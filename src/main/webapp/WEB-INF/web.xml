@@ -3,5 +3,24 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Archetype Created Web Application</display-name>
+	<display-name>TrialVerse</display-name>
+
+	<servlet>
+		<servlet-name>UserServlet</servlet-name>
+		<servlet-class>org.drugis.trialverse.StudyServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>StudyServlet</servlet-name>
+		<display-name>StudyServlet</display-name>
+		<description></description>
+		<servlet-class>org.drugis.trialverse.StudyServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>StudyServlet</servlet-name>
+		<url-pattern>/studies</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>StudyServlet</servlet-name>
+		<url-pattern>/studies/*</url-pattern>
+	</servlet-mapping>
 </web-app>

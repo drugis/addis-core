@@ -18,8 +18,14 @@
 
     <dependency> <!-- JSON support -->
       <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
+      <artifactId>jackson-mapper-asl</artifactId>
       <version>1.9.12</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
     </dependency>
 
     <dependency>
