@@ -58,7 +58,7 @@
         <xsl:param name="epochName" />
         <xsl:param name="offset" />
         <xsl:param name="relativeTo" />
-        '<xsl:value-of select="$offset" />&#160;<xsl:value-of select="translate(lower-case($relativeTo), '_', ' ')"/>&#160;<xsl:value-of select="$epochName"/>'
+        '<xsl:value-of select="$offset" />&#160;<xsl:value-of select="translate(xsl:lower-case($relativeTo), '_', ' ')"/>&#160;<xsl:value-of select="$epochName"/>'
     </xsl:function>
 
     <xsl:function name="drugis:get-mm-primary">
@@ -90,7 +90,7 @@
         <xsl:param name="type" />
         <xsl:param name="name" />
         <xsl:param name="ownerQuery" />
-        SELECT uuid_generate_v5(uuid_ns_url(), (SELECT <xsl:value-of select="$ownerQuery" /> || '/<xsl:value-of select="lower-case($type)" />/<xsl:value-of select="$name" />'))
+        SELECT uuid_generate_v5(uuid_ns_url(), (SELECT <xsl:value-of select="$ownerQuery" /> || '/<xsl:value-of select="xsl:lower-case($type)" />/<xsl:value-of select="$name" />'))
     </xsl:function>
 
     <xsl:function name="drugis:create-concept">
@@ -281,7 +281,7 @@
     <xsl:template match="studyOutcomeMeasures/studyOutcomeMeasure">
         <xsl:apply-templates select="whenTaken"/>
         <xsl:variable name="tagName" select="name(./(endpoint|populationCharacteristic|adverseEvent))" />
-        <xsl:variable name="varType" select="concat(upper-case(substring($tagName, 1, 1)), substring($tagName, 2))" />
+        <xsl:variable name="varType" select="concat(xsl:upper-case(substring($tagName, 1, 1)), substring($tagName, 2))" />
         <xsl:variable name="varName" select="(endpoint|populationCharacteristic|adverseEvent)/@name" />
         <xsl:variable name="variable" select="//addis-data/*[local-name() = concat($tagName, 's')]/*[@name = $varName]"/>
 
