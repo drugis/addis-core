@@ -1,20 +1,21 @@
 package org.drugis.trialverse.model;
 
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 
 import lombok.Data;
 
+import org.hibernate.annotations.Type;
+
 @Entity
-public @Data class Study {
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
+public @Data class Concept {
+	@Id @Type(type="pg-uuid") @GeneratedValue(strategy=GenerationType.AUTO) private UUID id;
 	@Column private String name;
-	@Column private String title;
-	@OneToOne private Concept indicationConcept;
-	@Column private String objective;
+	@Column private String description;
+	@Column private String type;
 }
