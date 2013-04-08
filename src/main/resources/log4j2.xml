@@ -2,16 +2,12 @@
 <configuration>
 	<appenders>
 		<Console name="console" target="SYSTEM_OUT">
-			<layout class="org.apache.log4j.PatternLayout">
-				<param name="ConversionPattern" value="%-5p: %c - %m%n" />
-			</layout>
+		 	<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
 			<ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY" />
 		</Console>
 		
 		<File name="logFile" fileName="trialverse.log">
-			<layout class="org.apache.log4j.PatternLayout">
-				<param name="ConversionPattern" value="%-5p: %c - %m%n" />
-			</layout>
+		 	<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
 		</File>
 	</appenders>
 	
