@@ -18,4 +18,10 @@ public @Data class Concept {
 	@Column private String name;
 	@Column private String description;
 	@Column private String type;
-}
+	@Column private String owner; 
+	
+	public String getType() {
+		return this.type.toLowerCase();
+	}
+	
+}	
