@@ -15,12 +15,13 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 @Entity
-@TypeDef(name="conceptTypeEnum", typeClass=ConceptTypeEnumConverter.class,
+@TypeDef(name="conceptType", typeClass=EnumConverter.class,
 		 parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.model.ConceptType")})
+
 public @Data class Concept {
 	@Id @Type(type="pg-uuid") @GeneratedValue(strategy=GenerationType.AUTO) private UUID id;
 	@Column private String name;
 	@Column private String description;
-	@Column @Type(type="conceptTypeEnum") private ConceptType type;
+	@Column @Type(type="conceptType") private ConceptType type;
 	@Column private String owner; 
 }

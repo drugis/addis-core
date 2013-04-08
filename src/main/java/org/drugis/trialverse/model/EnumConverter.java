@@ -15,7 +15,7 @@ import org.postgresql.util.PGobject;
 
 // This implementation works only with Postgres
 // From http://anismiles.wordpress.com/2010/08/04/postgres-enum-with-hibernate/
-public class ConceptTypeEnumConverter implements EnhancedUserType, ParameterizedType {
+public class EnumConverter implements EnhancedUserType, ParameterizedType {
 	private Class<Enum> enumClass;
 
 	public void setParameterValues(Properties parameters) {
