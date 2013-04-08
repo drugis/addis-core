@@ -27,7 +27,6 @@
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="packagesToScan" value="org.drugis.trialverse.model" />
-		<property name="persistenceUnitName" value="persistenceUnit" />
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
 				<property name="showSql" value="true" />
@@ -35,7 +34,10 @@
 				<property name="databasePlatform" value="${hibernate.dialect}" />
 			</bean>
 		</property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.ejb.naming_strategy">org.drugis.common.hibernate.PluralizedNamingStrategy</prop>
+			</props>
+		</property>
 	</bean>
-	
-	
 </beans>
