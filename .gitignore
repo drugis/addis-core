@@ -2,7 +2,9 @@
 .metadata
 .project
 .settings
+.springBeans
 bin
 *~
 target
 tags
+dbms/*Example.sql
