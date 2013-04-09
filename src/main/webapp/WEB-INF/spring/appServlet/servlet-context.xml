@@ -21,6 +21,7 @@
 	<beans:bean class="org.springframework.data.rest.webmvc.RepositoryRestMvcConfiguration" />
 	
 	<context:component-scan base-package="org.drugis.trialverse.model" />
+	<context:component-scan base-package="org.drugis.trialverse.repositories" />
 	
-	<jpa:repositories base-package="org.drugis.trialverse.model"/>
+	<jpa:repositories base-package="org.drugis.trialverse.repositories"/>
 </beans:beans>
