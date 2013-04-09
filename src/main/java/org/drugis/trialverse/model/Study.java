@@ -7,7 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 
 import lombok.Data;
 
@@ -16,7 +16,6 @@ public @Data class Study {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
 	@Column private String name;
 	@Column private String title;
-	@OneToOne @JoinColumn(name = "indication_concept") private Concept indication;
-	@Column private String objective;
-	
-}	
+	@ManyToOne @JoinColumn(name = "indication_concept") private Concept indication;
+	@Column private String objective;	
+}
