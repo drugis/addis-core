@@ -21,7 +21,7 @@ import org.hibernate.annotations.TypeDef;
 		 parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.model.ConceptType")})
 
 public @Data class Concept {
-	@Id @Type(type="pg-uuid") @GeneratedValue(strategy=GenerationType.AUTO) private UUID id;
+	@Id @Type(type="pg-uuid") @GeneratedValue(strategy=GenerationType.IDENTITY) private UUID id;
 	@Column private String name;
 	@Column private String description;
 	@Column @Type(type="conceptType") private ConceptType type;

@@ -8,6 +8,6 @@ import lombok.Data;
 
 @Entity
 public @Data class CodeSystem {
-	@Id private String codeSystem;
-	@Column private String codeSystemName;
+	@Id @Column(name="code_system") private String oid;
+	@Column(name="code_system_name") private String name;
 }

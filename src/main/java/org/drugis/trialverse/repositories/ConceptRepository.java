@@ -14,5 +14,7 @@ import org.springframework.data.rest.repository.annotation.RestResource;
 public interface ConceptRepository extends JpaRepository<Concept, UUID> {
 	
 	@RestResource(path="type", rel="types")
-	public Page<Concept> findByType(@Param("type") ConceptType type, Pageable pageable);
+	public Page<Concept> findByType(
+			@Param("type") ConceptType type, 
+			Pageable pageable);
 }
