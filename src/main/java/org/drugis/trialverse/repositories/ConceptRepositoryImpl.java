@@ -7,7 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.drugis.trialverse.model.Concept;
-import org.springframework.data.repository.query.Param;
 
 public class ConceptRepositoryImpl implements ConceptRepositoryCustom {
 	@PersistenceContext private EntityManager d_em;
