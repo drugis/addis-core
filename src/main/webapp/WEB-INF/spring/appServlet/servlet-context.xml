@@ -22,6 +22,8 @@
 	
 	<context:component-scan base-package="org.drugis.trialverse.model" />
 	<context:component-scan base-package="org.drugis.trialverse.repositories" />
+	<context:component-scan base-package="org.drugis.trialverse.controller" />
+	<context:component-scan base-package="org.drugis.trialverse.rest" />
 	
 	<jpa:repositories base-package="org.drugis.trialverse.repositories"/>
 </beans:beans>

@@ -6,5 +6,5 @@ import java.util.UUID;
 import org.drugis.trialverse.model.Concept;
 
 public interface ConceptRepositoryCustom {
-	public List<Concept> findTreatments(UUID id);
+	public List<Concept> findTreatmentsByIndication(UUID id);
 }
