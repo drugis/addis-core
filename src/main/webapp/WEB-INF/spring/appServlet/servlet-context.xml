@@ -13,15 +13,17 @@
 	
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<annotation-driven />
+	
+	<beans:bean class="org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration"/>
 
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
 	<resources mapping="/resources/**" location="/resources/" />
 	<resources mapping="/favicon.ico" location="/favicon.ico" />
 	
-	<beans:bean class="org.springframework.data.rest.webmvc.RepositoryRestMvcConfiguration" />
-	
 	<context:component-scan base-package="org.drugis.trialverse.model" />
 	<context:component-scan base-package="org.drugis.trialverse.repositories" />
+	<context:component-scan base-package="org.drugis.trialverse.controller" />
+	<context:component-scan base-package="org.drugis.trialverse.rest" />
 	
 	<jpa:repositories base-package="org.drugis.trialverse.repositories"/>
 </beans:beans>
