@@ -11,8 +11,13 @@ import javax.persistence.ManyToOne;
 
 import lombok.Data;
 
+import org.springframework.hateoas.Identifiable;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
 @Entity
-public @Data class Study {
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE)
+public @Data class Study implements Identifiable<Long> {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
 	@Column private String name;
 	@Column private String title;

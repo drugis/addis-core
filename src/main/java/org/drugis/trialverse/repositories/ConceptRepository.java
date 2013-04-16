@@ -15,6 +15,4 @@ public interface ConceptRepository extends CrudRepository<Concept, UUID>, Concep
 	
 	@RestResource(path="type", rel="types")
 	public Page<Concept> findByType(@Param("type") ConceptType type, Pageable pageable);
-	
-
 }

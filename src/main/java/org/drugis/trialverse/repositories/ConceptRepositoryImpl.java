@@ -13,7 +13,8 @@ public class ConceptRepositoryImpl implements ConceptRepositoryCustom {
 	
 	@SuppressWarnings("unchecked")
 	public List<Concept> findTreatmentsByIndication(UUID indicationConcept) {
-		List<Concept> results = d_em.createNativeQuery("SELECT DISTINCT concepts.* FROM studies, treatments, concepts " +
+		List<Concept> results = d_em.createNativeQuery(
+				"SELECT DISTINCT concepts.* FROM studies, treatments, concepts " +
 				"WHERE studies.indication_concept = CAST(:indication AS uuid) " +
 				"AND studies.id = treatments.study_id " +
 				"AND concepts.id = treatments.drug_concept", Concept.class)

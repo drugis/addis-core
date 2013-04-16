@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/concepts/{id}")
-@ExposesResourceFor(Concept.class)
 public class ConceptsController {
 	private final ConceptRepository d_concepts;
 	private final EntityLinks d_entityLinks; 
@@ -31,13 +30,12 @@ public class ConceptsController {
 	public ConceptsController(ConceptRepository concepts, EntityLinks entityLinks) {
 		Assert.notNull(entityLinks, "EntityLinks must not be null!");
 		Assert.notNull(concepts, "ConceptRepository must not be null!");
-
 		d_concepts = concepts;
 		d_entityLinks = entityLinks;
 	}
 	
-	@RequestMapping(value = "treatments", method = RequestMethod.GET)
 	@ResponseBody
+	@RequestMapping(value = "treatments", method = RequestMethod.GET)
 	public ResponseEntity<List<Resource<Concept>>> getTreatments(@PathVariable("id") UUID conceptId) {
 		
 		Concept concept = d_concepts.findOne(conceptId);
