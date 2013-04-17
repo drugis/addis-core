@@ -13,4 +13,7 @@ public interface ConceptRepository extends JpaRepository<Concept, UUID>, Concept
 	
 	@RestResource(path="type", rel="types")
 	public Page<Concept> findByType(@Param("type") ConceptType type, Pageable pageable);
+	
+	@RestResource(path="typeAndName")
+	public Page<Concept> findByTypeAndNameContaining(@Param("type") ConceptType type, @Param("q") String name, Pageable pageable);
 }

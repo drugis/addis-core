@@ -9,6 +9,7 @@ import org.drugis.trialverse.concept.ConceptRepository;
 import org.drugis.trialverse.concept.ConceptType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
+import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/concepts/{id}")
+@ExposesResourceFor(Concept.class)
 public class ConceptsController {
 	private final ConceptRepository d_concepts;
 	private final EntityLinks d_entityLinks; 
