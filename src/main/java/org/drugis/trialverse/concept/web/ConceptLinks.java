@@ -1,6 +1,6 @@
-package org.drugis.trialverse.rest;
+package org.drugis.trialverse.concept.web;
 
-import org.drugis.trialverse.model.Concept;
+import org.drugis.trialverse.concept.Concept;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;

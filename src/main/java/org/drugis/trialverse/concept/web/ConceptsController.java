@@ -1,15 +1,14 @@
-package org.drugis.trialverse.controller;
+package org.drugis.trialverse.concept.web;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.drugis.trialverse.model.Concept;
-import org.drugis.trialverse.model.ConceptType;
-import org.drugis.trialverse.repositories.ConceptRepository;
+import org.drugis.trialverse.concept.Concept;
+import org.drugis.trialverse.concept.ConceptRepository;
+import org.drugis.trialverse.concept.ConceptType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
-import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

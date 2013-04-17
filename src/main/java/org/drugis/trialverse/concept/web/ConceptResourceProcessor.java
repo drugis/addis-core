@@ -1,11 +1,13 @@
-package org.drugis.trialverse.rest;
+package org.drugis.trialverse.concept.web;
 
-import org.drugis.trialverse.model.Concept;
+import org.drugis.trialverse.concept.Concept;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceProcessor;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+@Component
 public class ConceptResourceProcessor implements ResourceProcessor<Resource<Concept>> {
 
 	private final ConceptLinks links;

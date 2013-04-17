@@ -1,4 +1,4 @@
-package org.drugis.trialverse.repositories;
+package org.drugis.trialverse.concept;
 
 import java.util.List;
 import java.util.UUID;
@@ -6,8 +6,8 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.drugis.trialverse.model.Concept;
-
+import org.springframework.stereotype.Component;
+@Component
 public class ConceptRepositoryImpl implements ConceptRepositoryCustom {
 	@PersistenceContext private EntityManager d_em;
 	

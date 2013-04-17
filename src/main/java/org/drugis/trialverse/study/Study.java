@@ -1,4 +1,4 @@
-package org.drugis.trialverse.model;
+package org.drugis.trialverse.study;
 
 
 import javax.persistence.Column;
@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 
 import lombok.Data;
 
+import org.drugis.trialverse.concept.Concept;
 import org.springframework.hateoas.Identifiable;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;

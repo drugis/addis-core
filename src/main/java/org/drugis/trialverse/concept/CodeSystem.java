@@ -1,4 +1,4 @@
-package org.drugis.trialverse.model;
+package org.drugis.trialverse.concept;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
