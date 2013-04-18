@@ -1,6 +1,5 @@
 package org.drugis.trialverse.study.web;
 
-import org.drugis.trialverse.concept.Concept;
 import org.drugis.trialverse.study.Study;
 import org.drugis.trialverse.study.StudyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
