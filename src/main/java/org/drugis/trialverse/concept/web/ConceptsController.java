@@ -24,6 +24,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/concepts/{id}")
 @ExposesResourceFor(Concept.class)
 public class ConceptsController {
+	private interface Fetcher {
+		public List<Concept> fetch(UUID conceptId);
+	}
+	
 	private final ConceptRepository d_concepts;
 	private final EntityLinks d_entityLinks; 
 		
@@ -38,10 +42,29 @@ public class ConceptsController {
 	@ResponseBody
 	@RequestMapping(value = "treatments", method = RequestMethod.GET)
 	public ResponseEntity<List<Resource<Concept>>> getTreatments(@PathVariable("id") UUID conceptId) {
-		
+		Fetcher fetcher = new Fetcher() {
+			public List<Concept> fetch(UUID conceptId) {
+				return d_concepts.findTreatmentsByIndication(conceptId);
+			}
+		};
+		return fetchConceptsFor(conceptId, fetcher);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "variables", method = RequestMethod.GET)
+	public ResponseEntity<List<Resource<Concept>>> getVariables(@PathVariable("id") UUID conceptId) {
+		Fetcher fetcher = new Fetcher() {
+			public List<Concept> fetch(UUID conceptId) {
+				return d_concepts.findVariablesByIndication(conceptId);
+			}
+		};
+		return fetchConceptsFor(conceptId, fetcher);
+	}
+
+	private ResponseEntity<List<Resource<Concept>>> fetchConceptsFor(UUID conceptId, Fetcher fetcher) {
 		Concept concept = d_concepts.findOne(conceptId);
 		if (concept.getType().equals(ConceptType.INDICATION)) { 
-			List<Concept> treatments = d_concepts.findTreatmentsByIndication(conceptId);
+			List<Concept> treatments = fetcher.fetch(conceptId);
 			List<Resource<Concept>> result = new ArrayList<>();
 			for(Concept treatment : treatments) { 
 				Resource<Concept> resource = new Resource<Concept>(treatment);
