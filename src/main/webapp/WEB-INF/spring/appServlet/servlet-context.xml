@@ -28,8 +28,4 @@
 	<context:component-scan base-package="org.drugis.trialverse" />
 
 	<bean class="org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration"/>
-	
-	<bean id="studiesQuery" class="org.drugis.trialverse.QueryTemplate">
-		<constructor-arg name="resourceName" value="/studiesQuery.template.sql" />
-	</bean>
 </beans>

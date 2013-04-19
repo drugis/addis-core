@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import org.drugis.trialverse.CachedQueryTemplateFactory.QueryTemplate;
+import org.drugis.trialverse.QueryTemplateFactory;
 import org.drugis.trialverse.study.Study;
 import org.drugis.trialverse.study.StudyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,25 +18,31 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/studies/{id}")
+@RequestMapping("/studies")
 @ExposesResourceFor(Study.class)
 public class StudiesController {
 
 	private final StudyRepository d_studies;
-	private final EntityLinks d_entityLinks; 
-		
+	private QueryTemplateFactory d_queryTemplateFactory;
+
+	
 	@Autowired
-	public StudiesController(StudyRepository studies, EntityLinks entityLinks) {
-		Assert.notNull(entityLinks, "EntityLinks must not be null!");
+	public StudiesController(StudyRepository studies, QueryTemplateFactory tmpl) {
 		Assert.notNull(studies, "StudyRepository must not be null!");
 		d_studies = studies;
-		d_entityLinks = entityLinks;
+		d_queryTemplateFactory = tmpl;
+
 	}
 	
-	@RequestMapping("/foo")
+	@RequestMapping("/findByConcepts")
 	@ResponseBody
-	public List<Study> getStudiesOrSomething(@RequestParam UUID indication) { 
-		return d_studies.findStudies(indication, Collections.<UUID>emptyList(), Collections.<UUID>emptyList());
+	public List<Study> getStudiesForConcepts(@RequestParam UUID indication) { 
+		QueryTemplate query = d_queryTemplateFactory.buildQueryTemplate("/studiesQuery.template.sql");
+		return d_studies.findStudies(
+				query, 
+				indication, 
+				Collections.<UUID>emptyList(), 
+				Collections.<UUID>emptyList());
 	}
 	
 }

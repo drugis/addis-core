@@ -42,23 +42,21 @@ public class ConceptsController {
 	@ResponseBody
 	@RequestMapping(value = "treatments", method = RequestMethod.GET)
 	public ResponseEntity<List<Resource<Concept>>> getTreatments(@PathVariable("id") UUID conceptId) {
-		Fetcher fetcher = new Fetcher() {
+		return fetchConceptsFor(conceptId, new Fetcher() {
 			public List<Concept> fetch(UUID conceptId) {
 				return d_concepts.findTreatmentsByIndication(conceptId);
 			}
-		};
-		return fetchConceptsFor(conceptId, fetcher);
+		});
 	}
 	
 	@ResponseBody
 	@RequestMapping(value = "variables", method = RequestMethod.GET)
 	public ResponseEntity<List<Resource<Concept>>> getVariables(@PathVariable("id") UUID conceptId) {
-		Fetcher fetcher = new Fetcher() {
+		return fetchConceptsFor(conceptId, new Fetcher() {
 			public List<Concept> fetch(UUID conceptId) {
 				return d_concepts.findVariablesByIndication(conceptId);
 			}
-		};
-		return fetchConceptsFor(conceptId, fetcher);
+		});
 	}
 
 	private ResponseEntity<List<Resource<Concept>>> fetchConceptsFor(UUID conceptId, Fetcher fetcher) {

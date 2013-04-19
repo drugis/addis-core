@@ -15,11 +15,12 @@ import org.drugis.trialverse.concept.Concept;
 import org.springframework.hateoas.Identifiable;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE)
 public @Data class Study implements Identifiable<Long> {
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
+	@Id @JsonIgnore @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
 	@Column private String name;
 	@Column private String title;
 	@ManyToOne @JoinColumn(name = "indication_concept") private Concept indication;

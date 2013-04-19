@@ -48,5 +48,6 @@
 		</property>
 	</bean>
 	
+	<bean id="queryTemplateFactory" class="org.drugis.trialverse.CachedQueryTemplateFactory" />
 	<jpa:repositories base-package="org.drugis.trialverse"/>
 </beans>
