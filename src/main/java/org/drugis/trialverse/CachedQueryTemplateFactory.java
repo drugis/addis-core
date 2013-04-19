@@ -1,7 +1,8 @@
 package org.drugis.trialverse;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.NoArgsConstructor;
 
@@ -11,7 +12,7 @@ import com.google.common.io.Resources;
 @NoArgsConstructor
 public class CachedQueryTemplateFactory implements QueryTemplateFactory {
 	
-	private HashMap<String, QueryTemplate> d_templateCache = new HashMap<>();
+	private Map<String, QueryTemplate> d_templateCache = new ConcurrentHashMap<String, QueryTemplate>();
 
 	@Override
 	public QueryTemplate buildQueryTemplate(String templateFile) { 
