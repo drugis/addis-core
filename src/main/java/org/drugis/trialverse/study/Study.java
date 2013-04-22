@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import lombok.Data;
 
@@ -23,6 +24,6 @@ public @Data class Study implements Identifiable<Long> {
 	@Id @JsonIgnore @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
 	@Column private String name;
 	@Column private String title;
-	@ManyToOne @JoinColumn(name = "indication_concept") private Concept indication;
+	@OneToOne @JoinColumn(name = "indication_concept") private Concept indication;
 	@Column private String objective;	
 }

@@ -18,13 +18,14 @@ import org.hibernate.annotations.TypeDef;
 import org.springframework.hateoas.Identifiable;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @TypeDef(name="conceptType", typeClass=PostgresEnumConverter.class,
 		 parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.concept.ConceptType")})
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE)
 public @Data class Concept implements Identifiable<UUID>  {
-	@Id @Type(type="pg-uuid") @GeneratedValue(strategy=GenerationType.IDENTITY) private UUID id;
+	@Id @JsonIgnore @Type(type="pg-uuid") @GeneratedValue(strategy=GenerationType.IDENTITY) private UUID id;
 	@Column private String name;
 	@Column private String description;
 	@Column @Type(type="conceptType") private ConceptType type;
