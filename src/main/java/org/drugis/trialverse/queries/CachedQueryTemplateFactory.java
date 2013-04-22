@@ -1,4 +1,4 @@
-package org.drugis.trialverse;
+package org.drugis.trialverse.queries;
 
 import java.io.IOException;
 import java.util.Map;

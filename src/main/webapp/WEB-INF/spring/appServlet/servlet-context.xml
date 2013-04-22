@@ -27,5 +27,6 @@
 	
 	<context:component-scan base-package="org.drugis.trialverse" />
 
+	
 	<bean class="org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration"/>
 </beans>
