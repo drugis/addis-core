@@ -8,10 +8,15 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.drugis.trialverse.queries.CachedQueryTemplateFactory.QueryTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
+@Getter
+@Setter
 public class StudyRepositoryImpl implements StudyRepositoryCustom {
 	@PersistenceContext private EntityManager d_em;
 	
