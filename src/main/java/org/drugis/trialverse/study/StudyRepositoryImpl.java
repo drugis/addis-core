@@ -9,22 +9,25 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.drugis.trialverse.queries.CachedQueryTemplateFactory.QueryTemplate;
+import org.drugis.trialverse.queries.QueryTemplateFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class StudyRepositoryImpl implements StudyRepositoryCustom {
 	@PersistenceContext private EntityManager d_em;
 	
+	@Autowired private QueryTemplateFactory queryTemplateFactory;
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Study> findStudies(
-			QueryTemplate query,
 			UUID indication,
 			List<UUID> variables,
 			List<UUID> treatments) {
-		
+		QueryTemplate template = queryTemplateFactory.buildQueryTemplate("queries/studiesQuery.template.sql");
 		List<Study> results = d_em.createNativeQuery(
-				query.getTemplate(),
+				template.getTemplate(),
 				Study.class)
 				.setParameter("indication", castUUIDs(Collections.singletonList(indication)))
 				.setParameter("treatments", castUUIDs(treatments))

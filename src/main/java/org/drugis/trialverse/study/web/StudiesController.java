@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class StudiesController {
 
 	private final StudyRepository d_studies;
-	private final QueryTemplateFactory d_queryTemplateFactory;
 	private final EntityLinks d_entityLinks; 
 
 	@Autowired
@@ -36,7 +35,6 @@ public class StudiesController {
 		Assert.notNull(studies, "StudyRepository must not be null!");
 		Assert.notNull(entityLinks, "EntityLinks must not be null!");
 		d_studies = studies;
-		d_queryTemplateFactory = tmpl;
 		d_entityLinks = entityLinks;
 
 	}
@@ -47,9 +45,8 @@ public class StudiesController {
 			@RequestParam UUID indication,
 			@RequestParam List<UUID> variables,
 			@RequestParam List<UUID> treatments) { 
-		QueryTemplate query = d_queryTemplateFactory.buildQueryTemplate("/queries/studiesQuery.template.sql");
 		
-		List<Study> studies = d_studies.findStudies(query, indication, variables, treatments);
+		List<Study> studies = d_studies.findStudies(indication, variables, treatments);
 		
 		List<Resource<Study>> result = new ArrayList<>();
 		for(Study study : studies) { 
