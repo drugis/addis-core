@@ -44,7 +44,7 @@ public class ConceptsController {
 	@RequestMapping(value = "treatments", method = RequestMethod.GET)
 	public ResponseEntity<List<Resource<Concept>>> getTreatments(
 			final @PathVariable("id") UUID conceptId,
-			final @RequestParam("name") String name) {
+			final @RequestParam(value="name", required=false) String name) {
 		return fetchConceptsFor(conceptId, new Fetcher() {
 			public List<Concept> fetch(UUID conceptId) {
 				return d_concepts.findTreatmentsByIndication(conceptId, name);
@@ -56,7 +56,7 @@ public class ConceptsController {
 	@RequestMapping(value = "variables", method = RequestMethod.GET)
 	public ResponseEntity<List<Resource<Concept>>> getVariables(
 			final @PathVariable("id") UUID conceptId,
-			final @RequestParam("name") String name) {
+			final @RequestParam(value="name", required=false) String name) {
 		return fetchConceptsFor(conceptId, new Fetcher() {
 			public List<Concept> fetch(UUID conceptId) {
 				return d_concepts.findVariablesByIndication(conceptId, name);
