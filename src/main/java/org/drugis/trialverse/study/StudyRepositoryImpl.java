@@ -29,14 +29,14 @@ public class StudyRepositoryImpl implements StudyRepositoryCustom {
 		List<Study> results = d_em.createNativeQuery(
 				template.getTemplate(),
 				Study.class)
-				.setParameter("indication", castUUIDs(Collections.singletonList(indication)))
-				.setParameter("treatments", castUUIDs(treatments))
-				.setParameter("variables", castUUIDs(variables))
+				.setParameter("indication", UUIDsToString(Collections.singletonList(indication)))
+				.setParameter("treatments", UUIDsToString(treatments))
+				.setParameter("variables", UUIDsToString(variables))
 				.getResultList();
 		return results;
 	}
 	
-	private List<Object> castUUIDs(List<UUID> uuids) { 
+	private List<Object> UUIDsToString(List<UUID> uuids) { 
 		List<Object> result = new ArrayList<>();
 		for(UUID uuid : uuids) { 
 			result.add(uuid.toString());
