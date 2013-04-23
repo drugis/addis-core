@@ -5,7 +5,7 @@ import java.util.UUID;
 
 
 public interface ConceptRepositoryCustom {
-	public List<Concept> findTreatmentsByIndication(UUID id);
+	public List<Concept> findTreatmentsByIndication(UUID id, String name);
 	
-	public List<Concept> findVariablesByIndication(UUID id);
+	public List<Concept> findVariablesByIndication(UUID id, String name);
 }

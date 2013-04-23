@@ -18,6 +18,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -41,20 +42,24 @@ public class ConceptsController {
 	
 	@ResponseBody
 	@RequestMapping(value = "treatments", method = RequestMethod.GET)
-	public ResponseEntity<List<Resource<Concept>>> getTreatments(@PathVariable("id") UUID conceptId) {
+	public ResponseEntity<List<Resource<Concept>>> getTreatments(
+			final @PathVariable("id") UUID conceptId,
+			final @RequestParam("name") String name) {
 		return fetchConceptsFor(conceptId, new Fetcher() {
 			public List<Concept> fetch(UUID conceptId) {
-				return d_concepts.findTreatmentsByIndication(conceptId);
+				return d_concepts.findTreatmentsByIndication(conceptId, name);
 			}
 		});
 	}
 	
 	@ResponseBody
 	@RequestMapping(value = "variables", method = RequestMethod.GET)
-	public ResponseEntity<List<Resource<Concept>>> getVariables(@PathVariable("id") UUID conceptId) {
+	public ResponseEntity<List<Resource<Concept>>> getVariables(
+			final @PathVariable("id") UUID conceptId,
+			final @RequestParam("name") String name) {
 		return fetchConceptsFor(conceptId, new Fetcher() {
 			public List<Concept> fetch(UUID conceptId) {
-				return d_concepts.findVariablesByIndication(conceptId);
+				return d_concepts.findVariablesByIndication(conceptId, name);
 			}
 		});
 	}
