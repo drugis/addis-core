@@ -15,15 +15,16 @@ import org.drugis.common.hibernate.PostgresEnumConverter;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 import org.springframework.hateoas.Identifiable;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@TypeDef(name="conceptType", typeClass=PostgresEnumConverter.class,
-		 parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.concept.ConceptType")})
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE)
+@TypeDefs({
+	@TypeDef(name="conceptType", typeClass=PostgresEnumConverter.class,
+			 parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.concept.ConceptType")})
+})
 public @Data class Concept implements Identifiable<UUID>  {
 	@Id @JsonIgnore @Type(type="pg-uuid") @GeneratedValue(strategy=GenerationType.IDENTITY) private UUID id;
 	@Column private String name;
