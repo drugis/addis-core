@@ -1,11 +1,15 @@
 package org.drugis.trialverse.study;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import lombok.Data;
@@ -18,10 +22,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE)
-public @Data class Study implements Identifiable<Long> {
+@Data public class Study implements Identifiable<Long> {
 	@Id @JsonIgnore @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
 	@Column private String name;
 	@Column private String title;
 	@OneToOne @JoinColumn(name = "indication_concept") private Concept indication;
 	@Column private String objective;	
+	@OneToMany(mappedBy="armPK.studyId", fetch=FetchType.EAGER) private List<Arm> arms;
 }
