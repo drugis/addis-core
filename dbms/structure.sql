@@ -105,6 +105,7 @@ CREATE TABLE "epochs" (
   "note_hook" bigint,
   PRIMARY KEY ("study_id", "name")
 );
+CREATE INDEX ON "epochs" ("study_id");
 
 CREATE TABLE "arms" (
   "study_id" bigint REFERENCES studies (id),
@@ -113,6 +114,7 @@ CREATE TABLE "arms" (
   "note_hook" bigint,
   PRIMARY KEY ("study_id", "name")
 );
+CREATE INDEX ON "arms" ("study_id");
 COMMENT ON COLUMN "arms"."name" IS 'Empty string indicates "total population"';
 
 CREATE TABLE "designs" (
