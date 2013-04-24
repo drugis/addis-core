@@ -30,4 +30,21 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
+	<!-- per-request transactions -->
+    <filter>
+        <filter-name>transactionFilter</filter-name>
+        <filter-class>
+           org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter
+        </filter-class>
+        <init-param>
+            <param-name>entityManagerFactoryBeanName</param-name>
+            <param-value>entityManagerFactory</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>transactionFilter</filter-name>
+        <url-pattern>*</url-pattern>
+    </filter-mapping>
+
+
 </web-app>
