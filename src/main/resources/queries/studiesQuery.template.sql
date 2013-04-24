@@ -20,7 +20,7 @@ FROM studies,
     )
     AS request_treatments (id)
     ON treatment_concepts.id = request_treatments.id
-WHERE studies.indication_concept = (CAST (:indication AS uuid))
+WHERE studies.indication_concept = CAST(:indication AS uuid)
 AND studies.id = study_variables.study_id 
 AND study_concepts.id = study_variables.variable_concept
 AND concept_map.sub = study_concepts.id

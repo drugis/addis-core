@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -48,5 +47,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	@Column @Type(type="blindingType")  private BlindingType blindingType;
 	@Column @Type(type="allocationType")  private AllocationType allocationType;
 
-	@OneToMany(mappedBy="armPK.studyId", fetch=FetchType.EAGER) private List<Arm> arms;
+	@OneToMany(mappedBy="armPK.studyId") private List<Arm> arms;
+	@OneToMany(mappedBy="epochPK.studyId") private List<Epoch> epochs;
+	@OneToMany(mappedBy="activityPK.studyId") private List<Activity> activities;
+
 }
