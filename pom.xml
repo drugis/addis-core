@@ -131,6 +131,26 @@
 			<version>${jackson-version}</version>
 		</dependency>
 
+		<!-- Joda -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.2</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jadira.usertype</groupId>
+			<artifactId>usertype.core</artifactId>
+			<version>3.0.0.GA</version>
+		</dependency>
+		
+		<!-- This is *not* a mistake. The latest Joda binding is in 2.1.2 -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-joda</artifactId>
+			<version>2.1.2</version>
+		</dependency>
+
 		<!-- projectlombok.org/ -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>

@@ -1,6 +1,6 @@
-package org.drugis.trialverse.queries;
+package org.drugis.trialverse.jpa;
 
-import org.drugis.trialverse.queries.CachedQueryTemplateFactory.QueryTemplate;
+import org.drugis.trialverse.jpa.CachedQueryTemplateFactory.QueryTemplate;
 import org.springframework.stereotype.Service;
 
 @Service

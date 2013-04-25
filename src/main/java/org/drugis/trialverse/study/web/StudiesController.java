@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.drugis.trialverse.queries.CachedQueryTemplateFactory;
+import org.drugis.trialverse.jpa.CachedQueryTemplateFactory;
 import org.drugis.trialverse.study.Study;
 import org.drugis.trialverse.study.StudyRepository;
 import org.springframework.beans.factory.annotation.Autowired;

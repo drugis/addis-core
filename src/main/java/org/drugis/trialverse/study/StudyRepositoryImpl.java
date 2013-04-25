@@ -8,8 +8,8 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.drugis.trialverse.queries.CachedQueryTemplateFactory.QueryTemplate;
-import org.drugis.trialverse.queries.QueryTemplateFactory;
+import org.drugis.trialverse.jpa.QueryTemplateFactory;
+import org.drugis.trialverse.jpa.CachedQueryTemplateFactory.QueryTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
