@@ -10,7 +10,7 @@
     <xsl:param name="projectDescription" as="xs:string" />
 
     <xsl:output method="text" indent="yes" media-type="text/sql"/>
-    <xsl:strip-space elements="*"/>
+    <xsl:strip-space elements="*" />
 
     <xsl:variable name="snomed">2.16.840.1.113883.6.96</xsl:variable>
     <xsl:variable name="atc">2.16.840.1.113883.6.73</xsl:variable>
@@ -58,7 +58,7 @@
         <xsl:param name="epochName" />
         <xsl:param name="offset" />
         <xsl:param name="relativeTo" />
-        '<xsl:value-of select="$offset" />&#160;<xsl:value-of select="translate(lower-case($relativeTo), '_', ' ')"/>&#160;<xsl:value-of select="$epochName"/>'
+        '<xsl:value-of select="$offset" /><xsl:value-of select="concat(' ', translate(lower-case($relativeTo), '_', ' '), ' ')"/><xsl:value-of select="$epochName"/>'
     </xsl:function>
 
     <xsl:function name="drugis:get-mm-primary">
