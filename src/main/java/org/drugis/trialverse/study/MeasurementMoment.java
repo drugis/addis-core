@@ -35,20 +35,12 @@ public class MeasurementMoment {
 	@Column
 	@Type(type = "interval")
 	@JsonProperty
-	private Long offsetFromEpoch;
+	private Period offsetFromEpoch;
 
 	@Data private static class MeasurementMomentPK implements Serializable {
 		private static final long serialVersionUID = 189168965179522667L;
 
 		@JsonIgnore Long studyId;
 		String name;
-	}
-
-	public Period getOffsetFromEpoch() {
-		if(offsetFromEpoch != null) {
-			return new Period((long)offsetFromEpoch).normalizedStandard();
-		} else {
-			return null;
-		}
 	}
 }

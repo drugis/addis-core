@@ -11,6 +11,8 @@ import java.util.Date;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
+import org.joda.time.Instant;
+import org.joda.time.Period;
 import org.postgresql.util.PGInterval;
 
 
@@ -57,9 +59,11 @@ public class Interval implements UserType {
 			return null;
 		}
 		final PGInterval pgInterval = new PGInterval(interval);
-		final Date epoch = new Date(0l);
+		final Date epoch = new Date(0L);
 		pgInterval.add(epoch);
-		return Long.valueOf(epoch.getTime());	}
+		final Long duration = Long.valueOf(epoch.getTime());
+		return new Period((long)duration).normalizedStandard();
+	}
 
 	@Override
 	public void nullSafeSet(final PreparedStatement st, final Object value, final int index, final SessionImplementor session)
@@ -68,7 +72,8 @@ public class Interval implements UserType {
 			st.setNull(index, Types.VARCHAR);
 		} else {
 			//this http://postgresql.1045698.n5.nabble.com/Inserting-Information-in-PostgreSQL-interval-td2175203.html#a2175205
-			st.setObject(index, getInterval(((Long) value).longValue()), Types.OTHER);
+			final long duration = (((Period) value).toDurationFrom(new Instant(0L))).getMillis();
+			st.setObject(index, getInterval(duration), Types.OTHER);
 		}
 	}
 

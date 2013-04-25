@@ -38,13 +38,5 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 	@Column
 	@Type(type = "interval")
-	private Long periodicity;
-
-	public Period getPeriodicity() {
-		if(periodicity != null) {
-			return new Period((long)periodicity).normalizedStandard();
-		} else {
-			return null;
-		}
-	}
+	private Period periodicity;
 }

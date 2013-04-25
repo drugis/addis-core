@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 	@Column
 	@Type(type = "interval")
 	@JsonProperty
-	private Long duration;
+	private Period duration;
 
 	@Embeddable
 	@Data private static class EpochPK implements Serializable {
@@ -40,14 +40,4 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 	public String getName() {
 		return epochPK.getName();
 	}
-
-	public Period getDuration() {
-		if(duration != null) {
-			return new Period((long)duration).normalizedStandard();
-		} else {
-			return null;
-		}
-	}
-
-
 }
