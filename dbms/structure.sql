@@ -57,8 +57,8 @@ CREATE TABLE "treatments" (
 CREATE TABLE "treatment_dosings" (
   "treatment_id" bigint REFERENCES treatments (id),
   "planned_time" interval,
-  "min_dose" varchar,
-  "max_dose" varchar,
+  "min_dose" float,
+  "max_dose" float,
   "scale_modifier" varchar,
   "unit_concept" uuid REFERENCES concepts (id),
   PRIMARY KEY ("treatment_id", "planned_time")
