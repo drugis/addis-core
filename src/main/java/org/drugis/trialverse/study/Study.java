@@ -51,6 +51,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	@OneToMany(mappedBy="epochPK.studyId") private List<Epoch> epochs;
 	@OneToMany(mappedBy="activityPK.studyId") private List<Activity> activities;
 	@OneToMany(mappedBy="designPK.studyId")  private List<Design> designs;
-	@OneToMany(mappedBy="studyVariablePK.studyId") private List<StudyVariable> variables;
+	@OneToMany(mappedBy="variablePK.studyId") private List<Variable> variables;
 	@OneToMany(mappedBy="measurementMomentPK.studyId") private List<MeasurementMoment> measurementMoments;
 }

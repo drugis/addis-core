@@ -111,7 +111,7 @@ CREATE TABLE "project_studies" (
   PRIMARY KEY ("project_id", "study_id")
 );
 
-CREATE TABLE "study_references" (
+CREATE TABLE "references" (
   "study_id" bigint REFERENCES studies (id),
   "id" varchar,
   "repository" text DEFAULT 'PubMed',
@@ -148,7 +148,7 @@ ALTER TABLE "designs" ADD CONSTRAINT "design_arm_fkey" FOREIGN KEY ("study_id", 
 ALTER TABLE "designs" ADD CONSTRAINT "design_epoch_fkey" FOREIGN KEY ("study_id", "epoch_name") REFERENCES "epochs" ("study_id", "name");
 ALTER TABLE "designs" ADD CONSTRAINT "design_activity_fkey" FOREIGN KEY ("study_id", "activity_name") REFERENCES "activities" ("study_id", "name");
 
-CREATE TABLE "study_variables" (
+CREATE TABLE "variables" (
   "study_id" bigint,
   "variable_concept" uuid REFERENCES concepts (id),
   "is_primary" bool,
@@ -176,7 +176,7 @@ CREATE TABLE "measurements" (
   PRIMARY KEY ("variable_concept", "measurement_moment_name", "arm_name", "attribute")
 );
 COMMENT ON COLUMN "measurements"."variable_concept" IS 'Uniquely identifies the study';
-ALTER TABLE "measurements" ADD CONSTRAINT "variable_measurement_fkey" FOREIGN KEY ("study_id", "variable_concept") REFERENCES "study_variables" ("study_id", "variable_concept");
+ALTER TABLE "measurements" ADD CONSTRAINT "variable_measurement_fkey" FOREIGN KEY ("study_id", "variable_concept") REFERENCES "variables" ("study_id", "variable_concept");
 ALTER TABLE "measurements" ADD CONSTRAINT "arm_measurement_fkey" FOREIGN KEY ("study_id", "arm_name") REFERENCES "arms" ("study_id", "name");
 
 CREATE TABLE "measurement_moments" (

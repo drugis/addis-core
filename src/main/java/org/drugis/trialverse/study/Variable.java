@@ -29,15 +29,15 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 	@TypeDef(name="variableType", typeClass=PostgresEnumConverter.class,
 		parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.VariableType")})
 })
-@Data public class StudyVariable {
-	@JsonUnwrapped private @EmbeddedId StudyVariablePK studyVariablePK;
+@Data public class Variable {
+	@JsonUnwrapped private @EmbeddedId VariablePK variablePK;
 	@Column private Boolean isPrimary;
 	@ManyToOne private Concept unitConcept;
 	@Column @Type(type="measurementType") private MeasurementType measurementType;
 	@Column @Type(type="variableType") private VariableType variableType;
 
 	@Embeddable
-	@Data private static class StudyVariablePK implements Serializable {
+	@Data private static class VariablePK implements Serializable {
 		private static final long serialVersionUID = -4052311975385835101L;
 
 		@JsonIgnore private Long studyId;
@@ -45,7 +45,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 	}
 
 	public URI getVariableConcept() {
-		return EntityLinkResolver.getInstance().getLinkForEntity(studyVariablePK.variableConcept);
+		return EntityLinkResolver.getInstance().getLinkForEntity(variablePK.variableConcept);
 	}
 
 	public URI getUnitConcept() {

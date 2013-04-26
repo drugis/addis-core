@@ -245,7 +245,7 @@
 
     <xsl:template match="characteristics/references">
         <xsl:for-each select="pubMedId">
-            INSERT INTO study_references (study_id, id) VALUES (
+            INSERT INTO "references" (study_id, id) VALUES (
                <xsl:value-of select="drugis:get-study(../../../@name)" />,
                '<xsl:value-of select="text()" />');
         </xsl:for-each>
@@ -298,7 +298,7 @@
         ), notes AS (
             <xsl:value-of select="drugis:create-notes('som_note_hook', notes, false())" />
         )
-        INSERT INTO study_variables (study_id, variable_concept, is_primary, measurement_type, unit_concept, variable_type, note_hook)
+        INSERT INTO variables (study_id, variable_concept, is_primary, measurement_type, unit_concept, variable_type, note_hook)
             VALUES (<xsl:value-of select="drugis:get-study(../../@name)"/>,
                 (SELECT id FROM variable_concept),
                 <xsl:value-of select="@primary"/>,
