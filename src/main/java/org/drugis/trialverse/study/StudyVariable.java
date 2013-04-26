@@ -1,6 +1,7 @@
 package org.drugis.trialverse.study;
 
 import java.io.Serializable;
+import java.net.URI;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -12,6 +13,7 @@ import lombok.Data;
 
 import org.drugis.common.hibernate.PostgresEnumConverter;
 import org.drugis.trialverse.concept.Concept;
+import org.drugis.trialverse.core.EntityLinkResolver;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -38,7 +40,15 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 	@Data private static class StudyVariablePK implements Serializable {
 		private static final long serialVersionUID = -4052311975385835101L;
 
-		@JsonIgnore Long studyId;
-		@ManyToOne Concept variableConcept;
+		@JsonIgnore private Long studyId;
+		@ManyToOne private Concept variableConcept;
+	}
+
+	public URI getVariableConcept() {
+		return EntityLinkResolver.getInstance().getLinkForEntity(studyVariablePK.variableConcept);
+	}
+
+	public URI getUnitConcept() {
+		return EntityLinkResolver.getInstance().getLinkForEntity(unitConcept);
 	}
 }

@@ -1,5 +1,6 @@
 package org.drugis.trialverse.study;
 
+import java.net.URI;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -14,6 +15,7 @@ import javax.persistence.OneToOne;
 import lombok.Data;
 
 import org.drugis.trialverse.concept.Concept;
+import org.drugis.trialverse.core.EntityLinkResolver;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.joda.time.Period;
@@ -41,5 +43,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	@Type(type = "interval")
 	private Period periodicity;
 
-
+	public URI getDrugConcept() {
+		return EntityLinkResolver.getInstance().getLinkForEntity(drugConcept);
+	}
 }

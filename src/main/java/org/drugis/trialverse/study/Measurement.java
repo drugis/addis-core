@@ -1,15 +1,17 @@
 package org.drugis.trialverse.study;
 
 import java.io.Serializable;
-import java.util.UUID;
+import java.net.URI;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 import lombok.Data;
 
-import org.hibernate.annotations.Type;
+import org.drugis.trialverse.concept.Concept;
+import org.drugis.trialverse.core.EntityLinkResolver;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
@@ -23,9 +25,13 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 	@Data static class MeasurementPK implements Serializable {
 		private static final long serialVersionUID = 5206825154379784745L;
 		Long studyId;
-		@Type(type="pg-uuid") UUID variableConcept;
+		@ManyToOne Concept variableConcept;
 		String measurementMomentName;
 		String armName;
 		String attribute;
+	}
+
+	public URI getVariableConcept() {
+		return EntityLinkResolver.getInstance().getLinkForEntity(measurementPK.variableConcept);
 	}
 }
