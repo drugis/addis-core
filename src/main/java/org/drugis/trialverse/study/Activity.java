@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @TypeDef(name="activityType", typeClass=PostgresEnumConverter.class,
 		 parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.ActivityType")})
 @Data public class Activity {
-	@EmbeddedId @JsonIgnore private  ActivityPK activityPK;
+	@EmbeddedId @JsonIgnore private  ActivityPK key;
 	@Column @Type(type="activityType") private  ActivityType type;
 
 	@Embeddable
@@ -45,6 +45,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	@OneToMany private List<Treatment> treatment;
 
 	public String getName() {
-		return activityPK.getName();
+		return key.getName();
 	}
 }

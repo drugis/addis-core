@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 		parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.VariableType")})
 })
 @Data public class Variable {
-	@JsonUnwrapped private @EmbeddedId VariablePK variablePK;
+	@JsonUnwrapped private @EmbeddedId VariablePK key;
 	@Column private Boolean isPrimary;
 	@ManyToOne private Concept unitConcept;
 	@Column @Type(type="measurementType") private MeasurementType measurementType;
@@ -45,7 +45,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 	}
 
 	public URI getVariableConcept() {
-		return EntityLinkResolver.getInstance().getLinkForEntity(variablePK.variableConcept);
+		return EntityLinkResolver.getInstance().getLinkForEntity(key.variableConcept);
 	}
 
 	public URI getUnitConcept() {

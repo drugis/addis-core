@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 		fieldVisibility = JsonAutoDetect.Visibility.NON_PRIVATE,
 		isGetterVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY)
 @Data public class Epoch {
-	@EmbeddedId @JsonIgnore EpochPK epochPK;
+	@EmbeddedId @JsonIgnore EpochPK key;
 
 	@Column
 	@Type(type = "interval")
@@ -38,6 +38,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  	}
 
 	public String getName() {
-		return epochPK.getName();
+		return key.getName();
 	}
 }

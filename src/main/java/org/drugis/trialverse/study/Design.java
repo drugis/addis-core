@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name="designs")
 @Data public class Design {
-	@EmbeddedId @JsonIgnore DesignPK designPK;
+	@EmbeddedId @JsonIgnore DesignPK key;
 	@Column String activityName;
 
 	@Embeddable
@@ -27,10 +27,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  	}
 
 	public String getArmName() {
-		return designPK.getArmName();
+		return key.getArmName();
 	}
 
 	public String getEpochName() {
-		return designPK.getEpochName();
+		return key.getEpochName();
 	}
 }

@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE)
 @Data public class Arm {
-	@EmbeddedId @JsonIgnore ArmPK armPK;
+	@EmbeddedId @JsonIgnore ArmPK key;
 	@Column Integer armSize;
 
 	@Embeddable
@@ -26,6 +26,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  	}
 
 	public String getName() {
-		return armPK.getName();
+		return key.getName();
 	}
 }

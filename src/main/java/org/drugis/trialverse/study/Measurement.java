@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 @Entity
 @Data public class Measurement {
-	@EmbeddedId @JsonUnwrapped private  MeasurementPK measurementPK;
+	@EmbeddedId @JsonUnwrapped private  MeasurementPK key;
 
 	@Column private Integer integerValue;
 	@Column private Double realValue;
@@ -32,6 +32,6 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 	}
 
 	public URI getVariableConcept() {
-		return EntityLinkResolver.getInstance().getLinkForEntity(measurementPK.variableConcept);
+		return EntityLinkResolver.getInstance().getLinkForEntity(key.variableConcept);
 	}
 }

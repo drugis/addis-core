@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 @Entity
 @Data class TreatmentDosing {
-	@JsonUnwrapped @EmbeddedId private TreatmentDosingPK treatmentDosingPK;
+	@JsonUnwrapped @EmbeddedId private TreatmentDosingPK key;
 	@Column private Double minDose;
 	@Column private Double maxDose;
 	@Column private String scaleModifier;

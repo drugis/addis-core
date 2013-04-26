@@ -52,9 +52,9 @@ public class StudiesController {
 		if (variable != null && measurementMoment != null) {
 			System.err.println(variable);
 			System.err.println(measurementMoment);
-			return d_measurements.findByStudyIdAndVariableAndMeasurementMoment(id, variable, measurementMoment);
+			return d_measurements.find(id, variable, measurementMoment);
 		} else if (variable == null && measurementMoment == null) {
-			return d_measurements.findByStudyId(id);
+			return d_measurements.find(id);
 		} else {
 			throw new RuntimeException();
 		}

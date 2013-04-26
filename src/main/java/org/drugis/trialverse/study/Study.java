@@ -47,10 +47,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	@Column @Type(type="blindingType")  private BlindingType blindingType;
 	@Column @Type(type="allocationType")  private AllocationType allocationType;
 
-	@OneToMany(mappedBy="armPK.studyId") private List<Arm> arms;
-	@OneToMany(mappedBy="epochPK.studyId") private List<Epoch> epochs;
-	@OneToMany(mappedBy="activityPK.studyId") private List<Activity> activities;
-	@OneToMany(mappedBy="designPK.studyId")  private List<Design> designs;
-	@OneToMany(mappedBy="variablePK.studyId") private List<Variable> variables;
-	@OneToMany(mappedBy="measurementMomentPK.studyId") private List<MeasurementMoment> measurementMoments;
+	@OneToMany(mappedBy="key.studyId") private List<Arm> arms;
+	@OneToMany(mappedBy="key.studyId") private List<Epoch> epochs;
+	@OneToMany(mappedBy="key.studyId") private List<Activity> activities;
+	@OneToMany(mappedBy="key.studyId")  private List<Design> designs;
+	@OneToMany(mappedBy="key.studyId") private List<Variable> variables;
+	@OneToMany(mappedBy="key.studyId") private List<MeasurementMoment> measurementMoments;
 }
