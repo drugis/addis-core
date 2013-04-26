@@ -28,11 +28,11 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 		parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.VariableType")})
 })
 @Data public class StudyVariable {
-	@JsonUnwrapped @EmbeddedId StudyVariablePK studyVariablePK;
-	@Column Boolean isPrimary;
-	@ManyToOne Concept unitConcept;
-	@Column @Type(type="measurementType") MeasurementType measurementType;
-	@Column @Type(type="variableType") VariableType variableType;
+	@JsonUnwrapped private @EmbeddedId StudyVariablePK studyVariablePK;
+	@Column private Boolean isPrimary;
+	@ManyToOne private Concept unitConcept;
+	@Column @Type(type="measurementType") private MeasurementType measurementType;
+	@Column @Type(type="variableType") private VariableType variableType;
 
 	@Embeddable
 	@Data private static class StudyVariablePK implements Serializable {

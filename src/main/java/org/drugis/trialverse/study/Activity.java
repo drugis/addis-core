@@ -28,8 +28,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @TypeDef(name="activityType", typeClass=PostgresEnumConverter.class,
 		 parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.ActivityType")})
 @Data public class Activity {
-	@EmbeddedId @JsonIgnore ActivityPK activityPK;
-	@Column @Type(type="activityType") ActivityType type;
+	@EmbeddedId @JsonIgnore private  ActivityPK activityPK;
+	@Column @Type(type="activityType") private  ActivityType type;
 
 	@Embeddable
 	@Data private static class ActivityPK implements Serializable {
@@ -42,7 +42,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 		@JoinColumn(name="activityName"),
 		@JoinColumn(name="studyId")
 	})
-	@OneToMany List<Treatment> treatment;
+	@OneToMany private List<Treatment> treatment;
 
 	public String getName() {
 		return activityPK.getName();

@@ -18,11 +18,11 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 @Entity
 @Data class TreatmentDosing {
-	@JsonUnwrapped @EmbeddedId TreatmentDosingPK treatmentDosingPK;
-	@Column Double minDose;
-	@Column Double maxDose;
-	@Column String scaleModifier;
-	@OneToOne Concept unitConcept;
+	@JsonUnwrapped @EmbeddedId private TreatmentDosingPK treatmentDosingPK;
+	@Column private Double minDose;
+	@Column private Double maxDose;
+	@Column private String scaleModifier;
+	@OneToOne private Concept unitConcept;
 
 	@Embeddable
 	@Data private static class TreatmentDosingPK implements Serializable {

@@ -27,10 +27,10 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 	@TypeDef(name="interval", typeClass = org.drugis.trialverse.jpa.types.Interval.class)
 })
 public class MeasurementMoment {
-	@EmbeddedId @JsonUnwrapped MeasurementMomentPK measurementMomentPK;
-	@Column String epochName;
-	@Column Boolean isPrimary;
-	@Column @Type(type="epochOffsetType") EpochOffsetType beforeEpoch;
+	@EmbeddedId @JsonUnwrapped private MeasurementMomentPK measurementMomentPK;
+	@Column private String epochName;
+	@Column private Boolean isPrimary;
+	@Column @Type(type="epochOffsetType") private EpochOffsetType beforeEpoch;
 
 	@Column
 	@Type(type = "interval")

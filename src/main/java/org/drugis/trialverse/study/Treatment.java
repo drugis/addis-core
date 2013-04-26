@@ -28,15 +28,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 		fieldVisibility = JsonAutoDetect.Visibility.NON_PRIVATE,
 		isGetterVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY)
 @Data public class Treatment  implements Identifiable<Long> {
-	@JsonIgnore @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
-	@JsonIgnore @Column Long studyId;
-	@JsonIgnore @Column String activityName;
-	@OneToOne Concept drugConcept;
+
+	@JsonIgnore @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private  Long id;
+	@JsonIgnore @Column private  Long studyId;
+	@JsonIgnore @Column private String activityName;
+	@OneToOne private Concept drugConcept;
 
 	@JoinColumn(name="treatmentId")
-	@OneToMany List<TreatmentDosing> treatmentDosing;
+	@OneToMany private List<TreatmentDosing> treatmentDosing;
 
 	@Column
 	@Type(type = "interval")
 	private Period periodicity;
+
+
 }

@@ -15,10 +15,10 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 @Entity
 @Data public class Measurement {
-	@EmbeddedId @JsonUnwrapped MeasurementPK measurementPK;
+	@EmbeddedId @JsonUnwrapped private  MeasurementPK measurementPK;
 
-	@Column Integer integerValue;
-	@Column Double realValue;
+	@Column private Integer integerValue;
+	@Column private Double realValue;
 
 	@Data static class MeasurementPK implements Serializable {
 		private static final long serialVersionUID = 5206825154379784745L;
