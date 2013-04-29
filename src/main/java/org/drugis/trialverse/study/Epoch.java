@@ -26,8 +26,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 	@EmbeddedId @JsonIgnore EpochPK key;
 
 	@Column
-	@Type(type = "interval")
 	@JsonProperty
+	@Type(type = "interval")
 	private Period duration;
 
 	@Embeddable

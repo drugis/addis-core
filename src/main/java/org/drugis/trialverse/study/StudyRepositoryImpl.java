@@ -48,7 +48,7 @@ public class StudyRepositoryImpl implements StudyRepositoryCustom {
 		return results;
 	}
 
-	public List<String> uuidToString(final List<UUID> uuids) {
+	private static List<String> uuidToString(final List<UUID> uuids) {
 		final List<String> result = new ArrayList<>();
 		for(final UUID uuid : uuids) {
 			result.add(uuid.toString());

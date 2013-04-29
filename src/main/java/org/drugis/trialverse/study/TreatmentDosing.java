@@ -8,7 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 
 import lombok.Data;
 
@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 	@Column private Double minDose;
 	@Column private Double maxDose;
 	@Column private String scaleModifier;
-	@OneToOne private Concept unitConcept;
+	@ManyToOne private Concept unitConcept;
 
 	@Embeddable
 	@Data private static class TreatmentDosingPK implements Serializable {

@@ -9,8 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import lombok.Data;
 
@@ -34,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	@JsonIgnore @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private  Long id;
 	@JsonIgnore @Column private  Long studyId;
 	@JsonIgnore @Column private String activityName;
-	@OneToOne private Concept drugConcept;
+	@ManyToOne private Concept drugConcept;
 
 	@JoinColumn(name="treatmentId")
 	@OneToMany private List<TreatmentDosing> treatmentDosing;

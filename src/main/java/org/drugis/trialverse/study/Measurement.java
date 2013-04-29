@@ -24,8 +24,8 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 	@Data static class MeasurementPK implements Serializable {
 		private static final long serialVersionUID = 5206825154379784745L;
-		Long studyId;
 		@ManyToOne Concept variableConcept;
+		Long studyId;
 		String measurementMomentName;
 		String armName;
 		String attribute;

@@ -81,7 +81,6 @@ public class StudiesController {
 	public Object findVariableMappings(
 			@RequestParam final UUID variable,
 			@RequestParam final List<Long> studies) {
-
 		return d_studies.findVariableMappings(studies, variable);
 	}
 }

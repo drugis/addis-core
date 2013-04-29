@@ -25,7 +25,6 @@
 	
 	<context:component-scan base-package="org.drugis.trialverse" />
 
-	
 	<bean class="org.drugis.trialverse.core.OurRestConfiguration" id="RepositoryRestMvcConfiguration"/>
 	
 </beans>

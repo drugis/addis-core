@@ -9,13 +9,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import lombok.Data;
 
 import org.drugis.common.hibernate.PostgresEnumConverter;
 import org.drugis.trialverse.concept.Concept;
+import org.drugis.trialverse.study.types.AllocationType;
+import org.drugis.trialverse.study.types.BlindingType;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -28,15 +30,15 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE)
 @TypeDefs({
 	@TypeDef(name="blindingType", typeClass=PostgresEnumConverter.class,
-			parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.BlindingType")}),
+			parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.types.BlindingType")}),
 	@TypeDef(name="allocationType", typeClass=PostgresEnumConverter.class,
-		parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.AllocationType")})
+		parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.types.AllocationType")})
 })
 @Data public class Study implements Identifiable<Long> {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
 	@Column private String name;
 	@Column private String title;
-	@OneToOne @JoinColumn(name = "indication_concept") private Concept indication;
+	@ManyToOne @JoinColumn(name = "indication_concept") private Concept indication;
 	@Column private String objective;
 	@Column private Integer numberOfCenters;
 	@Column private String inclusion;

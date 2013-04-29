@@ -14,6 +14,8 @@ import lombok.Data;
 import org.drugis.common.hibernate.PostgresEnumConverter;
 import org.drugis.trialverse.concept.Concept;
 import org.drugis.trialverse.core.EntityLinkResolver;
+import org.drugis.trialverse.study.types.MeasurementType;
+import org.drugis.trialverse.study.types.VariableType;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -25,9 +27,9 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 @Entity
 @TypeDefs({
 	@TypeDef(name="measurementType", typeClass=PostgresEnumConverter.class,
-			parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.MeasurementType")}),
+			parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.types.MeasurementType")}),
 	@TypeDef(name="variableType", typeClass=PostgresEnumConverter.class,
-		parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.VariableType")})
+		parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.types.VariableType")})
 })
 @Data public class Variable {
 	@JsonUnwrapped private @EmbeddedId VariablePK key;
