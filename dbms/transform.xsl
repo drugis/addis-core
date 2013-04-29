@@ -58,7 +58,7 @@
         <xsl:param name="epochName" />
         <xsl:param name="offset" />
         <xsl:param name="relativeTo" />
-        '<xsl:value-of select="$offset" /><xsl:value-of select="concat(' ', translate(lower-case($relativeTo), '_', ' '), ' ')"/><xsl:value-of select="$epochName"/>'
+        '<xsl:value-of select="$offset" /><xsl:value-of select="concat(' ', translate(lower-case($relativeTo), '_', ' '), ' ')"/><xsl:value-of select="normalize-space($epochName)"/>'
     </xsl:function>
 
     <xsl:function name="drugis:get-mm-primary">
@@ -66,7 +66,7 @@
         <xsl:param name="offset" />
         <xsl:param name="relativeTo" />
         <xsl:choose>
-            <xsl:when test="$epochName = 'Main phase' and $offset = 'P0D' and $relativeTo = 'BEFORE_EPOCH_END'">'TRUE'</xsl:when>
+            <xsl:when test="normalize-space($epochName) = 'Main phase' and $offset = 'P0D' and $relativeTo = 'BEFORE_EPOCH_END'">'TRUE'</xsl:when>
             <xsl:otherwise>'FALSE'</xsl:otherwise>
         </xsl:choose>
     </xsl:function>
