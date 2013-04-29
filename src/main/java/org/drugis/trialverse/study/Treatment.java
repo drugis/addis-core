@@ -44,6 +44,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	private Period periodicity;
 
 	public URI getDrugConcept() {
-		return EntityLinkResolver.getInstance().getLinkForEntity(drugConcept);
+		return EntityLinkResolver.getInstance().getLinkForEntity(Concept.class, drugConcept.getId());
 	}
 }

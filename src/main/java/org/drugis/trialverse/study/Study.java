@@ -23,7 +23,6 @@ import org.hibernate.annotations.TypeDefs;
 import org.springframework.hateoas.Identifiable;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE)
@@ -34,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 		parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.AllocationType")})
 })
 @Data public class Study implements Identifiable<Long> {
-	@Id @JsonIgnore @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
 	@Column private String name;
 	@Column private String title;
 	@OneToOne @JoinColumn(name = "indication_concept") private Concept indication;

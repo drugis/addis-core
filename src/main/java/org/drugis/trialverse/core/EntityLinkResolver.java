@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Identifiable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 @Service
 public class EntityLinkResolver {
@@ -25,5 +26,11 @@ public class EntityLinkResolver {
 
 	public URI getLinkForEntity(final Identifiable<?> entity) {
 		return entity != null ? d_links.linkForSingleResource(entity).toUri() : null;
+	}
+
+	public URI getLinkForEntity(final Class<?> type, final Object id) {
+		Assert.notNull(type);
+		Assert.notNull(id);
+		return d_links.linkForSingleResource(type, id).toUri();
 	}
 }

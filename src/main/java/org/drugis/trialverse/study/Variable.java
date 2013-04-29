@@ -39,16 +39,16 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 	@Embeddable
 	@Data private static class VariablePK implements Serializable {
 		private static final long serialVersionUID = -4052311975385835101L;
-
 		@JsonIgnore private Long studyId;
 		@ManyToOne private Concept variableConcept;
 	}
 
 	public URI getVariableConcept() {
-		return EntityLinkResolver.getInstance().getLinkForEntity(key.variableConcept);
+		return EntityLinkResolver.getInstance().getLinkForEntity(Concept.class, key.variableConcept.getId());
 	}
 
 	public URI getUnitConcept() {
-		return EntityLinkResolver.getInstance().getLinkForEntity(unitConcept);
+		if(unitConcept == null) return null;
+		return EntityLinkResolver.getInstance().getLinkForEntity(Concept.class, unitConcept.getId());
 	}
 }

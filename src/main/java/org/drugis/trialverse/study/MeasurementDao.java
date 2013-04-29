@@ -1,12 +1,12 @@
 package org.drugis.trialverse.study;
 
 import java.util.List;
-import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.drugis.trialverse.concept.Concept;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -22,7 +22,7 @@ public class MeasurementDao {
 
 	public List<Measurement> find(
 			final Long id,
-			final UUID variable,
+			final Concept variable,
 			final String measurementMoment) {
 		final String sql = "FROM Measurement WHERE key.studyId = :id AND " +
 				"key.variableConcept = :var AND " +

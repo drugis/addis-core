@@ -34,6 +34,6 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 	}
 
 	public URI getUnitConcept() {
-		return EntityLinkResolver.getInstance().getLinkForEntity(unitConcept);
+		return EntityLinkResolver.getInstance().getLinkForEntity(Concept.class, unitConcept.getId());
 	}
 }
