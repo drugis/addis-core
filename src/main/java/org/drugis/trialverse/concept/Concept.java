@@ -20,6 +20,7 @@ import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 import org.springframework.hateoas.Identifiable;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -29,6 +30,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 			 parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.concept.ConceptType")})
 })
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonAutoDetect(
+		fieldVisibility = JsonAutoDetect.Visibility.NON_PRIVATE,
+		isGetterVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY)
 @NoArgsConstructor
 @Data public class Concept implements Identifiable<UUID>  {
 	@Id @JsonIgnore @Type(type="pg-uuid") @GeneratedValue(strategy=GenerationType.IDENTITY) private UUID id;

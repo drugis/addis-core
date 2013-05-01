@@ -12,20 +12,19 @@ import org.springframework.util.Assert;
 public class ConceptResourceProcessor implements ResourceProcessor<Resource<Concept>> {
 
 	private final ConceptLinks links;
-	
+
 	@Autowired
-	public ConceptResourceProcessor(ConceptLinks links) {
+	public ConceptResourceProcessor(final ConceptLinks links) {
 		Assert.notNull(links, "ConceptLinks must not be null!");
 		this.links = links;
 	}
 
 	@Override
-	public Resource<Concept> process(Resource<Concept> resource) {
-		Concept concept = resource.getContent();
-		if(concept.getType().equals(ConceptType.INDICATION)) { 
+	public Resource<Concept> process(final Resource<Concept> resource) {
+		final Concept concept = resource.getContent();
+		if(concept.getType().equals(ConceptType.INDICATION)) {
 			resource.add(this.links.getTreatmentLink(concept));
 			resource.add(this.links.getVariableLink(concept));
-
 		}
 		return resource;
 	}
