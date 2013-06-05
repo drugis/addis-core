@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appenders>
+		<Console name="console" target="SYSTEM_OUT">
+		 	<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+			<ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY" />
+		</Console>
+		
+		<File name="logFile" fileName="trialverse.log">
+		 	<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+		</File>
+	</appenders>
+	
+	<loggers>
+		<logger name="org.drugis.trialverse" level="debug" />
+	
+		<root level="info">
+			<appender-ref ref="console" />
+			<appender-ref ref="logFile" />
+		</root>
+	</loggers>
+</configuration>
