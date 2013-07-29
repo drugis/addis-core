@@ -173,6 +173,7 @@
 		</dependency>
 
 		<!-- Logging -->
+		<!--
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -202,6 +203,7 @@
 			<version>${org.apache.logging.log4j-version}</version>
 			<scope>runtime</scope>
 		</dependency>
+		-->
 
 		<!-- @Inject -->
 		<dependency>
