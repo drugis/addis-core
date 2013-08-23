@@ -7,76 +7,26 @@ CREATE TYPE measurement_type as ENUM ('CONTINUOUS', 'RATE', 'CATEGORICAL');
 CREATE TYPE variable_type as ENUM ('PopulationCharacteristic', 'Endpoint', 'AdverseEvent');
 CREATE TYPE epoch_offset as ENUM ('FROM_EPOCH_START', 'BEFORE_EPOCH_END');
 
-CREATE TABLE "concepts" (
-  "id" uuid,
-  "label" varchar,
-  "description" text,
-  "code" varchar,
-  "namespace" varchar NOT NULL,
-  PRIMARY KEY ("id")
-);
-
-CREATE TABLE "concept_map" (
-  "sub" uuid REFERENCES concepts (id),
-  "super" uuid REFERENCES concepts (id),
-  PRIMARY KEY ("sub", "super")
-);
-
 CREATE TABLE "drugs" (
   "id" bigserial,
   "name" varchar NOT NULL,
   "description" text,
-  "concept" uuid REFERENCES concepts (id),
   PRIMARY KEY ("id")
 );
-CREATE INDEX ON "drugs" ("concept");
 
 CREATE TABLE "indications" (
   "id" bigserial,
   "name" varchar NOT NULL,
   "description" text,
-  "concept" uuid REFERENCES concepts (id),
   PRIMARY KEY ("id")
 );
-CREATE INDEX ON "indications" ("concept");
 
 CREATE TABLE "units" (
   "id" bigserial,
   "name" varchar NOT NULL,
   "description" text,
-  "concept" uuid REFERENCES concepts (id),
   PRIMARY KEY ("id")
 );
-CREATE INDEX ON "units" ("concept");
-
-CREATE TABLE "treatments" (
-  "id" bigserial,
-  "study_id" bigint,
-  "activity_name" varchar NOT NULL,
-  "drug" bigint REFERENCES drugs (id),
-  "periodicity" interval DEFAULT 'P0D',
-  PRIMARY KEY ("id"),
-  UNIQUE("study_id", "activity_name", "drug")
-);
-
-CREATE TABLE "treatment_dosings" (
-  "treatment_id" bigint REFERENCES treatments (id),
-  "planned_time" interval,
-  "min_dose" float,
-  "max_dose" float,
-  "scale_modifier" varchar,
-  "unit" bigint REFERENCES units (id),
-  PRIMARY KEY ("treatment_id", "planned_time")
-);
-CREATE INDEX ON "treatment_dosings" ("treatment_id") WHERE "planned_time" IS NULL;
-
-CREATE TABLE "activities" (
-  "study_id" bigint,
-  "name" varchar,
-  "type" activity_type,
-  PRIMARY KEY ("study_id", "name")
-);
-ALTER TABLE "treatments" ADD CONSTRAINT "treatment_activity_fkey" FOREIGN KEY ("study_id", "activity_name") REFERENCES "activities" ("study_id", "name");
 
 CREATE TABLE "studies" (
   "metadata" hstore,
@@ -112,52 +62,91 @@ CREATE TABLE "namespaces" (
 );
 
 CREATE TABLE "namespace_studies" (
-  "namespace_id" bigint REFERENCES namespaces (id),
-  "study_id" bigint REFERENCES studies (id),
-  PRIMARY KEY ("namespace_id", "study_id")
+  "namespace" bigint REFERENCES namespaces (id),
+  "study" bigint REFERENCES studies (id),
+  PRIMARY KEY ("namespace", "study")
+);
+
+CREATE TABLE "namespace_concepts" (
+  "namespace" bigint REFERENCES namespaces (id),
+  "concept_path" varchar NOT NULL,
+  "metadata" hstore,
+  PRIMARY KEY ("namespace", "concept_path")
 );
 
 CREATE TABLE "references" (
-  "study_id" bigint REFERENCES studies (id),
+  "study" bigint REFERENCES studies (id),
   "id" varchar,
   "repository" text DEFAULT 'PubMed',
-  PRIMARY KEY ("study_id", "id")
+  PRIMARY KEY ("study", "id")
 );
 
+CREATE TABLE "activities" (
+  "id" bigserial,
+  "study" bigint,
+  "name" varchar,
+  "type" activity_type,
+  PRIMARY KEY ("id"),
+  UNIQUE ("study", "name")
+);
+
+CREATE TABLE "treatments" (
+  "id" bigserial,
+  "study" bigint REFERENCES studies ("id"),
+  "activity" bigint REFERENCES activities ("id"),
+  "drug" bigint REFERENCES drugs ("id"),
+  "periodicity" interval DEFAULT 'P0D',
+  PRIMARY KEY ("id"),
+  UNIQUE("study", "activity", "drug")
+);
+
+CREATE TABLE "treatment_dosings" (
+  "treatment" bigint REFERENCES treatments (id),
+  "planned_time" interval,
+  "min_dose" float,
+  "max_dose" float,
+  "scale_modifier" varchar,
+  "unit" bigint REFERENCES units (id),
+  PRIMARY KEY ("treatment", "planned_time")
+);
+CREATE INDEX ON "treatment_dosings" ("treatment") WHERE "planned_time" IS NULL;
+
+
+
 CREATE TABLE "epochs" (
-  "study_id" bigint REFERENCES studies (id),
+  "id" bigserial,
+  "study" bigint REFERENCES studies (id),
   "name" varchar,
   "duration" interval DEFAULT 'P0D',
   "notes" text[],
-  PRIMARY KEY ("study_id", "name")
+  PRIMARY KEY ("id"),
+  UNIQUE ("study", "name")
 );
-CREATE INDEX ON "epochs" ("study_id");
+CREATE INDEX ON "epochs" ("study");
 
 CREATE TABLE "arms" (
-  "study_id" bigint REFERENCES studies (id),
+  "id" bigserial,
+  "study" bigint REFERENCES studies (id),
   "name" varchar,
   "arm_size" varchar,
   "notes" text[],
-  PRIMARY KEY ("study_id", "name")
+  PRIMARY KEY ("id"),
+  UNIQUE ("study", "name")
 );
-CREATE INDEX ON "arms" ("study_id");
+CREATE INDEX ON "arms" ("study");
 COMMENT ON COLUMN "arms"."name" IS 'Empty string indicates "total population"';
 
 CREATE TABLE "designs" (
-  "study_id" bigint,
-  "arm_name" varchar,
-  "epoch_name" varchar,
-  "activity_name" varchar,
-  PRIMARY KEY ("study_id", "arm_name", "epoch_name")
+  "study" bigint REFERENCES studies ("id"),
+  "arm" bigint REFERENCES arms ("id"),
+  "epoch" bigint REFERENCES epochs ("id"),
+  "activity" bigint REFERENCES activities ("id"),
+  PRIMARY KEY ("study", "arm", "epoch")
 );
-ALTER TABLE "designs" ADD CONSTRAINT "design_arm_fkey" FOREIGN KEY ("study_id", "arm_name") REFERENCES "arms" ("study_id", "name");
-ALTER TABLE "designs" ADD CONSTRAINT "design_epoch_fkey" FOREIGN KEY ("study_id", "epoch_name") REFERENCES "epochs" ("study_id", "name");
-ALTER TABLE "designs" ADD CONSTRAINT "design_activity_fkey" FOREIGN KEY ("study_id", "activity_name") REFERENCES "activities" ("study_id", "name");
 
 CREATE TABLE "variables" (
   "id" bigserial,
-  "study_id" bigint,
-  "variable_concept" uuid REFERENCES concepts (id),
+  "study" bigint REFERENCES studies ("id"),
   "name" varchar,
   "description" text,
   "is_primary" bool,
@@ -165,9 +154,10 @@ CREATE TABLE "variables" (
   "unit" bigint REFERENCES units (id),
   "variable_type" variable_type,
   "notes" text[],
-  PRIMARY KEY ("id")
+  PRIMARY KEY ("id"),
+  UNIQUE ("study", "name")
 );
-CREATE UNIQUE INDEX ON "variables" ("study_id", "variable_concept");
+CREATE INDEX ON "variables" ("study");
 
 CREATE TABLE "variable_categories" (
   "variable" bigint REFERENCES variables (id),
@@ -175,30 +165,27 @@ CREATE TABLE "variable_categories" (
   PRIMARY KEY ("variable", "category_name")
 );
 
-CREATE TABLE "measurements" (
-  "study_id" bigint,
-  "variable_concept" uuid REFERENCES concepts (id),
-  "measurement_moment_name" varchar,
-  "arm_name" varchar,
-  "attribute" varchar,
-  "integer_value" bigint,
-  "real_value" float,
-  PRIMARY KEY ("variable_concept", "measurement_moment_name", "arm_name", "attribute")
-);
-COMMENT ON COLUMN "measurements"."variable_concept" IS 'Uniquely identifies the study';
-ALTER TABLE "measurements" ADD CONSTRAINT "variable_measurement_fkey" FOREIGN KEY ("study_id", "variable_concept") REFERENCES "variables" ("study_id", "variable_concept");
-ALTER TABLE "measurements" ADD CONSTRAINT "arm_measurement_fkey" FOREIGN KEY ("study_id", "arm_name") REFERENCES "arms" ("study_id", "name");
-
 CREATE TABLE "measurement_moments" (
-  "study_id" bigint,
+  "id" bigserial,
+  "study" bigint REFERENCES studies ("id"),
   "name" varchar,
-  "epoch_name" varchar,
+  "epoch" bigint REFERENCES epochs ("id"),
   "is_primary" bool,
   "offset_from_epoch" interval,
   "before_epoch" epoch_offset,
   "notes" text[],
-  PRIMARY KEY ("study_id", "name"),
-  UNIQUE ("study_id", "epoch_name", "offset_from_epoch", "before_epoch")
+  PRIMARY KEY ("id"),
+  UNIQUE ("epoch", "offset_from_epoch", "before_epoch"),
+  UNIQUE ("study", "name")
 );
-ALTER TABLE "measurement_moments" ADD CONSTRAINT "epoch_study_measurement_fkey" FOREIGN KEY ("study_id", "epoch_name") REFERENCES "epochs" ("study_id", "name");
-ALTER TABLE "measurements" ADD CONSTRAINT "measurement_moments_fkey" FOREIGN KEY ("study_id", "measurement_moment_name") REFERENCES "measurement_moments" ("study_id", "name");
+
+CREATE TABLE "measurements" (
+  "study" bigint REFERENCES studies (id),
+  "variable" bigint REFERENCES variables (id),
+  "measurement_moment" bigint REFERENCES measurement_moments (id),
+  "arm" bigint REFERENCES arms (id),
+  "attribute" varchar,
+  "integer_value" bigint,
+  "real_value" float,
+  PRIMARY KEY ("variable", "measurement_moment", "arm", "attribute")
+);
