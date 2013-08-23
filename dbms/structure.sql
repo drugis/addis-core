@@ -9,7 +9,7 @@ CREATE TYPE epoch_offset as ENUM ('FROM_EPOCH_START', 'BEFORE_EPOCH_END');
 
 CREATE TABLE "concepts" (
   "id" uuid,
-  "name" varchar NOT NULL,
+  "label" varchar,
   "description" text,
   "code" varchar,
   "namespace" varchar NOT NULL,
@@ -24,21 +24,30 @@ CREATE TABLE "concept_map" (
 
 CREATE TABLE "drugs" (
   "id" bigserial,
+  "name" varchar NOT NULL,
+  "description" text,
   "concept" uuid REFERENCES concepts (id),
   PRIMARY KEY ("id")
 );
+CREATE INDEX ON "drugs" ("concept");
 
 CREATE TABLE "indications" (
   "id" bigserial,
+  "name" varchar NOT NULL,
+  "description" text,
   "concept" uuid REFERENCES concepts (id),
   PRIMARY KEY ("id")
 );
+CREATE INDEX ON "indications" ("concept");
 
 CREATE TABLE "units" (
   "id" bigserial,
+  "name" varchar NOT NULL,
+  "description" text,
   "concept" uuid REFERENCES concepts (id),
   PRIMARY KEY ("id")
 );
+CREATE INDEX ON "units" ("concept");
 
 CREATE TABLE "treatments" (
   "id" bigserial,
