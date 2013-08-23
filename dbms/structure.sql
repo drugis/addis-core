@@ -6,24 +6,14 @@ CREATE TYPE status AS ENUM ('NOT_YET_RECRUITING', 'RECRUITING', 'ENROLLING', 'AC
 CREATE TYPE measurement_type as ENUM ('CONTINUOUS', 'RATE', 'CATEGORICAL');
 CREATE TYPE variable_type as ENUM ('PopulationCharacteristic', 'Endpoint', 'AdverseEvent');
 CREATE TYPE epoch_offset as ENUM ('FROM_EPOCH_START', 'BEFORE_EPOCH_END');
-CREATE TYPE concept_type as ENUM ('DRUG', 'INDICATION', 'UNIT', 'VARIABLE');
-
-CREATE TABLE "code_systems" (
-  "code_system" varchar,
-  "code_system_name" varchar,
-  PRIMARY KEY ("code_system")
-);
 
 CREATE TABLE "concepts" (
   "id" uuid,
   "name" varchar NOT NULL,
   "description" text,
-  "type" concept_type,
   "code" varchar,
-  "code_system" varchar REFERENCES code_systems (code_system),
-  "owner" varchar NOT NULL,
-  PRIMARY KEY ("id"),
-  UNIQUE("code", "code_system")
+  "namespace" varchar NOT NULL,
+  PRIMARY KEY ("id")
 );
 
 CREATE TABLE "concept_map" (
@@ -32,26 +22,32 @@ CREATE TABLE "concept_map" (
   PRIMARY KEY ("sub", "super")
 );
 
-CREATE TABLE "note_hooks" (
+CREATE TABLE "drugs" (
   "id" bigserial,
+  "concept" uuid REFERENCES concepts (id),
   PRIMARY KEY ("id")
 );
 
-CREATE TABLE "notes" (
+CREATE TABLE "indications" (
   "id" bigserial,
-  "note_hook_id" bigint REFERENCES note_hooks (id),
-  "text" text,
-  "source" source,
-  PRIMARY KEY ("id", "note_hook_id")
+  "concept" uuid REFERENCES concepts (id),
+  PRIMARY KEY ("id")
 );
+
+CREATE TABLE "units" (
+  "id" bigserial,
+  "concept" uuid REFERENCES concepts (id),
+  PRIMARY KEY ("id")
+);
+
 CREATE TABLE "treatments" (
   "id" bigserial,
   "study_id" bigint,
   "activity_name" varchar NOT NULL,
-  "drug_concept" uuid REFERENCES concepts (id),
+  "drug" bigint REFERENCES drugs (id),
   "periodicity" interval DEFAULT 'P0D',
   PRIMARY KEY ("id"),
-  UNIQUE("study_id", "activity_name", "drug_concept")
+  UNIQUE("study_id", "activity_name", "drug")
 );
 
 CREATE TABLE "treatment_dosings" (
@@ -60,7 +56,7 @@ CREATE TABLE "treatment_dosings" (
   "min_dose" float,
   "max_dose" float,
   "scale_modifier" varchar,
-  "unit_concept" uuid REFERENCES concepts (id),
+  "unit" bigint REFERENCES units (id),
   PRIMARY KEY ("treatment_id", "planned_time")
 );
 CREATE INDEX ON "treatment_dosings" ("treatment_id") WHERE "planned_time" IS NULL;
@@ -74,10 +70,11 @@ CREATE TABLE "activities" (
 ALTER TABLE "treatments" ADD CONSTRAINT "treatment_activity_fkey" FOREIGN KEY ("study_id", "activity_name") REFERENCES "activities" ("study_id", "name");
 
 CREATE TABLE "studies" (
+  "metadata" hstore,
   "id" bigserial,
   "name" varchar NOT NULL,
   "title" text,
-  "indication_concept" uuid REFERENCES concepts (id),
+  "indication" bigint REFERENCES indications (id),
   "objective" text,
   "allocation_type" allocation_type,
   "blinding_type" blinding_type,
@@ -89,26 +86,26 @@ CREATE TABLE "studies" (
   "status" status,
   "start_date" date,
   "end_date" date,
-  "note_hook" bigint REFERENCES note_hooks (id),
-  "blinding_type_note_hook" bigint REFERENCES note_hooks (id),
-  "title_note_hook" bigint REFERENCES note_hooks (id),
-  "allocation_type_note_hook" bigint REFERENCES note_hooks (id),
+  "notes" text[],
+  "blinding_type_notes" text[],
+  "allocation_type_notes" text[],
+  "title_notess" text[],
   PRIMARY KEY ("id")
 );
 CREATE INDEX ON "studies" ("name");
-CREATE INDEX ON "studies" ("indication_concept");
+CREATE INDEX ON "studies" ("indication");
 
-CREATE TABLE "projects" (
+CREATE TABLE "namespaces" (
   "id" bigserial,
   "name" varchar NOT NULL,
   "description" text,
   PRIMARY KEY ("id")
 );
 
-CREATE TABLE "project_studies" (
-  "project_id" bigint REFERENCES projects (id),
+CREATE TABLE "namespace_studies" (
+  "namespace_id" bigint REFERENCES namespaces (id),
   "study_id" bigint REFERENCES studies (id),
-  PRIMARY KEY ("project_id", "study_id")
+  PRIMARY KEY ("namespace_id", "study_id")
 );
 
 CREATE TABLE "references" (
@@ -122,7 +119,7 @@ CREATE TABLE "epochs" (
   "study_id" bigint REFERENCES studies (id),
   "name" varchar,
   "duration" interval DEFAULT 'P0D',
-  "note_hook" bigint REFERENCES note_hooks (id),
+  "notes" text[],
   PRIMARY KEY ("study_id", "name")
 );
 CREATE INDEX ON "epochs" ("study_id");
@@ -131,7 +128,7 @@ CREATE TABLE "arms" (
   "study_id" bigint REFERENCES studies (id),
   "name" varchar,
   "arm_size" varchar,
-  "note_hook" bigint REFERENCES note_hooks (id),
+  "notes" text[],
   PRIMARY KEY ("study_id", "name")
 );
 CREATE INDEX ON "arms" ("study_id");
@@ -149,20 +146,24 @@ ALTER TABLE "designs" ADD CONSTRAINT "design_epoch_fkey" FOREIGN KEY ("study_id"
 ALTER TABLE "designs" ADD CONSTRAINT "design_activity_fkey" FOREIGN KEY ("study_id", "activity_name") REFERENCES "activities" ("study_id", "name");
 
 CREATE TABLE "variables" (
+  "id" bigserial,
   "study_id" bigint,
   "variable_concept" uuid REFERENCES concepts (id),
+  "name" varchar,
+  "description" text,
   "is_primary" bool,
   "measurement_type" measurement_type,
-  "unit_concept" uuid REFERENCES concepts (id),
+  "unit" bigint REFERENCES units (id),
   "variable_type" variable_type,
-  "note_hook" bigint REFERENCES note_hooks (id),
-  PRIMARY KEY ("study_id", "variable_concept")
+  "notes" text[],
+  PRIMARY KEY ("id")
 );
+CREATE UNIQUE INDEX ON "variables" ("study_id", "variable_concept");
 
 CREATE TABLE "variable_categories" (
-  "variable_concept" uuid REFERENCES concepts (id),
+  "variable" bigint REFERENCES variables (id),
   "category_name" varchar,
-  PRIMARY KEY ("variable_concept", "category_name")
+  PRIMARY KEY ("variable", "category_name")
 );
 
 CREATE TABLE "measurements" (
@@ -186,7 +187,7 @@ CREATE TABLE "measurement_moments" (
   "is_primary" bool,
   "offset_from_epoch" interval,
   "before_epoch" epoch_offset,
-  "note_hook" bigint REFERENCES note_hooks (id),
+  "notes" text[],
   PRIMARY KEY ("study_id", "name"),
   UNIQUE ("study_id", "epoch_name", "offset_from_epoch", "before_epoch")
 );
