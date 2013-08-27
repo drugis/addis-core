@@ -35,20 +35,24 @@ CREATE TABLE "studies" (
   "title" text,
   "indication" bigint REFERENCES indications (id),
   "objective" text,
-  "allocation_type" allocation_type,
-  "blinding_type" blinding_type,
-  "number_of_centers" int2,
+--  "allocation" allocation_type,
+--  "blinding" blinding_type,
+  "allocation" varchar,
+  "blinding" varchar,
+  "centers" int2,
   "created_at" date,
-  "source" source DEFAULT 'MANUAL',
+--  "source" source DEFAULT 'MANUAL',
+  "source" varchar DEFAULT 'MANUAL',
   "exclusion" text,
   "inclusion" text,
-  "status" status,
-  "start_date" date,
-  "end_date" date,
+--  "study_status" status,
+  "study_status" varchar,
+  "study_start" date,
+  "study_end" date,
   "notes" text[],
-  "blinding_type_notes" text[],
-  "allocation_type_notes" text[],
-  "title_notess" text[],
+  "blinding_notes" text[],
+  "allocation_notes" text[],
+  "title_notes" text[],
   PRIMARY KEY ("id")
 );
 CREATE INDEX ON "studies" ("name");
@@ -189,3 +193,10 @@ CREATE TABLE "measurements" (
   "real_value" float,
   PRIMARY KEY ("variable", "measurement_moment", "arm", "attribute")
 );
+
+CREATE VIEW namespace_uris AS
+SELECT
+  namespace,
+  concept_path,
+  'http://trials.drugis.org/namespace/' || namespace || '/' || concept_path AS uri
+FROM namespace_concepts;
