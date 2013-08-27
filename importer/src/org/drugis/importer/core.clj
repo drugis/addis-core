@@ -2,10 +2,11 @@
   (:require [clojure.tools.cli :refer [cli]]
             [clojure.java.jdbc.sql :as sql]
             [clojure.java.jdbc :as jdbc]
-            [clj-xpath.core :refer [$x $x:tag $x:text $x:text* $x:attrs $x:attrs* $x:node $x:tag*]]
+            [clj-xpath.core :refer [$x $x:tag $x:text $x:text* $x:attrs $x:attrs* $x:node $x:tag* xml->doc]]
             [clojure.core :refer [slurp]]
             [clojure.string :refer [join]]
-            [clojure.java.io :refer [as-file]]))
+            [clojure.java.io :refer [as-file]]
+            ))
 
 (defn md5
   "Generate a md5 checksum for the given string"
@@ -90,14 +91,47 @@
   (println arg)
   arg)
 
+(defn as-int
+  [x]
+  (if (nil? x) nil (Integer. x)))
+
+(defn as-date
+  [x]
+  (if (nil? x) nil (java.sql.Date. (.getTimeInMillis (javax.xml.bind.DatatypeConverter/parseDateTime x)))) )
+
+(def studies-table
+  {:return :id
+   :each "/addis-data/studies/study"
+   :columns {:name ["." (fn [tag] (:name (:attrs tag)))]
+             :title ["./characteristics/title/value" (fn [tag] (:text tag))]
+             :objective ["./characteristics/objective/value" (fn [tag] (:text tag))]
+             :allocation ["./characteristics/allocation/value" (fn [tag] (:text tag))]
+             :blinding ["./characteristics/objective/value" (fn [tag] (:text tag))]
+             :number_of_centers ["./characteristics/centers/value" (fn [tag] (as-int (:text tag)))]
+             :created_at ["./characteristics/created_at/value" (fn [tag] (as-date (:text tag)))]
+             :source ["./characteristics/source/value" (fn [tag] (:text tag))]
+             :exclusion ["./characteristics/exclusion/value" (fn [tag] (:text tag))]
+             :inclusion ["./characteristics/inclusion/value" (fn [tag] (:text tag))]
+             :status ["./characteristics/study_status/value" (fn [tag] (:text tag))]
+             :start_date ["./characteristics/study_start/value" (fn [tag] (as-date (:text tag)))]
+             :end_date ["./characteristics/study_end/value" (fn [tag] (as-date (:text tag)))]}})
+
+(defn get-column-value
+  [data col-name col-def]
+  (let [xml (first ($x (first col-def) data))
+        value ((second col-def) xml)]
+  {col-name value})
+)
+
+(defn get-column-values
+  [data defs]
+  (apply merge
+  (map (fn [[col-name col-def]] (get-column-value data col-name col-def)) (:columns defs)))
+  )
+
 (defn import-study
   [data db ttl namespace study]
-  (let [xpath #(format "/addis-data/studies/study[@name=\"%s\"]/characteristics/%s/value" (get-in study [:attrs :name]) (name %))
-        characteristic (fn [name] (first ($x:text* (println* (xpath name)) data)))
-        characteristics [:title :objective :allocation :blinding :centers :created_at :source :exclusion :inclusion :study_status
-                     :study_start :study_end]
-        row (doall (merge {:name (get-in study [:attrs :name])}
-                   (zipmap characteristics (map characteristic characteristics))))]
+  (let [row (get-column-values study studies-table)]
     (:id (first (jdbc/insert! db :studies row)))))
 
 (defn import-studies
@@ -122,11 +156,11 @@
              ["-f" "--file" "ADDIS 1.x file"]
              ["-n" "--name" "Dataset short name"]
              ["-t" "--title" "Dataset description" :default "ADDIS data import"])]
-    (when (:help options)
+    (when (or (:help options) (not (:database options)) (not (:file options)) (not (:name options)))
       (println banner)
       (System/exit 0))
     (let
-      [data (slurp (as-file (options :file)))
+      [data (xml->doc (slurp (as-file (options :file))))
        db {:connection-uri (str "jdbc:" (options :database))}
        ttl (as-file "out.ttl")]
       ;(println (map (fn [tag] (:attrs tag)) ($x "/addis-data/indications/indication" data)))
