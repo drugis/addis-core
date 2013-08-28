@@ -3,10 +3,8 @@
             [clojure.java.jdbc.sql :as sql]
             [clojure.java.jdbc :as jdbc]
             [clj-xpath.core :refer [$x $x:tag $x:text $x:text* $x:attrs $x:attrs* $x:node $x:tag* xml->doc]]
-            [clojure.core :refer [slurp]]
             [clojure.string :refer [join]]
-            [clojure.java.io :refer [as-file]]
-            ))
+            [clojure.java.io :refer [as-file]]))
 
 (defn md5
   "Generate a md5 checksum for the given string"
@@ -99,39 +97,79 @@
   [x]
   (if (nil? x) nil (java.sql.Date. (.getTimeInMillis (javax.xml.bind.DatatypeConverter/parseDateTime x)))) )
 
+{:studies {"Aberg-Wisted sdljdfs" 74}}
+
+(def references-table
+  {:each "./characteristics/references/pubMedId"
+   :table :references
+   :columns {:study ["../../../.." #(get-in % [:attrs :name]) :studies]
+             :id ["." :text]
+             :repository ["." (fn [tag] "PubMed")]}})
+
 (def studies-table
-  {:return :id
+  {:xml-id ["." #(get-in % [:attrs :name])]
+   :sql-id :id
    :each "/addis-data/studies/study"
-   :columns {:name ["." (fn [tag] (:name (:attrs tag)))]
-             :title ["./characteristics/title/value" (fn [tag] (:text tag))]
-             :objective ["./characteristics/objective/value" (fn [tag] (:text tag))]
-             :allocation ["./characteristics/allocation/value" (fn [tag] (:text tag))]
-             :blinding ["./characteristics/objective/value" (fn [tag] (:text tag))]
-             :number_of_centers ["./characteristics/centers/value" (fn [tag] (as-int (:text tag)))]
-             :created_at ["./characteristics/created_at/value" (fn [tag] (as-date (:text tag)))]
-             :source ["./characteristics/source/value" (fn [tag] (:text tag))]
-             :exclusion ["./characteristics/exclusion/value" (fn [tag] (:text tag))]
-             :inclusion ["./characteristics/inclusion/value" (fn [tag] (:text tag))]
-             :status ["./characteristics/study_status/value" (fn [tag] (:text tag))]
-             :start_date ["./characteristics/study_start/value" (fn [tag] (as-date (:text tag)))]
-             :end_date ["./characteristics/study_end/value" (fn [tag] (as-date (:text tag)))]}})
+   :table :studies
+   :columns {:name ["." #(get-in % [:attrs :name])]
+             :title ["./characteristics/title/value" :text]
+             :objective ["./characteristics/objective/value" :text]
+             :allocation ["./characteristics/allocation/value" :text]
+             :blinding ["./characteristics/objective/value" :text]
+             :number_of_centers ["./characteristics/centers/value" #(as-int (:text %))]
+             :created_at ["./characteristics/created_at/value" #(as-date (:text %))]
+             :source ["./characteristics/source/value" :text]
+             :exclusion ["./characteristics/exclusion/value" :text]
+             :inclusion ["./characteristics/inclusion/value" :text]
+             :status ["./characteristics/study_status/value" :text]
+             :start_date ["./characteristics/study_start/value" #(as-date (:text %))]
+             :end_date ["./characteristics/study_end/value" #(as-date (:text %))]}
+   :dependent-tables [references-table]})
+
+(defn $x?
+  [xpath xml]
+  (first ($x xpath xml)))
+
+(defn apply-context
+  [row context]
+  (into {}
+         (map (fn [[col-name val-fn]] {col-name (val-fn context)}) row)))
+
+(defn get-xml-value
+  [xml value-def]
+  (let [node ($x? (first value-def) xml)] ((second value-def) node)))
 
 (defn get-column-value
-  [data col-name col-def]
-  (let [xml (first ($x (first col-def) data))
-        value ((second col-def) xml)]
-  {col-name value})
-)
+  [xml col-name col-def]
+  (let [value (get-xml-value xml col-def)
+        reference (nth col-def 2 nil)]
+  {col-name (fn [context] (if (nil? reference) value (get-in context [reference value])))}))
 
 (defn get-column-values
-  [data defs]
-  (apply merge
-  (map (fn [[col-name col-def]] (get-column-value data col-name col-def)) (:columns defs)))
-  )
+  [xml defs]
+  (into {}
+         (map (fn [[col-name col-def]]
+                (get-column-value xml col-name col-def)) defs)))
+
+(declare get-table)
+
+(defn get-table-row
+  [xml table]
+  (let [xml-id (get-xml-value xml (:xml-id table))
+        columns (get-column-values xml (:columns table))
+        rev-deps (map #(get-table xml %) (:dependent-tables table))]
+  {xml-id {:columns columns :dependent-tables rev-deps}}))
+
+(defn get-table
+  [xml table]
+  (let [elements ($x (:each table) xml)
+        rows (into {} (map #(get-table-row % table) elements))]
+    {:table (:table table) :sql-id (:sql-id table) :rows rows}))
 
 (defn import-study
   [data db ttl namespace study]
-  (let [row (get-column-values study studies-table)]
+  (let [table-row (get-table-row study studies-table)
+        row (apply-context (:columns (first (vals table-row))) nil)]
     (:id (first (jdbc/insert! db :studies row)))))
 
 (defn import-studies
@@ -174,6 +212,5 @@
                                   (println (jdbc/query db (sql/select "COUNT(*)" :namespace_concepts (sql/where {:namespace namespace}))))
                                   (println (jdbc/query db (sql/select [:id :name] :studies)))
                                   )
-                                (throw (InterruptedException.))
-                                ))
+                                (throw (InterruptedException.))))
         (catch InterruptedException e)))))
