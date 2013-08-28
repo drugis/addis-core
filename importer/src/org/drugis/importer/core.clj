@@ -76,9 +76,13 @@
 
 (def entity-types ["units" "indications" "drugs" "endpoints" "adverseEvents" "populationCharacteristics"])
 
+(defn xpath-tag-or
+  [tag-names]
+  (join "|" (map (fn [tag-name] (str "self::" tag-name)) tag-names)))
+
 (defn import-entities
   [data db ttl namespace]
-  (let [xpath-expr (join "|" (map (fn [type] (str "self::" type)) entity-types))
+  (let [xpath-expr (xpath-tag-or entity-types)
         entities (map tag-to-entity ($x (str "/addis-data/*[" xpath-expr "]/*") data))]
     (spit ttl (write-ttl (map #(entity-rdf namespace %) entities)))
     (apply (partial jdbc/insert! db :namespace_concepts [:namespace :concept_path])
@@ -108,6 +112,64 @@
              :id ["." :text]
              :repository ["." (fn [_] "PubMed")]}})
 
+(def arms-table
+  {:xml-id ["." #(get-in % [:attrs :name])]
+   :sql-id :id
+   :each "./arms/arm"
+   :table :arms
+   :columns {:study ["." (fn [_] nil) :parent]
+             :name ["." #(get-in % [:attrs :name])]
+             :arm_size ["." #(get-in % [:attrs :size])]}})
+
+(def epochs-table
+  {:xml-id ["." #(get-in % [:attrs :name])]
+   :sql-id :id
+   :each "./epochs/epoch"
+   :table :epochs
+   :columns {:study ["." (fn [_] nil) :parent]
+             :name ["." #(get-in % [:attrs :name])]
+             :duration ["." #(get-in % [:attrs :duration])]}})
+
+(defn when-taken-name
+  [node]
+  (let [howLong (get-in node [:attrs :howLong])
+        relativeTo (get-in node [:attrs :relativeTo])
+        epochName (get-in ($x "./epoch" node) [:attrs :name])]
+    (str howLong " " relativeTo " " epochName)))
+
+(def measurement-moments-table
+ {:xml-id ["." when-taken-name]
+   :sql-id :id
+   :each "./studyOutcomeMeasures/studyOutcomeMeasure/whenTaken"
+   :table :measurement_moments
+   :columns {:study ["." (fn [_] nil) :parent]
+             :name ["." when-taken-name]
+             :epoch ["./epoch" #(get-in % [:attrs :name]) :sibling :epochs]
+             }})
+
+(def variables-table
+  {:xml-id ["." #(get-in % [:attrs :id])]
+   :sql-id :id
+   :each "./studyOutcomeMeasures/studyOutcomeMeasure"
+   :table :variables
+   :columns {:study ["." (fn [_] nil) :parent]
+             :name [(str "./*[" (xpath-tag-or ["adverseEvent" "endpoint" "populationCharacteristic"]) "]") #(get-in % [:attrs :name])]}
+   })
+
+(def measurements-table
+  {:xml-id ["." #(get-in % [:attrs :id])]
+   :sql-id :id
+   :each "./measurements/measurement"
+   :table :variables
+   :columns {:study ["." (fn [_] nil) :parent]
+             :variable ["./studyOutcomeMeasure" #(get-in % [:attrs :id]) :sibling :variables]
+             :arm ["./arm" #(get-in % [:attrs :name]) :sibling :arms]
+             :measurement_moment ["./whenTaken" when-taken-name :sibling :measurement_moments]
+             }
+   }
+
+  )
+
 (def studies-table
   {:xml-id ["." #(get-in % [:attrs :name])]
    :sql-id :id
@@ -126,7 +188,8 @@
              :status ["./characteristics/study_status/value" :text]
              :start_date ["./characteristics/study_start/value" #(as-date (:text %))]
              :end_date ["./characteristics/study_end/value" #(as-date (:text %))]}
-   :dependent-tables [references-table]})
+   :dependent-tables [references-table arms-table epochs-table variables-table]})
+   ;:dependent-tables [references-table arms-table epochs-table measurement-moments-table variables-table measurements-table]
 
 (defn $x?
   [xpath xml]
