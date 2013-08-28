@@ -100,11 +100,13 @@
 {:studies {"Aberg-Wisted sdljdfs" 74}}
 
 (def references-table
-  {:each "./characteristics/references/pubMedId"
+  {:xml-id ["." :text]
+   :sql-id :id
+   :each "./characteristics/references/pubMedId"
    :table :references
-   :columns {:study ["../../../.." #(get-in % [:attrs :name]) :studies]
+   :columns {:study ["." (fn [_] nil) :parent]
              :id ["." :text]
-             :repository ["." (fn [tag] "PubMed")]}})
+             :repository ["." (fn [_] "PubMed")]}})
 
 (def studies-table
   {:xml-id ["." #(get-in % [:attrs :name])]
@@ -131,9 +133,10 @@
   (first ($x xpath xml)))
 
 (defn apply-context
-  [row context]
+  ([row context] (apply-context row nil context))
+  ([row parent context]
   (into {}
-         (map (fn [[col-name val-fn]] {col-name (val-fn context)}) row)))
+         (map (fn [[col-name val-fn]] {col-name (val-fn parent context)}) row))))
 
 (defn get-xml-value
   [xml value-def]
@@ -142,8 +145,10 @@
 (defn get-column-value
   [xml col-name col-def]
   (let [value (get-xml-value xml col-def)
-        reference (nth col-def 2 nil)]
-  {col-name (fn [context] (if (nil? reference) value (get-in context [reference value])))}))
+        ref-type (nth col-def 2 nil)
+        ref-key (nth col-def 3 nil)]
+  {col-name (fn [parent-id context]
+              (if (nil? ref-type) value (if (= :sibling ref-type) (get-in context [ref-key value]) parent-id)))}))
 
 (defn get-column-values
   [xml defs]
@@ -166,23 +171,34 @@
         rows (into {} (map #(get-table-row % table) elements))]
     {:table (:table table) :sql-id (:sql-id table) :rows rows}))
 
-(defn import-study
-  [data db ttl namespace study]
-  (let [table-row (get-table-row study studies-table)
-        row (apply-context (:columns (first (vals table-row))) nil)]
-    (:id (first (jdbc/insert! db :studies row)))))
+(defn jdbc-inserter
+  [db]
+  (fn [table columns]
+    (first (jdbc/insert! db table columns :entities (sql/quoted \")))))
 
-(defn import-studies
-  [data db ttl namespace]
-  (let [studies ($x "/addis-data/studies/study" data)]
-    (doall (map (partial import-study data db ttl namespace) studies))))
+(defn insert-row
+  [inserter table-name sql-id-fn row-xml-id columns]
+  [row-xml-id (sql-id-fn (inserter table-name columns))])
+
+(defn insert-table
+  ([inserter table-data] (insert-table inserter table-data nil {}))
+  ([inserter {:keys [sql-id rows table]} parent-id context]
+   {table (into {}(map (fn [[k v]]
+                   (let [inserted (insert-row inserter table sql-id k (apply-context (:columns v) parent-id context))
+                         xml-id (first inserted)
+                         sql-id (second inserted)]
+                     (loop [dt (:dependent-tables v) acc {}]
+                       (if (seq dt)
+                         (recur (rest dt) (merge acc (insert-table inserter (first dt) sql-id acc)))
+                         {xml-id [sql-id acc]}))
+                     )) rows))}))
 
 (defn addis-import
   [datadef db ttl]
   (let [data (datadef :data)
         namespace (init-namespace db (datadef :name) (datadef :description))]
     (import-entities data db ttl namespace)
-    (import-studies data db ttl namespace)
+    (insert-table (jdbc-inserter db) (get-table data studies-table))
     namespace))
 
 (defn -main
@@ -201,7 +217,6 @@
       [data (xml->doc (slurp (as-file (options :file))))
        db {:connection-uri (str "jdbc:" (options :database))}
        ttl (as-file "out.ttl")]
-      ;(println (map (fn [tag] (:attrs tag)) ($x "/addis-data/indications/indication" data)))
       (try
         (jdbc/db-transaction* db
                               (fn [db]
@@ -212,5 +227,6 @@
                                   (println (jdbc/query db (sql/select "COUNT(*)" :namespace_concepts (sql/where {:namespace namespace}))))
                                   (println (jdbc/query db (sql/select [:id :name] :studies)))
                                   )
-                                (throw (InterruptedException.))))
+                                ;(throw (InterruptedException.))
+                                ))
         (catch InterruptedException e)))))
