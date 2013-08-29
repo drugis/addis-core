@@ -161,13 +161,13 @@
    })
 
 (def measurement-attrs
-  {:mean "mean"
-   :stdDev "standard deviation"
-   :sampleSize "sample size"
-   :rate "rate"})
+  {"mean" "mean"
+   "stdDev" "standard deviation"
+   "sampleSize" "sample size"
+   "rate" "rate"})
 
-(def integer-attrs [:sampleSize :rate])
-(def real-attrs [:mean :stdDev])
+(def integer-attrs ["sampleSize" "rate"])
+(def real-attrs ["mean" "stdDev"])
 
 (defn in? [coll x] (some #(= x %) coll))
 
@@ -181,8 +181,7 @@
    :columns {:study ["." (fn [_] nil) :parent]
              :variable ["./studyOutcomeMeasure" #(vtd/attr % :id) :sibling :variables]
              :arm ["./arm" #(vtd/attr % :name) :sibling :arms]
-             :measurement_moment ["./whenTaken" when-taken-name :sibling :measurement_moments]
-             :attribute ["." (fn [_] "x")]}
+             :measurement_moment ["./whenTaken" when-taken-name :sibling :measurement_moments]}
    :collapse [{:xml-id ["." #(vtd/attr % :name)]
                :each "./categoricalMeasurement/category"
                :columns {:attribute ["." #(vtd/attr % :name)]
@@ -190,7 +189,7 @@
                          :real_value ["." (fn [_] nil)]}}
               {:xml-id ["." vtd/tag]
                :each (str "./*[" (xpath-tag-or ["continuousMeasurement" "rateMeasurement"]) "]/@*")
-               :columns {:attribute ["." (fn [tag] ((vtd/tag tag) measurement-attrs))]
+               :columns {:attribute ["." (fn [tag] (get measurement-attrs (vtd/tag tag)))]
                          :integer_value ["." (fn [tag] (if (in? integer-attrs (vtd/tag tag)) (as-int (vtd-value tag)) nil))]
                          :real_value ["." (fn [tag] (if (in? real-attrs (vtd/tag tag)) (as-double (vtd-value tag)) nil))]
                          }}]
