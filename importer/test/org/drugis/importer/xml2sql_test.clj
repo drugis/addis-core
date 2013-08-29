@@ -1,8 +1,9 @@
-(ns org.drugis.importer.core_test
+(ns org.drugis.importer.xml2sql_test
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
             [clj-xpath.core :refer [xml->doc $x $x:node?]]
-            [org.drugis.importer.core :refer :all]))
+            [org.drugis.importer.xml2sql :refer :all]
+            ))
 
 (deftest test-xpath-parent
   (testing "xpath can go back up the tree"
@@ -270,6 +271,4 @@
                                       :bar {"bar" [3 {}]
                                             "qux" [4 {}]}}]}}))
         (inserter nil nil)
-        )))
-  )
-
+        ))))
