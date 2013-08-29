@@ -1,12 +1,21 @@
 (ns org.drugis.importer.xml2sql
   (:require [clojure.java.jdbc.sql :as sql]
             [clojure.java.jdbc :as jdbc]
-            [clj-xpath.core :refer [$x]]))
+            [riveted.core :as vtd]))
 
-(def $x?
-  (memoize (fn
-             [xpath xml]
-             (first ($x xpath xml)))))
+(def xml->doc vtd/navigator)
+
+(defn vtd-value [node] (vtd/attr node (vtd/tag node)))
+
+(defn $x?
+  [xpath xml]
+  (let [doc (if (instance? String xml) (xml->doc xml) xml)]
+    (vtd/at doc xpath)))
+
+(defn $x
+  [xpath xml]
+  (let [doc (if (instance? String xml) (xml->doc xml) xml)]
+    (vtd/search doc xpath)))
 
 (defn apply-context
   ([row context] (apply-context row nil context))
@@ -16,7 +25,9 @@
 
 (defn get-xml-value
   [xml value-def]
-  (let [node ($x? (first value-def) xml)] ((second value-def) node)))
+  (let [[xpath transform] value-def
+        node (if (= "." xpath) xml ($x? xpath xml))]
+    (transform node)))
 
 (defn get-column-value
   [xml col-name col-def]

@@ -1,15 +1,23 @@
 (ns org.drugis.importer.xml2sql_test
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
-            [clj-xpath.core :refer [xml->doc $x $x:node?]]
             [org.drugis.importer.xml2sql :refer :all]
+            [riveted.core :as vtd]  
             ))
 
 (deftest test-xpath-parent
   (testing "xpath can go back up the tree"
     (let [xml "<root attr=\"x\"><foobar/></root>"
           node ($x? "/root/foobar" xml)]
-          (is (= :root (:tag ($x? ".." node)))))))
+          (is (= "root" (vtd/tag ($x? ".." node)))))))
+
+(deftest test-xpath-attr
+  (testing "xpath can select attributes"
+    (let [xml "<root attr=\"x\"/>"
+          node ($x? "/root/@attr" xml)]
+      (is (= "attr" (vtd/tag node)))
+      (is (= "x" (vtd/attr node (vtd/tag node))))
+      )))
 
 (deftest test-get-column-value
   (testing "get-column-value should apply xpath and transform"
@@ -17,17 +25,17 @@
            (apply-context (get-column-value
              "<root><foobar>bar</foobar></root>"
              :foo
-             ["./root/foobar" :text]) nil nil)))
+             ["/root/foobar" vtd/text]) nil nil)))
     (is (= {:foo "baz"}
            (apply-context (get-column-value
              "<root><foobar foo=\"baz\">bar</foobar></root>"
              :foo
-             ["./root/foobar" #(get-in % [:attrs :foo])]) nil nil))))
+             ["/root/foobar" #(vtd/attr % :foo)]) nil nil))))
   (testing "get-column-value generates context closure where sql-id required"
     (let [rval (:foo (get-column-value
                        "<root><foobar>bar</foobar></root>"
                        :foo
-                       ["./root/foobar" :text :sibling :pitty]))
+                       ["/root/foobar" vtd/text :sibling :pitty]))
           context {:pitty {"bar" [8 {}] "baz" [10 {}]}}]
       (is (= 8 (rval nil context)))))
   )
@@ -37,21 +45,20 @@
     (is (= {:foo "bar" :fu "baz"}
            (apply-context (get-column-values
              "<root><foobar foo=\"baz\">bar</foobar></root>"
-             {:foo["./root/foobar" :text]
-              :fu ["./root/foobar"
-                   #(get-in % [:attrs :foo])]}) nil)))))
+             {:foo["/root/foobar" vtd/text]
+              :fu ["/root/foobar" #(vtd/attr % :foo)]}) nil)))))
 
 (deftest test-get-xml-value
   (testing "get-xml-value works"
-    (is (= "bar" (get-xml-value "<foobar foo=\"baz\">bar</foobar>" ["/foobar" :text])))))
+    (is (= "bar" (get-xml-value "<foobar foo=\"baz\">bar</foobar>" ["/foobar" vtd/text])))))
 
 (deftest test-get-table
-  (let [foobar-def {:xml-id ["." :text]
+  (let [foobar-def {:xml-id ["." vtd/text]
                     :sql-id :foo
                     :each "./foobar"
                     :table :foobar
-                    :columns {:foo ["." :text]
-                              :fu ["." #(get-in % [:attrs :foo])]}
+                    :columns {:foo ["." vtd/text]
+                              :fu ["." #(vtd/attr % :foo)]}
                     :dependent-tables []}
         ctx-map-row (fn [row-tpl parent context] (assoc row-tpl :columns (apply-context (:columns row-tpl) parent context)))
         nil-map #(ctx-map-row % nil nil)
@@ -85,11 +92,11 @@
         (is (= {"bar" {:columns {:foo "bar" :fu "baz"} :dependent-tables []}
                 "qox" {:columns {:foo "qox" :fu "qux"} :dependent-tables []}} (:rows table)))))
     (testing "get-table-row recurses for dependent-tables"
-      (let [table-def {:xml-id ["." #(get-in % [:attrs :id])]
+      (let [table-def {:xml-id ["." #(vtd/attr % :id)]
                        :sql-id :id
                        :each "/root/container"
                        :table :container
-                       :columns {:id ["." #(get-in % [:attrs :id])]}
+                       :columns {:id ["." #(vtd/attr % :id)]}
                        :dependent-tables [foobar-def]}
             table-tpl (get-table-row
                         ($x? "/root/container" "<root><container id=\"3\"><foobar foo=\"baz\">bar</foobar></container></root>")
@@ -102,18 +109,18 @@
                                                        :dependent-tables []}}}]}}
                table))))
     (testing "get-table-row recurses with parent keys"
-      (let [nested-def {:xml-id ["." #(get-in % [:attrs :name])]
+      (let [nested-def {:xml-id ["." #(vtd/attr % :name)]
                         :sql-id :id
                         :each "./nested"
                         :table :nested
-                        :columns {:parent [".." #(get-in % [:attrs :name]) :parent]
-                                  :name ["." #(get-in % [:attrs :name])]}
+                        :columns {:parent [".." #(vtd/attr % :name) :parent]
+                                  :name ["." #(vtd/attr % :name)]}
                         :dependent-tables []}
-            container-def {:xml-id ["." #(get-in % [:attrs :name])]
+            container-def {:xml-id ["." #(vtd/attr % :name)]
                            :sql-id :id
                            :each "/root/container"
                            :table :container
-                           :columns {:name ["." #(get-in % [:attrs :name])]}
+                           :columns {:name ["." #(vtd/attr % :name)]}
                            :dependent-tables [nested-def]}
             table-tpl (get-table-row
                         ($x? "/root/container" "<root><container name=\"foo\"><nested name=\"bar\" /></container></root>")
@@ -129,7 +136,7 @@
                table))))
     (testing "get-table-row does not allow :collapse with :dependent-tables"
       (is (thrown? IllegalArgumentException (get-table-row "<root />" 
-                                                           {:xml-id ["." :tag]
+                                                           {:xml-id ["." vtd/tag]
                                                             :sql-id :id
                                                             :each "/root"
                                                             :table :root
@@ -137,62 +144,62 @@
                                                             :collapse [{}]
                                                             :dependent-tables [{}]}))))
     (testing "get-table-row returns multiple rows for :collapse"
-      (let [table-def {:xml-id ["." :tag]
+      (let [table-def {:xml-id ["." vtd/tag]
                        :sql-id :id
                        :each "/root/*"
                        :table :root
-                       :columns {:tag ["." :tag]}
-                       :collapse [{:xml-id ["." :tag]
+                       :columns {:tag ["." vtd/tag]}
+                       :collapse [{:xml-id ["." vtd/tag]
                                    :each "@*"
-                                   :columns {:attr ["." :tag]
-                                             :value ["." :text]}}]}
+                                   :columns {:attr ["." vtd/tag]
+                                             :value ["." vtd-value]}}]}
             node ($x? "/root/*" "<root><foobar foo=\"baz\" bar=\"qux\"/></root>")
             table (nil-map-rows (get-table-row node table-def))]
-        (is (= {[:foobar :foo] {:columns {:tag :foobar :attr :foo :value "baz"}
+        (is (= {["foobar" "foo"] {:columns {:tag "foobar" :attr "foo" :value "baz"}
                                   :dependent-tables []}
-                [:foobar :bar] {:columns {:tag :foobar :attr :bar :value "qux"}
+                ["foobar" "bar"] {:columns {:tag "foobar" :attr "bar" :value "qux"}
                                   :dependent-tables []}}
                table))))
     (testing "get-table-row concatenates multiple :collapse definitions"
-      (let [table-def {:xml-id ["." :tag]
+      (let [table-def {:xml-id ["." vtd/tag]
                        :sql-id :id
                        :each "/root/*"
                        :table :root
-                       :columns {:tag ["." :tag]}
-                       :collapse [{:xml-id ["." :tag]
+                       :columns {:tag ["." vtd/tag]}
+                       :collapse [{:xml-id ["." vtd/tag]
                                    :each "@*"
-                                   :columns {:attr ["." :tag]
-                                             :value ["." :text]}}
-                                  {:xml-id ["." :tag]
+                                   :columns {:attr ["." vtd/tag]
+                                             :value ["." vtd-value]}}
+                                  {:xml-id ["." vtd/tag]
                                    :each "./*"
-                                   :columns {:attr ["." :tag]
-                                             :value ["." :text]}}]}
+                                   :columns {:attr ["." vtd/tag]
+                                             :value ["." vtd/text]}}]}
             node ($x? "/root/*" "<root><foobar foo=\"baz\" bar=\"qux\"><x>3</x></foobar></root>")
             table (nil-map-rows (get-table-row node table-def))]
-        (is (= {[:foobar :foo] {:columns {:tag :foobar :attr :foo :value "baz"}
+        (is (= {["foobar" "foo"] {:columns {:tag "foobar" :attr "foo" :value "baz"}
                                   :dependent-tables []}
-                [:foobar :bar] {:columns {:tag :foobar :attr :bar :value "qux"}
+                ["foobar" "bar"] {:columns {:tag "foobar" :attr "bar" :value "qux"}
                                   :dependent-tables []} 
-                [:foobar :x] {:columns {:tag :foobar :attr :x :value "3"}
+                ["foobar" "x"] {:columns {:tag "foobar" :attr "x" :value "3"}
                                   :dependent-tables []}}
                table))))
     (testing "get-table-row returns multiple rows for :collapse"
-      (let [table-def {:xml-id ["." :tag]
+      (let [table-def {:xml-id ["." vtd/tag]
                        :sql-id :id
                        :each "/root/*"
                        :table :root
-                       :columns {:tag ["." :tag]}
-                       :collapse [{:xml-id ["." :tag]
+                       :columns {:tag ["." vtd/tag]}
+                       :collapse [{:xml-id ["." vtd/tag]
                                    :each "@*"
-                                   :columns {:attr ["." :tag]
-                                             :value ["." :text]}}]
+                                   :columns {:attr ["." vtd/tag]
+                                             :value ["." vtd-value]}}]
                        }
             table (nil-map-rows (get-table-row
                         ($x? "/root/*" "<root><foobar foo=\"baz\" bar=\"qux\"/></root>")
                         table-def))]
-        (is (= {[:foobar :foo] {:columns {:tag :foobar :attr :foo :value "baz"}
+        (is (= {["foobar" "foo"] {:columns {:tag "foobar" :attr "foo" :value "baz"}
                                   :dependent-tables []}
-                [:foobar :bar] {:columns {:tag :foobar :attr :bar :value "qux"}
+                ["foobar" "bar"] {:columns {:tag "foobar" :attr "bar" :value "qux"}
                                   :dependent-tables []}}
                table))))
 

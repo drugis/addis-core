@@ -2,10 +2,10 @@
   (:require [clojure.tools.cli :refer [cli]]
             [clojure.java.jdbc.sql :as sql]
             [clojure.java.jdbc :as jdbc]
-            [clj-xpath.core :refer [$x $x:tag $x:text $x:text? $x:text* $x:attrs $x:attrs* $x:node $x:tag* xml->doc]]
             [clojure.string :refer [join]]
             [clojure.java.io :refer [as-file]]
             [org.drugis.importer.xml2sql :refer :all]
+            [riveted.core :as vtd]  
             ))
 
 (defn md5
@@ -74,7 +74,7 @@
 
 (defn tag-to-entity
   [tag]
-  (merge (:attrs tag) {:type (name (:tag tag))}))
+  (merge (:attrs tag) {:type (name (vtd/tag tag))}))
 
 (def entity-types ["units" "indications" "drugs" "endpoints" "adverseEvents" "populationCharacteristics"])
 
@@ -108,37 +108,37 @@
   (if (nil? x) nil (java.sql.Date. (.getTimeInMillis (javax.xml.bind.DatatypeConverter/parseDateTime x)))) )
 
 (def references-table
-  {:xml-id ["." :text]
+  {:xml-id ["." vtd/text]
    :sql-id :id
    :each "./characteristics/references/pubMedId"
    :table :references
    :columns {:study ["." (fn [_] nil) :parent]
-             :id ["." :text]
+             :id ["." vtd/text]
              :repository ["." (fn [_] "PubMed")]}})
 
 (def arms-table
-  {:xml-id ["." #(get-in % [:attrs :name])]
+  {:xml-id ["." #(vtd/attr % :name)]
    :sql-id :id
    :each "./arms/arm"
    :table :arms
    :columns {:study ["." (fn [_] nil) :parent]
-             :name ["." #(get-in % [:attrs :name])]
-             :arm_size ["." #(get-in % [:attrs :size])]}})
+             :name ["." #(vtd/attr % :name)]
+             :arm_size ["." #(vtd/attr % :size)]}})
 
 (def epochs-table
-  {:xml-id ["." #(get-in % [:attrs :name])]
+  {:xml-id ["." #(vtd/attr % :name)]
    :sql-id :id
    :each "./epochs/epoch"
    :table :epochs
    :columns {:study ["." (fn [_] nil) :parent]
-             :name ["." #(get-in % [:attrs :name])]
-             :duration ["." #(get-in % [:attrs :duration])]}})
+             :name ["." #(vtd/attr % :name)]
+             :duration ["." #(vtd/attr % :duration)]}})
 
 (defn when-taken-name
   [node]
-  (let [howLong (get-in node [:attrs :howLong])
-        relativeTo (get-in node [:attrs :relativeTo])
-        epochName (get-in ($x? "./epoch" node) [:attrs :name])]
+  (let [howLong (vtd/attr node :howLong)
+        relativeTo (vtd/attr node :relativeTo)
+        epochName (vtd/attr ($x? "./epoch" node) :name)]
     (str howLong " " relativeTo " " epochName)))
 
 (def measurement-moments-table
@@ -148,16 +148,16 @@
    :table :measurement_moments
    :columns {:study ["." (fn [_] nil) :parent]
              :name ["." when-taken-name]
-             :epoch ["./epoch" #(get-in % [:attrs :name]) :sibling :epochs]
+             :epoch ["./epoch" #(vtd/attr % :name) :sibling :epochs]
              }})
 
 (def variables-table
-  {:xml-id ["." #(get-in % [:attrs :id])]
+  {:xml-id ["." #(vtd/attr % :id)]
    :sql-id :id
    :each "./studyOutcomeMeasures/studyOutcomeMeasure"
    :table :variables
    :columns {:study ["." (fn [_] nil) :parent]
-             :name [(str "./*[" (xpath-tag-or ["adverseEvent" "endpoint" "populationCharacteristic"]) "]") #(get-in % [:attrs :name])]}
+             :name [(str "./*[" (xpath-tag-or ["adverseEvent" "endpoint" "populationCharacteristic"]) "]") #(vtd/attr % :name)]}
    })
 
 (def measurement-attrs
@@ -172,51 +172,55 @@
 (defn in? [coll x] (some #(= x %) coll))
 
 (def measurements-table
-  {:xml-id ["." (fn [tag] [($x:text? "./studyOutcomeMeasure/@id" tag) ($x:text? "./arm/@name" tag) (when-taken-name ($x? "./whenTaken" tag))])]
+  {:xml-id ["." (fn [tag] [(vtd-value ($x? "./studyOutcomeMeasure/@id" tag))
+                           (vtd-value ($x? "./arm/@name" tag))
+                           (when-taken-name ($x? "./whenTaken" tag))])]
    :sql-id :id
    :each "./measurements/measurement"
    :table :measurements
    :columns {:study ["." (fn [_] nil) :parent]
-             :variable ["./studyOutcomeMeasure" #(get-in % [:attrs :id]) :sibling :variables]
-             :arm ["./arm" #(get-in % [:attrs :name]) :sibling :arms]
-             :measurement_moment ["./whenTaken" when-taken-name :sibling :measurement_moments]}
-   :collapse [{:xml-id ["." #(get-in % [:attrs :name])]
+             :variable ["./studyOutcomeMeasure" #(vtd/attr % :id) :sibling :variables]
+             :arm ["./arm" #(vtd/attr % :name) :sibling :arms]
+             :measurement_moment ["./whenTaken" when-taken-name :sibling :measurement_moments]
+             :attribute ["." (fn [_] "x")]}
+   :collapse [{:xml-id ["." #(vtd/attr % :name)]
                :each "./categoricalMeasurement/category"
-               :columns {:attribute ["." #(get-in % [:attrs :name])]
-                         :integer_value ["." (fn [tag] (as-int (get-in tag [:attrs :rate])))]
+               :columns {:attribute ["." #(vtd/attr % :name)]
+                         :integer_value ["." (fn [tag] (as-int (vtd/attr tag :rate)))]
                          :real_value ["." (fn [_] nil)]}}
-              {:xml-id ["." :tag]
+              {:xml-id ["." vtd/tag]
                :each (str "./*[" (xpath-tag-or ["continuousMeasurement" "rateMeasurement"]) "]/@*")
-               :columns {:attribute ["." (fn [tag] ((:tag tag) measurement-attrs))]
-                         :integer_value ["." (fn [tag] (if (in? integer-attrs (:tag tag)) (as-int (:text tag)) nil))]
-                         :real_value ["." (fn [tag] (if (in? real-attrs (:tag tag)) (as-double (:text tag)) nil))]
-                         }}]})
+               :columns {:attribute ["." (fn [tag] ((vtd/tag tag) measurement-attrs))]
+                         :integer_value ["." (fn [tag] (if (in? integer-attrs (vtd/tag tag)) (as-int (vtd-value tag)) nil))]
+                         :real_value ["." (fn [tag] (if (in? real-attrs (vtd/tag tag)) (as-double (vtd-value tag)) nil))]
+                         }}]
+   })
 
 (def studies-table
-  {:xml-id ["." #(get-in % [:attrs :name])]
+  {:xml-id ["." #(vtd/attr % :name)]
    :sql-id :id
    :each "/addis-data/studies/study"
    :table :studies
-   :columns {:name ["." #(get-in % [:attrs :name])]
-             :title ["./characteristics/title/value" :text]
-             :objective ["./characteristics/objective/value" :text]
-             :allocation ["./characteristics/allocation/value" :text]
-             :blinding ["./characteristics/objective/value" :text]
-             :number_of_centers ["./characteristics/centers/value" #(as-int (:text %))]
-             :created_at ["./characteristics/created_at/value" #(as-date (:text %))]
-             :source ["./characteristics/source/value" :text]
-             :exclusion ["./characteristics/exclusion/value" :text]
-             :inclusion ["./characteristics/inclusion/value" :text]
-             :status ["./characteristics/study_status/value" :text]
-             :start_date ["./characteristics/study_start/value" #(as-date (:text %))]
-             :end_date ["./characteristics/study_end/value" #(as-date (:text %))]}
+   :columns {:name ["." #(vtd/attr % :name)]
+             :title ["./characteristics/title/value" vtd/text]
+             :objective ["./characteristics/objective/value" vtd/text]
+             :allocation ["./characteristics/allocation/value" vtd/text]
+             :blinding ["./characteristics/objective/value" vtd/text]
+             :number_of_centers ["./characteristics/centers/value" #(as-int (vtd/text %))]
+             :created_at ["./characteristics/created_at/value" #(as-date (vtd/text %))]
+             :source ["./characteristics/source/value" vtd/text]
+             :exclusion ["./characteristics/exclusion/value" vtd/text]
+             :inclusion ["./characteristics/inclusion/value" vtd/text]
+             :status ["./characteristics/study_status/value" vtd/text]
+             :start_date ["./characteristics/study_start/value" #(as-date (vtd/text %))]
+             :end_date ["./characteristics/study_end/value" #(as-date (vtd/text %))]}
    :dependent-tables [references-table arms-table epochs-table measurement-moments-table variables-table measurements-table]})
 
 (defn addis-import
   [datadef db ttl]
   (let [data (datadef :data)
         namespace (init-namespace db (datadef :name) (datadef :description))]
-    (import-entities data db ttl namespace)
+    ;(import-entities data db ttl namespace)
     (insert-table (jdbc-inserter db) (get-table data studies-table))
     namespace))
 
