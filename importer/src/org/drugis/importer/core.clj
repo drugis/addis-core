@@ -2,7 +2,7 @@
   (:require [clojure.tools.cli :refer [cli]]
             [clojure.java.jdbc.sql :as sql]
             [clojure.java.jdbc :as jdbc]
-            [clj-xpath.core :refer [$x $x:tag $x:text $x:text* $x:attrs $x:attrs* $x:node $x:tag* xml->doc]]
+            [clj-xpath.core :refer [$x $x:tag $x:text $x:text? $x:text* $x:attrs $x:attrs* $x:node $x:tag* xml->doc]]
             [clojure.string :refer [join]]
             [clojure.java.io :refer [as-file]]))
 
@@ -16,6 +16,11 @@
     (.toString
      (new java.math.BigInteger 1 (.digest hash-bytes)) ; Positive and the size of the number
      16)))
+
+(def $x?
+  (memoize (fn
+             [xpath xml]
+             (first ($x xpath xml)))))
 
 (defn init-namespace
   [db name description]
@@ -97,11 +102,13 @@
   [x]
   (if (nil? x) nil (Integer. x)))
 
+(defn as-double
+  [x]
+  (if (nil? x) nil (Double. x)))
+
 (defn as-date
   [x]
   (if (nil? x) nil (java.sql.Date. (.getTimeInMillis (javax.xml.bind.DatatypeConverter/parseDateTime x)))) )
-
-{:studies {"Aberg-Wisted sdljdfs" 74}}
 
 (def references-table
   {:xml-id ["." :text]
@@ -134,7 +141,7 @@
   [node]
   (let [howLong (get-in node [:attrs :howLong])
         relativeTo (get-in node [:attrs :relativeTo])
-        epochName (get-in ($x "./epoch" node) [:attrs :name])]
+        epochName (get-in ($x? "./epoch" node) [:attrs :name])]
     (str howLong " " relativeTo " " epochName)))
 
 (def measurement-moments-table
@@ -156,19 +163,37 @@
              :name [(str "./*[" (xpath-tag-or ["adverseEvent" "endpoint" "populationCharacteristic"]) "]") #(get-in % [:attrs :name])]}
    })
 
+(def measurement-attrs
+  {:mean "mean"
+   :stdDev "standard deviation"
+   :sampleSize "sample size"
+   :rate "rate"})
+
+(def integer-attrs [:sampleSize :rate])
+(def real-attrs [:mean :stdDev])
+
+(defn in? [coll x] (some #(= x %) coll))
+
 (def measurements-table
-  {:xml-id ["." #(get-in % [:attrs :id])]
+  {:xml-id ["." (fn [tag] [($x:text? "./studyOutcomeMeasure/@id" tag) ($x:text? "./arm/@name" tag) (when-taken-name ($x? "./whenTaken" tag))])]
    :sql-id :id
    :each "./measurements/measurement"
-   :table :variables
+   :table :measurements
    :columns {:study ["." (fn [_] nil) :parent]
              :variable ["./studyOutcomeMeasure" #(get-in % [:attrs :id]) :sibling :variables]
              :arm ["./arm" #(get-in % [:attrs :name]) :sibling :arms]
-             :measurement_moment ["./whenTaken" when-taken-name :sibling :measurement_moments]
-             }
-   }
-
-  )
+             :measurement_moment ["./whenTaken" when-taken-name :sibling :measurement_moments]}
+   :collapse [{:xml-id ["." #(get-in % [:attrs :name])]
+               :each "./categoricalMeasurement/category"
+               :columns {:attribute ["." #(get-in % [:attrs :name])]
+                         :integer_value ["." (fn [tag] (as-int (get-in tag [:attrs :rate])))]
+                         :real_value ["." (fn [_] nil)]}}
+              {:xml-id ["." :tag]
+               :each (str "./*[" (xpath-tag-or ["continuousMeasurement" "rateMeasurement"]) "]/@*")
+               :columns {:attribute ["." (fn [tag] ((:tag tag) measurement-attrs))]
+                         :integer_value ["." (fn [tag] (if (in? integer-attrs (:tag tag)) (as-int (:text tag)) nil))]
+                         :real_value ["." (fn [tag] (if (in? real-attrs (:tag tag)) (as-double (:text tag)) nil))]
+                         }}]})
 
 (def studies-table
   {:xml-id ["." #(get-in % [:attrs :name])]
@@ -188,12 +213,7 @@
              :status ["./characteristics/study_status/value" :text]
              :start_date ["./characteristics/study_start/value" #(as-date (:text %))]
              :end_date ["./characteristics/study_end/value" #(as-date (:text %))]}
-   :dependent-tables [references-table arms-table epochs-table variables-table]})
-   ;:dependent-tables [references-table arms-table epochs-table measurement-moments-table variables-table measurements-table]
-
-(defn $x?
-  [xpath xml]
-  (first ($x xpath xml)))
+   :dependent-tables [references-table arms-table epochs-table measurement-moments-table variables-table measurements-table]})
 
 (defn apply-context
   ([row context] (apply-context row nil context))
@@ -211,7 +231,7 @@
         ref-type (nth col-def 2 nil)
         ref-key (nth col-def 3 nil)]
   {col-name (fn [parent-id context]
-              (if (nil? ref-type) value (if (= :sibling ref-type) (get-in context [ref-key value]) parent-id)))}))
+              (if (nil? ref-type) value (if (= :sibling ref-type) (first (get-in context [ref-key value])) parent-id)))}))
 
 (defn get-column-values
   [xml defs]
@@ -221,12 +241,29 @@
 
 (declare get-table)
 
+(defn- get-collapsed
+  [xml table xml-id columns] 
+  (if (nil? table) nil
+    (let [collapsed (:rows (get-table xml table))]
+    (into {} (map 
+               (fn [[nested-xml-id nested-row]]
+                 {[xml-id nested-xml-id] (update-in nested-row [:columns] merge columns)}) collapsed)))))
+
 (defn get-table-row
   [xml table]
-  (let [xml-id (get-xml-value xml (:xml-id table))
+  (if (every? table [:dependent-tables :collapse])
+    (throw (IllegalArgumentException.
+             (str "Error in definition of table "
+                  (:table table)
+                  " -- :dependent-tables and :collapse can not be mixed"))))
+  (let [xml-id (if-let [id (:xml-id table)]
+                 (get-xml-value xml id)
+                 (java.util.UUID/randomUUID))
         columns (get-column-values xml (:columns table))
         rev-deps (map #(get-table xml %) (:dependent-tables table))]
-  {xml-id {:columns columns :dependent-tables rev-deps}}))
+    (if (:collapse table)
+      (into {} (map #(get-collapsed xml % xml-id columns) (:collapse table)))
+      {xml-id {:columns columns :dependent-tables rev-deps}})))
 
 (defn get-table
   [xml table]
@@ -237,7 +274,10 @@
 (defn jdbc-inserter
   [db]
   (fn [table columns]
-    (first (jdbc/insert! db table columns :entities (sql/quoted \")))))
+    (try 
+    (first (jdbc/insert! db table columns :entities (sql/quoted \")))
+      (catch Exception e (do (println "JDBC ERROR" columns) (throw e)))
+      )))
 
 (defn insert-row
   [inserter table-name sql-id-fn row-xml-id columns]
