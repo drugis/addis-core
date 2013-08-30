@@ -8,37 +8,41 @@
 (deftest test-xpath-parent
   (testing "xpath can go back up the tree"
     (let [xml "<root attr=\"x\"><foobar/></root>"
-          node ($x? "/root/foobar" xml)]
-          (is (= "root" (vtd/tag ($x? ".." node)))))))
+          node (vtd/at (vtd/navigator xml) "/root/foobar")]
+          (is (= "root" (vtd/tag (vtd/at node "..")))))))
 
 (deftest test-xpath-attr
   (testing "xpath can select attributes"
-    (let [xml "<root attr=\"x\"/>"
-          node ($x? "/root/@attr" xml)]
+    (let [xml (vtd/navigator "<root attr=\"x\"/>")
+          node (vtd/at xml "/root/@attr")]
       (is (= "attr" (vtd/tag node)))
-      (is (= "x" (vtd/attr node (vtd/tag node))))
-      )))
+      (is (= "x" (vtd/attr node (vtd/tag node)))))))
+
+(deftest test-attrs
+  (testing "attrs returns attribute-value map"
+    (let [xml (vtd/navigator "<root x=\"5\" y=\"7\"/>")
+          node (vtd/at xml "/root")]
+      (is (= {"x" "5" "y" "7"} (attrs node))))))
 
 (deftest test-get-column-value
   (testing "get-column-value should apply xpath and transform"
     (is (= {:foo "bar"}
            (apply-context (get-column-value
-             "<root><foobar>bar</foobar></root>"
+             (vtd/navigator "<root><foobar>bar</foobar></root>")
              :foo
              ["/root/foobar" vtd/text]) nil nil)))
     (is (= {:foo "baz"}
            (apply-context (get-column-value
-             "<root><foobar foo=\"baz\">bar</foobar></root>"
+             (vtd/navigator "<root><foobar foo=\"baz\">bar</foobar></root>")
              :foo
              ["/root/foobar" #(vtd/attr % :foo)]) nil nil))))
   (testing "get-column-value generates context closure where sql-id required"
     (let [rval (:foo (get-column-value
-                       "<root><foobar>bar</foobar></root>"
+                       (vtd/navigator "<root><foobar>bar</foobar></root>")
                        :foo
                        ["/root/foobar" vtd/text :sibling :pitty]))
           context {:pitty {"bar" [8 {}] "baz" [10 {}]}}]
-      (is (= 8 (rval nil context)))))
-  )
+      (is (= 8 (rval nil context))))))
 
 (deftest test-get-column-values
   (testing "get-column-values maps all columns"
@@ -152,7 +156,7 @@
                        :collapse [{:xml-id ["." vtd/tag]
                                    :each "@*"
                                    :columns {:attr ["." vtd/tag]
-                                             :value ["." vtd-value]}}]}
+                                             :value ["." attr-value]}}]}
             node ($x? "/root/*" "<root><foobar foo=\"baz\" bar=\"qux\"/></root>")
             table (nil-map-rows (get-table-row node table-def))]
         (is (= {["foobar" "foo"] {:columns {:tag "foobar" :attr "foo" :value "baz"}
@@ -169,7 +173,7 @@
                        :collapse [{:xml-id ["." vtd/tag]
                                    :each "@*"
                                    :columns {:attr ["." vtd/tag]
-                                             :value ["." vtd-value]}}
+                                             :value ["." attr-value]}}
                                   {:xml-id ["." vtd/tag]
                                    :each "./*"
                                    :columns {:attr ["." vtd/tag]
@@ -192,18 +196,15 @@
                        :collapse [{:xml-id ["." vtd/tag]
                                    :each "@*"
                                    :columns {:attr ["." vtd/tag]
-                                             :value ["." vtd-value]}}]
-                       }
+                                             :value ["." attr-value]}}]}
             table (nil-map-rows (get-table-row
-                        ($x? "/root/*" "<root><foobar foo=\"baz\" bar=\"qux\"/></root>")
+                        (vtd/at (vtd/navigator "<root><foobar foo=\"baz\" bar=\"qux\"/></root>") "/root/*")
                         table-def))]
         (is (= {["foobar" "foo"] {:columns {:tag "foobar" :attr "foo" :value "baz"}
                                   :dependent-tables []}
                 ["foobar" "bar"] {:columns {:tag "foobar" :attr "bar" :value "qux"}
                                   :dependent-tables []}}
-               table))))
-
-    ))
+               table))))))
 
 (deftest test-insert-table
   (let [inserter-fn (fn [expected]
@@ -277,5 +278,4 @@
                {:foobar {"foobar" [1 {:foo {"foo" [2 {}]}
                                       :bar {"bar" [3 {}]
                                             "qux" [4 {}]}}]}}))
-        (inserter nil nil)
-        ))))
+        (inserter nil nil)))))

@@ -5,7 +5,9 @@
 
 (def xml->doc vtd/navigator)
 
-(defn vtd-value [node] (vtd/attr node (vtd/tag node)))
+(defn attr-value [node] (vtd/attr node (vtd/tag node)))
+
+(defn attrs [node] (into {} (map (fn [attr] {(vtd/tag attr) (attr-value attr)}) (vtd/search node "./@*"))))
 
 (defn $x?
   [xpath xml]
@@ -16,6 +18,32 @@
   [xpath xml]
   (let [doc (if (instance? String xml) (xml->doc xml) xml)]
     (vtd/search doc xpath)))
+
+(defn parent-ref
+  []
+  ["." (fn [_] nil) :parent])
+
+(defn sibling-ref
+  [table function]
+  ["." function :sibling table])
+
+(defn value
+  [val-or-fn]
+  (if (fn? val-or-fn)
+    ["." val-or-fn]
+    ["." (fn [_] val-or-fn)]))
+
+(defn xpath-text
+  ([xpath]
+   (xpath-text xpath identity))
+  ([xpath transform]
+   (value #(transform (vtd/text (vtd/at % xpath))))))
+
+(defn xpath-attr
+  ([xpath attr]
+   (xpath-attr xpath attr identity))
+  ([xpath attr transform]
+   (value #(transform (vtd/attr (vtd/at % xpath) attr)))))
 
 (defn apply-context
   ([row context] (apply-context row nil context))
