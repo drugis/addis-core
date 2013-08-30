@@ -191,12 +191,12 @@
              :variable (x2s/sibling-ref :variables #(vtd/attr (vtd/at % "./studyOutcomeMeasure") :id))
              :arm (x2s/sibling-ref :arms #(vtd/attr (vtd/at % "./arm") :name))
              :measurement_moment (x2s/sibling-ref :measurement_moments #(when-taken-name (vtd/at % "./whenTaken")))}
-   :collapse [{:xml-id ["." #(vtd/attr % :name)]
+   :collapse [{:xml-id (x2s/value #(vtd/attr % :name))
                :each "./categoricalMeasurement/category"
                :columns {:attribute (x2s/value #(vtd/attr % :name))
                          :integer_value (x2s/value #(as-int (vtd/attr % :rate)))
                          :real_value (x2s/value nil)}}
-              {:xml-id ["." vtd/tag]
+              {:xml-id (x2s/value vtd/tag)
                :each (str "./*[" (xpath-tag-or ["continuousMeasurement" "rateMeasurement"]) "]/@*")
                :columns {:attribute (x2s/value (fn [tag] (get measurement-attrs (vtd/tag tag))))
                          :integer_value (x2s/value (fn [tag] (if (in? integer-attrs (vtd/tag tag)) (as-int (x2s/attr-value tag)) nil)))
@@ -275,6 +275,7 @@
     (when (or (:help options) (not (:database options)) (not (:file options)) (not (:name options)))
       (println banner)
       (System/exit 0))
+    ;(Thread/sleep 2000)
     (let
       [data (vtd/navigator (slurp (as-file (options :file))))
        db {:connection-uri (str "jdbc:" (options :database))}
