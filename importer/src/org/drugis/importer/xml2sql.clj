@@ -9,17 +9,22 @@
 
 (defn parent-ref
   []
-  ["." (fn [_] nil) :parent])
+  (fn [node]
+    (fn [parent context] parent)))
 
 (defn sibling-ref
-  [table function]
-  ["." function :sibling table])
+  [table xml-id-fn]
+  (fn [node]
+    (let [xml-id (xml-id-fn node)]
+      (fn [parent context]
+        (first (get (get context table) xml-id))))))
 
 (defn value
   [val-or-fn]
-  (if (fn? val-or-fn)
-    ["." val-or-fn]
-    ["." (fn [_] val-or-fn)]))
+  (let [val-fn (if (fn? val-or-fn) val-or-fn (fn [_] val-or-fn))]
+    (fn [node]
+      (let [value (val-fn node)]
+        (fn [parent context] value)))))
 
 (defn xpath-text
   ([xpath]
@@ -39,19 +44,9 @@
   (into {}
          (map (fn [[col-name val-fn]] {col-name (val-fn parent context)}) row))))
 
-(defn get-xml-value
-  [xml value-def]
-  (let [[xpath transform] value-def
-        node (if (= "." xpath) xml (vtd/at xml xpath))]
-    (transform node)))
-
 (defn get-column-value
   [xml col-name col-def]
-  (let [value (get-xml-value xml col-def)
-        ref-type (nth col-def 2 nil)
-        ref-key (nth col-def 3 nil)]
-  {col-name (fn [parent-id context]
-              (if (nil? ref-type) value (if (= :sibling ref-type) (first (get-in context [ref-key value])) parent-id)))}))
+  {col-name (col-def xml)})
 
 (defn get-column-values
   [xml defs]
@@ -77,7 +72,7 @@
                   (:table table)
                   " -- :dependent-tables and :collapse can not be mixed"))))
   (let [xml-id (if-let [id (:xml-id table)]
-                 (get-xml-value xml id)
+                 ((id xml) nil nil)
                  (java.util.UUID/randomUUID))
         columns (get-column-values xml (:columns table))
         rev-deps (map #(get-table xml %) (:dependent-tables table))]
