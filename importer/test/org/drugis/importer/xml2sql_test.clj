@@ -48,13 +48,13 @@
   (testing "get-column-values maps all columns"
     (is (= {:foo "bar" :fu "baz"}
            (apply-context (get-column-values
-             "<root><foobar foo=\"baz\">bar</foobar></root>"
+             (vtd/navigator "<root><foobar foo=\"baz\">bar</foobar></root>")
              {:foo["/root/foobar" vtd/text]
               :fu ["/root/foobar" #(vtd/attr % :foo)]}) nil)))))
 
 (deftest test-get-xml-value
   (testing "get-xml-value works"
-    (is (= "bar" (get-xml-value "<foobar foo=\"baz\">bar</foobar>" ["/foobar" vtd/text])))))
+    (is (= "bar" (get-xml-value (vtd/navigator "<foobar foo=\"baz\">bar</foobar>") ["/foobar" vtd/text])))))
 
 (deftest test-get-table
   (let [foobar-def {:xml-id ["." vtd/text]
@@ -74,13 +74,13 @@
         nil-map-tables #(ctx-map-tables % nil nil)]
     (testing "get-table-row returns xml-id and columns"
       (let [table-row (nil-map-rows (get-table-row
-                                     ($x? "/foobar" "<foobar foo=\"baz\">bar</foobar>")
+                                     (vtd/at (vtd/navigator "<foobar foo=\"baz\">bar</foobar>") "/foobar")
                                      foobar-def))]
         (is (= {"bar" {:columns {:foo "bar" :fu "baz"} :dependent-tables []}} table-row))))
     (testing "get-table-row generates random xml-id when missing"
       (let [table-def (dissoc foobar-def :xml-id)
             table-row-fn (fn [] (nil-map-rows (get-table-row
-                                     ($x? "/foobar" "<foobar foo=\"baz\">bar</foobar>")
+                                     (vtd/at (vtd/navigator "<foobar foo=\"baz\">bar</foobar>") "/foobar")
                                      table-def)))
             table-row1 (table-row-fn)
             table-row2 (table-row-fn)
@@ -91,7 +91,7 @@
         (is (= {:columns {:foo "bar" :fu "baz"} :dependent-tables []} (get table-row1 xml-id1)))))
     (testing "get-table returns xml-id and columns"
       (let [table (nil-map-table (get-table
-                                   ($x? "/root" "<root><foobar foo=\"baz\">bar</foobar><foobar foo=\"qux\">qox</foobar></root>")
+                                   (vtd/at (vtd/navigator "<root><foobar foo=\"baz\">bar</foobar><foobar foo=\"qux\">qox</foobar></root>") "/root")
                                    foobar-def))]
         (is (= {"bar" {:columns {:foo "bar" :fu "baz"} :dependent-tables []}
                 "qox" {:columns {:foo "qox" :fu "qux"} :dependent-tables []}} (:rows table)))))
@@ -103,7 +103,7 @@
                        :columns {:id ["." #(vtd/attr % :id)]}
                        :dependent-tables [foobar-def]}
             table-tpl (get-table-row
-                        ($x? "/root/container" "<root><container id=\"3\"><foobar foo=\"baz\">bar</foobar></container></root>")
+                        (vtd/at (vtd/navigator "<root><container id=\"3\"><foobar foo=\"baz\">bar</foobar></container></root>") "/root/container")
                         table-def)
             table (assoc-in (nil-map-rows table-tpl) ["3" :dependent-tables] (nil-map-tables (get-in table-tpl ["3" :dependent-tables]))) ]
         (is (= {"3" {:columns {:id "3"}
@@ -127,7 +127,7 @@
                            :columns {:name ["." #(vtd/attr % :name)]}
                            :dependent-tables [nested-def]}
             table-tpl (get-table-row
-                        ($x? "/root/container" "<root><container name=\"foo\"><nested name=\"bar\" /></container></root>")
+                        (vtd/at (vtd/navigator "<root><container name=\"foo\"><nested name=\"bar\" /></container></root>") "/root/container")
                         container-def)
             table (assoc-in (nil-map-rows table-tpl)
                             ["foo" :dependent-tables]
@@ -157,7 +157,7 @@
                                    :each "@*"
                                    :columns {:attr ["." vtd/tag]
                                              :value ["." attr-value]}}]}
-            node ($x? "/root/*" "<root><foobar foo=\"baz\" bar=\"qux\"/></root>")
+            node (vtd/at (vtd/navigator"<root><foobar foo=\"baz\" bar=\"qux\"/></root>") "/root/*")
             table (nil-map-rows (get-table-row node table-def))]
         (is (= {["foobar" "foo"] {:columns {:tag "foobar" :attr "foo" :value "baz"}
                                   :dependent-tables []}
@@ -178,7 +178,7 @@
                                    :each "./*"
                                    :columns {:attr ["." vtd/tag]
                                              :value ["." vtd/text]}}]}
-            node ($x? "/root/*" "<root><foobar foo=\"baz\" bar=\"qux\"><x>3</x></foobar></root>")
+            node (vtd/at (vtd/navigator "<root><foobar foo=\"baz\" bar=\"qux\"><x>3</x></foobar></root>") "/root/*")
             table (nil-map-rows (get-table-row node table-def))]
         (is (= {["foobar" "foo"] {:columns {:tag "foobar" :attr "foo" :value "baz"}
                                   :dependent-tables []}

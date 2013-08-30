@@ -3,21 +3,9 @@
             [clojure.java.jdbc :as jdbc]
             [riveted.core :as vtd]))
 
-(def xml->doc vtd/navigator)
-
 (defn attr-value [node] (vtd/attr node (vtd/tag node)))
 
 (defn attrs [node] (into {} (map (fn [attr] {(vtd/tag attr) (attr-value attr)}) (vtd/search node "./@*"))))
-
-(defn $x?
-  [xpath xml]
-  (let [doc (if (instance? String xml) (xml->doc xml) xml)]
-    (vtd/at doc xpath)))
-
-(defn $x
-  [xpath xml]
-  (let [doc (if (instance? String xml) (xml->doc xml) xml)]
-    (vtd/search doc xpath)))
 
 (defn parent-ref
   []
@@ -54,7 +42,7 @@
 (defn get-xml-value
   [xml value-def]
   (let [[xpath transform] value-def
-        node (if (= "." xpath) xml ($x? xpath xml))]
+        node (if (= "." xpath) xml (vtd/at xml xpath))]
     (transform node)))
 
 (defn get-column-value
@@ -99,7 +87,7 @@
 
 (defn get-table
   [xml table]
-  (let [elements ($x (:each table) xml)
+  (let [elements (vtd/search xml (:each table))
         rows (into {} (map #(get-table-row % table) elements))]
     {:table (:table table) :sql-id (:sql-id table) :rows rows}))
 
