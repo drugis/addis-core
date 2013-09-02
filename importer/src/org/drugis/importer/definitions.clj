@@ -129,7 +129,7 @@
    :table :arms
    :columns {:study (x2s/parent-ref) 
              :name (x2s/value #(vtd/attr % :name))
-             :arm_size (x2s/value #(vtd/attr % :size))}})
+             :arm_size (x2s/value #(as-int (vtd/attr % :size)))}})
 
 (def epochs-table
   {:xml-id (x2s/value #(vtd/attr % :name))

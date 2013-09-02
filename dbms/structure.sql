@@ -39,7 +39,7 @@ CREATE TABLE "studies" (
 --  "blinding" blinding_type,
   "allocation" varchar,
   "blinding" varchar,
-  "number_of_centers" int2,
+  "number_of_centers" int4,
   "created_at" date,
 --  "source" source DEFAULT 'MANUAL',
   "source" varchar DEFAULT 'MANUAL',
@@ -132,7 +132,7 @@ CREATE TABLE "arms" (
   "id" bigserial,
   "study" bigint REFERENCES studies (id),
   "name" varchar,
-  "arm_size" varchar,
+  "arm_size" int4,
   "notes" text[],
   PRIMARY KEY ("id"),
   UNIQUE ("study", "name")
