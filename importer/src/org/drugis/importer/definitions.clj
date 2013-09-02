@@ -103,6 +103,16 @@
   [x]
   (if (nil? x) nil (java.sql.Date. (.getTimeInMillis (javax.xml.bind.DatatypeConverter/parseDateTime x)))) )
 
+(def ^:private dtf (javax.xml.datatype.DatatypeFactory/newInstance))
+
+(defn as-duration
+  [x]
+  (if (nil? x)
+    nil
+    (let [d (.newDuration dtf x)]
+      (org.postgresql.util.PGInterval. (.getYears d) (.getMonths d) (.getDays d)
+                                       (.getHours d) (.getMinutes d) (.getSeconds d)))))
+
 (def references-table
   {:xml-id (x2s/value vtd/text)
    :sql-id :id
@@ -128,7 +138,7 @@
    :table :epochs
    :columns {:study (x2s/parent-ref)
              :name (x2s/value #(vtd/attr % :name))
-             :duration (x2s/value #(vtd/attr % :duration))}})
+             :duration (x2s/xpath-text "./duration" as-duration)}})
 
 (defn when-taken-name
   [node]
