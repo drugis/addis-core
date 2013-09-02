@@ -26,6 +26,12 @@
       (let [value (val-fn node)]
         (fn [parent context] value)))))
 
+(defn xpath-tag
+  ([xpath]
+   (xpath-tag xpath identity))
+  ([xpath transform]
+   (value #(transform (vtd/tag (vtd/at % xpath))))))
+
 (defn xpath-text
   ([xpath]
    (xpath-text xpath identity))
@@ -82,7 +88,9 @@
 
 (defn get-table
   [xml table]
-  (let [elements (vtd/search xml (:each table))
+  (let [elements (if (fn? (:each table))
+                   ((:each table) xml)
+                   (vtd/search xml (:each table)))
         rows (into {} (map #(get-table-row % table) elements))]
     {:table (:table table) :sql-id (:sql-id table) :rows rows}))
 

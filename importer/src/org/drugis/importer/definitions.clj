@@ -99,9 +99,21 @@
   [x]
   (if (nil? x) nil (Double. x)))
 
+(defn as-boolean
+  [x]
+  (if (nil? x) nil (Boolean. x)))
+
+(defn parse-xml-datetime
+  [x]
+  (.getTimeInMillis (javax.xml.bind.DatatypeConverter/parseDateTime x)))
+
 (defn as-date
   [x]
-  (if (nil? x) nil (java.sql.Date. (.getTimeInMillis (javax.xml.bind.DatatypeConverter/parseDateTime x)))) )
+  (if (nil? x) nil (java.sql.Date. (parse-xml-datetime x))))
+
+(defn as-timestamp
+  [x]
+  (if (nil? x) nil (java.sql.Timestamp. (parse-xml-datetime x))))
 
 (def ^:private dtf (javax.xml.datatype.DatatypeFactory/newInstance))
 
@@ -112,6 +124,32 @@
     (let [d (.newDuration dtf x)]
       (org.postgresql.util.PGInterval. (.getYears d) (.getMonths d) (.getDays d)
                                        (.getHours d) (.getMinutes d) (.getSeconds d)))))
+
+(defn as-enum
+  [type value]
+  (let [object (org.postgresql.util.PGobject.)]
+    (.setValue object (clojure.string/upper-case value))
+    (.setType object type)
+    object))
+
+(def as-allocation-enum (partial as-enum "allocation_type"))
+(def as-blinding-enum (partial as-enum "blinding_type"))
+(def as-source-enum (partial as-enum "study_source"))
+(def as-status-enum (partial as-enum "study_status"))
+
+(def as-measurement-type (partial as-enum "measurement_type"))
+(def as-variable-type #(as-enum "variable_type"
+                                ({:populationCharacteristic "POPULATION_CHARACTERISTIC"
+                                  :endpoint "ENDPOINT"
+                                  :adverseEvent "ADVERSE_EVENT"} (keyword %))))
+(def as-epoch-offset-enum (partial as-enum "epoch_offset"))
+
+(defn as-activity-enum
+  [tag]
+  (let [tag-name (vtd/tag tag)]
+    (if (= tag-name "predefined")
+      (as-enum "activity_type" (vtd/text tag))
+      (as-enum "activity_type" tag-name))))
 
 (def references-table
   {:xml-id (x2s/value vtd/text)
@@ -138,7 +176,33 @@
    :table :epochs
    :columns {:study (x2s/parent-ref)
              :name (x2s/value #(vtd/attr % :name))
-             :duration (x2s/xpath-text "./duration" as-duration)}})
+             :duration (x2s/xpath-text "./duration" as-duration)
+             }})
+
+(def drugs-table
+  {:xml-id (x2s/value #(vtd/attr % :name))
+   :sql-id :id
+   :each "./activities/studyActivity/activity/treatment/drugTreatment/drug"
+   :table :drugs
+   :columns {:study (x2s/parent-ref)
+             :name (x2s/value #(vtd/attr % :name))}})
+
+;(def treatments-table
+;  {:sql-id :id
+;   :each "./activity/treatment/drugTreatment"
+;   :table :treatments
+;   :columns {:activity (x2s/parent-ref)
+;             :periodicity (x2s/xpath-attr "./*/doseUnit" :perTime as-duration)}})
+
+(def activities-table
+  {:xml-id (x2s/value #(vtd/attr % :name))
+   :sql-id :id
+   :each "./activities/studyActivity"
+   :table :activities
+   :columns {:study (x2s/parent-ref)
+             :name (x2s/value #(vtd/attr % :name))
+             :type (x2s/value #(as-activity-enum (vtd/at % "./activity/*")))}
+   :dependent-tables []})
 
 (defn when-taken-name
   [node]
@@ -154,8 +218,11 @@
    :table :measurement_moments
    :columns {:study (x2s/parent-ref)
              :name (x2s/value when-taken-name)
-             :epoch (x2s/sibling-ref :epochs (fn [node] (vtd/attr (vtd/at node "./epoch") :name)))}
-  })
+             :epoch (x2s/sibling-ref :epochs (fn [node] (vtd/attr (vtd/at node "./epoch") :name)))
+             :offset_from_epoch (x2s/value #(as-duration (vtd/attr % :howLong)))
+             :relative_to (x2s/value #(as-epoch-offset-enum (vtd/attr % :relativeTo)))
+             ;:is_primary TODO
+             }})
 
 (defn resolve-var-ref
   [var-ref]
@@ -165,6 +232,14 @@
                   (vtd/tag var-ref)
                   (vtd/attr var-ref :name))))
 
+(def variable-categories-table
+  {:xml-id (x2s/value #(vtd/text %))
+   :sql-id (juxt :variable :category_name)
+   :each #(vtd/search (resolve-var-ref %) "./categorical/category")
+   :table :variable_categories
+   :columns {:variable (x2s/parent-ref)
+             :category_name (x2s/value #(vtd/text %))}})
+
 (def variables-table
   {:xml-id (x2s/value #(vtd/attr (vtd/at % "..") :id))
    :sql-id :id
@@ -172,7 +247,15 @@
    :table :variables
    :columns {:study (x2s/parent-ref)
              :name (x2s/value #(vtd/attr % :name))
-             :description (x2s/value #(vtd/attr (resolve-var-ref %) :description))}})
+             :description (x2s/value #(vtd/attr (resolve-var-ref %) :description))
+             :unit_description (x2s/value #(vtd/attr (vtd/at (resolve-var-ref %) "./continuous") :unitOfMeasurement))
+             :is_primary (x2s/xpath-attr ".." :primary as-boolean)
+             :variable_type (x2s/value #(as-variable-type (vtd/tag %)))
+             :measurement_type (x2s/value #(as-measurement-type
+                                             (vtd/tag (vtd/at (resolve-var-ref %) 
+                                                              (str "./*[" (xpath-tag-or ["rate" "continuous" "categorical"]) "]")))))
+             }
+   :dependent-tables [variable-categories-table]})
 
 (def measurement-attrs
   {"mean" "mean"
@@ -217,17 +300,17 @@
              :title (x2s/xpath-text "./characteristics/title/value")
              :indication (x2s/sibling-ref :indications #(vtd/attr % :name))
              :objective (x2s/xpath-text "./characteristics/objective/value")
-             :allocation (x2s/xpath-text "./characteristics/allocation/value")
-             :blinding (x2s/xpath-text "./characteristics/blinding/value")
+             :allocation (x2s/xpath-text "./characteristics/allocation/value" as-allocation-enum)
+             :blinding (x2s/xpath-text "./characteristics/blinding/value" as-blinding-enum)
              :number_of_centers (x2s/xpath-text "./characteristics/centers/value" as-int)
-             :created_at (x2s/xpath-text "./characteristics/created_at/value" as-date)
-             :source (x2s/xpath-text "./characteristics/source/value")
+             :created_at (x2s/xpath-text "./characteristics/created_at/value" as-timestamp)
+             :source (x2s/xpath-text "./characteristics/source/value" as-source-enum)
              :exclusion (x2s/xpath-text  "./characteristics/exclusion/value")
              :inclusion (x2s/xpath-text "./characteristics/inclusion/value")
-             :status (x2s/xpath-text "./characteristics/status/value")
+             :status (x2s/xpath-text "./characteristics/status/value" as-status-enum)
              :start_date (x2s/xpath-text "./characteristics/start_date/value" as-date)
              :end_date (x2s/xpath-text "./characteristics/end_date/value" as-date)}
-   :dependent-tables [references-table arms-table epochs-table measurement-moments-table variables-table measurements-table]})
+   :dependent-tables [references-table arms-table epochs-table drugs-table activities-table measurement-moments-table variables-table measurements-table]})
 
 (def indications-table
   {:xml-id (x2s/value #(vtd/attr (vtd/at % "..") :name))

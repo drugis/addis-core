@@ -1,18 +1,11 @@
 CREATE TYPE activity_type AS ENUM ('SCREENING', 'RANDOMIZATION', 'WASH_OUT', 'FOLLOW_UP', 'TREATMENT', 'OTHER');
 CREATE TYPE allocation_type AS ENUM ('UNKNOWN', 'RANDOMIZED', 'NONRANDOMIZED');
 CREATE TYPE blinding_type AS ENUM ('OPEN', 'SINGLE_BLIND', 'DOUBLE_BLIND', 'TRIPLE_BLIND', 'UNKNOWN');
-CREATE TYPE source AS ENUM ('MANUAL', 'CLINICALTRIALS');
-CREATE TYPE status AS ENUM ('NOT_YET_RECRUITING', 'RECRUITING', 'ENROLLING', 'ACTIVE', 'COMPLETED', 'SUSPENDED', 'TERMINATED', 'WITHDRAWN', 'UNKNOWN');
+CREATE TYPE study_source AS ENUM ('MANUAL', 'CLINICALTRIALS');
+CREATE TYPE study_status AS ENUM ('NOT_YET_RECRUITING', 'RECRUITING', 'ENROLLING', 'ACTIVE', 'COMPLETED', 'SUSPENDED', 'TERMINATED', 'WITHDRAWN', 'UNKNOWN');
 CREATE TYPE measurement_type as ENUM ('CONTINUOUS', 'RATE', 'CATEGORICAL');
-CREATE TYPE variable_type as ENUM ('PopulationCharacteristic', 'Endpoint', 'AdverseEvent');
+CREATE TYPE variable_type as ENUM ('POPULATION_CHARACTERISTIC', 'ENDPOINT', 'ADVERSE_EVENT');
 CREATE TYPE epoch_offset as ENUM ('FROM_EPOCH_START', 'BEFORE_EPOCH_END');
-
-CREATE TABLE "drugs" (
-  "id" bigserial,
-  "name" varchar NOT NULL,
-  "description" text,
-  PRIMARY KEY ("id")
-);
 
 CREATE TABLE "indications" (
   "id" bigserial,
@@ -35,18 +28,14 @@ CREATE TABLE "studies" (
   "title" text,
   "indication" bigint REFERENCES indications (id),
   "objective" text,
---  "allocation" allocation_type,
---  "blinding" blinding_type,
-  "allocation" varchar,
-  "blinding" varchar,
+  "allocation" allocation_type,
+  "blinding" blinding_type,
   "number_of_centers" int4,
-  "created_at" date,
---  "source" source DEFAULT 'MANUAL',
-  "source" varchar DEFAULT 'MANUAL',
+  "created_at" timestamp,
+  "source" study_source DEFAULT 'MANUAL',
   "exclusion" text,
   "inclusion" text,
---  "status" status,
-  "status" varchar,
+  "status" study_status,
   "start_date" date,
   "end_date" date,
   "notes" text[],
@@ -57,6 +46,14 @@ CREATE TABLE "studies" (
 );
 CREATE INDEX ON "studies" ("name");
 CREATE INDEX ON "studies" ("indication");
+
+CREATE TABLE "drugs" (
+  "id" bigserial,
+  "study" bigint REFERENCES studies ("id"),
+  "name" varchar NOT NULL,
+  "description" text,
+  PRIMARY KEY ("id")
+);
 
 CREATE TABLE "namespaces" (
   "id" bigserial,
@@ -96,12 +93,11 @@ CREATE TABLE "activities" (
 
 CREATE TABLE "treatments" (
   "id" bigserial,
-  "study" bigint REFERENCES studies ("id"),
   "activity" bigint REFERENCES activities ("id"),
   "drug" bigint REFERENCES drugs ("id"),
   "periodicity" interval DEFAULT 'P0D',
   PRIMARY KEY ("id"),
-  UNIQUE("study", "activity", "drug")
+  UNIQUE("activity", "drug")
 );
 
 CREATE TABLE "treatment_dosings" (
@@ -153,9 +149,9 @@ CREATE TABLE "variables" (
   "study" bigint REFERENCES studies ("id"),
   "name" varchar,
   "description" text,
+  "unit_description" text,
   "is_primary" bool,
   "measurement_type" measurement_type,
-  "unit" bigint REFERENCES units (id),
   "variable_type" variable_type,
   "notes" text[],
   PRIMARY KEY ("id"),
@@ -176,10 +172,10 @@ CREATE TABLE "measurement_moments" (
   "epoch" bigint REFERENCES epochs ("id"),
   "is_primary" bool,
   "offset_from_epoch" interval,
-  "before_epoch" epoch_offset,
+  "relative_to" epoch_offset,
   "notes" text[],
   PRIMARY KEY ("id"),
-  UNIQUE ("epoch", "offset_from_epoch", "before_epoch"),
+  UNIQUE ("epoch", "offset_from_epoch", "relative_to"),
   UNIQUE ("study", "name")
 );
 
