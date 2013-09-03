@@ -93,15 +93,15 @@
 
 (defn as-int
   [x]
-  (if (nil? x) nil (Integer. x)))
+  (when-not (nil? x) (Integer. x)))
 
 (defn as-double
   [x]
-  (if (nil? x) nil (Double. x)))
+  (when-not (nil? x) (Double. x)))
 
 (defn as-boolean
   [x]
-  (if (nil? x) nil (Boolean. x)))
+  (when-not (nil? x) (Boolean. x)))
 
 (defn parse-xml-datetime
   [x]
@@ -109,11 +109,11 @@
 
 (defn as-date
   [x]
-  (if (nil? x) nil (java.sql.Date. (parse-xml-datetime x))))
+  (when-not (nil? x) (java.sql.Date. (parse-xml-datetime x))))
 
 (defn as-timestamp
   [x]
-  (if (nil? x) nil (java.sql.Timestamp. (parse-xml-datetime x))))
+  (when-not (nil? x) (java.sql.Timestamp. (parse-xml-datetime x))))
 
 (def ^:private dtf (javax.xml.datatype.DatatypeFactory/newInstance))
 
@@ -187,13 +187,46 @@
    :columns {:study (x2s/parent-ref)
              :name (x2s/value #(vtd/attr % :name))}})
 
+(def units-table
+  {:xml-id (x2s/value #(vtd/attr % :name))
+   :sql-id :id
+   :each "./activities/studyActivity/activity/treatment/drugTreatment/*/doseUnit/unit"
+   :table :units
+   :columns {:study (x2s/parent-ref)
+             :name (x2s/value #(vtd/attr % :name))}})
+
+(def treatment-dosings-table
+  {:sql-id (juxt :treatment :planned_time)
+   :each "."
+   :table :treatment_dosings
+   :columns {:treatment (x2s/parent-ref)
+             :planned_time (x2s/value (as-duration "P0D"))
+             :scale_modifier (x2s/xpath-attr "./*/doseUnit" :scaleModifier)
+             :unit (x2s/sibling-ref :units #(vtd/attr (vtd/at % "./*/doseUnit/unit") :name) #(nth % 2))}
+   :collapse [{:each "./flexibleDose"
+               :columns {:min_dose (x2s/value #(as-double (vtd/attr % :minDose)))
+                         :max_dose (x2s/value #(as-double (vtd/attr % :maxDose)))}}
+              {:each "./fixedDose"
+               :columns {:min_dose (x2s/value #(as-double (vtd/attr % :quantity)))
+                         :max_dose (x2s/value #(as-double (vtd/attr % :quantity)))}}]})
+
 (def treatments-table
   {:sql-id :id
    :each "./activity/treatment/drugTreatment"
    :table :treatments
    :columns {:activity (x2s/parent-ref)
              :drug (x2s/sibling-ref :drugs #(vtd/attr (vtd/at % "./drug") :name) second)
-             :periodicity (x2s/xpath-attr "./*/doseUnit" :perTime as-duration)}})
+             :periodicity (x2s/xpath-attr "./*/doseUnit" :perTime as-duration)}
+   :dependent-tables [treatment-dosings-table]})
+
+(def designs-table
+  {:xml-id (x2s/value (fn [node] [(vtd/attr node :arm) (vtd/attr node :epoch)])) 
+   :sql-id (juxt :arm :epoch)
+   :each "./usedBy"
+   :table :designs
+   :columns {:activity (x2s/parent-ref)
+             :arm (x2s/sibling-ref :arms #(vtd/attr % :arm) second)
+             :epoch (x2s/sibling-ref :epochs #(vtd/attr % :epoch) second)}})
 
 (def activities-table
   {:xml-id (x2s/value #(vtd/attr % :name))
@@ -203,7 +236,7 @@
    :columns {:study (x2s/parent-ref)
              :name (x2s/value #(vtd/attr % :name))
              :type (x2s/value #(as-activity-enum (vtd/at % "./activity/*")))}
-   :dependent-tables [treatments-table]})
+   :dependent-tables [treatments-table designs-table]})
 
 (defn when-taken-name
   [node]
@@ -311,7 +344,9 @@
              :status (x2s/xpath-text "./characteristics/status/value" as-status-enum)
              :start_date (x2s/xpath-text "./characteristics/start_date/value" as-date)
              :end_date (x2s/xpath-text "./characteristics/end_date/value" as-date)}
-   :dependent-tables [references-table arms-table epochs-table drugs-table activities-table measurement-moments-table variables-table measurements-table]})
+   :dependent-tables [drugs-table units-table references-table
+                      arms-table epochs-table activities-table
+                      measurement-moments-table variables-table measurements-table]})
 
 (def indications-table
   {:xml-id (x2s/value #(vtd/attr (vtd/at % "..") :name))

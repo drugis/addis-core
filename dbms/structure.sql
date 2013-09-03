@@ -14,13 +14,6 @@ CREATE TABLE "indications" (
   PRIMARY KEY ("id")
 );
 
-CREATE TABLE "units" (
-  "id" bigserial,
-  "name" varchar NOT NULL,
-  "description" text,
-  PRIMARY KEY ("id")
-);
-
 CREATE TABLE "studies" (
   "metadata" hstore,
   "id" bigserial,
@@ -46,6 +39,14 @@ CREATE TABLE "studies" (
 );
 CREATE INDEX ON "studies" ("name");
 CREATE INDEX ON "studies" ("indication");
+
+CREATE TABLE "units" (
+  "id" bigserial,
+  "study" bigint REFERENCES studies ("id"),
+  "name" varchar NOT NULL,
+  "description" text,
+  PRIMARY KEY ("id")
+);
 
 CREATE TABLE "drugs" (
   "id" bigserial,
@@ -137,11 +138,10 @@ CREATE INDEX ON "arms" ("study");
 COMMENT ON COLUMN "arms"."name" IS 'Empty string indicates "total population"';
 
 CREATE TABLE "designs" (
-  "study" bigint REFERENCES studies ("id"),
   "arm" bigint REFERENCES arms ("id"),
   "epoch" bigint REFERENCES epochs ("id"),
   "activity" bigint REFERENCES activities ("id"),
-  PRIMARY KEY ("study", "arm", "epoch")
+  PRIMARY KEY ("arm", "epoch")
 );
 
 CREATE TABLE "variables" (
