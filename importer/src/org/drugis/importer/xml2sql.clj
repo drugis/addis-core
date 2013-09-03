@@ -10,21 +10,23 @@
 (defn parent-ref
   []
   (fn [node]
-    (fn [parent context] parent)))
+    (fn [contexts]
+     (let [[parent context] (first contexts)] parent))))
 
 (defn sibling-ref
   [table xml-id-fn]
   (fn [node]
     (let [xml-id (xml-id-fn node)]
-      (fn [parent context]
-        (first (get (get context table) xml-id))))))
+      (fn [contexts]
+        (let [[parent context] (first contexts)]
+          (first (get (get context table) xml-id)))))))
 
 (defn value
   [val-or-fn]
   (let [val-fn (if (fn? val-or-fn) val-or-fn (fn [_] val-or-fn))]
     (fn [node]
       (let [value (val-fn node)]
-        (fn [parent context] value)))))
+        (fn [contexts] value)))))
 
 (defn xpath-tag
   ([xpath]
@@ -45,10 +47,9 @@
    (value #(transform (vtd/attr (vtd/at % xpath) attr)))))
 
 (defn apply-context
-  ([row context] (apply-context row nil context))
-  ([row parent context]
+  ([row contexts]
   (into {}
-         (map (fn [[col-name val-fn]] {col-name (val-fn parent context)}) row))))
+         (map (fn [[col-name val-fn]] {col-name (val-fn contexts)}) row))))
 
 (defn get-column-value
   [xml col-name col-def]
@@ -78,7 +79,7 @@
                   (:table table)
                   " -- :dependent-tables and :collapse can not be mixed"))))
   (let [xml-id (if-let [id (:xml-id table)]
-                 ((id xml) nil nil)
+                 ((id xml) nil)
                  (java.util.UUID/randomUUID))
         columns (get-column-values xml (:columns table))
         rev-deps (map #(get-table xml %) (:dependent-tables table))]
@@ -108,12 +109,12 @@
 (defn insert-table
   ([inserter table-data] (insert-table inserter table-data nil {}))
   ([inserter {:keys [sql-id rows table]} parent-id context]
-   {table (into {}(map (fn [[k v]]
-                   (let [inserted (insert-row inserter table sql-id k (apply-context (:columns v) parent-id context))
-                         xml-id (first inserted)
-                         sql-id (second inserted)]
-                     (loop [dt (:dependent-tables v) acc {}]
-                       (if (seq dt)
-                         (recur (rest dt) (merge acc (insert-table inserter (first dt) sql-id acc)))
-                         {xml-id [sql-id acc]}))
-                     )) rows))}))
+   {table (into {} (map (fn [[k v]]
+                          (let [inserted (insert-row inserter table sql-id k (apply-context (:columns v) [[parent-id context]]))
+                                xml-id (first inserted)
+                                sql-id (second inserted)]
+                            (loop [dt (:dependent-tables v) acc {}]
+                              (if (seq dt)
+                                (recur (rest dt) (merge acc (insert-table inserter (first dt) sql-id acc)))
+                                {xml-id [sql-id acc]}))
+                            )) rows))}))

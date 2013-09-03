@@ -30,19 +30,19 @@
            (apply-context (get-column-value
              (vtd/navigator "<root><foobar>bar</foobar></root>")
              :foo
-             (xpath-text "/root/foobar")) nil nil)))
+             (xpath-text "/root/foobar")) [[nil {}]])))
     (is (= {:foo "baz"}
            (apply-context (get-column-value
              (vtd/navigator "<root><foobar foo=\"baz\">bar</foobar></root>")
              :foo
-             (xpath-attr "/root/foobar" :foo)) nil nil))))
+             (xpath-attr "/root/foobar" :foo)) [[nil {}]]))))
   (testing "get-column-value generates context closure where sql-id required"
     (let [rval (:foo (get-column-value
                        (vtd/navigator "<root><foobar>bar</foobar></root>")
                        :foo
                        (sibling-ref :pitty #(vtd/text (vtd/at % "/root/foobar")))))
           context {:pitty {"bar" [8 {}] "baz" [10 {}]}}]
-      (is (= 8 (rval nil context))))))
+      (is (= 8 (rval [[nil context]]))))))
 
 (deftest test-get-column-values
   (testing "get-column-values maps all columns"
@@ -50,7 +50,7 @@
            (apply-context (get-column-values
              (vtd/navigator "<root><foobar foo=\"baz\">bar</foobar></root>")
              {:foo (xpath-text "/root/foobar")
-              :fu  (xpath-attr "/root/foobar" :foo)}) nil)))))
+              :fu  (xpath-attr "/root/foobar" :foo)}) [[nil {}]])))))
 
 ;(deftest test-value
 ;  (testing "xpath-text works"
@@ -64,7 +64,7 @@
                     :columns {:foo (value vtd/text)
                               :fu (value #(vtd/attr % :foo))}
                     :dependent-tables []}
-        ctx-map-row (fn [row-tpl parent context] (assoc row-tpl :columns (apply-context (:columns row-tpl) parent context)))
+        ctx-map-row (fn [row-tpl parent context] (assoc row-tpl :columns (apply-context (:columns row-tpl) [[parent context]])))
         nil-map #(ctx-map-row % nil nil)
         ctx-map-rows (fn [rows-tpl parent context] (into {} (map (fn [[k v]] {k (ctx-map-row v parent context)}) rows-tpl)))
         nil-map-rows #(ctx-map-rows % nil nil)
@@ -224,8 +224,8 @@
     (testing "A simple insert-table returns xml->sql id map"
       (let [table {:table :foobar
                    :sql-id :id
-                   :rows {"foo" {:columns {:name (fn [_ _] "foo")} :dependent-tables []}
-                          "bar" {:columns {:name (fn [_ _] "bar")} :dependent-tables []}}}
+                   :rows {"foo" {:columns {:name (fn [_] "foo")} :dependent-tables []}
+                          "bar" {:columns {:name (fn [_] "bar")} :dependent-tables []}}}
             expected {[:foobar {:name "foo"}] {:id 1}
                       [:foobar {:name "bar"}] {:id 2}}
             inserter (inserter-fn expected)]
@@ -233,15 +233,15 @@
     (testing "insert-table passes parent id to dependent-tables"
       (let [nested-foo {:table :baz
                         :sql-id :id
-                        :rows {"baz" {:columns {:parent (fn [p _] p) :name (fn [_ _] "baz")}}}}
+                        :rows {"baz" {:columns {:parent (fn [contexts] (first (first contexts))) :name (fn [_] "baz")}}}}
             nested-bar {:table :baz
                         :sql-id :id
-                        :rows {"baz" {:columns {:parent (fn [p _] p) :name (fn [_ _] "baz")}}
-                               "qux" {:columns {:parent (fn [p _] p) :name (fn [_ _] "qux")}}}}
+                        :rows {"baz" {:columns {:parent (fn [contexts] (first (first contexts))) :name (fn [_] "baz")}}
+                               "qux" {:columns {:parent (fn [contexts] (first (first contexts))) :name (fn [_] "qux")}}}}
             table {:table :foobar
                    :sql-id :id
-                   :rows {"foo" {:columns {:name (fn [_ _] "foo")} :dependent-tables [nested-foo]}
-                          "bar" {:columns {:name (fn [_ _] "bar")} :dependent-tables [nested-bar]}}}
+                   :rows {"foo" {:columns {:name (fn [_] "foo")} :dependent-tables [nested-foo]}
+                          "bar" {:columns {:name (fn [_] "bar")} :dependent-tables [nested-bar]}}}
             expected {[:foobar {:name "foo"}] {:id 1}
                       [:foobar {:name "bar"}] {:id 2}
                       [:baz {:parent 1 :name "baz"}] {:id 3}
@@ -257,18 +257,18 @@
     (testing "insert-table passes sibling ids to dependent-tables"
       (let [nested-foo {:table :foo
                         :sql-id :id
-                        :rows {"foo" {:columns {:parent (fn [p _] p) :name (fn [_ _] "foo")}}}}
+                        :rows {"foo" {:columns {:parent (fn [contexts] (first (first contexts))) :name (fn [_] "foo")}}}}
             nested-bar {:table :bar
                         :sql-id :id
-                        :rows {"bar" {:columns {:parent (fn [p _] p)
-                                                :foo (fn [_ ctx] (first (get-in ctx [:foo "foo"])))
-                                                :name (fn [_ _] "bar")}}
-                               "qux" {:columns {:parent (fn [p _] p)
-                                                :foo (fn [_ ctx] (first (get-in ctx [:foo "foo"])))
-                                                :name (fn [_ _] "qux")}}}}
+                        :rows {"bar" {:columns {:parent (fn [contexts] (first (first contexts)))
+                                                :foo (fn [contexts] (first (get-in (second (first contexts)) [:foo "foo"])))
+                                                :name (fn [_] "bar")}}
+                               "qux" {:columns {:parent (fn [contexts] (first (first contexts)))
+                                                :foo (fn [contexts] (first (get-in (second (first contexts)) [:foo "foo"])))
+                                                :name (fn [_] "qux")}}}}
             table {:table :foobar
                    :sql-id :id
-                   :rows {"foobar" {:columns {:name (fn [_ _] "foobar")} :dependent-tables [nested-foo nested-bar]}}}
+                   :rows {"foobar" {:columns {:name (fn [_] "foobar")} :dependent-tables [nested-foo nested-bar]}}}
             expected {[:foobar {:name "foobar"}] {:id 1}
                       [:foo {:parent 1 :name "foo"}] {:id 2}
                       [:bar {:parent 1 :foo 2 :name "bar" }] {:id 3}
