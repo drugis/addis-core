@@ -8,18 +8,22 @@
 (defn attrs [node] (into {} (map (fn [attr] {(vtd/tag attr) (attr-value attr)}) (vtd/search node "./@*"))))
 
 (defn parent-ref
-  []
-  (fn [node]
-    (fn [contexts]
-     (let [[parent context] (first contexts)] parent))))
+  ([]
+   (parent-ref first))
+  ([resolve-fn]
+   (fn [node]
+     (fn [contexts]
+       (let [[parent context] (resolve-fn contexts)] parent)))))
 
 (defn sibling-ref
-  [table xml-id-fn]
-  (fn [node]
-    (let [xml-id (xml-id-fn node)]
-      (fn [contexts]
-        (let [[parent context] (first contexts)]
-          (first (get (get context table) xml-id)))))))
+  ([table xml-id-fn]
+   (sibling-ref table xml-id-fn first))
+  ([table xml-id-fn resolve-fn]
+   (fn [node]
+     (let [xml-id (xml-id-fn node)]
+       (fn [contexts]
+         (let [[parent context] (resolve-fn contexts)]
+           (first (get-in context [table xml-id]))))))))
 
 (defn value
   [val-or-fn]
