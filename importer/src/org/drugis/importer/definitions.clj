@@ -342,8 +342,8 @@
              :exclusion (x2s/xpath-text  "./characteristics/exclusion/value")
              :inclusion (x2s/xpath-text "./characteristics/inclusion/value")
              :status (x2s/xpath-text "./characteristics/status/value" as-status-enum)
-             :start_date (x2s/xpath-text "./characteristics/start_date/value" as-date)
-             :end_date (x2s/xpath-text "./characteristics/end_date/value" as-date)}
+             :start_date (x2s/xpath-text "./characteristics/study_start/value" as-date)
+             :end_date (x2s/xpath-text "./characteristics/study_end/value" as-date)}
    :dependent-tables [drugs-table units-table references-table
                       arms-table epochs-table activities-table
                       measurement-moments-table variables-table measurements-table]})
