@@ -253,8 +253,7 @@
                {:foobar {"foo" [1 {:baz {"baz" [3 {}]}}]
                          "bar" [2 {:baz {"baz" [4 {}]
                                          "qux" [5 {}]}}]}}))
-        (inserter nil nil)
-        ))
+        (inserter nil nil)))
     (testing "insert-table passes sibling ids to dependent-tables"
       (let [nested-foo {:table :foo
                         :sql-id :id
@@ -311,4 +310,43 @@
                 {"foobar"
                  [8 {:bar {"bar" [2 {:foo {"foo" [3 {}]}}]}
                      :qux {"qux" [5 {}] "qox" [6 {}]}}]}}))
+        (inserter nil nil)))
+    (testing "insert-table calls post-insert"
+      (let [called (atom false)
+            table {:table :foobar
+                   :sql-id :id
+                   :rows {"foo" {:columns {:name (fn [_] "foo")} :dependent-tables []}}
+                   :post-insert (fn [_ inserted _]  (reset! called true) (is (= inserted {"foo" [1 {}]})))}
+            expected {[:foobar {:name "foo"}] {:id 1}}
+            inserter (inserter-fn expected)]
+        (is (= (insert-table inserter table) {:foobar {"foo" [1 {}]}}))
+        (is @called)))
+    (testing "insert-table passes the context to post-insert"
+      (let [nested-foo {:table :foo
+                        :sql-id :id
+                        :rows {"foo" {:columns {:name (fn [_] "foo")}}}
+                        :post-insert (fn [_ inserted contexts] 
+                                       (is (= inserted {"foo" [2 {}]}))
+                                       (is (= contexts [[1 {}] [nil {}]])))}
+            nested-bar {:table :bar
+                        :sql-id :id
+                        :rows {"bar" {:columns {:name (fn [_] "bar")}}}
+                        :post-insert (fn [_ inserted contexts] 
+                                       (is (= inserted {"bar" [3 {}]}))
+                                       (is (= contexts [[1 {:foo {"foo" [2 {}]}}] [nil {}]])))}
+            table {:table :foobar
+                   :sql-id :id
+                   :rows {"foobar" {:columns {:name (fn [_] "foobar")} :dependent-tables [nested-foo nested-bar]}}
+                   :post-insert (fn [row-data inserted contexts] 
+                                  (is (= row-data {:name "foobar"}))
+                                  (is (= inserted {"foobar" [1 {:foo {"foo" [2 {}]}
+                                                                :bar {"bar" [3 {}]}}]}))
+                                  (is (= contexts [[nil {}]])))}
+            expected {[:foobar {:name "foobar"}] {:id 1}
+                      [:foo {:name "foo"}] {:id 2}
+                      [:bar {:name "bar" }] {:id 3}}
+            inserter (inserter-fn expected)]
+        (is (= (insert-table inserter table)
+               {:foobar {"foobar" [1 {:foo {"foo" [2 {}]}
+                                      :bar {"bar" [3 {}]}}]}}))
         (inserter nil nil)))))

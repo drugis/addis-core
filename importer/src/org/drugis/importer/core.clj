@@ -4,7 +4,7 @@
             [clojure.java.jdbc :as jdbc]
             [clojure.java.io :refer [as-file]]
             [org.drugis.importer.xml2sql :as x2s]
-            [org.drugis.importer.definitions :refer [namespaces-table]]
+            [org.drugis.importer.definitions :refer [namespaces-table entities-to-rdf]]
             [riveted.core :as vtd]  
             ))
 
@@ -16,8 +16,11 @@
 (defn addis-import
   [datadef db ttl]
   (let [table-def (namespaces-table (:name datadef) (:description datadef))
-        table (x2s/get-table (:data datadef) table-def)]
-    (first (:namespace (:namespaces (x2s/insert-table (x2s/jdbc-inserter db) table))))))
+        table (x2s/get-table (:data datadef) table-def)
+        namespace (first (:namespace (:namespaces (x2s/insert-table (x2s/jdbc-inserter db) table))))]
+    (entities-to-rdf (:data datadef) ttl namespace)
+    namespace
+    ))
 
 (defn -main
   [& args]

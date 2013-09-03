@@ -97,7 +97,7 @@
                    ((:each table) xml)
                    (vtd/search xml (:each table)))
         rows (into {} (map #(get-table-row % table) elements))]
-    {:table (:table table) :sql-id (:sql-id table) :rows rows}))
+    {:table (:table table) :sql-id (:sql-id table) :rows rows :post-insert (:post-insert table)}))
 
 (defn jdbc-inserter
   [db]
@@ -112,11 +112,14 @@
 
 (defn insert-table
   ([inserter table-data] (insert-table inserter table-data [[nil {}]]))
-  ([inserter {:keys [sql-id rows table]} contexts]
+  ([inserter {:keys [sql-id rows table post-insert]} contexts]
    {table (into {} (map (fn [[k v]]
-                          (let [[xml-id sql-id] (insert-row inserter table sql-id k (apply-context (:columns v) contexts))]
+                          (let [row-data (apply-context (:columns v) contexts)
+                                [xml-id sql-id] (insert-row inserter table sql-id k row-data)]
                             (loop [dt (:dependent-tables v) acc {}]
                               (if (seq dt)
                                 (recur (rest dt) (merge acc (insert-table inserter (first dt) (cons [sql-id acc] contexts))))
-                                {xml-id [sql-id acc]}))
+                                (let [inserted {xml-id [sql-id acc]} ]
+                                  (when post-insert (post-insert row-data inserted contexts))
+                                  inserted)))
                             )) rows))}))

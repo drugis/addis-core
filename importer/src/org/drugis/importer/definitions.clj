@@ -3,6 +3,7 @@
             [clojure.java.jdbc :as jdbc]
             [clojure.string :refer [join]]
             [clojure.java.io :refer [as-file]]
+            [clojure.set :refer [map-invert]]
             [org.drugis.importer.xml2sql :as x2s]
             [riveted.core :as vtd]  
             ))
@@ -26,6 +27,10 @@
   [namespace entity]
   (format "http://trials.drugis.org/namespace/%d/%s" namespace (entity-path entity)))
 
+(defn entity-ref-uri
+  [study-id entity-type entity-id]
+  (format "http://trials.drugis.org/study/%d/%s/%d" study-id entity-type entity-id))
+
 (defn tag-to-entity
   [tag]
   (merge (x2s/attrs tag) {:type (vtd/tag tag)}))
@@ -37,10 +42,6 @@
   [tag-names]
   (join "|" (map (fn [tag-name] (str "self::" tag-name)) tag-names)))
 
-(defn init-namespace
-  [db name description]
-  (:id (first (jdbc/insert! db :namespaces {:name name :description description}))))
-
 (defn snomed-uri
   [snomed-id]
   (format "http://www.ihtsdo.org/SCT_%s" snomed-id))
@@ -50,18 +51,19 @@
   (format "http://www.whocc.no/ATC2011/%s" atc-id))
 
 (defn write-ttl
-  [statements]
+  [prefixes statements]
   (let [ttl-str (fn [resource] (if (sequential? resource) (second resource) (str "\"" resource "\"")))
         write-triples
         (fn [triples]
           (let [intermediate (map (fn [[k v]] (str "  " (ttl-str k) " " (ttl-str v))) (second triples))
-                triple-str (reduce (fn [itm acc] (str acc " ;\n" itm)) intermediate)]
-            (str (ttl-str (first triples)) "\n" triple-str " .\n")))]
-    (reduce (fn [itm acc] (str acc "\n" itm)) (map write-triples statements))))
+                triple-str (join " ;\n" intermediate)]
+            (str (ttl-str (first triples)) "\n" triple-str " .\n")))
+        write-prefix (fn [[prefix uri]] (format "@prefix %s: <%s> ." (name prefix)  uri))]
+      (join "\n" (concat (map write-prefix prefixes) [""] (map write-triples statements)))))
 
 (def entity-type-map
-  {"indication" (fn [entity] (snomed-uri (:code entity)))
-   "drug" (fn [entity] (atc-uri (:atcCode entity)))})
+  {"indication" (fn [entity] (snomed-uri (get entity "code")))
+   "drug" (fn [entity] (atc-uri (get entity "atcCode")))})
 
 (defn rdf-uri
   ([uri] [:uri (str "<" uri ">")])
@@ -78,18 +80,43 @@
   [namespace entity]
   [(rdf-uri (entity-uri namespace entity))
    (concat [[(rdf-uri :rdf "type") (rdf-uri :owl "Class")]
-            [(rdf-uri :rdfs "label") (:name entity)]
-            [(rdf-uri :rdfs "comment") (:description entity)]]
+            [(rdf-uri :rdfs "label") (get entity "name")]
+            [(rdf-uri :rdfs "comment") (get entity "description")]]
            (entity-mapping entity))])
 
-(defn import-entities
-  [data db ttl namespace]
-  (let [xpath-expr (xpath-tag-or entity-types)
-        entities (map tag-to-entity (vtd/search (str "/addis-data/*[" xpath-expr "]/*") data))]
-    (spit ttl (write-ttl (map #(entity-rdf namespace %) entities)))
-    (apply (partial jdbc/insert! db :namespace_concepts [:namespace :concept_path])
-           (map (fn [entity] [namespace (entity-path entity)]) entities))))
+(def ttl-buffer (atom []))
 
+(defn append-ttl
+  [statement]
+  (swap! ttl-buffer conj statement))
+
+(defn entity-ref-rdf
+  [entity-ref entity-ref-uri entity-cls-uri]
+  [(rdf-uri entity-ref-uri)
+   [[(rdf-uri :rdf "type") (rdf-uri entity-cls-uri)]
+    [(rdf-uri :rdfs "label") (:name entity-ref)]
+    [(rdf-uri :rdfs "comment") (:description entity-ref)]]])
+
+(defn entity-ref-rdf-callback
+  [entity-type-or-fn study-resolver]
+  (fn [entity-ref inserted contexts]
+    (let [[namespace] (last (butlast contexts))
+          [xml-id [sql-id _]] (first inserted)
+          [study] (study-resolver contexts)
+          entity-type (if (fn? entity-type-or-fn) (entity-type-or-fn entity-ref) entity-type-or-fn)
+          entity-ref-uri (entity-ref-uri study entity-type sql-id)
+          entity-cls-uri (entity-uri namespace {"name" xml-id :type entity-type})]
+      (append-ttl (entity-ref-rdf entity-ref entity-ref-uri entity-cls-uri)))))
+
+(defn entities-to-rdf
+  [data ttl namespace]
+  (let [xpath-expr (xpath-tag-or entity-types)
+        nodes (vtd/search data (str "/addis-data/*[" xpath-expr "]/*"))
+        entities (map tag-to-entity nodes)
+        prefixes {:rdfs "http://www.w3.org/2000/01/rdf-schema#"
+                  :rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                  :owl "http://www.w3.org/2002/07/owl#"}]
+    (spit ttl (write-ttl prefixes (concat @ttl-buffer (map #(entity-rdf namespace %) entities))))))
 
 (defn as-int
   [x]
@@ -137,11 +164,14 @@
 (def as-source-enum (partial as-enum "study_source"))
 (def as-status-enum (partial as-enum "study_status"))
 
+(def variable-type-xml-to-sql {:populationCharacteristic "POPULATION_CHARACTERISTIC"
+                               :endpoint "ENDPOINT"
+                               :adverseEvent "ADVERSE_EVENT"})
+(def variable-type-sql-to-xml (map-invert variable-type-xml-to-sql))
+
 (def as-measurement-type (partial as-enum "measurement_type"))
 (def as-variable-type #(as-enum "variable_type"
-                                ({:populationCharacteristic "POPULATION_CHARACTERISTIC"
-                                  :endpoint "ENDPOINT"
-                                  :adverseEvent "ADVERSE_EVENT"} (keyword %))))
+                                (variable-type-xml-to-sql (keyword %))))
 (def as-epoch-offset-enum (partial as-enum "epoch_offset"))
 
 (defn as-activity-enum
@@ -191,7 +221,8 @@
    :each "./activities/studyActivity/activity/treatment/drugTreatment/drug"
    :table :drugs
    :columns {:study (x2s/parent-ref)
-             :name (x2s/value #(vtd/attr % :name))}})
+             :name (x2s/value #(vtd/attr % :name))}
+   :post-insert (entity-ref-rdf-callback "drug" first)})
 
 (def units-table
   {:xml-id (x2s/value #(vtd/attr % :name))
@@ -199,7 +230,8 @@
    :each "./activities/studyActivity/activity/treatment/drugTreatment/*/doseUnit/unit"
    :table :units
    :columns {:study (x2s/parent-ref)
-             :name (x2s/value #(vtd/attr % :name))}})
+             :name (x2s/value #(vtd/attr % :name))}
+   :post-insert (entity-ref-rdf-callback "unit" first)})
 
 (def treatment-dosings-table
   {:sql-id (juxt :treatment :planned_time)
@@ -295,7 +327,10 @@
                                              (vtd/tag (vtd/at (resolve-var-ref %) 
                                                               (str "./*[" (xpath-tag-or ["rate" "continuous" "categorical"]) "]")))))
              }
-   :dependent-tables [variable-categories-table]})
+   :dependent-tables [variable-categories-table]
+   :post-insert (entity-ref-rdf-callback (fn [entity-ref]
+                                           (name (get variable-type-sql-to-xml (.getValue (:variable_type entity-ref)))))
+                                         first)})
 
 (def measurement-attrs
   {"mean" "mean"
@@ -359,7 +394,8 @@
    :sql-id :id
    :each "./studies/study/indication"
    :table :indications
-   :columns {:name (x2s/value #(vtd/attr % :name))}})
+   :columns {:name (x2s/value #(vtd/attr % :name))}
+   :post-insert (entity-ref-rdf-callback "indication" first)})
 
 (def namespace-studies-table
   {:xml-id (x2s/value #(vtd/attr % :name))
