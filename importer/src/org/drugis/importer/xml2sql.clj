@@ -107,14 +107,12 @@
   [row-xml-id (sql-id-fn (inserter table-name columns))])
 
 (defn insert-table
-  ([inserter table-data] (insert-table inserter table-data nil {}))
-  ([inserter {:keys [sql-id rows table]} parent-id context]
+  ([inserter table-data] (insert-table inserter table-data [[nil {}]]))
+  ([inserter {:keys [sql-id rows table]} contexts]
    {table (into {} (map (fn [[k v]]
-                          (let [inserted (insert-row inserter table sql-id k (apply-context (:columns v) [[parent-id context]]))
-                                xml-id (first inserted)
-                                sql-id (second inserted)]
+                          (let [[xml-id sql-id] (insert-row inserter table sql-id k (apply-context (:columns v) contexts))]
                             (loop [dt (:dependent-tables v) acc {}]
                               (if (seq dt)
-                                (recur (rest dt) (merge acc (insert-table inserter (first dt) sql-id acc)))
+                                (recur (rest dt) (merge acc (insert-table inserter (first dt) (cons [sql-id acc] contexts))))
                                 {xml-id [sql-id acc]}))
                             )) rows))}))

@@ -213,6 +213,7 @@
                           (if (nil? table-name)
                             (is (empty? @remaining))
                             (let [rval (get @remaining [table-name columns])]
+                              ;(println "INSERTING" [table-name columns] "IN" table-name "=>" rval)
                               (is (not (nil? rval)))
                               (swap! remaining dissoc [table-name columns])
                               rval)))))]
@@ -278,4 +279,36 @@
                {:foobar {"foobar" [1 {:foo {"foo" [2 {}]}
                                       :bar {"bar" [3 {}]
                                             "qux" [4 {}]}}]}}))
+        (inserter nil nil)))
+    (testing "insert-table keeps context from upwards on the stack"
+      (let [nested-qux {:table :qux
+                        :sql-id :id
+                        :rows {"qux" {:columns {:name (fn [_] "qux")}}
+                               "qox" {:columns {:name (fn [_] "qox")}}} }
+            nested-foo {:table :foo
+                        :sql-id :id
+                        :rows {"foo" {:columns {:grand-parent (fn [contexts] (first (second contexts)))
+                                                :parent (fn [contexts] (first (first contexts)))
+                                                :qux (fn [contexts] (first (get (:qux (second (second contexts))) "qox")))
+                                                :name (fn [_] "foo")}}}}
+            nested-bar {:table :bar
+                        :sql-id :id
+                        :rows {"bar" {:columns {:parent (fn [contexts] (first (first contexts)))
+                                                :name (fn [_] "bar")}
+                                      :dependent-tables [nested-foo]}}}
+            table {:table :foobar
+                   :sql-id :id
+                   :rows {"foobar" {:columns {:name (fn [_] "foobar")}
+                                    :dependent-tables [nested-qux nested-bar]}}}
+            expected {[:foobar {:name "foobar"}] {:id 8}
+                      [:qux {:name "qux"}] {:id 5}
+                      [:qux {:name "qox"}] {:id 6}
+                      [:bar {:parent 8 :name "bar"}] {:id 2}
+                      [:foo {:grand-parent 8 :parent 2 :qux 6 :name "foo"}] {:id 3}}
+            inserter (inserter-fn expected)]
+        (is (= (insert-table inserter table)
+               {:foobar
+                {"foobar"
+                 [8 {:bar {"bar" [2 {:foo {"foo" [3 {}]}}]}
+                     :qux {"qux" [5 {}] "qox" [6 {}]}}]}}))
         (inserter nil nil)))))
