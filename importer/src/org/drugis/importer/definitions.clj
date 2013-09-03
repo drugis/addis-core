@@ -187,12 +187,13 @@
    :columns {:study (x2s/parent-ref)
              :name (x2s/value #(vtd/attr % :name))}})
 
-;(def treatments-table
-;  {:sql-id :id
-;   :each "./activity/treatment/drugTreatment"
-;   :table :treatments
-;   :columns {:activity (x2s/parent-ref)
-;             :periodicity (x2s/xpath-attr "./*/doseUnit" :perTime as-duration)}})
+(def treatments-table
+  {:sql-id :id
+   :each "./activity/treatment/drugTreatment"
+   :table :treatments
+   :columns {:activity (x2s/parent-ref)
+             :drug (x2s/sibling-ref :drugs #(vtd/attr (vtd/at % "./drug") :name) second)
+             :periodicity (x2s/xpath-attr "./*/doseUnit" :perTime as-duration)}})
 
 (def activities-table
   {:xml-id (x2s/value #(vtd/attr % :name))
@@ -202,7 +203,7 @@
    :columns {:study (x2s/parent-ref)
              :name (x2s/value #(vtd/attr % :name))
              :type (x2s/value #(as-activity-enum (vtd/at % "./activity/*")))}
-   :dependent-tables []})
+   :dependent-tables [treatments-table]})
 
 (defn when-taken-name
   [node]
