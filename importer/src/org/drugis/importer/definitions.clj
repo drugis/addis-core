@@ -161,13 +161,19 @@
              :repository (x2s/value "PubMed")}})
 
 (def arms-table
-  {:xml-id (x2s/value #(vtd/attr % :name))
+  {:xml-id (x2s/value nil)
    :sql-id :id
-   :each "./arms/arm"
+   :each "."
    :table :arms
-   :columns {:study (x2s/parent-ref) 
-             :name (x2s/value #(vtd/attr % :name))
-             :arm_size (x2s/value #(as-int (vtd/attr % :size)))}})
+   :columns {:study (x2s/parent-ref) }
+   :collapse [{:xml-id (x2s/value #(vtd/attr % :name))
+               :each "./arms/arm"
+               :columns {:name (x2s/value #(vtd/attr % :name))
+                         :arm_size (x2s/value #(as-int (vtd/attr % :size)))}}
+              {:xml-id (x2s/value nil)
+               :each "."
+               :columns {:name (x2s/value "")
+                         :arm_size (x2s/value nil)}}]})
 
 (def epochs-table
   {:xml-id (x2s/value #(vtd/attr % :name))
@@ -225,7 +231,7 @@
    :each "./usedBy"
    :table :designs
    :columns {:activity (x2s/parent-ref)
-             :arm (x2s/sibling-ref :arms #(vtd/attr % :arm) second)
+             :arm (x2s/sibling-ref :arms (fn [node] [nil (vtd/attr node :arm)]) second)
              :epoch (x2s/sibling-ref :epochs #(vtd/attr % :epoch) second)}})
 
 (def activities-table
@@ -311,7 +317,7 @@
    :table :measurements
    :columns {:study (x2s/parent-ref)
              :variable (x2s/sibling-ref :variables #(vtd/attr (vtd/at % "./studyOutcomeMeasure") :id))
-             :arm (x2s/sibling-ref :arms #(vtd/attr (vtd/at % "./arm") :name))
+             :arm (x2s/sibling-ref :arms (fn [node] [nil (vtd/attr (vtd/at node "./arm") :name)]))
              :measurement_moment (x2s/sibling-ref :measurement_moments #(when-taken-name (vtd/at % "./whenTaken")))}
    :collapse [{:xml-id (x2s/value #(vtd/attr % :name))
                :each "./categoricalMeasurement/category"
