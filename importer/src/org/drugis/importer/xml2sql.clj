@@ -98,10 +98,7 @@
                    ((:each table) xml)
                    (vtd/search xml (:each table)))
         rows (into {} (map #(get-table-row % table) elements))]
-    (into {} (filter second {:table (:table table)
-                             :sql-id (:sql-id table)
-                             :rows rows
-                             :post-insert (:post-insert table)}))))
+    (merge {:rows rows} (select-keys table [:table :sql-id :post-insert]))))
 
 (defn jdbc-inserter
   [db]
