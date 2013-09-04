@@ -13,7 +13,7 @@
   ([resolve-fn]
    (fn [node]
      (fn [contexts]
-       (let [[parent _] (resolve-fn contexts)] parent)))))
+       (let [[_ _ parent _] (resolve-fn contexts)] parent)))))
 
 (defn sibling-ref
   ([table xml-id-fn]
@@ -22,7 +22,7 @@
    (fn [node]
      (let [xml-id (xml-id-fn node)]
        (fn [contexts]
-         (let [[parent context] (resolve-fn contexts)]
+         (let [[_ _ parent context] (resolve-fn contexts)]
            (first (get-in context [table xml-id]))))))))
 
 (defn value
@@ -112,14 +112,14 @@
   [row-xml-id (sql-id-fn (inserter table-name columns))])
 
 (defn insert-table
-  ([inserter table-data] (insert-table inserter table-data [[nil {}]]))
+  ([inserter table-data] (insert-table inserter table-data []))
   ([inserter {:keys [sql-id rows table post-insert]} contexts]
    {table (into {} (map (fn [[k v]]
                           (let [row-data (apply-context (:columns v) contexts)
                                 [xml-id sql-id] (insert-row inserter table sql-id k row-data)]
                             (loop [dt (:dependent-tables v) acc {}]
                               (if (seq dt)
-                                (recur (rest dt) (merge acc (insert-table inserter (first dt) (cons [sql-id acc] contexts))))
+                                (recur (rest dt) (merge acc (insert-table inserter (first dt) (cons [table xml-id sql-id acc] contexts))))
                                 (let [inserted {xml-id [sql-id acc]} ]
                                   (when post-insert (post-insert row-data inserted contexts))
                                   inserted)))

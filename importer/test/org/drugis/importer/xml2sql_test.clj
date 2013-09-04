@@ -30,19 +30,19 @@
            (apply-context (get-column-value
              (vtd/navigator "<root><foobar>bar</foobar></root>")
              :foo
-             (xpath-text "/root/foobar")) [[nil {}]])))
+             (xpath-text "/root/foobar")) [])))
     (is (= {:foo "baz"}
            (apply-context (get-column-value
              (vtd/navigator "<root><foobar foo=\"baz\">bar</foobar></root>")
              :foo
-             (xpath-attr "/root/foobar" :foo)) [[nil {}]]))))
+             (xpath-attr "/root/foobar" :foo)) []))))
   (testing "get-column-value generates context closure where sql-id required"
     (let [rval (:foo (get-column-value
                        (vtd/navigator "<root><foobar>bar</foobar></root>")
                        :foo
                        (sibling-ref :pitty #(vtd/text (vtd/at % "/root/foobar")))))
           context {:pitty {"bar" [8 {}] "baz" [10 {}]}}]
-      (is (= 8 (rval [[nil context]]))))))
+      (is (= 8 (rval [[nil nil nil context]]))))))
 
 (deftest test-get-column-values
   (testing "get-column-values maps all columns"
@@ -50,7 +50,7 @@
            (apply-context (get-column-values
              (vtd/navigator "<root><foobar foo=\"baz\">bar</foobar></root>")
              {:foo (xpath-text "/root/foobar")
-              :fu  (xpath-attr "/root/foobar" :foo)}) [[nil {}]])))))
+              :fu  (xpath-attr "/root/foobar" :foo)}) [])))))
 
 ;(deftest test-value
 ;  (testing "xpath-text works"
@@ -64,7 +64,7 @@
                     :columns {:foo (value vtd/text)
                               :fu (value #(vtd/attr % :foo))}
                     :dependent-tables []}
-        ctx-map-row (fn [row-tpl parent context] (assoc row-tpl :columns (apply-context (:columns row-tpl) [[parent context]])))
+        ctx-map-row (fn [row-tpl parent context] (assoc row-tpl :columns (apply-context (:columns row-tpl) [[nil nil parent context]])))
         nil-map #(ctx-map-row % nil nil)
         ctx-map-rows (fn [rows-tpl parent context] (into {} (map (fn [[k v]] {k (ctx-map-row v parent context)}) rows-tpl)))
         nil-map-rows #(ctx-map-rows % nil nil)
@@ -234,11 +234,11 @@
     (testing "insert-table passes parent id to dependent-tables"
       (let [nested-foo {:table :baz
                         :sql-id :id
-                        :rows {"baz" {:columns {:parent (fn [contexts] (first (first contexts))) :name (fn [_] "baz")}}}}
+                        :rows {"baz" {:columns {:parent (fn [contexts] (nth (first contexts) 2)) :name (fn [_] "baz")}}}}
             nested-bar {:table :baz
                         :sql-id :id
-                        :rows {"baz" {:columns {:parent (fn [contexts] (first (first contexts))) :name (fn [_] "baz")}}
-                               "qux" {:columns {:parent (fn [contexts] (first (first contexts))) :name (fn [_] "qux")}}}}
+                        :rows {"baz" {:columns {:parent (fn [contexts] (nth (first contexts) 2)) :name (fn [_] "baz")}}
+                               "qux" {:columns {:parent (fn [contexts] (nth (first contexts) 2)) :name (fn [_] "qux")}}}}
             table {:table :foobar
                    :sql-id :id
                    :rows {"foo" {:columns {:name (fn [_] "foo")} :dependent-tables [nested-foo]}
@@ -257,14 +257,14 @@
     (testing "insert-table passes sibling ids to dependent-tables"
       (let [nested-foo {:table :foo
                         :sql-id :id
-                        :rows {"foo" {:columns {:parent (fn [contexts] (first (first contexts))) :name (fn [_] "foo")}}}}
+                        :rows {"foo" {:columns {:parent (fn [contexts] (nth (first contexts) 2)) :name (fn [_] "foo")}}}}
             nested-bar {:table :bar
                         :sql-id :id
-                        :rows {"bar" {:columns {:parent (fn [contexts] (first (first contexts)))
-                                                :foo (fn [contexts] (first (get-in (second (first contexts)) [:foo "foo"])))
+                        :rows {"bar" {:columns {:parent (fn [contexts] (nth (first contexts) 2))
+                                                :foo (fn [contexts] (first (get-in (nth (first contexts) 3) [:foo "foo"])))
                                                 :name (fn [_] "bar")}}
-                               "qux" {:columns {:parent (fn [contexts] (first (first contexts)))
-                                                :foo (fn [contexts] (first (get-in (second (first contexts)) [:foo "foo"])))
+                               "qux" {:columns {:parent (fn [contexts] (nth (first contexts) 2))
+                                                :foo (fn [contexts] (first (get-in (nth (first contexts) 3) [:foo "foo"])))
                                                 :name (fn [_] "qux")}}}}
             table {:table :foobar
                    :sql-id :id
@@ -286,13 +286,13 @@
                                "qox" {:columns {:name (fn [_] "qox")}}} }
             nested-foo {:table :foo
                         :sql-id :id
-                        :rows {"foo" {:columns {:grand-parent (fn [contexts] (first (second contexts)))
-                                                :parent (fn [contexts] (first (first contexts)))
-                                                :qux (fn [contexts] (first (get (:qux (second (second contexts))) "qox")))
+                        :rows {"foo" {:columns {:grand-parent (fn [contexts] (nth (second contexts) 2))
+                                                :parent (fn [contexts] (nth (first contexts) 2))
+                                                :qux (fn [contexts] (first (get (:qux (nth (second contexts) 3)) "qox")))
                                                 :name (fn [_] "foo")}}}}
             nested-bar {:table :bar
                         :sql-id :id
-                        :rows {"bar" {:columns {:parent (fn [contexts] (first (first contexts)))
+                        :rows {"bar" {:columns {:parent (fn [contexts] (nth (first contexts) 2))
                                                 :name (fn [_] "bar")}
                                       :dependent-tables [nested-foo]}}}
             table {:table :foobar
@@ -327,13 +327,13 @@
                         :rows {"foo" {:columns {:name (fn [_] "foo")}}}
                         :post-insert (fn [_ inserted contexts] 
                                        (is (= inserted {"foo" [2 {}]}))
-                                       (is (= contexts [[1 {}] [nil {}]])))}
+                                       (is (= contexts [[:foobar "foobar" 1 {}]])))}
             nested-bar {:table :bar
                         :sql-id :id
                         :rows {"bar" {:columns {:name (fn [_] "bar")}}}
                         :post-insert (fn [_ inserted contexts] 
                                        (is (= inserted {"bar" [3 {}]}))
-                                       (is (= contexts [[1 {:foo {"foo" [2 {}]}}] [nil {}]])))}
+                                       (is (= contexts [[:foobar "foobar" 1 {:foo {"foo" [2 {}]}}]])))}
             table {:table :foobar
                    :sql-id :id
                    :rows {"foobar" {:columns {:name (fn [_] "foobar")} :dependent-tables [nested-foo nested-bar]}}
@@ -341,7 +341,7 @@
                                   (is (= row-data {:name "foobar"}))
                                   (is (= inserted {"foobar" [1 {:foo {"foo" [2 {}]}
                                                                 :bar {"bar" [3 {}]}}]}))
-                                  (is (= contexts [[nil {}]])))}
+                                  (is (= contexts [])))}
             expected {[:foobar {:name "foobar"}] {:id 1}
                       [:foo {:name "foo"}] {:id 2}
                       [:bar {:name "bar" }] {:id 3}}
