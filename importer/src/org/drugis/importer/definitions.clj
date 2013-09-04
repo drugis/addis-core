@@ -1,12 +1,8 @@
 (ns org.drugis.importer.definitions
-  (:require [clojure.java.jdbc.sql :as sql]
-            [clojure.java.jdbc :as jdbc]
-            [clojure.string :refer [join]]
-            [clojure.java.io :refer [as-file]]
+  (:require [clojure.string :refer [join]]
             [clojure.set :refer [map-invert]]
             [org.drugis.importer.xml2sql :as x2s]
-            [riveted.core :as vtd]  
-            ))
+            [riveted.core :as vtd]))
 
 (defn md5
   "Generate a md5 checksum for the given string"
@@ -118,17 +114,11 @@
                   :owl "http://www.w3.org/2002/07/owl#"}]
     (spit ttl (write-ttl prefixes (concat @ttl-buffer (map #(entity-rdf namespace %) entities))))))
 
-(defn as-int
-  [x]
-  (when-not (nil? x) (Integer. x)))
+(defn as-int [x] (when-not (nil? x) (Integer. x)))
 
-(defn as-double
-  [x]
-  (when-not (nil? x) (Double. x)))
+(defn as-double [x] (when-not (nil? x) (Double. x)))
 
-(defn as-boolean
-  [x]
-  (when-not (nil? x) (Boolean. x)))
+(defn as-boolean [x] (when-not (nil? x) (Boolean. x)))
 
 (defn parse-xml-datetime
   [x]
@@ -170,8 +160,10 @@
 (def variable-type-sql-to-xml (map-invert variable-type-xml-to-sql))
 
 (def as-measurement-type (partial as-enum "measurement_type"))
+
 (def as-variable-type #(as-enum "variable_type"
                                 (variable-type-xml-to-sql (keyword %))))
+
 (def as-epoch-offset-enum (partial as-enum "epoch_offset"))
 
 (defn as-activity-enum
@@ -258,7 +250,7 @@
    :dependent-tables [treatment-dosings-table]})
 
 (def designs-table
-  {:xml-id (x2s/value (fn [node] [(vtd/attr node :arm) (vtd/attr node :epoch)])) 
+  {:xml-id (x2s/value (fn [node] [(vtd/attr node :arm) (vtd/attr node :epoch)]))
    :sql-id (juxt :arm :epoch)
    :each "./usedBy"
    :table :designs
@@ -324,7 +316,7 @@
              :is_primary (x2s/xpath-attr ".." :primary as-boolean)
              :variable_type (x2s/value #(as-variable-type (vtd/tag %)))
              :measurement_type (x2s/value #(as-measurement-type
-                                             (vtd/tag (vtd/at (resolve-var-ref %) 
+                                             (vtd/tag (vtd/at (resolve-var-ref %)
                                                               (str "./*[" (xpath-tag-or ["rate" "continuous" "categorical"]) "]")))))
              }
    :dependent-tables [variable-categories-table]

@@ -13,7 +13,7 @@
   ([resolve-fn]
    (fn [node]
      (fn [contexts]
-       (let [[parent context] (resolve-fn contexts)] parent)))))
+       (let [[parent _] (resolve-fn contexts)] parent)))))
 
 (defn sibling-ref
   ([table xml-id-fn]
@@ -70,10 +70,11 @@
 (defn- get-collapsed
   [xml table xml-id columns]
   (if (nil? table) nil
-    (let [collapsed (:rows (get-table xml table))]
-    (into {} (map
-               (fn [[nested-xml-id nested-row]]
-                 {[xml-id nested-xml-id] (update-in nested-row [:columns] merge columns)}) collapsed)))))
+      (let [collapsed (:rows (get-table xml table))]
+        (into {} (map
+                  (fn [[nested-xml-id nested-row]]
+                    {[xml-id nested-xml-id]
+                     (update-in nested-row [:columns] merge columns)}) collapsed)))))
 
 (defn get-table-row
   [xml table]

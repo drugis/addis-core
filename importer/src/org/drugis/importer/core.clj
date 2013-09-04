@@ -1,6 +1,8 @@
 (ns org.drugis.importer.core
   (:require [clojure.tools.cli :refer [cli]]
             [clojure.java.io :refer [as-file]]
+            [clojure.java.jdbc :as jdbc]
+            [clojure.java.jdbc.sql :as sql]
             [org.drugis.importer.xml2sql :as x2s]
             [org.drugis.importer.definitions :refer [namespaces-table entities-to-rdf]]
             [riveted.core :as vtd]))
