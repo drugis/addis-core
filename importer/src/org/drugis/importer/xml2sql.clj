@@ -68,10 +68,10 @@
 (declare get-table)
 
 (defn- get-collapsed
-  [xml table xml-id columns] 
+  [xml table xml-id columns]
   (if (nil? table) nil
     (let [collapsed (:rows (get-table xml table))]
-    (into {} (map 
+    (into {} (map
                (fn [[nested-xml-id nested-row]]
                  {[xml-id nested-xml-id] (update-in nested-row [:columns] merge columns)}) collapsed)))))
 
@@ -97,12 +97,15 @@
                    ((:each table) xml)
                    (vtd/search xml (:each table)))
         rows (into {} (map #(get-table-row % table) elements))]
-    {:table (:table table) :sql-id (:sql-id table) :rows rows :post-insert (:post-insert table)}))
+    (into {} (filter second {:table (:table table)
+                             :sql-id (:sql-id table)
+                             :rows rows
+                             :post-insert (:post-insert table)}))))
 
 (defn jdbc-inserter
   [db]
   (fn [table columns]
-    (try 
+    (try
     (first (jdbc/insert! db table columns :entities (sql/quoted \")))
       (catch Exception e (do (println "JDBC ERROR" columns) (throw e))))))
 
