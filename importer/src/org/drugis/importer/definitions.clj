@@ -94,15 +94,17 @@
     [(rdf-uri :rdfs "comment") (:description entity-ref)]]])
 
 (defn entity-ref-rdf-callback
-  [entity-type-or-fn study-resolver]
-  (fn [entity-ref inserted contexts]
-    (let [[namespace] (last (butlast contexts))
-          [xml-id [sql-id _]] (first inserted)
-          [study] (study-resolver contexts)
-          entity-type (if (fn? entity-type-or-fn) (entity-type-or-fn entity-ref) entity-type-or-fn)
-          entity-ref-uri (entity-ref-uri study entity-type sql-id)
-          entity-cls-uri (entity-uri namespace {"name" xml-id :type entity-type})]
-      (append-ttl (entity-ref-rdf entity-ref entity-ref-uri entity-cls-uri)))))
+  [entity-type-or-fn]
+  (let [find-namespace (x2s/parent-finder :namespaces)
+        find-study (x2s/parent-finder :studies)]
+    (fn [entity-ref inserted contexts]
+      (let [namespace (find-namespace contexts)
+            [xml-id [sql-id _]] (first inserted)
+            study (find-study contexts)
+            entity-type (if (fn? entity-type-or-fn) (entity-type-or-fn entity-ref) entity-type-or-fn)
+            entity-ref-uri (entity-ref-uri study entity-type sql-id)
+            entity-cls-uri (entity-uri namespace {"name" xml-id :type entity-type})]
+        (append-ttl (entity-ref-rdf entity-ref entity-ref-uri entity-cls-uri))))))
 
 (defn entities-to-rdf
   [data ttl namespace]
@@ -214,7 +216,7 @@
    :table :drugs
    :columns {:study (x2s/parent-ref)
              :name (x2s/value #(vtd/attr % :name))}
-   :post-insert (entity-ref-rdf-callback "drug" first)})
+   :post-insert (entity-ref-rdf-callback "drug")})
 
 (def units-table
   {:xml-id (x2s/value #(vtd/attr % :name))
@@ -223,7 +225,7 @@
    :table :units
    :columns {:study (x2s/parent-ref)
              :name (x2s/value #(vtd/attr % :name))}
-   :post-insert (entity-ref-rdf-callback "unit" first)})
+   :post-insert (entity-ref-rdf-callback "unit")})
 
 (def treatment-dosings-table
   {:sql-id (juxt :treatment :planned_time)
@@ -232,7 +234,7 @@
    :columns {:treatment (x2s/parent-ref)
              :planned_time (x2s/value (as-duration "P0D"))
              :scale_modifier (x2s/xpath-attr "./*/doseUnit" :scaleModifier)
-             :unit (x2s/sibling-ref :units #(vtd/attr (vtd/at % "./*/doseUnit/unit") :name) #(nth % 2))}
+             :unit (x2s/sibling-ref :units #(vtd/attr (vtd/at % "./*/doseUnit/unit") :name))}
    :collapse [{:each "./flexibleDose"
                :columns {:min_dose (x2s/value #(as-double (vtd/attr % :minDose)))
                          :max_dose (x2s/value #(as-double (vtd/attr % :maxDose)))}}
@@ -245,7 +247,7 @@
    :each "./activity/treatment/drugTreatment"
    :table :treatments
    :columns {:activity (x2s/parent-ref)
-             :drug (x2s/sibling-ref :drugs #(vtd/attr (vtd/at % "./drug") :name) second)
+             :drug (x2s/sibling-ref :drugs #(vtd/attr (vtd/at % "./drug") :name))
              :periodicity (x2s/xpath-attr "./*/doseUnit" :perTime as-duration)}
    :dependent-tables [treatment-dosings-table]})
 
@@ -255,8 +257,8 @@
    :each "./usedBy"
    :table :designs
    :columns {:activity (x2s/parent-ref)
-             :arm (x2s/sibling-ref :arms (fn [node] [nil (vtd/attr node :arm)]) second)
-             :epoch (x2s/sibling-ref :epochs #(vtd/attr % :epoch) second)}})
+             :arm (x2s/sibling-ref :arms (fn [node] [nil (vtd/attr node :arm)]))
+             :epoch (x2s/sibling-ref :epochs #(vtd/attr % :epoch))}})
 
 (def activities-table
   {:xml-id (x2s/value #(vtd/attr % :name))
@@ -321,8 +323,7 @@
              }
    :dependent-tables [variable-categories-table]
    :post-insert (entity-ref-rdf-callback (fn [entity-ref]
-                                           (name (get variable-type-sql-to-xml (.getValue (:variable_type entity-ref)))))
-                                         first)})
+                                           (name (get variable-type-sql-to-xml (.getValue (:variable_type entity-ref))))))})
 
 (def measurement-attrs
   {"mean" "mean"
@@ -387,7 +388,7 @@
    :each "./studies/study/indication"
    :table :indications
    :columns {:name (x2s/value #(vtd/attr % :name))}
-   :post-insert (entity-ref-rdf-callback "indication" first)})
+   :post-insert (entity-ref-rdf-callback "indication")})
 
 (def namespace-studies-table
   {:xml-id (x2s/value #(vtd/attr % :name))

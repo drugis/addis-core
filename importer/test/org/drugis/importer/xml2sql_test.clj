@@ -234,11 +234,11 @@
     (testing "insert-table passes parent id to dependent-tables"
       (let [nested-foo {:table :baz
                         :sql-id :id
-                        :rows {"baz" {:columns {:parent (fn [contexts] (nth (first contexts) 2)) :name (fn [_] "baz")}}}}
+                        :rows {"baz" {:columns {:parent (parent-finder) :name (fn [_] "baz")}}}}
             nested-bar {:table :baz
                         :sql-id :id
-                        :rows {"baz" {:columns {:parent (fn [contexts] (nth (first contexts) 2)) :name (fn [_] "baz")}}
-                               "qux" {:columns {:parent (fn [contexts] (nth (first contexts) 2)) :name (fn [_] "qux")}}}}
+                        :rows {"baz" {:columns {:parent (parent-finder) :name (fn [_] "baz")}}
+                               "qux" {:columns {:parent (parent-finder) :name (fn [_] "qux")}}}}
             table {:table :foobar
                    :sql-id :id
                    :rows {"foo" {:columns {:name (fn [_] "foo")} :dependent-tables [nested-foo]}
@@ -257,14 +257,14 @@
     (testing "insert-table passes sibling ids to dependent-tables"
       (let [nested-foo {:table :foo
                         :sql-id :id
-                        :rows {"foo" {:columns {:parent (fn [contexts] (nth (first contexts) 2)) :name (fn [_] "foo")}}}}
+                        :rows {"foo" {:columns {:parent (parent-finder) :name (fn [_] "foo")}}}}
             nested-bar {:table :bar
                         :sql-id :id
-                        :rows {"bar" {:columns {:parent (fn [contexts] (nth (first contexts) 2))
-                                                :foo (fn [contexts] (first (get-in (nth (first contexts) 3) [:foo "foo"])))
+                        :rows {"bar" {:columns {:parent (parent-finder)
+                                                :foo (sibling-finder :foo "foo")
                                                 :name (fn [_] "bar")}}
-                               "qux" {:columns {:parent (fn [contexts] (nth (first contexts) 2))
-                                                :foo (fn [contexts] (first (get-in (nth (first contexts) 3) [:foo "foo"])))
+                               "qux" {:columns {:parent (parent-finder)
+                                                :foo (sibling-finder :foo "foo")
                                                 :name (fn [_] "qux")}}}}
             table {:table :foobar
                    :sql-id :id
@@ -286,13 +286,13 @@
                                "qox" {:columns {:name (fn [_] "qox")}}} }
             nested-foo {:table :foo
                         :sql-id :id
-                        :rows {"foo" {:columns {:grand-parent (fn [contexts] (nth (second contexts) 2))
-                                                :parent (fn [contexts] (nth (first contexts) 2))
+                        :rows {"foo" {:columns {:grand-parent (parent-finder :foobar)
+                                                :parent (parent-finder)
                                                 :qux (fn [contexts] (first (get (:qux (nth (second contexts) 3)) "qox")))
                                                 :name (fn [_] "foo")}}}}
             nested-bar {:table :bar
                         :sql-id :id
-                        :rows {"bar" {:columns {:parent (fn [contexts] (nth (first contexts) 2))
+                        :rows {"bar" {:columns {:parent (parent-finder)
                                                 :name (fn [_] "bar")}
                                       :dependent-tables [nested-foo]}}}
             table {:table :foobar

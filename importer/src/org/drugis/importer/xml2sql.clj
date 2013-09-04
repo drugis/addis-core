@@ -7,23 +7,28 @@
 
 (defn attrs [node] (into {} (map (fn [attr] {(vtd/tag attr) (attr-value attr)}) (vtd/search node "./@*"))))
 
+(defn parent-finder
+  ([] (fn [contexts] (nth (first contexts) 2)))
+  ([table-name] (fn [contexts] (nth (some #(if (= table-name (first %)) %) contexts) 2))))
+
 (defn parent-ref
   ([]
-   (parent-ref first))
-  ([resolve-fn]
-   (fn [node]
-     (fn [contexts]
-       (let [[_ _ parent _] (resolve-fn contexts)] parent)))))
+   (parent-ref nil))
+  ([table-name]
+   (let [find-parent (if (nil? table-name) (parent-finder) (parent-finder table-name))]
+     (fn [node] find-parent))))
+
+(defn sibling-finder
+  [table-name xml-id]
+  (fn [contexts]
+    (let [table (some #(get (nth % 3) table-name) contexts)]
+      (first (get table xml-id)))))
 
 (defn sibling-ref
   ([table xml-id-fn]
-   (sibling-ref table xml-id-fn first))
-  ([table xml-id-fn resolve-fn]
    (fn [node]
      (let [xml-id (xml-id-fn node)]
-       (fn [contexts]
-         (let [[_ _ parent context] (resolve-fn contexts)]
-           (first (get-in context [table xml-id]))))))))
+       (sibling-finder table xml-id)))))
 
 (defn value
   [val-or-fn]
