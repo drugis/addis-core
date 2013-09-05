@@ -1,9 +1,8 @@
 (ns org.drugis.importer.xml2sql_test
   (:require [clojure.test :refer :all]
-            [clojure.java.io :as io]
             [org.drugis.importer.xml2sql :refer :all]
-            [riveted.core :as vtd]  
-            ))
+            [org.drugis.importer.xml2sql_mock :refer [mockInserter]]
+            [riveted.core :as vtd]))
 
 (deftest test-xpath-parent
   (testing "xpath can go back up the tree"
@@ -186,51 +185,7 @@
                                   :dependent-tables []} 
                 ["foobar" "x"] {:columns {:tag "foobar" :attr "x" :value "3"}
                                   :dependent-tables []}}
-               table))))
-    (testing "get-table-row returns multiple rows for :collapse"
-      (let [table-def {:xml-id (value vtd/tag)
-                       :sql-id :id
-                       :each "/root/*"
-                       :table :root
-                       :columns {:tag (value vtd/tag)}
-                       :collapse [{:xml-id (value vtd/tag)
-                                   :each "@*"
-                                   :columns {:attr (value vtd/tag)
-                                             :value (value attr-value)}}]}
-            table (nil-map-rows (get-table-row
-                        (vtd/at (vtd/navigator "<root><foobar foo=\"baz\" bar=\"qux\"/></root>") "/root/*")
-                        table-def))]
-        (is (= {["foobar" "foo"] {:columns {:tag "foobar" :attr "foo" :value "baz"}
-                                  :dependent-tables []}
-                ["foobar" "bar"] {:columns {:tag "foobar" :attr "bar" :value "qux"}
-                                  :dependent-tables []}}
                table))))))
-
-(defprotocol IMockInserter
-  (insert-record [this table columns])
-  (insert [this table rows])
-  (verify [this]))
-
-(defrecord MockInserter
-  [remaining]
-  IMockInserter
-  (insert-record
-    [this table-name columns]
-    (let [rval (get @(get this :remaining) [table-name columns])]
-      ;(println "INSERTING" columns "IN" table-name "=>" rval)
-      (is (not (nil? rval)))
-      (swap! (get this :remaining) dissoc [table-name columns])
-      rval))
-  (insert
-    [this table-name rows]
-    (map (partial insert-record this table-name) rows))
-  (verify [this] 
-    (is (empty? @(get this :remaining)))))
-
-(defn mockInserter
-  [expected]
-  (let [mock (MockInserter. (atom expected))]
-    [(fn [table rows] (insert mock table rows)) (fn [] (verify mock))]))
 
 (deftest test-insert-table
     (testing "insert-row returns xml->sql id map"

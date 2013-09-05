@@ -130,3 +130,9 @@
                                   (when post-insert (post-insert row-data inserted contexts))
                                   inserted)))
                             )) rows))}))
+
+
+(defn xml->sql
+  [xml table-def inserter]
+  (let [table (get-table xml table-def)]
+    (insert-table inserter table)))
