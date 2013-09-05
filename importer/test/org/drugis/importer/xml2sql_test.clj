@@ -206,22 +206,39 @@
                                   :dependent-tables []}}
                table))))))
 
+(defprotocol IMockInserter
+  (insert-record [this table columns])
+  (insert [this table rows])
+  (verify [this]))
+
+(defrecord MockInserter
+  [remaining]
+  IMockInserter
+  (insert-record
+    [this table-name columns]
+    (let [rval (get @(get this :remaining) [table-name columns])]
+      ;(println "INSERTING" columns "IN" table-name "=>" rval)
+      (is (not (nil? rval)))
+      (swap! (get this :remaining) dissoc [table-name columns])
+      rval))
+  (insert
+    [this table-name rows]
+    (map (partial insert-record this table-name) rows))
+  (verify [this] 
+    (is (empty? @(get this :remaining)))))
+
+(defn mockInserter
+  [expected]
+  (let [mock (MockInserter. (atom expected))]
+    [(fn [table rows] (insert mock table rows)) (fn [] (verify mock))]))
+
 (deftest test-insert-table
-  (let [inserter-fn (fn [expected]
-                      (let [remaining (atom expected)]
-                        (fn [table-name columns]
-                          (if (nil? table-name)
-                            (is (empty? @remaining))
-                            (let [rval (get @remaining [table-name columns])]
-                              ;(println "INSERTING" [table-name columns] "IN" table-name "=>" rval)
-                              (is (not (nil? rval)))
-                              (swap! remaining dissoc [table-name columns])
-                              rval)))))]
     (testing "insert-row returns xml->sql id map"
       (let [columns {:name "foo"}
             expected {[:foobar {:name "foo"}] {:id 1}}
-            inserter (inserter-fn expected)]
-        (is (= (insert-row inserter :foobar :id "foo" columns) ["foo" 1]))))
+            [inserter verify] (mockInserter expected)]
+        (is (= (insert-row inserter :foobar :id "foo" columns) ["foo" 1]))
+        (verify)))
     (testing "A simple insert-table returns xml->sql id map"
       (let [table {:table :foobar
                    :sql-id :id
@@ -229,8 +246,9 @@
                           "bar" {:columns {:name (fn [_] "bar")} :dependent-tables []}}}
             expected {[:foobar {:name "foo"}] {:id 1}
                       [:foobar {:name "bar"}] {:id 2}}
-            inserter (inserter-fn expected)]
-        (is (= (insert-table inserter table) {:foobar {"foo" [1 {}] "bar" [2 {}]}}))))
+            [inserter verify] (mockInserter expected)]
+        (is (= (insert-table inserter table) {:foobar {"foo" [1 {}] "bar" [2 {}]}}))
+        (verify)))
     (testing "insert-table passes parent id to dependent-tables"
       (let [nested-foo {:table :baz
                         :sql-id :id
@@ -248,12 +266,12 @@
                       [:baz {:parent 1 :name "baz"}] {:id 3}
                       [:baz {:parent 2 :name "baz"}] {:id 4}
                       [:baz {:parent 2 :name "qux"}] {:id 5}}
-            inserter (inserter-fn expected)]
+            [inserter verify] (mockInserter expected)]
         (is (= (insert-table inserter table)
                {:foobar {"foo" [1 {:baz {"baz" [3 {}]}}]
                          "bar" [2 {:baz {"baz" [4 {}]
                                          "qux" [5 {}]}}]}}))
-        (inserter nil nil)))
+        (verify)))
     (testing "insert-table passes sibling ids to dependent-tables"
       (let [nested-foo {:table :foo
                         :sql-id :id
@@ -273,12 +291,12 @@
                       [:foo {:parent 1 :name "foo"}] {:id 2}
                       [:bar {:parent 1 :foo 2 :name "bar" }] {:id 3}
                       [:bar {:parent 1 :foo 2 :name "qux" }] {:id 4}}
-            inserter (inserter-fn expected)]
+            [inserter verify] (mockInserter expected)]
         (is (= (insert-table inserter table)
                {:foobar {"foobar" [1 {:foo {"foo" [2 {}]}
                                       :bar {"bar" [3 {}]
                                             "qux" [4 {}]}}]}}))
-        (inserter nil nil)))
+        (verify)))
     (testing "insert-table keeps context from upwards on the stack"
       (let [nested-qux {:table :qux
                         :sql-id :id
@@ -304,13 +322,13 @@
                       [:qux {:name "qox"}] {:id 6}
                       [:bar {:parent 8 :name "bar"}] {:id 2}
                       [:foo {:grand-parent 8 :parent 2 :qux 6 :name "foo"}] {:id 3}}
-            inserter (inserter-fn expected)]
+            [inserter verify] (mockInserter expected)]
         (is (= (insert-table inserter table)
                {:foobar
                 {"foobar"
                  [8 {:bar {"bar" [2 {:foo {"foo" [3 {}]}}]}
                      :qux {"qux" [5 {}] "qox" [6 {}]}}]}}))
-        (inserter nil nil)))
+        (verify)))
     (testing "insert-table calls post-insert"
       (let [called (atom false)
             table {:table :foobar
@@ -318,7 +336,7 @@
                    :rows {"foo" {:columns {:name (fn [_] "foo")} :dependent-tables []}}
                    :post-insert (fn [_ inserted _]  (reset! called true) (is (= inserted {"foo" [1 {}]})))}
             expected {[:foobar {:name "foo"}] {:id 1}}
-            inserter (inserter-fn expected)]
+            [inserter verify] (mockInserter expected)]
         (is (= (insert-table inserter table) {:foobar {"foo" [1 {}]}}))
         (is @called)))
     (testing "insert-table passes the context to post-insert"
@@ -345,8 +363,8 @@
             expected {[:foobar {:name "foobar"}] {:id 1}
                       [:foo {:name "foo"}] {:id 2}
                       [:bar {:name "bar" }] {:id 3}}
-            inserter (inserter-fn expected)]
+            [inserter verify] (mockInserter expected)]
         (is (= (insert-table inserter table)
                {:foobar {"foobar" [1 {:foo {"foo" [2 {}]}
                                       :bar {"bar" [3 {}]}}]}}))
-        (inserter nil nil)))))
+        (verify))))

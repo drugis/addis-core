@@ -107,14 +107,15 @@
 
 (defn jdbc-inserter
   [db]
-  (fn [table columns]
+  (fn [table rows]
+    (assert (vector? rows))
     (try
-    (first (jdbc/insert! db table columns :entities (sql/quoted \")))
-      (catch Exception e (do (println "JDBC ERROR" columns) (throw e))))))
+      (apply jdbc/insert! db table (conj rows :entities (sql/quoted \")))
+      (catch Exception e (do (println "JDBC ERROR" rows) (throw e))))))
 
 (defn insert-row
   [inserter table-name sql-id-fn row-xml-id columns]
-  [row-xml-id (sql-id-fn (inserter table-name columns))])
+  [row-xml-id (sql-id-fn (first (inserter table-name [columns])))])
 
 (defn insert-table
   ([inserter table-data] (insert-table inserter table-data []))
