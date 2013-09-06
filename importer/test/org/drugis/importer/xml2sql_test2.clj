@@ -238,7 +238,7 @@
                    :collapse [{:xml-id (x2s/value vtd/tag)
                                :each "@*"
                                :columns {:attr (x2s/value vtd/tag)
-                                         :value (x2s/value x2s/attr-value)}}]}
+                                         :value (x2s/value vtd/text)}}]}
         xml (vtd/navigator "<root><foobar foo=\"baz\" bar=\"qux\"/><foobaz bar=\"qox\"/></root>")
         expected {[:root {:tag "foobar" :attr "foo" :value "baz"}] {:id 3}
                   [:root {:tag "foobar" :attr "bar" :value "qux"}] {:id 4}
@@ -258,7 +258,7 @@
                    :collapse [{:xml-id (x2s/value vtd/tag)
                                :each "@*"
                                :columns {:attr (x2s/value vtd/tag)
-                                         :value (x2s/value x2s/attr-value)}}
+                                         :value (x2s/value vtd/text)}}
                               {:xml-id (x2s/value vtd/tag)
                                :each "./*"
                                :columns {:attr (x2s/value vtd/tag)

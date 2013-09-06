@@ -155,7 +155,7 @@
                        :collapse [{:xml-id (value vtd/tag)
                                    :each "@*"
                                    :columns {:attr (value vtd/tag)
-                                             :value (value attr-value)}}]}
+                                             :value (value vtd/text)}}]}
             node (vtd/at (vtd/navigator"<root><foobar foo=\"baz\" bar=\"qux\"/></root>") "/root/*")
             table (nil-map-rows (get-table-row node table-def))]
         (is (= {["foobar" "foo"] {:columns {:tag "foobar" :attr "foo" :value "baz"}
@@ -172,7 +172,7 @@
                        :collapse [{:xml-id (value vtd/tag)
                                    :each "@*"
                                    :columns {:attr (value vtd/tag)
-                                             :value (value attr-value)}}
+                                             :value (value vtd/text)}}
                                   {:xml-id (value vtd/tag)
                                    :each "./*"
                                    :columns {:attr (value vtd/tag)

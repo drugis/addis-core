@@ -3,9 +3,7 @@
             [clojure.java.jdbc :as jdbc]
             [riveted.core :as vtd]))
 
-(defn attr-value [node] (vtd/attr node (vtd/tag node)))
-
-(defn attrs [node] (into {} (map (fn [attr] {(vtd/tag attr) (attr-value attr)}) (vtd/search node "./@*"))))
+(defn attrs [node] (into {} (map (fn [attr] {(vtd/tag attr) (vtd/text attr)}) (vtd/search node "./@*"))))
 
 (defn parent-finder
   ([] (fn [contexts] (nth (first contexts) 2)))

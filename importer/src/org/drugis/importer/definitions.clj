@@ -355,8 +355,8 @@
               {:xml-id (x2s/value vtd/tag)
                :each (str "./*[" (xpath-tag-or ["continuousMeasurement" "rateMeasurement"]) "]/@*")
                :columns {:attribute (x2s/value (fn [tag] (get measurement-attrs (vtd/tag tag))))
-                         :integer_value (x2s/value (fn [tag] (if (in? integer-attrs (vtd/tag tag)) (as-int (x2s/attr-value tag)) nil)))
-                         :real_value (x2s/value (fn [tag] (if (in? real-attrs (vtd/tag tag)) (as-double (x2s/attr-value tag)) nil)))
+                         :integer_value (x2s/value (fn [tag] (if (in? integer-attrs (vtd/tag tag)) (as-int (vtd/text tag)) nil)))
+                         :real_value (x2s/value (fn [tag] (if (in? real-attrs (vtd/tag tag)) (as-double (vtd/text tag)) nil)))
                          }}]})
 
 (def studies-table
