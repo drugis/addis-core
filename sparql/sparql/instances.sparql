@@ -1,0 +1,24 @@
+# Count trialverse instances of SNOMED term
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX snomed: <http://www.ihtsdo.org/>
+
+SELECT COUNT(?uri) WHERE {
+  GRAPH <http://trials.drugis.org/namespaces/> {
+    ?g rdf:type <http://trials.drugis.org/namespace> .
+  }
+  GRAPH ?g {
+     ?uri rdf:type ?namespaceConcept .
+     ?uri rdfs:label ?label .
+     ?namespaceConcept owl:sameAs ?concept .
+  }
+  GRAPH <http://www.ihtsdo.org/SNOMEDCT/> {
+    { ?concept rdfs:subClassOf{0} snomed:SCT_310497006 . } # Exact matches of severe depression
+    UNION
+    { ?concept rdfs:subClassOf* snomed:SCT_38341003 . } # Transitive matches of hypertensive disorder
+    ?concept rdfs:subClassOf+ snomed:SCT_64572001 . # IS A disease
+    MINUS { ?concept rdfs:subClassOf+ snomed:SCT_127326005 } # NOT IS A non-human disease
+  }
+}
+
