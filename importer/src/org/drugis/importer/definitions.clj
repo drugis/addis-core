@@ -359,6 +359,15 @@
                          :real_value (x2s/value (fn [tag] (if (in? real-attrs (vtd/tag tag)) (as-double (vtd/text tag)) nil)))
                          }}]})
 
+(def indications-table
+  {:xml-id (x2s/value #(vtd/attr % :name))
+   :sql-id :id
+   :each "indication"
+   :table :indications
+   :columns {:study (x2s/parent-ref)
+             :name (x2s/value #(vtd/attr % :name))}
+   :post-insert (entity-ref-rdf-callback "indication")})
+
 (def studies-table
   {:xml-id (x2s/value #(vtd/attr % :name))
    :sql-id :id
@@ -366,7 +375,6 @@
    :table :studies
    :columns {:name (x2s/value #(vtd/attr % :name))
              :title (x2s/xpath-text "./characteristics/title/value")
-             :indication (x2s/sibling-ref :indications #(vtd/attr % :name))
              :objective (x2s/xpath-text "./characteristics/objective/value")
              :allocation (x2s/xpath-text "./characteristics/allocation/value" as-allocation-enum)
              :blinding (x2s/xpath-text "./characteristics/blinding/value" as-blinding-enum)
@@ -378,17 +386,9 @@
              :status (x2s/xpath-text "./characteristics/status/value" as-status-enum)
              :start_date (x2s/xpath-text "./characteristics/study_start/value" as-date)
              :end_date (x2s/xpath-text "./characteristics/study_end/value" as-date)}
-   :dependent-tables [drugs-table units-table references-table
+   :dependent-tables [indications-table drugs-table units-table references-table
                       arms-table epochs-table activities-table
                       measurement-moments-table variables-table measurements-table]})
-
-(def indications-table
-  {:xml-id (x2s/value #(vtd/attr (vtd/at % "..") :name))
-   :sql-id :id
-   :each "./studies/study/indication"
-   :table :indications
-   :columns {:name (x2s/value #(vtd/attr % :name))}
-   :post-insert (entity-ref-rdf-callback "indication")})
 
 (def namespace-studies-table
   {:xml-id (x2s/value #(vtd/attr % :name))
@@ -414,4 +414,4 @@
    :table :namespaces
    :columns {:name (x2s/value name)
              :description (x2s/value description)}
-   :dependent-tables [namespace-concepts-table indications-table studies-table namespace-studies-table]})
+   :dependent-tables [namespace-concepts-table studies-table namespace-studies-table]})

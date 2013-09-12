@@ -7,19 +7,11 @@ CREATE TYPE measurement_type as ENUM ('CONTINUOUS', 'RATE', 'CATEGORICAL');
 CREATE TYPE variable_type as ENUM ('POPULATION_CHARACTERISTIC', 'ENDPOINT', 'ADVERSE_EVENT');
 CREATE TYPE epoch_offset as ENUM ('FROM_EPOCH_START', 'BEFORE_EPOCH_END');
 
-CREATE TABLE "indications" (
-  "id" bigserial,
-  "name" varchar NOT NULL,
-  "description" text,
-  PRIMARY KEY ("id")
-);
-
 CREATE TABLE "studies" (
   "metadata" hstore,
   "id" bigserial,
   "name" varchar NOT NULL,
   "title" text,
-  "indication" bigint REFERENCES indications (id),
   "objective" text,
   "allocation" allocation_type,
   "blinding" blinding_type,
@@ -38,9 +30,16 @@ CREATE TABLE "studies" (
   PRIMARY KEY ("id")
 );
 CREATE INDEX ON "studies" ("name");
-CREATE INDEX ON "studies" ("indication");
 
 CREATE TABLE "units" (
+  "id" bigserial,
+  "study" bigint REFERENCES studies ("id"),
+  "name" varchar NOT NULL,
+  "description" text,
+  PRIMARY KEY ("id")
+);
+
+CREATE TABLE "indications" (
   "id" bigserial,
   "study" bigint REFERENCES studies ("id"),
   "name" varchar NOT NULL,
