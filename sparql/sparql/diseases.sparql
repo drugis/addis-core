@@ -6,7 +6,7 @@ PREFIX snomed: <http://www.ihtsdo.org/>
 
 SELECT * WHERE {
   GRAPH <http://www.ihtsdo.org/SNOMEDCT/> {
-    ?disease rdfs:subClassOf snomed:SCT_64572001 .
-    ?disease rdfs:label ?label .
+    ?uri rdfs:subClassOf snomed:SCT_64572001 .
+    ?uri rdfs:label ?label .
   }
 }

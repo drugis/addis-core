@@ -1,20 +1,65 @@
-<h2>Define indication</h2>
+<div class="row">
+  <div class="columns large-12"> 
+    <h2>Define indication</h2>
 
-<label>Search SNOMED human diseases: <input type="text" ng-model="searchString"></input></label>
-<input type="button" value="Query" ng-click="query()"></input>
+    <label>Search SNOMED human diseases: <input type="text" ng-model="searchString"></input></label>
+    <input type="button" value="Query" ng-click="query()"></input>
 
+    <div class="row">
+      <h4>Selected</h4>
+      <ul class="no-bullet">
+        <li ng-repeat="term in selected">
+          <select class="large-2">
+            <option>Any subterm of</option>
+            <option>Exactly</option>
+          </select>
+          {{term.label.value}}
+          <a class="button tiny alert radius" href="" ng-click="remove(term)">X</a>
+        </li>
+      </ul>
+    </div>
 
-<h2>Debug</h2>
+    <div class="row">
+      <div class="columns large-12">
+        <div class="row">
+          <div class="columns large-4">
+            <h4>Broader</h4>
+            <ul>
+              <li ng-repeat="term in broader"><a href="" ng-click="setCurrent(term)">{{term.label.value}}</a></li>
+            </ul>
+          </div>
+          <div class="columns large-4">
+            <h4>Terms</h4>
+            <ul>
+              <li ng-repeat="term in terms">
+                <a ng-class="{active: (term == clicked)}" href="" ng-click="getAdjacent(term)">{{term.label.value}}</a>
+                <a class="button tiny success radius" href="" ng-click="add(term)">+</a>
+               </li>
+            </ul>
+          </div>
+          <div class="columns large-4">
+            <h4>Narrower</h4>
+            <ul>
+              <li ng-repeat="term in narrower"><a href="" ng-click="setCurrent(term)">{{term.label.value}}</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<textarea cols="80" rows="15" ng-model="sparql" readonly></textarea>
+    <h2>Debug</h2>
 
-<table>
-	<tr>
-		<th>Disease URI</th>
-		<th>Disease Label</th>
-	</tr>
-	<tr ng-repeat="entry in data">
-		<td>{{entry.disease.value}}</td>
-		<td>{{entry.label.value}}</td>
-	</tr>
-</table>
+    <textarea style="height: 300px" ng-model="sparql" readonly></textarea>
+
+    <table>
+      <tr>
+        <th>Disease URI</th>
+        <th>Disease Label</th>
+      </tr>
+      <tr ng-repeat="entry in data">
+        <td>{{entry.uri.value}}</td>
+        <td>{{entry.label.value}}</td>
+      </tr>
+    </table>
+  </div>
+</div>
