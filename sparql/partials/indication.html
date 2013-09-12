@@ -1,0 +1,20 @@
+<h2>Define indication</h2>
+
+<label>Search SNOMED human diseases: <input type="text" ng-model="searchString"></input></label>
+<input type="button" value="Query" ng-click="query()"></input>
+
+
+<h2>Debug</h2>
+
+<textarea cols="80" rows="15" ng-model="sparql" readonly></textarea>
+
+<table>
+	<tr>
+		<th>Disease URI</th>
+		<th>Disease Label</th>
+	</tr>
+	<tr ng-repeat="entry in data">
+		<td>{{entry.disease.value}}</td>
+		<td>{{entry.label.value}}</td>
+	</tr>
+</table>

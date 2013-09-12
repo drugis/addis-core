@@ -1,0 +1,16 @@
+# First 10 SNOMED CT disease terms that match a regex
+# and are not non-human disease
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX snomed: <http://www.ihtsdo.org/>
+PREFIX text: <http://jena.apache.org/text#>
+
+SELECT * WHERE {
+  GRAPH <http://www.ihtsdo.org/SNOMEDCT/> {
+    ?disease text:query (rdfs:label "<%= query %>") .
+    ?disease rdfs:subClassOf+ snomed:SCT_64572001 . # IS A disease
+    ?disease rdfs:label ?label .
+    MINUS { ?disease rdfs:subClassOf+ snomed:SCT_127326005 } # NOT IS A non-human disease
+  }
+} LIMIT 10
