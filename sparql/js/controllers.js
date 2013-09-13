@@ -98,14 +98,17 @@ controller('IndicationController', ['$scope', '$injector', function($scope, $inj
   var restrictions = {
     'snomed-human-diseases' : {
       label: 'SNOMED human diseases',
+	  labelUri: 'rdfs:label',
       graph: '<http://www.ihtsdo.org/SNOMEDCT/>',
-      sparql: '?uri rdfs:subClassOf+ snomed:SCT_64572001 . # IS A disease\n' +
+      sparql: '?uri rdfs:label ?label .\n' +
+	          '?uri rdfs:subClassOf+ snomed:SCT_64572001 . # IS A disease\n' +
               'MINUS { ?uri rdfs:subClassOf+ snomed:SCT_127326005 } # NOT IS A non-human disease'
     },
     'drugis-indications' : {
       label: 'drugis.org indications',
+	  labelUri: 'rdfs:label',
       graph: '?g',
-      sparql: '?uri rdfs:subClassOf <http://trials.drugis.org/indication> .',
+      sparql: '?uri rdfs:subClassOf <http://trials.drugis.org/indication>  ;\n rdfs:label ?label .',
       graphQuery: 'GRAPH <http://trials.drugis.org/namespaces/> {\n' +
                   '  ?g rdf:type <http://trials.drugis.org/namespace> .\n' +
                   '}'
@@ -120,13 +123,15 @@ controller('DrugController', ['$scope', '$injector', function($scope, $injector)
   var restrictions = {
     'atc' : {
       label: 'ATC classification',
+	  labelUri: 'rdfs:label',
       graph: '<http://www.whocc.no/ATC2011/>',
-      sparql: '?uri rdfs:subClassOf+ atc:ATCCode .'
+      sparql: '?uri rdfs:subClassOf+ atc:ATCCode ;\n rdfs:label ?label .'
     },
     'drugis-drugs' : {
       label: 'drugis.org drugs',
+	  labelUri: 'rdfs:label',
       graph: '?g',
-      sparql: '?uri rdfs:subClassOf <http://trials.drugis.org/drug> .',
+      sparql: '?uri rdfs:subClassOf <http://trials.drugis.org/drug> ;\n rdfs:label ?label .',
       graphQuery: 'GRAPH <http://trials.drugis.org/namespaces/> { ' +
                   '?g rdf:type <http://trials.drugis.org/namespace> .' +
                   ' }'
@@ -139,10 +144,17 @@ controller('DrugController', ['$scope', '$injector', function($scope, $injector)
 }]).
 controller('AdverseEventController', ['$scope', '$injector', function($scope, $injector) {
   var restrictions = {
+    'medra' : {
+      label: 'MedDRA adverse events',
+	  labelUri: 'skos:prefLabel',
+      graph: '<http://purl.bioontology.org/ontology/MDR/>',
+      sparql: '?uri skos:prefLabel ?label .'
+    },
     'drugis-adverseEvents' : {
       label: 'drugis.org adverse events',
+	  labelUri: 'rdfs:label',
       graph: '?g',
-      sparql: '?uri rdfs:subClassOf <http://trials.drugis.org/adverseEvent> .',
+      sparql: '?uri rdfs:subClassOf <http://trials.drugis.org/adverseEvent> ;\n rdfs:label ?label .',
       graphQuery: 'GRAPH <http://trials.drugis.org/namespaces/> { ' +
                   '?g rdf:type <http://trials.drugis.org/namespace> .' +
                   ' }'
@@ -157,6 +169,7 @@ controller('EndpointController', ['$scope', '$injector', function($scope, $injec
   var restrictions = {
     'drugis-endpoints' : {
       label: 'drugis.org endpoints',
+	  labelUri: 'rdfs:label',
       graph: '?g',
       sparql: '?uri rdfs:subClassOf <http://trials.drugis.org/endpoint> .',
       graphQuery: 'GRAPH <http://trials.drugis.org/namespaces/> { ' +
