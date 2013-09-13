@@ -10,9 +10,7 @@
               <label class="right inline">Search</label>
             </div>
             <div class="large-3 columns">
-              <select ng-model="source">
-                <option value="snomed-human-diseases">SNOMED human diseases</option>
-                <option value="drugis-indications">drugis.org indications</option>
+              <select ng-model="source" ng-options="x.label for (key, x) in restrictions">
               </select>
             </div>
             <div class="large-7 columns">

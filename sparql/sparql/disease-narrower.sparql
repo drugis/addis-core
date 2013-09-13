@@ -3,12 +3,13 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX owl:  <http://www.w3.org/2002/07/owl#>
 PREFIX snomed: <http://www.ihtsdo.org/>
+PREFIX atc: <http://www.whocc.no/ATC2011/>
 
 SELECT * WHERE {
-  GRAPH <http://www.ihtsdo.org/SNOMEDCT/> {
+  <%= restrict.graphQuery %>
+  GRAPH <%= restrict.graph %> {
     ?uri rdfs:subClassOf <<%= uri %>> .
-    ?uri rdfs:subClassOf+ snomed:SCT_64572001 . # IS A disease
     ?uri rdfs:label ?label .
-    MINUS { ?uri rdfs:subClassOf+ snomed:SCT_127326005 } # NOT IS A non-human disease
+    <%= restrict.sparql %>
   }
 } LIMIT 10

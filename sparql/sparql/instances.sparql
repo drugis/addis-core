@@ -3,6 +3,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX owl:  <http://www.w3.org/2002/07/owl#>
 PREFIX snomed: <http://www.ihtsdo.org/>
+PREFIX atc: <http://www.whocc.no/ATC2011/>
 
 SELECT (COUNT(DISTINCT ?instance) AS ?count) WHERE {
   GRAPH <http://trials.drugis.org/namespaces/> {
