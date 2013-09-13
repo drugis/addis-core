@@ -2,20 +2,24 @@
   <div class="columns large-12"> 
     <h2>Define indication</h2>
 
-    <label>Search SNOMED human diseases: <input type="text" ng-model="searchString"></input></label>
-    <input type="button" value="Query" ng-click="query()"></input>
+    <form>
+      <label>Search SNOMED human diseases: <input type="text" ng-model="searchString"></input></label>
+      <input type="submit" value="Query" ng-click="query()"></input>
+    </form>
 
     <div class="row">
       <h4>Selected</h4>
+      <input type="button" value="Count" ng-click="count()"></input>
+      <span ng-bind="termCount"></span>
       <ul class="no-bullet">
         <li ng-repeat="term in selected">
-          <select class="large-2">
-            <option>Any subterm of</option>
-            <option>Exactly</option>
+          <select ng-model="term.transitive" class="large-2">
+            <option value="transitive">Any subterm of</option>
+            <option value="exact">Exactly</option>
           </select>
-          {{term.label.value}}
+          {{term.label}}
           <a class="button tiny alert radius" href="" ng-click="remove(term)">X</a>
-          {{term.uri.value}}
+          {{term.uri}} {{term.transitive}}
         </li>
       </ul>
     </div>
@@ -26,14 +30,14 @@
           <div class="columns large-4">
             <h4>Broader</h4>
             <ul>
-              <li ng-repeat="term in broader"><a href="" ng-click="setCurrent(term)">{{term.label.value}}</a></li>
+              <li ng-repeat="term in broader"><a href="" ng-click="setCurrent(term)">{{term.label}}</a></li>
             </ul>
           </div>
           <div class="columns large-4">
             <h4>Terms</h4>
             <ul>
               <li ng-repeat="term in terms">
-                <a ng-class="{active: (term == clicked)}" href="" ng-click="getAdjacent(term)">{{term.label.value}}</a>
+                <a ng-class="{active: (term == clicked)}" href="" ng-click="getAdjacent(term)">{{term.label}}</a>
                 <a class="button tiny success radius" href="" ng-click="add(term)">+</a>
                </li>
             </ul>
@@ -41,7 +45,7 @@
           <div class="columns large-4">
             <h4>Narrower</h4>
             <ul>
-              <li ng-repeat="term in narrower"><a href="" ng-click="setCurrent(term)">{{term.label.value}}</a></li>
+              <li ng-repeat="term in narrower"><a href="" ng-click="setCurrent(term)">{{term.label}}</a></li>
             </ul>
           </div>
         </div>
@@ -58,8 +62,8 @@
         <th>Disease Label</th>
       </tr>
       <tr ng-repeat="entry in data">
-        <td>{{entry.uri.value}}</td>
-        <td>{{entry.label.value}}</td>
+        <td>{{entry.uri}}</td>
+        <td>{{entry.label}}</td>
       </tr>
     </table>
   </div>
