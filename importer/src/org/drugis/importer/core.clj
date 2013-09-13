@@ -23,14 +23,16 @@
              ["-d" "--database" "JDBC connection URI for the db"]
              ["-f" "--file" "ADDIS 1.x file"]
              ["-n" "--name" "Dataset short name"]
-             ["-t" "--title" "Dataset description" :default "ADDIS data import"])]
+             ["-t" "--title" "Dataset description" :default "ADDIS data import"]
+             ["-r" "--rdf" "RDF (turtle) file" :default "out.ttl"]
+             )]
     (when (or (:help options) (some nil? ((juxt :file :database :name :title) options)))
       (println banner)
       (System/exit 0))
     (let
         [data (vtd/navigator (slurp (as-file (options :file))))
          db {:connection-uri (str "jdbc:" (options :database))}
-         ttl (as-file "out.ttl")]
+         ttl (as-file (:rdf options))]
       (jdbc/db-transaction* db
                             (fn [db]
                               (let [namespace

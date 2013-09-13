@@ -1,1 +1,1 @@
-lein run --database "postgresql://localhost?user=trialverse&password=develop" --file "../dbms/data/hypertensionExample.addis" --name "Edarbi EPAR" --title "Hypertension dataset based on the Edarbi EPAR"
+lein run --database "postgresql://localhost?user=trialverse&password=develop" --rdf "hypertension.ttl" --file "../dbms/data/hypertensionExample.addis" --name "Edarbi EPAR" --title "Hypertension dataset based on the Edarbi EPAR"
