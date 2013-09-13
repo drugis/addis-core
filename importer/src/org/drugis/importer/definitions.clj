@@ -77,7 +77,8 @@
   [(rdf-uri (entity-uri namespace entity))
    (concat [[(rdf-uri :rdf "type") (rdf-uri :owl "Class")]
             [(rdf-uri :rdfs "label") (get entity "name")]
-            [(rdf-uri :rdfs "comment") (get entity "description")]]
+            [(rdf-uri :rdfs "comment") (get entity "description")]
+            [(rdf-uri :rdfs "subClassOf") (rdf-uri (str "http://trials.drugis.org/" (:type entity)))]]
            (entity-mapping entity))])
 
 (def ttl-buffer (atom []))
