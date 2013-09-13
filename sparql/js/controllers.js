@@ -5,7 +5,23 @@
 angular.module('myApp.controllers', []).
 controller('IndicationController', ['$scope', 'SparqlService', function($scope, $sparql) {
   $scope.selected = [];
-  $scope.searchString = "cardio*";
+  $scope.searchString = 'cardio*';
+  $scope.source = 'snomed-human-diseases';
+
+  var restrictions = {
+    'snomed-human-diseases' : {
+      graph: '<http://www.ihtsdo.org/SNOMEDCT/>',
+      sparql: '?uri rdfs:subClassOf+ snomed:SCT_64572001 . # IS A disease\n' +
+        'MINUS { ?uri rdfs:subClassOf+ snomed:SCT_127326005 } # NOT IS A non-human disease'
+    },
+    'drugis-indications' : {
+      graph: '?g',
+      sparql: '?uri rdfs:subClassOf <http://trials.drugis.org/indication> .',
+      graphQuery: 'GRAPH <http://trials.drugis.org/namespaces/> {\n' +
+        '  ?g rdf:type <http://trials.drugis.org/namespace> .\n' +
+        '}'
+    }
+  };
 
   var extractValues = function(result) {
     var bindings = result.data.results.bindings;
@@ -17,7 +33,7 @@ controller('IndicationController', ['$scope', 'SparqlService', function($scope, 
   };
 
   $scope.query = function() {
-    $sparql.query('disease-search', { query: $scope.searchString }).then(
+    $sparql.query('disease-search', { query: $scope.searchString, restrict: restrictions[$scope.source] }).then(
       function(result) {
         $scope.data = extractValues(result);
         $scope.terms = $scope.data;
@@ -34,7 +50,7 @@ controller('IndicationController', ['$scope', 'SparqlService', function($scope, 
   };
 
   $scope.count = function() {
-    $sparql.query('instances', { terms : $scope.selected }).then(
+    $sparql.query('instances', { terms : $scope.selected, restrict: restrictions[$scope.source] }).then(
       function(result) {
         $scope.termCount = extractValues(result)[0].count;
         $scope.sparql = result.query;
@@ -60,8 +76,8 @@ controller('IndicationController', ['$scope', 'SparqlService', function($scope, 
     var errorFn = function(result) {
       $scope.sparql = result.query;
     };
-    var broader = $sparql.query("disease-broader", { uri: uri }).then(resultsFn("broader"), errorFn);
-    var narrower = $sparql.query("disease-narrower", { uri: uri }).then(resultsFn("narrower"), errorFn);
+    var broader = $sparql.query('disease-broader', { uri: uri }).then(resultsFn('broader'), errorFn);
+    var narrower = $sparql.query('disease-narrower', { uri: uri }).then(resultsFn('narrower'), errorFn);
   };
 
   $scope.setCurrent = function(term) {
@@ -72,7 +88,7 @@ controller('IndicationController', ['$scope', 'SparqlService', function($scope, 
   $scope.add = function(term) {
     if (!_.find($scope.selected, function(obj) { return obj.uri === term.uri; })) {
       var t = _.clone(term);
-      t.transitive = "exact";
+      t.transitive = 'exact';
       $scope.selected.push(t);
     }
   };

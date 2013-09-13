@@ -1,16 +1,33 @@
 <div class="row">
-  <div class="columns large-12"> 
+  <div class="columns large-12">
     <h2>Define indication</h2>
 
     <form>
-      <label>Search SNOMED human diseases: <input type="text" ng-model="searchString"></input></label>
-      <input type="submit" value="Query" ng-click="query()"></input>
+      <div class="row">
+        <div class="large-12 columns">
+          <div class="row">
+            <div class="large-1 columns">
+              <label class="right inline">Search</label>
+            </div>
+            <div class="large-3 columns">
+              <select ng-model="source">
+                <option value="snomed-human-diseases">SNOMED human diseases</option>
+                <option value="drugis-indications">drugis.org indications</option>
+              </select>
+            </div>
+            <div class="large-7 columns">
+              <input type="text" ng-model="searchString"></input>
+            </div>
+            <div class="large-1 columns">
+              <input class="button postfix" type="submit" value="Query" ng-click="query()"></input>
+            </div>
+          </div>
+        </div>
+      </div>
     </form>
 
     <div class="row">
       <h4>Selected</h4>
-      <input type="button" value="Count" ng-click="count()"></input>
-      <span ng-bind="termCount"></span>
       <ul class="no-bullet">
         <li ng-repeat="term in selected">
           <select ng-model="term.transitive" class="large-2">
@@ -19,9 +36,10 @@
           </select>
           {{term.label}}
           <a class="button tiny alert radius" href="" ng-click="remove(term)">X</a>
-          {{term.uri}} {{term.transitive}}
         </li>
       </ul>
+      <input type="button" value="Count instances in TrialVerse" ng-disabled="!selected.length" ng-click="count()"></input>
+      <span ng-bind="termCount"></span>
     </div>
 
     <div class="row">
@@ -66,5 +84,6 @@
         <td>{{entry.label}}</td>
       </tr>
     </table>
+
   </div>
 </div>
