@@ -13,6 +13,7 @@ SELECT ?uri ?label WHERE {
   <%= restrict.graphQuery %>
   GRAPH <%= restrict.graph %> {
     ?uri text:query (<%= restrict.labelUri %> "<%= query %>") .
+	?uri <%= restrict.labelUri %> ?label .
     <%= restrict.sparql %>
   }
 } LIMIT 10
