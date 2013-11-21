@@ -150,7 +150,19 @@ And the Fuseki server is started as follows:
 This enables a special `text:query` predicate that allows us to perform text
 searches using the Lucene query language within SPARQL, e.g.:
 
-    ?o text:query (rdfs:label 'cardio*')
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+    PREFIX snomed: <http://www.ihtsdo.org/>
+    PREFIX text:    <http://jena.apache.org/text#> 
+
+    SELECT * WHERE {
+      GRAPH <http://www.ihtsdo.org/SNOMEDCT/> {
+        ?uri rdfs:subClassOf snomed:SCT_64572001 .
+        ?uri text:query (rdfs:label 'Fistula*') .
+        ?uri rdfs:label ?label .
+      }
+    }
 
 The text index currently has some shortcomings:
 
