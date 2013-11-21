@@ -56,14 +56,14 @@ of Fuseki (1.0.0-20130909.201554-20) for reasons that will be made clear
 below. Jena is installed under its own user on our workstations rather than
 in a virtual machine, to maximize the memory available (our machines have
 only 4GB memory - for now). The following lines in the `.profile` enable the
-Jena and Fuseki command line tools:
+Jena and Fuseki command line tools (**NB: update versions to the ones you download**):
 
-    export JENA_HOME=$HOME/apache-jena-2.10.1
-    export FUSEKI_HOME=$HOME/jena-fuseki-1.0.0-20130909.201554-20
+    export JENA_HOME=$HOME/apache-jena-2.11.0
+    export FUSEKI_HOME=$HOME/jena-fuseki-1.0.1-SNAPSHOT
     export PATH=$FUSEKI_HOME:$JENA_HOME/bin:$PATH
 
 The most important tool from the Jena distribution is `tdbloader`, which
-enables us to load large RDF files to named graphs in bulk:
+enables us to load large RDF files to named graphs in bulk (**NB: will not work without a `file.rdf`**):
 
     tdbloader --loc DB --graph URI file.rdf
 
@@ -191,3 +191,5 @@ Conclusion
     "Large Triple Stores"
 [jena-text]: http://jena.apache.org/documentation/query/text-query.html
     "Text searches with SPARQL"
+[umls2rdf]: https://github.com/ncbo/umls2rdf
+    "Take the MYSQL Unified Medical Language System (UMLS) database to convert the ontologies to RDF using OWL and SKOS as main schemas."
