@@ -82,58 +82,8 @@ need an index to improve performance of text matching queries. Our search
 initially led us to LARQ, which is being replaced by [jena-text][jena-text]
 as of Jena 2.10.2 (i.e. the *next* release of Jena). Luckily, a pre-release
 version of Fuseki is available that supports jena-text with Lucene indexing.
-To enable text indexing, a custom Jena assembler definition `desc.ttl` is
-needed:
-
-    @prefix fuseki:  <http://jena.apache.org/fuseki#> .
-    @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-    @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
-    @prefix tdb:     <http://jena.hpl.hp.com/2008/tdb#> .
-    @prefix ja:      <http://jena.hpl.hp.com/2005/11/Assembler#> .
-    @prefix text:    <http://jena.apache.org/text#> .
-
-    # TDB
-    [] ja:loadClass "com.hp.hpl.jena.tdb.TDB" .
-    tdb:DatasetTDB rdfs:subClassOf ja:RDFDataset .
-    tdb:GraphTDB   rdfs:subClassOf ja:Model .
-
-    # Lucene Text Index
-    [] ja:loadClass "org.apache.jena.query.text.TextQuery" .
-    text:TextDataset     rdfs:subClassOf ja:RDFDataset .
-    text:TextIndexLucene rdfs:subClassOf text:TextIndex .
-
-    [] rdf:type fuseki:Server ;
-      fuseki:services (
-        <#service_full>
-      ).
-
-    <#service_full> rdf:type fuseki:Service ;
-      rdfs:label                         "TDB Service (RW)" ;
-      fuseki:name                        "ds" ;
-      fuseki:serviceQuery                "query" ;
-      fuseki:serviceQuery                "sparql" ;
-      fuseki:serviceUpdate               "update" ;
-      fuseki:serviceUpload               "upload" ;
-      fuseki:serviceReadWriteGraphStore  "data" ;
-      fuseki:serviceReadGraphStore       "get" ;
-      fuseki:dataset                      <#text_dataset> .
-
-    <#text_dataset> rdf:type text:TextDataset ;
-      text:dataset [
-        rdf:type     tdb:DatasetTDB ;
-        tdb:location "DB" ; ] ;
-      text:index     <#index_lucene> .
-
-    <#index_lucene> a text:TextIndexLucene ;
-      text:directory <file:DBLucene> ;
-      text:entityMap <#entity_map> .
-
-    <#entity_map> a text:EntityMap ;
-        text:entityField      "uri" ;
-        text:defaultField     "text" ;
-        text:map (
-          [ text:field "text" ; text:predicate rdfs:label ]
-        ) .
+To enable text indexing, a custom Jena assembler definition [desc.ttl](desc.ttl) is
+needed.
 
 This loads the TDB storage mechanism as well as the text indexing
 capabilities. Then, it defines a Fuseki service that exposes a text-indexed
