@@ -173,12 +173,13 @@ FIXME: some questions raised about output ontology, availability of more canonic
 Importing ADDIS datasets
 ------------------------
 
-The `org.drugis.importer` Clojure project allows the importing of ADDIS datasets into a `.ttl` file. The importer checks for each item whether there is a known code system to which it is mapped, for example ACT for drugs. If there is, a mapping between the item and the encoded concept is added. 
+The `org.drugis.importer` Clojure project allows the importing of ADDIS datasets into a PostgreSQL database, and exporting of metadata to a `.ttl` file. The importer checks for each item whether there is a known code system to which it is mapped, for example ATC for drugs. If there is, a mapping between the item and the encoded concept is added. 
 
-Example command line for importing a specific dataset (assumes [leiningen][leiningen] is installed and PostgreSQL is set up):
-```lein run --database "postgresql://localhost?user=<user>&password=<passwd>" --rdf "depression.ttl" --file "example.addis" --name "example dataset" --title "example title"```
+Example command line for importing a specific dataset (assumes [leiningen][leiningen] is installed and an [initialised trialverse PostgreSQL database][../dbms] is set up):
+```lein run --database "postgresql://localhost?user=<user>&password=<passwd>"\\
+ --rdf "depression.ttl" --file "example.addis" --name "example dataset" --title "example title"```
 
-By convention each ADDIS dataset should be loaded into its own graph labeled `http://trials.drugis.org/namespaces/<number>/`, where '<number>' is the id (chosen arbitrarily) of the imported dataset.
+By convention each ADDIS dataset should be loaded into its own graph labeled `http://trials.drugis.org/namespaces/<number>/`, where '<number>' is the id given by the importer.
 
 Querying
 --------
