@@ -196,7 +196,7 @@ Querying
 Web Frontend
 ------------
 
-Once an instance of fuseki is running with loaded data, it can be accessed via our [SPARQL frontend](../sparql). To run this, navigate to the sparql directory and execute `python -m SimpleHTTPServer 3000`. Now the frontend is available at http://localhost:3000/.
+Once an instance of fuseki is running with loaded data, it can be accessed via our [SPARQL frontend](../sparql). To run this, navigate to the sparql directory and execute `python -m SimpleHTTPServer 3000`. Now the frontend is available at [http://localhost:3000/].
 
 Conclusion
 ----------
