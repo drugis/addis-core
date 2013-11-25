@@ -140,7 +140,6 @@ we performed the following steps:
  4. Load both sets into a graph named `http://www.ihtsdo.org/SNOMEDCT/`. Example commands:
 
         tdbloader --loc DB --graph=http://www.ihtsdo.org/SNOMEDCT/ snomed.rdf
-
         tdbloader --loc DB --graph=http://www.ihtsdo.org/SNOMEDCT/ snomed-inferred.ttl
 
 ### ATC classification
@@ -193,6 +192,11 @@ Querying
 ### Finding concepts ###
 
 ### Finding instances ###
+
+Web Frontend
+------------
+
+Once an instance of fuseki is running with loaded data, it can be accessed via our [SPARQL frontend](../sparql). To run this, navigate to the sparql directory and execute `python -m SimpleHTTPServer 3000`. Now the frontend is available at http://localhost:3000/.
 
 Conclusion
 ----------
