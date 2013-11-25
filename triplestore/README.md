@@ -138,7 +138,9 @@ we performed the following steps:
  3. Use [Protege][protege] and the [Hermit][hermit] reasoner to classify SNOMED CT and export the inferred relationships.
 
  4. Load both sets into a graph named `http://www.ihtsdo.org/SNOMEDCT/`. Example commands:
-    tdbloader --loc DB --graph=http://www.ihtsdo.org/SNOMEDCT/ snomed.rdf 
+
+    tdbloader --loc DB --graph=http://www.ihtsdo.org/SNOMEDCT/ snomed.rdf
+
     tdbloader --loc DB --graph=http://www.ihtsdo.org/SNOMEDCT/ snomed-inferred.ttl
 
 ### ATC classification
@@ -171,6 +173,13 @@ FIXME: some questions raised about output ontology, availability of more canonic
 Importing ADDIS datasets
 ------------------------
 
+The `org.drugis.importer` Clojure project allows the importing of ADDIS datasets into a `.ttl` file. The importer checks for each item whether there is a known code system to which it is mapped, for example ACT for drugs. If there is, a mapping between the item and the encoded concept is added. 
+
+Example command line for importing a specific dataset (assumes [leiningen][leiningen] is installed and PostgreSQL is set up):
+```lein run --database "postgresql://localhost?user=<user>&password=<passwd>" --rdf "depression.ttl" --file "example.addis" --name "example dataset" --title "example title"```
+
+By convention each ADDIS dataset should be loaded into its own graph labeled `http://trials.drugis.org/namespaces/<number>/`, where '<number>' is the id (chosen arbitrarily) of the imported dataset.
+
 Querying
 --------
 
@@ -182,7 +191,7 @@ Conclusion
 ----------
 
 [architecture]: http://drugis.org/files/20130319-addis2-architecture.pdf
-	"ADDIS 2.x Requirements and Architecture"
+    "ADDIS 2.x Requirements and Architecture"
 [semanticweb]: http://www.w3.org/2001/sw/
     "W3C Semantic Web Activity Homepage"
 [large]: http://www.w3.org/wiki/LargeTripleStores
@@ -195,3 +204,5 @@ Conclusion
     "Reasoner for ontologies"
 [umls2rdf]: https://github.com/ncbo/umls2rdf
     "Take the MYSQL Unified Medical Language System (UMLS) database to convert the ontologies to RDF using OWL and SKOS as main schemas."
+[leiningen]: https://github.com/technomancy/leiningen
+    "Tool for running Clojure programs"
