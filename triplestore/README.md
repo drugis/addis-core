@@ -61,11 +61,13 @@ Jena and Fuseki command line tools (**NB: update versions to the ones you downlo
     export PATH=$FUSEKI_HOME:$JENA_HOME/bin:$PATH
 
 The most important tool from the Jena distribution is `tdbloader`, which
-enables us to load large RDF files to named graphs in bulk (**NB: will not work without a `file.rdf`**):
+enables us to load large RDF files to named graphs in bulk.
 
-    tdbloader --loc DB --graph URI file.rdf
+    tdbloader --loc DB --graph=URI file.rdf
 
-This will create the `DB` directory and initialize a new triple store if one doesn't exist. Otherwise, the existing triple store at that location will be updated. A SPARQL-update and SPARQL-HTTP enabled endpoint can be run using Fuseki as follows:
+Replace 'URI' with the URI of the graph to load the data into, and 'file.rdf' with the file you want to load. Note that .ttl files can also be loaded. This will create the `DB` directory and initialize a new triple store if one doesn't exist. Otherwise, the existing triple store at that location will be updated. 
+
+A SPARQL-update and SPARQL-HTTP enabled endpoint can be run using Fuseki as follows:
 
     fuseki-server --loc DB --update /ds
 
@@ -135,7 +137,9 @@ we performed the following steps:
 
  3. Use [Protege][protege] and the [Hermit][hermit] reasoner to classify SNOMED CT and export the inferred relationships.
 
- 4. Load both sets into a graph named `http://www.ihtsdo.org/SNOMEDCT/`.
+ 4. Load both sets into a graph named `http://www.ihtsdo.org/SNOMEDCT/`. Example commands:
+    tdbloader --loc DB --graph=http://www.ihtsdo.org/SNOMEDCT/ snomed.rdf 
+    tdbloader --loc DB --graph=http://www.ihtsdo.org/SNOMEDCT/ snomed-inferred.ttl
 
 ### ATC classification
 
