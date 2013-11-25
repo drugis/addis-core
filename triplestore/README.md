@@ -139,9 +139,9 @@ we performed the following steps:
 
  4. Load both sets into a graph named `http://www.ihtsdo.org/SNOMEDCT/`. Example commands:
 
-    tdbloader --loc DB --graph=http://www.ihtsdo.org/SNOMEDCT/ snomed.rdf
+        tdbloader --loc DB --graph=http://www.ihtsdo.org/SNOMEDCT/ snomed.rdf
 
-    tdbloader --loc DB --graph=http://www.ihtsdo.org/SNOMEDCT/ snomed-inferred.ttl
+        tdbloader --loc DB --graph=http://www.ihtsdo.org/SNOMEDCT/ snomed-inferred.ttl
 
 ### ATC classification
 
@@ -176,6 +176,7 @@ Importing ADDIS datasets
 The `org.drugis.importer` Clojure project allows the importing of ADDIS datasets into a PostgreSQL database, and exporting of metadata to a `.ttl` file. The importer checks for each item whether there is a known code system to which it is mapped, for example ATC for drugs. If there is, a mapping between the item and the encoded concept is added. 
 
 Example command line for importing a specific dataset (assumes [leiningen][leiningen] is installed and an [initialised trialverse PostgreSQL database](../dbms) is set up):
+
     lein run --database "postgresql://localhost?user=<user>&password=<passwd>"\\
     --rdf "depression.ttl" --file "example.addis" --name "example dataset" --title "example title"
 
