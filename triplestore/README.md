@@ -51,9 +51,7 @@ various services (SPARQL update, reasoning, etc.). The W3C comparison of
 sets of triples than Sesame, which had been tested only up to 70M triples,
 a limit easily exceeded by our use cases.
 
-We run the latest release (2.10.1) of Apache Jena and a pre-release snapshot
-of Fuseki (1.0.0-20130909.201554-20) for reasons that will be made clear
-below. Jena is installed under its own user on our workstations rather than
+Jena is installed under its own user on our workstations rather than
 in a virtual machine, to maximize the memory available (our machines have
 only 4GB memory - for now). The following lines in the `.profile` enable the
 Jena and Fuseki command line tools (**NB: update versions to the ones you download**):
@@ -78,11 +76,7 @@ Such a Fuseki instance easily serves the terminologies we're interested in.
 However, many of our use cases require some form of text matching. This is
 supported in SPARQL using the `regex()` function. However, on our full triple
 store, queries involving `regex()` can often take many minutes. Therefore, we
-need an index to improve performance of text matching queries. Our search
-initially led us to LARQ, which is being replaced by [jena-text][jena-text]
-as of Jena 2.10.2 (i.e. the *next* release of Jena). Luckily, a pre-release
-version of Fuseki is available that supports jena-text with Lucene indexing.
-To enable text indexing, a custom Jena assembler definition [desc.ttl](desc.ttl) is
+need an index to improve performance of text matching queries. To enable text indexing, a custom Jena assembler definition [desc.ttl](desc.ttl) is
 needed.
 
 This loads the TDB storage mechanism as well as the text indexing
@@ -139,9 +133,9 @@ we performed the following steps:
 
  2. Convert the stated relationships to RDF using the supplied Perl script.
 
- 3. Use Protege and the Hermit reasoner to classify SNOMED CT and export the inferred relationships.
+ 3. Use [Protege][protege] and the [Hermit][hermit] reasoner to classify SNOMED CT and export the inferred relationships.
 
- 4. Load both sets into the graph `http://www.ihtsdo.org/SNOMEDCT/`.
+ 4. Load both sets into a graph named `http://www.ihtsdo.org/SNOMEDCT/`.
 
 ### ATC classification
 
@@ -191,5 +185,9 @@ Conclusion
     "Large Triple Stores"
 [jena-text]: http://jena.apache.org/documentation/query/text-query.html
     "Text searches with SPARQL"
+[protege]: http://protege.stanford.edu/
+    "Ontology editor and knowledge-base framework"
+[hermit]: http://hermit-reasoner.com/
+    "Reasoner for ontologies"
 [umls2rdf]: https://github.com/ncbo/umls2rdf
     "Take the MYSQL Unified Medical Language System (UMLS) database to convert the ontologies to RDF using OWL and SKOS as main schemas."
