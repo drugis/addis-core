@@ -177,8 +177,11 @@ The `org.drugis.importer` Clojure project allows the importing of ADDIS datasets
 
 Example command line for importing a specific dataset (assumes [leiningen][leiningen] is installed and an [initialised trialverse PostgreSQL database](../dbms) is set up):
 
-    lein run --database "postgresql://localhost?user=<user>&password=<passwd>"\\
-    --rdf "depression.ttl" --file "example.addis" --name "example dataset" --title "example title"
+    lein run --database "postgresql://localhost?user=<user>&password=<passwd>" \\
+             --rdf "depression.ttl" \\
+             --file "example.addis" \\
+             --name "example dataset" \\
+             --title "example title"
 
 By convention each ADDIS dataset should be loaded into its own graph labeled `http://trials.drugis.org/namespaces/<number>/`, where '<number>' is the id given by the importer.
 
