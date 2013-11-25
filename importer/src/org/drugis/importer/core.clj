@@ -4,7 +4,7 @@
             [clojure.java.jdbc :as jdbc]
             [clojure.java.jdbc.sql :as sql]
             [org.drugis.importer.xml2sql :as x2s]
-            [org.drugis.importer.definitions :refer [namespaces-table entities-to-rdf]]
+            [org.drugis.importer.definitions :refer [write-ttl rdf-uri namespaces-table entities-to-rdf]]
             [riveted.core :as vtd]))
 
 (defn addis-import
@@ -38,6 +38,11 @@
                               (let [namespace
                                     (addis-import {:data data
                                                    :name (options :name)
-                                                   :description (options :title)} db ttl)]
-                                (println "namespace_id" namespace)
-                                ))))))
+                                                   :description (options :title)} db ttl)
+                                    prefixes {:rdfs "http://www.w3.org/2000/01/rdf-schema#"
+                                              :rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                                              }]
+                                (println (write-ttl prefixes [[(rdf-uri (str "http://trials.drugis.org/namespaces/" namespace "/"))
+  [[(rdf-uri :rdf "type") (rdf-uri "http://trials.drugis.org/namespace")]
+   [(rdf-uri :rdfs "label") (options :name)]
+   [(rdf-uri :rdfs "comment") (options :title)]]]]))))))))
