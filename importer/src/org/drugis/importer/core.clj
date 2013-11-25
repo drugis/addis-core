@@ -40,9 +40,4 @@
                                                    :name (options :name)
                                                    :description (options :title)} db ttl)]
                                 (println "namespace_id" namespace)
-                                (println (jdbc/query db (sql/select "COUNT(*) AS entity_count" :namespace_concepts (sql/where {:namespace namespace}))))
-                                (println (jdbc/query db
-                                                     (sql/select [:id :name] :studies
-                                                                 (sql/join :namespace_studies {:studies.id :namespace_studies.study})
-                                                                 (sql/where {:namespace_studies.namespace namespace})
-                                                                 (sql/order-by :studies.name))))))))))
+                                ))))))
