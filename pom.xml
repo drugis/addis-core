@@ -7,11 +7,10 @@
   <version>0.1-SNAPSHOT</version>
   <name>ADDIS Core</name>
   <properties>
-    <org.springframework.social-version>1.0.3.RELEASE</org.springframework.social-version>
-    <org.springframework.social-config-version>1.1.0.M3</org.springframework.social-config-version>
+    <org.springframework.social-version>1.1.0.BUILD-SNAPSHOT</org.springframework.social-version>
     <spring-social-google-version>1.0.0.M3</spring-social-google-version>
     <org.springframework-version>3.2.6.RELEASE</org.springframework-version>
-    <org.springframework.security-version>3.2.0.RELEASE</org.springframework.security-version>
+    <org.springframework.security-version>3.2.0.RC1</org.springframework.security-version>
     <jackson.version>1.9.13</jackson.version>
     <java-version>1.7</java-version>
 
@@ -39,6 +38,11 @@
       <version>${org.springframework.security-version}</version>
     </dependency>
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>${org.springframework-version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.social</groupId>
       <artifactId>spring-social-core</artifactId>
       <version>${org.springframework.social-version}</version>
@@ -51,12 +55,17 @@
     <dependency>
       <groupId>org.springframework.social</groupId>
       <artifactId>spring-social-config</artifactId>
-      <version>${org.springframework.social-config-version}</version>
+      <version>${org.springframework.social-version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.social</groupId>
       <artifactId>spring-social-security</artifactId>
-      <version>${org.springframework.social-config-version}</version>
+      <version>${org.springframework.social-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+      <version>${org.springframework-version}</version>
     </dependency>
 
     <!-- TESTING -->
@@ -86,6 +95,16 @@
       <version>2.2.1</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>javax.servlet.jsp.jstl</groupId>
+      <artifactId>jstl-api</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
 
     <!-- Jackson (Json)-->
     <dependency>
@@ -110,6 +129,14 @@
       <url>http://repo.springsource.org/release</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+    <!-- For testing against latest Spring snapshots -->
+    <repository>
+      <id>org.springframework.maven.snapshot</id>
+      <name>Spring Maven Snapshot Repository</name>
+      <url>http://repo.springsource.org/snapshot</url>
+      <releases><enabled>false</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
     </repository>
     <!-- For developing against latest Spring milestones -->
     <repository>
