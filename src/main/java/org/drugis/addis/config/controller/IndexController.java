@@ -1,4 +1,4 @@
-package org.drugis.addis.config.controlller;
+package org.drugis.addis.config.controller;
 
 /*
  * Copyright 2013 the original author or authors.
