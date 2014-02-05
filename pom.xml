@@ -184,9 +184,9 @@
           <path>/</path>
           <systemProperties>
             <ADDIS_CORE_DB_DRIVER>${env.ADDIS_CORE_DB_DRIVER}</ADDIS_CORE_DB_DRIVER>
-            <ADDIS_CORE_DB_URL>${env.ADDIS_CORE_DB_DRIVER}</ADDIS_CORE_DB_URL>
-            <ADDIS_CORE_DB_USERNAME>${env.ADDIS_CORE_DB_DRIVER}</ADDIS_CORE_DB_USERNAME>
-            <ADDIS_CORE_DB_PASSWORD>${env.ADDIS_CORE_DB_DRIVER}</ADDIS_CORE_DB_PASSWORD>
+            <ADDIS_CORE_DB_URL>${env.ADDIS_CORE_DB_URL}</ADDIS_CORE_DB_URL>
+            <ADDIS_CORE_DB_USERNAME>${env.ADDIS_CORE_DB_USERNAME}</ADDIS_CORE_DB_USERNAME>
+            <ADDIS_CORE_DB_PASSWORD>${env.ADDIS_CORE_DB_PASSWORD}</ADDIS_CORE_DB_PASSWORD>
           </systemProperties>
         </configuration>
       </plugin>
