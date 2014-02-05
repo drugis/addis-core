@@ -19,7 +19,7 @@
 <!--[if gt IE 8]><!-->
 <link rel="stylesheet" href="<c:url value="/app/css/addis-drugis.css" />">
 <!--<![endif]-->
-<script type="text/javascript" src="<c:url value="/app/js/bower_components/foundation/js/vendor/custom.modernizr.js" />"></script>
+<script type="text/javascript" src="<c:url value="/app/js/bower_components/foundation/js/vendor/modernizr.js" />"></script>
 <script type="text/javascript" src="<c:url value="/app/js/bower_components/bowser/bowser.min.js" />"></script>
 
 </head>
