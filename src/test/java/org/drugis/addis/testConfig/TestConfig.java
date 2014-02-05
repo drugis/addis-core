@@ -1,4 +1,4 @@
-package org.drugis.addis.config;
+package org.drugis.addis.testConfig;
 
 import org.drugis.addis.security.repository.AccountRepository;
 import org.mockito.Mockito;
