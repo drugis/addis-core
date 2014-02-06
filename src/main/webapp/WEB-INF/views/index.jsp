@@ -14,7 +14,7 @@
 
     <link rel="stylesheet" type="text/css" href="app/js/bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="<c:url value="/app/css/addis-drugis.css" />">
-
+    <script src="app/js/bower_components/requirejs/require.js" data-main="app/js/main.js"></script>
   </head>
 
   <body>
@@ -57,16 +57,6 @@
     </div>
 
     <div ui-view></div>
-
-	<script src="app/js/bower_components/jquery/jquery.min.js"></script>
-	<script src="app/js/bower_components/foundation/js/foundation.min.js"></script>
-	<script>
-	$(document).foundation({
-	  topbar : {
-	    mobile_show_parent_link: true
-	  }
-	});
-	</script>
     <script>
 
       window.config = {
