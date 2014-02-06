@@ -1,6 +1,7 @@
 package org.drugis.addis.projects.repository;
 
 import org.drugis.addis.projects.Project;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 
