@@ -79,8 +79,7 @@ public class ProjectsControllerTest {
   public void testQueryEmptyProjects() throws Exception {
     when(projectRepository.query()).thenReturn(Collections.<Project>emptyList());
 
-    mockMvc.perform(get("projects").principal(user))
-      .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+    mockMvc.perform(get("/projects").principal(user))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$", hasSize(0)));
 

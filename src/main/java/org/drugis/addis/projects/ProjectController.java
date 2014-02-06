@@ -6,6 +6,7 @@ import org.drugis.addis.security.Account;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -32,9 +33,11 @@ public class ProjectController {
   @RequestMapping(value="", method= RequestMethod.GET)
   @ResponseBody
   public Collection<Project> query(Principal currentUser) throws MethodNotAllowedException {
+    System.out.println("getting user");
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    System.out.println("user found");
     if (user != null) {
-      return projectsRepository.query(user.getId());
+      return projectsRepository.query();
     } else {
       throw new MethodNotAllowedException();
     }
