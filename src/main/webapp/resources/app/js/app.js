@@ -1,16 +1,17 @@
 'use strict';
 define(
   ['angular',
-   'require',
-   'jQuery',
-   'foundation',
-   'angular-ui-router',
-   'controllers'],
-  function(angular, require, $) {
-    var dependencies = ['ui.router', 'addis.controllers'];
+    'require',
+    'jQuery',
+    'foundation',
+    'angular-ui-router',
+    'controllers',
+    'resources'],
+  function (angular, require, $) {
+    var dependencies = ['ui.router', 'addis.controllers', 'addis.resources'];
     var app = angular.module('addis', dependencies);
 
-    app.run(['$rootScope', function($rootScope) {
+    app.run(['$rootScope', function ($rootScope) {
 
       $rootScope.$on('$viewContentLoaded', function () {
         $(document).foundation();
@@ -18,17 +19,17 @@ define(
 
     }]);
 
-   app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
-        var baseTemplatePath = "app/views/";
+    app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+      var baseTemplatePath = "app/views/";
 
-          // Default route
-          $stateProvider.state('projects',
-                               { url: '/projects',
-                                 templateUrl: baseTemplatePath + 'projects.html',
-                                 controller: "ProjectsController" });
-          $urlRouterProvider.otherwise('/projects');
-        }]);
+      // Default route
+      $stateProvider.state('projects',
+        { url: '/projects',
+          templateUrl: baseTemplatePath + 'projects.html',
+          controller: "ProjectsController" });
+      $urlRouterProvider.otherwise('/projects');
+    }]);
 
 
     return app;
-  });
+});
