@@ -2,3 +2,5 @@ target/
 .idea
 *.iml
 src/main/webapp/resources/app/js/bower_components/
+src/test/karma-test-results.xml
+
