@@ -3,4 +3,6 @@ target/
 *.iml
 src/main/webapp/resources/app/js/bower_components/
 src/test/karma-test-results.xml
+4e4e6bf
+.sass-cache
 
