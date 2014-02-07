@@ -104,7 +104,7 @@ public class ProjectsControllerTest {
       .andExpect(content().contentType(APPLICATION_JSON_UTF8))
       .andExpect(jsonPath("$", hasSize(projects.size())))
       .andExpect(jsonPath("$[0].id", is(project.getId())))
-      .andExpect(jsonPath("$[0].ownerId", is(project.getOwnerId())))
+      .andExpect(jsonPath("$[0].owner", is(project.getOwner())))
       .andExpect(jsonPath("$[0].name", is(project.getName())))
       .andExpect(jsonPath("$[0].description", is(project.getDescription())));
 

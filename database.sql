@@ -1,30 +1,37 @@
 -- liquibase formatted sql
 
 -- changeset reidd:1
-
-create table UserConnection (userId varchar(255) not null,
-  providerId varchar(255) not null,
-  providerUserId varchar(255),
-  rank int not null,
-  displayName varchar(255),
-  profileUrl varchar(512),
-  imageUrl varchar(512),
-  accessToken varchar(255) not null,          
-  secret varchar(255),
-  refreshToken varchar(255),
+CREATE TABLE UserConnection (userId varchar(255) NOT NULL,
+  providerId VARCHAR(255) NOT NULL,
+  providerUserId VARCHAR(255),
+  rank INT NOT NULL,
+  displayName VARCHAR(255),
+  profileUrl VARCHAR(512),
+  imageUrl VARCHAR(512),
+  accessToken VARCHAR(255) NOT NULL,
+  secret VARCHAR(255),
+  refreshToken VARCHAR(255),
   expireTime bigint,
-  primary key (userId, providerId, providerUserId));
-create unique index UserConnectionRank on UserConnection(userId, providerId, rank);
+  PRIMARY KEY (userId, providerId, providerUserId));
+CREATE UNIQUE index UserConnectionRank ON UserConnection(userId, providerId, rank);
 
-create table Account (id SERIAL NOT NULL,
-            username varchar unique,
-            firstName varchar not null, 
-            lastName varchar not null,
-            password varchar default '',
-            primary key (id));
+CREATE TABLE Account (id SERIAL NOT NULL,
+            username VARCHAR UNIQUE,
+            firstName VARCHAR NOT NULL,
+            lastName VARCHAR NOT NULL,
+            password VARCHAR DEFAULT '',
+            PRIMARY KEY (id));
 
 CREATE TABLE AccountRoles (
     accountId INT,
     role VARCHAR NOT NULL,
     FOREIGN KEY (accountId) REFERENCES Account(id)
-)
+);
+
+-- changeset stroombergc:2
+CREATE TABLE Project (id SERIAL NOT NULL,
+            owner INT,
+            name VARCHAR NOT NULL,
+            description TEXT NOT NULL,
+            PRIMARY KEY (id),
+            FOREIGN KEY(owner) REFERENCES Account(id));
