@@ -60,11 +60,11 @@
     <script>
 
       window.config = {
-        projectRepository : {
-          service : "Projects",
-          url : "projects/",
-          _csrf_token : "${_csrf.token}",
-          _csrf_header : "${_csrf.headerName}"
+        user : {
+          id : "${account.id}",
+          name : "${account.firstName}",
+          firstName : "${account.firstName}",
+          LastName : "${account.lastName}"
         }
       };
 

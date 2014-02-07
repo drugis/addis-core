@@ -34,4 +34,15 @@ public class JdbcProjectRepository implements ProjectRepository {
     String staticSqlStatment = "SELECT id, owner, name, description FROM Project";
     return jdbcTemplate.query(staticSqlStatment, rowMapper);
   }
+
+  @Override
+  public Collection<Project> queryByOwnerId(Integer ownerId) {
+    PreparedStatementCreatorFactory pscf =
+            new PreparedStatementCreatorFactory("SELECT id, owner, name, description FROM Project WHERE owner = ?");
+    pscf.addParameter(new SqlParameter(Types.INTEGER));
+    return jdbcTemplate.query(
+            pscf.newPreparedStatementCreator(new Object[] { ownerId }), rowMapper);
+  }
+
+
 }

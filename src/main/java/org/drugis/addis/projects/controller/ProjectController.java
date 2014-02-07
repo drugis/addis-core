@@ -32,10 +32,10 @@ public class ProjectController {
 
   @RequestMapping(value="/projects", method= RequestMethod.GET)
   @ResponseBody
-  public Collection<Project> query(Principal currentUser) throws MethodNotAllowedException {
+  public Collection<Project> query(Principal currentUser, @RequestParam(required = false) Integer owner) throws MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return projectsRepository.query();
+      return owner == null ? projectsRepository.query() : projectsRepository.queryByOwnerId(owner);
     } else {
       throw new MethodNotAllowedException();
     }

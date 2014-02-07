@@ -112,4 +112,25 @@ public class ProjectsControllerTest {
     verify(accountRepository).findAccountByUsername("gert");
   }
 
+  @Test
+  public void testQueryProjectsWithQueryString() throws Exception {
+    int ownerId = 2;
+    Project project = new Project(2, ownerId, "test2", "desc");
+    ArrayList projects = new ArrayList();
+    projects.add(project);
+    when(projectRepository.queryByOwnerId(ownerId)).thenReturn(projects);
+
+    mockMvc.perform(get("/projects?owner=2").principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", hasSize(projects.size())))
+            .andExpect(jsonPath("$[0].id", is(project.getId())))
+            .andExpect(jsonPath("$[0].owner", is(project.getOwner())))
+            .andExpect(jsonPath("$[0].name", is(project.getName())))
+            .andExpect(jsonPath("$[0].description", is(project.getDescription())));
+
+    verify(projectRepository).queryByOwnerId(ownerId);
+    verify(accountRepository).findAccountByUsername("gert");
+  }
+
 }
