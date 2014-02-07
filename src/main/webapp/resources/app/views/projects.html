@@ -3,13 +3,13 @@
     <h3>Your projects</h3>
     <ul>
       <li ng-repeat="project in projects | filter:user.id ">
-        {{project.name}} - {{project.description}}
+        {{project.name}} - {{project.description}} - {{project.owner.firstName}} {{project.owner.lastName}}
       </li>
     </ul>
     <h3>Other projects</h3>
     <ul>
       <li ng-repeat="project in projects | filter:'!'+user.id ">
-        {{project.name}} - {{project.description}}
+        {{project.name}} - {{project.description}}- {{project.owner.firstName}} {{project.owner.lastName}}
       </li>
     </ul>
   </div>

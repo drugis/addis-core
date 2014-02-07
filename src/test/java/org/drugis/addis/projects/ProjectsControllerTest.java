@@ -59,6 +59,9 @@ public class ProjectsControllerTest {
 
   private Principal user;
 
+  private Account john = new Account(1, "a", "john", "lennon"),
+          paul = new Account(2, "a", "paul", "mc cartney");
+
 
   @Before
   public void setUp() {
@@ -92,8 +95,8 @@ public class ProjectsControllerTest {
 
   @Test
   public void testQueryProjects() throws Exception {
-    Project project = new Project(1 ,1, "name", "desc");
-    Project project2 = new Project(2 ,2, "otherName", "other description");
+    Project project = new Project(1 ,john, "name", "desc");
+    Project project2 = new Project(2 ,paul, "otherName", "other description");
     ArrayList projects = new ArrayList();
     projects.add(project);
     projects.add(project2);
@@ -104,7 +107,7 @@ public class ProjectsControllerTest {
       .andExpect(content().contentType(APPLICATION_JSON_UTF8))
       .andExpect(jsonPath("$", hasSize(projects.size())))
       .andExpect(jsonPath("$[0].id", is(project.getId())))
-      .andExpect(jsonPath("$[0].owner", is(project.getOwner())))
+      .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())))
       .andExpect(jsonPath("$[0].name", is(project.getName())))
       .andExpect(jsonPath("$[0].description", is(project.getDescription())));
 
@@ -114,22 +117,21 @@ public class ProjectsControllerTest {
 
   @Test
   public void testQueryProjectsWithQueryString() throws Exception {
-    int ownerId = 2;
-    Project project = new Project(2, ownerId, "test2", "desc");
+    Project project = new Project(2, paul, "test2", "desc");
     ArrayList projects = new ArrayList();
     projects.add(project);
-    when(projectRepository.queryByOwnerId(ownerId)).thenReturn(projects);
+    when(projectRepository.queryByOwnerId(paul.getId())).thenReturn(projects);
 
     mockMvc.perform(get("/projects?owner=2").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", hasSize(projects.size())))
             .andExpect(jsonPath("$[0].id", is(project.getId())))
-            .andExpect(jsonPath("$[0].owner", is(project.getOwner())))
+            .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())))
             .andExpect(jsonPath("$[0].name", is(project.getName())))
             .andExpect(jsonPath("$[0].description", is(project.getDescription())));
 
-    verify(projectRepository).queryByOwnerId(ownerId);
+    verify(projectRepository).queryByOwnerId(paul.getId());
     verify(accountRepository).findAccountByUsername("gert");
   }
 
