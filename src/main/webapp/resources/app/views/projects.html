@@ -1,9 +1,15 @@
 <div class="row">
   <div class="columns large-12">
-    <h3>Projects</h3>
+    <h3>Your projects</h3>
     <ul>
-      <li ng-repeat="project in projects">
-        {{project.name}} - {{project.description}}
+      <li ng-repeat="project in projects | filter:user.id ">
+        {{project.name}} - {{project.description}} - {{project.owner.firstName}} {{project.owner.lastName}}
+      </li>
+    </ul>
+    <h3>Other projects</h3>
+    <ul>
+      <li ng-repeat="project in projects | filter:'!'+user.id ">
+        {{project.name}} - {{project.description}}- {{project.owner.firstName}} {{project.owner.lastName}}
       </li>
     </ul>
   </div>

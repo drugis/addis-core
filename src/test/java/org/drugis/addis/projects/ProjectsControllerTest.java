@@ -1,6 +1,7 @@
 package org.drugis.addis.projects;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -25,6 +26,7 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.inject.Inject;
 import java.nio.charset.Charset;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -57,6 +59,9 @@ public class ProjectsControllerTest {
 
   private Principal user;
 
+  private Account john = new Account(1, "a", "john", "lennon"),
+          paul = new Account(2, "a", "paul", "mc cartney");
+
 
   @Before
   public void setUp() {
@@ -81,9 +86,53 @@ public class ProjectsControllerTest {
 
     mockMvc.perform(get("/projects").principal(user))
       .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON_UTF8))
       .andExpect(jsonPath("$", hasSize(0)));
 
     verify(projectRepository).query();
     verify(accountRepository).findAccountByUsername("gert");
   }
+
+  @Test
+  public void testQueryProjects() throws Exception {
+    Project project = new Project(1 ,john, "name", "desc");
+    Project project2 = new Project(2 ,paul, "otherName", "other description");
+    ArrayList projects = new ArrayList();
+    projects.add(project);
+    projects.add(project2);
+    when(projectRepository.query()).thenReturn(projects);
+
+    mockMvc.perform(get("/projects").principal(user))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$", hasSize(projects.size())))
+      .andExpect(jsonPath("$[0].id", is(project.getId())))
+      .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())))
+      .andExpect(jsonPath("$[0].name", is(project.getName())))
+      .andExpect(jsonPath("$[0].description", is(project.getDescription())));
+
+    verify(projectRepository).query();
+    verify(accountRepository).findAccountByUsername("gert");
+  }
+
+  @Test
+  public void testQueryProjectsWithQueryString() throws Exception {
+    Project project = new Project(2, paul, "test2", "desc");
+    ArrayList projects = new ArrayList();
+    projects.add(project);
+    when(projectRepository.queryByOwnerId(paul.getId())).thenReturn(projects);
+
+    mockMvc.perform(get("/projects?owner=2").principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", hasSize(projects.size())))
+            .andExpect(jsonPath("$[0].id", is(project.getId())))
+            .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())))
+            .andExpect(jsonPath("$[0].name", is(project.getName())))
+            .andExpect(jsonPath("$[0].description", is(project.getDescription())));
+
+    verify(projectRepository).queryByOwnerId(paul.getId());
+    verify(accountRepository).findAccountByUsername("gert");
+  }
+
 }

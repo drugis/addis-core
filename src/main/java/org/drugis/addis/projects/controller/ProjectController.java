@@ -1,6 +1,7 @@
-package org.drugis.addis.projects;
+package org.drugis.addis.projects.controller;
 
 import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ import java.util.Collection;
  * Created by daan on 2/6/14.
  */
 @Controller
-@RequestMapping(value="/projects")
+@RequestMapping(value="")
 public class ProjectController {
 
   final static Logger logger = LoggerFactory.getLogger(ProjectController.class);
@@ -30,14 +31,13 @@ public class ProjectController {
   @Inject
   private AccountRepository accountRepository;
 
-  @RequestMapping(value="", method= RequestMethod.GET)
+  @RequestMapping(value="/projects", method= RequestMethod.GET)
   @ResponseBody
-  public Collection<Project> query(Principal currentUser) throws MethodNotAllowedException {
-    System.out.println("getting user");
+  public Collection<Project> query(Principal currentUser, @RequestParam(required = false) Integer owner) throws MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     System.out.println("user found");
     if (user != null) {
-      return projectsRepository.query();
+      return owner == null ? projectsRepository.query() : projectsRepository.queryByOwnerId(owner);
     } else {
       throw new MethodNotAllowedException();
     }
