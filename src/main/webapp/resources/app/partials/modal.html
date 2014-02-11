@@ -1,0 +1,11 @@
+<div>
+  <div ng-if="buttonText">
+    <a class="button" ng-click="model.open()">{{buttonText}}</a>
+  </div>
+
+  <div class="reveal-modal-bg" ng-style="bgStyle(model.show)"></div>
+  <div class="reveal-modal open" ng-style="fgStyle(model.show)">
+    <div ng-transclude></div>
+    <a class="close-reveal-modal" ng-click="model.close()">&times;</a>
+  </div>
+</div>

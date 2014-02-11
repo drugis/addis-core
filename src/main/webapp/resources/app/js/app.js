@@ -6,9 +6,10 @@ define(
     'foundation',
     'angular-ui-router',
     'controllers',
+    'directives',
     'resources'],
   function (angular, require, $) {
-    var dependencies = ['ui.router', 'addis.controllers', 'addis.resources'];
+    var dependencies = ['ui.router', 'addis.controllers', 'addis.directives', 'addis.resources'];
     var app = angular.module('addis', dependencies);
 
     app.run(['$rootScope', function ($rootScope) {

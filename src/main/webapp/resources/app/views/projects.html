@@ -10,15 +10,58 @@
         </li>
       </ul>
     </div>
-    <h3>Other projects</h3>
+
+    <h3>All projects</h3>
 
     <div class="panel">
       <ul>
-        <li ng-repeat="project in projects | filter:'!'+user.id ">
+        <li ng-repeat="project in projects">
           <a href="/projects/{{project.id}}">{{project.name}} - {{project.description}} - {{project.owner.firstName}}
             {{project.owner.lastName}}</a>
         </li>
       </ul>
     </div>
+
+    <a id="create-project-btn" class="button" ng-click="createProjectModal.open()"><i class="fa fa-plus"></i> Create
+      project</a>
+
+    <modal model="createProjectModal">
+      <h3>Create a new project</h3>
+
+      <form>
+        <div class="row">
+          <div class="large-12 columns">
+            <label>Name
+              <input type="text" ng-model="model.name">
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="large-6 columns">
+            <label>Description
+              <textarea rows="12" ng-model="model.description"></textarea>
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="large-6 columns">
+            <label>TrialVerse namespace
+              <select ng-model="model.namespace" ng-options="tv.name for tv in trialverse"></select>
+            </label>
+            <ul class="button-group">
+              <li><a class="button small secondary" ng-click="createProjectModal.close()">Cancel</a></li>
+              <li ng-show="model.choice != 'local'">
+                <a class="button small success" ng-disabled="!model.choice" ng-click="createProject(model)">Create
+                  project</a>
+              </li>
+              <li ng-show="model.choice == 'local'">
+                <a class="button small success" ng-disabled="!local.contents" ng-click="createProject(mode)">Create
+                  project</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </form>
+    </modal>
   </div>
 </div>
