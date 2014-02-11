@@ -30,7 +30,7 @@
 
       <form>
         <div class="row">
-          <div class="large-12 columns">
+          <div class="large-8 columns">
             <label>Name
               <input type="text" ng-model="model.name">
             </label>
@@ -39,7 +39,7 @@
         <div class="row">
           <div class="large-6 columns">
             <label>Description
-              <textarea rows="12" ng-model="model.description"></textarea>
+              <textarea rows="4" ng-model="model.description"></textarea>
             </label>
           </div>
         </div>
@@ -55,7 +55,7 @@
                   project</a>
               </li>
               <li ng-show="model.choice == 'local'">
-                <a class="button small success" ng-disabled="!local.contents" ng-click="createProject(mode)">Create
+                <a class="button small success" ng-disabled="!local.contents" ng-click="createProject(model)">Create
                   project</a>
               </li>
             </ul>
