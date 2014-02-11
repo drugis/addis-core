@@ -14,6 +14,7 @@ import org.drugis.addis.security.repository.AccountRepository;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.Collection;
 
@@ -43,11 +44,20 @@ public class ProjectController {
     }
   }
 
+ @RequestMapping(value="", method=RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
+	@ResponseBody
+	public Project create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody Project body) {
+		Account user = accountRepository.findAccountByUsername(currentUser.getName());
+		Project Project = projectsRepository.create(user, body.getName(), body.getDescription(), body.getNamespace());
+		response.setStatus(HttpServletResponse.SC_CREATED);
+		response.setHeader("Location", request.getRequestURL() + "/" + Project.getId());
+		return Project;
+	}
+
   @ResponseStatus(HttpStatus.FORBIDDEN)
 	@ExceptionHandler(MethodNotAllowedException.class)
 	public String handleMethodNotAllowed(HttpServletRequest request) {
 		logger.error("Access to resource not authorised.\n{}", request.getRequestURL());
 		return "redirect:/error/403";
 	}
-
 }

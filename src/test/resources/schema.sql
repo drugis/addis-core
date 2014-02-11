@@ -1,6 +1,6 @@
--- liquibase formatted sql
+SET DATABASE SQL SYNTAX PGS TRUE;
+SET DATABASE SQL SIZE FALSE;
 
--- changeset reidd:1
 CREATE TABLE UserConnection (userId varchar(255) NOT NULL,
   providerId VARCHAR(255) NOT NULL,
   providerUserId VARCHAR(255),

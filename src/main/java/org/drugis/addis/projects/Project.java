@@ -10,15 +10,17 @@ public class Project {
   private int id;
   private String name;
   private String description;
+  private String namespace;
 
   public Project() {
   }
 
-  public Project(int id, Account owner, String name, String description) {
+  public Project(int id, Account owner, String name, String description, String namespace) {
     this.id = id;
     this.owner = owner;
     this.name = name;
     this.description = description;
+    this.namespace = namespace;
   }
 
   public int getId() {
@@ -39,5 +41,13 @@ public class Project {
 
   public String getDescription() {
     return description;
+  }
+
+  public String getNamespace() {
+    return namespace;
+  }
+
+  public void setNamespace(String namespace) {
+    this.namespace = namespace;
   }
 }
