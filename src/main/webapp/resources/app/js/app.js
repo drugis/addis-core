@@ -7,9 +7,10 @@ define(
     'angular-ui-router',
     'controllers',
     'directives',
+    'filters',
     'resources'],
   function (angular, require, $) {
-    var dependencies = ['ui.router', 'addis.controllers', 'addis.directives', 'addis.resources'];
+    var dependencies = ['ui.router', 'addis.controllers', 'addis.directives', 'addis.resources', 'addis.filters'];
     var app = angular.module('addis', dependencies);
 
     app.run(['$rootScope', '$window', '$http', function ($rootScope, $window, $http) {
