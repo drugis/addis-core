@@ -15,6 +15,7 @@ import org.drugis.addis.security.repository.AccountRepository;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.Charset;
 import java.security.Principal;
 import java.util.Collection;
 
@@ -26,6 +27,12 @@ import java.util.Collection;
 public class ProjectController {
 
   final static Logger logger = LoggerFactory.getLogger(ProjectController.class);
+
+  public final static MediaType APPLICATION_JSON_UTF8 = new MediaType(
+          MediaType.APPLICATION_JSON.getType(),
+          MediaType.APPLICATION_JSON.getSubtype(),
+          Charset.forName("utf8"));
+  public final static String APPLICATION_JSON_UTF8_VALUE =  "application/json; charset=UTF-8";
 
   @Inject
   private ProjectRepository projectsRepository;
@@ -44,7 +51,7 @@ public class ProjectController {
     }
   }
 
- @RequestMapping(value="", method=RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
+ @RequestMapping(value="/projects", method=RequestMethod.POST, produces = {APPLICATION_JSON_UTF8_VALUE})
 	@ResponseBody
 	public Project create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody Project body) {
 		Account user = accountRepository.findAccountByUsername(currentUser.getName());

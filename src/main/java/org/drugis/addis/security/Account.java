@@ -16,13 +16,13 @@
 package org.drugis.addis.security;
 
 public class Account {
-	private final int id;
+	private int id;
 
-	private final String username;
+	private String username;
 
-	private final String firstName;
+	private String firstName;
 
-	private final String lastName;
+	private String lastName;
 
 	public Account(String username, String firstName, String lastName) {
 		this (-1, username, firstName, lastName);
@@ -34,6 +34,9 @@ public class Account {
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
+
+  public Account() {
+  }
 	
 	public int getId() {
 		return id;
