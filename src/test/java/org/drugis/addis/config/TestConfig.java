@@ -10,7 +10,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = {"org.drugis.addis.config", "org.drugis.addis.error", "org.drugis.addis.projects.controller"}, excludeFilters = {@ComponentScan.Filter(Configuration.class)})
+@ComponentScan(basePackages = {"org.drugis.addis.config", "org.drugis.addis.error", "org.drugis.addis.projects.controller",
+        "org.drugis.addis.trialverse"}, excludeFilters = {@ComponentScan.Filter(Configuration.class)})
 public class TestConfig {
   @Bean
   public AccountRepository mockAccountRepository() {

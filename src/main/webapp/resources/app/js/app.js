@@ -12,8 +12,11 @@ define(
     var dependencies = ['ui.router', 'addis.controllers', 'addis.directives', 'addis.resources'];
     var app = angular.module('addis', dependencies);
 
-    app.run(['$rootScope', function ($rootScope) {
+    app.run(['$rootScope', '$window', '$http', function ($rootScope, $window, $http) {
+      var csrfToken = $window.config._csrf_token;
+      var csrfHeader = $window.config._csrf_header;
 
+      $http.defaults.headers.common[csrfHeader] = csrfToken;
       $rootScope.$on('$viewContentLoaded', function () {
         $(document).foundation();
       });

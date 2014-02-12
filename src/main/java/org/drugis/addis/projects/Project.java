@@ -1,6 +1,7 @@
 package org.drugis.addis.projects;
 
 import org.drugis.addis.security.Account;
+import org.drugis.addis.trialverse.Trialverse;
 
 /**
  * Created by daan on 2/6/14.
@@ -10,17 +11,17 @@ public class Project {
   private int id;
   private String name;
   private String description;
-  private String namespace;
+  private Trialverse trialverse;
 
   public Project() {
   }
 
-  public Project(int id, Account owner, String name, String description, String namespace) {
+  public Project(int id, Account owner, String name, String description, Trialverse trialverse) {
     this.id = id;
     this.owner = owner;
     this.name = name;
     this.description = description;
-    this.namespace = namespace;
+    this.trialverse = trialverse;
   }
 
   public int getId() {
@@ -43,11 +44,11 @@ public class Project {
     return description;
   }
 
-  public String getNamespace() {
-    return namespace;
+  public Trialverse getTrialverse() {
+    return trialverse;
   }
 
-  public void setNamespace(String namespace) {
-    this.namespace = namespace;
+  public void setTrialverse(Trialverse trialverse) {
+    this.trialverse = trialverse;
   }
 }

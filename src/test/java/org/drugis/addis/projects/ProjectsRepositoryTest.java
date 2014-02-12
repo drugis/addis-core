@@ -3,7 +3,7 @@ package org.drugis.addis.projects;
 import org.drugis.addis.config.RepositoryTestConfig;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
-import org.junit.Ignore;
+import org.drugis.addis.trialverse.Trialverse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class ProjectsRepositoryTest {
     Account account = mock(Account.class);
     when(account.getId()).thenReturn(1);
     assertEquals(3, projectRepository.query().size());
-    Project project = projectRepository.create(account, "newProjectName", "newProjectDesc", "newTrialVerseNamespace");
+    Project project = projectRepository.create(account, "newProjectName", "newProjectDesc", new Trialverse("newTrialVerseNamespace"));
     assertEquals(project.getOwner(), account);
     assertEquals(4, projectRepository.query().size());
   }

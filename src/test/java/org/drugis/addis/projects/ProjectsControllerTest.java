@@ -9,17 +9,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
-import org.drugis.addis.projects.controller.ProjectController;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.hamcrest.Matcher;
+import org.drugis.addis.trialverse.Trialverse;
+import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -28,7 +27,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
-import java.nio.charset.Charset;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,7 +84,7 @@ public class ProjectsControllerTest {
 
     mockMvc.perform(get("/projects").principal(user))
       .andExpect(status().isOk())
-      .andExpect(content().contentType(ProjectController.APPLICATION_JSON_UTF8))
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(jsonPath("$", hasSize(0)));
 
     verify(projectRepository).query();
@@ -95,8 +93,8 @@ public class ProjectsControllerTest {
 
   @Test
   public void testQueryProjects() throws Exception {
-    Project project = new Project(1 ,john, "name", "desc", "ns1");
-    Project project2 = new Project(2 ,paul, "otherName", "other description", "ns2");
+    Project project = new Project(1 ,john, "name", "desc", new Trialverse("ns1"));
+    Project project2 = new Project(2 ,paul, "otherName", "other description", new Trialverse("ns2"));
     ArrayList projects = new ArrayList();
     projects.add(project);
     projects.add(project2);
@@ -104,13 +102,13 @@ public class ProjectsControllerTest {
 
     mockMvc.perform(get("/projects").principal(user))
       .andExpect(status().isOk())
-      .andExpect(content().contentType(ProjectController.APPLICATION_JSON_UTF8))
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(jsonPath("$", hasSize(projects.size())))
       .andExpect(jsonPath("$[0].id", is(project.getId())))
       .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())))
       .andExpect(jsonPath("$[0].name", is(project.getName())))
       .andExpect(jsonPath("$[0].description", is(project.getDescription())))
-      .andExpect(jsonPath("$[0].namespace", is(project.getNamespace())));
+      .andExpect(jsonPath("$[0].trialverse.name", is(project.getTrialverse().getName())));
 
     verify(projectRepository).query();
     verify(accountRepository).findAccountByUsername("gert");
@@ -118,14 +116,14 @@ public class ProjectsControllerTest {
 
   @Test
   public void testQueryProjectsWithQueryString() throws Exception {
-    Project project = new Project(2, paul, "test2", "desc", "ns1");
+    Project project = new Project(2, paul, "test2", "desc", new Trialverse("ns1"));
     ArrayList projects = new ArrayList();
     projects.add(project);
     when(projectRepository.queryByOwnerId(paul.getId())).thenReturn(projects);
 
     mockMvc.perform(get("/projects?owner=2").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(ProjectController.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", hasSize(projects.size())))
             .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())));
 
@@ -135,15 +133,15 @@ public class ProjectsControllerTest {
 
   @Test
   public void testCreateProject() throws Exception {
-    Project project = new Project(1, gert, "testname", "testdescription", "testnamespace");
-    when(projectRepository.create(project.getOwner(), project.getName(), project.getDescription(), project.getNamespace())).thenReturn(project);
+    Project project = new Project(1, gert, "testname", "testdescription", new Trialverse("testnamespace"));
     String jsonContent = TestUtils.createJson(project);
-    mockMvc.perform(post("/projects").principal(user).content(jsonContent).contentType(ProjectController.APPLICATION_JSON_UTF8))
+    when(projectRepository.create(project.getOwner(), project.getName(), project.getDescription(), project.getTrialverse())).thenReturn(project);
+    mockMvc.perform(post("/projects").principal(user).content(jsonContent).contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(ProjectController.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.name", is("testname")));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
-    verify(projectRepository).create(project.getOwner(), project.getName(), project.getDescription(), project.getNamespace());
+    verify(projectRepository).create(project.getOwner(), project.getName(), project.getDescription(), project.getTrialverse());
   }
 
 }

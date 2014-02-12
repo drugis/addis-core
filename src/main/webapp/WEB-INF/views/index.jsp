@@ -67,7 +67,9 @@
           name : "${account.firstName}",
           firstName : "${account.firstName}",
           LastName : "${account.lastName}"
-        }
+        },
+        _csrf_token : "${_csrf.token}",
+        _csrf_header : "${_csrf.headerName}"
       };
 
       function signout(){

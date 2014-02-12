@@ -2,6 +2,7 @@ package org.drugis.addis.projects.repository;
 
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.security.Account;
+import org.drugis.addis.trialverse.Trialverse;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -13,5 +14,5 @@ import java.util.Map;
 public interface ProjectRepository {
   Collection<Project> query();
   Collection<Project> queryByOwnerId(Integer ownerId);
-  Project create(Account owner, String name, String description, String namespace);
+  Project create(Account owner, String name, String description, Trialverse trialverse);
 }
