@@ -4,6 +4,7 @@
 
     <div class="panel">
       <ul>
+        <li ng-show="!(projects | filter:user.id).length">No projects</li>
         <li ng-repeat="project in projects | filter:user.id ">
           <a href="/projects/{{project.id}}">{{project.name}} - {{project.description}} - {{project.owner.firstName}}
             {{project.owner.lastName}}</a>
@@ -11,11 +12,12 @@
       </ul>
     </div>
 
-    <h3>All projects</h3>
+    <h3>Other projects</h3>
 
     <div class="panel">
       <ul>
-        <li ng-repeat="project in projects">
+        <li ng-show="!(projects | filter:'!'+user.id).length">No other projects</li>
+        <li ng-repeat="project in projects | filter:'!'+user.id ">
           <a href="/projects/{{project.id}}">{{project.name}} - {{project.description}} - {{project.owner.firstName}}
             {{project.owner.lastName}}</a>
         </li>
@@ -50,12 +52,8 @@
             </label>
             <ul class="button-group">
               <li><a class="button small secondary" ng-click="createProjectModal.close()">Cancel</a></li>
-              <li ng-show="model.choice != 'local'">
-                <a class="button small success" ng-disabled="!model.choice" ng-click="createProject(model)">Create
-                  project</a>
-              </li>
-              <li ng-show="model.choice == 'local'">
-                <a class="button small success" ng-disabled="!local.contents" ng-click="createProject(model)">Create
+              <li>
+                <a class="button small success" ng-disabled="false" ng-click="createProject(model)">Create
                   project</a>
               </li>
             </ul>

@@ -43,21 +43,20 @@ public class ProjectController {
     }
   }
 
- @RequestMapping(value="/projects", method=RequestMethod.POST, produces = {WebConstants.APPLICATION_JSON_UTF8_VALUE})
-	@ResponseBody
-	public Project create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody Project body) {
-    System.out.println("connor");
-		Account user = accountRepository.findAccountByUsername(currentUser.getName());
-		Project Project = projectsRepository.create(user, body.getName(), body.getDescription(), body.getTrialverse());
-		response.setStatus(HttpServletResponse.SC_CREATED);
-		response.setHeader("Location", request.getRequestURL() + "/" + Project.getId());
-		return Project;
-	}
+  @RequestMapping(value="/projects", method=RequestMethod.POST)
+  @ResponseBody
+  public Project create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody Project body) {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    Project Project = projectsRepository.create(user, body.getName(), body.getDescription(), body.getTrialverse());
+    response.setStatus(HttpServletResponse.SC_CREATED);
+    response.setHeader("Location", request.getRequestURL() + "/" );
+    return Project;
+  }
 
   @ResponseStatus(HttpStatus.FORBIDDEN)
-	@ExceptionHandler(MethodNotAllowedException.class)
-	public String handleMethodNotAllowed(HttpServletRequest request) {
-		logger.error("Access to resource not authorised.\n{}", request.getRequestURL());
-		return "redirect:/error/403";
-	}
+  @ExceptionHandler(MethodNotAllowedException.class)
+  public String handleMethodNotAllowed(HttpServletRequest request) {
+    logger.error("Access to resource not authorised.\n{}", request.getRequestURL());
+    return "redirect:/error/403";
+  }
 }
