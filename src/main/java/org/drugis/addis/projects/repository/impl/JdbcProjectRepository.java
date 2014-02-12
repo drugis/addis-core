@@ -57,21 +57,24 @@ public class JdbcProjectRepository implements ProjectRepository {
 
   @Override
   public Project create(final Account owner, final String name, final String description, final String namespace) {
-    		KeyHolder keyHolder = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-				PreparedStatement ps = con.prepareStatement("insert into Project (owner, name, description, namespace) values (?, ?, ?, ?)",
-            new String[] {"id"});
-				ps.setInt(1, owner.getId());
-				ps.setString(2, name);
-				ps.setString(3, description);
+    KeyHolder keyHolder = new GeneratedKeyHolder();
+
+    jdbcTemplate.update(new PreparedStatementCreator() {
+
+      @Override
+      public PreparedStatement createPreparedStatement(Connection connection)
+              throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("insert into Project (owner, name, description, namespace) values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+        ps.setInt(1, owner.getId());
+        ps.setString(2, name);
+        ps.setString(3, description);
         ps.setString(4, namespace);
-				return ps;
-			}
-		}, keyHolder);
-		int projectId = (Integer) keyHolder.getKey();
-		return new Project(projectId, owner, name, description, namespace);
+        return ps;
+      }
+    }, keyHolder);
+
+    int projectId = (Integer) keyHolder.getKey();
+    return new Project(projectId, owner, name, description, namespace);
   }
 
 

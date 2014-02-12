@@ -35,12 +35,13 @@ public class ProjectsRepositoryTest {
     assertEquals(2, projects.size());
   }
 
-  @Ignore
   @Test
   public void testCreate() {
     Account account = mock(Account.class);
     when(account.getId()).thenReturn(1);
+    assertEquals(3, projectRepository.query().size());
     Project project = projectRepository.create(account, "newProjectName", "newProjectDesc", "newTrialVerseNamespace");
     assertEquals(project.getOwner(), account);
+    assertEquals(4, projectRepository.query().size());
   }
 }
