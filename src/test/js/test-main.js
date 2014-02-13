@@ -13,12 +13,12 @@ console.log(tests);
 
 require.config({
   paths: {
-    'jQuery': 'bower_components/jquery/jquery.min',
-    'underscore': 'bower_components/underscore/underscore-min',
-    'angular': 'bower_components/angular/angular.min',
-    'angular-resource': 'bower_components/angular-resource/angular-resource.min',
-    'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router.min',
-    'foundation': 'bower_components/foundation/js/foundation.min',
+    'jQuery': 'bower_components/jquery/jquery',
+    'underscore': 'bower_components/underscore/underscore',
+    'angular': 'bower_components/angular/angular',
+    'angular-resource': 'bower_components/angular-resource/angular-resource',
+    'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
+    'foundation': 'bower_components/foundation/js/foundation',
     'jasmine': 'bower_components/jasmine/lib/jasmine-core/jasmine',
     'jasmine-html': 'bower_components/jasmine/lib/jasmine-core/jasmine-html',
     'angular-mocks': 'bower_components/angular-mocks/angular-mocks'
