@@ -1,13 +1,23 @@
 <div class="row">
   <div class="columns large-12">
-    <h3>Your projects</h3>
+    <div class="row">
+      <div class="columns large-3">
+        <h3>Your projects</h3>
+      </div>
+      <div >
+      <a id="create-project-btn" class="button" ng-click="createProjectModal.open()"><i class="fa fa-plus"></i> Create
+        project</a>
+      </div>
+    </div>
 
     <div class="panel">
       <ul>
         <li ng-show="!(projects | ownProjectsFilter:user.id).length">No projects</li>
         <li ng-repeat="project in projects | ownProjectsFilter:user.id ">
-          <a href="/projects/{{project.id}}">{{project.name}} - {{project.description}} - {{project.owner.firstName}}
-            {{project.owner.lastName}}</a>
+          <a href="/projects/{{project.id}}">
+            <span title="project name">{{project.name}} </span> -
+            <span title="project description">{{project.description}} </span>
+          </a>
         </li>
       </ul>
     </div>
@@ -18,14 +28,14 @@
       <ul>
         <li ng-show="!(projects | ownProjectsFilter:user.id:true).length">No other projects</li>
         <li ng-repeat="project in projects | ownProjectsFilter:user.id:true">
-          <a href="/projects/{{project.id}}">{{project.name}} - {{project.description}} - {{project.owner.firstName}}
-            {{project.owner.lastName}}</a>
+          <a href="/projects/{{project.id}}">
+            <span title="project name">{{project.name}}</span> -
+            <span title="project description">{{project.description}}</span>
+            <span title="user name">({{project.owner.firstName}} {{project.owner.lastName}})</span>
+          </a>
         </li>
       </ul>
     </div>
-
-    <a id="create-project-btn" class="button" ng-click="createProjectModal.open()"><i class="fa fa-plus"></i> Create
-      project</a>
 
     <modal model="createProjectModal">
       <h3>Create a new project</h3>
