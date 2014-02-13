@@ -63,7 +63,7 @@
 
       window.config = {
         user : {
-          id : "${account.id}",
+          id : ${account.id},
           name : "${account.firstName}",
           firstName : "${account.firstName}",
           LastName : "${account.lastName}"

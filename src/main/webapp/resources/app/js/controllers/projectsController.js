@@ -13,6 +13,7 @@ define([], function() {
           $scope.createProjectModal.close();
         });
       });
+
     };
   };
   return dependencies.concat(ProjectsController);
