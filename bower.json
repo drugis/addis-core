@@ -25,7 +25,6 @@
     "angular": "~1.2.11",
     "bowser": "~0.3.7",
     "fastclick": "~0.6.11",
-    "jquery": "~2.1.0",
     "modernizr": "~2.7.1"
   }
 }
