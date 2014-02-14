@@ -13,7 +13,7 @@ console.log(tests);
 
 require.config({
   paths: {
-    'jQuery': 'bower_components/jquery/jquery',
+    'jQuery': 'bower_components/jquery/dist/jquery',
     'underscore': 'bower_components/underscore/underscore',
     'angular': 'bower_components/angular/angular',
     'angular-resource': 'bower_components/angular-resource/angular-resource',

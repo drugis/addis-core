@@ -10,6 +10,8 @@ Make sure the SASS submodule is present:
 
 Make sure you've run `make` in the src/main/webapp/resources directory first to generate the CSS.
 
+Make sure you have the bower components needen by running `bower install` from the root of the repository
+
 Running with PostgreSQL
 -----------------------
 
