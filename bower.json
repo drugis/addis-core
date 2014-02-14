@@ -1,0 +1,31 @@
+{
+  "name": "addis-core",
+  "version": "0.0.0",
+  "homepage": "https://github.com/drugis/addis-core",
+  "authors": [],
+  "license": "GPL3",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src/main/webapp/resources/app/js/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-mocks": "~1.2.11",
+    "angular-resource": "~1.2.11",
+    "angular-ui-router": "0.2.7",
+    "bowser": "~0.3.7",
+    "font-awesome": "~4.0.3",
+    "foundation": "~5.0.3",
+    "requirejs-domready": "~2.0.1",
+    "requirejs": "~2.1.10",
+    "underscore": "~1.5.2",
+    "angular": "~1.2.11",
+    "bowser": "~0.3.7",
+    "fastclick": "~0.6.11",
+    "jquery": "~2.1.0",
+    "modernizr": "~2.7.1"
+  }
+}
