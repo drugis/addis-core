@@ -3,6 +3,13 @@ addis-core
 
 ADDIS 2.x core
 
+Make sure the SASS submodule is present:
+
+    git submodule init
+    git submodule update
+
+Make sure you've run `make` in the src/main/webapp/resources directory first to generate the CSS.
+
 Running with PostgreSQL
 -----------------------
 
