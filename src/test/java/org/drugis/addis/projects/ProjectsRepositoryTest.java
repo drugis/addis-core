@@ -1,6 +1,7 @@
 package org.drugis.addis.projects;
 
 import org.drugis.addis.config.RepositoryTestConfig;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.Trialverse;
@@ -44,4 +45,18 @@ public class ProjectsRepositoryTest {
     assertEquals(project.getOwner(), account);
     assertEquals(4, projectRepository.query().size());
   }
+
+  @Test(expected = ResourceDoesNotExistException.class)
+  public void testGetNonexistentProjectFails() throws Exception {
+    projectRepository.getProjectById(3213);
+  }
+
+  @Test
+  public void testGetProjectById() throws Exception {
+    Account account = new Account(1, "foo@bar.com", "Connor", "Bonnor");
+    Project project = new Project(1, account, "testname 1", "testdescription 1", new Trialverse("org.drugis.addis.trialverse://testtrialverse1"));
+    Project result = projectRepository.getProjectById(1);
+    assertEquals(project, result);
+  }
+
 }
