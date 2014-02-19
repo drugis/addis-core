@@ -1,4 +1,4 @@
-define(['angular', 'angular-mocks', 'filters'], function (ownProjectsFilter) {
+define(['angular', 'angular-mocks', 'filters'], function () {
   describe("Filter: ownProjectsFilter", function () {
     var mockProjects = [
       {owner: {id: 1}, name: "testName1"},
