@@ -35,7 +35,8 @@ define(
           })
         .state('project',
           { url: '/projects/:id',
-            templateUrl: baseTemplatePath + 'project.html'
+            templateUrl: baseTemplatePath + 'project.html',
+            controller: 'SingleProjectController'
           }
         );
 
