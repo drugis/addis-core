@@ -59,7 +59,7 @@
     <div class="row">
       <div class="large-12 columns">
         <h1>addis.drugis.org <br/>
-          <small>Aggregate Data Drug Information System for clinical data analysis</small>
+          <small>Aggregate Data Drug Information System</small>
         </h1>
       </div>
     </div>
