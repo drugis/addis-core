@@ -31,7 +31,8 @@ module.exports = function(config) {
     // list of files to exclude
     exclude: [
       'app/js/main.js',
-      'app/js/bower_components/**/*Spec.js'
+      'app/js/bower_components/**/*Spec.js',
+      '../../../../src/test/protractor/**/*',
     ],
 
     // test results reporter to use
