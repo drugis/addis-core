@@ -43,4 +43,8 @@ require.config({
 });
 
 window.name = "NG_DEFER_BOOTSTRAP!";
+window.config = {
+  _csrf_token : 'token',
+  _csrf_header : 'header'
+};
 

@@ -14,7 +14,7 @@
       <ul>
         <li ng-show="!(projects | ownProjectsFilter:user.id).length">No projects</li>
         <li ng-repeat="project in projects | ownProjectsFilter:user.id ">
-          <a href="/projects/{{project.id}}">
+          <a href="#/projects/{{project.id}}">
             <span title="project name">{{project.name}} </span> -
             <span title="project description">{{project.description}} </span>
           </a>
@@ -28,7 +28,7 @@
       <ul>
         <li ng-show="!(projects | ownProjectsFilter:user.id:true).length">No other projects</li>
         <li ng-repeat="project in projects | ownProjectsFilter:user.id:true">
-          <a href="/projects/{{project.id}}">
+          <a href="#/projects/{{project.id}}">
             <span title="project name">{{project.name}}</span> -
             <span title="project description">{{project.description}}</span>
             <span title="user name">({{project.owner.firstName}} {{project.owner.lastName}})</span>
