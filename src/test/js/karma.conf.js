@@ -13,7 +13,8 @@ module.exports = function(config) {
       'karma-phantomjs-launcher',
       'karma-junit-reporter',
       'karma-jasmine',
-      'karma-requirejs'
+      'karma-requirejs',
+      'karma-coverage'
     ],
 
 
@@ -35,11 +36,25 @@ module.exports = function(config) {
       '../../../../src/test/protractor/**/*',
     ],
 
+    preprocessors: {
+      'app/js/*.js': 'coverage',
+      'app/js/controllers/*.js': 'coverage',
+      'app/js/directives/*.js': 'coverage',
+      'app/js/filters/*.js': 'coverage',
+      'app/js/services/*.js': 'coverage'
+    },
+
     // test results reporter to use
     // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
-    reporters: ['progress', 'junit'],
+    reporters: ['progress', 'junit', 'coverage'],
     junitReporter :{
       outputFile: '../../../test/karma-test-results.xml'
+    },
+
+    coverageReporter: {
+      type : 'cobertura',
+      dir : '../../../../target/karma-reports/coverage/',
+      file : 'karma-coverage-result.xml'
     },
 
 
