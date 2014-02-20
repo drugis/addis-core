@@ -15,14 +15,19 @@
  */
 package org.drugis.addis.security;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "Account")
 public class Account {
+  @Id
   private int id;
-
   private String username;
-
   private String firstName;
 
-  private String lastName;
+ private String lastName;
 
   public Account(String username, String firstName, String lastName) {
     this(-1, username, firstName, lastName);
