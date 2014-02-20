@@ -8310,3 +8310,13 @@ input[type='file'] {
 label {
   margin-top: 0.5rem;
 }
+
+/* line 20, ../../sass/addis-drugis.scss */
+.inline-header {
+  display: inline;
+}
+
+/* line 24, ../../sass/addis-drugis.scss */
+.project-description {
+  padding: 10px 0px;
+}
