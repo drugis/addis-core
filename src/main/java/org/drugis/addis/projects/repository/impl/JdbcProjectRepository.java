@@ -1,6 +1,7 @@
 package org.drugis.addis.projects.repository.impl;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.projects.Outcome;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
@@ -18,13 +19,13 @@ import sun.util.logging.resources.logging;
 
 import javax.inject.Inject;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
 /**
  * Created by daan on 2/6/14.
  */
-@Repository
 public class JdbcProjectRepository implements ProjectRepository {
 
   final static Logger logger = LoggerFactory.getLogger(JdbcProjectRepository.class);

@@ -1,8 +1,19 @@
+<ul ng-show="loading.loaded" class="breadcrumbs">
+  <li><a href="#/projects">Projects</a></li>
+  <li class="current active">{{project.name}}</li>
+</ul>
 <div>
   <div class="row">
     <div class="columns large-12">
-      Project:
-      {{project.name}}, {{project.description}}, {{project.namespace}}
+      <h2 class="inline-header" title="Project title">{{project.name}}</h2>
+
+      <h3 class="subheader inline-header" title="Trialverse namespace">/ {{project.trialverse.name}}</h3>
+
+      <div class="row">
+        <div class="columns large-6 small-12">
+          <p class="project-description" title="Project description">{{project.description}}</p>
+        </div>
+      </div>
     </div>
   </div>
   <div class="row">

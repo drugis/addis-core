@@ -3,17 +3,32 @@ package org.drugis.addis.projects;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.Trialverse;
 
+import javax.persistence.*;
+import java.util.List;
+
 /**
  * Created by daan on 2/6/14.
  */
+@Entity
+@Table(name = "Project")
 public class Project {
-  private Account owner;
+  @Id
   private int id;
+  @ManyToOne
+  private Account owner;
   private String name;
   private String description;
+  @Transient
   private Trialverse trialverse;
 
   public Project() {
+  }
+
+  public Project(Account owner, String name, String description, Trialverse trialverse) {
+    this.owner = owner;
+    this.name = name;
+    this.description = description;
+    this.trialverse = trialverse;
   }
 
   public Project(int id, Account owner, String name, String description, Trialverse trialverse) {

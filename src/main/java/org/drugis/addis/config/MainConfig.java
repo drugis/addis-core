@@ -15,21 +15,30 @@
  */
 package org.drugis.addis.config;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jndi.JndiTemplate;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import java.util.Properties;
 
 @Configuration
 @ComponentScan(basePackages = "org.drugis.addis", excludeFilters = { @Filter(Configuration.class) })
 @EnableTransactionManagement
+@EnableJpaRepositories(basePackages = {"org.drugis.addis"})
 public class MainConfig {
 	@Bean
 	public DataSource dataSource() {
@@ -44,12 +53,45 @@ public class MainConfig {
 	}
 
 	@Bean
-	public PlatformTransactionManager transactionManager() {
-		return new DataSourceTransactionManager(dataSource());
+	public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+		JpaTransactionManager transactionManager = new JpaTransactionManager();
+    transactionManager.setEntityManagerFactory(entityManagerFactory);
+    return transactionManager;
 	}
 
 	@Bean
 	public JdbcTemplate jdbcTemplate() {
 		return new JdbcTemplate(dataSource());
 	}
+
+  @Bean
+  public PersistenceExceptionTranslationPostProcessor exceptionTranslation(){
+    return new PersistenceExceptionTranslationPostProcessor();
+  }
+
+  @Bean
+  public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+    vendorAdapter.setGenerateDdl(false);
+    LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+    em.setJpaVendorAdapter(vendorAdapter);
+    em.setPackagesToScan("org.drugis.addis");
+    em.setDataSource(dataSource());
+    em.afterPropertiesSet();
+    em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
+    em.setJpaProperties(additionalProperties());
+    return em;
+  }
+
+  Properties additionalProperties() {
+    return new Properties() {
+      {
+        setProperty("" +
+          "", "create-drop");
+
+        setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+      }
+    };
+  }
+
 }

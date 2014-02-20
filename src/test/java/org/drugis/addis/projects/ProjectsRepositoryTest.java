@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.mockito.Mockito.*;
+
+import java.util.ArrayList;
 import java.util.Collection;
 
 import static org.junit.Assert.*;
@@ -58,5 +60,4 @@ public class ProjectsRepositoryTest {
     Project result = projectRepository.getProjectById(1);
     assertEquals(project, result);
   }
-
 }

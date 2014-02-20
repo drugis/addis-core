@@ -7972,7 +7972,7 @@ input[type='file'] {
 /* line 73, ../../sass/_main.scss */
 .alert-box {
   margin-top: 0.5rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 /*
@@ -8298,15 +8298,24 @@ input[type='file'] {
 .color-stripe {
   background: #cc3333;
   height: 0.45rem;
-  margin-bottom: 0.75rem;
 }
 
-/* line 12, ../../sass/addis-drugis.scss */
+/* line 11, ../../sass/addis-drugis.scss */
 .alert-box-message {
   padding-right: 1.25rem;
 }
 
-/* line 16, ../../sass/addis-drugis.scss */
+/* line 15, ../../sass/addis-drugis.scss */
 label {
   margin-top: 0.5rem;
+}
+
+/* line 19, ../../sass/addis-drugis.scss */
+.inline-header {
+  display: inline;
+}
+
+/* line 23, ../../sass/addis-drugis.scss */
+.project-description {
+  padding: 10px 0px;
 }

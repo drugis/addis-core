@@ -5,8 +5,7 @@
 
 .color-stripe {
   background: $drugis-color; 
-  height: 0.45rem;  
-  margin-bottom: 0.75rem;
+  height: 0.45rem;
 }
 
 .alert-box-message {
@@ -15,4 +14,12 @@
 
 label {
   margin-top: 0.5rem;
+}
+
+.inline-header {
+  display: inline;
+}
+
+.project-description {
+  padding: 10px 0px;
 }
