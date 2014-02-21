@@ -1,19 +1,26 @@
 package org.drugis.addis.projects;
 
+import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.config.RepositoryTestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.Trialverse;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.transaction.Transactional;
+
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -21,7 +28,8 @@ import static org.junit.Assert.*;
  * Created by daan on 2/11/14.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {RepositoryTestConfig.class})
+@ContextConfiguration(classes = {JpaRepositoryTestConfig.class})
+@Transactional
 public class ProjectsRepositoryTest {
   @Autowired
   private ProjectRepository projectRepository;
@@ -40,12 +48,13 @@ public class ProjectsRepositoryTest {
 
   @Test
   public void testCreate() {
-    Account account = mock(Account.class);
-    when(account.getId()).thenReturn(1);
+    Account account = new Account(1, "foo@bar.com", "Connor", "Bonnor");
     assertEquals(3, projectRepository.query().size());
     Project project = projectRepository.create(account, "newProjectName", "newProjectDesc", new Trialverse("newTrialVerseNamespace"));
     assertEquals(project.getOwner(), account);
-    assertEquals(4, projectRepository.query().size());
+    Collection<Project> projectList = projectRepository.query();
+    assertEquals(4, projectList.size());
+    assertNotNull(project.getId());
   }
 
   @Test(expected = ResourceDoesNotExistException.class)

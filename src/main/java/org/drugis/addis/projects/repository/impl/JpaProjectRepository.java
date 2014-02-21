@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.Collection;
 
@@ -17,7 +16,7 @@ import java.util.Collection;
  * Created by daan on 2/20/14.
  */
 @Repository
-public class JpaProjectRepository implements ProjectRepository{
+public class JpaProjectRepository implements ProjectRepository {
 
   @PersistenceContext
   EntityManager em;
@@ -29,12 +28,16 @@ public class JpaProjectRepository implements ProjectRepository{
 
   @Override
   public Project getProjectById(Integer projectId) throws ResourceDoesNotExistException {
-    return em.find(Project.class, projectId);
+    Project project = em.find(Project.class, projectId);
+    if (project == null) {
+      throw new ResourceDoesNotExistException();
+    }
+    return project;
   }
 
   @Override
   public Collection<Project> queryByOwnerId(Integer ownerId) {
-    TypedQuery<Project> query = em.createQuery("from Project where Project.owner.id = :ownerId", Project.class);
+    TypedQuery<Project> query = em.createQuery("from Project p where p.owner.id = :ownerId", Project.class);
     query.setParameter("ownerId", ownerId);
     return query.getResultList();
   }
@@ -43,6 +46,7 @@ public class JpaProjectRepository implements ProjectRepository{
   public Project create(Account owner, String name, String description, Trialverse trialverse) {
     Project project = new Project(owner, name, description, trialverse);
     em.persist(project);
+    em.flush();
     return project;
   }
 }

@@ -15,19 +15,23 @@
  */
 package org.drugis.addis.security;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 
 @Entity
-@Table(name = "Account")
+@Table
 public class Account {
+
   @Id
-  private int id;
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
+
   private String username;
   private String firstName;
+  private String lastName;
 
- private String lastName;
+  protected Account() {
+  }
 
   public Account(String username, String firstName, String lastName) {
     this(-1, username, firstName, lastName);
@@ -40,23 +44,36 @@ public class Account {
     this.lastName = lastName;
   }
 
-  public Account() {
+  public Integer getId() {
+    return id;
   }
 
-  public int getId() {
-    return id;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public String getUsername() {
     return username;
   }
 
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
   public String getFirstName() {
     return firstName;
   }
 
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
   public String getLastName() {
     return lastName;
+  }
+
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
   }
 
   @Override
@@ -66,9 +83,9 @@ public class Account {
 
     Account account = (Account) o;
 
-    if (id != account.id) return false;
-    if (firstName != null ? !firstName.equals(account.firstName) : account.firstName != null) return false;
-    if (lastName != null ? !lastName.equals(account.lastName) : account.lastName != null) return false;
+    if (!firstName.equals(account.firstName)) return false;
+    if (!id.equals(account.id)) return false;
+    if (!lastName.equals(account.lastName)) return false;
     if (!username.equals(account.username)) return false;
 
     return true;
@@ -76,10 +93,10 @@ public class Account {
 
   @Override
   public int hashCode() {
-    int result = id;
+    int result = id.hashCode();
     result = 31 * result + username.hashCode();
-    result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
-    result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+    result = 31 * result + firstName.hashCode();
+    result = 31 * result + lastName.hashCode();
     return result;
   }
 }
