@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse;
 
+
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -16,7 +17,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.security.Principal;
 
 import static org.hamcrest.Matchers.is;

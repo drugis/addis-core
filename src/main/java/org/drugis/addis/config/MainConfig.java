@@ -75,12 +75,13 @@ public class MainConfig {
     vendorAdapter.setGenerateDdl(false);
     vendorAdapter.setShowSql(true);
     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+    em.setJpaProperties(additionalProperties());
     em.setJpaVendorAdapter(vendorAdapter);
     em.setPackagesToScan("org.drugis.addis");
     em.setDataSource(dataSource());
     em.afterPropertiesSet();
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
-    em.setJpaProperties(additionalProperties());
+
     return em;
   }
 
