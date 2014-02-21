@@ -300,9 +300,10 @@
       <plugin>
         <groupId>org.apache.tomcat.maven</groupId>
         <artifactId>tomcat7-maven-plugin</artifactId>
-        <version>2.0</version>
+        <version>2.2</version>
         <configuration>
           <path>/</path>
+          <contextFile>/home/connor/Code/addis-core/src/main/webapp/META-INF/context.xml</contextFile>
           <systemProperties>
             <ADDIS_CORE_DB_DRIVER>${env.ADDIS_CORE_DB_DRIVER}</ADDIS_CORE_DB_DRIVER>
             <ADDIS_CORE_DB_URL>${env.ADDIS_CORE_DB_URL}</ADDIS_CORE_DB_URL>
