@@ -1,13 +1,20 @@
 package org.drugis.addis.projects.repository.impl;
 
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.Trialverse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.Assert;
+import sun.util.logging.resources.logging;
 
 import javax.inject.Inject;
 import java.sql.*;
@@ -19,6 +26,8 @@ import java.util.Map;
  */
 @Repository
 public class JdbcProjectRepository implements ProjectRepository {
+
+  final static Logger logger = LoggerFactory.getLogger(JdbcProjectRepository.class);
 
   @Inject
   private JdbcTemplate jdbcTemplate;
@@ -43,6 +52,24 @@ public class JdbcProjectRepository implements ProjectRepository {
   }
 
   @Override
+  public Project getProjectById(Integer projectId) throws ResourceDoesNotExistException {
+    Assert.notNull(projectId, "project id can not ben null");
+    String queryString = "SELECT p.id, a.id ownerId," +
+            " a.username ownerUserName," +
+            " a.firstname ownerFirstName," +
+            " a.lastname ownerLastName," +
+            " p.name, p.description, p.trialverse " +
+            "FROM Project p, Account a" +
+            " WHERE p.owner = a.id AND p.id = ?";
+    try {
+      return jdbcTemplate.queryForObject(queryString, rowMapper, projectId);
+    } catch (DataAccessException e) {
+      logger.error(e.toString());
+      throw new ResourceDoesNotExistException();
+    }
+  }
+
+  @Override
   public Collection<Project> queryByOwnerId(Integer ownerId) {
     String queryString = "SELECT p.id, a.id ownerId," +
             " a.username ownerUserName," +
@@ -54,7 +81,7 @@ public class JdbcProjectRepository implements ProjectRepository {
     PreparedStatementCreatorFactory pscf = new PreparedStatementCreatorFactory(queryString);
     pscf.addParameter(new SqlParameter(Types.INTEGER));
     return jdbcTemplate.query(
-            pscf.newPreparedStatementCreator(new Object[] { ownerId }), rowMapper);
+            pscf.newPreparedStatementCreator(new Object[]{ownerId}), rowMapper);
   }
 
   @Override

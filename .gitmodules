@@ -4,4 +4,4 @@
 	branch = master
 [submodule "src/main/webapp/resources/app/js/bower_components"]
 	path = src/main/webapp/resources/app/js/bower_components
-	url = https://github.com/ConnorStroomberg/addis-core-bower.git
+	url = https://github.com/drugis/addis-core-bower.git

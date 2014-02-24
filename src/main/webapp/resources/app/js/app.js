@@ -27,12 +27,22 @@ define(
     app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
       var baseTemplatePath = "app/views/";
 
+      $stateProvider
+        .state('projects',
+          { url: '/projects',
+            templateUrl: baseTemplatePath + 'projects.html',
+            controller: 'ProjectsController'
+          })
+        .state('project',
+          { url: '/projects/:id',
+            templateUrl: baseTemplatePath + 'project.html',
+            controller: 'SingleProjectController'
+          }
+        );
+
       // Default route
-      $stateProvider.state('projects',
-        { url: '/projects',
-          templateUrl: baseTemplatePath + 'projects.html',
-          controller: "ProjectsController" });
       $urlRouterProvider.otherwise('/projects');
+
     }]);
 
 

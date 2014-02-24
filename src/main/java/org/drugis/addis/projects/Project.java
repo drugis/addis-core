@@ -51,4 +51,30 @@ public class Project {
   public void setTrialverse(Trialverse trialverse) {
     this.trialverse = trialverse;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Project project = (Project) o;
+
+    if (id != project.id) return false;
+    if (description != null ? !description.equals(project.description) : project.description != null) return false;
+    if (!name.equals(project.name)) return false;
+    if (!owner.equals(project.owner)) return false;
+    if (!trialverse.equals(project.trialverse)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = owner.hashCode();
+    result = 31 * result + id;
+    result = 31 * result + name.hashCode();
+    result = 31 * result + (description != null ? description.hashCode() : 0);
+    result = 31 * result + trialverse.hashCode();
+    return result;
+  }
 }

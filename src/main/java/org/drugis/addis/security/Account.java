@@ -16,41 +16,65 @@
 package org.drugis.addis.security;
 
 public class Account {
-	private int id;
+  private int id;
 
-	private String username;
+  private String username;
 
-	private String firstName;
+  private String firstName;
 
-	private String lastName;
+  private String lastName;
 
-	public Account(String username, String firstName, String lastName) {
-		this (-1, username, firstName, lastName);
-	}
-	
-	public Account(int id, String username, String firstName, String lastName) {
-		this.id = id;
-		this.username = username;
-		this.firstName = firstName;
-		this.lastName = lastName;
-	}
+  public Account(String username, String firstName, String lastName) {
+    this(-1, username, firstName, lastName);
+  }
+
+  public Account(int id, String username, String firstName, String lastName) {
+    this.id = id;
+    this.username = username;
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
 
   public Account() {
   }
-	
-	public int getId() {
-		return id;
-	}
 
-	public String getUsername() {
-		return username;
-	}
+  public int getId() {
+    return id;
+  }
 
-	public String getFirstName() {
-		return firstName;
-	}
+  public String getUsername() {
+    return username;
+  }
 
-	public String getLastName() {
-		return lastName;
-	}
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public String getLastName() {
+    return lastName;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Account account = (Account) o;
+
+    if (id != account.id) return false;
+    if (firstName != null ? !firstName.equals(account.firstName) : account.firstName != null) return false;
+    if (lastName != null ? !lastName.equals(account.lastName) : account.lastName != null) return false;
+    if (!username.equals(account.username)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = id;
+    result = 31 * result + username.hashCode();
+    result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+    result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+    return result;
+  }
 }
