@@ -1,5 +1,6 @@
 package org.drugis.addis.projects;
 
+import junit.framework.Assert;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.config.RepositoryTestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -14,11 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import static org.mockito.Mockito.*;
 
+import java.lang.reflect.Array;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,6 +39,9 @@ import static org.junit.Assert.*;
 public class ProjectsRepositoryTest {
   @Autowired
   private ProjectRepository projectRepository;
+
+  @PersistenceContext
+  EntityManager em;
 
   @Test
   public void testQuery() {
@@ -64,9 +73,29 @@ public class ProjectsRepositoryTest {
 
   @Test
   public void testGetProjectById() throws Exception {
-    Account account = new Account(1, "foo@bar.com", "Connor", "Bonnor");
+    Account account = em.find(Account.class, 1);
+    Outcome outcome1 = em.find(Outcome.class, 1);
+    Outcome outcome2 = em.find(Outcome.class, 2);
+
     Project project = new Project(1, account, "testname 1", "testdescription 1", new Trialverse("org.drugis.addis.trialverse://testtrialverse1"));
+    project.addOutcome(outcome1);
+    project.addOutcome(outcome2);
+
     Project result = projectRepository.getProjectById(1);
     assertEquals(project, result);
   }
+
+  @Test
+  public void testUpdateOutcomes() throws Exception {
+    Project project = projectRepository.getProjectById(1);
+
+    Outcome outcomeNew = new Outcome("nameNew", "motivationNew", "URINew");
+    project.addOutcome(outcomeNew);
+
+    em.persist(project);
+
+    Project projectUpdated = projectRepository.getProjectById(1);
+    assertTrue(projectUpdated.getOutcomes().contains(outcomeNew));
+  }
+
 }

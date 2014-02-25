@@ -35,3 +35,13 @@ CREATE TABLE Project (id SERIAL NOT NULL,
             trialverse VARCHAR NOT NULL,
             PRIMARY KEY (id),
             FOREIGN KEY(owner) REFERENCES Account(id));
+
+-- changeset reidd:2
+
+CREATE TABLE Outcome (id SERIAL NOT NULL,
+                      project INT,
+                      name VARCHAR NOT NULL,
+                      description TEXT NOT NULL,
+                      trialverse VARCHAR NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(project) REFERENCES Project(id));

@@ -1,22 +1,30 @@
 package org.drugis.addis.projects;
 
-import java.net.URI;
+import javax.persistence.*;
 
 /**
  * Created by daan on 2/20/14.
  */
+@Entity
 public class Outcome {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
   private String name;
   private String motivation;
-  private URI semanticOutcome;
+  private String semanticOutcome;
 
   public Outcome() {
   }
 
-  public Outcome(String name, String motivation, URI semanticOutcome) {
+  public Outcome(String name, String motivation, String semanticOutcome) {
     this.name = name;
     this.motivation = motivation;
     this.semanticOutcome = semanticOutcome;
+  }
+
+  public Integer getId() {
+    return id;
   }
 
   public String getName() {
@@ -27,7 +35,7 @@ public class Outcome {
     return motivation;
   }
 
-  public URI getSemanticOutcome() {
+  public String getSemanticOutcome() {
     return semanticOutcome;
   }
 
@@ -38,6 +46,7 @@ public class Outcome {
 
     Outcome outcome = (Outcome) o;
 
+    if (!id.equals(outcome.id)) return false;
     if (!motivation.equals(outcome.motivation)) return false;
     if (!name.equals(outcome.name)) return false;
     if (!semanticOutcome.equals(outcome.semanticOutcome)) return false;
@@ -47,7 +56,8 @@ public class Outcome {
 
   @Override
   public int hashCode() {
-    int result = name.hashCode();
+    int result = id.hashCode();
+    result = 31 * result + name.hashCode();
     result = 31 * result + motivation.hashCode();
     result = 31 * result + semanticOutcome.hashCode();
     return result;
