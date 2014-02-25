@@ -19,4 +19,6 @@ public interface ProjectRepository {
 
   Collection<Project> queryByOwnerId(Integer ownerId);
   Project create(Account owner, String name, String description, Trialverse trialverse);
+
+  Project update(Project body);
 }

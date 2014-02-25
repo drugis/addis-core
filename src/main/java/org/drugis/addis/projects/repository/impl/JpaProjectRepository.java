@@ -1,6 +1,7 @@
 package org.drugis.addis.projects.repository.impl;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.projects.Outcome;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
@@ -46,7 +47,16 @@ public class JpaProjectRepository implements ProjectRepository {
   public Project create(Account owner, String name, String description, Trialverse trialverse) {
     Project project = new Project(owner, name, description, trialverse);
     em.persist(project);
-    em.flush();
     return project;
+  }
+
+  @Override
+  public Project update(Project detachedProject) {
+    for(Outcome outcome : detachedProject.getOutcomes()){
+      if(outcome.getId() == null) {
+        em.persist(outcome);
+      }
+    }
+    return em.merge(detachedProject);
   }
 }

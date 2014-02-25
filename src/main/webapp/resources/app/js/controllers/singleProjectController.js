@@ -8,6 +8,10 @@ define([], function() {
     $scope.project.$promise.then(function() {
       $scope.loading.loaded = true;
     });
+    $scope.addOutcome = function(outcome) {
+      $scope.project.outcomes.push(outcome);
+      ProjectsService.save($scope.project);
+    };
   };
   return dependencies.concat(ProjectsController);
 });

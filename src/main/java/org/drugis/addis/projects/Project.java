@@ -30,19 +30,21 @@ public class Project {
   @Embedded
   private Trialverse trialverse;
 
-  @OneToMany(cascade = CascadeType.ALL)
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinColumn(name="project")
   private List<Outcome> outcomes = new ArrayList<>();
+
 
   public Project() {
   }
 
-  public Project(Integer id, Account owner, String name, String description, Trialverse trialverse) {
+  public Project(Integer id,Account owner, String name, String description, Trialverse trialverse, List<Outcome> outcomes) {
     this.id = id;
     this.owner = owner;
     this.name = name;
     this.description = description;
     this.trialverse = trialverse;
+    this.outcomes = outcomes;
   }
 
   public Project(Account owner, String name, String description, Trialverse trialverse) {
@@ -52,10 +54,12 @@ public class Project {
     this.trialverse = trialverse;
   }
 
-  public Project(Account owner, String name, String description) {
-    this.owner = owner;
-    this.name = name;
-    this.description = description;
+  public void addOutcome(Outcome outcome) {
+    outcomes.add(outcome);
+  }
+
+  public void removeOutcome(Outcome outcome) {
+    outcomes.remove(outcome);
   }
 
   public Integer getId() {
@@ -98,16 +102,12 @@ public class Project {
     this.trialverse = trialverse;
   }
 
-  public void addOutcome(Outcome outcome) {
-    outcomes.add(outcome);
-  }
-
-  public void removeOutcome(Outcome outcome) {
-    outcomes.remove(outcome);
-  }
-
   public List<Outcome> getOutcomes() {
     return outcomes;
+  }
+
+  public void setOutcomes(List<Outcome> outcomes) {
+    this.outcomes = outcomes;
   }
 
   @Override

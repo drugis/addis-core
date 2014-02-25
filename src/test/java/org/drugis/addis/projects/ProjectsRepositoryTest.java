@@ -9,6 +9,7 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.Trialverse;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +78,7 @@ public class ProjectsRepositoryTest {
     Outcome outcome1 = em.find(Outcome.class, 1);
     Outcome outcome2 = em.find(Outcome.class, 2);
 
-    Project project = new Project(1, account, "testname 1", "testdescription 1", new Trialverse("org.drugis.addis.trialverse://testtrialverse1"));
+    Project project = new Project(1, account, "testname 1", "testdescription 1", new Trialverse("org.drugis.addis.trialverse://testtrialverse1"), new ArrayList<Outcome>());
     project.addOutcome(outcome1);
     project.addOutcome(outcome2);
 
@@ -96,6 +97,20 @@ public class ProjectsRepositoryTest {
 
     Project projectUpdated = projectRepository.getProjectById(1);
     assertTrue(projectUpdated.getOutcomes().contains(outcomeNew));
+  }
+
+  @Test
+  public void testUpdateProject() throws Exception {
+    Project project = em.find(Project.class, 1);
+    em.detach(project);
+
+    Outcome outcomeNew = new Outcome("nameNew", "motivationNew", "URINew");
+    project.addOutcome(outcomeNew);
+
+    Project updated = projectRepository.update(project);
+
+    assertTrue(updated.getOutcomes().contains(outcomeNew));
+    assertTrue(em.contains(updated));
   }
 
 }

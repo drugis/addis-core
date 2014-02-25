@@ -1,6 +1,6 @@
 define(['angular', 'angular-mocks', 'controllers'],
   function () {
-    describe("ProjectsController", function () {
+    describe("The projectsController", function () {
       var scope, window, ctrl, projectsService, trialverseService;
       var mockProjects =
         [

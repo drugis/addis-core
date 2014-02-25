@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Created by daan on 2/6/14.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes= {TestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 @WebAppConfiguration
 public class ProjectsControllerTest {
 
@@ -58,8 +58,8 @@ public class ProjectsControllerTest {
   private Principal user;
 
   private Account john = new Account(1, "a", "john", "lennon"),
-          paul = new Account(2, "a", "paul", "mc cartney"),
-          gert = new Account(3, "gert", "Gert", "van Valkenhoef");
+    paul = new Account(2, "a", "paul", "mc cartney"),
+    gert = new Account(3, "gert", "Gert", "van Valkenhoef");
 
 
   @Before
@@ -93,8 +93,8 @@ public class ProjectsControllerTest {
 
   @Test
   public void testQueryProjects() throws Exception {
-    Project project = new Project(1 ,john, "name", "desc", new Trialverse("ns1"));
-    Project project2 = new Project(2 ,paul, "otherName", "other description", new Trialverse("ns2"));
+    Project project = new Project(1, john, "name", "desc", new Trialverse("ns1"), new ArrayList<Outcome>());
+    Project project2 = new Project(2, paul, "otherName", "other description", new Trialverse("ns2"), new ArrayList<Outcome>());
     ArrayList projects = new ArrayList();
     projects.add(project);
     projects.add(project2);
@@ -116,16 +116,16 @@ public class ProjectsControllerTest {
 
   @Test
   public void testQueryProjectsWithQueryString() throws Exception {
-    Project project = new Project(2, paul, "test2", "desc", new Trialverse("ns1"));
+    Project project = new Project(2, paul, "test2", "desc", new Trialverse("ns1"), new ArrayList<Outcome>());
     ArrayList projects = new ArrayList();
     projects.add(project);
     when(projectRepository.queryByOwnerId(paul.getId())).thenReturn(projects);
 
     mockMvc.perform(get("/projects?owner=2").principal(user))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$", hasSize(projects.size())))
-            .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())));
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$", hasSize(projects.size())))
+      .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())));
 
     verify(projectRepository).queryByOwnerId(paul.getId());
     verify(accountRepository).findAccountByUsername("gert");
@@ -133,25 +133,25 @@ public class ProjectsControllerTest {
 
   @Test
   public void testCreateProject() throws Exception {
-    Project project = new Project(1, gert, "testname", "testdescription", new Trialverse("testnamespace"));
+    Project project = new Project(1, gert, "testname", "testdescription", new Trialverse("testnamespace"), new ArrayList<Outcome>());
     String jsonContent = TestUtils.createJson(project);
     when(projectRepository.create(project.getOwner(), project.getName(), project.getDescription(), project.getTrialverse())).thenReturn(project);
     mockMvc.perform(post("/projects").principal(user).content(jsonContent).contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.name", is("testname")));
+      .andExpect(status().isCreated())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.name", is("testname")));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).create(project.getOwner(), project.getName(), project.getDescription(), project.getTrialverse());
   }
 
   @Test
   public void testGetSingleProject() throws Exception {
-    Project project = new Project(1, john, "name", "desc", new Trialverse("ns1"));
+    Project project = new Project(1, john, "name", "desc", new Trialverse("ns1"), new ArrayList<Outcome>());
     when(projectRepository.getProjectById(project.getId())).thenReturn(project);
     mockMvc.perform(get("/projects/" + project.getId()).principal(user))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.id", is(project.getId())));
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.id", is(project.getId())));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).getProjectById(project.getId());
   }
@@ -160,9 +160,39 @@ public class ProjectsControllerTest {
   public void testGetNonexistentProject() throws Exception {
     when(projectRepository.getProjectById(1)).thenThrow(new ResourceDoesNotExistException());
     mockMvc.perform(get("/projects/1").principal(user))
-            .andExpect(redirectedUrl("/error/404"));
+      .andExpect(redirectedUrl("/error/404"));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).getProjectById(1);
+  }
+
+  @Test
+  public void testUpdate() throws Exception {
+    Project project = new Project(1, gert, "name", "desc", new Trialverse("ns1"), new ArrayList<Outcome>());
+    project.addOutcome(new Outcome(1, "name", "motivation", "semantics"));
+    String jsonContent = TestUtils.createJson(project);
+    when(projectRepository.getProjectById(1)).thenReturn(project);
+    when(projectRepository.update(project)).thenReturn(project);
+
+    mockMvc.perform(post("/projects/1").principal(user).content(jsonContent).contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.id", is(project.getId())));
+    verify(projectRepository).getProjectById(1);
+    verify(projectRepository).update(project);
+  }
+
+  @Test
+  public void testUpdateNotOwnedProjectFails() throws Exception {
+    Project project = new Project(1, paul, "name", "desc", new Trialverse("ns1"), new ArrayList<Outcome>());
+    project.addOutcome(new Outcome(1, "name", "motivation", "semantics"));
+    String jsonContent = TestUtils.createJson(project);
+    when(projectRepository.getProjectById(1)).thenReturn(project);
+    when(projectRepository.update(project)).thenReturn(project);
+
+    mockMvc.perform(post("/projects/1").principal(user).content(jsonContent).contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(redirectedUrl("/error/403"));
+    verify(projectRepository).getProjectById(1);
+
   }
 
 }

@@ -17,6 +17,13 @@ public class Outcome {
   public Outcome() {
   }
 
+  public Outcome(Integer id, String name, String motivation, String semanticOutcome) {
+    this.id = id;
+    this.name = name;
+    this.motivation = motivation;
+    this.semanticOutcome = semanticOutcome;
+  }
+
   public Outcome(String name, String motivation, String semanticOutcome) {
     this.name = name;
     this.motivation = motivation;
@@ -27,16 +34,32 @@ public class Outcome {
     return id;
   }
 
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
   public String getName() {
     return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String getMotivation() {
     return motivation;
   }
 
+  public void setMotivation(String motivation) {
+    this.motivation = motivation;
+  }
+
   public String getSemanticOutcome() {
     return semanticOutcome;
+  }
+
+  public void setSemanticOutcome(String semanticOutcome) {
+    this.semanticOutcome = semanticOutcome;
   }
 
   @Override

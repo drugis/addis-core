@@ -2,6 +2,7 @@ package org.drugis.addis.projects.controller;
 
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.projects.Outcome;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
@@ -65,6 +66,16 @@ public class ProjectController {
     response.setStatus(HttpServletResponse.SC_CREATED);
     response.setHeader("Location", request.getRequestURL() + "/");
     return Project;
+  }
+
+  @RequestMapping(value = "/projects/{projectId}", method = RequestMethod.POST)
+  @ResponseBody
+  public Project update(Principal currentUser, @PathVariable Integer projectId, @RequestBody Project body) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Project project = projectsRepository.getProjectById(projectId);
+    if (!project.getOwner().getUsername().equals(currentUser.getName())) {
+      throw new MethodNotAllowedException();
+    }
+    return projectsRepository.update(body);
   }
 
   @ResponseStatus(HttpStatus.FORBIDDEN)
