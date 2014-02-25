@@ -25,11 +25,12 @@ require.config({
   },
   baseUrl: '/base/app/js',
   shim: {
-    'angular': { exports : 'angular'},
-    'angular-resource': { deps:['angular'], exports: 'angular-resource'},
+    'foundation': {deps: ['jQuery']},
+    'angular': { deps: ['jQuery'], exports : 'angular'},
+    'angular-ui-router': { deps: ['angular']},
+    'angular-resource': { deps: ['angular'], exports: 'angular-resource'},
     'angular-mocks': { deps: ['angular'], exports: 'angular.mock' },
     'underscore': { exports : '_'},
-    'jQuery': { exports : 'jQuery'},
     'jasmine': { exports: 'jasmine' },
     'jasmine-html': { deps: ['jasmine'], exports: 'jasmine' }
   },
