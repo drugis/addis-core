@@ -1,17 +1,15 @@
 <Context allowLinking="true">
   <Manager pathname="" /> <!-- disable session persistence since it doesn't work for OAuth anyway -->
 
-  <!--<Resource name="jdbc/addiscore" auth="Container"-->
-  <!--type="javax.sql.DataSource" driverClassName="${ADDIS_CORE_DB_DRIVER}"-->
-  <!--url="${ADDIS_CORE_DB_URL}"-->
-  <!--username="${ADDIS_CORE_DB_USERNAME}" password="${ADDIS_CORE_DB_PASSWORD}"-->
-  <!--maxActive="20" maxIdle="10" maxWait="-1"/>-->
+  <Resource
+          name="jdbc/addiscore"
+          auth="Container"
+          type="javax.sql.DataSource" driverClassName="${ADDIS_CORE_DB_DRIVER}"
+          url="${ADDIS_CORE_DB_URL}"
+          username="${ADDIS_CORE_DB_USERNAME}" password="${ADDIS_CORE_DB_PASSWORD}"
+          maxActive="20" maxIdle="10" maxWait="-1"/>
 
-
-  <Resource name="jdbc/addiscore" auth="Container"
-            type="javax.sql.DataSource" driverClassName="org.postgresql.Driver"
-            url="jdbc:postgresql://localhost/addiscore"
-            username="addiscore" password="develop"
-            maxActive="20" maxIdle="10" maxWait="-1"/>
-
+  <ResourceLink name="jdbc/addiscore"
+                global="jdbc/addiscore"
+                type="javax.sql.DataSource"/>
 </Context>	
