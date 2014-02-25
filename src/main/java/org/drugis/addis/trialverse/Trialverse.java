@@ -1,9 +1,14 @@
 package org.drugis.addis.trialverse;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
 /**
  * Created by connor on 2/12/14.
  */
+@Embeddable
 public class Trialverse {
+  @Column(name = "trialverse")
   private String name;
 
   public Trialverse() {
@@ -16,6 +21,10 @@ public class Trialverse {
 
   public String getName() {
     return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   @Override

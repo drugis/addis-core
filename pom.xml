@@ -9,11 +9,12 @@
   <properties>
     <org.springframework.social-version>1.1.0.BUILD-SNAPSHOT</org.springframework.social-version>
     <spring-social-google-version>1.0.0.M3</spring-social-google-version>
-    <org.springframework-version>3.2.6.RELEASE</org.springframework-version>
+    <org.springframework-version>4.0.1.RELEASE</org.springframework-version>
     <org.springframework.security-version>3.2.0.RC1</org.springframework.security-version>
     <jackson.version>1.9.13</jackson.version>
     <java-version>1.7</java-version>
     <org.slf4j-version>1.7.5</org.slf4j-version>
+    <hibernate-version>4.3.1.Final</hibernate-version>
 
   </properties>
   <dependencies>
@@ -74,6 +75,17 @@
       <artifactId>spring-tx</artifactId>
       <version>${org.springframework-version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+      <version>${org.springframework-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-jpa</artifactId>
+      <version>1.4.3.RELEASE</version>
+    </dependency>
+
 
     <!-- TESTING -->
     <dependency>
@@ -101,12 +113,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <version>${org.springframework-version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
       <version>0.8.1</version>
@@ -124,24 +130,12 @@
       <version>2.3.1</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>cobertura-maven-plugin</artifactId>
-      <version>2.6</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
 
     <!-- Servlet -->
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -158,14 +152,16 @@
     </dependency>
     <dependency>
       <groupId>javax.servlet.jsp.jstl</groupId>
-      <artifactId>jstl-api</artifactId>
-      <version>1.2</version>
+      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
+      <version>1.2.1</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
       <version>1.2</version>
     </dependency>
+
 
     <!-- Jackson (Json)-->
     <dependency>
@@ -181,6 +177,18 @@
       <version>9.1-901-1.jdbc4</version>
     </dependency>
 
+    <!-- Hibernate -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>${hibernate-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+      <version>${hibernate-version}</version>
+    </dependency>
+
     <!-- Logging -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -191,15 +199,18 @@
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
       <version>${org.slf4j-version}</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.0.13</version>
-      <scope>runtime</scope>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.6.1</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>4.0.1.RELEASE</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <repositories>
@@ -287,11 +298,12 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>tomcat-maven-plugin</artifactId>
-        <version>1.1</version>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.2</version>
         <configuration>
           <path>/</path>
+          <contextFile>${basedir}/src/main/webapp/META-INF/context.xml</contextFile>
           <systemProperties>
             <ADDIS_CORE_DB_DRIVER>${env.ADDIS_CORE_DB_DRIVER}</ADDIS_CORE_DB_DRIVER>
             <ADDIS_CORE_DB_URL>${env.ADDIS_CORE_DB_URL}</ADDIS_CORE_DB_URL>
@@ -343,7 +355,7 @@
           <skipKarma>false</skipKarma>
           <skipTests>false</skipTests>
           <karmaFailureIgnore>false</karmaFailureIgnore>
-          <reporters>dots,junit</reporters>
+          <reporters>dots,junit,coverage</reporters>
         </configuration>
       </plugin>
     </plugins>

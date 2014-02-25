@@ -16,6 +16,7 @@ import org.drugis.addis.security.repository.AccountRepository;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.security.Principal;
 import java.util.Collection;
 
@@ -23,7 +24,8 @@ import java.util.Collection;
  * Created by daan on 2/6/14.
  */
 @Controller
-@RequestMapping(value="")
+@RequestMapping(value = "")
+@Transactional
 public class ProjectController {
 
   final static Logger logger = LoggerFactory.getLogger(ProjectController.class);
@@ -33,7 +35,7 @@ public class ProjectController {
   @Inject
   private AccountRepository accountRepository;
 
-  @RequestMapping(value="/projects", method= RequestMethod.GET)
+  @RequestMapping(value = "/projects", method = RequestMethod.GET)
   @ResponseBody
   public Collection<Project> query(Principal currentUser, @RequestParam(required = false) Integer owner) throws MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
@@ -55,13 +57,13 @@ public class ProjectController {
     }
   }
 
-  @RequestMapping(value="/projects", method=RequestMethod.POST)
+  @RequestMapping(value = "/projects", method = RequestMethod.POST)
   @ResponseBody
   public Project create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody Project body) {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     Project Project = projectsRepository.create(user, body.getName(), body.getDescription(), body.getTrialverse());
     response.setStatus(HttpServletResponse.SC_CREATED);
-    response.setHeader("Location", request.getRequestURL() + "/" );
+    response.setHeader("Location", request.getRequestURL() + "/");
     return Project;
   }
 
