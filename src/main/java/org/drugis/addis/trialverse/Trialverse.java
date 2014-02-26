@@ -11,6 +11,10 @@ public class Trialverse {
   @Column(name = "trialverse")
   private String name;
 
+  private Integer id;
+
+  private String uri;
+
   public Trialverse() {
   }
 

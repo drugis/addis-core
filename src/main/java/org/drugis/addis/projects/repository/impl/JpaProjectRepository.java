@@ -44,7 +44,7 @@ public class JpaProjectRepository implements ProjectRepository {
   }
 
   @Override
-  public Project create(Account owner, String name, String description, Trialverse trialverse) {
+  public Project create(Account owner, String name, String description, Integer trialverse) {
     Project project = new Project(owner, name, description, trialverse);
     em.persist(project);
     return project;
@@ -52,8 +52,8 @@ public class JpaProjectRepository implements ProjectRepository {
 
   @Override
   public Project update(Project detachedProject) {
-    for(Outcome outcome : detachedProject.getOutcomes()){
-      if(outcome.getId() == null) {
+    for (Outcome outcome : detachedProject.getOutcomes()) {
+      if (outcome.getId() == null) {
         em.persist(outcome);
       }
     }

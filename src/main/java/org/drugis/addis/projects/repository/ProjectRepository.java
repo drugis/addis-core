@@ -18,7 +18,8 @@ public interface ProjectRepository {
   Project getProjectById(Integer projectId) throws ResourceDoesNotExistException;
 
   Collection<Project> queryByOwnerId(Integer ownerId);
-  Project create(Account owner, String name, String description, Trialverse trialverse);
+
+  Project create(Account owner, String name, String description, Integer trialverse);
 
   Project update(Project body);
 }

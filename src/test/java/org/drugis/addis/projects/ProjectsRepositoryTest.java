@@ -60,7 +60,7 @@ public class ProjectsRepositoryTest {
   public void testCreate() {
     Account account = new Account(1, "foo@bar.com", "Connor", "Bonnor");
     assertEquals(3, projectRepository.query().size());
-    Project project = projectRepository.create(account, "newProjectName", "newProjectDesc", new Trialverse("newTrialVerseNamespace"));
+    Project project = projectRepository.create(account, "newProjectName", "newProjectDesc", 1);
     assertEquals(project.getOwner(), account);
     Collection<Project> projectList = projectRepository.query();
     assertEquals(4, projectList.size());
@@ -78,7 +78,7 @@ public class ProjectsRepositoryTest {
     Outcome outcome1 = em.find(Outcome.class, 1);
     Outcome outcome2 = em.find(Outcome.class, 2);
 
-    Project project = new Project(1, account, "testname 1", "testdescription 1", new Trialverse("org.drugis.addis.trialverse://testtrialverse1"), new ArrayList<Outcome>());
+    Project project = new Project(1, account, "testname 1", "testdescription 1", 1, new ArrayList<Outcome>());
     project.addOutcome(outcome1);
     project.addOutcome(outcome2);
 

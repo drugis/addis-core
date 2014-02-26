@@ -32,7 +32,7 @@ CREATE TABLE Project (id SERIAL NOT NULL,
             owner INT,
             name VARCHAR NOT NULL,
             description TEXT NOT NULL,
-            trialverse VARCHAR NOT NULL,
+            trialverseId INT,
             PRIMARY KEY (id),
             FOREIGN KEY(owner) REFERENCES Account(id));
 

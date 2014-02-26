@@ -1,7 +1,6 @@
 package org.drugis.addis.projects;
 
 import org.drugis.addis.security.Account;
-import org.drugis.addis.trialverse.Trialverse;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -27,8 +26,8 @@ public class Project {
   @Column
   private String description;
 
-  @Embedded
-  private Trialverse trialverse;
+  @Column
+  private Integer trialverseId;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinColumn(name="project")
@@ -38,20 +37,20 @@ public class Project {
   public Project() {
   }
 
-  public Project(Integer id,Account owner, String name, String description, Trialverse trialverse, List<Outcome> outcomes) {
+  public Project(Integer id, Account owner, String name, String description, Integer trialverseId, List<Outcome> outcomes) {
     this.id = id;
     this.owner = owner;
     this.name = name;
     this.description = description;
-    this.trialverse = trialverse;
+    this.trialverseId = trialverseId;
     this.outcomes = outcomes;
   }
 
-  public Project(Account owner, String name, String description, Trialverse trialverse) {
+  public Project(Account owner, String name, String description, Integer trialverseId) {
     this.owner = owner;
     this.name = name;
     this.description = description;
-    this.trialverse = trialverse;
+    this.trialverseId = trialverseId;
   }
 
   public void addOutcome(Outcome outcome) {
@@ -94,12 +93,12 @@ public class Project {
     this.description = description;
   }
 
-  public Trialverse getTrialverse() {
-    return trialverse;
+  public Integer getTrialverseId() {
+    return trialverseId;
   }
 
-  public void setTrialverse(Trialverse trialverse) {
-    this.trialverse = trialverse;
+  public void setTrialverseId(Integer trialverseId) {
+    this.trialverseId = trialverseId;
   }
 
   public List<Outcome> getOutcomes() {
@@ -122,7 +121,7 @@ public class Project {
     if (!name.equals(project.name)) return false;
     if (!outcomes.equals(project.outcomes)) return false;
     if (!owner.equals(project.owner)) return false;
-    if (!trialverse.equals(project.trialverse)) return false;
+    if (!trialverseId.equals(project.trialverseId)) return false;
 
     return true;
   }
@@ -133,7 +132,7 @@ public class Project {
     result = 31 * result + owner.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + description.hashCode();
-    result = 31 * result + trialverse.hashCode();
+    result = 31 * result + trialverseId.hashCode();
     result = 31 * result + outcomes.hashCode();
     return result;
   }

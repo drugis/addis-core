@@ -7,7 +7,7 @@
     <div class="columns large-12">
       <h2 class="inline-header" title="Project title">{{project.name}}</h2>
 
-      <h3 class="subheader inline-header" title="Trialverse namespace">/ {{project.trialverse.name}}</h3>
+      <h3 class="subheader inline-header" title="Trialverse namespace">/ {{project.trialverseId.name}}</h3>
 
       <div class="row">
         <div class="columns large-6 small-12">
@@ -19,12 +19,13 @@
   <div class="row">
     <div class="columns large-6">
       Outcomes
-      <button ng-click="addOutcome({name:'name', motivation: 'motivation', semanticOutcome: 'semantics'})">Click mij</button>
+      <button ng-click="addOutcome({name:'name', motivation: 'motivation', semanticOutcome: 'semantics'})">Click mij
+      </button>
       <ul>
         <li ng-repeat="outcome in project.outcomes">
           <span title="outcome name">{{outcome.name}} </span> -
           <span title="outcome motivation">{{outcome.motivation}} </span> -
-          <span title="corrensponding trialverse semantic outcome">{{outcome.semanticOutcome}} </span>
+          <span title="corrensponding trialverseId semantic outcome">{{outcome.semanticOutcome}} </span>
         </li>
       </ul>
     </div>

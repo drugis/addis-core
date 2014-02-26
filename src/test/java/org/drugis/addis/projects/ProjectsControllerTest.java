@@ -17,7 +17,6 @@ import org.drugis.addis.trialverse.Trialverse;
 import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,8 +92,8 @@ public class ProjectsControllerTest {
 
   @Test
   public void testQueryProjects() throws Exception {
-    Project project = new Project(1, john, "name", "desc", new Trialverse("ns1"), new ArrayList<Outcome>());
-    Project project2 = new Project(2, paul, "otherName", "other description", new Trialverse("ns2"), new ArrayList<Outcome>());
+    Project project = new Project(1, john, "name", "desc", 1, new ArrayList<Outcome>());
+    Project project2 = new Project(2, paul, "otherName", "other description", 2, new ArrayList<Outcome>());
     ArrayList projects = new ArrayList();
     projects.add(project);
     projects.add(project2);
@@ -108,7 +107,7 @@ public class ProjectsControllerTest {
       .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())))
       .andExpect(jsonPath("$[0].name", is(project.getName())))
       .andExpect(jsonPath("$[0].description", is(project.getDescription())))
-      .andExpect(jsonPath("$[0].trialverse.name", is(project.getTrialverse().getName())));
+            .andExpect(jsonPath("$[0].trialverseId", is(project.getTrialverseId())));
 
     verify(projectRepository).query();
     verify(accountRepository).findAccountByUsername("gert");
@@ -116,7 +115,7 @@ public class ProjectsControllerTest {
 
   @Test
   public void testQueryProjectsWithQueryString() throws Exception {
-    Project project = new Project(2, paul, "test2", "desc", new Trialverse("ns1"), new ArrayList<Outcome>());
+    Project project = new Project(2, paul, "test2", "desc", 1, new ArrayList<Outcome>());
     ArrayList projects = new ArrayList();
     projects.add(project);
     when(projectRepository.queryByOwnerId(paul.getId())).thenReturn(projects);
@@ -133,20 +132,20 @@ public class ProjectsControllerTest {
 
   @Test
   public void testCreateProject() throws Exception {
-    Project project = new Project(1, gert, "testname", "testdescription", new Trialverse("testnamespace"), new ArrayList<Outcome>());
+    Project project = new Project(1, gert, "testname", "testdescription", 1, new ArrayList<Outcome>());
     String jsonContent = TestUtils.createJson(project);
-    when(projectRepository.create(project.getOwner(), project.getName(), project.getDescription(), project.getTrialverse())).thenReturn(project);
+    when(projectRepository.create(project.getOwner(), project.getName(), project.getDescription(), project.getTrialverseId())).thenReturn(project);
     mockMvc.perform(post("/projects").principal(user).content(jsonContent).contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(status().isCreated())
       .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(jsonPath("$.name", is("testname")));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
-    verify(projectRepository).create(project.getOwner(), project.getName(), project.getDescription(), project.getTrialverse());
+    verify(projectRepository).create(project.getOwner(), project.getName(), project.getDescription(), project.getTrialverseId());
   }
 
   @Test
   public void testGetSingleProject() throws Exception {
-    Project project = new Project(1, john, "name", "desc", new Trialverse("ns1"), new ArrayList<Outcome>());
+    Project project = new Project(1, john, "name", "desc", 1, new ArrayList<Outcome>());
     when(projectRepository.getProjectById(project.getId())).thenReturn(project);
     mockMvc.perform(get("/projects/" + project.getId()).principal(user))
       .andExpect(status().isOk())
@@ -167,7 +166,7 @@ public class ProjectsControllerTest {
 
   @Test
   public void testUpdate() throws Exception {
-    Project project = new Project(1, gert, "name", "desc", new Trialverse("ns1"), new ArrayList<Outcome>());
+    Project project = new Project(1, gert, "name", "desc", 1, new ArrayList<Outcome>());
     project.addOutcome(new Outcome(1, "name", "motivation", "semantics"));
     String jsonContent = TestUtils.createJson(project);
     when(projectRepository.getProjectById(1)).thenReturn(project);
@@ -183,7 +182,7 @@ public class ProjectsControllerTest {
 
   @Test
   public void testUpdateNotOwnedProjectFails() throws Exception {
-    Project project = new Project(1, paul, "name", "desc", new Trialverse("ns1"), new ArrayList<Outcome>());
+    Project project = new Project(1, paul, "name", "desc", 1, new ArrayList<Outcome>());
     project.addOutcome(new Outcome(1, "name", "motivation", "semantics"));
     String jsonContent = TestUtils.createJson(project);
     when(projectRepository.getProjectById(1)).thenReturn(project);
