@@ -7,7 +7,6 @@ import org.springframework.dao.annotation.PersistenceExceptionTranslationPostPro
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -21,9 +20,9 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = "org.drugis.addis", excludeFilters = {@ComponentScan.Filter(Configuration.class)})
+@ComponentScan(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security"}, excludeFilters = {@ComponentScan.Filter(Configuration.class)})
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"org.drugis.addis"})
+@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects"})
 public class JpaRepositoryTestConfig {
 
   @Bean
