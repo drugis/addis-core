@@ -2,6 +2,7 @@ package org.drugis.addis.config;
 
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -21,6 +22,11 @@ public class TestConfig {
   @Bean
   public ProjectRepository mockProjectsRepository() {
     return Mockito.mock(ProjectRepository.class);
+  }
+
+  @Bean
+  public TrialverseRepository mockTrialverseRepository() {
+    return Mockito.mock(TrialverseRepository.class);
   }
 }
 

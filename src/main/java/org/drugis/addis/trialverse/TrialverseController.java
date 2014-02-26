@@ -4,11 +4,9 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.security.Principal;
@@ -20,15 +18,30 @@ import java.util.Collection;
  */
 @Controller
 public class TrialverseController {
+
   @Inject
   private AccountRepository accountRepository;
-  @RequestMapping(value="/trialverse", method= RequestMethod.GET)
 
+  @Inject
+  private TrialverseRepository trialverseRepository;
+
+  @RequestMapping(value = "/trialverse", method = RequestMethod.GET)
   @ResponseBody
   public Collection<Trialverse> query(Principal currentUser) throws MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return Arrays.asList(new Trialverse("testname1"), new Trialverse("testname2"));
+      return trialverseRepository.query();
+    } else {
+      throw new MethodNotAllowedException();
+    }
+  }
+
+  @RequestMapping(value = "/trialverse/{trialverseId}", method = RequestMethod.GET)
+  @ResponseBody
+  public Trialverse get(Principal currentUser, @PathVariable Integer trialverseId) throws MethodNotAllowedException {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    if (user != null) {
+      return trialverseRepository.get(trialverseId);
     } else {
       throw new MethodNotAllowedException();
     }
