@@ -1,15 +1,9 @@
 package org.drugis.addis.projects;
 
-import junit.framework.Assert;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
-import org.drugis.addis.config.RepositoryTestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
-import org.drugis.addis.trialverse.Trialverse;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +13,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-
-import static org.mockito.Mockito.*;
-
-import java.lang.reflect.Array;
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import static org.junit.Assert.*;
 

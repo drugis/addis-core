@@ -1,16 +1,18 @@
-package org.drugis.addis.trialverse;
+package org.drugis.addis.trialverse.controller;
 
 import org.drugis.addis.exception.MethodNotAllowedException;
-import org.drugis.addis.projects.Project;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.Trialverse;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.Collection;
 
 /**

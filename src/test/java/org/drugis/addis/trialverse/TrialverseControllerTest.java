@@ -9,7 +9,6 @@ import org.drugis.addis.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -19,7 +18,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -27,15 +25,13 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Created by connor on 2/12/14.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes= {TestConfig.class})
+@ContextConfiguration(classes = {TestConfig.class})
 @WebAppConfiguration
 public class TrialverseControllerTest {
 
@@ -66,8 +62,8 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetNamespaces() throws Exception {
-    Trialverse trialverse1 = new Trialverse("a");
-    Trialverse trialverse2 = new Trialverse("b");
+    Trialverse trialverse1 = new Trialverse(1, "a", "descra");
+    Trialverse trialverse2 = new Trialverse(2, "b", "descrb");
     Collection<Trialverse> trialverseCollection = Arrays.asList(trialverse1, trialverse2);
     when(trialverseRepository.query()).thenReturn(trialverseCollection);
     mockMvc.perform(get("/trialverse").principal(user))
@@ -80,7 +76,7 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetNamespaceById() throws Exception {
-    Trialverse trialverse1 = new Trialverse("a");
+    Trialverse trialverse1 = new Trialverse(1, "a", "descrea");
     when(trialverseRepository.get(1)).thenReturn(trialverse1);
     mockMvc.perform(get("/trialverse/1").principal(user))
             .andExpect(status().isOk())

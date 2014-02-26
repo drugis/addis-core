@@ -20,17 +20,17 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security"}, excludeFilters = {@ComponentScan.Filter(Configuration.class)})
+@ComponentScan(basePackages = {"org.drugis.addis.trialverse", "org.drugis.addis.security"}, excludeFilters = {@ComponentScan.Filter(Configuration.class)})
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects"})
-public class JpaRepositoryTestConfig {
+@EnableJpaRepositories(basePackages = "org.drugis.addis.trialverse")
+public class JpaTrialverseRepositoryTestConfig {
 
   @Bean
   public DataSource dataSource() {
     return new EmbeddedDatabaseBuilder()
             .setType(EmbeddedDatabaseType.HSQL)
-            .addScript("classpath:/schema.sql")
-            .addScript("classpath:/test-data.sql")
+            .addScript("classpath:/trialverse-schema.sql")
+            .addScript("classpath:/trialverse-test-data.sql")
             .build();
   }
 
@@ -58,7 +58,7 @@ public class JpaRepositoryTestConfig {
     vendorAdapter.setShowSql(true);
     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
     em.setJpaVendorAdapter(vendorAdapter);
-    em.setPackagesToScan("org.drugis.addis.projects", "org.drugis.addis.security");
+    em.setPackagesToScan("org.drugis.addis.trialverse");
     em.setDataSource(dataSource());
     em.afterPropertiesSet();
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());

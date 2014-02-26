@@ -1,26 +1,37 @@
 package org.drugis.addis.trialverse;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Created by connor on 2/12/14.
  */
-@Embeddable
+@Entity
+@Table(name = "namespaces")
 public class Trialverse {
-  @Column(name = "trialverse")
-  private String name;
-
+  @Id
   private Integer id;
 
-  private String uri;
+  private String name;
+
+  private String description;
 
   public Trialverse() {
   }
 
-  public Trialverse(String name) {
-
+  public Trialverse(Integer id, String name, String description) {
+    this.id = id;
     this.name = name;
+    this.description = description;
+  }
+
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public String getName() {
@@ -31,6 +42,14 @@ public class Trialverse {
     this.name = name;
   }
 
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -38,14 +57,19 @@ public class Trialverse {
 
     Trialverse that = (Trialverse) o;
 
-    if (name != null ? !name.equals(that.name) : that.name != null) return false;
+    if (!description.equals(that.description)) return false;
+    if (!id.equals(that.id)) return false;
+    if (!name.equals(that.name)) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    return name != null ? name.hashCode() : 0;
+    int result = id.hashCode();
+    result = 31 * result + name.hashCode();
+    result = 31 * result + description.hashCode();
+    return result;
   }
 }
 
