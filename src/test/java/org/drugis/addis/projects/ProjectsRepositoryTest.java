@@ -28,7 +28,7 @@ public class ProjectsRepositoryTest {
   @Autowired
   private ProjectRepository projectRepository;
 
-  @PersistenceContext
+  @PersistenceContext(unitName = "addisCore")
   EntityManager em;
 
   @Test

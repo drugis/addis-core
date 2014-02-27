@@ -17,6 +17,7 @@ package org.drugis.addis.config;
 
 import org.drugis.addis.security.SimpleSocialUsersDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,69 +38,70 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter{
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	private ApplicationContext context;
+  @Autowired
+  private ApplicationContext context;
 
-	@Inject
-	private DataSource dataSource;
+  @Inject
+  @Qualifier("dsAddisCore")
+  private DataSource dataSource;
 
-	@Override
-	protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-		auth.jdbcAuthentication()
-				.dataSource(dataSource)
-				.usersByUsernameQuery("SELECT username, password, TRUE FROM Account WHERE username = ?")
-				.authoritiesByUsernameQuery("SELECT Account.username, COALESCE(AccountRoles.role, 'ROLE_USER') FROM Account" +
-                        " LEFT OUTER JOIN AccountRoles ON Account.id = AccountRoles.accountId WHERE Account.username = ?")
-				.passwordEncoder(passwordEncoder());
-	}
+  @Override
+  protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+    auth.jdbcAuthentication()
+            .dataSource(dataSource)
+            .usersByUsernameQuery("SELECT username, password, TRUE FROM Account WHERE username = ?")
+            .authoritiesByUsernameQuery("SELECT Account.username, COALESCE(AccountRoles.role, 'ROLE_USER') FROM Account" +
+                    " LEFT OUTER JOIN AccountRoles ON Account.id = AccountRoles.accountId WHERE Account.username = ?")
+            .passwordEncoder(passwordEncoder());
+  }
 
-	@Override
-	public void configure(WebSecurity web) throws Exception {
-		web
-			.ignoring()
-				.antMatchers("/resources/**");
-	}
+  @Override
+  public void configure(WebSecurity web) throws Exception {
+    web
+            .ignoring()
+            .antMatchers("/resources/**");
+  }
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http
-			.formLogin()
-				.loginPage("/signin")
-				.loginProcessingUrl("/signin/authenticate")
-				.failureUrl("/signin?param.error=bad_credentials")
-                .defaultSuccessUrl("/")
-			.and()
-				.logout()
-					.logoutUrl("/signout")
-					.deleteCookies("JSESSIONID")
-			.and()
-				.authorizeRequests()
-					.antMatchers("/favicon.ico", "/resources/**", "/app/**", "/auth/**", "/signin", "/signup", "/error/**").permitAll()
-                    .antMatchers("/monitoring").hasRole("MONITORING")
-					.antMatchers("/**").authenticated()
-			.and()
-				.rememberMe()
-			.and()
-				.apply(new SpringSocialConfigurer())
-				.and().setSharedObject(ApplicationContext.class, context);
-	}
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http
+            .formLogin()
+            .loginPage("/signin")
+            .loginProcessingUrl("/signin/authenticate")
+            .failureUrl("/signin?param.error=bad_credentials")
+            .defaultSuccessUrl("/")
+            .and()
+            .logout()
+            .logoutUrl("/signout")
+            .deleteCookies("JSESSIONID")
+            .and()
+            .authorizeRequests()
+            .antMatchers("/favicon.ico", "/resources/**", "/app/**", "/auth/**", "/signin", "/signup", "/error/**").permitAll()
+            .antMatchers("/monitoring").hasRole("MONITORING")
+            .antMatchers("/**").authenticated()
+            .and()
+            .rememberMe()
+            .and()
+            .apply(new SpringSocialConfigurer())
+            .and().setSharedObject(ApplicationContext.class, context);
+  }
 
-	@Bean
-	public SocialUserDetailsService socialUsersDetailService() {
-		return new SimpleSocialUsersDetailService(userDetailsService());
-	}
+  @Bean
+  public SocialUserDetailsService socialUsersDetailService() {
+    return new SimpleSocialUsersDetailService(userDetailsService());
+  }
 
-	@Bean
-	public UserIdSource userIdSource() {
-		return new AuthenticationNameUserIdSource();
-	}
+  @Bean
+  public UserIdSource userIdSource() {
+    return new AuthenticationNameUserIdSource();
+  }
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
 
 }

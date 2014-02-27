@@ -1,24 +1,8 @@
-/*
- * Copyright 2013 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.drugis.addis.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -35,41 +19,44 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
 
+/**
+ * Created by connor on 2/27/14.
+ */
 @Configuration
-@ComponentScan(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security"}, excludeFilters = {@Filter(Configuration.class)})
+@ComponentScan(basePackages = "org.drugis.addis.trialverse", excludeFilters = {@ComponentScan.Filter(Configuration.class)})
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security"})
-public class MainConfig {
-  @Bean(name = "dsAddisCore")
+@EnableJpaRepositories(basePackages = {"org.drugis.addis.trialverse"})
+public class TrialverseConfig {
+  @Bean(name = "dsTrialverse")
   public DataSource dataSource() {
     DataSource ds;
     JndiTemplate jndi = new JndiTemplate();
     try {
-      ds = (DataSource) jndi.lookup("java:/comp/env/jdbc/addiscore");
+      ds = (DataSource) jndi.lookup("java:/comp/env/jdbc/trialverse");
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
     return ds;
   }
 
-  @Bean(name = "ptmAddisCore")
-  public PlatformTransactionManager transactionManager(@Qualifier("emAddisCore") EntityManagerFactory entityManagerFactory) {
+  @Bean
+  public PlatformTransactionManager transactionManager(@Qualifier("trialverse") EntityManagerFactory entityManagerFactory) {
     JpaTransactionManager transactionManager = new JpaTransactionManager();
     transactionManager.setEntityManagerFactory(entityManagerFactory);
     return transactionManager;
   }
 
-  @Bean(name = "jtAddisCore")
+  @Bean(name = "jdbcTrialverse")
   public JdbcTemplate jdbcTemplate() {
     return new JdbcTemplate(dataSource());
   }
 
-  @Bean(name = "petppAddisCore")
+  @Bean(name = "petppTrialverse")
   public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
     return new PersistenceExceptionTranslationPostProcessor();
   }
 
-  @Bean(name = "emAddisCore")
+  @Bean(name = "emTrialverse")
   public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
     HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
     vendorAdapter.setGenerateDdl(false);
@@ -77,11 +64,10 @@ public class MainConfig {
     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
     em.setJpaProperties(additionalProperties());
     em.setJpaVendorAdapter(vendorAdapter);
-    em.setPackagesToScan("org.drugis.addis.projects", "org.drugis.addis.security");
+    em.setPackagesToScan("org.drugis.addis.trialverse");
+    em.setPersistenceUnitName("trialverse");
     em.setDataSource(dataSource());
-    em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
-
     em.afterPropertiesSet();
     return em;
   }

@@ -15,57 +15,54 @@
  */
 package org.drugis.addis.security.repository.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import javax.inject.Inject;
-
-import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.UsernameAlreadyInUseException;
+import org.drugis.addis.security.repository.AccountRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 @Repository
 public class JdbcAccountRepository implements AccountRepository {
 
-	private final JdbcTemplate jdbcTemplate;
+  @Inject
+  @Qualifier("jtAddisCore")
+  private JdbcTemplate jdbcTemplate;
 
-	private RowMapper<Account> rowMapper = new RowMapper<Account>() {
-		public Account mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return new Account(rs.getInt("id"), rs.getString("username"), rs.getString("firstName"), rs.getString("lastName"));
-		}
-	};
-	
-	@Inject
-	public JdbcAccountRepository(JdbcTemplate jdbcTemplate) {
-		this.jdbcTemplate = jdbcTemplate;
-	}
+  private RowMapper<Account> rowMapper = new RowMapper<Account>() {
+    public Account mapRow(ResultSet rs, int rowNum) throws SQLException {
+      return new Account(rs.getInt("id"), rs.getString("username"), rs.getString("firstName"), rs.getString("lastName"));
+    }
+  };
 
-	@Transactional
-	public void createAccount(Account user) throws UsernameAlreadyInUseException {
-		try {
-			jdbcTemplate.update(
-					"insert into Account (firstName, lastName, username) values (?, ?, ?)",
-					user.getFirstName(), user.getLastName(), user.getUsername());
-		} catch (DuplicateKeyException e) {
-			throw new UsernameAlreadyInUseException(user.getUsername());
-		}
-	}
+  @Transactional
+  public void createAccount(Account user) throws UsernameAlreadyInUseException {
+    try {
+      jdbcTemplate.update(
+              "insert into Account (firstName, lastName, username) values (?, ?, ?)",
+              user.getFirstName(), user.getLastName(), user.getUsername());
+    } catch (DuplicateKeyException e) {
+      throw new UsernameAlreadyInUseException(user.getUsername());
+    }
+  }
 
-	public Account findAccountByUsername(String username) {
-		return jdbcTemplate.queryForObject(
-				"select id, username, firstName, lastName from Account where username = ?",
-				rowMapper, username);
-	}
+  public Account findAccountByUsername(String username) {
+    return jdbcTemplate.queryForObject(
+            "select id, username, firstName, lastName from Account where username = ?",
+            rowMapper, username);
+  }
 
-	public Account findAccountById(int id) {
-		return jdbcTemplate.queryForObject(
-				"select id, username, firstName, lastName from Account where id = ?",
-				rowMapper, id);
-	}
+  public Account findAccountById(int id) {
+    return jdbcTemplate.queryForObject(
+            "select id, username, firstName, lastName from Account where id = ?",
+            rowMapper, id);
+  }
 
 }

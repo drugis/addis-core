@@ -5,7 +5,7 @@ import org.drugis.addis.projects.Outcome;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
-import org.drugis.addis.trialverse.Trialverse;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -19,7 +19,8 @@ import java.util.Collection;
 @Repository
 public class JpaProjectRepository implements ProjectRepository {
 
-  @PersistenceContext
+  @Qualifier("emAddisCore")
+  @PersistenceContext(unitName = "addisCore")
   EntityManager em;
 
   @Override

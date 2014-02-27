@@ -3,6 +3,7 @@ package org.drugis.addis.trialverse.repository.impl;
 
 import org.drugis.addis.trialverse.Trialverse;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -16,7 +17,8 @@ import java.util.Collection;
 @Repository
 public class JpaTrialverseRepository implements TrialverseRepository {
 
-  @PersistenceContext
+  @PersistenceContext(unitName = "trialverse")
+  @Qualifier("emTrialverse")
   EntityManager em;
 
   @Override

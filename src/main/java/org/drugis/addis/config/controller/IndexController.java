@@ -30,29 +30,25 @@ import java.security.Principal;
 @Controller
 public class IndexController {
 
-    private final Provider<ConnectionRepository> connectionRepositoryProvider;
+  @Inject
+  private Provider<ConnectionRepository> connectionRepositoryProvider;
 
-    private final AccountRepository accountRepository;
+  @Inject
+  private AccountRepository accountRepository;
 
-    @Inject
-    public IndexController(Provider<ConnectionRepository> connectionRepositoryProvider, AccountRepository accountRepository) {
-        this.connectionRepositoryProvider = connectionRepositoryProvider;
-        this.accountRepository = accountRepository;
+  @RequestMapping("/")
+  public String index(Principal currentUser, Model model, HttpServletRequest request) {
+    model.addAttribute("connectionsToProviders", getConnectionRepository().findAllConnections());
+    try {
+      model.addAttribute(accountRepository.findAccountByUsername(currentUser.getName()));
+    } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+      request.getSession().invalidate();
+      return "redirect:/signin";
     }
+    return "index";
+  }
 
-    @RequestMapping("/")
-    public String index(Principal currentUser, Model model, HttpServletRequest request) {
-        model.addAttribute("connectionsToProviders", getConnectionRepository().findAllConnections());
-        try {
-            model.addAttribute(accountRepository.findAccountByUsername(currentUser.getName()));
-        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
-            request.getSession().invalidate();
-            return "redirect:/signin";
-        }
-        return "index";
-    }
-
-    private ConnectionRepository getConnectionRepository() {
-        return connectionRepositoryProvider.get();
-    }
+  private ConnectionRepository getConnectionRepository() {
+    return connectionRepositoryProvider.get();
+  }
 }

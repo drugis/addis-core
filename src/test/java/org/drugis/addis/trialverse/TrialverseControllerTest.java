@@ -62,8 +62,8 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetNamespaces() throws Exception {
-    Trialverse trialverse1 = new Trialverse(1, "a", "descra");
-    Trialverse trialverse2 = new Trialverse(2, "b", "descrb");
+    Trialverse trialverse1 = new Trialverse(1L, "a", "descra");
+    Trialverse trialverse2 = new Trialverse(2L, "b", "descrb");
     Collection<Trialverse> trialverseCollection = Arrays.asList(trialverse1, trialverse2);
     when(trialverseRepository.query()).thenReturn(trialverseCollection);
     mockMvc.perform(get("/trialverse").principal(user))
@@ -76,7 +76,7 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetNamespaceById() throws Exception {
-    Trialverse trialverse1 = new Trialverse(1, "a", "descrea");
+    Trialverse trialverse1 = new Trialverse(1L, "a", "descrea");
     when(trialverseRepository.get(1)).thenReturn(trialverse1);
     mockMvc.perform(get("/trialverse/1").principal(user))
             .andExpect(status().isOk())

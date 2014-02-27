@@ -1,5 +1,6 @@
 package org.drugis.addis.config;
 
+import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -38,12 +39,18 @@ public class JpaTrialverseRepositoryTestConfig {
   public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
     JpaTransactionManager transactionManager = new JpaTransactionManager();
     transactionManager.setEntityManagerFactory(entityManagerFactory);
+    transactionManager.setPersistenceUnitName("trialverse");
     return transactionManager;
   }
 
-  @Bean
+  @Bean(name = "jtTrialverse")
   public JdbcTemplate jdbcTemplate() {
     return new JdbcTemplate(dataSource());
+  }
+
+  @Bean(name = "jtAddisCore")
+  public JdbcTemplate jdbcTemplateMock() {
+    return Mockito.mock(JdbcTemplate.class);
   }
 
   @Bean
@@ -60,9 +67,10 @@ public class JpaTrialverseRepositoryTestConfig {
     em.setJpaVendorAdapter(vendorAdapter);
     em.setPackagesToScan("org.drugis.addis.trialverse");
     em.setDataSource(dataSource());
-    em.afterPropertiesSet();
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
     em.setJpaProperties(additionalProperties());
+    em.setPersistenceUnitName("trialverse");
+    em.afterPropertiesSet();
     return em;
   }
 

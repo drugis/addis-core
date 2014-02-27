@@ -41,7 +41,7 @@ public class JpaRepositoryTestConfig {
     return transactionManager;
   }
 
-  @Bean
+  @Bean(name = "jtAddisCore")
   public JdbcTemplate jdbcTemplate() {
     return new JdbcTemplate(dataSource());
   }
@@ -60,9 +60,10 @@ public class JpaRepositoryTestConfig {
     em.setJpaVendorAdapter(vendorAdapter);
     em.setPackagesToScan("org.drugis.addis.projects", "org.drugis.addis.security");
     em.setDataSource(dataSource());
-    em.afterPropertiesSet();
+    em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
     em.setJpaProperties(additionalProperties());
+    em.afterPropertiesSet();
     return em;
   }
 
