@@ -1,6 +1,7 @@
 package org.drugis.addis.trialverse;
 
 import org.drugis.addis.config.JpaTrialverseRepositoryTestConfig;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,4 +29,11 @@ public class TrialverseRepositoryTest {
     Collection<Trialverse> trialverses = trialverseRepository.query();
     assertEquals(3, trialverses.size());
   }
+
+  @Test
+  public void testGet() throws ResourceDoesNotExistException {
+    Trialverse trialverse = trialverseRepository.get(1L);
+    assertEquals(new Long(1), trialverse.getId());
+  }
+
 }

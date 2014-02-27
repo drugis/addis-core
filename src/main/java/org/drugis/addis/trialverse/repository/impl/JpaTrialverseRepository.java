@@ -1,11 +1,11 @@
 package org.drugis.addis.trialverse.repository.impl;
 
 
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.Trialverse;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,7 +27,11 @@ public class JpaTrialverseRepository implements TrialverseRepository {
   }
 
   @Override
-  public Trialverse get(Integer trialverseId) {
-    throw new NotImplementedException();
+  public Trialverse get(Long trialverseId) throws ResourceDoesNotExistException {
+    Trialverse trialverse = em.find(Trialverse.class, trialverseId);
+    if (trialverse == null) {
+      throw new ResourceDoesNotExistException();
+    }
+    return trialverse;
   }
 }

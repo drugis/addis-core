@@ -39,8 +39,8 @@ public class TrialverseConfig {
     return ds;
   }
 
-  @Bean
-  public PlatformTransactionManager transactionManager(@Qualifier("trialverse") EntityManagerFactory entityManagerFactory) {
+  @Bean(name = "ptmTrialverse")
+  public PlatformTransactionManager transactionManager(@Qualifier("emTrialverse") EntityManagerFactory entityManagerFactory) {
     JpaTransactionManager transactionManager = new JpaTransactionManager();
     transactionManager.setEntityManagerFactory(entityManagerFactory);
     return transactionManager;

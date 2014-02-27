@@ -77,12 +77,12 @@ public class TrialverseControllerTest {
   @Test
   public void testGetNamespaceById() throws Exception {
     Trialverse trialverse1 = new Trialverse(1L, "a", "descrea");
-    when(trialverseRepository.get(1)).thenReturn(trialverse1);
+    when(trialverseRepository.get(1L)).thenReturn(trialverse1);
     mockMvc.perform(get("/trialverse/1").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.name", is("a")));
-    verify(trialverseRepository).get(1);
+    verify(trialverseRepository).get(1L);
   }
 
 }

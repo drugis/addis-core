@@ -1,6 +1,7 @@
 package org.drugis.addis.trialverse.controller;
 
 import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.Trialverse;
@@ -40,7 +41,7 @@ public class TrialverseController {
 
   @RequestMapping(value = "/trialverse/{trialverseId}", method = RequestMethod.GET)
   @ResponseBody
-  public Trialverse get(Principal currentUser, @PathVariable Integer trialverseId) throws MethodNotAllowedException {
+  public Trialverse get(Principal currentUser, @PathVariable Long trialverseId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       return trialverseRepository.get(trialverseId);

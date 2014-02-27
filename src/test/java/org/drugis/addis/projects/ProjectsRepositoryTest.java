@@ -22,8 +22,8 @@ import static org.junit.Assert.*;
  * Created by daan on 2/11/14.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {JpaRepositoryTestConfig.class})
 @Transactional
+@ContextConfiguration(classes = {JpaRepositoryTestConfig.class})
 public class ProjectsRepositoryTest {
   @Autowired
   private ProjectRepository projectRepository;
