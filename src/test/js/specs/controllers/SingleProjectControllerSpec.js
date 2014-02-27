@@ -36,8 +36,10 @@ define(['angular', 'angular-mocks'], function () {
       expect(projectsService.save).toHaveBeenCalled();
     });
 
-    it("should place the associated trialverse information on the scope", function() {
-      expect(trialverseService.get).toHaveBeenCalledWith(mockProject.trialverseId);
+    it("should place the associated trialverse information on the scope on resolution", function() {
+      deferred.resolve();
+      scope.$apply();
+      expect(trialverseService.get).toHaveBeenCalledWith({id: mockProject.trialverseId});
       expect(scope.trialverse).toEqual(mockTrialverse);
     });
   });
