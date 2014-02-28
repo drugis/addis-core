@@ -33,4 +33,9 @@ export ADDIS_CORE_DB_USERNAME=addiscore
 export ADDIS_CORE_DB_PASSWORD=develop
 export ADDIS_CORE_OAUTH_GOOGLE_SECRET=HU_-JxoYUvMbvk4vVRMhHibI
 export ADDIS_CORE_OAUTH_GOOGLE_KEY=201346854981-3pcdhh96orc3lcdr8k4i1u58pvepjme4.apps.googleusercontent.com
+export TRIALVERSE_DB_DRIVER=org.postgresql.Driver
+export TRIALVERSE_DB_URL=jdbc:postgresql://localhost/trialverse
+export TRIALVERSE_DB_USERNAME=trialverse
+export TRIALVERSE_DB_PASSWORD=develop
+export TRIPLESTORE_URI=http://localhost:3030/ds/query
 ```
