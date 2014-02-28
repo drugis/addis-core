@@ -1,7 +1,7 @@
 package org.drugis.addis.trialverse.repository;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.trialverse.Trialverse;
+import org.drugis.addis.trialverse.model.Trialverse;
 
 import java.util.Collection;
 

@@ -114,12 +114,6 @@
     </dependency>
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
-      <artifactId>json-path</artifactId>
-      <version>0.8.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path-assert</artifactId>
       <version>0.8.1</version>
       <scope>test</scope>
@@ -169,6 +163,14 @@
       <artifactId>jackson-mapper-asl</artifactId>
       <version>${jackson.version}</version>
     </dependency>
+
+    <!-- JSON PATH -->
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+      <version>0.8.1</version>
+    </dependency>
+
 
     <!-- PostgreSQL JDBC driver -->
     <dependency>
@@ -313,6 +315,7 @@
             <TRIALVERSE_DB_URL>${env.TRIALVERSE_DB_URL}</TRIALVERSE_DB_URL>
             <TRIALVERSE_DB_USERNAME>${env.TRIALVERSE_DB_USERNAME}</TRIALVERSE_DB_USERNAME>
             <TRIALVERSE_DB_PASSWORD>${env.TRIALVERSE_DB_PASSWORD}</TRIALVERSE_DB_PASSWORD>
+            <TRIPLESTORE_URI>${env.TRIPLESTORE_URI}</TRIPLESTORE_URI>
           </systemProperties>
         </configuration>
       </plugin>

@@ -2,6 +2,7 @@ package org.drugis.addis.config;
 
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
@@ -27,5 +28,11 @@ public class TestConfig {
   public TrialverseRepository mockTrialverseRepository() {
     return Mockito.mock(TrialverseRepository.class);
   }
+
+  @Bean
+  public TriplestoreService mockTriplestoreService() {
+    return Mockito.mock(TriplestoreService.class);
+  }
+
 }
 

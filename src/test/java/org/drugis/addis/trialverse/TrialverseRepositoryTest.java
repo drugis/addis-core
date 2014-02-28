@@ -2,6 +2,7 @@ package org.drugis.addis.trialverse;
 
 import org.drugis.addis.config.JpaTrialverseRepositoryTestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.trialverse.model.Trialverse;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;

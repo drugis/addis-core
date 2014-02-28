@@ -4,7 +4,10 @@ package org.drugis.addis.trialverse;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.Trialverse;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
+import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +49,9 @@ public class TrialverseControllerTest {
   @Inject
   private TrialverseRepository trialverseRepository;
 
+  @Inject
+  private TriplestoreService triplestoreService;
+
   private Principal user;
 
   private Account gert = new Account(3, "gert", "Gert", "van Valkenhoef");
@@ -54,6 +60,7 @@ public class TrialverseControllerTest {
   public void setUp() {
     reset(accountRepository);
     reset(trialverseRepository);
+    reset(triplestoreService);
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
@@ -83,6 +90,26 @@ public class TrialverseControllerTest {
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.name", is("a")));
     verify(trialverseRepository).get(1L);
+  }
+
+  @Test
+  public void testQuerySemanticOutcomes() throws Exception {
+    Long namespaceId = 1L;
+    SemanticOutcome testOutCome = new SemanticOutcome("http://test/com", "test label");
+    when(triplestoreService.getOutcomes(namespaceId)).thenReturn(Arrays.asList(testOutCome));
+    mockMvc.perform(get("/trialverse/" + namespaceId + "/outcomes").principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$[0].uri", is(testOutCome.getUri())));
+    verify(triplestoreService).getOutcomes(namespaceId);
+  }
+
+  @Test
+  public void testUnauthorisedGetSemanticOutcomesFails() throws Exception {
+    Principal haxor = mock(Principal.class);
+    when(haxor.getName()).thenReturn("who?");
+    mockMvc.perform(get("/trialverse/1/outcomes").principal(haxor))
+            .andExpect(redirectedUrl("/error/403"));
   }
 
 }

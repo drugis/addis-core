@@ -21,9 +21,9 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = {"org.drugis.addis.trialverse", "org.drugis.addis.security"}, excludeFilters = {@ComponentScan.Filter(Configuration.class)})
+@ComponentScan(basePackages = {"org.drugis.addis.trialverse.repository", "org.drugis.addis.security", "org.drugis.addis.trialverse.model"}, excludeFilters = {@ComponentScan.Filter(Configuration.class)})
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "org.drugis.addis.trialverse")
+@EnableJpaRepositories(basePackages = "org.drugis.addis.trialverse.repository")
 public class JpaTrialverseRepositoryTestConfig {
 
   @Bean
@@ -65,7 +65,7 @@ public class JpaTrialverseRepositoryTestConfig {
     vendorAdapter.setShowSql(true);
     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
     em.setJpaVendorAdapter(vendorAdapter);
-    em.setPackagesToScan("org.drugis.addis.trialverse");
+    em.setPackagesToScan("org.drugis.addis.trialverse.model");
     em.setDataSource(dataSource());
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
     em.setJpaProperties(additionalProperties());

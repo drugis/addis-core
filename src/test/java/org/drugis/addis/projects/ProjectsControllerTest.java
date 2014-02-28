@@ -1,19 +1,11 @@
 package org.drugis.addis.projects;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.trialverse.Trialverse;
 import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
@@ -32,6 +24,10 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -57,8 +53,8 @@ public class ProjectsControllerTest {
   private Principal user;
 
   private Account john = new Account(1, "a", "john", "lennon"),
-    paul = new Account(2, "a", "paul", "mc cartney"),
-    gert = new Account(3, "gert", "Gert", "van Valkenhoef");
+          paul = new Account(2, "a", "paul", "mc cartney"),
+          gert = new Account(3, "gert", "Gert", "van Valkenhoef");
 
 
   @Before
@@ -82,9 +78,9 @@ public class ProjectsControllerTest {
     when(projectRepository.query()).thenReturn(Collections.<Project>emptyList());
 
     mockMvc.perform(get("/projects").principal(user))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(jsonPath("$", hasSize(0)));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", hasSize(0)));
 
     verify(projectRepository).query();
     verify(accountRepository).findAccountByUsername("gert");
@@ -100,13 +96,13 @@ public class ProjectsControllerTest {
     when(projectRepository.query()).thenReturn(projects);
 
     mockMvc.perform(get("/projects").principal(user))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(jsonPath("$", hasSize(projects.size())))
-      .andExpect(jsonPath("$[0].id", is(project.getId())))
-      .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())))
-      .andExpect(jsonPath("$[0].name", is(project.getName())))
-      .andExpect(jsonPath("$[0].description", is(project.getDescription())))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", hasSize(projects.size())))
+            .andExpect(jsonPath("$[0].id", is(project.getId())))
+            .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())))
+            .andExpect(jsonPath("$[0].name", is(project.getName())))
+            .andExpect(jsonPath("$[0].description", is(project.getDescription())))
             .andExpect(jsonPath("$[0].trialverseId", is(project.getTrialverseId())));
 
     verify(projectRepository).query();
@@ -121,10 +117,10 @@ public class ProjectsControllerTest {
     when(projectRepository.queryByOwnerId(paul.getId())).thenReturn(projects);
 
     mockMvc.perform(get("/projects?owner=2").principal(user))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(jsonPath("$", hasSize(projects.size())))
-      .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", hasSize(projects.size())))
+            .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())));
 
     verify(projectRepository).queryByOwnerId(paul.getId());
     verify(accountRepository).findAccountByUsername("gert");
@@ -136,9 +132,9 @@ public class ProjectsControllerTest {
     String jsonContent = TestUtils.createJson(project);
     when(projectRepository.create(project.getOwner(), project.getName(), project.getDescription(), project.getTrialverseId())).thenReturn(project);
     mockMvc.perform(post("/projects").principal(user).content(jsonContent).contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(status().isCreated())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(jsonPath("$.name", is("testname")));
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.name", is("testname")));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).create(project.getOwner(), project.getName(), project.getDescription(), project.getTrialverseId());
   }
@@ -148,9 +144,9 @@ public class ProjectsControllerTest {
     Project project = new Project(1, john, "name", "desc", 1, new ArrayList<Outcome>());
     when(projectRepository.getProjectById(project.getId())).thenReturn(project);
     mockMvc.perform(get("/projects/" + project.getId()).principal(user))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(jsonPath("$.id", is(project.getId())));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.id", is(project.getId())));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).getProjectById(project.getId());
   }
@@ -159,7 +155,7 @@ public class ProjectsControllerTest {
   public void testGetNonexistentProject() throws Exception {
     when(projectRepository.getProjectById(1)).thenThrow(new ResourceDoesNotExistException());
     mockMvc.perform(get("/projects/1").principal(user))
-      .andExpect(redirectedUrl("/error/404"));
+            .andExpect(redirectedUrl("/error/404"));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).getProjectById(1);
   }
@@ -173,9 +169,9 @@ public class ProjectsControllerTest {
     when(projectRepository.update(project)).thenReturn(project);
 
     mockMvc.perform(post("/projects/1").principal(user).content(jsonContent).contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(jsonPath("$.id", is(project.getId())));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.id", is(project.getId())));
     verify(projectRepository).getProjectById(1);
     verify(projectRepository).update(project);
   }
@@ -189,7 +185,7 @@ public class ProjectsControllerTest {
     when(projectRepository.update(project)).thenReturn(project);
 
     mockMvc.perform(post("/projects/1").principal(user).content(jsonContent).contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(redirectedUrl("/error/403"));
+            .andExpect(redirectedUrl("/error/403"));
     verify(projectRepository).getProjectById(1);
 
   }

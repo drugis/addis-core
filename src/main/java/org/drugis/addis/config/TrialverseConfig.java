@@ -14,6 +14,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -70,6 +71,11 @@ public class TrialverseConfig {
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
     em.afterPropertiesSet();
     return em;
+  }
+
+  @Bean
+  public RestTemplate restTemplateFactory() {
+    return new RestTemplate();
   }
 
   Properties additionalProperties() {

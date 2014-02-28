@@ -4,15 +4,18 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.trialverse.Trialverse;
+import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.Trialverse;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
+import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Collection;
 
@@ -22,11 +25,16 @@ import java.util.Collection;
 @Controller
 public class TrialverseController {
 
+  final static Logger logger = LoggerFactory.getLogger(TrialverseController.class);
+
   @Inject
   private AccountRepository accountRepository;
 
   @Inject
   private TrialverseRepository trialverseRepository;
+
+  @Inject
+  private TriplestoreService triplestoreService;
 
   @RequestMapping(value = "/trialverse", method = RequestMethod.GET)
   @ResponseBody
@@ -48,5 +56,30 @@ public class TrialverseController {
     } else {
       throw new MethodNotAllowedException();
     }
+  }
+
+  @RequestMapping(value = "/trialverse/{trialverseId}/outcomes", method = RequestMethod.GET)
+  @ResponseBody
+  public Collection<SemanticOutcome> queryOutcomes(Principal currentUser, @PathVariable Long trialverseId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    if (user != null) {
+      return triplestoreService.getOutcomes(trialverseId);
+    } else {
+      throw new MethodNotAllowedException();
+    }
+  }
+
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  @ExceptionHandler(MethodNotAllowedException.class)
+  public String handleMethodNotAllowed(HttpServletRequest request) {
+    logger.error("Access to resource not authorised.\n{}", request.getRequestURL());
+    return "redirect:/error/403";
+  }
+
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(ResourceDoesNotExistException.class)
+  public String handleResourceDoesNotExist(HttpServletRequest request) {
+    logger.error("Access to non-existent resource.\n{}", request.getRequestURL());
+    return "redirect:/error/404";
   }
 }

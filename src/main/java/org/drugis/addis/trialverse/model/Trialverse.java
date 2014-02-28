@@ -1,4 +1,4 @@
-package org.drugis.addis.trialverse;
+package org.drugis.addis.trialverse.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
