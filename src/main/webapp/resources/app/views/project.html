@@ -19,8 +19,8 @@
   <div class="row">
     <div class="columns large-6">
       Outcomes
-      <button ng-click="addOutcome({name:'name', motivation: 'motivation', semanticOutcome: 'semantics'})">Click mij
-      </button>
+      <button class="small" ng-click="createOutcomeModal.open()">Add outcome</button>
+
       <ul>
         <li ng-repeat="outcome in project.outcomes">
           <span title="outcome name">{{outcome.name}} </span> -
@@ -38,4 +38,39 @@
       Analyses
     </div>
   </div>
+  <modal model="createOutcomeModal">
+    <h3>Create a new outcome</h3>
+
+    <form>
+      <div class="row">
+        <div class="large-8 columns">
+          <label>Name
+            <input type="text" ng-model="model.name">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-6 columns">
+          <label>Motivation
+            <textarea rows="4" ng-model="model.motivation"></textarea>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-6 columns">
+          <label>Semantic outcome
+            <select ng-model="model.semanticOutcome"
+                    ng-options="semanticOutcome as semanticOutcome.label for semanticOutcome in semanticOutcomes"></select>
+          </label>
+          <ul class="button-group">
+            <li><a class="button small secondary" ng-click="createOutcomeModal.close()">Cancel</a></li>
+            <li>
+              <a class="button small success" ng-disabled="false" ng-click="addOutcome(model)">Create
+                project</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </form>
+  </modal>
 </div>

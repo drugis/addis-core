@@ -1,22 +1,32 @@
 define(['angular', 'angular-mocks'], function () {
   describe('SingleProjectController', function () {
     beforeEach(module('addis.controllers'));
-    var scope, projectsService, deferred
-      mockProject = {id: 1, name: 'projectName', description: 'testDescription', namespace: 'testNamespace', outcomes: [], trialverseId: 1}
+    var scope, projectsService, trialverseService, semanticOutcomeService, deferred, mockSemanticOutcomes,
+      mockProject = {id: 1, name: 'projectName', description: 'testDescription', namespace: 'testNamespace', outcomes: [], trialverseId: 1},
       mockTrialverse = {id: 1, name: 'trialverseName', description: 'trialverseDescription'};
 
     beforeEach(inject(function ($controller, $q, $rootScope) {
       var mockStateParams = {id: mockProject.id};
+
+      mockSemanticOutcomes = ["a", "b", 'c'] ;
       projectsService = jasmine.createSpyObj('projectsService', ['get', 'save']);
       projectsService.get.andReturn(mockProject);
       trialverseService = jasmine.createSpyObj('trialverseService', ['get']);
       trialverseService.get.andReturn(mockTrialverse);
+      semanticOutcomeService = jasmine.createSpyObj('semanticOutcomeService', ['query']);
+      semanticOutcomeService.query.andReturn(mockSemanticOutcomes);
 
       scope = $rootScope;
       deferred = $q.defer();
       mockProject.$promise = deferred.promise;
 
-      $controller('SingleProjectController', {$scope: scope, 'ProjectsService': projectsService, 'TrialverseService': trialverseService, $stateParams: mockStateParams});
+      $controller('SingleProjectController', {
+        $scope: scope, 'ProjectsService': projectsService,
+        'TrialverseService': trialverseService,
+        'SemanticOutcomeService': semanticOutcomeService,
+        $stateParams: mockStateParams
+       });
+
     }));
 
     it('should place project information on the scope', function () {
@@ -41,6 +51,13 @@ define(['angular', 'angular-mocks'], function () {
       scope.$apply();
       expect(trialverseService.get).toHaveBeenCalledWith({id: mockProject.trialverseId});
       expect(scope.trialverse).toEqual(mockTrialverse);
+    });
+
+    it("should place the possible semanticOutcomes on the scope on resolution", function() {
+      deferred.resolve();
+      scope.$apply();
+      expect(semanticOutcomeService.query).toHaveBeenCalledWith({id: mockProject.trialverseId});
+      expect(scope.semanticOutcomes).toEqual(mockSemanticOutcomes);
     });
   });
 });
