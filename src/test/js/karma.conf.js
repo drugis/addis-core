@@ -53,7 +53,7 @@ module.exports = function(config) {
 
     coverageReporter: {
       type : 'cobertura',
-      dir : '../../../../target/karma-reports/coverage/',
+      dir : '../../../../target/site/cobertura/',
       file : 'karma-coverage-result.xml'
     },
 
