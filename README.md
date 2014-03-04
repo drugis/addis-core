@@ -21,11 +21,21 @@ Set up the database:
 ```
 sudo -u postgres psql -c "CREATE USER addiscore WITH PASSWORD 'develop'"
 sudo -u postgres psql -c "CREATE DATABASE addiscore ENCODING 'utf-8' OWNER addiscore"
+sudo -u postgres psql -c "CREATE USER trialverse WITH PASSWORD 'develop'"
+sudo -u postgres psql -c "CREATE DATABASE trialverse ENCODING 'utf-8' OWNER trialverse"
+
 ```
 
 Set up the environment:
 
 ```
+export TRIALVERSE_DB_CHANGELOG=database.sql
+export TRIALVERSE_DB_DRIVER=org.postgresql.Driver
+export TRIALVERSE_DB_URL=jdbc:postgresql://localhost/trialverse
+export TRIALVERSE_DB_USERNAME=trialverse
+export TRIALVERSE_DB_PASSWORD=develop
+export TRIPLESTORE_URI=http://localhost:3030
+
 export ADDIS_CORE_DB_CHANGELOG=database.sql
 export ADDIS_CORE_DB_DRIVER=org.postgresql.Driver
 export ADDIS_CORE_DB_URL=jdbc:postgresql://localhost/addiscore
