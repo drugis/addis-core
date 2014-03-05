@@ -1,8 +1,10 @@
 package org.drugis.addis.projects;
 
 import org.drugis.addis.config.JpaRepositoryTestConfig;
+import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.outcomes.Outcome;
+import org.drugis.addis.outcomes.OutcomeCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.junit.Test;
@@ -16,6 +18,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -113,4 +116,32 @@ public class ProjectsRepositoryTest {
     projectRepository.getProjectOutcome(2, 1);
   }
 
+  @Test
+  public void testCreateOutcome() throws Exception {
+    OutcomeCommand outcomeCommand = new OutcomeCommand("newName", "newMotivation", "http://semantic.com");
+    Account user = em.find(Account.class, 1);
+
+    Outcome result = projectRepository.createOutcome(user, 1, outcomeCommand);
+    assertNotNull(result);
+    assertEquals(outcomeCommand.getName(), result.getName());
+    assertEquals(outcomeCommand.getMotivation(), result.getMotivation());
+    assertEquals(outcomeCommand.getSemanticOutcome(), result.getSemanticOutcome());
+    em.flush();
+    Project project = em.find(Project.class, 1);
+    assertTrue(project.getOutcomes().contains(result));
+  }
+
+  @Test(expected = MethodNotAllowedException.class)
+  public void testCannotCreateOutcomeInNotOwnedProject() throws Exception {
+    Account account = em.find(Account.class, 2);
+    OutcomeCommand outcomeCommand = new OutcomeCommand("newName", "newMotivation", "http://semantic.com");
+    projectRepository.createOutcome(account, 1, outcomeCommand);
+  }
+
+  @Test(expected = ResourceDoesNotExistException.class)
+  public void testCannotCreateOutcomeInNonexistentProject() throws Exception {
+    Account account = em.find(Account.class, 2);
+    OutcomeCommand outcomeCommand = new OutcomeCommand("newName", "newMotivation", "http://semantic.com");
+    projectRepository.createOutcome(account, 134957862, outcomeCommand);
+  }
 }

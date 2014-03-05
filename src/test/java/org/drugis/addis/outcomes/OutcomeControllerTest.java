@@ -1,5 +1,6 @@
 package org.drugis.addis.outcomes;
 
+import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
@@ -24,9 +25,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -108,6 +111,20 @@ public class OutcomeControllerTest {
       .andExpect(jsonPath("$.id", is(outcome.getId())));
     verify(accountRepository).findAccountByUsername("gert");
     verify(projectRepository).getProjectOutcome(projectId, outcome.getId());
+  }
+
+  @Test
+  public void testCreateOutcome() throws Exception {
+    OutcomeCommand outcomeCommand = new OutcomeCommand("name", "motivation", "uri");
+    Outcome outcome = new Outcome(1, "name", "motivation", "uri");
+    when(projectRepository.createOutcome(gert, 1, outcomeCommand)).thenReturn(outcome);
+    String body = TestUtils.createJson(outcomeCommand);
+    mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(status().isCreated())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.id", notNullValue()));
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(projectRepository).createOutcome(gert, 1, outcomeCommand);
   }
 
 }
