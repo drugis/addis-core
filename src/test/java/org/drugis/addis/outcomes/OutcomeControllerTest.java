@@ -1,8 +1,8 @@
 package org.drugis.addis.outcomes;
 
 import org.drugis.addis.config.TestConfig;
-import org.drugis.addis.outcomes.Outcome;
-import org.drugis.addis.outcomes.repository.OutcomeRepository;
+import org.drugis.addis.projects.Project;
+import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
@@ -21,6 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.inject.Inject;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
@@ -42,7 +43,7 @@ public class OutcomeControllerTest {
   private AccountRepository accountRepository;
 
   @Inject
-  private OutcomeRepository outcomeRepository;
+  private ProjectRepository projectRepository;
 
   @Autowired
   private WebApplicationContext webApplicationContext;
@@ -57,7 +58,7 @@ public class OutcomeControllerTest {
   @Before
   public void setUp() {
     reset(accountRepository);
-    reset(outcomeRepository);
+    reset(projectRepository);
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
@@ -66,14 +67,17 @@ public class OutcomeControllerTest {
 
   @After
   public void tearDown() {
-    verifyNoMoreInteractions(accountRepository, outcomeRepository);
+    verifyNoMoreInteractions(accountRepository, projectRepository);
   }
 
   @Test
   public void testQueryOutcomes() throws Exception {
     Outcome outcome = new Outcome(1, "name", "motivation", "uri");
     Integer projectId = 1;
-    when(outcomeRepository.query(projectId)).thenReturn(Arrays.asList(outcome));
+    List<Outcome> outcomes = Arrays.asList(outcome);
+    Project project = mock(Project.class);
+    when(project.getOutcomes()).thenReturn(outcomes);
+    when(projectRepository.getProjectById(projectId)).thenReturn(project);
 
     mockMvc.perform(get("/projects/1/outcomes").principal(user))
       .andExpect(status().isOk())
@@ -81,7 +85,7 @@ public class OutcomeControllerTest {
       .andExpect(jsonPath("$", hasSize(1)))
       .andExpect(jsonPath("$[0].id", is(outcome.getId())));
 
-    verify(outcomeRepository).query(projectId);
+    verify(projectRepository).getProjectById(projectId);
     verify(accountRepository).findAccountByUsername("gert");
   }
 
