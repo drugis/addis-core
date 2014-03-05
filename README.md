@@ -34,7 +34,7 @@ export TRIALVERSE_DB_DRIVER=org.postgresql.Driver
 export TRIALVERSE_DB_URL=jdbc:postgresql://localhost/trialverse
 export TRIALVERSE_DB_USERNAME=trialverse
 export TRIALVERSE_DB_PASSWORD=develop
-export TRIPLESTORE_URI=http://localhost:3030
+export TRIPLESTORE_URI=http://localhost:3030/ds/query
 
 export ADDIS_CORE_DB_CHANGELOG=database.sql
 export ADDIS_CORE_DB_DRIVER=org.postgresql.Driver
