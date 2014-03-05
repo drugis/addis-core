@@ -40,4 +40,16 @@ public class OutcomeController extends AbstractAddisCoreController {
       throw new MethodNotAllowedException();
     }
   }
+
+  @RequestMapping(value = "/projects/{projectId}/outcomes/{outcomeId}", method = RequestMethod.GET)
+  @ResponseBody
+  public Outcome get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer outcomeId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    if (user != null) {
+      return projectRepository.getProjectOutcome(projectId, outcomeId);
+    } else {
+      throw new MethodNotAllowedException();
+    }
+  }
+
 }

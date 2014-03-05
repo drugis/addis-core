@@ -60,4 +60,15 @@ public class JpaProjectRepository implements ProjectRepository {
     }
     return em.merge(detachedProject);
   }
+
+  @Override
+  public Outcome getProjectOutcome(Integer projectId, Integer outcomeId) throws ResourceDoesNotExistException {
+    Project project = getProjectById(projectId);
+    for (Outcome outcome : project.getOutcomes()) {
+      if (outcome.getId().equals(outcomeId)) {
+        return outcome;
+      }
+    }
+    throw new ResourceDoesNotExistException();
+  }
 }

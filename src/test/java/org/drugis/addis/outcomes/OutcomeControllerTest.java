@@ -97,4 +97,17 @@ public class OutcomeControllerTest {
     verify(accountRepository).findAccountByUsername("gert");
   }
 
+  @Test
+  public void testGetOutcome() throws Exception {
+    Outcome outcome = new Outcome(1, "name", "motivation", "uri");
+    Integer projectId = 1;
+    when(projectRepository.getProjectOutcome(projectId, outcome.getId())).thenReturn(outcome);
+    mockMvc.perform(get("/projects/1/outcomes/1").principal(user))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.id", is(outcome.getId())));
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(projectRepository).getProjectOutcome(projectId, outcome.getId());
+  }
+
 }
