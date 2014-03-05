@@ -5,6 +5,7 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.OutcomeCommand;
 import org.drugis.addis.projects.Project;
+import org.drugis.addis.projects.ProjectCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -51,16 +52,6 @@ public class JpaProjectRepository implements ProjectRepository {
     Project project = new Project(owner, name, description, trialverse);
     em.persist(project);
     return project;
-  }
-
-  @Override
-  public Project update(Project detachedProject) {
-    for (Outcome outcome : detachedProject.getOutcomes()) {
-      if (outcome.getId() == null) {
-        em.persist(outcome);
-      }
-    }
-    return em.merge(detachedProject);
   }
 
   @Override

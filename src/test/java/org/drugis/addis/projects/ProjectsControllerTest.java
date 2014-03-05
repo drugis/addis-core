@@ -161,35 +161,5 @@ public class ProjectsControllerTest {
     verify(projectRepository).getProjectById(1);
   }
 
-  @Test
-  public void testUpdate() throws Exception {
-    Project project = new Project(1, gert, "name", "desc", 1, new ArrayList<Outcome>());
-    project.addOutcome(new Outcome(1, "name", "motivation", "semantics"));
-    String jsonContent = TestUtils.createJson(project);
-    when(projectRepository.getProjectById(1)).thenReturn(project);
-    when(projectRepository.update(project)).thenReturn(project);
-
-    mockMvc.perform(post("/projects/1").principal(user).content(jsonContent).contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.id", is(project.getId())));
-    verify(projectRepository).getProjectById(1);
-    verify(projectRepository).update(project);
-  }
-
-  @Test
-  public void testUpdateNotOwnedProjectFails() throws Exception {
-    Project project = new Project(1, paul, "name", "desc", 1, new ArrayList<Outcome>());
-    project.addOutcome(new Outcome(1, "name", "motivation", "semantics"));
-    String jsonContent = TestUtils.createJson(project);
-    when(projectRepository.getProjectById(1)).thenReturn(project);
-    when(projectRepository.update(project)).thenReturn(project);
-
-    mockMvc.perform(post("/projects/1").principal(user).content(jsonContent).contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(redirectedUrl("/error/403"));
-    verify(projectRepository).getProjectById(1);
-
-  }
-
 }
 

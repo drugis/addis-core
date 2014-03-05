@@ -7,6 +7,7 @@ import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.OutcomeCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
+import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,27 +82,13 @@ public class ProjectsRepositoryTest {
   public void testUpdateOutcomes() throws Exception {
     Project project = projectRepository.getProjectById(1);
 
-    Outcome outcomeNew = new Outcome("nameNew", "motivationNew", "URINew");
+    Outcome outcomeNew = new Outcome("nameNew", "motivationNew", new SemanticOutcome("URINew", "labelnew"));
     project.addOutcome(outcomeNew);
 
     em.persist(project);
 
     Project projectUpdated = projectRepository.getProjectById(1);
     assertTrue(projectUpdated.getOutcomes().contains(outcomeNew));
-  }
-
-  @Test
-  public void testUpdateProject() throws Exception {
-    Project project = em.find(Project.class, 1);
-    em.detach(project);
-
-    Outcome outcomeNew = new Outcome("nameNew", "motivationNew", "URINew");
-    project.addOutcome(outcomeNew);
-
-    Project updated = projectRepository.update(project);
-
-    assertTrue(updated.getOutcomes().contains(outcomeNew));
-    assertTrue(em.contains(updated));
   }
 
   @Test
@@ -118,14 +105,15 @@ public class ProjectsRepositoryTest {
 
   @Test
   public void testCreateOutcome() throws Exception {
-    OutcomeCommand outcomeCommand = new OutcomeCommand("newName", "newMotivation", "http://semantic.com");
+    OutcomeCommand outcomeCommand = new OutcomeCommand("newName", "newMotivation", new SemanticOutcome("http://semantic.com", "labelnew"));
     Account user = em.find(Account.class, 1);
 
     Outcome result = projectRepository.createOutcome(user, 1, outcomeCommand);
     assertNotNull(result);
     assertEquals(outcomeCommand.getName(), result.getName());
     assertEquals(outcomeCommand.getMotivation(), result.getMotivation());
-    assertEquals(outcomeCommand.getSemanticOutcome(), result.getSemanticOutcome());
+    assertEquals(outcomeCommand.getSemanticOutcome().getLabel(), result.getSemanticOutcomeLabel());
+    assertEquals(outcomeCommand.getSemanticOutcome().getUri(), result.getSemanticOutcomeUrl());
     em.flush();
     Project project = em.find(Project.class, 1);
     assertTrue(project.getOutcomes().contains(result));
@@ -134,14 +122,14 @@ public class ProjectsRepositoryTest {
   @Test(expected = MethodNotAllowedException.class)
   public void testCannotCreateOutcomeInNotOwnedProject() throws Exception {
     Account account = em.find(Account.class, 2);
-    OutcomeCommand outcomeCommand = new OutcomeCommand("newName", "newMotivation", "http://semantic.com");
+    OutcomeCommand outcomeCommand = new OutcomeCommand("newName", "newMotivation", new SemanticOutcome("http://semantic.com", "labelnew"));
     projectRepository.createOutcome(account, 1, outcomeCommand);
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
   public void testCannotCreateOutcomeInNonexistentProject() throws Exception {
     Account account = em.find(Account.class, 2);
-    OutcomeCommand outcomeCommand = new OutcomeCommand("newName", "newMotivation", "http://semantic.com");
+    OutcomeCommand outcomeCommand = new OutcomeCommand("newName", "newMotivation", new SemanticOutcome("http://semantic.com", "labelnew"));
     projectRepository.createOutcome(account, 134957862, outcomeCommand);
   }
 }

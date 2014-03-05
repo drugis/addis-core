@@ -6,6 +6,7 @@ import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
@@ -75,7 +76,7 @@ public class OutcomeControllerTest {
 
   @Test
   public void testQueryOutcomes() throws Exception {
-    Outcome outcome = new Outcome(1, "name", "motivation", "uri");
+    Outcome outcome = new Outcome(1, "name", "motivation", new SemanticOutcome("http://semantic.com", "labelnew"));
     Integer projectId = 1;
     List<Outcome> outcomes = Arrays.asList(outcome);
     Project project = mock(Project.class);
@@ -102,7 +103,7 @@ public class OutcomeControllerTest {
 
   @Test
   public void testGetOutcome() throws Exception {
-    Outcome outcome = new Outcome(1, "name", "motivation", "uri");
+    Outcome outcome = new Outcome(1, "name", "motivation", new SemanticOutcome("http://semantic.com", "labelnew"));
     Integer projectId = 1;
     when(projectRepository.getProjectOutcome(projectId, outcome.getId())).thenReturn(outcome);
     mockMvc.perform(get("/projects/1/outcomes/1").principal(user))
@@ -115,11 +116,26 @@ public class OutcomeControllerTest {
 
   @Test
   public void testCreateOutcome() throws Exception {
-    OutcomeCommand outcomeCommand = new OutcomeCommand("name", "motivation", "uri");
-    Outcome outcome = new Outcome(1, "name", "motivation", "uri");
+    OutcomeCommand outcomeCommand = new OutcomeCommand("name", "motivation", new SemanticOutcome("http://semantic.com", "labelnew"));
+    Outcome outcome = new Outcome(1, "name", "motivation", new SemanticOutcome("http://semantic.com", "labelnew"));
     when(projectRepository.createOutcome(gert, 1, outcomeCommand)).thenReturn(outcome);
     String body = TestUtils.createJson(outcomeCommand);
     mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(status().isCreated())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.id", notNullValue()));
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(projectRepository).createOutcome(gert, 1, outcomeCommand);
+  }
+
+  @Test
+  public void testCreateOutcome2() throws Exception {
+    OutcomeCommand outcomeCommand = new OutcomeCommand("name", "motivation", new SemanticOutcome("http://trials.drugis.org/namespace/1/adverseEvent/f5234ff6082f641705c3b68ea6bf518b", "Headache"));
+    Outcome outcome = new Outcome(1, "name", "motivation", new SemanticOutcome("http://trials.drugis.org/namespace/1/adverseEvent/f5234ff6082f641705c3b68ea6bf518b", "Headache"));
+    Integer projectId = 1;
+    when(projectRepository.createOutcome(gert, projectId, outcomeCommand)).thenReturn(outcome);
+    String testJson = "{\"name\":\"name\",\"semanticOutcome\":{\"uri\":\"http://trials.drugis.org/namespace/1/adverseEvent/f5234ff6082f641705c3b68ea6bf518b\",\"label\":\"Headache\"},\"motivation\":\"motivation\",\"projectId\":1}";
+    mockMvc.perform(post("/projects/1/outcomes").content(testJson).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(status().isCreated())
       .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(jsonPath("$.id", notNullValue()));

@@ -1,5 +1,7 @@
 package org.drugis.addis.outcomes;
 
+import org.drugis.addis.trialverse.model.SemanticOutcome;
+
 /**
  * Created by daan on 3/5/14.
  */
@@ -7,16 +9,18 @@ public class OutcomeCommand {
 
   private String name;
   private String motivation;
-  private String semanticOutcome;
+  private SemanticOutcome semanticOutcome;
 
   public OutcomeCommand() {
   }
 
-  public OutcomeCommand(String name, String motivation, String semanticOutcome) {
+  public OutcomeCommand(String name, String motivation, SemanticOutcome semanticOutcome) {
     this.name = name;
     this.motivation = motivation;
     this.semanticOutcome = semanticOutcome;
   }
+
+  private void setProjectId(Integer projectId) {}
 
   public String getName() {
     return name;
@@ -26,7 +30,7 @@ public class OutcomeCommand {
     return motivation;
   }
 
-  public String getSemanticOutcome() {
+  public SemanticOutcome getSemanticOutcome() {
     return semanticOutcome;
   }
 

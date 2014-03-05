@@ -42,6 +42,7 @@ CREATE TABLE Outcome (id SERIAL NOT NULL,
                       project INT,
                       name VARCHAR NOT NULL,
                       motivation TEXT NOT NULL,
-                      semanticOutcome VARCHAR NOT NULL,
+                      semanticOutcomeLabel VARCHAR NOT NULL,
+                      semanticOutcomeUrl VARCHAR NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY(project) REFERENCES Project(id));

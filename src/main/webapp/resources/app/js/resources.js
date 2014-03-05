@@ -4,5 +4,6 @@ define(function(require) {
   return angular.module('addis.resources', ['ngResource'])
     .factory('ProjectsService', require('services/projectsService'))
     .factory('TrialverseService', require('services/trialverseService'))
-    .factory('SemanticOutcomeService', require('services/semanticOutcomeService'));
+    .factory('SemanticOutcomeService', require('services/semanticOutcomeService'))
+    .factory('OutcomeService', require('services/outcomeService'));
 });

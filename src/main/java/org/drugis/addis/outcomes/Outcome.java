@@ -1,5 +1,7 @@
 package org.drugis.addis.outcomes;
 
+import org.drugis.addis.trialverse.model.SemanticOutcome;
+
 import javax.persistence.*;
 
 /**
@@ -12,54 +14,42 @@ public class Outcome {
   private Integer id;
   private String name;
   private String motivation;
-  private String semanticOutcome;
+  private String semanticOutcomeLabel;
+  private String semanticOutcomeUrl;
 
   public Outcome() {
   }
 
-  public Outcome(Integer id, String name, String motivation, String semanticOutcome) {
+  public Outcome(String name, String motivation, SemanticOutcome semanticOutcome) {
+    this(null, name, motivation, semanticOutcome);
+  }
+
+  public Outcome(Integer id, String name, String motivation, SemanticOutcome semanticOutcome) {
     this.id = id;
     this.name = name;
     this.motivation = motivation;
-    this.semanticOutcome = semanticOutcome;
-  }
-
-  public Outcome(String name, String motivation, String semanticOutcome) {
-    this.name = name;
-    this.motivation = motivation;
-    this.semanticOutcome = semanticOutcome;
+    this.semanticOutcomeLabel = semanticOutcome.getLabel();
+    this.semanticOutcomeUrl = semanticOutcome.getUri();
   }
 
   public Integer getId() {
     return id;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
   public String getName() {
     return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
   }
 
   public String getMotivation() {
     return motivation;
   }
 
-  public void setMotivation(String motivation) {
-    this.motivation = motivation;
+  public String getSemanticOutcomeLabel() {
+    return semanticOutcomeLabel;
   }
 
-  public String getSemanticOutcome() {
-    return semanticOutcome;
-  }
-
-  public void setSemanticOutcome(String semanticOutcome) {
-    this.semanticOutcome = semanticOutcome;
+  public String getSemanticOutcomeUrl() {
+    return semanticOutcomeUrl;
   }
 
   @Override
@@ -72,7 +62,8 @@ public class Outcome {
     if (!id.equals(outcome.id)) return false;
     if (!motivation.equals(outcome.motivation)) return false;
     if (!name.equals(outcome.name)) return false;
-    if (!semanticOutcome.equals(outcome.semanticOutcome)) return false;
+    if (!semanticOutcomeLabel.equals(outcome.semanticOutcomeLabel)) return false;
+    if (!semanticOutcomeUrl.equals(outcome.semanticOutcomeUrl)) return false;
 
     return true;
   }
@@ -82,7 +73,8 @@ public class Outcome {
     int result = id.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + motivation.hashCode();
-    result = 31 * result + semanticOutcome.hashCode();
+    result = 31 * result + semanticOutcomeLabel.hashCode();
+    result = 31 * result + semanticOutcomeUrl.hashCode();
     return result;
   }
 }

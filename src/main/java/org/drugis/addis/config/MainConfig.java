@@ -77,7 +77,7 @@ public class MainConfig {
     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
     em.setJpaProperties(additionalProperties());
     em.setJpaVendorAdapter(vendorAdapter);
-    em.setPackagesToScan("org.drugis.addis.projects", "org.drugis.addis.security");
+    em.setPackagesToScan("org.drugis.addis.projects", "org.drugis.addis.outcomes", "org.drugis.addis.security");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
