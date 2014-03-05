@@ -1,4 +1,4 @@
-package org.drugis.addis;
+package org.drugis.addis.outcomes;
 
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.outcomes.Outcome;
@@ -90,7 +90,7 @@ public class OutcomeControllerTest {
     when(accountRepository.findAccountByUsername("gert")).thenReturn(null);
     mockMvc.perform(get("/projects/1/outcomes").principal(user))
       .andExpect(redirectedUrl("/error/403"));
-      verify(accountRepository).findAccountByUsername("gert");
+    verify(accountRepository).findAccountByUsername("gert");
   }
 
 }
