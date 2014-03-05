@@ -40,8 +40,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     Map<String, String> vars = new HashMap<>();
     vars.put("query", query);
     vars.put("output", "json");
-    String response = triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
 
+    String response = triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (int i = 0; i < bindings.size(); ++i) {
       Object binding = bindings.get(i);

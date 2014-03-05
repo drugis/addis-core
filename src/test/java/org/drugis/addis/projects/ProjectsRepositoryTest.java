@@ -2,6 +2,7 @@ package org.drugis.addis.projects;
 
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package org.drugis.addis.projects;
+package org.drugis.addis.outcomes;
 
 import javax.persistence.*;
 

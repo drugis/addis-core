@@ -1,7 +1,7 @@
 package org.drugis.addis.projects.repository.impl;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.projects.Outcome;
+import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;

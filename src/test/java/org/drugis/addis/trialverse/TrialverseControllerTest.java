@@ -73,7 +73,7 @@ public class TrialverseControllerTest {
     Trialverse trialverse2 = new Trialverse(2L, "b", "descrb");
     Collection<Trialverse> trialverseCollection = Arrays.asList(trialverse1, trialverse2);
     when(trialverseRepository.query()).thenReturn(trialverseCollection);
-    mockMvc.perform(get("/trialverse").principal(user))
+    mockMvc.perform(get("/namespaces").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", hasSize(2)))
@@ -85,7 +85,7 @@ public class TrialverseControllerTest {
   public void testGetNamespaceById() throws Exception {
     Trialverse trialverse1 = new Trialverse(1L, "a", "descrea");
     when(trialverseRepository.get(1L)).thenReturn(trialverse1);
-    mockMvc.perform(get("/trialverse/1").principal(user))
+    mockMvc.perform(get("/namespaces/1").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.name", is("a")));
@@ -97,7 +97,7 @@ public class TrialverseControllerTest {
     Long namespaceId = 1L;
     SemanticOutcome testOutCome = new SemanticOutcome("http://test/com", "test label");
     when(triplestoreService.getOutcomes(namespaceId)).thenReturn(Arrays.asList(testOutCome));
-    mockMvc.perform(get("/trialverse/" + namespaceId + "/outcomes").principal(user))
+    mockMvc.perform(get("/namespaces/" + namespaceId + "/outcomes").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0].uri", is(testOutCome.getUri())));
@@ -108,7 +108,7 @@ public class TrialverseControllerTest {
   public void testUnauthorisedGetSemanticOutcomesFails() throws Exception {
     Principal haxor = mock(Principal.class);
     when(haxor.getName()).thenReturn("who?");
-    mockMvc.perform(get("/trialverse/1/outcomes").principal(haxor))
+    mockMvc.perform(get("/namespaces/1/outcomes").principal(haxor))
             .andExpect(redirectedUrl("/error/403"));
   }
 

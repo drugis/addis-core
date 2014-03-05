@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -36,7 +37,7 @@ public class TrialverseController {
   @Inject
   private TriplestoreService triplestoreService;
 
-  @RequestMapping(value = "/trialverse", method = RequestMethod.GET)
+  @RequestMapping(value = "/namespaces", method = RequestMethod.GET)
   @ResponseBody
   public Collection<Trialverse> query(Principal currentUser) throws MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
@@ -47,23 +48,23 @@ public class TrialverseController {
     }
   }
 
-  @RequestMapping(value = "/trialverse/{trialverseId}", method = RequestMethod.GET)
+  @RequestMapping(value = "/namespaces/{namespaceId}", method = RequestMethod.GET)
   @ResponseBody
-  public Trialverse get(Principal currentUser, @PathVariable Long trialverseId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Trialverse get(Principal currentUser, @PathVariable Long namespaceId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return trialverseRepository.get(trialverseId);
+      return trialverseRepository.get(namespaceId);
     } else {
       throw new MethodNotAllowedException();
     }
   }
 
-  @RequestMapping(value = "/trialverse/{trialverseId}/outcomes", method = RequestMethod.GET)
+  @RequestMapping(value = "/namespaces/{namespaceId}/outcomes", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<SemanticOutcome> queryOutcomes(Principal currentUser, @PathVariable Long trialverseId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Collection<SemanticOutcome> queryOutcomes(Principal currentUser, @PathVariable Long namespaceId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return triplestoreService.getOutcomes(trialverseId);
+      return triplestoreService.getOutcomes(namespaceId);
     } else {
       throw new MethodNotAllowedException();
     }

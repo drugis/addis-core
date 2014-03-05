@@ -1,5 +1,6 @@
 package org.drugis.addis.projects.controller;
 
+import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.Project;
@@ -24,7 +25,7 @@ import java.util.Collection;
  */
 @Controller
 @Transactional("ptmAddisCore")
-public class ProjectController {
+public class ProjectController extends AbstractAddisCoreController {
 
   final static Logger logger = LoggerFactory.getLogger(ProjectController.class);
 
@@ -73,19 +74,5 @@ public class ProjectController {
       throw new MethodNotAllowedException();
     }
     return projectsRepository.update(body);
-  }
-
-  @ResponseStatus(HttpStatus.FORBIDDEN)
-  @ExceptionHandler(MethodNotAllowedException.class)
-  public String handleMethodNotAllowed(HttpServletRequest request) {
-    logger.error("Access to resource not authorised.\n{}", request.getRequestURL());
-    return "redirect:/error/403";
-  }
-
-  @ResponseStatus(HttpStatus.NOT_FOUND)
-  @ExceptionHandler(ResourceDoesNotExistException.class)
-  public String handleResourceDoesNotExist(HttpServletRequest request) {
-    logger.error("Access to non-existent resource.\n{}", request.getRequestURL());
-    return "redirect:/error/404";
   }
 }

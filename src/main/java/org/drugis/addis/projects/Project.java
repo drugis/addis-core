@@ -1,5 +1,6 @@
 package org.drugis.addis.projects;
 
+import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.security.Account;
 
 import javax.persistence.*;

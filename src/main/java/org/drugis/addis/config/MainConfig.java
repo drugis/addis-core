@@ -36,7 +36,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security"}, excludeFilters = {@Filter(Configuration.class)})
+@ComponentScan(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security", "org.drugis.addis.outcomes"}, excludeFilters = {@Filter(Configuration.class)})
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security"})
 public class MainConfig {
