@@ -10,8 +10,8 @@
 <div class="row">
   <div class="columns large-12">
     <div class="row">
-      <div class="columns large-3">
-        <h3>Your projects</h3>
+      <div class="columns large-2">
+      <h3>Your projects</h3>
       </div>
       <div>
         <a id="create-project-btn" class="button" ng-click="createProjectModal.open()"><i class="fa fa-plus"></i> Create
@@ -46,39 +46,39 @@
       </ul>
     </div>
 
-    <modal model="createProjectModal">
-      <h3>Create a new project</h3>
-
-      <form>
-        <div class="row">
-          <div class="large-8 columns">
-            <label>Name
-              <input type="text" ng-model="model.name">
-            </label>
-          </div>
-        </div>
-        <div class="row">
-          <div class="large-6 columns">
-            <label>Description
-              <textarea rows="4" ng-model="model.description"></textarea>
-            </label>
-          </div>
-        </div>
-        <div class="row">
-          <div class="large-6 columns">
-            <label>TrialVerse namespace
-              <select ng-model="model.trialverseId" ng-options="tv.id as tv.name for tv in trialverse"></select>
-            </label>
-            <ul class="button-group">
-              <li><a class="button small secondary" ng-click="createProjectModal.close()">Cancel</a></li>
-              <li>
-                <a class="button small success" ng-disabled="false" ng-click="createProject(model)">Create
-                  project</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </form>
-    </modal>
   </div>
+  <modal model="createProjectModal">
+    <h3>Create a new project</h3>
+
+    <form>
+      <div class="row">
+        <div class="large-8 columns">
+          <label>Name
+            <input type="text" ng-model="model.name">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-6 columns">
+          <label>Description
+            <textarea rows="4" ng-model="model.description"></textarea>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-6 columns">
+          <label>TrialVerse namespace
+            <select ng-model="model.trialverseId" ng-options="tv.id as tv.name for tv in trialverse"></select>
+          </label>
+          <ul class="button-group">
+            <li><a class="button small secondary" ng-click="createProjectModal.close()">Cancel</a></li>
+            <li>
+              <a class="button small success" ng-disabled="false" ng-click="createProject(model)">Create
+                project</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </form>
+  </modal>
 </div>
