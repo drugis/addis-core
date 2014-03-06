@@ -5,5 +5,7 @@ define(function(require) {
     .factory('ProjectsService', require('services/projectsService'))
     .factory('TrialverseService', require('services/trialverseService'))
     .factory('SemanticOutcomeService', require('services/semanticOutcomeService'))
-    .factory('OutcomeService', require('services/outcomeService'));
+    .factory('SemanticInterventionService', require('services/semanticInterventionService'))
+    .factory('OutcomeService', require('services/outcomeService'))
+    .factory('InterventionService', require('services/interventionService'));
 });

@@ -1,7 +1,8 @@
 define(['angular', 'angular-mocks'], function () {
   describe('SingleProjectController', function () {
     beforeEach(module('addis.controllers'));
-    var scope, projectsService, trialverseService, semanticOutcomeService, outcomeService, deferred, mockSemanticOutcomes, window,
+    var scope, projectsService, trialverseService, semanticOutcomeService, semanticInterventionsService, outcomeService,
+     interventionService, deferred, mockSemanticOutcomes, window,
       mockProject = {id: 1, owner: {id: 1}, name: 'projectName', description: 'testDescription', namespace: 'testNamespace', outcomes: [], trialverseId: 1, $save: function(){}},
       mockTrialverse = {id: 1, name: 'trialverseName', description: 'trialverseDescription'};
 
@@ -9,6 +10,7 @@ define(['angular', 'angular-mocks'], function () {
       var mockStateParams = {id: mockProject.id};
 
       mockSemanticOutcomes = ["a", "b", 'c'] ;
+      mockSemanticInterventions = ["e", "f", 'g'] ;
       projectsService = jasmine.createSpyObj('projectsService', ['get', 'save']);
       projectsService.get.andReturn(mockProject);
       trialverseService = jasmine.createSpyObj('trialverseService', ['get']);
@@ -16,11 +18,15 @@ define(['angular', 'angular-mocks'], function () {
       semanticOutcomeService = jasmine.createSpyObj('semanticOutcomeService', ['query']);
       semanticOutcomeService.query.andReturn(mockSemanticOutcomes);
       outcomeService = jasmine.createSpyObj('outcomeService', ['save']);
+      semanticInterventionService = jasmine.createSpyObj('semanticInterventionService', ['query']);
+      semanticInterventionService.query.andReturn(mockSemanticInterventions);
+      interventionService = jasmine.createSpyObj('interventionService', ['save']);
 
       spyOn(mockProject, '$save');
 
       scope = $rootScope;
       scope.createOutcomeModal = jasmine.createSpyObj('createOutcomeModal', ['close']);
+      scope.createInterventionModal = jasmine.createSpyObj('createInterventionModal', ['close']);
       deferred = $q.defer();
       mockProject.$promise = deferred.promise;
 
@@ -33,7 +39,9 @@ define(['angular', 'angular-mocks'], function () {
         'ProjectsService': projectsService,
         'TrialverseService': trialverseService,
         'SemanticOutcomeService': semanticOutcomeService,
-        'OutcomeService': outcomeService
+        'OutcomeService': outcomeService,
+        'SemanticInterventionService': semanticInterventionService,
+        'InterventionService': interventionService
        });
 
     }));
@@ -84,6 +92,23 @@ define(['angular', 'angular-mocks'], function () {
       scope.$apply();
       expect(scope.editMode.allowEditing).toBeFalsy();
     })
+
+    it("should make an update call when an inervention is added", function() {
+      var newIntervention = {name: "name", motivation: "motivation", semanticIntervention: "semantics"};
+      var newInterventionWithProjectId = {name: "name", motivation: "motivation", semanticIntervention: "semantics", projectId: 1};
+      scope.addIntervention(newIntervention);
+      expect(scope.createInterventionModal.close).toHaveBeenCalled();
+      expect(interventionService.save).toHaveBeenCalledWith(newInterventionWithProjectId, jasmine.any(Function));
+    });
+
+    it("should place the possible semanticInterventions on the scope on resolution", function() {
+      deferred.resolve();
+      scope.$apply();
+      expect(semanticInterventionService.query).toHaveBeenCalledWith({id: mockProject.trialverseId});
+      expect(scope.semanticInterventions).toEqual(mockSemanticInterventions);
+    });
+
+
 
   });
 });
