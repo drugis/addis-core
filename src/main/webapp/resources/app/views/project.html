@@ -19,7 +19,7 @@
   <div class="row">
     <div class="columns large-6">
       Outcomes
-      <button class="small" ng-click="createOutcomeModal.open()">Add outcome</button>
+      <button class="small" ng-click="createOutcomeModal.open()"><i class="fa fa-plus"></i> Add outcome</button>
 
       <ul>
         <li ng-repeat="outcome in project.outcomes">
@@ -39,7 +39,7 @@
     </div>
   </div>
   <modal model="createOutcomeModal">
-    <h3>Create a new outcome</h3>
+    <h3>Add a new outcome</h3>
 
     <form>
       <div class="row">
@@ -65,8 +65,7 @@
           <ul class="button-group">
             <li><a class="button small secondary" ng-click="createOutcomeModal.close()">Cancel</a></li>
             <li>
-              <a class="button small success" ng-disabled="false" ng-click="addOutcome(model)">Create
-                project</a>
+              <a class="button small success" ng-disabled="false" ng-click="addOutcome(model)">Add outcome</a>
             </li>
           </ul>
         </div>
