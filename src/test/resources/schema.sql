@@ -1,6 +1,8 @@
 SET DATABASE SQL SYNTAX PGS TRUE;
 SET DATABASE SQL SIZE FALSE;
 
+-- changeset reidd:1
+
 CREATE TABLE UserConnection (userId varchar(255) NOT NULL,
   providerId VARCHAR(255) NOT NULL,
   providerUserId VARCHAR(255),
@@ -36,8 +38,6 @@ CREATE TABLE Project (id SERIAL NOT NULL,
             PRIMARY KEY (id),
             FOREIGN KEY(owner) REFERENCES Account(id));
 
--- changeset reidd:2
-
 CREATE TABLE Outcome (id SERIAL NOT NULL,
                       project INT,
                       name VARCHAR NOT NULL,
@@ -47,7 +47,6 @@ CREATE TABLE Outcome (id SERIAL NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY(project) REFERENCES Project(id));
 
--- changeset reidd:3
 CREATE TABLE Intervention (id SERIAL NOT NULL,
                       project INT,
                       name VARCHAR NOT NULL,

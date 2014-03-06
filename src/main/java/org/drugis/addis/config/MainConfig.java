@@ -36,7 +36,11 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security", "org.drugis.addis.outcomes"}, excludeFilters = {@Filter(Configuration.class)})
+@ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
+        "org.drugis.addis.projects",
+        "org.drugis.addis.security",
+        "org.drugis.addis.outcomes",
+        "org.drugis.addis.interventions"})
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security"})
 public class MainConfig {
@@ -77,7 +81,7 @@ public class MainConfig {
     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
     em.setJpaProperties(additionalProperties());
     em.setJpaVendorAdapter(vendorAdapter);
-    em.setPackagesToScan("org.drugis.addis.projects", "org.drugis.addis.outcomes", "org.drugis.addis.security");
+    em.setPackagesToScan("org.drugis.addis.projects", "org.drugis.addis.outcomes", "org.drugis.addis.interventions", "org.drugis.addis.security");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());

@@ -36,8 +36,6 @@ CREATE TABLE Project (id SERIAL NOT NULL,
             PRIMARY KEY (id),
             FOREIGN KEY(owner) REFERENCES Account(id));
 
--- changeset reidd:2
-
 CREATE TABLE Outcome (id SERIAL NOT NULL,
                       project INT,
                       name VARCHAR NOT NULL,
@@ -47,7 +45,6 @@ CREATE TABLE Outcome (id SERIAL NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY(project) REFERENCES Project(id));
 
-- changeset reidd:3
 CREATE TABLE Intervention (id SERIAL NOT NULL,
                            project INT,
                            name VARCHAR NOT NULL,

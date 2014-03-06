@@ -1,5 +1,6 @@
 package org.drugis.addis.interventions.controller;
 
+import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
@@ -22,7 +23,7 @@ import java.util.Collection;
  */
 @Controller
 @Transactional("ptmAddisCore")
-public class InterventionController {
+public class InterventionController extends AbstractAddisCoreController {
 
   @Inject
   private ProjectRepository projectRepository;

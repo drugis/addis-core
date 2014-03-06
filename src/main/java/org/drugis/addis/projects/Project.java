@@ -5,9 +5,7 @@ import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.security.Account;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by daan on 2/6/14.
@@ -34,17 +32,17 @@ public class Project {
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinColumn(name="project")
-  private List<Outcome> outcomes = new ArrayList<>();
+  private Set<Outcome> outcomes = new HashSet<>();
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinColumn(name="project")
-  private List<Intervention> interventions = new ArrayList<>();
+  private Set<Intervention> interventions = new HashSet<>();
 
 
   public Project() {
   }
 
-  public Project(Integer id, Account owner, String name, String description, Integer trialverseId, List<Outcome> outcomes) {
+  public Project(Integer id, Account owner, String name, String description, Integer trialverseId) {
     this.id = id;
     this.owner = owner;
     this.name = name;
@@ -62,6 +60,10 @@ public class Project {
 
   public void addOutcome(Outcome outcome) {
     outcomes.add(outcome);
+  }
+
+  public void addIntervention(Intervention intervention) {
+    interventions.add(intervention);
   }
 
   public void removeOutcome(Outcome outcome) {
@@ -108,19 +110,19 @@ public class Project {
     this.trialverseId = trialverseId;
   }
 
-  public List<Outcome> getOutcomes() {
-    return outcomes;
+  public Set<Outcome> getOutcomes() {
+    return Collections.unmodifiableSet(outcomes);
   }
 
-  public void setOutcomes(List<Outcome> outcomes) {
+  public void setOutcomes(Set<Outcome> outcomes) {
     this.outcomes = outcomes;
   }
 
-  public Collection<Intervention> getInterventions() {
-    return interventions;
+  public Set<Intervention> getInterventions() {
+    return Collections.unmodifiableSet(interventions);
   }
 
-  public void setInterventions(List<Intervention> interventions) {
+  public void setInterventions(Set<Intervention> interventions) {
     this.interventions = interventions;
   }
 
@@ -132,7 +134,7 @@ public class Project {
     Project project = (Project) o;
 
     if (!description.equals(project.description)) return false;
-    if (!id.equals(project.id)) return false;
+    if (id != null ? !id.equals(project.id) : project.id != null) return false;
     if (!interventions.equals(project.interventions)) return false;
     if (!name.equals(project.name)) return false;
     if (!outcomes.equals(project.outcomes)) return false;
@@ -144,7 +146,7 @@ public class Project {
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
+    int result = id != null ? id.hashCode() : 0;
     result = 31 * result + owner.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + description.hashCode();

@@ -58,7 +58,7 @@ public class JpaRepositoryTestConfig {
     vendorAdapter.setShowSql(true);
     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
     em.setJpaVendorAdapter(vendorAdapter);
-    em.setPackagesToScan("org.drugis.addis.outcomes", "org.drugis.addis.projects", "org.drugis.addis.security");
+    em.setPackagesToScan("org.drugis.addis.outcomes", "org.drugis.addis.interventions", "org.drugis.addis.projects", "org.drugis.addis.security");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());

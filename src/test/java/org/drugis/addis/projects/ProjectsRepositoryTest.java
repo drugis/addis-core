@@ -3,6 +3,7 @@ package org.drugis.addis.projects;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.OutcomeCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
@@ -17,9 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -69,11 +68,15 @@ public class ProjectsRepositoryTest {
     Account account = em.find(Account.class, 1);
     Outcome outcome1 = em.find(Outcome.class, 1);
     Outcome outcome2 = em.find(Outcome.class, 2);
+    Intervention intervention1 = em.find(Intervention.class, 1);
+    Intervention intervention2 = em.find(Intervention.class, 2);
 
-    Project project = new Project(1, account, "testname 1", "testdescription 1", 1, new ArrayList<Outcome>());
+    Project project = new Project(1, account, "testname 1", "testdescription 1", 1);
     project.addOutcome(outcome1);
     project.addOutcome(outcome2);
-
+    project.addIntervention(intervention1);
+    project.addIntervention(intervention2);
+    em.flush();
     Project result = projectRepository.getProjectById(1);
     assertEquals(project, result);
   }
@@ -107,7 +110,6 @@ public class ProjectsRepositoryTest {
   public void testCreateOutcome() throws Exception {
     OutcomeCommand outcomeCommand = new OutcomeCommand("newName", "newMotivation", new SemanticOutcome("http://semantic.com", "labelnew"));
     Account user = em.find(Account.class, 1);
-
     Outcome result = projectRepository.createOutcome(user, 1, outcomeCommand);
     assertNotNull(result);
     assertEquals(outcomeCommand.getName(), result.getName());

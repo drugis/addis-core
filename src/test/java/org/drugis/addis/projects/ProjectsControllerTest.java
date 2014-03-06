@@ -3,7 +3,6 @@ package org.drugis.addis.projects;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -89,8 +88,8 @@ public class ProjectsControllerTest {
 
   @Test
   public void testQueryProjects() throws Exception {
-    Project project = new Project(1, john, "name", "desc", 1, new ArrayList<Outcome>());
-    Project project2 = new Project(2, paul, "otherName", "other description", 2, new ArrayList<Outcome>());
+    Project project = new Project(1, john, "name", "desc", 1);
+    Project project2 = new Project(2, paul, "otherName", "other description", 2);
     ArrayList projects = new ArrayList();
     projects.add(project);
     projects.add(project2);
@@ -112,7 +111,7 @@ public class ProjectsControllerTest {
 
   @Test
   public void testQueryProjectsWithQueryString() throws Exception {
-    Project project = new Project(2, paul, "test2", "desc", 1, new ArrayList<Outcome>());
+    Project project = new Project(2, paul, "test2", "desc", 1);
     ArrayList projects = new ArrayList();
     projects.add(project);
     when(projectRepository.queryByOwnerId(paul.getId())).thenReturn(projects);
@@ -129,7 +128,7 @@ public class ProjectsControllerTest {
 
   @Test
   public void testCreateProject() throws Exception {
-    Project project = new Project(1, gert, "testname", "testdescription", 1, new ArrayList<Outcome>());
+    Project project = new Project(1, gert, "testname", "testdescription", 1);
     String jsonContent = TestUtils.createJson(project);
     when(projectRepository.create(project.getOwner(), project.getName(), project.getDescription(), project.getTrialverseId())).thenReturn(project);
     mockMvc.perform(post("/projects").principal(user).content(jsonContent).contentType(WebConstants.APPLICATION_JSON_UTF8))
@@ -142,7 +141,7 @@ public class ProjectsControllerTest {
 
   @Test
   public void testGetSingleProject() throws Exception {
-    Project project = new Project(1, john, "name", "desc", 1, new ArrayList<Outcome>());
+    Project project = new Project(1, john, "name", "desc", 1);
     when(projectRepository.getProjectById(project.getId())).thenReturn(project);
     mockMvc.perform(get("/projects/" + project.getId()).principal(user))
             .andExpect(status().isOk())
