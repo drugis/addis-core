@@ -20,6 +20,7 @@ define(['angular', 'angular-mocks'], function () {
       spyOn(mockProject, '$save');
 
       scope = $rootScope;
+      scope.createOutcomeModal = jasmine.createSpyObj('createOutcomeModal', ['close']);
       deferred = $q.defer();
       mockProject.$promise = deferred.promise;
 
@@ -46,9 +47,12 @@ define(['angular', 'angular-mocks'], function () {
       expect(scope.loading.loaded).toBeTruthy();
     });
 
-    xit("should make an update call when an outcome is added", function() {
-      scope.addOutcome({name: "name", motivation: "motivation", semanticOutcome: "semantics"});
-      expect(scope.project.$save).toHaveBeenCalled();
+    it("should make an update call when an outcome is added", function() {
+      var newOutcome = {name: "name", motivation: "motivation", semanticOutcome: "semantics"};
+      var newOutcomeWithProjectId = {name: "name", motivation: "motivation", semanticOutcome: "semantics", projectId: 1};
+      scope.addOutcome(newOutcome);
+      expect(scope.createOutcomeModal.close).toHaveBeenCalled();
+      expect(outcomeService.save).toHaveBeenCalledWith(newOutcomeWithProjectId, jasmine.any(Function));
     });
 
     it("should place the associated trialverse information on the scope on resolution", function() {

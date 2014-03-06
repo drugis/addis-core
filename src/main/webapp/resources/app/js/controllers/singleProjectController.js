@@ -11,12 +11,13 @@ define([], function() {
       $scope.semanticOutcomes = SemanticOutcomeService.query({id: $scope.project.trialverseId});
       $scope.loading.loaded = true;
     });
+
     $scope.addOutcome = function(newOutcome) {
       newOutcome.projectId = $scope.project.id;
+      $scope.createOutcomeModal.close();
       OutcomeService.save(newOutcome, function(outcome) {
         $scope.project.outcomes.push(outcome);
-      })
-
+      });
     };
   };
   return dependencies.concat(ProjectsController);
