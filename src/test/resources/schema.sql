@@ -46,3 +46,14 @@ CREATE TABLE Outcome (id SERIAL NOT NULL,
                       semanticOutcomeUrl VARCHAR NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY(project) REFERENCES Project(id));
+
+-- changeset reidd:3
+CREATE TABLE Intervention (id SERIAL NOT NULL,
+                      project INT,
+                      name VARCHAR NOT NULL,
+                      motivation TEXT NOT NULL,
+                      semanticInterventionLabel VARCHAR NOT NULL,
+                      semanticInterventionUrl VARCHAR NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(project) REFERENCES Project(id));
+
