@@ -1,8 +1,8 @@
 define(['angular', 'angular-mocks'], function () {
   describe('SingleProjectController', function () {
     beforeEach(module('addis.controllers'));
-    var scope, projectsService, trialverseService, semanticOutcomeService, outcomeService, deferred, mockSemanticOutcomes,
-      mockProject = {id: 1, name: 'projectName', description: 'testDescription', namespace: 'testNamespace', outcomes: [], trialverseId: 1, $save: function(){}},
+    var scope, projectsService, trialverseService, semanticOutcomeService, outcomeService, deferred, mockSemanticOutcomes, window,
+      mockProject = {id: 1, owner: {id: 1}, name: 'projectName', description: 'testDescription', namespace: 'testNamespace', outcomes: [], trialverseId: 1, $save: function(){}},
       mockTrialverse = {id: 1, name: 'trialverseName', description: 'trialverseDescription'};
 
     beforeEach(inject(function ($controller, $q, $rootScope) {
@@ -24,13 +24,16 @@ define(['angular', 'angular-mocks'], function () {
       deferred = $q.defer();
       mockProject.$promise = deferred.promise;
 
+      window = {config: {user: {id: 1}}};
+
       $controller('SingleProjectController', {
         $scope: scope,
+        $window: window,
+        $stateParams: mockStateParams,
         'ProjectsService': projectsService,
         'TrialverseService': trialverseService,
         'SemanticOutcomeService': semanticOutcomeService,
-        'OutcomeService': outcomeService,
-        $stateParams: mockStateParams
+        'OutcomeService': outcomeService
        });
 
     }));
@@ -68,6 +71,19 @@ define(['angular', 'angular-mocks'], function () {
       expect(semanticOutcomeService.query).toHaveBeenCalledWith({id: mockProject.trialverseId});
       expect(scope.semanticOutcomes).toEqual(mockSemanticOutcomes);
     });
+
+    it("isOwnProject should be true if the project is owned by the logged-in user", function() {
+      deferred.resolve();
+      scope.$apply();
+      expect(scope.editMode.allowEditing).toBeTruthy();
+    })
+
+    it("isOwnProject should be false if the project is not owned by the logged-in user", function() {
+      window.config.user.id = 2;
+      deferred.resolve();
+      scope.$apply();
+      expect(scope.editMode.allowEditing).toBeFalsy();
+    })
 
   });
 });

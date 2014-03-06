@@ -19,13 +19,15 @@
   <div class="row">
     <div class="columns large-6">
       Outcomes
-      <button class="small" ng-click="createOutcomeModal.open()"><i class="fa fa-plus"></i> Add outcome</button>
+      <button ng-show="editMode.allowEditing" class="small" ng-click="createOutcomeModal.open()"><i
+              class="fa fa-plus"></i> Add outcome
+      </button>
 
       <ul>
         <li ng-repeat="outcome in project.outcomes">
           <span title="outcome name">{{outcome.name}} </span> -
           <span title="outcome motivation">{{outcome.motivation}} </span> -
-          <span title="corrensponding trialverseId semantic outcome">{{outcome.semanticOutcome}} </span>
+          <span title="corrensponding trialverseId semantic outcome">{{outcome.semanticOutcomeLabel}} </span>
         </li>
       </ul>
     </div>
