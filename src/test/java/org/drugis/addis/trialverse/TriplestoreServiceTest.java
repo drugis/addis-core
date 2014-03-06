@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse;
 
+import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
@@ -36,17 +37,26 @@ public class TriplestoreServiceTest {
 
   @Test
   public void testGetOutcomes() {
-    String mockResult = buildMockResult();
+    String mockResult = buildMockOutcomeResult();
     when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
     List<SemanticOutcome> result = triplestoreService.getOutcomes(1L);
     SemanticOutcome result1 = new SemanticOutcome("http://trials.drugis.org/namespace/1/endpoint/test1", "DBP 24-hour mean");
     assertEquals(result.get(0), result1);
   }
 
+  @Test
+  public void testGetInterventions() {
+    String mockResult = buildMockInterventionResult();
+    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
+    List<SemanticIntervention> result = triplestoreService.getInterventions(1L);
+    SemanticIntervention result1 = new SemanticIntervention("http://trials.drugis.org/namespace/1/drug/test1", "Azilsartan");
+    assertEquals(result.get(0), result1);
+  }
+
   /*
    * Build json result object containing 2 bindings both with a uri and label
   * */
-  private String buildMockResult() {
+  private String buildMockOutcomeResult() {
     return "{\n" +
             "      \"results\": {\n" +
             "      \"bindings\": [\n" +
@@ -57,6 +67,23 @@ public class TriplestoreServiceTest {
             "      {\n" +
             "        \"uri\": { \"type\": \"uri\" , \"value\": \"http://trials.drugis.org/namespace/1/adverseEvent/test2\" } ,\n" +
             "        \"label\": { \"type\": \"literal\" , \"value\": \"Blood pressure increased\" }\n" +
+            "      }]}}";
+  }
+
+  /*
+ * Build json result object containing 2 bindings both with a uri and label
+* */
+  private String buildMockInterventionResult() {
+    return "{\n" +
+            "      \"results\": {\n" +
+            "      \"bindings\": [\n" +
+            "      {\n" +
+            "        \"uri\": { \"type\": \"uri\" , \"value\": \"http://trials.drugis.org/namespace/1/drug/test1\" } ,\n" +
+            "        \"label\": { \"type\": \"literal\" , \"value\": \"Azilsartan\" }\n" +
+            "      } ,\n" +
+            "      {\n" +
+            "        \"uri\": { \"type\": \"uri\" , \"value\": \"http://trials.drugis.org/namespace/1/drug/test2\" } ,\n" +
+            "        \"label\": { \"type\": \"literal\" , \"value\": \"Placebo\" }\n" +
             "      }]}}";
   }
 }

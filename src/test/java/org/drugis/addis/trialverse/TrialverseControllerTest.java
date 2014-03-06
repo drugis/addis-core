@@ -4,6 +4,7 @@ package org.drugis.addis.trialverse;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.model.Trialverse;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
@@ -102,6 +103,18 @@ public class TrialverseControllerTest {
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0].uri", is(testOutCome.getUri())));
     verify(triplestoreService).getOutcomes(namespaceId);
+  }
+
+  @Test
+  public void testQuerySemanticInterventions() throws Exception {
+    Long namespaceId = 1L;
+    SemanticIntervention testIntervention = new SemanticIntervention("http://test/com", "test label");
+    when(triplestoreService.getInterventions(namespaceId)).thenReturn(Arrays.asList(testIntervention));
+    mockMvc.perform(get("/namespaces/" + namespaceId + "/interventions").principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$[0].uri", is(testIntervention.getUri())));
+    verify(triplestoreService).getInterventions(namespaceId);
   }
 
   @Test

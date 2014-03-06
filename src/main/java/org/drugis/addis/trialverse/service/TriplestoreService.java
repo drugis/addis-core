@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse.service;
 
+import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 
 import java.util.List;
@@ -9,4 +10,6 @@ import java.util.List;
  */
 public interface TriplestoreService {
   public List<SemanticOutcome> getOutcomes(Long namespaceId);
+
+  public List<SemanticIntervention> getInterventions(Long namespaceId);
 }
