@@ -6068,13 +6068,7 @@ table.show-for-xlarge, table.show-for-large, table.hide-for-small, table.hide-fo
     margin: 0;
   }
 }
-/* ----~~~~ Allow setting of textarea height via html ~~~~~----  */
-/* line 3, ../../drugis-css/_drugis.scss */
-textarea {
-  height: auto;
-}
-
-/* line 7, ../../drugis-css/_drugis.scss */
+/* line 1, ../../drugis-css/_drugis.scss */
 #hero {
   background: #cc3333;
   height: 420px;
@@ -6083,7 +6077,7 @@ textarea {
   padding: 100px 20px 0 20px;
 }
 
-/* line 15, ../../drugis-css/_drugis.scss */
+/* line 9, ../../drugis-css/_drugis.scss */
 #hero h1 {
   font-size: 4em;
   color: white;
@@ -6092,19 +6086,19 @@ textarea {
   line-height: 100%;
 }
 
-/* line 23, ../../drugis-css/_drugis.scss */
+/* line 17, ../../drugis-css/_drugis.scss */
 #hero h1 small {
   color: white;
 }
 
-/* line 27, ../../drugis-css/_drugis.scss */
+/* line 21, ../../drugis-css/_drugis.scss */
 #hero h4 {
   font-size: 1.35em;
   color: white;
   font-weight: 300;
 }
 
-/* line 33, ../../drugis-css/_drugis.scss */
+/* line 27, ../../drugis-css/_drugis.scss */
 header {
   background: #cc3333;
   text-align: left;
@@ -6112,7 +6106,7 @@ header {
   padding: 25px 20px 35px 0px;
 }
 
-/* line 40, ../../drugis-css/_drugis.scss */
+/* line 34, ../../drugis-css/_drugis.scss */
 header h2 {
   font-size: 3.5em;
   color: white;
@@ -6121,69 +6115,69 @@ header h2 {
   line-height: 100%;
 }
 
-/* line 48, ../../drugis-css/_drugis.scss */
+/* line 42, ../../drugis-css/_drugis.scss */
 header h4 {
   color: white;
 }
 
-/* line 52, ../../drugis-css/_drugis.scss */
+/* line 46, ../../drugis-css/_drugis.scss */
 header small {
   color: white;
 }
 
-/* line 56, ../../drugis-css/_drugis.scss */
+/* line 50, ../../drugis-css/_drugis.scss */
 .content {
   padding-top: 20px;
 }
 
-/* line 60, ../../drugis-css/_drugis.scss */
+/* line 54, ../../drugis-css/_drugis.scss */
 h3 img {
   float: right;
   margin-right: 10px;
 }
 
-/* line 65, ../../drugis-css/_drugis.scss */
+/* line 59, ../../drugis-css/_drugis.scss */
 .row-divider {
   margin: 2rem 0;
 }
 
-/* line 69, ../../drugis-css/_drugis.scss */
+/* line 63, ../../drugis-css/_drugis.scss */
 .screen-shot {
   border: 1px solid #dddddd;
   padding: 4px;
   margin: 0.5rem;
 }
 
-/* line 75, ../../drugis-css/_drugis.scss */
+/* line 69, ../../drugis-css/_drugis.scss */
 .footer {
   background: #333333;
   padding: 24px 0 10px;
 }
 
-/* line 82, ../../drugis-css/_drugis.scss */
+/* line 76, ../../drugis-css/_drugis.scss */
 .footer a,
 .footer h4,
 .footer p {
   color: #666666;
 }
 
-/* line 86, ../../drugis-css/_drugis.scss */
+/* line 80, ../../drugis-css/_drugis.scss */
 .footer a:hover {
   color: #777777;
 }
 
 /* ---------sticky footer --------------*/
-/* line 92, ../../drugis-css/_drugis.scss */
+/* line 86, ../../drugis-css/_drugis.scss */
 * {
   margin: 0;
 }
 
-/* line 96, ../../drugis-css/_drugis.scss */
+/* line 90, ../../drugis-css/_drugis.scss */
 html, body {
   height: 100%;
 }
 
-/* line 100, ../../drugis-css/_drugis.scss */
+/* line 94, ../../drugis-css/_drugis.scss */
 .wrapper {
   min-height: 100%;
   height: auto !important;
@@ -6191,34 +6185,34 @@ html, body {
   margin: 0 auto -4rem;
 }
 
-/* line 107, ../../drugis-css/_drugis.scss */
+/* line 101, ../../drugis-css/_drugis.scss */
 .push {
   height: 4.5rem;
 }
 
-/* line 111, ../../drugis-css/_drugis.scss */
+/* line 105, ../../drugis-css/_drugis.scss */
 .footer {
   height: 4.5rem;
 }
 
-/* line 115, ../../drugis-css/_drugis.scss */
+/* line 109, ../../drugis-css/_drugis.scss */
 .footer, .push {
   clear: both;
 }
 
-/* line 119, ../../drugis-css/_drugis.scss */
+/* line 113, ../../drugis-css/_drugis.scss */
 .copyright {
   display: inline;
 }
 
 /* -------- end sticky footer---------*/
-/* line 124, ../../drugis-css/_drugis.scss */
+/* line 118, ../../drugis-css/_drugis.scss */
 #map_canvas {
   height: 280px;
 }
 
 /* standard */
-/* line 129, ../../drugis-css/_drugis.scss */
+/* line 123, ../../drugis-css/_drugis.scss */
 pre {
   margin-bottom: rem-calc(20);
   border: 1px solid #b4b4b4;
@@ -6228,14 +6222,14 @@ pre {
   overflow-x: auto;
 }
 
-/* line 138, ../../drugis-css/_drugis.scss */
+/* line 132, ../../drugis-css/_drugis.scss */
 pre code {
   border: none;
   background: none;
   padding: 0px;
 }
 
-/* line 144, ../../drugis-css/_drugis.scss */
+/* line 138, ../../drugis-css/_drugis.scss */
 code {
   border: 1px solid #b4b4b4;
   background-color: #e7e7e7;
