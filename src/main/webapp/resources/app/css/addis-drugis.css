@@ -8310,6 +8310,30 @@ label {
 }
 
 /* line 24, ../../sass/addis-drugis.scss */
+.project-header {
+  border-bottom: 1px solid;
+  margin-bottom: 1.25rem;
+}
+
+/* line 29, ../../sass/addis-drugis.scss */
 .project-description {
   padding: 10px 0px;
+}
+
+/* line 33, ../../sass/addis-drugis.scss */
+.nested-view .has-tip {
+  font-weight: inherit;
+  border-bottom: none;
+}
+
+/* line 38, ../../sass/addis-drugis.scss */
+.nested-view ul {
+  padding-left: 0.5rem;
+}
+
+/* line 42, ../../sass/addis-drugis.scss */
+.nested-view li.colored-row {
+  background-color: #dbdbdb;
+  margin-bottom: 10px;
+  padding: 0.5rem 0rem;
 }

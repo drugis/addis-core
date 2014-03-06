@@ -21,6 +21,26 @@ label {
   display: inline;
 }
 
+.project-header {
+  border-bottom: 1px solid;
+  margin-bottom: 1.25rem;
+}
+
 .project-description {
   padding: 10px 0px;
+}
+
+.nested-view .has-tip {
+  font-weight: inherit;
+  border-bottom: none;
+}
+
+.nested-view ul {
+  padding-left: 0.5rem;
+}
+
+.nested-view li.colored-row {
+  background-color: scale-color($secondary-color, $lightness: -5%);
+  margin-bottom: 10px;
+  padding: 0.5rem 0rem;
 }

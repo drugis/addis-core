@@ -3,9 +3,9 @@
   <li class="current active">{{project.name}}</li>
 </ul>
 <div>
-  <div class="row">
+  <div class="project-header row">
     <div class="columns large-12">
-      <h2 class="inline-header" title="Project title">{{project.name}}</h2>
+      <h1 class="inline-header" title="Project title">{{project.name}}</h1>
 
       <h3 class="subheader inline-header" title="Trialverse namespace">/ {{trialverse.name}}</h3>
 
@@ -16,18 +16,22 @@
       </div>
     </div>
   </div>
-  <div class="row">
-    <div class="columns large-6">
-      Outcomes
-      <button ng-show="editMode.allowEditing" class="small" ng-click="createOutcomeModal.open()"><i
-              class="fa fa-plus"></i> Add outcome
-      </button>
 
-      <ul>
-        <li ng-repeat="outcome in project.outcomes">
-          <span title="outcome name">{{outcome.name}} </span> -
-          <span title="outcome motivation">{{outcome.motivation}} </span> -
-          <span title="corrensponding trialverseId semantic outcome">{{outcome.semanticOutcomeLabel}} </span>
+  <!-- outcomes -->
+  <div class="nested-view row border">
+    <div class="columns large-6">
+      <div class="nested-view-header row">
+        Outcomes
+        <button ng-show="editMode.allowEditing" class="small" ng-click="createOutcomeModal.open()"><i
+                class="fa fa-plus"></i> Add outcome
+        </button>
+      </div>
+      <ul class="no-bullet">
+        <li data-tooltip class="row colored-row has-tip" ng-repeat="outcome in project.outcomes"
+            title="{{outcome.motivation}}">
+          <span class="columns large-6">{{outcome.name}} </span>
+          <!--<span title="outcome motivation">{{outcome.motivation}} </span> --->
+          <span class="columns large-6">{{outcome.semanticOutcomeLabel}} </span>
         </li>
       </ul>
     </div>
@@ -35,6 +39,7 @@
       Interventions
     </div>
   </div>
+
   <div class="row">
     <div class="columns large-12">
       Analyses
