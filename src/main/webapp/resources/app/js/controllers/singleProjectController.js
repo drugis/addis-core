@@ -11,6 +11,8 @@ define([], function() {
       $scope.trialverse = TrialverseService.get({id: $scope.project.trialverseId});
       $scope.semanticOutcomes = SemanticOutcomeService.query({id: $scope.project.trialverseId});
       $scope.semanticInterventions = SemanticInterventionService.query({id: $scope.project.trialverseId});
+      $scope.outcomes = OutcomeService.query({projectId: $scope.project.id});
+      $scope.interventions = InterventionService.query({projectId: $scope.project.id});
       $scope.loading.loaded = true;
       $scope.editMode.allowEditing = $window.config.user.id === $scope.project.owner.id;
     });
@@ -19,7 +21,7 @@ define([], function() {
       newOutcome.projectId = $scope.project.id;
       $scope.createOutcomeModal.close();
       OutcomeService.save(newOutcome, function(outcome) {
-        $scope.project.outcomes.push(outcome);
+        $scope.outcomes.push(outcome);
       });
     };
 
@@ -27,7 +29,8 @@ define([], function() {
       newIntervention.projectId = $scope.project.id;
       $scope.createInterventionModal.close();
       InterventionService.save(newIntervention, function(intervention) {
-        $scope.project.interventions.push(intervention);
+        $scope.interventions.push(intervention);
+        $scope.mainForm.$setPristine();
       });
     };
   };

@@ -1,10 +1,15 @@
 define(['angular', 'angular-mocks'], function () {
   describe('SingleProjectController', function () {
     beforeEach(module('addis.controllers'));
-    var scope, projectsService, trialverseService, semanticOutcomeService, semanticInterventionsService, outcomeService,
-     interventionService, deferred, mockSemanticOutcomes, window,
-      mockProject = {id: 1, owner: {id: 1}, name: 'projectName', description: 'testDescription', namespace: 'testNamespace', outcomes: [], trialverseId: 1, $save: function(){}},
-      mockTrialverse = {id: 1, name: 'trialverseName', description: 'trialverseDescription'};
+    var scope, deferred, window,
+    projectsService, trialverseService, semanticOutcomeService, semanticInterventionsService,
+    outcomeService, interventionService,
+     mockSemanticOutcomes,
+     mockProject = {id: 1, owner: {id: 1}, name: 'projectName',
+       description: 'testDescription', namespace: 'testNamespace',trialverseId: 1, $save: function(){}},
+     mockTrialverse = {id: 1, name: 'trialverseName', description: 'trialverseDescription'},
+     mockOutcomes = [1, 2, 3],
+     mockInterventions = [4, 5, 6];
 
     beforeEach(inject(function ($controller, $q, $rootScope) {
       var mockStateParams = {id: mockProject.id};
@@ -17,11 +22,12 @@ define(['angular', 'angular-mocks'], function () {
       trialverseService.get.andReturn(mockTrialverse);
       semanticOutcomeService = jasmine.createSpyObj('semanticOutcomeService', ['query']);
       semanticOutcomeService.query.andReturn(mockSemanticOutcomes);
-      outcomeService = jasmine.createSpyObj('outcomeService', ['save']);
+      outcomeService = jasmine.createSpyObj('outcomeService', ['query', 'save']);
+      outcomeService.query.andReturn(mockOutcomes);
       semanticInterventionService = jasmine.createSpyObj('semanticInterventionService', ['query']);
       semanticInterventionService.query.andReturn(mockSemanticInterventions);
-      interventionService = jasmine.createSpyObj('interventionService', ['save']);
-
+      interventionService = jasmine.createSpyObj('interventionService', ['query', 'save']);
+      interventionService.query.andReturn(mockInterventions);
       spyOn(mockProject, '$save');
 
       scope = $rootScope;
@@ -49,6 +55,14 @@ define(['angular', 'angular-mocks'], function () {
     it('should place project information on the scope', function () {
       expect(projectsService.get).toHaveBeenCalledWith({id: mockProject.id});
       expect(scope.project).toEqual(mockProject);
+    });
+
+    it('should place the outcome and intervention information on the scope once the project has been loaded', function() {
+      deferred.resolve();
+      scope.$apply();
+      expect(scope.outcomes).toEqual(mockOutcomes);
+      expect(scope.interventions).toEqual(mockInterventions);
+      expect(scope.loading.loaded).toBeTruthy();
     });
 
     it('should tell the scope whether the resource is loaded', function() {

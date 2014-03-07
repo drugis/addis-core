@@ -3,7 +3,8 @@
   <li class="current active">{{project.name}}</li>
 </ul>
 <div>
-  <div class="project-header row">
+  <form name="mainForm">
+    <div class="project-header row">
     <div class="columns large-12">
       <h1 class="inline-header" title="Project title">{{project.name}}</h1>
 
@@ -28,7 +29,7 @@
         </button>
       </div>
       <ul class="no-bullet">
-        <li data-tooltip class="row colored-row has-tip" ng-repeat="outcome in project.outcomes"
+        <li data-tooltip class="row colored-row has-tip" ng-repeat="outcome in outcomes"
             title="{{outcome.motivation}}">
           <span class="columns large-6">{{outcome.name}} </span>
           <span class="columns large-6">{{outcome.semanticOutcomeLabel}} </span>
@@ -45,7 +46,7 @@
         </button>
       </div>
       <ul class="no-bullet">
-        <li data-tooltip class="row colored-row has-tip" ng-repeat="intervention in project.interventions"
+        <li data-tooltip class="row colored-row has-tip" ng-repeat="intervention in interventions"
             title="{{intervention.motivation}}">
           <span class="columns large-6">{{intervention.name}} </span>
           <span class="columns large-6">{{intervention.semanticInterventionLabel}} </span>
@@ -63,9 +64,9 @@
   <modal model="createOutcomeModal">
     <h3>Add a new outcome</h3>
 
-    <form>
+    <form name="outcomeForm">
       <div class="row">
-        <div class="large-4 columns">
+      <div class="large-4 columns">
         <label>Name
             <input type="text" ng-model="model.name">
           </label>
@@ -98,7 +99,7 @@
   <modal model="createInterventionModal">
     <h3>Add a new intervention</h3>
 
-    <form>
+    <form name="interventionForm">
       <div class="row">
         <div class="large-4 columns">
           <label>Name
@@ -122,11 +123,13 @@
           <ul class="button-group">
             <li><a class="button small secondary" ng-click="createInterventionModal.close()">Cancel</a></li>
             <li>
-              <a class="button small success" ng-disabled="false" ng-click="addIntervention(model)">Add intervention</a>
+              <input type="submit" class="button small success" ng-disabled="false" ng-click="addIntervention(model)"
+                     value="Add intervention"/>
             </li>
           </ul>
         </div>
       </div>
     </form>
   </modal>
+  </form>
 </div>
