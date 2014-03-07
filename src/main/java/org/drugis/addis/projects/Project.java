@@ -5,13 +5,14 @@ import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.security.Account;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by daan on 2/6/14.
  */
 @Entity
-public class Project {
+public class Project implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,12 +32,12 @@ public class Project {
   private Integer trialverseId;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JoinColumn(name="project")
-  private Set<Outcome> outcomes = new HashSet<>();
+  @JoinColumn(name = "project")
+  private List<Outcome> outcomes = new ArrayList<>();
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JoinColumn(name="project")
-  private Set<Intervention> interventions = new HashSet<>();
+  @JoinColumn(name = "project")
+  private List<Intervention> interventions = new ArrayList<>();
 
 
   public Project() {
@@ -48,7 +49,6 @@ public class Project {
     this.name = name;
     this.description = description;
     this.trialverseId = trialverseId;
-    this.outcomes = outcomes;
   }
 
   public Project(Account owner, String name, String description, Integer trialverseId) {
@@ -110,19 +110,19 @@ public class Project {
     this.trialverseId = trialverseId;
   }
 
-  public Set<Outcome> getOutcomes() {
-    return Collections.unmodifiableSet(outcomes);
+  public List<Outcome> getOutcomes() {
+    return Collections.unmodifiableList(outcomes);
   }
 
-  public void setOutcomes(Set<Outcome> outcomes) {
+  public void setOutcomes(List<Outcome> outcomes) {
     this.outcomes = outcomes;
   }
 
-  public Set<Intervention> getInterventions() {
-    return Collections.unmodifiableSet(interventions);
+  public List<Intervention> getInterventions() {
+    return Collections.unmodifiableList(interventions);
   }
 
-  public void setInterventions(Set<Intervention> interventions) {
+  public void setInterventions(List<Intervention> interventions) {
     this.interventions = interventions;
   }
 

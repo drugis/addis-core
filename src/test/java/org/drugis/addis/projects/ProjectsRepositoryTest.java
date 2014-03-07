@@ -4,10 +4,12 @@ import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.InterventionCommand;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.OutcomeCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
+import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,33 +67,14 @@ public class ProjectsRepositoryTest {
 
   @Test
   public void testGetProjectById() throws Exception {
-    Account account = em.find(Account.class, 1);
-    Outcome outcome1 = em.find(Outcome.class, 1);
-    Outcome outcome2 = em.find(Outcome.class, 2);
-    Intervention intervention1 = em.find(Intervention.class, 1);
-    Intervention intervention2 = em.find(Intervention.class, 2);
-
-    Project project = new Project(1, account, "testname 1", "testdescription 1", 1);
-    project.addOutcome(outcome1);
-    project.addOutcome(outcome2);
-    project.addIntervention(intervention1);
-    project.addIntervention(intervention2);
-    em.flush();
     Project result = projectRepository.getProjectById(1);
-    assertEquals(project, result);
-  }
 
-  @Test
-  public void testUpdateOutcomes() throws Exception {
-    Project project = projectRepository.getProjectById(1);
-
-    Outcome outcomeNew = new Outcome("nameNew", "motivationNew", new SemanticOutcome("URINew", "labelnew"));
-    project.addOutcome(outcomeNew);
-
-    em.persist(project);
-
-    Project projectUpdated = projectRepository.getProjectById(1);
-    assertTrue(projectUpdated.getOutcomes().contains(outcomeNew));
+    assertEquals(new Integer(1), result.getId());
+    assertEquals("testname 1", result.getName());
+    assertEquals("testdescription 1", result.getDescription());
+    em.refresh(result);
+    assertEquals(2, result.getOutcomes().size());
+    assertEquals(2, result.getInterventions().size());
   }
 
   @Test
@@ -116,9 +99,38 @@ public class ProjectsRepositoryTest {
     assertEquals(outcomeCommand.getMotivation(), result.getMotivation());
     assertEquals(outcomeCommand.getSemanticOutcome().getLabel(), result.getSemanticOutcomeLabel());
     assertEquals(outcomeCommand.getSemanticOutcome().getUri(), result.getSemanticOutcomeUrl());
+    em.persist(result);
     em.flush();
     Project project = em.find(Project.class, 1);
     assertTrue(project.getOutcomes().contains(result));
+  }
+
+  @Test
+  public void getProjectIntervention() throws Exception {
+    Intervention expected = em.find(Intervention.class, 1);
+    Intervention result = projectRepository.getProjectIntervention(1, 1);
+    assertEquals(expected, result);
+  }
+
+  @Test(expected = ResourceDoesNotExistException.class)
+  public void testInterventionFromWrongProjectFails() throws Exception {
+    projectRepository.getProjectIntervention(2, 1);
+  }
+
+  @Test
+  public void testCreateIntervention() throws Exception {
+    InterventionCommand interventionCommand = new InterventionCommand("newName", "newMotivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+    Account user = em.find(Account.class, 1);
+    Intervention result = projectRepository.createIntervention(user, 1, interventionCommand);
+    assertNotNull(result);
+    assertEquals(interventionCommand.getName(), result.getName());
+    assertEquals(interventionCommand.getMotivation(), result.getMotivation());
+    assertEquals(interventionCommand.getSemanticIntervention().getLabel(), result.getSemanticInterventionLabel());
+    assertEquals(interventionCommand.getSemanticIntervention().getUri(), result.getSemanticInterventionUrl());
+    em.persist(result);
+    em.flush();
+    Project project = em.find(Project.class, 1);
+    assertTrue(project.getInterventions().contains(result));
   }
 
   @Test(expected = MethodNotAllowedException.class)

@@ -23,6 +23,10 @@ public class Intervention {
   public Intervention() {
   }
 
+  public Intervention(String name, String motivation, SemanticIntervention semanticIntervention) {
+    this(null, name, motivation, semanticIntervention);
+  }
+
   public Intervention(Integer id, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUrl) {
     this.id = id;
     this.name = name;
@@ -82,7 +86,7 @@ public class Intervention {
 
     Intervention that = (Intervention) o;
 
-    if (!id.equals(that.id)) return false;
+    if (id != null ? !id.equals(that.id) : that.id != null) return false;
     if (!motivation.equals(that.motivation)) return false;
     if (!name.equals(that.name)) return false;
     if (!semanticInterventionLabel.equals(that.semanticInterventionLabel)) return false;
@@ -93,7 +97,7 @@ public class Intervention {
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
+    int result = id != null ? id.hashCode() : 0;
     result = 31 * result + name.hashCode();
     result = 31 * result + motivation.hashCode();
     result = 31 * result + semanticInterventionLabel.hashCode();

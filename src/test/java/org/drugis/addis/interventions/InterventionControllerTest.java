@@ -20,9 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
@@ -70,7 +68,7 @@ public class InterventionControllerTest {
   public void testQueryInterventions() throws Exception {
     Intervention intervention = new Intervention(1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
     Integer projectId = 1;
-    Set<Intervention> interventions = new HashSet<>(Arrays.asList(intervention));
+    List<Intervention> interventions = Arrays.asList(intervention);
     Project project = mock(Project.class);
     when(project.getInterventions()).thenReturn(interventions);
     when(projectRepository.getProjectById(projectId)).thenReturn(project);

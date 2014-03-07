@@ -52,5 +52,29 @@ public class Outcome {
     return semanticOutcomeUrl;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Outcome)) return false;
 
+    Outcome outcome = (Outcome) o;
+
+    if (id != null ? !id.equals(outcome.id) : outcome.id != null) return false;
+    if (!motivation.equals(outcome.motivation)) return false;
+    if (!name.equals(outcome.name)) return false;
+    if (!semanticOutcomeLabel.equals(outcome.semanticOutcomeLabel)) return false;
+    if (!semanticOutcomeUrl.equals(outcome.semanticOutcomeUrl)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = id != null ? id.hashCode() : 0;
+    result = 31 * result + name.hashCode();
+    result = 31 * result + motivation.hashCode();
+    result = 31 * result + semanticOutcomeLabel.hashCode();
+    result = 31 * result + semanticOutcomeUrl.hashCode();
+    return result;
+  }
 }

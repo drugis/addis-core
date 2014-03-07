@@ -23,8 +23,7 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.inject.Inject;
 import java.security.Principal;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -79,7 +78,7 @@ public class OutcomeControllerTest {
   public void testQueryOutcomes() throws Exception {
     Outcome outcome = new Outcome(1, "name", "motivation", new SemanticOutcome("http://semantic.com", "labelnew"));
     Integer projectId = 1;
-    Set<Outcome> outcomes = new HashSet<>(Arrays.asList(outcome));
+    List<Outcome> outcomes = Arrays.asList(outcome);
     Project project = mock(Project.class);
     when(project.getOutcomes()).thenReturn(outcomes);
     when(projectRepository.getProjectById(projectId)).thenReturn(project);
