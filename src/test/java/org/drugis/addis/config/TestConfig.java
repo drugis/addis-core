@@ -1,5 +1,7 @@
 package org.drugis.addis.config;
 
+import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
@@ -13,11 +15,11 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @Configuration
 @EnableWebMvc
 @ComponentScan(excludeFilters = {@ComponentScan.Filter(Configuration.class)}, basePackages = {
-        "org.drugis.addis.error",
-        "org.drugis.addis.projects.controller",
-        "org.drugis.addis.outcomes.controller",
-        "org.drugis.addis.interventions.controller",
-        "org.drugis.addis.trialverse.controller",})
+  "org.drugis.addis.error",
+  "org.drugis.addis.projects.controller",
+  "org.drugis.addis.outcomes.controller",
+  "org.drugis.addis.interventions.controller",
+  "org.drugis.addis.trialverse.controller",})
 public class TestConfig {
   @Bean
   public AccountRepository mockAccountRepository() {
@@ -27,6 +29,16 @@ public class TestConfig {
   @Bean
   public ProjectRepository mockProjectsRepository() {
     return Mockito.mock(ProjectRepository.class);
+  }
+
+  @Bean
+  public InterventionRepository interventionRepository() {
+    return Mockito.mock(InterventionRepository.class);
+  }
+
+  @Bean
+  public OutcomeRepository outcomeRepository() {
+    return Mockito.mock(OutcomeRepository.class);
   }
 
   @Bean

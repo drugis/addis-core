@@ -43,7 +43,7 @@ CREATE TABLE Outcome (id SERIAL NOT NULL,
                       name VARCHAR NOT NULL,
                       motivation TEXT NOT NULL,
                       semanticOutcomeLabel VARCHAR NOT NULL,
-                      semanticOutcomeUrl VARCHAR NOT NULL,
+                      semanticOutcomeUri VARCHAR NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY(project) REFERENCES Project(id));
 
@@ -52,7 +52,7 @@ CREATE TABLE Intervention (id SERIAL NOT NULL,
                       name VARCHAR NOT NULL,
                       motivation TEXT NOT NULL,
                       semanticInterventionLabel VARCHAR NOT NULL,
-                      semanticInterventionUrl VARCHAR NOT NULL,
+                      semanticInterventionUri VARCHAR NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY(project) REFERENCES Project(id));
 

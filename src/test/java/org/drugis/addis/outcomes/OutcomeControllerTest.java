@@ -2,6 +2,7 @@ package org.drugis.addis.outcomes;
 
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
@@ -12,6 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -47,7 +49,7 @@ public class OutcomeControllerTest {
   private AccountRepository accountRepository;
 
   @Inject
-  private ProjectRepository projectRepository;
+  private OutcomeRepository outcomeRepository;
 
   @Autowired
   private WebApplicationContext webApplicationContext;
@@ -62,7 +64,7 @@ public class OutcomeControllerTest {
   @Before
   public void setUp() {
     reset(accountRepository);
-    reset(projectRepository);
+    reset(outcomeRepository);
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
@@ -71,7 +73,7 @@ public class OutcomeControllerTest {
 
   @After
   public void tearDown() {
-    verifyNoMoreInteractions(accountRepository, projectRepository);
+    verifyNoMoreInteractions(accountRepository, outcomeRepository);
   }
 
   @Test
@@ -79,9 +81,7 @@ public class OutcomeControllerTest {
     Outcome outcome = new Outcome(1, "name", "motivation", new SemanticOutcome("http://semantic.com", "labelnew"));
     Integer projectId = 1;
     List<Outcome> outcomes = Arrays.asList(outcome);
-    Project project = mock(Project.class);
-    when(project.getOutcomes()).thenReturn(outcomes);
-    when(projectRepository.getProjectById(projectId)).thenReturn(project);
+    when(outcomeRepository.query(projectId)).thenReturn(outcomes);
 
     mockMvc.perform(get("/projects/1/outcomes").principal(user))
             .andExpect(status().isOk())
@@ -89,7 +89,7 @@ public class OutcomeControllerTest {
             .andExpect(jsonPath("$", hasSize(1)))
             .andExpect(jsonPath("$[0].id", is(outcome.getId())));
 
-    verify(projectRepository).getProjectById(projectId);
+    verify(outcomeRepository).query(projectId);
     verify(accountRepository).findAccountByUsername("gert");
   }
 
@@ -103,44 +103,29 @@ public class OutcomeControllerTest {
 
   @Test
   public void testGetOutcome() throws Exception {
-    Outcome outcome = new Outcome(1, "name", "motivation", new SemanticOutcome("http://semantic.com", "labelnew"));
+    Outcome outcome = new Outcome(1, 1, "name", "motivation", new SemanticOutcome("http://semantic.com", "labelnew"));
     Integer projectId = 1;
-    when(projectRepository.getProjectOutcome(projectId, outcome.getId())).thenReturn(outcome);
+    when(outcomeRepository.get(projectId, outcome.getId())).thenReturn(outcome);
     mockMvc.perform(get("/projects/1/outcomes/1").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.id", is(outcome.getId())));
     verify(accountRepository).findAccountByUsername("gert");
-    verify(projectRepository).getProjectOutcome(projectId, outcome.getId());
+    verify(outcomeRepository).get(projectId, outcome.getId());
   }
 
   @Test
   public void testCreateOutcome() throws Exception {
-    OutcomeCommand outcomeCommand = new OutcomeCommand("name", "motivation", new SemanticOutcome("http://semantic.com", "labelnew"));
-    Outcome outcome = new Outcome(1, "name", "motivation", new SemanticOutcome("http://semantic.com", "labelnew"));
-    when(projectRepository.createOutcome(gert, 1, outcomeCommand)).thenReturn(outcome);
+    Outcome outcome = new Outcome(1, 1, "name", "motivation", new SemanticOutcome("http://semantic.com", "labelnew"));
+    OutcomeCommand outcomeCommand = new OutcomeCommand(1, "name", "motivation", new SemanticOutcome("http://semantic.com", "labelnew"));
+    when(outcomeRepository.create(gert, outcomeCommand)).thenReturn(outcome);
     String body = TestUtils.createJson(outcomeCommand);
     mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
-    verify(projectRepository).createOutcome(gert, 1, outcomeCommand);
-  }
-
-  @Test
-  public void testCreateOutcome2() throws Exception {
-    OutcomeCommand outcomeCommand = new OutcomeCommand("name", "motivation", new SemanticOutcome("http://trials.drugis.org/namespace/1/adverseEvent/f5234ff6082f641705c3b68ea6bf518b", "Headache"));
-    Outcome outcome = new Outcome(1, "name", "motivation", new SemanticOutcome("http://trials.drugis.org/namespace/1/adverseEvent/f5234ff6082f641705c3b68ea6bf518b", "Headache"));
-    Integer projectId = 1;
-    when(projectRepository.createOutcome(gert, projectId, outcomeCommand)).thenReturn(outcome);
-    String testJson = "{\"name\":\"name\",\"semanticOutcome\":{\"uri\":\"http://trials.drugis.org/namespace/1/adverseEvent/f5234ff6082f641705c3b68ea6bf518b\",\"label\":\"Headache\"},\"motivation\":\"motivation\",\"projectId\":1}";
-    mockMvc.perform(post("/projects/1/outcomes").content(testJson).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.id", notNullValue()));
-    verify(accountRepository).findAccountByUsername("gert");
-    verify(projectRepository).createOutcome(gert, 1, outcomeCommand);
+    verify(outcomeRepository).create(gert, outcomeCommand);
   }
 
 }

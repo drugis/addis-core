@@ -22,12 +22,4 @@ public interface ProjectRepository {
   Collection<Project> queryByOwnerId(Integer ownerId);
 
   Project create(Account owner, String name, String description, Integer trialverse);
-
-  Outcome getProjectOutcome(Integer projectId, Integer outcomeId) throws ResourceDoesNotExistException;
-
-  Outcome createOutcome(Account user, Integer projectId, OutcomeCommand outcome) throws MethodNotAllowedException, ResourceDoesNotExistException;
-
-  Intervention getProjectIntervention(Integer projectId, Integer interventionId) throws ResourceDoesNotExistException;
-
-  Intervention createIntervention(Account user, Integer projectId, InterventionCommand interventionCommand) throws ResourceDoesNotExistException, MethodNotAllowedException;
 }

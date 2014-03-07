@@ -31,14 +31,6 @@ public class Project implements Serializable {
   @Column
   private Integer trialverseId;
 
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JoinColumn(name = "project")
-  private List<Outcome> outcomes = new ArrayList<>();
-
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JoinColumn(name = "project")
-  private List<Intervention> interventions = new ArrayList<>();
-
 
   public Project() {
   }
@@ -56,18 +48,6 @@ public class Project implements Serializable {
     this.name = name;
     this.description = description;
     this.trialverseId = trialverseId;
-  }
-
-  public void addOutcome(Outcome outcome) {
-    outcomes.add(outcome);
-  }
-
-  public void addIntervention(Intervention intervention) {
-    interventions.add(intervention);
-  }
-
-  public void removeOutcome(Outcome outcome) {
-    outcomes.remove(outcome);
   }
 
   public Integer getId() {
@@ -110,22 +90,6 @@ public class Project implements Serializable {
     this.trialverseId = trialverseId;
   }
 
-  public List<Outcome> getOutcomes() {
-    return Collections.unmodifiableList(outcomes);
-  }
-
-  public void setOutcomes(List<Outcome> outcomes) {
-    this.outcomes = outcomes;
-  }
-
-  public List<Intervention> getInterventions() {
-    return Collections.unmodifiableList(interventions);
-  }
-
-  public void setInterventions(List<Intervention> interventions) {
-    this.interventions = interventions;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -135,9 +99,7 @@ public class Project implements Serializable {
 
     if (!description.equals(project.description)) return false;
     if (id != null ? !id.equals(project.id) : project.id != null) return false;
-    if (!interventions.equals(project.interventions)) return false;
     if (!name.equals(project.name)) return false;
-    if (!outcomes.equals(project.outcomes)) return false;
     if (!owner.equals(project.owner)) return false;
     if (!trialverseId.equals(project.trialverseId)) return false;
 
@@ -151,8 +113,6 @@ public class Project implements Serializable {
     result = 31 * result + name.hashCode();
     result = 31 * result + description.hashCode();
     result = 31 * result + trialverseId.hashCode();
-    result = 31 * result + outcomes.hashCode();
-    result = 31 * result + interventions.hashCode();
     return result;
   }
 }

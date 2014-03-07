@@ -5,6 +5,7 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.OutcomeCommand;
+import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -26,16 +27,17 @@ import java.util.Collection;
 public class OutcomeController extends AbstractAddisCoreController {
 
   @Inject
-  private ProjectRepository projectRepository;
-  @Inject
   private AccountRepository accountRepository;
+  @Inject
+  private OutcomeRepository outcomeRepository;
+
 
   @RequestMapping(value = "/projects/{projectId}/outcomes", method = RequestMethod.GET)
   @ResponseBody
   public Collection<Outcome> query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return projectRepository.getProjectById(projectId).getOutcomes();
+      return outcomeRepository.query(projectId);
     } else {
       throw new MethodNotAllowedException();
     }
@@ -46,7 +48,7 @@ public class OutcomeController extends AbstractAddisCoreController {
   public Outcome get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer outcomeId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return projectRepository.getProjectOutcome(projectId, outcomeId);
+      return outcomeRepository.get(projectId, outcomeId);
     } else {
       throw new MethodNotAllowedException();
     }
@@ -57,7 +59,7 @@ public class OutcomeController extends AbstractAddisCoreController {
   public Outcome create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId, @RequestBody OutcomeCommand outcomeCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      Outcome outcome = projectRepository.createOutcome(user, projectId, outcomeCommand);
+      Outcome outcome = outcomeRepository.create(user, outcomeCommand);
       response.setStatus(HttpServletResponse.SC_CREATED);
       response.setHeader("Location", request.getRequestURL() + "/");
       return outcome;

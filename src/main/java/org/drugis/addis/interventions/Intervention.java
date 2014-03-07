@@ -15,68 +15,50 @@ public class Intervention {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
+  private Integer project;
   private String name;
   private String motivation;
   private String semanticInterventionLabel;
-  private String semanticInterventionUrl;
+  private String semanticInterventionUri;
 
   public Intervention() {
   }
 
-  public Intervention(String name, String motivation, SemanticIntervention semanticIntervention) {
-    this(null, name, motivation, semanticIntervention);
+  public Intervention(Integer project, String name, String motivation, SemanticIntervention semanticIntervention) {
+    this(null, project, name, motivation, semanticIntervention);
   }
 
-  public Intervention(Integer id, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUrl) {
+  public Intervention(Integer id, Integer project, String name, String motivation, SemanticIntervention semanticIntervention) {
     this.id = id;
+    this.project = project;
     this.name = name;
     this.motivation = motivation;
-    this.semanticInterventionLabel = semanticInterventionLabel;
-    this.semanticInterventionUrl = semanticInterventionUrl;
-  }
-
-  public Intervention(Integer id, String name, String motivation, SemanticIntervention semanticIntervention) {
-    this(id, name, motivation, semanticIntervention.getLabel(), semanticIntervention.getUri());
+    this.semanticInterventionLabel = semanticIntervention.getLabel();
+    this.semanticInterventionUri = semanticIntervention.getUri();
   }
 
   public Integer getId() {
     return id;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
+  public Integer getProject() {
+    return project;
   }
 
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
   public String getMotivation() {
     return motivation;
-  }
-
-  public void setMotivation(String motivation) {
-    this.motivation = motivation;
   }
 
   public String getSemanticInterventionLabel() {
     return semanticInterventionLabel;
   }
 
-  public void setSemanticInterventionLabel(String semanticInterventionLabel) {
-    this.semanticInterventionLabel = semanticInterventionLabel;
-  }
-
-  public String getSemanticInterventionUrl() {
-    return semanticInterventionUrl;
-  }
-
-  public void setSemanticInterventionUrl(String semanticInterventionUrl) {
-    this.semanticInterventionUrl = semanticInterventionUrl;
+  public String getSemanticInterventionUri() {
+    return semanticInterventionUri;
   }
 
   @Override
@@ -89,8 +71,9 @@ public class Intervention {
     if (id != null ? !id.equals(that.id) : that.id != null) return false;
     if (!motivation.equals(that.motivation)) return false;
     if (!name.equals(that.name)) return false;
+    if (!project.equals(that.project)) return false;
     if (!semanticInterventionLabel.equals(that.semanticInterventionLabel)) return false;
-    if (!semanticInterventionUrl.equals(that.semanticInterventionUrl)) return false;
+    if (!semanticInterventionUri.equals(that.semanticInterventionUri)) return false;
 
     return true;
   }
@@ -98,10 +81,11 @@ public class Intervention {
   @Override
   public int hashCode() {
     int result = id != null ? id.hashCode() : 0;
+    result = 31 * result + project.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + motivation.hashCode();
     result = 31 * result + semanticInterventionLabel.hashCode();
-    result = 31 * result + semanticInterventionUrl.hashCode();
+    result = 31 * result + semanticInterventionUri.hashCode();
     return result;
   }
 }

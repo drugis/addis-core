@@ -6,7 +6,7 @@ import org.drugis.addis.trialverse.model.SemanticIntervention;
  * Created by connor on 3/6/14.
  */
 public class InterventionCommand {
-
+  private Integer projectId;
   private String name;
   private String motivation;
   private SemanticIntervention semanticIntervention;
@@ -14,13 +14,15 @@ public class InterventionCommand {
   public InterventionCommand() {
   }
 
-  public InterventionCommand(String name, String motivation, SemanticIntervention semanticIntervention) {
+  public InterventionCommand(Integer projectId, String name, String motivation, SemanticIntervention semanticIntervention) {
+    this.projectId = projectId;
     this.name = name;
     this.motivation = motivation;
     this.semanticIntervention = semanticIntervention;
   }
 
-  private void setProjectId(Integer projectId) {
+  public Integer getProjectId() {
+    return projectId;
   }
 
   public String getName() {
@@ -44,6 +46,7 @@ public class InterventionCommand {
 
     if (!motivation.equals(that.motivation)) return false;
     if (!name.equals(that.name)) return false;
+    if (!projectId.equals(that.projectId)) return false;
     if (!semanticIntervention.equals(that.semanticIntervention)) return false;
 
     return true;
@@ -51,7 +54,8 @@ public class InterventionCommand {
 
   @Override
   public int hashCode() {
-    int result = name.hashCode();
+    int result = projectId.hashCode();
+    result = 31 * result + name.hashCode();
     result = 31 * result + motivation.hashCode();
     result = 31 * result + semanticIntervention.hashCode();
     return result;

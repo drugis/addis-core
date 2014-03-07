@@ -20,9 +20,19 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security"}, excludeFilters = {@ComponentScan.Filter(Configuration.class)})
+@ComponentScan(excludeFilters = {@ComponentScan.Filter(Configuration.class)},
+  basePackages = {
+    "org.drugis.addis.projects",
+    "org.drugis.addis.outcomes",
+    "org.drugis.addis.interventions",
+    "org.drugis.addis.security"
+  })
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects"})
+@EnableJpaRepositories(basePackages = {
+  "org.drugis.addis.projects",
+  "org.drugis.addis.outcomes",
+  "org.drugis.addis.interventions"
+})
 public class JpaRepositoryTestConfig {
 
   @Bean

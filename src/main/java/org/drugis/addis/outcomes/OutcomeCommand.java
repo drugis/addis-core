@@ -7,6 +7,7 @@ import org.drugis.addis.trialverse.model.SemanticOutcome;
  */
 public class OutcomeCommand {
 
+  private Integer projectId;
   private String name;
   private String motivation;
   private SemanticOutcome semanticOutcome;
@@ -14,13 +15,16 @@ public class OutcomeCommand {
   public OutcomeCommand() {
   }
 
-  public OutcomeCommand(String name, String motivation, SemanticOutcome semanticOutcome) {
+  public OutcomeCommand(Integer projectId, String name, String motivation, SemanticOutcome semanticOutcome) {
+    this.projectId = projectId;
     this.name = name;
     this.motivation = motivation;
     this.semanticOutcome = semanticOutcome;
   }
 
-  private void setProjectId(Integer projectId) {}
+  public Integer getProjectId() {
+    return projectId;
+  }
 
   public String getName() {
     return name;
@@ -43,6 +47,7 @@ public class OutcomeCommand {
 
     if (!motivation.equals(that.motivation)) return false;
     if (!name.equals(that.name)) return false;
+    if (!projectId.equals(that.projectId)) return false;
     if (!semanticOutcome.equals(that.semanticOutcome)) return false;
 
     return true;
@@ -50,7 +55,8 @@ public class OutcomeCommand {
 
   @Override
   public int hashCode() {
-    int result = name.hashCode();
+    int result = projectId.hashCode();
+    result = 31 * result + name.hashCode();
     result = 31 * result + motivation.hashCode();
     result = 31 * result + semanticOutcome.hashCode();
     return result;

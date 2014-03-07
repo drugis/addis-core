@@ -5,7 +5,7 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.interventions.InterventionCommand;
-import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.springframework.stereotype.Controller;
@@ -19,23 +19,24 @@ import java.security.Principal;
 import java.util.Collection;
 
 /**
- * Created by daan on 3/6/14.
+ * Created by daan on 3/5/14.
  */
 @Controller
 @Transactional("ptmAddisCore")
 public class InterventionController extends AbstractAddisCoreController {
 
   @Inject
-  private ProjectRepository projectRepository;
-  @Inject
   private AccountRepository accountRepository;
+  @Inject
+  private InterventionRepository interventionRepository;
+
 
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.GET)
   @ResponseBody
   public Collection<Intervention> query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return projectRepository.getProjectById(projectId).getInterventions();
+      return interventionRepository.query(projectId);
     } else {
       throw new MethodNotAllowedException();
     }
@@ -46,7 +47,7 @@ public class InterventionController extends AbstractAddisCoreController {
   public Intervention get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer interventionId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return projectRepository.getProjectIntervention(projectId, interventionId);
+      return interventionRepository.get(projectId, interventionId);
     } else {
       throw new MethodNotAllowedException();
     }
@@ -57,7 +58,7 @@ public class InterventionController extends AbstractAddisCoreController {
   public Intervention create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId, @RequestBody InterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      Intervention intervention = projectRepository.createIntervention(user, projectId, interventionCommand);
+      Intervention intervention = interventionRepository.create(user, interventionCommand);
       response.setStatus(HttpServletResponse.SC_CREATED);
       response.setHeader("Location", request.getRequestURL() + "/");
       return intervention;
@@ -65,6 +66,5 @@ public class InterventionController extends AbstractAddisCoreController {
       throw new MethodNotAllowedException();
     }
   }
-
 
 }
