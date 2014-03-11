@@ -8,6 +8,8 @@ define([], function() {
     $scope.trialverse = TrialverseService.query();
 
     $scope.createProject = function (newProject) {
+      // clear modal form by resetting model in current scope
+      this.model = {};
       ProjectsService.save(newProject, function(savedProject) {
         $scope.projects = ProjectsService.query(function(){
           $scope.createProjectModal.close();
