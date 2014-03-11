@@ -1,4 +1,4 @@
-define(['angular', 'angular-mocks'], function () {
+define(['angular', 'angular-mocks', 'underscore'], function () {
   describe('SingleProjectController', function () {
     beforeEach(module('addis.controllers'));
     var scope, deferred, window,
@@ -74,10 +74,12 @@ define(['angular', 'angular-mocks'], function () {
 
     it("should make an update call when an outcome is added", function() {
       var newOutcome = {name: "name", motivation: "motivation", semanticOutcome: "semantics"};
-      var newOutcomeWithProjectId = {name: "name", motivation: "motivation", semanticOutcome: "semantics", projectId: 1};
+      var newOutcomeWithProjectId = _.extend({projectId: 1}, newOutcome);
+      scope.model = newOutcome;
       scope.addOutcome(newOutcome);
       expect(scope.createOutcomeModal.close).toHaveBeenCalled();
       expect(outcomeService.save).toHaveBeenCalledWith(newOutcomeWithProjectId, jasmine.any(Function));
+      expect(scope.model).toEqual({});
     });
 
     it("should place the associated trialverse information on the scope on resolution", function() {
@@ -109,10 +111,12 @@ define(['angular', 'angular-mocks'], function () {
 
     it("should make an update call when an inervention is added", function() {
       var newIntervention = {name: "name", motivation: "motivation", semanticIntervention: "semantics"};
-      var newInterventionWithProjectId = {name: "name", motivation: "motivation", semanticIntervention: "semantics", projectId: 1};
+      var newInterventionWithProjectId = _.extend(newIntervention, {projectId: 1});
+      scope.model = newIntervention
       scope.addIntervention(newIntervention);
       expect(scope.createInterventionModal.close).toHaveBeenCalled();
       expect(interventionService.save).toHaveBeenCalledWith(newInterventionWithProjectId, jasmine.any(Function));
+      expect(scope.model).toEqual({});
     });
 
     it("should place the possible semanticInterventions on the scope on resolution", function() {

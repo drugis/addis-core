@@ -20,6 +20,7 @@ define([], function() {
     $scope.addOutcome = function(newOutcome) {
       newOutcome.projectId = $scope.project.id;
       $scope.createOutcomeModal.close();
+      this.model = {};
       OutcomeService.save(newOutcome, function(outcome) {
         $scope.outcomes.push(outcome);
       });
@@ -28,9 +29,9 @@ define([], function() {
     $scope.addIntervention = function(newIntervention) {
       newIntervention.projectId = $scope.project.id;
       $scope.createInterventionModal.close();
+      this.model = {};
       InterventionService.save(newIntervention, function(intervention) {
         $scope.interventions.push(intervention);
-        $scope.mainForm.$setPristine();
       });
     };
   };
