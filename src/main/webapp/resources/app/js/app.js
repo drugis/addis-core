@@ -38,6 +38,12 @@ define(
             templateUrl: baseTemplatePath + 'project.html',
             controller: 'SingleProjectController'
           }
+        )
+        .state('analysis',
+          { url: '/projects/:projectId/analyses/:analysisId',
+            templateUrl: baseTemplatePath + 'analysis.html',
+            controller: 'AnalysisController'
+          }
         );
 
       // Default route

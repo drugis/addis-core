@@ -53,3 +53,12 @@ CREATE TABLE Intervention (id SERIAL NOT NULL,
                            semanticInterventionUri VARCHAR NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY(project) REFERENCES Project(id));
+
+CREATE TABLE Analysis (id SERIAL NOT NULL,
+        projectId INT,
+        name VARCHAR NOT NULL,
+        analysisType VARCHAR NOT NULL,
+        study VARCHAR,
+  PRIMARY KEY (id),
+  FOREIGN KEY(projectId) REFERENCES Project(id));
+

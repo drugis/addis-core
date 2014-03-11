@@ -21,17 +21,19 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan(excludeFilters = {@ComponentScan.Filter(Configuration.class)},
-  basePackages = {
-    "org.drugis.addis.projects",
-    "org.drugis.addis.outcomes",
-    "org.drugis.addis.interventions",
-    "org.drugis.addis.security"
-  })
+        basePackages = {
+                "org.drugis.addis.projects",
+                "org.drugis.addis.outcomes",
+                "org.drugis.addis.interventions",
+                "org.drugis.addis.analyses",
+                "org.drugis.addis.security"
+        })
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {
-  "org.drugis.addis.projects",
-  "org.drugis.addis.outcomes",
-  "org.drugis.addis.interventions"
+        "org.drugis.addis.projects",
+        "org.drugis.addis.outcomes",
+        "org.drugis.addis.interventions",
+        "org.drugis.addis.analyses"
 })
 public class JpaRepositoryTestConfig {
 
@@ -68,7 +70,11 @@ public class JpaRepositoryTestConfig {
     vendorAdapter.setShowSql(true);
     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
     em.setJpaVendorAdapter(vendorAdapter);
-    em.setPackagesToScan("org.drugis.addis.outcomes", "org.drugis.addis.interventions", "org.drugis.addis.projects", "org.drugis.addis.security");
+    em.setPackagesToScan("org.drugis.addis.outcomes",
+            "org.drugis.addis.interventions",
+            "org.drugis.addis.projects",
+            "org.drugis.addis.analyses",
+            "org.drugis.addis.security");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
