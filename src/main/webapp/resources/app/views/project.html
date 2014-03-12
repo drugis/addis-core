@@ -64,7 +64,7 @@
     <ul class="no-bullet">
       <li ng-repeat="analysis in analyses">
         <span class="columns large-4">{{analysis.name}} </span>
-        <span class="columns large-4">{{analysis.type}} </span>
+        <span class="columns large-4">{{analysis.analysisType}} </span>
         <span class="columns large-4">{{analysis.study}} </span>
       </li>
     </ul>
@@ -159,8 +159,8 @@
     <div class="row">
       <div class="large-6 columns">
         <label>Type
-          <select ng-model="model.type">
-            <option>Single-study Benefit-Risk</option>
+          <select ng-model="model.type=Single-study Benefit-Ris">
+            <option selected>Single-study Benefit-Risk</option>
           </select>
         </label>
       </div>

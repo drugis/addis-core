@@ -1,5 +1,9 @@
 package org.drugis.addis.analyses;
 
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * Created by connor on 3/11/14.
  */
@@ -18,6 +22,13 @@ public enum AnalysisType {
     return label;
   }
 
+  @Override
+  @JsonValue
+  public String toString() {
+    return this.label;
+  }
+
+  @JsonCreator
   public static AnalysisType getByLabel(String label) throws Exception {
     switch (label) {
       case SINGLE_STUDY_BENEFIT_RISK_LABEL:

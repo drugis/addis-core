@@ -18,4 +18,9 @@ public class AnalysisTypeTest {
   public void testGetByNonsenseLabelFails() throws Exception {
     AnalysisType.getByLabel("something serious but wrong");
   }
+
+  @Test
+  public void testGetLabelEqualsToString() {
+    assertEquals(AnalysisType.SINGLE_STUDY_BENEFIT_RISK.getLabel(), AnalysisType.SINGLE_STUDY_BENEFIT_RISK.toString());
+  }
 }
