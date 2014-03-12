@@ -54,22 +54,21 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="columns large-12">
+    <div class="nested-view-header columns large-12 border row">
       Analyses
       <button ng-show="editMode.allowEditing" class="small" ng-click="createAnalysisModal.open()"><i
               class="fa fa-plus"></i> Add Analysis
       </button>
     </div>
-    <ul class="no-bullet">
-      <li ng-repeat="analysis in analyses">
-        <span class="columns large-4">{{analysis.name}} </span>
-        <span class="columns large-4">{{analysis.type}} </span>
-        <span class="columns large-4">{{analysis.study}} </span>
-      </li>
-    </ul>
-  </div>
-</div>
+    <div class="nested-view row columns large-12">
+      <ul class="no-bullet">
+        <li class="row colored-row" ng-repeat="analysis in analyses">
+          <span class="columns large-4">{{analysis.name}} </span>
+          <span class="columns large-4">{{analysis.analysisType}} </span>
+          <span class="columns large-4">{{analysis.study}} </span>
+        </li>
+      </ul>
+    </div>
 </div>
 
 
@@ -159,9 +158,8 @@
     <div class="row">
       <div class="large-6 columns">
         <label>Type
-          <select ng-model="model.type">
-            <option>Single-study Benefit-Risk</option>
-          </select>
+          <select ng-init="model.type=analysisTypes[0].label" ng-model="model.type"
+                  ng-options="type.label as type.label for type in analysisTypes"/>
         </label>
       </div>
     </div>

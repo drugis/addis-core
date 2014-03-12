@@ -14,6 +14,8 @@ define([], function() {
     $scope.project = ProjectsService.get($stateParams);
     $scope.editMode =  {allowEditing: false};
 
+    $scope.analysisTypes = [{label : 'Single-study Benefit-Risk'}];
+
     $scope.project.$promise.then(function() {
       $scope.trialverse = TrialverseService.get({id: $scope.project.trialverseId});
       $scope.semanticOutcomes = SemanticOutcomeService.query({id: $scope.project.trialverseId});
