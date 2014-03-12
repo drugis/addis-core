@@ -1,16 +1,9 @@
 package org.drugis.addis.projects;
 
 import org.drugis.addis.config.JpaRepositoryTestConfig;
-import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.Intervention;
-import org.drugis.addis.interventions.InterventionCommand;
-import org.drugis.addis.outcomes.Outcome;
-import org.drugis.addis.outcomes.OutcomeCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
-import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +15,8 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.Collection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by daan on 2/11/14.
@@ -53,7 +47,7 @@ public class ProjectsRepositoryTest {
   public void testCreate() {
     Account account = new Account(1, "foo@bar.com", "Connor", "Bonnor");
     assertEquals(3, projectRepository.query().size());
-    Project project = projectRepository.create(account, "newProjectName", "newProjectDesc", 1);
+    Project project = projectRepository.create(account, new ProjectCommand("newProjectName", "newProjectDesc", 1));
     assertEquals(project.getOwner(), account);
     Collection<Project> projectList = projectRepository.query();
     assertEquals(4, projectList.size());

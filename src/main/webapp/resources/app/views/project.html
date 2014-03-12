@@ -24,7 +24,7 @@
       <div class="nested-view-header row">
         Outcomes
         <button ng-show="editMode.allowEditing" class="small" ng-click="createOutcomeModal.open()"><i
-                class="fa fa-plus"></i> Add outcome
+            class="fa fa-plus"></i> Add outcome
         </button>
       </div>
       <ul class="no-bullet">
@@ -41,7 +41,7 @@
       <div class="nested-view-header row">
         Interventions
         <button ng-show="editMode.allowEditing" class="small" ng-click="createInterventionModal.open()"><i
-                class="fa fa-plus"></i> Add intervention
+            class="fa fa-plus"></i> Add intervention
         </button>
       </div>
       <ul class="no-bullet">
@@ -54,21 +54,29 @@
     </div>
   </div>
 
-    <div class="nested-view-header columns large-12 border row">
-      Analyses
-      <button ng-show="editMode.allowEditing" class="small" ng-click="createAnalysisModal.open()"><i
-              class="fa fa-plus"></i> Add Analysis
-      </button>
+  <div class="nested-view row">
+    <div class="nested-view row">
+      <div class="columns nested-view-header large-12 border">
+        Analyses
+        <button ng-show="editMode.allowEditing" class="small" ng-click="createAnalysisModal.open()"><i
+            class="fa fa-plus"></i> Add Analysis
+        </button>
+      </div>
     </div>
-    <div class="nested-view row columns large-12">
-      <ul class="no-bullet">
-        <li class="row colored-row" ng-repeat="analysis in analyses">
-          <span class="columns large-4">{{analysis.name}} </span>
-          <span class="columns large-4">{{analysis.analysisType}} </span>
-          <span class="columns large-4">{{analysis.study}} </span>
-        </li>
-      </ul>
+    <div class="row">
+      <div class="nested-view row columns large-12">
+        <ul class="no-bullet">
+          <li class="row colored-row" ng-repeat="analysis in analyses">
+            <a href="#/projects/{{project.id}}/analyses/{{analysis.id}}">
+              <span class="columns large-4">{{analysis.name}} </span>
+              <span class="columns large-4">{{analysis.analysisType}} </span>
+              <span class="columns large-4">{{analysis.study}} </span>
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
+  </div>
 </div>
 
 

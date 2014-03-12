@@ -10,7 +10,6 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -59,9 +58,9 @@ public class ProjectController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects", method = RequestMethod.POST)
   @ResponseBody
-  public Project create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody Project body) {
+  public Project create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody ProjectCommand command) {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    Project Project = projectsRepository.create(user, body.getName(), body.getDescription(), body.getTrialverseId());
+    Project Project = projectsRepository.create(user, command);
     response.setStatus(HttpServletResponse.SC_CREATED);
     response.setHeader("Location", request.getRequestURL() + "/");
     return Project;

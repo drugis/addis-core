@@ -1,5 +1,6 @@
 package org.drugis.addis.interventions;
 
+import org.apache.commons.lang.StringUtils;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 
 /**
@@ -30,7 +31,7 @@ public class InterventionCommand {
   }
 
   public String getMotivation() {
-    return motivation;
+    return motivation == null ? StringUtils.EMPTY : motivation;
   }
 
   public SemanticIntervention getSemanticIntervention() {

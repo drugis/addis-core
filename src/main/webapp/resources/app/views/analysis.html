@@ -1,1 +1,24 @@
-<h1>Analysis</h1>
+<ul ng-show="loading.loaded" class="breadcrumbs">
+  <li><a href="#/projects">Projects</a></li>
+  <li><a href="#/projects/{{project.id}}">{{project.name}}</a></li>
+  <li class="current active">{{analysis.name}}</li>
+</ul>
+<div>
+  <div class="project-header row">
+    <div class="columns large-12">
+      <h1 class="inline-header" title="Project title">{{project.name}}</h1>
+
+      <h3 class="subheader inline-header" title="Trialverse namespace">/ {{trialverse.name}}</h3>
+
+      <h3 class="subheader inline-header" title="Analysis name">/ {{analysis.name}}</h3>
+
+      <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.type}}</h3>
+
+      <div class="row">
+        <div class="columns large-6 small-12">
+          <p class="project-description" title="Project description">{{project.description}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

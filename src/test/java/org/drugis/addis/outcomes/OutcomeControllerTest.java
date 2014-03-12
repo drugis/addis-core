@@ -3,8 +3,6 @@ package org.drugis.addis.outcomes;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
-import org.drugis.addis.projects.Project;
-import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
@@ -13,7 +11,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -57,8 +54,8 @@ public class OutcomeControllerTest {
   private Principal user;
 
   private Account john = new Account(1, "a", "john", "lennon"),
-          paul = new Account(2, "a", "paul", "mc cartney"),
-          gert = new Account(3, "gert", "Gert", "van Valkenhoef");
+    paul = new Account(2, "a", "paul", "mc cartney"),
+    gert = new Account(3, "gert", "Gert", "van Valkenhoef");
 
 
   @Before
@@ -84,10 +81,10 @@ public class OutcomeControllerTest {
     when(outcomeRepository.query(projectId)).thenReturn(outcomes);
 
     mockMvc.perform(get("/projects/1/outcomes").principal(user))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$", hasSize(1)))
-            .andExpect(jsonPath("$[0].id", is(outcome.getId())));
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$", hasSize(1)))
+      .andExpect(jsonPath("$[0].id", is(outcome.getId())));
 
     verify(outcomeRepository).query(projectId);
     verify(accountRepository).findAccountByUsername("gert");
@@ -97,7 +94,7 @@ public class OutcomeControllerTest {
   public void testUnauthorisedAccessFails() throws Exception {
     when(accountRepository.findAccountByUsername("gert")).thenReturn(null);
     mockMvc.perform(get("/projects/1/outcomes").principal(user))
-            .andExpect(redirectedUrl("/error/403"));
+      .andExpect(redirectedUrl("/error/403"));
     verify(accountRepository).findAccountByUsername("gert");
   }
 
@@ -107,9 +104,9 @@ public class OutcomeControllerTest {
     Integer projectId = 1;
     when(outcomeRepository.get(projectId, outcome.getId())).thenReturn(outcome);
     mockMvc.perform(get("/projects/1/outcomes/1").principal(user))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.id", is(outcome.getId())));
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.id", is(outcome.getId())));
     verify(accountRepository).findAccountByUsername("gert");
     verify(outcomeRepository).get(projectId, outcome.getId());
   }
@@ -121,9 +118,23 @@ public class OutcomeControllerTest {
     when(outcomeRepository.create(gert, outcomeCommand)).thenReturn(outcome);
     String body = TestUtils.createJson(outcomeCommand);
     mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.id", notNullValue()));
+      .andExpect(status().isCreated())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.id", notNullValue()));
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(outcomeRepository).create(gert, outcomeCommand);
+  }
+
+  @Test
+  public void testHandleBlankMotivation() throws Exception {
+    OutcomeCommand outcomeCommand = new OutcomeCommand(1, "name", null, new SemanticOutcome("http://semantic.com", "labelnew"));
+    Outcome outcome = new Outcome(1, 1, "name", "", new SemanticOutcome("http://semantic.com", "labelnew"));
+    when(outcomeRepository.create(gert, outcomeCommand)).thenReturn(outcome);
+    String body = "{\"name\":\"name\",\"semanticOutcome\":{\"uri\":\"http://semantic.com\",\"label\":\"labelnew\"},\"projectId\":1}";
+    mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(status().isCreated())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(outcomeRepository).create(gert, outcomeCommand);
   }

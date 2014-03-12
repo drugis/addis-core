@@ -1,5 +1,6 @@
 package org.drugis.addis.outcomes;
 
+import org.apache.commons.lang.StringUtils;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 
 /**
@@ -31,7 +32,7 @@ public class OutcomeCommand {
   }
 
   public String getMotivation() {
-    return motivation;
+    return motivation == null ? StringUtils.EMPTY : motivation;
   }
 
   public SemanticOutcome getSemanticOutcome() {
@@ -45,7 +46,7 @@ public class OutcomeCommand {
 
     OutcomeCommand that = (OutcomeCommand) o;
 
-    if (!motivation.equals(that.motivation)) return false;
+    if (motivation != null ? !motivation.equals(that.motivation) : that.motivation != null) return false;
     if (!name.equals(that.name)) return false;
     if (!projectId.equals(that.projectId)) return false;
     if (!semanticOutcome.equals(that.semanticOutcome)) return false;
@@ -57,7 +58,7 @@ public class OutcomeCommand {
   public int hashCode() {
     int result = projectId.hashCode();
     result = 31 * result + name.hashCode();
-    result = 31 * result + motivation.hashCode();
+    result = 31 * result + (motivation != null ? motivation.hashCode() : 0);
     result = 31 * result + semanticOutcome.hashCode();
     return result;
   }

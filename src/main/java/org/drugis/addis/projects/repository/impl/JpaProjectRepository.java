@@ -1,12 +1,8 @@
 package org.drugis.addis.projects.repository.impl;
 
-import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.Intervention;
-import org.drugis.addis.interventions.InterventionCommand;
-import org.drugis.addis.outcomes.Outcome;
-import org.drugis.addis.outcomes.OutcomeCommand;
 import org.drugis.addis.projects.Project;
+import org.drugis.addis.projects.ProjectCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -49,8 +45,8 @@ public class JpaProjectRepository implements ProjectRepository {
   }
 
   @Override
-  public Project create(Account owner, String name, String description, Integer trialverse) {
-    Project project = new Project(owner, name, description, trialverse);
+  public Project create(Account user, ProjectCommand command) {
+    Project project = new Project(user, command.getName(), command.getDescription(), command.getTrialverseId());
     em.persist(project);
     return project;
   }

@@ -1,5 +1,6 @@
 package org.drugis.addis.projects;
 
+import org.apache.commons.lang.StringUtils;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -128,15 +129,16 @@ public class ProjectsControllerTest {
 
   @Test
   public void testCreateProject() throws Exception {
+    ProjectCommand projectCommand = new ProjectCommand("testname", "testdescription", 1);
     Project project = new Project(1, gert, "testname", "testdescription", 1);
-    String jsonContent = TestUtils.createJson(project);
-    when(projectRepository.create(project.getOwner(), project.getName(), project.getDescription(), project.getTrialverseId())).thenReturn(project);
+    String jsonContent = TestUtils.createJson(projectCommand);
+    when(projectRepository.create(gert, projectCommand)).thenReturn(project);
     mockMvc.perform(post("/projects").principal(user).content(jsonContent).contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.name", is("testname")));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
-    verify(projectRepository).create(project.getOwner(), project.getName(), project.getDescription(), project.getTrialverseId());
+    verify(projectRepository).create(gert, projectCommand);
   }
 
   @Test
@@ -158,6 +160,21 @@ public class ProjectsControllerTest {
             .andExpect(redirectedUrl("/error/404"));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).getProjectById(1);
+  }
+
+  @Test
+  public void testHandleNullDescription() throws Exception {
+    ProjectCommand projectCommand = new ProjectCommand("testname", null, 1);
+    Project project = new Project(1, gert, "testname", StringUtils.EMPTY, 1);
+    String requestBody = "{\"name\":\"testname\",\"trialverseId\":1}";
+    when(projectRepository.create(gert, projectCommand)).thenReturn(project);
+    mockMvc.perform(post("/projects").principal(user).content(requestBody).contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(status().isCreated())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.name", is("testname")));
+    verify(accountRepository).findAccountByUsername(gert.getUsername());
+    verify(projectRepository).create(gert, projectCommand);
+
   }
 
 }

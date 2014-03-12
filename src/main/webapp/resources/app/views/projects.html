@@ -50,8 +50,8 @@
   <modal model="createProjectModal">
     <h3>Create a new project</h3>
 
-    <form name="projectForm">
-    <div class="row">
+    <form name="projectForm" ng-submit="createProject(model)">
+      <div class="row">
       <div class="large-8 columns">
           <label>Name
             <input type="text" ng-model="model.name">
@@ -71,10 +71,14 @@
             <select ng-model="model.trialverseId" ng-options="tv.id as tv.name for tv in trialverse"></select>
           </label>
           <ul class="button-group">
-            <li><a class="button small secondary" ng-click="createProjectModal.close()">Cancel</a></li>
             <li>
-              <a class="button small success" ng-disabled="false" ng-click="createProject(model)">Create
-                project</a>
+              <button class="button small secondary" ng-click="createProjectModal.close()">Cancel</button>
+            </li>
+            <li>
+              <button type="submit" class="button small success" ng-disabled="!model.name || !model.trialverseId"
+                      ng-click="createProject(model)">Create
+                project
+              </button>
             </li>
           </ul>
         </div>

@@ -1,34 +1,22 @@
 package org.drugis.addis.projects;
 
-import org.drugis.addis.outcomes.OutcomeCommand;
-import org.drugis.addis.security.Account;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Created by daan on 3/5/14.
  */
 public class ProjectCommand {
-  private Account account;
   private String name;
   private String description;
   private Integer trialverseId;
-  private List<OutcomeCommand> outcomes = new ArrayList<>();
 
   public ProjectCommand() {
   }
 
-  public ProjectCommand(Account account, String name, String description, Integer trialverseId, List<OutcomeCommand> outcomes) {
-    this.account = account;
+  public ProjectCommand(String name, String description, Integer trialverseId) {
     this.name = name;
     this.description = description;
     this.trialverseId = trialverseId;
-    this.outcomes = outcomes;
-  }
-
-  public Account getAccount() {
-    return account;
   }
 
   public String getName() {
@@ -36,15 +24,11 @@ public class ProjectCommand {
   }
 
   public String getDescription() {
-    return description;
+    return description == null ? StringUtils.EMPTY : description;
   }
 
   public Integer getTrialverseId() {
     return trialverseId;
-  }
-
-  public List<OutcomeCommand> getOutcomes() {
-    return outcomes;
   }
 
   @Override
@@ -54,10 +38,8 @@ public class ProjectCommand {
 
     ProjectCommand that = (ProjectCommand) o;
 
-    if (!account.equals(that.account)) return false;
-    if (!description.equals(that.description)) return false;
+    if (description != null ? !description.equals(that.description) : that.description != null) return false;
     if (!name.equals(that.name)) return false;
-    if (!outcomes.equals(that.outcomes)) return false;
     if (!trialverseId.equals(that.trialverseId)) return false;
 
     return true;
@@ -65,11 +47,9 @@ public class ProjectCommand {
 
   @Override
   public int hashCode() {
-    int result = account.hashCode();
-    result = 31 * result + name.hashCode();
-    result = 31 * result + description.hashCode();
+    int result = name.hashCode();
+    result = 31 * result + (description != null ? description.hashCode() : 0);
     result = 31 * result + trialverseId.hashCode();
-    result = 31 * result + outcomes.hashCode();
     return result;
   }
 }
