@@ -78,8 +78,8 @@
 <modal model="createOutcomeModal">
   <h3>Add a new outcome</h3>
 
-  <form name="outcomeForm" ng-submit="createOutcome(model)">
-    <div class="row">
+  <form name="outcomeForm">
+  <div class="row">
       <div class="large-4 columns">
         <label>Name
           <input type="text" ng-model="model.name">
@@ -120,8 +120,8 @@
 <modal model="createInterventionModal">
   <h3>Add a new intervention</h3>
 
-  <form name="interventionForm" ng-submit="createIntervention(model)">
-    <div class="row">
+  <form name="interventionForm">
+  <div class="row">
       <div class="large-4 columns">
         <label>Name
           <input type="text" ng-model="model.name">
@@ -162,7 +162,7 @@
 <modal model="createAnalysisModal">
   <h3>Add a new analysis</h3>
 
-  <form name="analysisForm" ng-submit="addAnalysis(model)">
+  <form name="analysisForm">
     <div class="row">
       <div class="large-4 columns">
         <label>Name
@@ -184,7 +184,7 @@
           <button class="button small secondary" ng-click="createAnalysisModal.close()">Cancel</button>
         </li>
         <li>
-          <button type="submit" class="button small success" ng-disabled="!model.name || !model.type"
+          <button class="button small success" ng-disabled="!model.name || !model.type"
                   ng-click="addAnalysis(model)">Add analysis
           </button>
         </li>
