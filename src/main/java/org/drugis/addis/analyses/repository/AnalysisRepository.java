@@ -15,4 +15,6 @@ public interface AnalysisRepository {
   Collection<Analysis> query(Integer projectId);
 
   Analysis create(Account gert, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException;
+
+  Analysis get(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException;;
 }

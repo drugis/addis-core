@@ -6,9 +6,12 @@ import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.analyses.AnalysisType;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.util.WebConstants;
+import org.hamcrest.core.Is;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -113,6 +116,19 @@ public class AnalysisControllerTest {
             .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).create(gert, analysisCommand);
+  }
+
+  @Test
+  public void testGetOutcome() throws Exception {
+    Analysis analysis = new Analysis(1, 1, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK);
+    Integer projectId = 1;
+    when(analysisRepository.get(projectId, analysis.getId())).thenReturn(analysis);
+    mockMvc.perform(get("/projects/1/analyses/1").principal(user))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.id", is(analysis.getId())));
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(analysisRepository).get(projectId, analysis.getId());
   }
 
 }

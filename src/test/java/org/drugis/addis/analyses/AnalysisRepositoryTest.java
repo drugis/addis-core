@@ -4,6 +4,7 @@ import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.security.Account;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,4 +48,16 @@ public class AnalysisRepositoryTest {
     Analysis result = analysisRepository.create(user, analysisCommand);
     assertTrue(analysisRepository.query(1).contains(result));
   }
+
+  @Test
+  public void testGet() throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Analysis analysis = analysisRepository.get(1, 1);
+    assertEquals(em.find(Analysis.class, 1), analysis);
+  }
+
+  @Test(expected = ResourceDoesNotExistException.class)
+  public void testGetFromWrongProjectFails() throws ResourceDoesNotExistException {
+    analysisRepository.get(2, 1);
+  }
+
 }

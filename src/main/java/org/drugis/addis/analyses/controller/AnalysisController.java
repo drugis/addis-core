@@ -41,6 +41,18 @@ public class AnalysisController extends AbstractAddisCoreController {
     }
   }
 
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.GET)
+  @ResponseBody
+  public Analysis get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer analysisId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    if (user != null) {
+      return analysisRepository.get(projectId, analysisId);
+    } else {
+      throw new MethodNotAllowedException();
+    }
+  }
+
+
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.POST)
   @ResponseBody
   public Analysis create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId, @RequestBody AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {

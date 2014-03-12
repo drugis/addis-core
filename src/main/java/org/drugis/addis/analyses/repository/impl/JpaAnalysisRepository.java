@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.Collection;
@@ -30,6 +31,18 @@ public class JpaAnalysisRepository implements AnalysisRepository {
     TypedQuery<Analysis> query = em.createQuery("FROM Analysis a where a.projectId = :projectId", Analysis.class);
     query.setParameter("projectId", projectId);
     return query.getResultList();
+  }
+
+  @Override
+  public Analysis get(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
+    TypedQuery<Analysis> query = em.createQuery("FROM Analysis a WHERE a.id = :analysisId AND a.projectId = :projectId", Analysis.class);
+    query.setParameter("analysisId", analysisId);
+    query.setParameter("projectId", projectId);
+    try {
+      return query.getSingleResult();
+    } catch (NoResultException e) {
+      throw new ResourceDoesNotExistException();
+    }
   }
 
   @Override
