@@ -3,6 +3,7 @@
 @import "foundation";
 @import "drugis";
 @import "main";
+@import "foundation-select2";
 
 $addis-grey : $crumb-bg;
 $addis-grey-border : $crumb-border-color;
@@ -31,6 +32,10 @@ label {
 
 .project-description {
   padding: 10px 0px;
+}
+
+.nested-view {
+  min-height: 4rem;
 }
 
 .nested-view .has-tip {

@@ -2,19 +2,19 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
   describe('SingleProjectController', function () {
     beforeEach(module('addis.controllers'));
     var scope, projectDeferred, analysisDeferred, window,
-    projectsService, trialverseService, semanticOutcomeService, semanticInterventionsService,
-    outcomeService, interventionService,
-     mockSemanticOutcomes,
-     mockProject = {id: 1, owner: {id: 1}, name: 'projectName',
-     description: 'testDescription', namespace: 'testNamespace',trialverseId: 1, $save: function(){}},
-     mockTrialverse = {id: 1, name: 'trialverseName', description: 'trialverseDescription'},
-     mockOutcomes = [1, 2, 3],
-     mockInterventions = [4, 5, 6],
-     mockAnalyses = [7, 8, 9],
-     mockAnalysis = {projectId: 1, id: 2};
+      projectsService, trialverseService, semanticOutcomeService, semanticInterventionsService,
+      outcomeService, interventionService,
+      mockSemanticOutcomes,
+      mockProject = {id: 1, owner: {id: 1}, name: 'projectName',
+      description: 'testDescription', namespace: 'testNamespace',trialverseId: 1, $save: function(){}},
+      mockTrialverse = {id: 1, name: 'trialverseName', description: 'trialverseDescription'},
+      mockOutcomes = [1, 2, 3],
+      mockInterventions = [4, 5, 6],
+      mockAnalyses = [7, 8, 9],
+      mockAnalysis = {projectId: 1, id: 2};
 
     beforeEach(inject(function ($controller, $q, $rootScope) {
-      var mockStateParams = {id: mockProject.id};
+      var mockStateParams = {projectId: mockProject.id};
 
       mockSemanticOutcomes = ["a", "b", 'c'] ;
       mockSemanticInterventions = ["e", "f", 'g'] ;
@@ -66,7 +66,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
     }));
 
     it('should place project information on the scope', function () {
-      expect(projectsService.get).toHaveBeenCalledWith({id: mockProject.id});
+      expect(projectsService.get).toHaveBeenCalledWith({projectId: mockProject.id});
       expect(scope.project).toEqual(mockProject);
     });
 
