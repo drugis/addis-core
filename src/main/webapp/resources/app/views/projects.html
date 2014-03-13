@@ -50,7 +50,7 @@
   <modal model="createProjectModal">
     <h3>Create a new project</h3>
 
-    <form name="projectForm" ng-submit="createProject(model)">
+    <form name="projectForm">
       <div class="row">
       <div class="large-8 columns">
           <label>Name
@@ -75,7 +75,7 @@
               <button class="button small secondary" ng-click="createProjectModal.close()">Cancel</button>
             </li>
             <li>
-              <button type="submit" class="button small success" ng-disabled="!model.name || !model.trialverseId"
+              <button class="button small success" ng-disabled="!model.name || !model.trialverseId"
                       ng-click="createProject(model)">Create
                 project
               </button>
