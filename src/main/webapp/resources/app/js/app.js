@@ -8,9 +8,10 @@ define(
     'controllers',
     'directives',
     'filters',
-    'resources'],
+    'resources',
+    'angular-select2'],
   function (angular, require, $) {
-    var dependencies = ['ui.router', 'addis.controllers', 'addis.directives', 'addis.resources', 'addis.filters'];
+    var dependencies = ['ui.router', 'addis.controllers', 'addis.directives', 'addis.resources', 'addis.filters', 'ui.select2'];
     var app = angular.module('addis', dependencies);
 
     app.run(['$rootScope', '$window', '$http', function ($rootScope, $window, $http) {

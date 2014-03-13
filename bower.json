@@ -23,8 +23,8 @@
     "requirejs": "~2.1.10",
     "underscore": "~1.5.2",
     "angular": "~1.2.11",
-    "bowser": "~0.3.7",
     "fastclick": "~0.6.11",
-    "modernizr": "~2.7.1"
+    "modernizr": "~2.7.1",
+    "angular-ui-select2": "~0.0.5"
   }
 }
