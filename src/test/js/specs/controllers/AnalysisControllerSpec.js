@@ -1,7 +1,7 @@
 define(['angular', 'angular-mocks', 'controllers'], function() {
   describe("The analysisController", function() {
     var scope,
-      analysisService, projectsService,
+      analysisService, projectsService, outcomeService,
       mockAnalysis = {
         name: 'analysisName',
         type: 'Single-study Benefit-Risk',
@@ -10,6 +10,10 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       mockProject = {
         name: 'projectName'
       },
+      mockOutcomes = [
+        { name: 'mockOutcome1', semanticOutcome: 'mockSemantic1' },
+        { name: 'mockOutcome2', semanticOutcome: 'mockSemantic2' }
+      ],
       projectDeferred, analysisDeferred;
 
     beforeEach(module('addis.controllers'));
@@ -22,9 +26,11 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
       scope = $rootScope;
       analysisService = jasmine.createSpyObj('analysisService', ['get']);
-      analysisService.get.andReturn(mockAnalysis)
+      analysisService.get.andReturn(mockAnalysis);
       projectsService = jasmine.createSpyObj('projectService', ['get']);
-      projectsService.get.andReturn(mockProject)
+      projectsService.get.andReturn(mockProject);
+      outcomeService = jasmine.createSpyObj('outcomeService', ['query']);
+      outcomeService.query.andReturn(mockOutcomes);
 
       projectDeferred = $q.defer();
       mockProject.$promise = projectDeferred.promise;
@@ -55,6 +61,10 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       projectDeferred.resolve();
       expect(scope.analysis).toEqual(mockAnalysis);
       expect(scope.project).toEqual(mockProject);
+    });
+
+    it('should place a list of outcomes on the scope when it is loaded', function() {
+      expect(scope.outcomes).toEqual(mockOutcomes);
     });
   });
 });
