@@ -1,17 +1,16 @@
-package org.drugis.addis.analysiss;
+package org.drugis.addis.analysis;
 
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.Analysis;
 import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.analyses.AnalysisType;
+import org.drugis.addis.analyses.Criterion;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.repository.CriteriaRepository;
 import org.drugis.addis.config.TestConfig;
-import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.util.WebConstants;
-import org.hamcrest.core.Is;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +51,10 @@ public class AnalysisControllerTest {
 
   @Inject
   private AnalysisRepository analysisRepository;
+
+  @Inject
+  CriteriaRepository criteriaRepository;
+
 
   @Autowired
   private WebApplicationContext webApplicationContext;
@@ -129,6 +132,27 @@ public class AnalysisControllerTest {
       .andExpect(jsonPath("$.id", is(analysis.getId())));
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(projectId, analysis.getId());
+  }
+
+  @Test
+  public void testQueryCriteria() throws Exception {
+    List<Criterion> criteria = Arrays.asList(new Criterion(1, 1), new Criterion(1, 2), new Criterion(1, 3));
+    Integer analysisId = 1;
+    Integer projectId = 1;
+    when(criteriaRepository.query(projectId, analysisId)).thenReturn(criteria);
+    mockMvc.perform(get("/projects/1/analyses/1/criteria").principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", hasSize(3)));
+  }
+
+  @Test
+  public void testCreateCriterion() throws Exception {
+    String jsonContent = "{\"analysisId\": 1, \"outcomeId\": 2}";
+    Criterion criterion = new Criterion(1, 2);
+    when(criteriaRepository.create(criterion)).thenReturn(criterion);
+    mockMvc.perform(post("/projects/1/analyses/1/criteria").principal(user).content(jsonContent));
+
   }
 
 }
