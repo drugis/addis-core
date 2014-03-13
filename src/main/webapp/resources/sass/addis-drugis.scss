@@ -4,6 +4,9 @@
 @import "drugis";
 @import "main";
 
+$addis-grey : $crumb-bg;
+$addis-grey-border : $crumb-border-color;
+
 .color-stripe {
   background: $drugis-color; 
   height: 0.45rem;
@@ -22,7 +25,7 @@ label {
 }
 
 .project-header {
-  border-bottom: 1px solid;
+  border-bottom: 1px solid $addis-grey-border;
   margin-bottom: 1.25rem;
 }
 
@@ -36,12 +39,16 @@ label {
 }
 
 .nested-view ul {
-  padding-left: 0.5rem;
-  padding-bottom: 1rem;
+  border: solid 1px $addis-grey-border;
+  padding: 0.5rem;
 }
 
 .nested-view li.colored-row {
-  background-color: scale-color($secondary-color, $lightness: -5%);
+  background-color: $addis-grey;
   margin-bottom: 10px;
-  padding: 0.5rem 0rem;
+  padding: 0.5rem 0.25rem 0.5rem 0.5rem;
+}
+
+.table-header h3,h4,h5 {
+    text-align: center;
 }

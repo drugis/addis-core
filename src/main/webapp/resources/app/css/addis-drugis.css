@@ -8288,53 +8288,58 @@ input[type='file'] {
   background-color: #006837;
 }
 
-/* line 7, ../../sass/addis-drugis.scss */
+/* line 10, ../../sass/addis-drugis.scss */
 .color-stripe {
   background: #cc3333;
   height: 0.45rem;
 }
 
-/* line 12, ../../sass/addis-drugis.scss */
+/* line 15, ../../sass/addis-drugis.scss */
 .alert-box-message {
   padding-right: 1.25rem;
 }
 
-/* line 16, ../../sass/addis-drugis.scss */
+/* line 19, ../../sass/addis-drugis.scss */
 label {
   margin-top: 0.5rem;
 }
 
-/* line 20, ../../sass/addis-drugis.scss */
+/* line 23, ../../sass/addis-drugis.scss */
 .inline-header {
   display: inline;
 }
 
-/* line 24, ../../sass/addis-drugis.scss */
+/* line 27, ../../sass/addis-drugis.scss */
 .project-header {
-  border-bottom: 1px solid;
+  border-bottom: 1px solid #dadada;
   margin-bottom: 1.25rem;
 }
 
-/* line 29, ../../sass/addis-drugis.scss */
+/* line 32, ../../sass/addis-drugis.scss */
 .project-description {
   padding: 10px 0px;
 }
 
-/* line 33, ../../sass/addis-drugis.scss */
+/* line 36, ../../sass/addis-drugis.scss */
 .nested-view .has-tip {
   font-weight: inherit;
   border-bottom: none;
 }
 
-/* line 38, ../../sass/addis-drugis.scss */
+/* line 41, ../../sass/addis-drugis.scss */
 .nested-view ul {
-  padding-left: 0.5rem;
-  padding-bottom: 1rem;
+  border: solid 1px #dadada;
+  padding: 0.5rem;
 }
 
-/* line 43, ../../sass/addis-drugis.scss */
+/* line 46, ../../sass/addis-drugis.scss */
 .nested-view li.colored-row {
-  background-color: #dbdbdb;
+  background-color: #f4f4f4;
   margin-bottom: 10px;
-  padding: 0.5rem 0rem;
+  padding: 0.5rem 0.25rem 0.5rem 0.5rem;
+}
+
+/* line 52, ../../sass/addis-drugis.scss */
+.table-header h3, h4, h5 {
+  text-align: center;
 }

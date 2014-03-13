@@ -19,20 +19,24 @@
 
 <div class="row">
   <!-- Outcomes -->
-  <div class="nested-view columns large-6 border">
+  <div class="nested-view columns large-6">
     <div class="nested-view-header">
       Outcomes
       <button ng-show="editMode.allowEditing" class="small" ng-click="createOutcomeModal.open()"><i
           class="fa fa-plus"></i> Add outcome
       </button>
     </div>
+    <div class="list-wrapper">
     <ul class="no-bullet">
-      <li data-tooltip class="row colored-row has-tip" ng-repeat="outcome in outcomes"
+      <li data-tooltip class="colored-row has-tip" ng-repeat="outcome in outcomes"
           title="{{outcome.motivation}}">
-        <span class="columns large-6">{{outcome.name}} </span>
-        <span class="columns large-6">{{outcome.semanticOutcomeLabel}} </span>
-      </li>
+        <div class="row">
+          <div class="columns large-6">{{outcome.name}} </div>
+          <div class="columns large-6">{{outcome.semanticOutcomeLabel}} </div>
+        </div>
+        </li>
     </ul>
+    </div>
   </div>
 
   <!-- Interventions -->
@@ -44,28 +48,30 @@
       </button>
     </div>
     <ul class="no-bullet">
-      <li data-tooltip class="row colored-row has-tip" ng-repeat="intervention in interventions"
+      <li data-tooltip class="colored-row has-tip" ng-repeat="intervention in interventions"
           title="{{intervention.motivation}}">
-        <span class="columns large-6">{{intervention.name}} </span>
-        <span class="columns large-6">{{intervention.semanticInterventionLabel}} </span>
-      </li>
+        <div class="row">
+          <div class="columns large-6">{{intervention.name}} </div>
+          <div class="columns large-6">{{intervention.semanticInterventionLabel}} </div>
+        </div>
+        </li>
     </ul>
   </div>
 
 </div>
 
-<!-- analyses -->
-<div class="row">
-  <div class="columns large-12 border">
+<!-- Analyses -->
+<!--<div class="row">-->
+<!--<div class="columns large-12 border">-->
 
-    <div class="nested-view columns large-12 border">
-      <div class="row nested-view-header">
-        Analyses
-        <button ng-show="editMode.allowEditing" class="small" ng-click="createAnalysisModal.open()"><i
-            class="fa fa-plus"></i> Add Analysis
-        </button>
-      </div>
-    </div>
+<div class="nested-view columns large-12 border">
+  <div class="row nested-view-header">
+    Analyses
+    <button ng-show="editMode.allowEditing" class="small" ng-click="createAnalysisModal.open()"><i
+        class="fa fa-plus"></i> Add Analysis
+    </button>
+  </div>
+</div>
 
     <ul class="no-bullet">
       <li class="row colored-row" ng-repeat="analysis in analyses">
@@ -86,7 +92,7 @@
   <h3>Add a new outcome</h3>
 
   <form name="outcomeForm">
-  <div class="row">
+    <div class="row">
       <div class="large-10 columns">
         <label>Name
           <input type="text" ng-model="model.name">
@@ -128,7 +134,7 @@
   <h3>Add a new intervention</h3>
 
   <form name="interventionForm">
-  <div class="row">
+    <div class="row">
       <div class="large-10 columns">
         <label>Name
           <input type="text" ng-model="model.name">
