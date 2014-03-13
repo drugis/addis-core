@@ -34,7 +34,7 @@ define(
             controller: 'ProjectsController'
           })
         .state('project',
-          { url: '/projects/:id',
+          { url: '/projects/:projectId',
             templateUrl: baseTemplatePath + 'project.html',
             controller: 'SingleProjectController'
           }

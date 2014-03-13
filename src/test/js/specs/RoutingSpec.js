@@ -25,7 +25,11 @@ define(['angular', 'angular-mocks', 'jQuery', 'app'], function () {
     });
 
     it('should navigate to #/projects/1 ', function() {
-      expect($state.href('project', { id: 1 })).toEqual('#/projects/1');
+      expect($state.href('project', { projectId: 1 })).toEqual('#/projects/1');
+    });
+
+    it('should navigate to #/projects/1/analyses/2 ', function() {
+      expect($state.href('analysis', { projectId: 1, analysisId: 2 })).toEqual('#/projects/1/analyses/2');
     });
 
   });
