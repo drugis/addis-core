@@ -10,10 +10,13 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       mockProject = {
         name: 'projectName'
       },
-      mockOutcomes = [
-        { name: 'mockOutcome1', semanticOutcome: 'mockSemantic1' },
-        { name: 'mockOutcome2', semanticOutcome: 'mockSemantic2' }
-      ],
+      mockOutcomes = [{
+        name: 'mockOutcome1',
+        semanticOutcome: 'mockSemantic1'
+      }, {
+        name: 'mockOutcome2',
+        semanticOutcome: 'mockSemantic2'
+      }],
       projectDeferred, analysisDeferred;
 
     beforeEach(module('addis.controllers'));
@@ -41,7 +44,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         $scope: scope,
         $stateParams: mockStateParams,
         'ProjectsService': projectsService,
-        'AnalysisService': analysisService
+        'AnalysisService': analysisService,
+        'OutcomeService': outcomeService
       });
     }));
 
