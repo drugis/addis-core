@@ -2,7 +2,9 @@ package org.drugis.addis.analyses.controller;
 
 import org.drugis.addis.analyses.Analysis;
 import org.drugis.addis.analyses.AnalysisCommand;
+import org.drugis.addis.analyses.Criterion;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.repository.CriteriaRepository;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -29,6 +31,8 @@ public class AnalysisController extends AbstractAddisCoreController {
   AnalysisRepository analysisRepository;
   @Inject
   AccountRepository accountRepository;
+  @Inject
+  CriteriaRepository criteriaRepository;
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
   @ResponseBody
@@ -65,6 +69,13 @@ public class AnalysisController extends AbstractAddisCoreController {
     } else {
       throw new MethodNotAllowedException();
     }
+  }
+
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/criteria", method = RequestMethod.GET)
+  @ResponseBody
+  public Collection<Criterion> queryCriteria(@PathVariable Integer projectId, @PathVariable Integer analysisId) {
+    return criteriaRepository.query(projectId, analysisId);
   }
 
 }
