@@ -15,26 +15,27 @@
   <div class="row">
     <div class="columns large-12 nested-view">
       <div class="nested-view-header">
-        Select Criteria
+        Selected Criteria
       </div>
-<select ui-select2 ng-model="number" data-placeholder="Pick a number">
-    <option value=""></option>
-    <option value="one">First</option>
-    <option value="two">Second</option>
-    <option value="three">Third</option>
-</select>
+      <div class="row">
+        <div class="columns large-6 nested-view">
+          <select multiple ui-select2 ng-model="number" data-placeholder="no criteria selected">
+            <option ng-repeat="outcome in outcomes" value="{{outcome.id}}">{{outcome.label}}</option>
+          </select>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="row">
     <div class="columns large-12 nested-view">
-      Select Alternatives
+      Selected Alternatives
     </div>
   </div>
 
   <div class="row">
     <div class="columns large-12 nested-view">
-      Select Study
+      Selected Study
     </div>
   </div>
 
@@ -43,7 +44,5 @@
       <button ng-disabled="true">Perform MCDA Analysis</button>
     </div>
   </div>
-
-
 
 </div>

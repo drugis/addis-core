@@ -15,14 +15,14 @@ require.config({
   baseUrl: 'app/js',
   shim: {
     'jQuery': { exports : 'jQuery' },
-    'angular': { exports : 'angular' },
+    'angular': { deps: ['jQuery'], exports : 'angular' },
+    'select2': {deps: ['jQuery'], exports : 'select2'},
+    'angular-select2': {deps: ['angular', 'select2'], exports: 'angular-select2'},
     'angular-resource': { deps:['angular'], exports: 'angular-resource' },
     'angular-ui-router': { deps:['angular'] },
     'underscore': { exports : '_' },
     'foundation':  { deps: ['jQuery'] },
-    'domReady': { exports: 'domReady'},
-    'select2' : { deps: ['jQuery'], exports: 'select2'},
-    'angular-select2': {deps: ['angular', 'select2'], exports: 'angular-select2'}
+    'domReady': { exports: 'domReady'}
   },
   priority: ['angular']
 });
