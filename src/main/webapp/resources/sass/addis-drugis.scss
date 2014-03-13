@@ -30,6 +30,10 @@ label {
   padding: 10px 0px;
 }
 
+.nested-view {
+  min-height: 4rem;
+}
+
 .nested-view .has-tip {
   font-weight: inherit;
   border-bottom: none;
