@@ -19,8 +19,9 @@
       </div>
       <div class="row">
         <div class="columns large-6 nested-view">
-          <select multiple ui-select2 ng-model="criteria" data-placeholder="no criteria selected">
-            <option ng-repeat="outcome in outcomes" value="{{outcome.id}}">{{outcome.name}}</option>
+          <select id="criteriaSelect" multiple ui-select2 ng-model="selectedOutcomeIds"
+                  data-placeholder="no criteria selected">
+            <option ng-repeat="outcome in outcomes" value={{outcome.id}}>{{outcome.name}}</option>
           </select>
         </div>
       </div>
