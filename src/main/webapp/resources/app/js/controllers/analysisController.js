@@ -8,7 +8,7 @@ define(['underscore'], function() {
     $scope.outcomes = OutcomeService.query($stateParams);
 
     var idsToOutcomes = function(selectedOutcomeIds, outcomes) {
-      var parsed = _.map(selectedOutcomeIds, function(outcomeId) {
+      return _.map(selectedOutcomeIds, function(outcomeId) {
         return _.find(outcomes, function(outcome) {
           return outcome && outcome.id === parseInt(outcomeId, 10);
         });
