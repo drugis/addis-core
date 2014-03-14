@@ -59,7 +59,7 @@ public class AnalysisRepositoryTest {
   public void testUpdate() throws ResourceDoesNotExistException, MethodNotAllowedException {
     Integer analysisId = 1;
     Account user = em.find(Account.class, 1);
-    AnalysisCommand analysisCommand = new AnalysisCommand(1, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL, Arrays.asList(1, 2, 3));
+    AnalysisCommand analysisCommand = new AnalysisCommand(1, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL, Arrays.asList(1, 2));
     Analysis updatedAnalysis = analysisRepository.update(user, analysisId, analysisCommand);
     assertEquals(analysisCommand.getProjectId(), updatedAnalysis.getProjectId());
     assertEquals(analysisCommand.getName(), updatedAnalysis.getName());
@@ -70,15 +70,27 @@ public class AnalysisRepositoryTest {
   @Test(expected = ResourceDoesNotExistException.class)
   public void testUpdateInWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = em.find(Account.class, 1);
-    AnalysisCommand analysisCommand = new AnalysisCommand(2, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL, Arrays.asList(1, 2, 3));
-    analysisRepository.update(user, 1, analysisCommand);
+    int projectId = 3;
+    AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL, Arrays.asList(1, 2));
+    analysisRepository.update(user, projectId, analysisCommand);
   }
 
   @Test(expected = MethodNotAllowedException.class)
   public void testUpdateNotOwnedProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = em.find(Account.class, 1);
-    AnalysisCommand analysisCommand = new AnalysisCommand(2, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL, Arrays.asList(1, 2, 3));
-    analysisRepository.update(user, 3, analysisCommand);
+    int notOwnedProjectId = 2;
+    AnalysisCommand analysisCommand = new AnalysisCommand(notOwnedProjectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL, Arrays.asList(1, 2));
+    int analysisId = 3;
+    analysisRepository.update(user, analysisId, analysisCommand);
+  }
+
+  @Test(expected = ResourceDoesNotExistException.class)
+  public void testUpdateAnalysisWithNonProjectOutcome() throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Account user = em.find(Account.class, 2);
+    int projectId = 2;
+    int analysisId = 3;
+    AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL, Arrays.asList(2));
+    analysisRepository.update(user, analysisId, analysisCommand);
   }
 
   @Test(expected = ResourceDoesNotExistException.class)

@@ -53,8 +53,7 @@ public class JpaAnalysisRepository implements AnalysisRepository {
 
   @Override
   public Analysis create(Account account, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Analysis newAnalysis = null;
-    newAnalysis = new Analysis(analysisCommand.getProjectId(), analysisCommand.getName(), AnalysisType.getByLabel(analysisCommand.getType()), Collections.EMPTY_LIST);
+    Analysis newAnalysis = new Analysis(analysisCommand.getProjectId(), analysisCommand.getName(), AnalysisType.getByLabel(analysisCommand.getType()), Collections.EMPTY_LIST);
     checkProjectExistsAndModifiable(account, analysisCommand);
     em.persist(newAnalysis);
     return newAnalysis;
@@ -64,11 +63,25 @@ public class JpaAnalysisRepository implements AnalysisRepository {
   public Analysis update(Account user, Integer analysisId, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
     checkProjectExistsAndModifiable(user, analysisCommand);
 
+    // do not allow changing of project ID
+    Analysis oldAnalysis = em.find(Analysis.class, analysisId);
+    if(! oldAnalysis.getProjectId().equals(analysisCommand.getProjectId())) {
+      throw new ResourceDoesNotExistException();
+    }
+
     List<Outcome> selectedOutcomes = new ArrayList<>();
     if (isNotEmpty(analysisCommand.getSelectedOutcomeIds())) {
       TypedQuery<Outcome> outcomeQuery = em.createQuery("FROM Outcome o WHERE o.id in :outcomeIds", Outcome.class);
       outcomeQuery.setParameter("outcomeIds", analysisCommand.getSelectedOutcomeIds());
       selectedOutcomes = outcomeQuery.getResultList();
+
+      // do not allow selection of outcomes that are not in the project
+      for (Outcome outcome : selectedOutcomes) {
+        if (outcome.getProject() != analysisCommand.getProjectId()) {
+          throw new ResourceDoesNotExistException();
+        }
+      }
+
     }
     Analysis updatedAnalysis = new Analysis(analysisId, analysisCommand.getProjectId(), analysisCommand.getName(), AnalysisType.getByLabel(analysisCommand.getType()), selectedOutcomes);
     return em.merge(updatedAnalysis);
