@@ -60,8 +60,8 @@ public class JpaAnalysisRepository implements AnalysisRepository {
   @Override
   public Analysis update(Account user, Integer analysisId, Analysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
     Project project = em.find(Project.class, analysis.getProjectId());
-    System.out.println("aantal x = " + analysis.getSelectedOutcomes().size());
-    System.out.println("aantal a = " + em.find(Analysis.class, analysisId).getSelectedOutcomes().size());
+    System.out.println("input  = " + analysis.getSelectedOutcomes().size());
+    System.out.println("initial  = " + em.find(Analysis.class, analysisId).getSelectedOutcomes().size());
     if (project == null) {
       throw new ResourceDoesNotExistException();
     }
@@ -87,6 +87,8 @@ public class JpaAnalysisRepository implements AnalysisRepository {
     for (Outcome o : analysis.getSelectedOutcomes()) {
       oldAnalysis.addSelectedOutCome(o);
     }
+    oldAnalysis.setName("test");
+    em.merge(oldAnalysis);
     return oldAnalysis;
   }
 
