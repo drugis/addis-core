@@ -6,6 +6,7 @@ import org.drugis.addis.analyses.AnalysisType;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.security.Account;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,7 +16,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 /**
  * Created by connor on 3/11/14.
@@ -48,19 +54,34 @@ public class JpaAnalysisRepository implements AnalysisRepository {
   @Override
   public Analysis create(Account account, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Analysis newAnalysis = null;
-    try {
-      newAnalysis = new Analysis(analysisCommand.getProjectId(), analysisCommand.getName(), AnalysisType.getByLabel(analysisCommand.getType()));
-    } catch (Exception e) {
-      throw new RuntimeException(e.getMessage(), e);
-    }
-    Project project = em.find(Project.class, newAnalysis.getProjectId());
-    if (project == null) {
-      throw new ResourceDoesNotExistException();
-    }
-    if (project.getOwner().getId() != account.getId()) {
-      throw new MethodNotAllowedException();
-    }
+    newAnalysis = new Analysis(analysisCommand.getProjectId(), analysisCommand.getName(), AnalysisType.getByLabel(analysisCommand.getType()), Collections.EMPTY_LIST);
+    checkProjectExistsAndModifiable(account, analysisCommand);
     em.persist(newAnalysis);
     return newAnalysis;
   }
+
+  @Override
+  public Analysis update(Account user, Integer analysisId, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    checkProjectExistsAndModifiable(user, analysisCommand);
+
+    List<Outcome> selectedOutcomes = new ArrayList<>();
+    if (isNotEmpty(analysisCommand.getSelectedOutcomeIds())) {
+      TypedQuery<Outcome> outcomeQuery = em.createQuery("FROM Outcome o WHERE o.id in :outcomeIds", Outcome.class);
+      outcomeQuery.setParameter("outcomeIds", analysisCommand.getSelectedOutcomeIds());
+      selectedOutcomes = outcomeQuery.getResultList();
+    }
+    Analysis updatedAnalysis = new Analysis(analysisId, analysisCommand.getProjectId(), analysisCommand.getName(), AnalysisType.getByLabel(analysisCommand.getType()), selectedOutcomes);
+    return em.merge(updatedAnalysis);
+  }
+
+  private void checkProjectExistsAndModifiable(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Project project = em.find(Project.class, analysisCommand.getProjectId());
+    if (project == null) {
+      throw new ResourceDoesNotExistException();
+    }
+    if (project.getOwner().getId() != user.getId()) {
+      throw new MethodNotAllowedException();
+    }
+  }
+
 }

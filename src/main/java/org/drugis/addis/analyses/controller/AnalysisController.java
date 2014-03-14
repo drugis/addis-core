@@ -31,8 +31,6 @@ public class AnalysisController extends AbstractAddisCoreController {
   AnalysisRepository analysisRepository;
   @Inject
   AccountRepository accountRepository;
-  @Inject
-  CriteriaRepository criteriaRepository;
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
   @ResponseBody
@@ -71,11 +69,15 @@ public class AnalysisController extends AbstractAddisCoreController {
     }
   }
 
-
-  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/criteria", method = RequestMethod.GET)
+  @RequestMapping(value="/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
-  public Collection<Criterion> queryCriteria(@PathVariable Integer projectId, @PathVariable Integer analysisId) {
-    return criteriaRepository.query(projectId, analysisId);
+  public Analysis update(Principal currentUser, @PathVariable Integer analysisId, @RequestBody AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    if (user != null) {
+      return analysisRepository.update(user, analysisId, analysisCommand);
+    } else {
+      throw new MethodNotAllowedException();
+    }
   }
 
 }

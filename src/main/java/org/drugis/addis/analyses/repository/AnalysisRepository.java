@@ -14,7 +14,9 @@ import java.util.Collection;
 public interface AnalysisRepository {
   Collection<Analysis> query(Integer projectId);
 
-  Analysis create(Account gert, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException;
+  Analysis create(Account user, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException;
 
   Analysis get(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException;;
+
+  Analysis update(Account user, Integer analysisId, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException;
 }

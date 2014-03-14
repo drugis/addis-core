@@ -29,12 +29,12 @@ public enum AnalysisType {
   }
 
   @JsonCreator
-  public static AnalysisType getByLabel(String label) throws Exception {
+  public static AnalysisType getByLabel(String label) {
     switch (label) {
       case SINGLE_STUDY_BENEFIT_RISK_LABEL:
         return SINGLE_STUDY_BENEFIT_RISK;
       default:
-        throw new Exception("Attempt to map nonexistent AnalysisType");
+        throw new EnumConstantNotPresentException(AnalysisType.class, label);
     }
   }
 }

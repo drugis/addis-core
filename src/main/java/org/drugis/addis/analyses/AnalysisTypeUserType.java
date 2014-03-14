@@ -35,13 +35,9 @@ public class AnalysisTypeUserType implements UserType {
   }
 
   @Override
-  public Object nullSafeGet(ResultSet resultSet, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
+  public Object nullSafeGet(ResultSet resultSet, String[] names, SessionImplementor session, Object owner) throws SQLException {
     String name = resultSet.getString(names[0]);
-    try {
-      return resultSet.wasNull() ? null : AnalysisType.getByLabel(name);
-    } catch (Exception e) {
-      throw new HibernateException(e.getMessage(), e);
-    }
+    return resultSet.wasNull() ? null : AnalysisType.getByLabel(name);
   }
 
   @Override

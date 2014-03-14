@@ -1,12 +1,13 @@
 package org.drugis.addis.analyses;
 
+import org.drugis.addis.outcomes.Outcome;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by connor on 3/11/14.
@@ -23,18 +24,25 @@ public class Analysis implements Serializable {
   private AnalysisType analysisType;
   private String study;
 
+  @OneToMany(cascade=CascadeType.ALL)
+  @JoinTable(name="analysis_outcomes",
+    joinColumns={@JoinColumn(name="analysis_id", referencedColumnName="id")},
+    inverseJoinColumns={@JoinColumn(name="outcome_id", referencedColumnName="id")})
+  private List<Outcome> selectedOutcomes = new ArrayList<>();
+
   public Analysis() {
   }
 
-  public Analysis(Integer id, Integer projectId, String name, AnalysisType analysisType) {
+  public Analysis(Integer id, Integer projectId, String name, AnalysisType analysisType, List<Outcome> selectedOutcomes) {
     this.id = id;
     this.projectId = projectId;
     this.name = name;
     this.analysisType = analysisType;
+    this.selectedOutcomes = selectedOutcomes == null ? this.selectedOutcomes : selectedOutcomes;
   }
 
-  public Analysis(Integer projectId, String name, AnalysisType analysisType) {
-    this(null, projectId, name, analysisType);
+  public Analysis(Integer projectId, String name, AnalysisType analysisType, List<Outcome> selectedOutcomes) {
+    this(null, projectId, name, analysisType, selectedOutcomes);
   }
 
   public Integer getId() {
@@ -57,10 +65,12 @@ public class Analysis implements Serializable {
     return study;
   }
 
+  public List<Outcome> getSelectedOutcomes() { return Collections.unmodifiableList(selectedOutcomes); }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof Analysis)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     Analysis analysis = (Analysis) o;
 
@@ -68,6 +78,7 @@ public class Analysis implements Serializable {
     if (id != null ? !id.equals(analysis.id) : analysis.id != null) return false;
     if (!name.equals(analysis.name)) return false;
     if (!projectId.equals(analysis.projectId)) return false;
+    if (!selectedOutcomes.equals(analysis.selectedOutcomes)) return false;
     if (study != null ? !study.equals(analysis.study) : analysis.study != null) return false;
 
     return true;
@@ -80,6 +91,7 @@ public class Analysis implements Serializable {
     result = 31 * result + name.hashCode();
     result = 31 * result + analysisType.hashCode();
     result = 31 * result + (study != null ? study.hashCode() : 0);
+    result = 31 * result + selectedOutcomes.hashCode();
     return result;
   }
 }
