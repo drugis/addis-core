@@ -2,7 +2,10 @@ package org.drugis.addis.outcomes;
 
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 /**
  * Created by daan on 2/20/14.
@@ -27,7 +30,7 @@ public class Outcome {
     this.name = name;
     this.motivation = motivation;
     this.semanticOutcomeLabel = semanticOutcome.getLabel();
-    this.semanticOutcomeUri = semanticOutcome.getLabel();
+    this.semanticOutcomeUri = semanticOutcome.getUri();
   }
 
   public Outcome(Integer project, String name, String motivation, SemanticOutcome semanticOutcome) {

@@ -62,3 +62,10 @@ CREATE TABLE Analysis (id SERIAL NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY(projectId) REFERENCES Project(id));
 
+CREATE TABLE Analysis_Outcomes (
+  AnalysisId INT,
+  OutcomeId INT,
+  PRIMARY KEY(AnalysisId, OutcomeId),
+  FOREIGN KEY(AnalysisId) REFERENCES Analysis(id),
+  FOREIGN KEY(OutcomeId) REFERENCES Outcome(id)
+);

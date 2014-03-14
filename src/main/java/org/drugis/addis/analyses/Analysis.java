@@ -5,7 +5,6 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,11 +23,11 @@ public class Analysis implements Serializable {
   private AnalysisType analysisType;
   private String study;
 
-  @OneToMany(cascade=CascadeType.ALL)
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinTable(name="analysis_outcomes",
-    joinColumns={@JoinColumn(name="analysis_id", referencedColumnName="id")},
-    inverseJoinColumns={@JoinColumn(name="outcome_id", referencedColumnName="id")})
-  private List<Outcome> selectedOutcomes = new ArrayList<>();
+    joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
+    inverseJoinColumns = {@JoinColumn(name = "outcomeId", referencedColumnName = "id")})
+  private List<Outcome> selectedOutcomes;
 
   public Analysis() {
   }
@@ -65,7 +64,9 @@ public class Analysis implements Serializable {
     return study;
   }
 
-  public List<Outcome> getSelectedOutcomes() { return Collections.unmodifiableList(selectedOutcomes); }
+  public List<Outcome> getSelectedOutcomes() {
+    return selectedOutcomes == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(selectedOutcomes);
+  }
 
   @Override
   public boolean equals(Object o) {
@@ -91,7 +92,7 @@ public class Analysis implements Serializable {
     result = 31 * result + name.hashCode();
     result = 31 * result + analysisType.hashCode();
     result = 31 * result + (study != null ? study.hashCode() : 0);
-    result = 31 * result + selectedOutcomes.hashCode();
+    // result = 31 * result + (selectedOutcomes != null ? selectedOutcomes.hashCode() : 0);
     return result;
   }
 }
