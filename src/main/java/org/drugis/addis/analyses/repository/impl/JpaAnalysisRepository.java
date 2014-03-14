@@ -16,10 +16,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
@@ -60,31 +58,36 @@ public class JpaAnalysisRepository implements AnalysisRepository {
   }
 
   @Override
-  public Analysis update(Account user, Integer analysisId, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
-    checkProjectExistsAndModifiable(user, analysisCommand);
+  public Analysis update(Account user, Integer analysisId, Analysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Project project = em.find(Project.class, analysis.getProjectId());
+    System.out.println("aantal x = " + analysis.getSelectedOutcomes().size());
+    System.out.println("aantal a = " + em.find(Analysis.class, analysisId).getSelectedOutcomes().size());
+    if (project == null) {
+      throw new ResourceDoesNotExistException();
+    }
+    if (project.getOwner().getId() != user.getId()) {
+      throw new MethodNotAllowedException();
+    }
 
     // do not allow changing of project ID
     Analysis oldAnalysis = em.find(Analysis.class, analysisId);
-    if(! oldAnalysis.getProjectId().equals(analysisCommand.getProjectId())) {
+    if (!oldAnalysis.getProjectId().equals(analysis.getProjectId())) {
       throw new ResourceDoesNotExistException();
     }
 
-    List<Outcome> selectedOutcomes = new ArrayList<>();
-    if (isNotEmpty(analysisCommand.getSelectedOutcomeIds())) {
-      TypedQuery<Outcome> outcomeQuery = em.createQuery("FROM Outcome o WHERE o.id in :outcomeIds", Outcome.class);
-      outcomeQuery.setParameter("outcomeIds", analysisCommand.getSelectedOutcomeIds());
-      selectedOutcomes = outcomeQuery.getResultList();
-
+    if (isNotEmpty(analysis.getSelectedOutcomes())) {
       // do not allow selection of outcomes that are not in the project
-      for (Outcome outcome : selectedOutcomes) {
-        if (outcome.getProject() != analysisCommand.getProjectId()) {
+      for (Outcome outcome : analysis.getSelectedOutcomes()) {
+        if (outcome.getProject() != analysis.getProjectId()) {
           throw new ResourceDoesNotExistException();
         }
       }
 
     }
-    Analysis updatedAnalysis = new Analysis(analysisId, analysisCommand.getProjectId(), analysisCommand.getName(), AnalysisType.getByLabel(analysisCommand.getType()), selectedOutcomes);
-    return em.merge(updatedAnalysis);
+    for (Outcome o : analysis.getSelectedOutcomes()) {
+      oldAnalysis.addSelectedOutCome(o);
+    }
+    return oldAnalysis;
   }
 
   private void checkProjectExistsAndModifiable(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {

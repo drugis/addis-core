@@ -2,9 +2,7 @@ package org.drugis.addis.analyses.controller;
 
 import org.drugis.addis.analyses.Analysis;
 import org.drugis.addis.analyses.AnalysisCommand;
-import org.drugis.addis.analyses.Criterion;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
-import org.drugis.addis.analyses.repository.CriteriaRepository;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -69,12 +67,12 @@ public class AnalysisController extends AbstractAddisCoreController {
     }
   }
 
-  @RequestMapping(value="/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
-  public Analysis update(Principal currentUser, @PathVariable Integer analysisId, @RequestBody AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Analysis update(Principal currentUser, @PathVariable Integer analysisId, @RequestBody Analysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return analysisRepository.update(user, analysisId, analysisCommand);
+      return analysisRepository.update(user, analysisId, analysis);
     } else {
       throw new MethodNotAllowedException();
     }

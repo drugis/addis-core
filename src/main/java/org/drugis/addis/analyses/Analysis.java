@@ -68,6 +68,16 @@ public class Analysis implements Serializable {
     return selectedOutcomes == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(selectedOutcomes);
   }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void addSelectedOutCome(Outcome outcome) {
+    if (!selectedOutcomes.contains(outcome)) {
+      selectedOutcomes.add(outcome);
+    }
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
