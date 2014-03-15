@@ -14,8 +14,8 @@ define(['angular', 'angular-mocks', 'controllers'],
         trialverseService = jasmine.createSpyObj('trialverseService', ['query']);
         projectsService = jasmine.createSpyObj('projectsService', ['query', 'save']);
 
-        projectsService.query.andReturn(mockProjects);
-        trialverseService.query.andReturn([{key:'val'}]);
+        projectsService.query.and.returnValue(mockProjects);
+        trialverseService.query.and.returnValue([{key:'val'}]);
 
         scope = {};
         window = {config: {user: {id: 12345}}};

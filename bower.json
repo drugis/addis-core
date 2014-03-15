@@ -25,6 +25,7 @@
     "angular": "~1.2.11",
     "fastclick": "~0.6.11",
     "modernizr": "~2.7.1",
-    "angular-ui-select2": "~0.0.5"
+    "angular-ui-select2": "~0.0.5",
+    "jasmine": "~2.0.0"
   }
 }

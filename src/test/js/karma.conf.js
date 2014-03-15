@@ -37,11 +37,11 @@ module.exports = function(config) {
     ],
 
     preprocessors: {
-      'app/js/*.js': 'coverage',
-      'app/js/controllers/*.js': 'coverage',
-      'app/js/directives/*.js': 'coverage',
-      'app/js/filters/*.js': 'coverage',
-      'app/js/services/*.js': 'coverage'
+//      'app/js/*.js': 'coverage',
+//      'app/js/controllers/*.js': 'coverage',
+//      'app/js/directives/*.js': 'coverage',
+//      'app/js/filters/*.js': 'coverage',
+//      'app/js/services/*.js': 'coverage'
     },
 
     // test results reporter to use

@@ -1,10 +1,11 @@
 define(['angular', 'angular-mocks', 'underscore'], function () {
   describe('SingleProjectController', function () {
     beforeEach(module('addis.controllers'));
-    var scope, projectDeferred, analysisDeferred, window,
-      projectsService, trialverseService, semanticOutcomeService, semanticInterventionsService,
-      outcomeService, interventionService,
-      mockSemanticOutcomes,
+
+    var scope, state, projectDeferred, analysisDeferred, window,
+      projectsService, trialverseService, semanticOutcomeService, semanticInterventionService,
+      outcomeService, interventionService, analysisService,
+      mockSemanticOutcomes, mockSemanticInterventions,
       mockProject = {id: 1, owner: {id: 1}, name: 'projectName',
       description: 'testDescription', namespace: 'testNamespace',trialverseId: 1, $save: function(){}},
       mockTrialverse = {id: 1, name: 'trialverseName', description: 'trialverseDescription'},
@@ -19,22 +20,20 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
       mockSemanticOutcomes = ["a", "b", 'c'] ;
       mockSemanticInterventions = ["e", "f", 'g'] ;
       projectsService = jasmine.createSpyObj('projectsService', ['get', 'save']);
-      projectsService.get.andReturn(mockProject);
+      projectsService.get.and.returnValue(mockProject);
       trialverseService = jasmine.createSpyObj('trialverseService', ['get']);
-      trialverseService.get.andReturn(mockTrialverse);
+      trialverseService.get.and.returnValue(mockTrialverse);
       semanticOutcomeService = jasmine.createSpyObj('semanticOutcomeService', ['query']);
-      semanticOutcomeService.query.andReturn(mockSemanticOutcomes);
+      semanticOutcomeService.query.and.returnValue(mockSemanticOutcomes);
       outcomeService = jasmine.createSpyObj('outcomeService', ['query', 'save']);
-      outcomeService.query.andReturn(mockOutcomes);
+      outcomeService.query.and.returnValue(mockOutcomes);
       semanticInterventionService = jasmine.createSpyObj('semanticInterventionService', ['query']);
-      semanticInterventionService.query.andReturn(mockSemanticInterventions);
+      semanticInterventionService.query.and.returnValue(mockSemanticInterventions);
       interventionService = jasmine.createSpyObj('interventionService', ['query', 'save']);
-      interventionService.query.andReturn(mockInterventions);
+      interventionService.query.and.returnValue(mockInterventions);
       analysisService = jasmine.createSpyObj('analysisService', ['query', 'save']);
-      analysisService.query.andReturn(mockAnalyses);
-      analysisService.save.andReturn(mockAnalysis);
-
-      spyOn(mockProject, '$save');
+      analysisService.query.and.returnValue(mockAnalyses);
+      analysisService.save.and.returnValue(mockAnalysis);
 
       scope = $rootScope;
       scope.createOutcomeModal = jasmine.createSpyObj('createOutcomeModal', ['close']);
@@ -115,19 +114,19 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
       projectDeferred.resolve();
       scope.$apply();
       expect(scope.editMode.allowEditing).toBeTruthy();
-    })
+    });
 
     it("isOwnProject should be false if the project is not owned by the logged-in user", function() {
       window.config.user.id = 2;
       projectDeferred.resolve();
       scope.$apply();
       expect(scope.editMode.allowEditing).toBeFalsy();
-    })
+    });
 
     it("should make an update call when an intervention is added", function() {
       var newIntervention = {name: "name", motivation: "motivation", semanticIntervention: "semantics"};
       var newInterventionWithProjectId = _.extend(newIntervention, {projectId: 1});
-      scope.model = newIntervention
+      scope.model = newIntervention;
       scope.addIntervention(newIntervention);
       expect(scope.createInterventionModal.close).toHaveBeenCalled();
       expect(interventionService.save).toHaveBeenCalledWith(newInterventionWithProjectId, jasmine.any(Function));
