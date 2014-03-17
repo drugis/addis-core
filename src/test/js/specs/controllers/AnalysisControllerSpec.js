@@ -2,6 +2,7 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
   describe("The analysisController", function () {
     var scope,
       analysisService, projectsService, outcomeService,
+      select2UtilService,
       mockOutcome1 = {
         id: 1,
         name: 'mockOutcome1',
@@ -17,7 +18,7 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
         type: 'Single-study Benefit-Risk',
         study: null,
         selectedOutcomes: [mockOutcome1],
-        $save: function() {}
+        $save: function () {}
       },
       mockProject = {
         id: 1,
@@ -42,6 +43,9 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       projectsService.get.and.returnValue(mockProject);
       outcomeService = jasmine.createSpyObj('outcomeService', ['query']);
       outcomeService.query.and.returnValue(mockOutcomes);
+      select2UtilService = jasmine.createSpyObj('select2UtilService', ['idsToObjects', 'objectsToIds']);
+      select2UtilService.idsToObjects.and.returnValue([mockOutcome1, mockOutcome2]);
+      select2UtilService.objectsToIds.and.returnValue(['1']);
 
       projectDeferred = $q.defer();
       mockProject.$promise = projectDeferred.promise;
@@ -55,7 +59,8 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
         $stateParams: mockStateParams,
         'ProjectsService': projectsService,
         'AnalysisService': analysisService,
-        'OutcomeService': outcomeService
+        'OutcomeService': outcomeService,
+        'Select2UtilService': select2UtilService
       });
     }));
 
@@ -70,7 +75,7 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       expect(scope.loading.loaded).toBeTruthy();
     });
 
-    it('should place project and analysis information on the scope when it is loaded', function () {
+    it('should place project, analysis and selectedOutcomeID information on the scope when it is loaded', function () {
       expect(scope.selectedOutcomeIds).toEqual([]);
       analysisDeferred.resolve();
       projectDeferred.resolve();
@@ -92,6 +97,6 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       scope.$apply();
       expect(scope.analysis.selectedOutcomes).toEqual([mockOutcome1, mockOutcome2]);
       expect(scope.analysis.$save).toHaveBeenCalled();
-    })
+    });
   });
 });
