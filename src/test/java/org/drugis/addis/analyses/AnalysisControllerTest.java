@@ -169,4 +169,5 @@ public class AnalysisControllerTest {
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).update(gert, analysis);
   }
+
 }

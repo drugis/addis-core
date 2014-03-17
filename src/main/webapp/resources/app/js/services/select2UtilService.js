@@ -3,16 +3,16 @@ define(['angular', 'underscore'], function () {
   var dependencies = [];
   var Select2UtilService = function () {
     return {
-      idsToObjects: function (selectedOutcomeIds, outcomes) {
-        return _.map(selectedOutcomeIds, function (outcomeId) {
-          return _.find(outcomes, function (outcome) {
-            return outcome && outcome.id === parseInt(outcomeId, 10);
+      idsToObjects: function (selectedIds, objects) {
+        return _.map(selectedIds, function (id) {
+          return _.find(objects, function (object) {
+            return object && object.id === parseInt(id, 10);
           });
         });
       },
-      objectsToIds: function (outcomes) {
-        return _.map(outcomes, function (outcome) {
-          return outcome.id.toString();
+      objectsToIds: function (objects) {
+        return _.map(objects, function (object) {
+          return object.id.toString();
         });
       }
     };

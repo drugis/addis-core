@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.Assert;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -146,5 +147,23 @@ public class AnalysisRepositoryTest {
     analysisRepository.get(2, 1);
   }
 
+
+  @Test
+  public void post2times() {
+    Account account = em.find(Account.class, 1);
+    Analysis analysis = em.find(Analysis.class, 1);
+    try {
+      analysisRepository.update(account, analysis);
+      em.close();
+      Analysis analysis1 = new Analysis(analysis.getId(), analysis.getProjectId(), analysis.getName(), analysis.getAnalysisType(), analysis.getSelectedOutcomes(), analysis.getSelectedInterventions());
+      analysisRepository.update(account, analysis1);
+    } catch (ResourceDoesNotExistException e) {
+      e.printStackTrace();
+    } catch (MethodNotAllowedException e) {
+      e.printStackTrace();
+      Assert.isTrue(false);
+    }
+
+  }
 
 }
