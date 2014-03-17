@@ -72,6 +72,10 @@ public class Analysis implements Serializable {
     this.name = name;
   }
 
+  public void setStudy(String study) {
+    this.study = study;
+  }
+
   public void addSelectedOutCome(Outcome outcome) {
     if (!selectedOutcomes.contains(outcome)) {
       selectedOutcomes.add(outcome);
@@ -105,4 +109,5 @@ public class Analysis implements Serializable {
     // result = 31 * result + (selectedOutcomes != null ? selectedOutcomes.hashCode() : 0);
     return result;
   }
+
 }
