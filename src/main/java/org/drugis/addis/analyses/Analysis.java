@@ -24,9 +24,9 @@ public class Analysis implements Serializable {
   private String study;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JoinTable(name="analysis_outcomes",
-    joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
-    inverseJoinColumns = {@JoinColumn(name = "outcomeId", referencedColumnName = "id")})
+  @JoinTable(name = "analysis_outcomes",
+          joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
+          inverseJoinColumns = {@JoinColumn(name = "outcomeId", referencedColumnName = "id")})
   private List<Outcome> selectedOutcomes;
 
   public Analysis() {
@@ -66,20 +66,6 @@ public class Analysis implements Serializable {
 
   public List<Outcome> getSelectedOutcomes() {
     return selectedOutcomes == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(selectedOutcomes);
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public void setStudy(String study) {
-    this.study = study;
-  }
-
-  public void addSelectedOutCome(Outcome outcome) {
-    if (!selectedOutcomes.contains(outcome)) {
-      selectedOutcomes.add(outcome);
-    }
   }
 
   @Override

@@ -82,12 +82,8 @@ public class JpaAnalysisRepository implements AnalysisRepository {
       }
 
     }
-    for (Outcome o : analysis.getSelectedOutcomes()) {
-      oldAnalysis.addSelectedOutCome(o);
-    }
-    oldAnalysis.setName(analysis.getName());
-    oldAnalysis.setStudy(analysis.getStudy());
-    return em.merge(oldAnalysis);
+
+    return em.merge(analysis);
   }
 
   private void checkProjectExistsAndModifiable(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
