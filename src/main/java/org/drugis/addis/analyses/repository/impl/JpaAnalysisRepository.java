@@ -6,6 +6,7 @@ import org.drugis.addis.analyses.AnalysisType;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.security.Account;
@@ -51,36 +52,46 @@ public class JpaAnalysisRepository implements AnalysisRepository {
 
   @Override
   public Analysis create(Account account, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Analysis newAnalysis = new Analysis(analysisCommand.getProjectId(), analysisCommand.getName(), AnalysisType.getByLabel(analysisCommand.getType()), Collections.EMPTY_LIST);
+    Analysis newAnalysis = new Analysis(analysisCommand.getProjectId(), analysisCommand.getName(), AnalysisType.getByLabel(analysisCommand.getType()), Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     checkProjectExistsAndModifiable(account, analysisCommand);
     em.persist(newAnalysis);
     return newAnalysis;
   }
 
   @Override
-  public Analysis update(Account user, Integer analysisId, Analysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public Analysis update(Account user, Analysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
     Project project = em.find(Project.class, analysis.getProjectId());
     if (project == null) {
       throw new ResourceDoesNotExistException();
     }
-    if (project.getOwner().getId() != user.getId()) {
+    if (!project.getOwner().getId().equals(user.getId())) {
       throw new MethodNotAllowedException();
     }
 
+    Integer analysisProjectId = analysis.getProjectId();
+
     // do not allow changing of project ID
-    Analysis oldAnalysis = em.find(Analysis.class, analysisId);
-    if (!oldAnalysis.getProjectId().equals(analysis.getProjectId())) {
+    Analysis oldAnalysis = em.find(Analysis.class, analysis.getId());
+    if (!oldAnalysis.getProjectId().equals(analysisProjectId)) {
       throw new ResourceDoesNotExistException();
     }
 
     if (isNotEmpty(analysis.getSelectedOutcomes())) {
       // do not allow selection of outcomes that are not in the project
       for (Outcome outcome : analysis.getSelectedOutcomes()) {
-        if (outcome.getProject() != analysis.getProjectId()) {
+        if (!outcome.getProject().equals(analysisProjectId)) {
           throw new ResourceDoesNotExistException();
         }
       }
+    }
 
+    if (isNotEmpty(analysis.getSelectedInterventions())) {
+      // do not allow selection of interventions that are not in the project
+      for (Intervention intervention : analysis.getSelectedInterventions()) {
+        if (!intervention.getProject().equals(analysisProjectId)) {
+          throw new ResourceDoesNotExistException();
+        }
+      }
     }
 
     return em.merge(analysis);

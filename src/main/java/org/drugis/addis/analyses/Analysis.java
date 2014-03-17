@@ -1,5 +1,6 @@
 package org.drugis.addis.analyses;
 
+import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.hibernate.annotations.Type;
 
@@ -29,19 +30,26 @@ public class Analysis implements Serializable {
           inverseJoinColumns = {@JoinColumn(name = "outcomeId", referencedColumnName = "id")})
   private List<Outcome> selectedOutcomes;
 
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @JoinTable(name = "analysis_interventions",
+          joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
+          inverseJoinColumns = {@JoinColumn(name = "interventionId", referencedColumnName = "id")})
+  private List<Intervention> selectedInterventions;
+
   public Analysis() {
   }
 
-  public Analysis(Integer id, Integer projectId, String name, AnalysisType analysisType, List<Outcome> selectedOutcomes) {
+  public Analysis(Integer id, Integer projectId, String name, AnalysisType analysisType, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
     this.id = id;
     this.projectId = projectId;
     this.name = name;
     this.analysisType = analysisType;
     this.selectedOutcomes = selectedOutcomes == null ? this.selectedOutcomes : selectedOutcomes;
+    this.selectedInterventions = selectedInterventions == null ? this.selectedInterventions : selectedInterventions;
   }
 
-  public Analysis(Integer projectId, String name, AnalysisType analysisType, List<Outcome> selectedOutcomes) {
-    this(null, projectId, name, analysisType, selectedOutcomes);
+  public Analysis(Integer projectId, String name, AnalysisType analysisType, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
+    this(null, projectId, name, analysisType, selectedOutcomes, selectedInterventions);
   }
 
   public Integer getId() {
@@ -68,10 +76,14 @@ public class Analysis implements Serializable {
     return selectedOutcomes == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(selectedOutcomes);
   }
 
+  public List<Intervention> getSelectedInterventions() {
+    return selectedInterventions == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(selectedInterventions);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (!(o instanceof Analysis)) return false;
 
     Analysis analysis = (Analysis) o;
 
@@ -79,7 +91,10 @@ public class Analysis implements Serializable {
     if (id != null ? !id.equals(analysis.id) : analysis.id != null) return false;
     if (!name.equals(analysis.name)) return false;
     if (!projectId.equals(analysis.projectId)) return false;
-    if (!selectedOutcomes.equals(analysis.selectedOutcomes)) return false;
+    if (selectedInterventions != null ? !selectedInterventions.equals(analysis.selectedInterventions) : analysis.selectedInterventions != null)
+      return false;
+    if (selectedOutcomes != null ? !selectedOutcomes.equals(analysis.selectedOutcomes) : analysis.selectedOutcomes != null)
+      return false;
     if (study != null ? !study.equals(analysis.study) : analysis.study != null) return false;
 
     return true;
@@ -92,8 +107,8 @@ public class Analysis implements Serializable {
     result = 31 * result + name.hashCode();
     result = 31 * result + analysisType.hashCode();
     result = 31 * result + (study != null ? study.hashCode() : 0);
-    // result = 31 * result + (selectedOutcomes != null ? selectedOutcomes.hashCode() : 0);
+    result = 31 * result + (selectedOutcomes != null ? selectedOutcomes.hashCode() : 0);
+    result = 31 * result + (selectedInterventions != null ? selectedInterventions.hashCode() : 0);
     return result;
   }
-
 }

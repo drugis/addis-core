@@ -16,7 +16,9 @@ public interface AnalysisRepository {
 
   Analysis create(Account user, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException;
 
-  Analysis get(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException;;
+  Analysis get(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException;
 
-  Analysis update(Account user, Integer analysisId, Analysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException;
+  ;
+
+  Analysis update(Account user, Analysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException;
 }
