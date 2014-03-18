@@ -37,6 +37,7 @@ CREATE TABLE Project (id SERIAL NOT NULL,
             FOREIGN KEY(owner) REFERENCES Account(id));
 
 CREATE TABLE Outcome (id SERIAL NOT NULL,
+                      version INT NOT NULL,
                       project INT,
                       name VARCHAR NOT NULL,
                       motivation TEXT NOT NULL,
@@ -55,6 +56,7 @@ CREATE TABLE Intervention (id SERIAL NOT NULL,
   FOREIGN KEY(project) REFERENCES Project(id));
 
 CREATE TABLE Analysis (id SERIAL NOT NULL,
+        version INT NOT NULL,
         projectId INT,
         name VARCHAR NOT NULL,
         analysisType VARCHAR NOT NULL,
