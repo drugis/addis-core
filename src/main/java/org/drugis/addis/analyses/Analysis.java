@@ -106,7 +106,7 @@ public class Analysis implements Serializable {
     result = 31 * result + name.hashCode();
     result = 31 * result + analysisType.hashCode();
     result = 31 * result + (study != null ? study.hashCode() : 0);
-    // result = 31 * result + (selectedOutcomes != null ? selectedOutcomes.hashCode() : 0);
+    result = 31 * result + (selectedOutcomes != null ? selectedOutcomes.hashCode() : 0);
     return result;
   }
 

@@ -88,6 +88,22 @@ public class AnalysisRepositoryTest {
     assertEquals(updatedAnalysis, result);
   }
 
+  @Test
+  public void testSimplerOutcomeMod() throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Account user = em.find(Account.class, 1);
+    Integer analysisId = 1;
+    Integer projectId = 1;
+    Object outcomeId = 1;
+
+    Analysis analysis = analysisRepository.get(projectId, analysisId);
+    analysis.addSelectedOutCome(em.find(Outcome.class, outcomeId));
+    Analysis result = analysisRepository.update(user, analysisId, analysis);
+    assertEquals(1, result.getSelectedOutcomes().size());
+
+    analysis = analysisRepository.get(projectId, analysisId);
+
+  }
+
 //  @Test(expected = ResourceDoesNotExistException.class)
 //  public void testUpdateInWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
 //    Account user = em.find(Account.class, 1);
