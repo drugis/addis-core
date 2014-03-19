@@ -74,7 +74,6 @@ public class AnalysisController extends AbstractAddisCoreController {
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
   public Analysis update(Principal currentUser, @RequestBody Analysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    logger.warn("in de update yo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       return analysisRepository.update(user, analysis);
