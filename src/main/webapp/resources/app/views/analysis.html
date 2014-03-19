@@ -3,11 +3,12 @@
   <li><a href="#/projects/{{project.id}}">{{project.name}}</a></li>
   <li class="current active">{{analysis.name}}</li>
 </ul>
+
 <div>
   <div class="project-header row">
     <div class="columns large-12">
       <h1 class="inline-header" title="Analysis title">{{analysis.name}}</h1>
-      
+
       <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.analysisType}}</h3>
     </div>
   </div>
@@ -30,8 +31,19 @@
 
   <div class="row">
     <div class="columns large-12 nested-view">
-      Selected Alternatives
+      <div class="nested-view-header">
+        Selected Alternatives
+      </div>
+      <div class="row">
+        <div class="columns large-6 nested-view">
+          <select id="interventionsSelect" multiple ui-select2 ng-model="selectedInterventionIds"
+                  data-placeholder="no interventions selected">
+            <option ng-repeat="intervention in interventions" value={{intervention.id}}>{{intervention.name}}</option>
+          </select>
+        </div>
+      </div>
     </div>
+
   </div>
 
   <div class="row">

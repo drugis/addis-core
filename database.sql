@@ -69,3 +69,11 @@ CREATE TABLE Analysis_Outcomes (
   FOREIGN KEY(AnalysisId) REFERENCES Analysis(id),
   FOREIGN KEY(OutcomeId) REFERENCES Outcome(id)
 );
+
+CREATE TABLE Analysis_Interventions (
+  AnalysisId INT,
+  InterventionId INT,
+  PRIMARY KEY(AnalysisId, InterventionId),
+  FOREIGN KEY(AnalysisId) REFERENCES Analysis(id),
+  FOREIGN KEY(InterventionId) REFERENCES Intervention(id)
+);

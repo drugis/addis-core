@@ -2,16 +2,14 @@ package org.drugis.addis.outcomes;
 
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by daan on 2/20/14.
  */
 @Entity
 public class Outcome {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -36,6 +34,7 @@ public class Outcome {
   public Outcome(Integer project, String name, String motivation, SemanticOutcome semanticOutcome) {
     this(null, project, name, motivation, semanticOutcome);
   }
+
 
   public Integer getId() {
     return id;
@@ -64,7 +63,7 @@ public class Outcome {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (!(o instanceof Outcome)) return false;
 
     Outcome outcome = (Outcome) o;
 

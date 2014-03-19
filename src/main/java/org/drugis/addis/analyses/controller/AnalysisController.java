@@ -8,6 +8,8 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,8 @@ import java.util.Collection;
 @Controller
 @Transactional("ptmAddisCore")
 public class AnalysisController extends AbstractAddisCoreController {
+
+  final static Logger logger = LoggerFactory.getLogger(AnalysisController.class);
 
   @Inject
   AnalysisRepository analysisRepository;
@@ -69,10 +73,11 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
-  public Analysis update(Principal currentUser, @PathVariable Integer analysisId, @RequestBody Analysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Analysis update(Principal currentUser, @RequestBody Analysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    logger.warn("in de update yo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return analysisRepository.update(user, analysisId, analysis);
+      return analysisRepository.update(user, analysis);
     } else {
       throw new MethodNotAllowedException();
     }
