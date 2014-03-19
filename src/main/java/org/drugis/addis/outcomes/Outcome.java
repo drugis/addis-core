@@ -10,9 +10,6 @@ import javax.persistence.*;
 @Entity
 public class Outcome {
 
-  @Version
-  private Integer version = 1;
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -38,9 +35,6 @@ public class Outcome {
     this(null, project, name, motivation, semanticOutcome);
   }
 
-  public Integer getVersion() {
-    return version;
-  }
 
   public Integer getId() {
     return id;
@@ -79,15 +73,13 @@ public class Outcome {
     if (!project.equals(outcome.project)) return false;
     if (!semanticOutcomeLabel.equals(outcome.semanticOutcomeLabel)) return false;
     if (!semanticOutcomeUri.equals(outcome.semanticOutcomeUri)) return false;
-    if (!version.equals(outcome.version)) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    int result = version.hashCode();
-    result = 31 * result + (id != null ? id.hashCode() : 0);
+    int result = id != null ? id.hashCode() : 0;
     result = 31 * result + project.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + motivation.hashCode();

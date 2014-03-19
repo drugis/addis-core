@@ -20,6 +20,8 @@ define(['underscore'], function () {
     $scope.selectedOutcomeIds = [];
     $scope.selectedInterventionIds = [];
 
+    $scope.dirty = false;
+
 
 
     $q.all([
@@ -32,21 +34,24 @@ define(['underscore'], function () {
 
       $scope.$watchCollection('selectedOutcomeIds', function () {
         $scope.analysis.selectedOutcomes = Select2UtilService.idsToObjects($scope.selectedOutcomeIds, $scope.outcomes);
+        $scope.dirty = true;
       });
 
       $scope.$watchCollection('selectedInterventionIds', function () {
         $scope.analysis.selectedInterventions = Select2UtilService.idsToObjects($scope.selectedInterventionIds, $scope.interventions);
+        $scope.dirty = true;
       });
 
-      $scope.$watch(function () {
-        return $scope.analysis.selectedOutcomes.concat($scope.analysis.selectedInterventions);
-      }, function () {
-        $scope.analysis.$save();
+      $scope.$watch('dirty', function () {
+        if ($scope.dirty) {
+          AnalysisService.save($scope.analysis, function () {
+            $scope.dirty = false;
+          });
+        }
+
       });
     });
 
-
-
-  }
+  };
   return dependencies.concat(AnalysisController);
 });

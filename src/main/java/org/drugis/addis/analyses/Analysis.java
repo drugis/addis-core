@@ -15,9 +15,6 @@ import java.util.List;
 @Entity
 public class Analysis implements Serializable {
 
-  @Version
-  private Integer version = 1;
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -54,10 +51,6 @@ public class Analysis implements Serializable {
 
   public Analysis(Integer projectId, String name, AnalysisType analysisType, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
     this(null, projectId, name, analysisType, selectedOutcomes, selectedInterventions);
-  }
-
-  public Integer getVersion() {
-    return version;
   }
 
   public Integer getId() {
@@ -104,15 +97,13 @@ public class Analysis implements Serializable {
     if (selectedOutcomes != null ? !selectedOutcomes.equals(analysis.selectedOutcomes) : analysis.selectedOutcomes != null)
       return false;
     if (study != null ? !study.equals(analysis.study) : analysis.study != null) return false;
-    if (!version.equals(analysis.version)) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    int result = version.hashCode();
-    result = 31 * result + (id != null ? id.hashCode() : 0);
+    int result = id != null ? id.hashCode() : 0;
     result = 31 * result + projectId.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + analysisType.hashCode();
