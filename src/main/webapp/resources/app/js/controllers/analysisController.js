@@ -10,8 +10,6 @@ define(['underscore'], function () {
       loaded: false
     };
 
-
-
     $scope.project = ProjectsService.get($stateParams);
     $scope.analysis = AnalysisService.get($stateParams);
 
@@ -19,10 +17,6 @@ define(['underscore'], function () {
     $scope.interventions = InterventionService.query($stateParams);
     $scope.selectedOutcomeIds = [];
     $scope.selectedInterventionIds = [];
-
-    $scope.dirty = false;
-
-
 
     $q.all([
       $scope.project.$promise,
@@ -32,24 +26,20 @@ define(['underscore'], function () {
       $scope.selectedOutcomeIds = Select2UtilService.objectsToIds($scope.analysis.selectedOutcomes);
       $scope.selectedInterventionIds = Select2UtilService.objectsToIds($scope.analysis.selectedInterventions);
 
-      $scope.$watchCollection('selectedOutcomeIds', function () {
-        $scope.analysis.selectedOutcomes = Select2UtilService.idsToObjects($scope.selectedOutcomeIds, $scope.outcomes);
-        $scope.dirty = true;
-      });
-
-      $scope.$watchCollection('selectedInterventionIds', function () {
-        $scope.analysis.selectedInterventions = Select2UtilService.idsToObjects($scope.selectedInterventionIds, $scope.interventions);
-        $scope.dirty = true;
-      });
-
-      $scope.$watch('dirty', function () {
-        if ($scope.dirty) {
-          AnalysisService.save($scope.analysis, function () {
-            $scope.dirty = false;
-          });
+      $scope.$watchCollection('selectedOutcomeIds', function (oldValue, newValue) {
+        if (newValue.length !== $scope.analysis.selectedOutcomes.length) {
+          $scope.analysis.selectedOutcomes = Select2UtilService.idsToObjects($scope.selectedOutcomeIds, $scope.outcomes);
+          $scope.analysis.$save();
         }
-
       });
+
+      $scope.$watchCollection('selectedInterventionIds', function (oldValue, newValue) {
+        if (newValue.length !== $scope.analysis.selectedInterventions.length) {
+          $scope.analysis.selectedInterventions = Select2UtilService.idsToObjects($scope.selectedInterventionIds, $scope.interventions);
+          $scope.analysis.$save();
+        }
+      });
+
     });
 
   };
