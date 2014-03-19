@@ -117,8 +117,9 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       scope.$apply();
       scope.selectedOutcomeIds = ['1', '2'];
       scope.$apply();
+      scope.dirty = true;
       expect(scope.analysis.selectedOutcomes).toEqual([mockOutcome1, mockOutcome2]);
-      expect(scope.analysis.$save).toHaveBeenCalled();
+      expect(analysisService.save).toHaveBeenCalled();
     });
 
     it('should save the analysis when the selected interventions change', function () {
@@ -129,7 +130,7 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       scope.selectedInterventionIds = ['1', '2'];
       scope.$apply();
       expect(scope.analysis.selectedInterventions).toEqual([mockIntervention1, mockIntervention2]);
-      expect(scope.analysis.$save).toHaveBeenCalled();
+      expect(analysisService.save).toHaveBeenCalled();
     });
   });
 });
