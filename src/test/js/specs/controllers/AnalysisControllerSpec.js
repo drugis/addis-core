@@ -35,6 +35,13 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
         id: 1,
         name: 'projectName'
       },
+      mockStudy1 = {
+        id: 1
+      },
+      mockStudy2 = {
+        id: 2
+      },
+      mockStudies = [mockStudy1, mockStudy2],
       mockOutcomes = [mockOutcome1, mockOutcome2],
       mockInterventions = [mockIntervention1, mockIntervention2],
       projectDeferred,
@@ -60,6 +67,8 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       interventionService.query.and.returnValue(mockInterventions);
       select2UtilService = jasmine.createSpyObj('select2UtilService', ['idsToObjects', 'objectsToIds']);
       select2UtilService.objectsToIds.and.returnValue(['1']);
+      trialverseStudyService = jasmine.createSpyObj('trialverseStudyService', ['query']);
+      trialverseStudyService.query.and.returnValue(mockStudies);
 
       projectDeferred = $q.defer();
       mockProject.$promise = projectDeferred.promise;
@@ -75,9 +84,11 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
         'AnalysisService': analysisService,
         'OutcomeService': outcomeService,
         'InterventionService': interventionService,
-        'Select2UtilService': select2UtilService
+        'Select2UtilService': select2UtilService,
+        'TrialverseStudyService': trialverseStudyService
       });
     }));
+
 
     it('should only make loading.loaded true when both project and analysis are loaded', function () {
       expect(scope.loading.loaded).toBeFalsy();
@@ -90,18 +101,6 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       expect(scope.loading.loaded).toBeTruthy();
     });
 
-    it('should place project, analysis, selectedOutcomeID and selectedInterventionId information on the scope when it is loaded', function () {
-      expect(scope.selectedOutcomeIds).toEqual([]);
-      expect(scope.selectedInterventionIds).toEqual([]);
-      analysisDeferred.resolve();
-      projectDeferred.resolve();
-      scope.$apply();
-      expect(scope.analysis).toEqual(mockAnalysis);
-      expect(scope.project).toEqual(mockProject);
-      expect(scope.selectedOutcomeIds).toEqual(['1']);
-      expect(scope.selectedInterventionIds).toEqual(['1']);
-    });
-
     it('should place a list of outcomes on the scope when it is loaded', function () {
       expect(scope.outcomes).toEqual(mockOutcomes);
     });
@@ -110,11 +109,54 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       expect(scope.interventions).toEqual(mockInterventions);
     });
 
-    it('should save the analysis when the selected outcomes change', function () {
-      select2UtilService.idsToObjects.and.returnValue([mockOutcome1, mockOutcome2]);
+    it('should not set project and analysis information before they are loaded', function () {
+      expect(scope.selectedOutcomeIds).toEqual([]);
+      expect(scope.selectedInterventionIds).toEqual([]);
+    });
+
+    it('should place project information on the scope', function () {
       analysisDeferred.resolve();
       projectDeferred.resolve();
       scope.$apply();
+      expect(scope.project).toEqual(mockProject);
+    });
+
+    it('should place analysis information on the scope', function () {
+      analysisDeferred.resolve();
+      projectDeferred.resolve();
+      scope.$apply();
+      expect(scope.analysis).toEqual(mockAnalysis);
+    });
+
+    it('should place selectedOutcomeId information on the scope', function () {
+      analysisDeferred.resolve();
+      projectDeferred.resolve();
+      scope.$apply();
+      expect(scope.selectedOutcomeIds).toEqual(['1']);
+    });
+
+    it('should place selectedOutcomeId information on the scope', function () {
+      analysisDeferred.resolve();
+      projectDeferred.resolve();
+      scope.$apply();
+      expect(scope.selectedInterventionIds).toEqual(['1']);
+    });
+
+    it('should place a list of studies on the scope when the project is loaded', function () {
+      analysisDeferred.resolve();
+      projectDeferred.resolve();
+      scope.$apply();
+      expect(scope.studies).toEqual(mockStudies);
+    });
+
+    it('should save the analysis when the selected outcomes change', function () {
+      select2UtilService.idsToObjects.and.returnValue([mockOutcome1, mockOutcome2]);
+
+      analysisDeferred.resolve();
+      projectDeferred.resolve();
+      scope.$apply();
+      scope.analysis.$save.calls.reset();
+
       scope.selectedOutcomeIds = ['1', '2'];
       scope.$apply();
       scope.dirty = true;
@@ -124,13 +166,29 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
 
     it('should save the analysis when the selected interventions change', function () {
       select2UtilService.idsToObjects.and.returnValue([mockIntervention1, mockIntervention2]);
+
       analysisDeferred.resolve();
       projectDeferred.resolve();
       scope.$apply();
+      scope.analysis.$save.calls.reset();
+
       scope.selectedInterventionIds = ['1', '2'];
       scope.$apply();
       expect(scope.analysis.selectedInterventions).toEqual([mockIntervention1, mockIntervention2]);
       expect(scope.analysis.$save).toHaveBeenCalled();
     });
+
+    it('should save the analysis when the selected study changes', function () {
+      analysisDeferred.resolve();
+      projectDeferred.resolve();
+      scope.$apply();
+      scope.analysis.$save.calls.reset();
+
+      scope.analysis.studyId = 1;
+      scope.$apply();
+      expect(scope.analysis.$save).toHaveBeenCalled();
+    });
+
+
   });
 });
