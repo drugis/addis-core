@@ -278,6 +278,29 @@
         epochName (vtd/attr (vtd/at node "./epoch") :name)]
     (str howLong " " relativeTo " " epochName)))
 
+(defn arm-receives-treatment
+  [studyNode epochName armName]
+  (let [usedBys (vtd/search studyNode "./activities/studyActivity/usedBy")
+        usedBy (first (filter #(and (= armName (vtd/attr % :arm)) (= epochName (vtd/attr % :epoch))) usedBys))]
+    (and (not (nil? usedBy)) (not (nil? (vtd/at usedBy "../activity/treatment"))))))
+
+(defn is-treatment-epoch
+  [studyNode epochName]
+  (let [arms (map #(vtd/attr % :name) (vtd/search studyNode "./arms/arm"))]
+    (every? #(arm-receives-treatment studyNode epochName %) arms)))
+
+(defn is-first-treatment-epoch
+  [studyNode epochName]
+  (let [epochNames (map  #(vtd/attr % :name) (vtd/search studyNode "./epochs/epoch"))
+        firstTrtEpoch (first (filter #(is-treatment-epoch studyNode %) epochNames))]
+    (= firstTrtEpoch epochName)))
+
+(defn is-measurement-moment-primary
+  [node]
+  (and (= (vtd/attr node :howLong) "P0D")
+       (= (vtd/attr node :relativeTo) "BEFORE_EPOCH_END")
+       (is-first-treatment-epoch (vtd/at node "../../..") (vtd/attr (vtd/at node "./epoch") :name))))
+
 (def measurement-moments-table
  {:xml-id (x2s/value when-taken-name)
    :sql-id :id
@@ -288,7 +311,7 @@
              :epoch (x2s/sibling-ref :epochs (fn [node] (vtd/attr (vtd/at node "./epoch") :name)))
              :offset_from_epoch (x2s/value #(as-duration (vtd/attr % :howLong)))
              :relative_to (x2s/value #(as-epoch-offset-enum (vtd/attr % :relativeTo)))
-             ;:is_primary TODO
+             :is_primary (x2s/value is-measurement-moment-primary)
              }})
 
 (defn resolve-var-ref
