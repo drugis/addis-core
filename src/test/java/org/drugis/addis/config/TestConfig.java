@@ -4,6 +4,7 @@ import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.CriteriaRepository;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
+import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
@@ -18,12 +19,13 @@ import static org.mockito.Mockito.mock;
 @Configuration
 @EnableWebMvc
 @ComponentScan(excludeFilters = {@ComponentScan.Filter(Configuration.class)}, basePackages = {
-        "org.drugis.addis.error",
-        "org.drugis.addis.projects.controller",
-        "org.drugis.addis.outcomes.controller",
-        "org.drugis.addis.interventions.controller",
-        "org.drugis.addis.analyses.controller",
-        "org.drugis.addis.trialverse.controller",})
+  "org.drugis.addis.error",
+  "org.drugis.addis.projects.controller",
+  "org.drugis.addis.outcomes.controller",
+  "org.drugis.addis.interventions.controller",
+  "org.drugis.addis.analyses.controller",
+  "org.drugis.addis.trialverse.controller",
+  "org.drugis.addis.problems.controller"})
 public class TestConfig {
   @Bean
   public AccountRepository mockAccountRepository() {
@@ -63,6 +65,11 @@ public class TestConfig {
   @Bean
   public TriplestoreService mockTriplestoreService() {
     return mock(TriplestoreService.class);
+  }
+
+  @Bean
+  public ProblemService mockProblemService() {
+    return mock(ProblemService.class);
   }
 }
 

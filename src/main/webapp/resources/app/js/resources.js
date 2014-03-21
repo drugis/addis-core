@@ -9,5 +9,6 @@ define(function (require) {
     .factory('OutcomeService', require('services/outcomeService'))
     .factory('InterventionService', require('services/interventionService'))
     .factory('AnalysisService', require('services/analysisService'))
-    .factory('TrialverseStudyService', require('services/trialverseStudyService'));
+    .factory('TrialverseStudyService', require('services/trialverseStudyService'))
+    .factory('ProblemService', require('services/problemService'));
 });
