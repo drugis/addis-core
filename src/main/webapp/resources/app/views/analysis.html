@@ -7,6 +7,7 @@
   <div class="project-header row">
     <div class="columns large-12">
       <h1 class="inline-header" title="Analysis title">{{analysis.name}}</h1>
+
       <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.analysisType}}</h3>
     </div>
   </div>
@@ -18,7 +19,7 @@
       <div class="row">
         <div class="columns large-6 nested-view">
           <select id="criteriaSelect" multiple ui-select2 ng-model="selectedOutcomeIds"
-            data-placeholder="no criteria selected">
+                  data-placeholder="no criteria selected">
             <option ng-repeat="outcome in outcomes" value={{outcome.id}}>{{outcome.name}}</option>
           </select>
         </div>
@@ -33,7 +34,7 @@
       <div class="row">
         <div class="columns large-6 nested-view">
           <select id="interventionsSelect" multiple ui-select2 ng-model="selectedInterventionIds"
-            data-placeholder="no interventions selected">
+                  data-placeholder="no interventions selected">
             <option ng-repeat="intervention in interventions" value={{intervention.id}}>{{intervention.name}}</option>
           </select>
         </div>
@@ -55,7 +56,7 @@
   </div>
   <div class="row">
     <div class="columns large-12 nested-view">
-      <button ng-disabled="true">Perform MCDA Analysis</button>
+      <button ng-click="createProblem()">Perform MCDA Analysis</button>
     </div>
   </div>
 </div>

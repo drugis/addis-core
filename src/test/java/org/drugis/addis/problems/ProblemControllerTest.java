@@ -1,7 +1,7 @@
-package org.drugis.addis.problem;
+package org.drugis.addis.problems;
 
 import org.drugis.addis.config.TestConfig;
-import org.drugis.addis.problem.service.ProblemService;
+import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;

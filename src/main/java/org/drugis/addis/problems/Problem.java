@@ -1,4 +1,4 @@
-package org.drugis.addis.problem;
+package org.drugis.addis.problems;
 
 import javax.persistence.Entity;
 import java.util.Map;

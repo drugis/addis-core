@@ -1,5 +1,7 @@
 package org.drugis.addis.trialverse.service.impl;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
@@ -10,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by connor on 2/28/14.
@@ -81,7 +80,13 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Override
   public List<Integer> getTrialverseDrugIds(Integer namespaceId, Integer studyId, List<String> interventionUris) {
-    String interventionUriOptions = StringUtils.join(interventionUris, "|");
+    Collection<String> strippedUris = Collections2.transform(interventionUris, new Function<String, String>() {
+      @Override
+      public String apply(String s) {
+        return subStringAfterLastSlash(s);
+      }
+    });
+    String interventionUriOptions = StringUtils.join(strippedUris, "|");
 
     String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
       "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
@@ -94,6 +99,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       "   FILTER regex(str(?uri), \"/study/" + studyId + "\") .\n" +
       " }\n" +
       "}";
+    System.out.println(query);
 
     Map<String, String> vars = new HashMap<>();
     vars.put("query", query);
@@ -111,7 +117,11 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   private Integer extractDrugIdFromUri(String uri) {
-    return Integer.parseInt(uri.substring(uri.lastIndexOf("/") + 1));
+    return Integer.parseInt(subStringAfterLastSlash(uri));
+  }
+
+  private String subStringAfterLastSlash(String inStr) {
+    return inStr.substring(inStr.lastIndexOf("/") + 1);
   }
 
 }

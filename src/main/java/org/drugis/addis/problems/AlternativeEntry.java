@@ -1,4 +1,4 @@
-package org.drugis.addis.problem;
+package org.drugis.addis.problems;
 
 /**
  * Created by daan on 3/21/14.

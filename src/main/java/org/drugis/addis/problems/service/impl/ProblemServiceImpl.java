@@ -1,12 +1,12 @@
-package org.drugis.addis.problem.service.impl;
+package org.drugis.addis.problems.service.impl;
 
 import org.drugis.addis.analyses.Analysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
-import org.drugis.addis.problem.AlternativeEntry;
-import org.drugis.addis.problem.Problem;
-import org.drugis.addis.problem.service.ProblemService;
+import org.drugis.addis.problems.AlternativeEntry;
+import org.drugis.addis.problems.Problem;
+import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
@@ -48,6 +48,8 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     List<Integer> drugIds = triplestoreService.getTrialverseDrugIds(project.getTrialverseId(), analysis.getStudyId(), interventionUris);
+
+    System.out.println(drugIds);
     List<String> armNames = trialverseRepository.getArmNamesByDrugIds(analysis.getStudyId(), drugIds);
 
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
