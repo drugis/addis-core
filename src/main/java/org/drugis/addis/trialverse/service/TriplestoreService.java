@@ -2,7 +2,6 @@ package org.drugis.addis.trialverse.service;
 
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
-import org.drugis.addis.trialverse.model.Study;
 
 import java.util.List;
 
@@ -14,7 +13,5 @@ public interface TriplestoreService {
 
   public List<SemanticIntervention> getInterventions(Long namespaceId);
 
-  public List<Study> queryStudies(Long namespaceId);
-
-  List<Integer> getTrialverseDrugIds(Integer studyId, List<String> interventionUris);
+  public List<Integer> getTrialverseDrugIds(Integer namespaceId, Integer studyId, List<String> interventionUris);
 }

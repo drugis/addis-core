@@ -15,6 +15,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
@@ -55,6 +58,21 @@ public class TriplestoreServiceTest {
     List<SemanticIntervention> result = triplestoreService.getInterventions(1L);
     SemanticIntervention result1 = new SemanticIntervention("http://trials.drugis.org/namespace/1/drug/test1", "Azilsartan");
     assertEquals(result.get(0), result1);
+  }
+
+  @Test
+  public void testGetDrugIds() {
+    Integer namespaceId = 1;
+    Integer studyId = 1;
+    List<String> interventionConceptUris = new ArrayList<>();
+    String mockResult = loadResource("/triplestoreService/exampleDrugIdResult.json");
+    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
+    List<Integer> expected = Arrays.asList(1, 4);
+
+    // EXECUTOR
+    List<Integer> result = triplestoreService.getTrialverseDrugIds(namespaceId, studyId, interventionConceptUris);
+
+    assertEquals(new HashSet<>(expected), new HashSet<>(result));
   }
 
   private String loadResource(String filename) {

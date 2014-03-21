@@ -8,6 +8,8 @@ import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problem.service.ProblemService;
 import org.drugis.addis.problem.service.impl.ProblemServiceImpl;
+import org.drugis.addis.projects.Project;
+import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
@@ -38,6 +40,9 @@ public class ProblemServiceTest {
   @Mock
   TrialverseRepository trialverseRepository;
 
+  @Mock
+  ProjectRepository projectRepository;
+
   @InjectMocks
   ProblemService problemService;
 
@@ -50,6 +55,7 @@ public class ProblemServiceTest {
   @Test
   public void testGetProblem() throws ResourceDoesNotExistException {
     Analysis exampleAnalysis = createAnalysis();
+    int namespaceId = 1;
     int projectId = exampleAnalysis.getProjectId();
     int analysisId = exampleAnalysis.getId();
     Integer studyId = exampleAnalysis.getStudyId();
@@ -61,8 +67,11 @@ public class ProblemServiceTest {
     List<Integer> drugIds = Arrays.asList(1001, 1002, 1003);
 
     Problem exampleProblem = createExampleProblem(exampleAnalysis);
+    Project project = mock(Project.class);
+    when(project.getTrialverseId()).thenReturn(namespaceId);
+    when(projectRepository.getProjectById(projectId)).thenReturn(project);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(exampleAnalysis);
-    when(triplestoreService.getTrialverseDrugIds(studyId, interventionUris)).thenReturn(drugIds);
+    when(triplestoreService.getTrialverseDrugIds(namespaceId, studyId, interventionUris)).thenReturn(drugIds);
     List<String> armNames = Arrays.asList("paroxetine 40 mg/day", "fluoxetine 20 mg/day");
     when(trialverseRepository.getArmNamesByDrugIds(studyId, drugIds)).thenReturn(armNames);
 
@@ -75,7 +84,7 @@ public class ProblemServiceTest {
     assertEquals(exampleProblem, actualProblem);
 
     verify(analysisRepository).get(projectId, analysisId);
-    verify(triplestoreService).getTrialverseDrugIds(studyId, interventionUris);
+    verify(triplestoreService).getTrialverseDrugIds(namespaceId, studyId, interventionUris);
     verify(trialverseRepository).getArmNamesByDrugIds(studyId, drugIds);
   }
 

@@ -7,6 +7,8 @@ import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.problem.AlternativeEntry;
 import org.drugis.addis.problem.Problem;
 import org.drugis.addis.problem.service.ProblemService;
+import org.drugis.addis.projects.Project;
+import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.springframework.stereotype.Service;
@@ -32,16 +34,20 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   TrialverseRepository trialverseRepository;
 
+  @Inject
+  ProjectRepository projectRepository;
+
   @Override
   public Problem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
     Analysis analysis = analysisRepository.get(projectId, analysisId);
+    Project project = projectRepository.getProjectById(projectId);
 
     List<String> interventionUris = new ArrayList<>(analysis.getSelectedInterventions().size());
     for (Intervention intervention : analysis.getSelectedInterventions()) {
       interventionUris.add(intervention.getSemanticInterventionUri());
     }
 
-    List<Integer> drugIds = triplestoreService.getTrialverseDrugIds(analysis.getStudyId(), interventionUris);
+    List<Integer> drugIds = triplestoreService.getTrialverseDrugIds(project.getTrialverseId(), analysis.getStudyId(), interventionUris);
     List<String> armNames = trialverseRepository.getArmNamesByDrugIds(analysis.getStudyId(), drugIds);
 
     Map<String, AlternativeEntry> alternatives = new HashMap<>();

@@ -2,9 +2,9 @@ package org.drugis.addis.trialverse.service.impl;
 
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
+import org.apache.commons.lang.StringUtils;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
-import org.drugis.addis.trialverse.model.Study;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -27,7 +27,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Override
   public List<SemanticOutcome> getOutcomes(Long namespaceId) {
-    ArrayList<SemanticOutcome> outcomes = new ArrayList<>();
+    List<SemanticOutcome> outcomes = new ArrayList<>();
 
     String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
             "\n" +
@@ -45,17 +45,16 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     String response = triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    for (int i = 0; i < bindings.size(); ++i) {
-      Object binding = bindings.get(i);
+    for (Object binding : bindings) {
       outcomes.add(new SemanticOutcome((String) JsonPath.read(binding, "$.uri.value"),
-              (String) JsonPath.read(binding, "$.label.value")));
+        (String) JsonPath.read(binding, "$.label.value")));
     }
     return outcomes;
   }
 
   @Override
   public List<SemanticIntervention> getInterventions(Long namespaceId) {
-    ArrayList<SemanticIntervention> interventions = new ArrayList<>();
+    List<SemanticIntervention> interventions = new ArrayList<>();
 
     String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
             "\n" +
@@ -73,21 +72,46 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     String response = triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    for (int i = 0; i < bindings.size(); ++i) {
-      Object binding = bindings.get(i);
+    for (Object binding : bindings) {
       interventions.add(new SemanticIntervention((String) JsonPath.read(binding, "$.uri.value"),
-              (String) JsonPath.read(binding, "$.label.value")));
+        (String) JsonPath.read(binding, "$.label.value")));
     }
     return interventions;
   }
 
   @Override
-  public List<Study> queryStudies(Long namespaceId) {
-    return null;
+  public List<Integer> getTrialverseDrugIds(Integer namespaceId, Integer studyId, List<String> interventionUris) {
+    String interventionUriOptions = StringUtils.join(interventionUris, "|");
+
+    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+      "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+      "\n" +
+      "SELECT  * WHERE {\n" +
+      " GRAPH <http://trials.drugis.org/> {\n" +
+      "   ?uri rdf:type ?type .\n" +
+      "   FILTER regex(str(?type), \"namespace/" +
+      namespaceId + "/drug/(" + interventionUriOptions + ")\") .\n" +
+      "   FILTER regex(str(?uri), \"/study/" + studyId + "\") .\n" +
+      " }\n" +
+      "}";
+
+    Map<String, String> vars = new HashMap<>();
+    vars.put("query", query);
+    vars.put("output", "json");
+
+    String response = triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    List<Integer> drugIds = new ArrayList<>(bindings.size());
+    for (Object binding : bindings) {
+      String uri = JsonPath.read(binding, "$.uri.value");
+      Integer drugId = extractDrugIdFromUri(uri);
+      drugIds.add(drugId);
+    }
+    return drugIds;
   }
 
-  @Override
-  public List<Integer> getTrialverseDrugIds(Integer studyId, List<String> interventionUris) {
-    return null;
+  private Integer extractDrugIdFromUri(String uri) {
+    return Integer.parseInt(uri.substring(uri.lastIndexOf("/") + 1));
   }
+
 }
