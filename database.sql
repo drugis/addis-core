@@ -58,7 +58,7 @@ CREATE TABLE Analysis (id SERIAL NOT NULL,
         projectId INT,
         name VARCHAR NOT NULL,
         analysisType VARCHAR NOT NULL,
-        study VARCHAR,
+        studyId INT,
   PRIMARY KEY (id),
   FOREIGN KEY(projectId) REFERENCES Project(id));
 

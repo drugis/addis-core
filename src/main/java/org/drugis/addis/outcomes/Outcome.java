@@ -9,6 +9,7 @@ import javax.persistence.*;
  */
 @Entity
 public class Outcome {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -33,6 +34,7 @@ public class Outcome {
   public Outcome(Integer project, String name, String motivation, SemanticOutcome semanticOutcome) {
     this(null, project, name, motivation, semanticOutcome);
   }
+
 
   public Integer getId() {
     return id;
@@ -61,7 +63,7 @@ public class Outcome {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (!(o instanceof Outcome)) return false;
 
     Outcome outcome = (Outcome) o;
 

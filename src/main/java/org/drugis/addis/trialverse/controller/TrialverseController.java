@@ -6,7 +6,8 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
-import org.drugis.addis.trialverse.model.Trialverse;
+import org.drugis.addis.trialverse.model.Study;
+import org.drugis.addis.trialverse.model.Namespace;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class TrialverseController {
 
   @RequestMapping(value = "/namespaces", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Trialverse> query(Principal currentUser) throws MethodNotAllowedException {
+  public Collection<Namespace> query(Principal currentUser) throws MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       return trialverseRepository.query();
@@ -50,7 +51,7 @@ public class TrialverseController {
 
   @RequestMapping(value = "/namespaces/{namespaceId}", method = RequestMethod.GET)
   @ResponseBody
-  public Trialverse get(Principal currentUser, @PathVariable Long namespaceId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Namespace get(Principal currentUser, @PathVariable Long namespaceId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       return trialverseRepository.get(namespaceId);
@@ -79,6 +80,12 @@ public class TrialverseController {
     } else {
       throw new MethodNotAllowedException();
     }
+  }
+
+  @RequestMapping(value = "/namespaces/{namespaceId}/studies", method = RequestMethod.GET)
+  @ResponseBody
+  public Collection<Study> queryStudies(@PathVariable Long namespaceId) {
+    return trialverseRepository.queryStudies(namespaceId);
   }
 
   @ResponseStatus(HttpStatus.FORBIDDEN)

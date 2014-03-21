@@ -11,9 +11,11 @@ define(['underscore'], function () {
       loaded: false
     };
 
+
     $scope.editMode = {
       allowEditing: false
     };
+
 
     $scope.project = ProjectsService.get($stateParams);
     $scope.analysis = AnalysisService.get($stateParams);
@@ -30,6 +32,7 @@ define(['underscore'], function () {
       $scope.analysis.$promise
     ]).then(function () {
       $scope.loading.loaded = true;
+
       $scope.editMode.allowEditing = $window.config.user.id === $scope.project.owner.id;
 
       $scope.studies = TrialverseStudyService.query({

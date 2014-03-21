@@ -49,7 +49,7 @@
     <ul class="title-area">
       <li class="name">
         <h1>
-          <a href="#">addis.drugis.org</a>
+          <a href="#" tabindex="1001">addis.drugis.org</a>
         </h1>
       </li>
     </ul>
@@ -69,14 +69,16 @@
     <div class="row">
       <div class="columns">
         <p><a href="#">addis.drugis.org</a> is designed to help policy makers and researchers judge the balance of favorable and unfavorable effects of medicines.</p>
-        
-        <div>
-          <a class=" button" href="auth/google?scope=openid%20email%20profile">Sign In with Google</a>
-        </div>
+        <form id="SignInForm" action="auth/google" method="GET">
+        <input type="hidden" name="scope" value="openid email profile" />
+          <div>
+            <button class=" button" type="submit" tabindex="1" href=>Sign In with Google</button>
+          </div>
+        </form>
         
         <p>Right now, you need a Google account to sign in. The information we retrieve from Google is only used to ensure that you continue to have access to the projects you create.</p>
 
-        <form id="hiddenSignInForm" action="<c:url value='/signin/authenticate'/>" method="POST" style="display: none;">
+        <form id="hiddenSignInForm" action="<c:url value='/signin/authenticate'/>" tabindex="1000" method="POST" style="display: none;">
           <input type="hidden" name="_csrf" value="<c:out value="${_csrf.token}" />" />
           <input type='text' name='username' />
           <input type='password' name='password'>

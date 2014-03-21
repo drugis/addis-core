@@ -9,7 +9,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "namespaces")
-public class Trialverse {
+public class Namespace {
   @Id
   private Long id;
 
@@ -17,10 +17,10 @@ public class Trialverse {
 
   private String description;
 
-  public Trialverse() {
+  public Namespace() {
   }
 
-  public Trialverse(Long id, String name, String description) {
+  public Namespace(Long id, String name, String description) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -55,7 +55,7 @@ public class Trialverse {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    Trialverse that = (Trialverse) o;
+    Namespace that = (Namespace) o;
 
     if (!description.equals(that.description)) return false;
     if (!id.equals(that.id)) return false;

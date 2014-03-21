@@ -14,6 +14,7 @@ import java.util.List;
  */
 @Entity
 public class Analysis implements Serializable {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -22,7 +23,8 @@ public class Analysis implements Serializable {
 
   @Type(type = "org.drugis.addis.analyses.AnalysisTypeUserType")
   private AnalysisType analysisType;
-  private String study;
+
+  private Integer studyId;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinTable(name = "analysis_outcomes",
@@ -68,8 +70,8 @@ public class Analysis implements Serializable {
     return analysisType;
   }
 
-  public String getStudy() {
-    return study;
+  public Integer getStudyId() {
+    return studyId;
   }
 
   public List<Outcome> getSelectedOutcomes() {
@@ -95,7 +97,7 @@ public class Analysis implements Serializable {
       return false;
     if (selectedOutcomes != null ? !selectedOutcomes.equals(analysis.selectedOutcomes) : analysis.selectedOutcomes != null)
       return false;
-    if (study != null ? !study.equals(analysis.study) : analysis.study != null) return false;
+    if (studyId != null ? !studyId.equals(analysis.studyId) : analysis.studyId != null) return false;
 
     return true;
   }
@@ -106,7 +108,7 @@ public class Analysis implements Serializable {
     result = 31 * result + projectId.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + analysisType.hashCode();
-    result = 31 * result + (study != null ? study.hashCode() : 0);
+    result = 31 * result + (studyId != null ? studyId.hashCode() : 0);
     result = 31 * result + (selectedOutcomes != null ? selectedOutcomes.hashCode() : 0);
     result = 31 * result + (selectedInterventions != null ? selectedInterventions.hashCode() : 0);
     return result;

@@ -78,7 +78,7 @@
         <a href="#/projects/{{project.id}}/analyses/{{analysis.id}}">
           <span class="columns large-4">{{analysis.name}} </span>
           <span class="columns large-4">{{analysis.analysisType}} </span>
-          <span class="columns large-4">{{analysis.study}} </span>
+          <span class="columns large-4">{{(studies | filter:{id: analysis.studyId}:true)[0].name}} </span>
         </a>
       </li>
     </ul>

@@ -4,6 +4,7 @@ import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.Study;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -78,5 +79,10 @@ public class TriplestoreServiceImpl implements TriplestoreService {
               (String) JsonPath.read(binding, "$.label.value")));
     }
     return interventions;
+  }
+
+  @Override
+  public List<Study> queryStudies(Long namespaceId) {
+    return null;
   }
 }

@@ -1,8 +1,10 @@
 'use strict';
-define(['angular', 'angular-resource'], function (angular, angularResource) {
+define([], function () {
   var dependencies = ['$resource'];
   var TrialverseService = function ($resource) {
-    return $resource('/namespaces/:id', {id: '@id'});
+    return $resource('/namespaces/:id', {
+      id: '@id'
+    });
   };
   return dependencies.concat(TrialverseService);
 });
