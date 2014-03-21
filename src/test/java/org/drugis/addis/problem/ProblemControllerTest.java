@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.mockito.Mockito.verify;
@@ -44,7 +45,7 @@ public class ProblemControllerTest {
 
   @Test
   public void testGetProblem() throws Exception {
-    Problem problem = new Problem("testProblem");
+    Problem problem = new Problem("testProblem", new HashMap<String, AlternativeEntry>());
     Integer projectId = 1;
     Integer analysisId = 1;
     when(problemService.getProblem(projectId, analysisId)).thenReturn(problem);

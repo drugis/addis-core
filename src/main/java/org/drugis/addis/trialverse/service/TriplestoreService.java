@@ -15,4 +15,6 @@ public interface TriplestoreService {
   public List<SemanticIntervention> getInterventions(Long namespaceId);
 
   public List<Study> queryStudies(Long namespaceId);
+
+  List<Integer> getTrialverseDrugIds(Integer studyId, List<String> interventionUris);
 }

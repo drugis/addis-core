@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,6 +36,12 @@ public class JpaTrialverseRepository implements TrialverseRepository {
       throw new ResourceDoesNotExistException();
     }
     return namespace;
+  }
+
+
+  @Override
+  public List<String> getArmNamesByDrugIds(Integer studyId, List<Integer> drugIds) {
+    return null;
   }
 
   @Override

@@ -16,4 +16,6 @@ public interface TrialverseRepository {
   public Namespace get(Long trialverseId) throws ResourceDoesNotExistException;
 
   public List<Study> queryStudies(Long namespaceId);
+
+  public List<String> getArmNamesByDrugIds(Integer studyId, List<Integer> drugIds);
 }

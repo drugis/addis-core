@@ -85,4 +85,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public List<Study> queryStudies(Long namespaceId) {
     return null;
   }
+
+  @Override
+  public List<Integer> getTrialverseDrugIds(Integer studyId, List<String> interventionUris) {
+    return null;
+  }
 }

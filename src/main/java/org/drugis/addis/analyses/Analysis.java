@@ -82,6 +82,10 @@ public class Analysis implements Serializable {
     return selectedInterventions == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(selectedInterventions);
   }
 
+  public void setStudyId(Integer studyId) {
+    this.studyId = studyId;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -113,4 +117,5 @@ public class Analysis implements Serializable {
     result = 31 * result + (selectedInterventions != null ? selectedInterventions.hashCode() : 0);
     return result;
   }
+
 }

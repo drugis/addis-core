@@ -1,6 +1,7 @@
 package org.drugis.addis.problem;
 
 import javax.persistence.Entity;
+import java.util.Map;
 
 /**
  * Created by daan on 3/21/14.
@@ -8,13 +9,19 @@ import javax.persistence.Entity;
 @Entity
 public class Problem {
   String title;
+  Map<String, AlternativeEntry> alternatives;
 
-  public Problem(String title) {
+  public Problem(String title, Map<String, AlternativeEntry> alternatives) {
     this.title = title;
+    this.alternatives = alternatives;
   }
 
   public String getTitle() {
     return title;
+  }
+
+  public Map<String, AlternativeEntry> getAlternatives() {
+    return alternatives;
   }
 
   @Override
@@ -24,13 +31,16 @@ public class Problem {
 
     Problem problem = (Problem) o;
 
-    if (title != null ? !title.equals(problem.title) : problem.title != null) return false;
+    if (!alternatives.equals(problem.alternatives)) return false;
+    if (!title.equals(problem.title)) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    return title != null ? title.hashCode() : 0;
+    int result = title.hashCode();
+    result = 31 * result + alternatives.hashCode();
+    return result;
   }
 }
