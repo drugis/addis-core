@@ -1,29 +1,26 @@
 'use strict';
 define(['underscore'], function() {
-  var dependencies = ['$scope', '$stateParams', '$q',
+  var dependencies = ['$scope', '$stateParams', '$q', '$window',
     'ProjectsService', 'AnalysisService', 'OutcomeService', 'InterventionService', 'Select2UtilService', 'TrialverseStudyService',
     'ProblemService'
   ];
   var AnalysisController = function ($scope, $stateParams, $q, $window,
     ProjectsService, AnalysisService, OutcomeService, InterventionService,
-    Select2UtilService, TrialverseStudyService) {
+    Select2UtilService, TrialverseStudyService, ProblemService) {
 
     $scope.loading = {
       loaded: false
     };
 
-
     $scope.editMode = {
       allowEditing: false
     };
-
 
     $scope.project = ProjectsService.get($stateParams);
     $scope.analysis = AnalysisService.get($stateParams);
 
     $scope.outcomes = OutcomeService.query($stateParams);
     $scope.interventions = InterventionService.query($stateParams);
-
 
     $scope.selectedOutcomeIds = [];
     $scope.selectedInterventionIds = [];
