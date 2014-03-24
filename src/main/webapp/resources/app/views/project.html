@@ -61,17 +61,15 @@
 </div>
 
 <!-- Analyses -->
-<!--<div class="row">-->
-<!--<div class="columns large-12 border">-->
-
-<div class="nested-view columns large-12 border">
-  <div class="row nested-view-header">
-    Analyses
-    <button ng-show="editMode.allowEditing" class="small" ng-click="createAnalysisModal.open()"><i
-        class="fa fa-plus"></i> Add Analysis
-    </button>
-  </div>
-</div>
+<div class="row">
+    <div class="columns large-12  nested-view">
+      <div class="nested-view-header">
+        Analyses
+        <button ng-show="editMode.allowEditing" class="small" ng-click="createAnalysisModal.open()"><i
+            class="fa fa-plus"></i> Add Analysis
+        </button>
+      </div>
+    </div>
 
     <ul class="no-bullet">
       <li class="row colored-row" ng-repeat="analysis in analyses">
@@ -82,9 +80,8 @@
         </a>
       </li>
     </ul>
-
-  </div>
 </div>
+
 
 
 <!-- Outcomes modal -->
