@@ -14,12 +14,11 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by connor on 2/26/14.
@@ -57,6 +56,16 @@ public class TrialverseRepositoryTest {
     Long studyId2 = 4L;
     Study studyNotInNamespace = em.find(Study.class, studyId2);
     assertFalse(studyList.contains(studyNotInNamespace));
+  }
+
+  @Test
+  public void testGetArmNamesByDrugIds() {
+    Integer studyId = 1;
+    List<Integer> drugIds = Arrays.asList(1, 2, 3);
+    List<String> result = trialverseRepository.getArmNamesByDrugIds(studyId, drugIds);
+    assertFalse(result.isEmpty());
+    assertEquals(2, result.size());
+    assertTrue(result.contains("study 1 arm 1"));
   }
 
 }

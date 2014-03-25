@@ -42,23 +42,23 @@ public class JpaTrialverseRepository implements TrialverseRepository {
   @Override
   public List<String> getArmNamesByDrugIds(Integer studyId, List<Integer> drugIds) {
     //TODO: use isPrimary column of measurement_moments
-    Query query = em.createQuery("SELECT" +
-      " a.name " +
-      " FROM" +
-      "  arms a," +
-      "  designs d," +
-      "  treatments t," +
-      "  measurement_moments mm" +
-      " WHERE" +
-      "  a.id = d.arm" +
-      " AND" +
-      "  d.activity = t.activity" +
-      " AND" +
-      "  mm.name = 'P0D BEFORE_EPOCH_END Main phase'" +
-      " AND" +
-      "  mm.epoch = d.epoch" +
-      " AND" +
-      " t.drug IN :drugIds");
+    Query query = em.createNativeQuery("SELECT" +
+            " a.name " +
+            " FROM" +
+            "  arms a," +
+            "  designs d," +
+            "  treatments t," +
+            "  measurement_moments mm" +
+            " WHERE" +
+            "  a.id = d.arm" +
+            " AND" +
+            "  d.activity = t.activity" +
+            " AND" +
+            "  mm.name = 'P0D BEFORE_EPOCH_END Main phase'" +
+            " AND" +
+            "  mm.epoch = d.epoch" +
+            " AND" +
+            " t.drug IN :drugIds");
     query.setParameter("drugIds", drugIds);
     return (List<String>)query.getResultList();
   }

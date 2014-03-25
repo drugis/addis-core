@@ -18,3 +18,18 @@ INSERT INTO namespace_studies VALUES(1, 3);
 INSERT INTO namespace_studies VALUES(2, 4);
 INSERT INTO namespace_studies VALUES(2, 5);
 INSERT INTO namespace_studies VALUES(2, 6);
+
+INSERT INTO  arms (id, study, name) VALUES(1, 1, 'study 1 arm 1');
+INSERT INTO  arms (id, study, name) VALUES(2, 1, 'study 1 arm 2');
+
+INSERT INTO  activities (id, study, name) VALUES(1, 1, 'study 1 activity 1');
+INSERT INTO  activities (id, study, name) VALUES(2, 1, 'study 1 activity 2');
+
+INSERT INTO  treatments (id, activity, drug) VALUES(1, 1, 1);
+INSERT INTO  treatments (id, activity, drug) VALUES(2, 2, 3);
+
+INSERT INTO  measurement_moments (id, study, name, epoch, is_primary) VALUES(1, 1, 'P0D BEFORE_EPOCH_END Main phase', 1, true);
+
+INSERT INTO  designs (arm, activity, epoch) VALUES(1, 1, 1);
+INSERT INTO  designs (arm, activity, epoch) VALUES(2, 2, 1);
+
