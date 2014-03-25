@@ -101,10 +101,11 @@
     (fn [entity-ref inserted contexts]
       (let [namespace (find-namespace contexts)
             [xml-id [sql-id _]] (first inserted)
+            name (:name entity-ref)
             study (find-study contexts)
             entity-type (if (fn? entity-type-or-fn) (entity-type-or-fn entity-ref) entity-type-or-fn)
             entity-ref-uri (entity-ref-uri study entity-type sql-id)
-            entity-cls-uri (entity-uri namespace {"name" xml-id :type entity-type})]
+            entity-cls-uri (entity-uri namespace {"name" name :type entity-type})]
         (append-ttl (entity-ref-rdf entity-ref entity-ref-uri entity-cls-uri))))))
 
 (defn entities-to-rdf
