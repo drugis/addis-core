@@ -10,10 +10,15 @@ import java.util.Map;
 public class Problem {
   String title;
   Map<String, AlternativeEntry> alternatives;
+  Map<String, CriterionEntry> criteria;
 
-  public Problem(String title, Map<String, AlternativeEntry> alternatives) {
+  public Problem() {
+  }
+
+  public Problem(String title, Map<String, AlternativeEntry> alternatives, Map<String, CriterionEntry> criteria) {
     this.title = title;
     this.alternatives = alternatives;
+    this.criteria = criteria;
   }
 
   public String getTitle() {
@@ -24,14 +29,19 @@ public class Problem {
     return alternatives;
   }
 
+  public Map<String, CriterionEntry> getCriteria() {
+    return criteria;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (!(o instanceof Problem)) return false;
 
     Problem problem = (Problem) o;
 
     if (!alternatives.equals(problem.alternatives)) return false;
+    if (!criteria.equals(problem.criteria)) return false;
     if (!title.equals(problem.title)) return false;
 
     return true;
@@ -41,6 +51,7 @@ public class Problem {
   public int hashCode() {
     int result = title.hashCode();
     result = 31 * result + alternatives.hashCode();
+    result = 31 * result + criteria.hashCode();
     return result;
   }
 }

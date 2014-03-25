@@ -5,6 +5,7 @@ import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.problems.AlternativeEntry;
+import org.drugis.addis.problems.CriterionEntry;
 import org.drugis.addis.problems.Problem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.Project;
@@ -57,7 +58,9 @@ public class ProblemServiceImpl implements ProblemService {
       alternatives.put(createKey(armName), new AlternativeEntry(armName));
     }
 
-    return new Problem(analysis.getName(), alternatives);
+    Map<String, CriterionEntry> criteria = new HashMap<>();
+
+    return new Problem(analysis.getName(), alternatives, criteria);
   }
 
   private String createKey(String value) {

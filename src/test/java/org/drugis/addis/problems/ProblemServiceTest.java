@@ -99,7 +99,17 @@ public class ProblemServiceTest {
     alternatives.put(alternative1Key, new AlternativeEntry(alternative1Title));
     alternatives.put(alternative2Key, new AlternativeEntry(alternative2Title));
 
-    return new Problem(title, alternatives);
+
+    String critetion1Key = "ham-d-responders";
+    String critetion1Title = "HAM-D Responders";
+    String critetion2Key = "insomnia";
+    String critetion2Title = "Insomnia";
+
+    Map<String, CriterionEntry> criteria = new HashMap<>();
+    criteria.put(critetion1Key, new CriterionEntry(critetion1Title));
+    criteria.put(critetion2Key, new CriterionEntry(critetion2Title));
+
+    return new Problem(title, alternatives, criteria);
   }
 
   private Analysis createAnalysis() {

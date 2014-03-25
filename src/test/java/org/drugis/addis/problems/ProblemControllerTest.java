@@ -45,7 +45,7 @@ public class ProblemControllerTest {
 
   @Test
   public void testGetProblem() throws Exception {
-    Problem problem = new Problem("testProblem", new HashMap<String, AlternativeEntry>());
+    Problem problem = new Problem("testProblem", new HashMap<String, AlternativeEntry>(), new HashMap<String, CriterionEntry>());
     Integer projectId = 1;
     Integer analysisId = 1;
     when(problemService.getProblem(projectId, analysisId)).thenReturn(problem);
