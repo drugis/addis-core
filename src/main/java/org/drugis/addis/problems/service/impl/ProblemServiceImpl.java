@@ -11,6 +11,7 @@ import org.drugis.addis.problems.Problem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.trialverse.model.Variable;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.springframework.stereotype.Service;
@@ -66,14 +67,17 @@ public class ProblemServiceImpl implements ProblemService {
 
     List<Integer> outcomeIds = triplestoreService.getTrialverseOutcomeIds(project.getTrialverseId(), analysis.getStudyId(), outcomeUris);
     System.out.println("DEBUG outcome ids : " + outcomeIds);
-    List<String> criteriaNames = trialverseRepository.getVariableNamesByOutcomeIds(analysis.getStudyId(), outcomeIds);
-
+    List<org.drugis.addis.trialverse.model.Variable> variables = trialverseRepository.getVariablesByOutcomeIds(outcomeIds);
     Map<String, CriterionEntry> criteria = new HashMap<>();
-    for (String criterionName : criteriaNames) {
-      criteria.put(createKey(criterionName), new CriterionEntry(criterionName));
+    for (org.drugis.addis.trialverse.model.Variable variable : variables) {
+      criteria.put(createKey(variable.getName()), createCriterionEntry(variable));
     }
-
     return new Problem(analysis.getName(), alternatives, criteria);
+  }
+
+  private CriterionEntry createCriterionEntry(Variable variable) {
+    //TODO replace them nulls
+    return new CriterionEntry(variable.getName(), null, null);
   }
 
   private String createKey(String value) {

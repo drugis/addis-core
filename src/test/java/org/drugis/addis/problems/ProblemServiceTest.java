@@ -12,6 +12,7 @@ import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.Variable;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.junit.After;
@@ -80,8 +81,13 @@ public class ProblemServiceTest {
     when(triplestoreService.getTrialverseOutcomeIds(namespaceId, studyId, outcomeUris)).thenReturn(outcomeIds);
     List<String> armNames = Arrays.asList("paroxetine 40 mg/day", "fluoxetine 20 mg/day");
     when(trialverseRepository.getArmNamesByDrugIds(studyId, drugIds)).thenReturn(armNames);
-    List<String> variableNames = Arrays.asList("HAM-D Responders", "Insomnia");
-    when(trialverseRepository.getVariableNamesByOutcomeIds(studyId, outcomeIds)).thenReturn(variableNames);
+    Variable variableMock1 = mock(Variable.class, "variable1");
+    Variable variableMock2 = mock(Variable.class, "variable2");
+    when(variableMock1.getName()).thenReturn("HAM-D Responders");
+    when(variableMock2.getName()).thenReturn("Insomnia");
+    List<Variable> variables = Arrays.asList(variableMock1, variableMock2);
+    when(trialverseRepository.getVariablesByOutcomeIds(outcomeIds)).thenReturn(variables);
+
     // Executor
     Problem actualProblem = problemService.getProblem(projectId, analysisId);
 
@@ -93,7 +99,7 @@ public class ProblemServiceTest {
     verify(analysisRepository).get(projectId, analysisId);
     verify(triplestoreService).getTrialverseDrugIds(namespaceId, studyId, interventionUris);
     verify(triplestoreService).getTrialverseOutcomeIds(namespaceId, studyId, outcomeUris);
-    verify(trialverseRepository).getVariableNamesByOutcomeIds(studyId, outcomeIds);
+    verify(trialverseRepository).getVariablesByOutcomeIds(outcomeIds);
     verify(trialverseRepository).getArmNamesByDrugIds(studyId, drugIds);
   }
 
@@ -115,8 +121,8 @@ public class ProblemServiceTest {
     String criterion2Title = "Insomnia";
 
     Map<String, CriterionEntry> criteria = new HashMap<>();
-    criteria.put(criterion1Key, new CriterionEntry(criterion1Title));
-    criteria.put(criterion2Key, new CriterionEntry(criterion2Title));
+    criteria.put(criterion1Key, mock(CriterionEntry.class, "criteriaEntry1"));
+    criteria.put(criterion2Key, mock(CriterionEntry.class, "criteriaEntry2"));
 
     return new Problem(title, alternatives, criteria);
   }

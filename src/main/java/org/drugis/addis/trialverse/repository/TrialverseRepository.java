@@ -3,6 +3,7 @@ package org.drugis.addis.trialverse.repository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.Namespace;
 import org.drugis.addis.trialverse.model.Study;
+import org.drugis.addis.trialverse.model.Variable;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,5 +20,5 @@ public interface TrialverseRepository {
 
   public List<String> getArmNamesByDrugIds(Integer studyId, List<Integer> drugIds);
 
-  public List<String> getVariableNamesByOutcomeIds(Integer studyId, List<Integer> outcomeIds);
+  public List<Variable> getVariablesByOutcomeIds(List<Integer> outcomeIds);
 }

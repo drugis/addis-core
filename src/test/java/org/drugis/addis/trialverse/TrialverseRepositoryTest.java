@@ -4,6 +4,7 @@ import org.drugis.addis.config.JpaTrialverseRepositoryTestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.Namespace;
 import org.drugis.addis.trialverse.model.Study;
+import org.drugis.addis.trialverse.model.Variable;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by connor on 2/26/14.
@@ -66,6 +68,16 @@ public class TrialverseRepositoryTest {
     assertFalse(result.isEmpty());
     assertEquals(2, result.size());
     assertTrue(result.contains("study 1 arm 1"));
+  }
+
+  @Test
+  public void testGetVariableNamesByOutcomeIds() {
+    Variable expected = em.find(Variable.class, 1L);
+    List<Integer> outcomeIds = Arrays.asList(1, 2, 3);
+    List<Variable> result = trialverseRepository.getVariablesByOutcomeIds(outcomeIds);
+    assertFalse(result.isEmpty());
+    assertEquals(2, result.size());
+    assertTrue(result.contains(expected));
   }
 
 }
