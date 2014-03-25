@@ -21,9 +21,8 @@ public class AlternativeEntry {
 
     AlternativeEntry that = (AlternativeEntry) o;
 
-    if (!title.equals(that.title)) return false;
+    return title.equals(that.title);
 
-    return true;
   }
 
   @Override

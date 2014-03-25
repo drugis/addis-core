@@ -19,6 +19,20 @@ import java.util.*;
  */
 @Service
 public class TriplestoreServiceImpl implements TriplestoreService {
+
+  public enum AnalysisConcept {
+    DRUG("drug"),
+    OUTCOME("(adverseEvent|endpoint)");
+    private final String searchString;
+
+    AnalysisConcept(String searchString) {
+      this.searchString = searchString;
+    }
+    public String getSearchString() {
+      return this.searchString;
+    }
+  }
+
   final String triplestoreUri = System.getenv("TRIPLESTORE_URI");
 
   @Inject
@@ -79,27 +93,25 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<Integer> getTrialverseDrugIds(Integer namespaceId, Integer studyId, List<String> interventionUris) {
-    Collection<String> strippedUris = Collections2.transform(interventionUris, new Function<String, String>() {
+  public List<Integer> getTrialverseDrugIds(Integer namespaceId, Integer studyId, List<String> drugURIs) {
+    return getTrialverseConceptIds(namespaceId, studyId, AnalysisConcept.DRUG, drugURIs);
+  }
+
+  @Override
+  public List<Integer> getTrialverseOutcomeIds(Integer namespaceId, Integer studyId, List<String> outcomeURIs) {
+    return getTrialverseConceptIds(namespaceId, studyId, AnalysisConcept.OUTCOME, outcomeURIs);
+  }
+
+  private List<Integer> getTrialverseConceptIds(Integer namespaceId, Integer studyId, AnalysisConcept analysisConcept, List<String> conceptURIs) {
+    Collection<String> strippedUris = Collections2.transform(conceptURIs, new Function<String, String>() {
       @Override
       public String apply(String s) {
         return subStringAfterLastSlash(s);
       }
     });
-    String interventionUriOptions = StringUtils.join(strippedUris, "|");
+    String uriOptions = StringUtils.join(strippedUris, "|");
 
-    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-      "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-      "\n" +
-      "SELECT  * WHERE {\n" +
-      " GRAPH <http://trials.drugis.org/> {\n" +
-      "   ?uri rdf:type ?type .\n" +
-      "   FILTER regex(str(?type), \"namespace/" +
-      namespaceId + "/drug/(" + interventionUriOptions + ")\") .\n" +
-      "   FILTER regex(str(?uri), \"/study/" + studyId + "\") .\n" +
-      " }\n" +
-      "}";
-    System.out.println(query);
+    String query = createFindUsagesQuery(namespaceId, studyId, AnalysisConcept.DRUG, uriOptions);
 
     Map<String, String> vars = new HashMap<>();
     vars.put("query", query);
@@ -107,16 +119,32 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     String response = triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    List<Integer> drugIds = new ArrayList<>(bindings.size());
+    List<Integer> conceptIds = new ArrayList<>(bindings.size());
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
-      Integer drugId = extractDrugIdFromUri(uri);
-      drugIds.add(drugId);
+      Integer conceptId = extractConceptIdFromUri(uri);
+      conceptIds.add(conceptId);
     }
-    return drugIds;
+    return conceptIds;
   }
 
-  private Integer extractDrugIdFromUri(String uri) {
+  private String createFindUsagesQuery(Integer namespaceId, Integer studyId, AnalysisConcept analysisConcept, String URIsToFind) {
+    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+      "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+      "\n" +
+      "SELECT  * WHERE {\n" +
+      " GRAPH <http://trials.drugis.org/> {\n" +
+      "   ?uri rdf:type ?type .\n" +
+      "   FILTER regex(str(?type), \"namespace/" +
+      namespaceId + "/" + analysisConcept.getSearchString() +  "/(" + URIsToFind + ")\") .\n" +
+      "   FILTER regex(str(?uri), \"/study/" + studyId + "\") .\n" +
+      " }\n" +
+      "}";
+    System.out.println(query);
+    return query;
+  }
+
+  private Integer extractConceptIdFromUri(String uri) {
     return Integer.parseInt(subStringAfterLastSlash(uri));
   }
 

@@ -75,6 +75,21 @@ public class TriplestoreServiceTest {
     assertEquals(new HashSet<>(expected), new HashSet<>(result));
   }
 
+  @Test
+  public void testGetOutcomeIds() {
+    Integer namespaceId = 1;
+    Integer studyId = 1;
+    List<String> outcomeConceptUris = new ArrayList<>();
+    String mockResult = loadResource("/triplestoreService/exampleOutcomeIdResult.json");
+    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
+    List<Integer> expected = Arrays.asList(1, 4);
+
+    // EXECUTOR
+    List<Integer> result = triplestoreService.getTrialverseOutcomeIds(namespaceId, studyId, outcomeConceptUris);
+
+    assertEquals(new HashSet<>(expected), new HashSet<>(result));
+  }
+
   private String loadResource(String filename) {
     try {
       InputStream stream = getClass().getResourceAsStream(filename);

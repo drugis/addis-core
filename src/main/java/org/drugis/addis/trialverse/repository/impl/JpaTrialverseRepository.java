@@ -64,6 +64,11 @@ public class JpaTrialverseRepository implements TrialverseRepository {
   }
 
   @Override
+  public List<String> getVariableNamesByOutcomeIds(Integer studyId, List<Integer> outcomeIds) {
+    return null;
+  }
+
+  @Override
   public List<Study> queryStudies(Long namespaceId) {
     Query query = em.createNativeQuery("select" +
       " s.id, s.name, s.title " +

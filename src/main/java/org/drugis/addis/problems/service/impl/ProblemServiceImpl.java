@@ -4,6 +4,7 @@ import org.drugis.addis.analyses.Analysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.AlternativeEntry;
 import org.drugis.addis.problems.CriterionEntry;
 import org.drugis.addis.problems.Problem;
@@ -50,7 +51,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     List<Integer> drugIds = triplestoreService.getTrialverseDrugIds(project.getTrialverseId(), analysis.getStudyId(), interventionUris);
 
-    System.out.println(drugIds);
+    System.out.println("DEBUG drug ids : " + drugIds);
     List<String> armNames = trialverseRepository.getArmNamesByDrugIds(analysis.getStudyId(), drugIds);
 
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
@@ -58,13 +59,25 @@ public class ProblemServiceImpl implements ProblemService {
       alternatives.put(createKey(armName), new AlternativeEntry(armName));
     }
 
+    List<String> outcomeUris = new ArrayList<>(analysis.getSelectedOutcomes().size());
+    for (Outcome outcome : analysis.getSelectedOutcomes()) {
+      outcomeUris.add(outcome.getSemanticOutcomeUri());
+    }
+
+    List<Integer> outcomeIds = triplestoreService.getTrialverseOutcomeIds(project.getTrialverseId(), analysis.getStudyId(), outcomeUris);
+    System.out.println("DEBUG outcome ids : " + outcomeIds);
+    List<String> criteriaNames = trialverseRepository.getVariableNamesByOutcomeIds(analysis.getStudyId(), outcomeIds);
+
     Map<String, CriterionEntry> criteria = new HashMap<>();
+    for (String criterionName : criteriaNames) {
+      criteria.put(createKey(criterionName), new CriterionEntry(criterionName));
+    }
 
     return new Problem(analysis.getName(), alternatives, criteria);
   }
 
   private String createKey(String value) {
     //TODO: Expand properly
-    return value.replace(" ", "-").replace("/", "");
+    return value.replace(" ", "-").replace("/", "").toLowerCase();
   }
 }

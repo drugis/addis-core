@@ -1,0 +1,15 @@
+{
+  "head": {
+    "vars": [ "uri" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/1/adverseEvent/4" }
+      } ,
+      {
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/1/endpoint/1" }
+      }
+    ]
+  }
+}

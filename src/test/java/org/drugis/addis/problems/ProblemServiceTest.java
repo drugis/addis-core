@@ -64,7 +64,12 @@ public class ProblemServiceTest {
     String interventionUri2 = exampleAnalysis.getSelectedInterventions().get(1).getSemanticInterventionUri();
     List<String> interventionUris = Arrays.asList(interventionUri1, interventionUri2);
 
+    String outcomeUri1 = exampleAnalysis.getSelectedOutcomes().get(0).getSemanticOutcomeUri();
+    String outcomeUri2 = exampleAnalysis.getSelectedOutcomes().get(1).getSemanticOutcomeUri();
+    List<String> outcomeUris = Arrays.asList(outcomeUri1, outcomeUri2);
+
     List<Integer> drugIds = Arrays.asList(1001, 1002, 1003);
+    List<Integer> outcomeIds = Arrays.asList(2001, 2002, 2003);
 
     Problem exampleProblem = createExampleProblem(exampleAnalysis);
     Project project = mock(Project.class);
@@ -72,9 +77,11 @@ public class ProblemServiceTest {
     when(projectRepository.getProjectById(projectId)).thenReturn(project);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(exampleAnalysis);
     when(triplestoreService.getTrialverseDrugIds(namespaceId, studyId, interventionUris)).thenReturn(drugIds);
+    when(triplestoreService.getTrialverseOutcomeIds(namespaceId, studyId, outcomeUris)).thenReturn(outcomeIds);
     List<String> armNames = Arrays.asList("paroxetine 40 mg/day", "fluoxetine 20 mg/day");
     when(trialverseRepository.getArmNamesByDrugIds(studyId, drugIds)).thenReturn(armNames);
-
+    List<String> variableNames = Arrays.asList("HAM-D Responders", "Insomnia");
+    when(trialverseRepository.getVariableNamesByOutcomeIds(studyId, outcomeIds)).thenReturn(variableNames);
     // Executor
     Problem actualProblem = problemService.getProblem(projectId, analysisId);
 
@@ -85,6 +92,8 @@ public class ProblemServiceTest {
 
     verify(analysisRepository).get(projectId, analysisId);
     verify(triplestoreService).getTrialverseDrugIds(namespaceId, studyId, interventionUris);
+    verify(triplestoreService).getTrialverseOutcomeIds(namespaceId, studyId, outcomeUris);
+    verify(trialverseRepository).getVariableNamesByOutcomeIds(studyId, outcomeIds);
     verify(trialverseRepository).getArmNamesByDrugIds(studyId, drugIds);
   }
 
@@ -100,14 +109,14 @@ public class ProblemServiceTest {
     alternatives.put(alternative2Key, new AlternativeEntry(alternative2Title));
 
 
-    String critetion1Key = "ham-d-responders";
-    String critetion1Title = "HAM-D Responders";
-    String critetion2Key = "insomnia";
-    String critetion2Title = "Insomnia";
+    String criterion1Key = "ham-d-responders";
+    String criterion1Title = "HAM-D Responders";
+    String criterion2Key = "insomnia";
+    String criterion2Title = "Insomnia";
 
     Map<String, CriterionEntry> criteria = new HashMap<>();
-    criteria.put(critetion1Key, new CriterionEntry(critetion1Title));
-    criteria.put(critetion2Key, new CriterionEntry(critetion2Title));
+    criteria.put(criterion1Key, new CriterionEntry(criterion1Title));
+    criteria.put(criterion2Key, new CriterionEntry(criterion2Title));
 
     return new Problem(title, alternatives, criteria);
   }

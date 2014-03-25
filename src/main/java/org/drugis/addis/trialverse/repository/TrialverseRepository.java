@@ -18,4 +18,6 @@ public interface TrialverseRepository {
   public List<Study> queryStudies(Long namespaceId);
 
   public List<String> getArmNamesByDrugIds(Integer studyId, List<Integer> drugIds);
+
+  public List<String> getVariableNamesByOutcomeIds(Integer studyId, List<Integer> outcomeIds);
 }
