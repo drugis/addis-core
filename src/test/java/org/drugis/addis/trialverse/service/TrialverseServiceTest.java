@@ -1,7 +1,7 @@
 package org.drugis.addis.trialverse.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
 import org.drugis.addis.trialverse.model.Variable;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.drugis.addis.trialverse.service.impl.TrialverseServiceImpl;
@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class TrialverseServiceTest {
   }
 
   @Test
-  public void testJSONVariables() {
+  public void testJSONVariables() throws IOException {
     Variable variable1 = new Variable(1L, 11L, "variable 1", "description 1", "my unit is...", true, "RATE", "CONTINUOUS");
     Variable variable2 = new Variable(2L, 12L, "variable 2", "description 2", "my unit is...", true, "RATE", "CONTINUOUS");
     List<Variable> variables = Arrays.asList(variable1, variable2);
@@ -44,7 +45,8 @@ public class TrialverseServiceTest {
     when(trialverseRepository.getVariablesByOutcomeIds(outcomeIds)).thenReturn(variables);
     ObjectMapper objectMapper = new ObjectMapper();
     List<JSONObject> serialisedVars = trialverseService.getVariablesByOutcomeIds(outcomeIds);
-    List<Variable> resultVars = objectMapper.readValue(List.class, serialisedVars.toString());
+    List<Variable> resultVars = objectMapper.readValue(serialisedVars.toString(), new TypeReference<List<Variable>>() {
+    });
     assertEquals(variables, resultVars);
   }
 }
