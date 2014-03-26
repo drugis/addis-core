@@ -69,8 +69,8 @@ public class ProblemServiceTest {
     String outcomeUri2 = exampleAnalysis.getSelectedOutcomes().get(1).getSemanticOutcomeUri();
     List<String> outcomeUris = Arrays.asList(outcomeUri1, outcomeUri2);
 
-    List<Integer> drugIds = Arrays.asList(1001, 1002, 1003);
-    List<Integer> outcomeIds = Arrays.asList(2001, 2002, 2003);
+    List<Long> drugIds = Arrays.asList(1001L, 1002L, 1003L);
+    List<Long> outcomeIds = Arrays.asList(2001L, 2002L, 2003L);
 
     Problem exampleProblem = createExampleProblem(exampleAnalysis);
     Project project = mock(Project.class);

@@ -93,16 +93,16 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<Integer> getTrialverseDrugIds(Integer namespaceId, Integer studyId, List<String> drugURIs) {
+  public List<Long> getTrialverseDrugIds(Integer namespaceId, Integer studyId, List<String> drugURIs) {
     return getTrialverseConceptIds(namespaceId, studyId, AnalysisConcept.DRUG, drugURIs);
   }
 
   @Override
-  public List<Integer> getTrialverseOutcomeIds(Integer namespaceId, Integer studyId, List<String> outcomeURIs) {
+  public List<Long> getTrialverseOutcomeIds(Integer namespaceId, Integer studyId, List<String> outcomeURIs) {
     return getTrialverseConceptIds(namespaceId, studyId, AnalysisConcept.OUTCOME, outcomeURIs);
   }
 
-  private List<Integer> getTrialverseConceptIds(Integer namespaceId, Integer studyId, AnalysisConcept analysisConcept, List<String> conceptURIs) {
+  private List<Long> getTrialverseConceptIds(Integer namespaceId, Integer studyId, AnalysisConcept analysisConcept, List<String> conceptURIs) {
     Collection<String> strippedUris = Collections2.transform(conceptURIs, new Function<String, String>() {
       @Override
       public String apply(String s) {
@@ -119,10 +119,10 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     String response = triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    List<Integer> conceptIds = new ArrayList<>(bindings.size());
+    List<Long> conceptIds = new ArrayList<>(bindings.size());
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
-      Integer conceptId = extractConceptIdFromUri(uri);
+      Long conceptId = extractConceptIdFromUri(uri);
       conceptIds.add(conceptId);
     }
     return conceptIds;
@@ -144,8 +144,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return query;
   }
 
-  private Integer extractConceptIdFromUri(String uri) {
-    return Integer.parseInt(subStringAfterLastSlash(uri));
+  private Long extractConceptIdFromUri(String uri) {
+    return Long.parseLong(subStringAfterLastSlash(uri));
   }
 
   private String subStringAfterLastSlash(String inStr) {

@@ -23,7 +23,7 @@ public class TrialverseServiceImpl implements TrialverseService {
   TrialverseRepository trialverseRepository;
 
   @Override
-  public List<JSONObject> getVariablesByOutcomeIds(List<Integer> outcomeIds) {
+  public List<JSONObject> getVariablesByOutcomeIds(List<Long> outcomeIds) {
     List<Variable> variableList = trialverseRepository.getVariablesByOutcomeIds(outcomeIds);
     Collection<JSONObject> JSONVariables = Collections2.transform(variableList, new Function<Variable, JSONObject>() {
       @Override

@@ -43,7 +43,7 @@ public class JpaTrialverseRepository implements TrialverseRepository {
 
 
   @Override
-  public List<String> getArmNamesByDrugIds(Integer studyId, List<Integer> drugIds) {
+  public List<String> getArmNamesByDrugIds(Integer studyId, List<Long> drugIds) {
     if (drugIds.isEmpty()) {
       return Collections.emptyList();
     }

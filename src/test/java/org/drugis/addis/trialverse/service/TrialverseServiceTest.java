@@ -41,12 +41,11 @@ public class TrialverseServiceTest {
     Variable variable1 = new Variable(1L, 11L, "variable 1", "description 1", "my unit is...", true, "RATE", "CONTINUOUS");
     Variable variable2 = new Variable(2L, 12L, "variable 2", "description 2", "my unit is...", true, "RATE", "CONTINUOUS");
     List<Variable> variables = Arrays.asList(variable1, variable2);
-    List<Integer> outcomeIds = Arrays.asList(1, 2);
+    List<Long> outcomeIds = Arrays.asList(1L, 2L);
     when(trialverseRepository.getVariablesByOutcomeIds(outcomeIds)).thenReturn(variables);
     ObjectMapper objectMapper = new ObjectMapper();
     List<JSONObject> serialisedVars = trialverseService.getVariablesByOutcomeIds(outcomeIds);
-    List<Variable> resultVars = objectMapper.readValue(serialisedVars.toString(), new TypeReference<List<Variable>>() {
-    });
+    List<Variable> resultVars = objectMapper.readValue(serialisedVars.toString(), new TypeReference<List<Variable>>() {} );
     assertEquals(variables, resultVars);
   }
 }

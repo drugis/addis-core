@@ -13,7 +13,7 @@ public interface TriplestoreService {
 
   public List<SemanticIntervention> getInterventions(Long namespaceId);
 
-  public List<Integer> getTrialverseDrugIds(Integer namespaceId, Integer studyId, List<String> interventionURIs);
+  public List<Long> getTrialverseDrugIds(Integer namespaceId, Integer studyId, List<String> interventionURIs);
 
-  public List<Integer> getTrialverseOutcomeIds(Integer namespaceId, Integer studyId, List<String> outcomeURIs);
+  public List<Long> getTrialverseOutcomeIds(Integer namespaceId, Integer studyId, List<String> outcomeURIs);
 }

@@ -33,3 +33,7 @@ INSERT INTO  measurement_moments (id, study, name, epoch, is_primary) VALUES(1, 
 INSERT INTO  designs (arm, activity, epoch) VALUES(1, 1, 1);
 INSERT INTO  designs (arm, activity, epoch) VALUES(2, 2, 1);
 
+INSERT INTO variables (id, study, name, description, unit_description, is_primary, measurement_type, variable_type)
+               VALUES (1,   1,    'Nausea', 'descr1', 'Millipuke', true, 'MEASTYPE', 'RATIO');
+INSERT INTO variables (id, study, name, description, unit_description, is_primary, measurement_type, variable_type)
+               VALUES (2,   1,    'HAM', 'Pig', 'descr2', false, 'MEASTYPE', 'CONTINUOUS');

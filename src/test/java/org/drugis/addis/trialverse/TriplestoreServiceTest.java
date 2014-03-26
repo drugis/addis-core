@@ -67,10 +67,10 @@ public class TriplestoreServiceTest {
     List<String> interventionConceptUris = new ArrayList<>();
     String mockResult = loadResource("/triplestoreService/exampleDrugIdResult.json");
     when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
-    List<Integer> expected = Arrays.asList(1, 4);
+    List<Long> expected = Arrays.asList(1L, 4L);
 
     // EXECUTOR
-    List<Integer> result = triplestoreService.getTrialverseDrugIds(namespaceId, studyId, interventionConceptUris);
+    List<Long> result = triplestoreService.getTrialverseDrugIds(namespaceId, studyId, interventionConceptUris);
 
     assertEquals(new HashSet<>(expected), new HashSet<>(result));
   }
@@ -82,10 +82,10 @@ public class TriplestoreServiceTest {
     List<String> outcomeConceptUris = new ArrayList<>();
     String mockResult = loadResource("/triplestoreService/exampleOutcomeIdResult.json");
     when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
-    List<Integer> expected = Arrays.asList(1, 4);
+    List<Long> expected = Arrays.asList(1L, 4L);
 
     // EXECUTOR
-    List<Integer> result = triplestoreService.getTrialverseOutcomeIds(namespaceId, studyId, outcomeConceptUris);
+    List<Long> result = triplestoreService.getTrialverseOutcomeIds(namespaceId, studyId, outcomeConceptUris);
 
     assertEquals(new HashSet<>(expected), new HashSet<>(result));
   }

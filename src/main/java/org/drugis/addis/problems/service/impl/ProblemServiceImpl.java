@@ -50,7 +50,7 @@ public class ProblemServiceImpl implements ProblemService {
       interventionUris.add(intervention.getSemanticInterventionUri());
     }
 
-    List<Integer> drugIds = triplestoreService.getTrialverseDrugIds(project.getTrialverseId(), analysis.getStudyId(), interventionUris);
+    List<Long> drugIds = triplestoreService.getTrialverseDrugIds(project.getTrialverseId(), analysis.getStudyId(), interventionUris);
 
     System.out.println("DEBUG drug ids : " + drugIds);
     List<String> armNames = trialverseRepository.getArmNamesByDrugIds(analysis.getStudyId(), drugIds);
@@ -65,7 +65,7 @@ public class ProblemServiceImpl implements ProblemService {
       outcomeUris.add(outcome.getSemanticOutcomeUri());
     }
 
-    List<Integer> outcomeIds = triplestoreService.getTrialverseOutcomeIds(project.getTrialverseId(), analysis.getStudyId(), outcomeUris);
+    List<Long> outcomeIds = triplestoreService.getTrialverseOutcomeIds(project.getTrialverseId(), analysis.getStudyId(), outcomeUris);
     System.out.println("DEBUG outcome ids : " + outcomeIds);
     List<org.drugis.addis.trialverse.model.Variable> variables = trialverseRepository.getVariablesByOutcomeIds(outcomeIds);
     Map<String, CriterionEntry> criteria = new HashMap<>();

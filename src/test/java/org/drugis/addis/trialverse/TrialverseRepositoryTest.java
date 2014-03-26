@@ -15,9 +15,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
@@ -63,9 +61,8 @@ public class TrialverseRepositoryTest {
   @Test
   public void testGetArmNamesByDrugIds() {
     Integer studyId = 1;
-    List<Integer> drugIds = Arrays.asList(1, 2, 3);
+    List<Long> drugIds = Arrays.asList(1L, 2L, 3L);
     List<String> result = trialverseRepository.getArmNamesByDrugIds(studyId, drugIds);
-    assertFalse(result.isEmpty());
     assertEquals(2, result.size());
     assertTrue(result.contains("study 1 arm 1"));
   }
@@ -73,11 +70,16 @@ public class TrialverseRepositoryTest {
   @Test
   public void testGetVariableNamesByOutcomeIds() {
     Variable expected = em.find(Variable.class, 1L);
-    List<Integer> outcomeIds = Arrays.asList(1, 2, 3);
+    List<Long> outcomeIds = Arrays.asList(1L, 2L, 3L);
     List<Variable> result = trialverseRepository.getVariablesByOutcomeIds(outcomeIds);
-    assertFalse(result.isEmpty());
     assertEquals(2, result.size());
     assertTrue(result.contains(expected));
+  }
+
+  @Test
+  public void testEmptyOutcomeIdInput() {
+    List<Variable> result = trialverseRepository.getVariablesByOutcomeIds(new ArrayList<Long>());
+    assertTrue(result.isEmpty());
   }
 
 }
