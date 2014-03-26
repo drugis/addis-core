@@ -15,17 +15,13 @@ import org.drugis.addis.problems.model.Variable;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.trialverse.model.MeasurementType;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
-import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by daan on 3/21/14.
@@ -83,9 +79,22 @@ public class ProblemServiceImpl implements ProblemService {
     return new Problem(analysis.getName(), alternatives, criteria);
   }
 
-  private CriterionEntry createCriterionEntry(Variable variable) {
-    //TODO replace them nulls
-    return new CriterionEntry(variable.getName(), null, null);
+  private CriterionEntry createCriterionEntry(Variable variable) throws EnumConstantNotPresentException {
+    List<Double> scale;
+    switch (variable.getMeasurementType()) {
+      case RATE:
+        scale = Arrays.asList(0.0, 1.0);
+        break;
+      case CONTINUOUS:
+        scale = Arrays.asList(null, null);
+        break;
+      case CATEGORICAL:
+        throw new EnumConstantNotPresentException(MeasurementType.class, "Categorical endpoints/adverse events not allowed");
+      default:
+        throw new EnumConstantNotPresentException(MeasurementType.class, variable.getMeasurementType().toString());
+    }
+    // NB: partialvaluefunctions to be filled in by MCDA component, left null here
+    return new CriterionEntry(variable.getName(), scale, null);
   }
 
   private String createKey(String value) {

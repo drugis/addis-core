@@ -34,6 +34,6 @@ INSERT INTO  designs (arm, activity, epoch) VALUES(1, 1, 1);
 INSERT INTO  designs (arm, activity, epoch) VALUES(2, 2, 1);
 
 INSERT INTO variables (id, study, name, description, unit_description, is_primary, measurement_type, variable_type)
-               VALUES (1,   1,    'Nausea', 'descr1', 'Millipuke', true, 2, 'RATIO');
+               VALUES (1,   1,    'Nausea', 'descr1', 'Millipuke', true, 'RATE', 'TEST');
 INSERT INTO variables (id, study, name, description, unit_description, is_primary, measurement_type, variable_type)
-               VALUES (2,   1,    'HAM', 'Pig', 'descr2', false, 1, 'CONTINUOUS');
+               VALUES (2,   1,    'HAM', 'Pig', 'descr2', false, 'RATE', 'TEST');

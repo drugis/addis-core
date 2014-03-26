@@ -6,20 +6,20 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Created by daan on 3/26/14.
  */
-public enum MeasurementType {
-  CONTINUOUS,
-  RATE,
-  CATEGORICAL;
+public enum VariableType {
+  POPULATION_CHARACTERISTIC,
+  ENDPOINT,
+  ADVERSE_EVENT;
 
   @Override
   public String toString() {
     switch (this) {
-      case CONTINUOUS: return "Continuous";
-      case RATE: return "Rate";
-      case CATEGORICAL: return "Categorical";
+      case POPULATION_CHARACTERISTIC: return "Population Characteristic";
+      case ENDPOINT: return "Endpoint";
+      case ADVERSE_EVENT: return "Adverse Event";
       default: return name();
     }
-  };
+  }
 
   @JsonValue
   public String toJson() {
@@ -27,7 +27,7 @@ public enum MeasurementType {
   }
 
   @JsonCreator
-  public static MeasurementType fromJson(String text) {
+  public static VariableType fromJson(String text) {
     return valueOf(text.toUpperCase());
   }
 }

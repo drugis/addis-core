@@ -47,7 +47,6 @@ public class JpaTrialverseRepository implements TrialverseRepository {
     if (drugIds.isEmpty()) {
       return Collections.emptyList();
     }
-    //TODO: use isPrimary column of measurement_moments
     Query query = em.createNativeQuery("SELECT" +
             " a.name " +
             " FROM" +
@@ -60,7 +59,7 @@ public class JpaTrialverseRepository implements TrialverseRepository {
             " AND" +
             "  d.activity = t.activity" +
             " AND" +
-            "  mm.name = 'P0D BEFORE_EPOCH_END Main phase'" +
+            "  mm.is_primary = true" +
             " AND" +
             "  mm.epoch = d.epoch" +
             " AND" +

@@ -111,7 +111,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     });
     String uriOptions = StringUtils.join(strippedUris, "|");
 
-    String query = createFindUsagesQuery(namespaceId, studyId, AnalysisConcept.DRUG, uriOptions);
+    String query = createFindUsagesQuery(namespaceId, studyId, analysisConcept, uriOptions);
 
     Map<String, String> vars = new HashMap<>();
     vars.put("query", query);

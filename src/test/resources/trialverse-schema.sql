@@ -73,7 +73,7 @@ CREATE TABLE variables (
     description VARCHAR,
     unit_description VARCHAR,
     is_primary boolean,
-    measurement_type int,
+    measurement_type VARCHAR,
     variable_type VARCHAR,
     PRIMARY KEY(id),
     FOREIGN KEY(study) REFERENCES studies(id)

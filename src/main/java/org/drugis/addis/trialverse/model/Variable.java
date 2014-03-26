@@ -1,5 +1,8 @@
 package org.drugis.addis.trialverse.model;
 
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -25,15 +28,20 @@ public class Variable {
   private Boolean isPrimary;
 
   @Column(name = "measurement_type")
+  @Type(type = "org.drugis.addis.trialverse.repository.PGEnumUserType",
+    parameters = {@Parameter(name = "enumClassName", value = "org.drugis.addis.trialverse.model.MeasurementType")})
   private MeasurementType measurementType;
 
   @Column(name = "variable_type")
-  private String variableType;
+  @Type(type = "org.drugis.addis.trialverse.repository.PGEnumUserType",
+    parameters = {@Parameter(name = "enumClassName", value = "org.drugis.addis.trialverse.model.VariableType")})
+  private VariableType variableType;
 
   public Variable() {
   }
 
-  public Variable(Long id, Long study, String name, String description, String unitDescription, Boolean isPrimary, MeasurementType measurementType, String variableType) {
+  public Variable(Long id, Long study, String name, String description, String unitDescription,
+                  Boolean isPrimary, MeasurementType measurementType, VariableType variableType) {
     this.id = id;
     this.study = study;
     this.name = name;
@@ -72,7 +80,7 @@ public class Variable {
     return measurementType;
   }
 
-  public String getVariableType() {
+  public VariableType getVariableType() {
     return variableType;
   }
 
@@ -91,7 +99,7 @@ public class Variable {
     if (!study.equals(variable.study)) return false;
     if (unitDescription != null ? !unitDescription.equals(variable.unitDescription) : variable.unitDescription != null)
       return false;
-    if (!variableType.equals(variable.variableType)) return false;
+    if (variableType != variable.variableType) return false;
 
     return true;
   }

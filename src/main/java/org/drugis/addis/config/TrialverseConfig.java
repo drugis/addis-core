@@ -65,7 +65,7 @@ public class TrialverseConfig {
     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
     em.setJpaProperties(additionalProperties());
     em.setJpaVendorAdapter(vendorAdapter);
-    em.setPackagesToScan("org.drugis.addis.trialverse");
+    em.setPackagesToScan("org.drugis.addis.trialverse", "org.drugis.addis.trialverse.model");
     em.setPersistenceUnitName("trialverse");
     em.setDataSource(dataSource());
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());

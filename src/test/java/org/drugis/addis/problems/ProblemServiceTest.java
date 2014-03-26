@@ -88,11 +88,11 @@ public class ProblemServiceTest {
     when(trialverseService.getArmNamesByDrugIds(studyId, drugIds)).thenReturn(armNames);
     ObjectMapper mapper = new ObjectMapper();
 
-    Variable variable1 = new Variable(1L, 11L, "Insomnia", "description 1", "my unit is...", true, MeasurementType.CATEGORICAL, "Test");
-    Variable variable2 = new Variable(2L, 12L, "HAM-D Responders", "description 2", "my unit is...", true, MeasurementType.RATE, "Test2");
+    Variable variable1 = new Variable(1L, 11L, "HAM-D Responders", "description 1", "my unit is...", true, MeasurementType.RATE, "Test2");
+    Variable variable2 = new Variable(2L, 12L, "Insomnia", "description 2", "my unit is...", true, MeasurementType.CONTINUOUS, "Test");
 
-    ObjectNode objectNode1 =  (ObjectNode) mapper.valueToTree(variable1);
-    ObjectNode objectNode2 = (ObjectNode) mapper.valueToTree(variable2);
+    ObjectNode objectNode1 =  mapper.valueToTree(variable1);
+    ObjectNode objectNode2 = mapper.valueToTree(variable2);
     List<ObjectNode> variables = Arrays.asList(objectNode1, objectNode2);
     when(trialverseService.getVariablesByOutcomeIds(outcomeIds)).thenReturn(variables);
 
@@ -103,8 +103,8 @@ public class ProblemServiceTest {
     List<AlternativeEntry> actualAlternativeEntries = new ArrayList<>(actualProblem.getAlternatives().values());
     List<CriterionEntry> expectedCriterionEntries = new ArrayList<>(exampleProblem.getCriteria().values());
     List<CriterionEntry> actualCriterionEntries = new ArrayList<>(actualProblem.getCriteria().values());
-    assertEquals(expectedAlternativeEntries, actualAlternativeEntries);
-    assertEquals(expectedCriterionEntries, actualCriterionEntries);
+    assertArrayEquals(expectedAlternativeEntries.toArray(), actualAlternativeEntries.toArray());
+    assertArrayEquals(expectedCriterionEntries.toArray(), actualCriterionEntries.toArray());
     assertEquals(exampleProblem, actualProblem);
 
     verify(analysisRepository).get(projectId, analysisId);
@@ -132,8 +132,9 @@ public class ProblemServiceTest {
     String criterion2Title = "Insomnia";
 
     Map<String, CriterionEntry> criteria = new HashMap<>();
-    CriterionEntry criterionEntry1 = new CriterionEntry(criterion1Title, null, null);
-    CriterionEntry criterionEntry2 = new CriterionEntry(criterion2Title, null, null);
+    List<Double> nullScale = Arrays.asList(null, null);
+    CriterionEntry criterionEntry1 = new CriterionEntry(criterion1Title, Arrays.asList(0.0, 1.0), null);
+    CriterionEntry criterionEntry2 = new CriterionEntry(criterion2Title, nullScale, null);
     criteria.put(criterion1Key, criterionEntry1);
     criteria.put(criterion2Key, criterionEntry2);
 
