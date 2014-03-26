@@ -9,6 +9,7 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.*;
+import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
@@ -75,7 +76,29 @@ public class ProblemServiceImpl implements ProblemService {
       criteria.put(createKey(variable.getName()), createCriterionEntry(variable));
     }
 
-    return new Problem(analysis.getName(), alternatives, criteria);
+    List<Measurement> measurements = new ArrayList<>(jsonMeasurements.size());
+    for (ObjectNode measurementJSONNode : jsonMeasurements) {
+      Measurement measurement = mapper.convertValue(measurementJSONNode, Measurement.class);
+      measurements.add(measurement);
+    }
+
+    List<AbstractMeasurementEntry> performanceTable = createPerformanceTable(measurements);
+
+    return new Problem(analysis.getName(), alternatives, criteria, performanceTable);
+  }
+
+  private List<AbstractMeasurementEntry> createPerformanceTable(List<Measurement> measurements) {
+    Collections.sort(measurements, new Comparator<Measurement>() {
+      @Override
+      public int compare(Measurement left, Measurement right) {
+        if (left.getVariableId().compareTo(right.getVariableId()) == 0) {
+          return (left.getArmId().compareTo(right.getArmId()));
+        } else {
+          return left.getVariableId().compareTo(right.getVariableId());
+        }
+      }
+    });
+    return new ArrayList<>();
   }
 
   private CriterionEntry createCriterionEntry(Variable variable) throws EnumConstantNotPresentException {

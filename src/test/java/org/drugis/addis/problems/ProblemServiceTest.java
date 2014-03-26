@@ -102,6 +102,9 @@ public class ProblemServiceTest {
     List<ObjectNode> variables = Arrays.asList(variableNode1, variableNode2);
     when(trialverseService.getVariablesByOutcomeIds(outcomeIds)).thenReturn(variables);
 
+    Measurement measurement = new Measurement();
+
+
     // Executor
     Problem actualProblem = problemService.getProblem(projectId, analysisId);
 

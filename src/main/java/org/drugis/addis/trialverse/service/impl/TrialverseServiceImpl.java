@@ -27,31 +27,28 @@ public class TrialverseServiceImpl implements TrialverseService {
   @Override
   public List<ObjectNode> getVariablesByOutcomeIds(List<Long> outcomeIds) {
     List<Variable> variableList = trialverseRepository.getVariablesByOutcomeIds(outcomeIds);
-    final ObjectMapper mapper = new ObjectMapper();
-    Collection<ObjectNode> JSONVariables = Collections2.transform(variableList, new Function<Variable, ObjectNode>() {
-      @Override
-      public ObjectNode apply(Variable variable) {
-        return (ObjectNode) mapper.valueToTree(variable);
-      }
-    });
-    return new ArrayList<>(JSONVariables);
+    return objectsToNodes(variableList);
   }
 
   @Override
   public List<ObjectNode> getArmsByDrugIds(Integer studyId, List<Long> drugIds) {
     List<Arm> arms = trialverseRepository.getArmsByDrugIds(studyId, drugIds);
-    final ObjectMapper mapper = new ObjectMapper();
-    Collection<ObjectNode> JSONVariables = Collections2.transform(arms, new Function<Arm, ObjectNode>() {
-      @Override
-      public ObjectNode apply(Arm arm) {
-        return (ObjectNode) mapper.valueToTree(arm);
-      }
-    });
-    return new ArrayList<>(JSONVariables);
+    return objectsToNodes(arms);
   }
 
   @Override
   public List<ObjectNode> getMeasurements(Integer studyId, List<Long> outcomeIds) {
     return null;
+  }
+
+  private <T> List<ObjectNode> objectsToNodes(List<T> objectList) {
+    final ObjectMapper mapper = new ObjectMapper();
+    Collection<ObjectNode> JSONVariables = Collections2.transform(objectList, new Function<T, ObjectNode>() {
+      @Override
+      public ObjectNode apply(T t) {
+        return (ObjectNode) mapper.valueToTree(t);
+      }
+    });
+    return new ArrayList<>(JSONVariables);
   }
 }
