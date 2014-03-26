@@ -2,7 +2,7 @@ package org.drugis.addis.problems.controller;
 
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.problems.Problem;
+import org.drugis.addis.problems.model.Problem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;

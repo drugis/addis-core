@@ -1,6 +1,9 @@
 package org.drugis.addis.problems;
 
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.problems.model.AlternativeEntry;
+import org.drugis.addis.problems.model.CriterionEntry;
+import org.drugis.addis.problems.model.Problem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.util.WebConstants;
 import org.junit.Before;

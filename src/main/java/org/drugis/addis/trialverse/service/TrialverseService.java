@@ -1,6 +1,6 @@
 package org.drugis.addis.trialverse.service;
 
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.List;
 
@@ -8,5 +8,7 @@ import java.util.List;
  * Created by connor on 25-3-14.
  */
 public interface TrialverseService {
-  public List<JSONObject> getVariablesByOutcomeIds(List<Long> outcomeIds);
+  public List<ObjectNode> getVariablesByOutcomeIds(List<Long> outcomeIds);
+
+  List<String> getArmNamesByDrugIds(Integer studyId, List<Long> drugIds);
 }

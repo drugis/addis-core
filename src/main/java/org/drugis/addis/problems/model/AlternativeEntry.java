@@ -1,4 +1,4 @@
-package org.drugis.addis.problems;
+package org.drugis.addis.problems.model;
 
 /**
  * Created by daan on 3/21/14.

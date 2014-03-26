@@ -1,20 +1,23 @@
 package org.drugis.addis.problems;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.drugis.addis.analyses.Analysis;
 import org.drugis.addis.analyses.AnalysisType;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
+import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.impl.ProblemServiceImpl;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
-import org.drugis.addis.trialverse.model.Variable;
-import org.drugis.addis.trialverse.repository.TrialverseRepository;
+import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.TrialverseServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +27,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.*;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -39,7 +43,7 @@ public class ProblemServiceTest {
   TriplestoreService triplestoreService;
 
   @Mock
-  TrialverseRepository trialverseRepository;
+  TrialverseService trialverseService;
 
   @Mock
   ProjectRepository projectRepository;
@@ -50,6 +54,7 @@ public class ProblemServiceTest {
   @Before
   public void setUp() {
     problemService = new ProblemServiceImpl();
+    trialverseService = new TrialverseServiceImpl();
     MockitoAnnotations.initMocks(this);
   }
 
@@ -80,27 +85,33 @@ public class ProblemServiceTest {
     when(triplestoreService.getTrialverseDrugIds(namespaceId, studyId, interventionUris)).thenReturn(drugIds);
     when(triplestoreService.getTrialverseOutcomeIds(namespaceId, studyId, outcomeUris)).thenReturn(outcomeIds);
     List<String> armNames = Arrays.asList("paroxetine 40 mg/day", "fluoxetine 20 mg/day");
-    when(trialverseRepository.getArmNamesByDrugIds(studyId, drugIds)).thenReturn(armNames);
-    Variable variableMock1 = mock(Variable.class, "variable1");
-    Variable variableMock2 = mock(Variable.class, "variable2");
-    when(variableMock1.getName()).thenReturn("HAM-D Responders");
-    when(variableMock2.getName()).thenReturn("Insomnia");
-    List<Variable> variables = Arrays.asList(variableMock1, variableMock2);
-    when(trialverseRepository.getVariablesByOutcomeIds(outcomeIds)).thenReturn(variables);
+    when(trialverseService.getArmNamesByDrugIds(studyId, drugIds)).thenReturn(armNames);
+    ObjectMapper mapper = new ObjectMapper();
+
+    Variable variable1 = new Variable(1L, 11L, "Insomnia", "description 1", "my unit is...", true, MeasurementType.CATEGORICAL, "Test");
+    Variable variable2 = new Variable(2L, 12L, "HAM-D Responders", "description 2", "my unit is...", true, MeasurementType.RATE, "Test2");
+
+    ObjectNode objectNode1 =  (ObjectNode) mapper.valueToTree(variable1);
+    ObjectNode objectNode2 = (ObjectNode) mapper.valueToTree(variable2);
+    List<ObjectNode> variables = Arrays.asList(objectNode1, objectNode2);
+    when(trialverseService.getVariablesByOutcomeIds(outcomeIds)).thenReturn(variables);
 
     // Executor
     Problem actualProblem = problemService.getProblem(projectId, analysisId);
 
     List<AlternativeEntry> expectedAlternativeEntries = new ArrayList<>(exampleProblem.getAlternatives().values());
     List<AlternativeEntry> actualAlternativeEntries = new ArrayList<>(actualProblem.getAlternatives().values());
+    List<CriterionEntry> expectedCriterionEntries = new ArrayList<>(exampleProblem.getCriteria().values());
+    List<CriterionEntry> actualCriterionEntries = new ArrayList<>(actualProblem.getCriteria().values());
     assertEquals(expectedAlternativeEntries, actualAlternativeEntries);
+    assertEquals(expectedCriterionEntries, actualCriterionEntries);
     assertEquals(exampleProblem, actualProblem);
 
     verify(analysisRepository).get(projectId, analysisId);
     verify(triplestoreService).getTrialverseDrugIds(namespaceId, studyId, interventionUris);
     verify(triplestoreService).getTrialverseOutcomeIds(namespaceId, studyId, outcomeUris);
-    verify(trialverseRepository).getVariablesByOutcomeIds(outcomeIds);
-    verify(trialverseRepository).getArmNamesByDrugIds(studyId, drugIds);
+    verify(trialverseService).getVariablesByOutcomeIds(outcomeIds);
+    verify(trialverseService).getArmNamesByDrugIds(studyId, drugIds);
   }
 
   private Problem createExampleProblem(Analysis analysis) {
@@ -143,6 +154,6 @@ public class ProblemServiceTest {
 
   @After
   public void cleanUp() {
-    verifyNoMoreInteractions(analysisRepository, triplestoreService, trialverseRepository);
+    verifyNoMoreInteractions(analysisRepository, triplestoreService, trialverseService);
   }
 }

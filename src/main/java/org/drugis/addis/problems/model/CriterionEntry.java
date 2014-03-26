@@ -1,4 +1,4 @@
-package org.drugis.addis.problems;
+package org.drugis.addis.problems.model;
 
 import java.util.List;
 

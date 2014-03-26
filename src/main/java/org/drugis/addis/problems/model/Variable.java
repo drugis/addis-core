@@ -1,33 +1,17 @@
-package org.drugis.addis.trialverse.model;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+package org.drugis.addis.problems.model;
 
 /**
  * Created by connor on 25-3-14.
  */
-@Entity
-@Table(name = "variables")
 public class Variable {
 
-  @Id
   private Long id;
   private Long study;
   private String name;
   private String description;
-
-  @Column(name = "unit_description")
   private String unitDescription;
-
-  @Column(name = "is_primary")
   private Boolean isPrimary;
-
-  @Column(name = "measurement_type")
   private MeasurementType measurementType;
-
-  @Column(name = "variable_type")
   private String variableType;
 
   public Variable() {
