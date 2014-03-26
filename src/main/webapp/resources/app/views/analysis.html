@@ -48,7 +48,7 @@
       </div>
       <div class="row">
         <div class="columns large-6 nested-view">
-          <select ng-model="analysis.studyId" ng-options="study.id as study.name for study in studies">
+          <select ng-model="analysis.studyId" ng-options="study.id as study.name for study in studies | orderBy:'name'">
           </select>
         </div>
       </div>
