@@ -70,11 +70,11 @@ public class JpaTrialverseRepository implements TrialverseRepository {
   }
 
   @Override
-  public List<Variable> getVariablesByOutcomeIds(List<Integer> outcomeIds) {
+  public List<Variable> getVariablesByOutcomeIds(List<Long> outcomeIds) {
     if (outcomeIds.isEmpty()) {
       return Collections.emptyList();
     }
-    TypedQuery<Variable> query = em.createQuery("FROM variables v WHERE v.id IN :outcomeIds", Variable.class);
+    TypedQuery<Variable> query = em.createQuery("FROM Variable v WHERE v.id IN :outcomeIds", Variable.class);
     query.setParameter("outcomeIds", outcomeIds);
     return query.getResultList();
   }

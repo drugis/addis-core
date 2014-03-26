@@ -66,3 +66,15 @@ CREATE TABLE measurement_moments (
     FOREIGN KEY(study) REFERENCES studies(id)
 );
 
+CREATE TABLE variables (
+    id bigint NOT NULL,
+    study bigint,
+    name character varying,
+    description VARCHAR,
+    unit_description VARCHAR,
+    is_primary boolean,
+    measurement_type VARCHAR,
+    variable_type VARCHAR,
+    PRIMARY KEY(id),
+    FOREIGN KEY(study) REFERENCES studies(id)
+);

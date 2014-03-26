@@ -20,5 +20,5 @@ public interface TrialverseRepository {
 
   public List<String> getArmNamesByDrugIds(Integer studyId, List<Integer> drugIds);
 
-  public List<Variable> getVariablesByOutcomeIds(List<Integer> outcomeIds);
+  public List<Variable> getVariablesByOutcomeIds(List<Long> outcomeIds);
 }

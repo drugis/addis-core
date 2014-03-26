@@ -21,7 +21,11 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = {"org.drugis.addis.trialverse.repository", "org.drugis.addis.security", "org.drugis.addis.trialverse.model"}, excludeFilters = {@ComponentScan.Filter(Configuration.class)})
+@ComponentScan(basePackages = {
+        "org.drugis.addis.trialverse.repository",
+        "org.drugis.addis.security",
+        "org.drugis.addis.trialverse.model"},
+        excludeFilters = {@ComponentScan.Filter(Configuration.class)})
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "org.drugis.addis.trialverse.repository")
 public class JpaTrialverseRepositoryTestConfig {
