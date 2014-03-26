@@ -84,16 +84,22 @@ public class ProblemServiceTest {
     when(analysisRepository.get(projectId, analysisId)).thenReturn(exampleAnalysis);
     when(triplestoreService.getTrialverseDrugIds(namespaceId, studyId, interventionUris)).thenReturn(drugIds);
     when(triplestoreService.getTrialverseOutcomeIds(namespaceId, studyId, outcomeUris)).thenReturn(outcomeIds);
-    List<String> armNames = Arrays.asList("paroxetine 40 mg/day", "fluoxetine 20 mg/day");
-    when(trialverseService.getArmNamesByDrugIds(studyId, drugIds)).thenReturn(armNames);
+
     ObjectMapper mapper = new ObjectMapper();
+
+    Arm arm1 = new Arm(1L, "paroxetine 40 mg/day");
+    Arm arm2 = new Arm(2L, "fluoxetine 20 mg/day");
+    ObjectNode armNode1 = mapper.valueToTree(arm1);
+    ObjectNode armNode2 = mapper.valueToTree(arm2);
+    List<ObjectNode> arms = Arrays.asList(armNode1, armNode2);
+    when(trialverseService.getArmsByDrugIds(studyId, drugIds)).thenReturn(arms);
 
     Variable variable1 = new Variable(1L, 11L, "HAM-D Responders", "description 1", "my unit is...", true, MeasurementType.RATE, "Test2");
     Variable variable2 = new Variable(2L, 12L, "Insomnia", "description 2", "my unit is...", true, MeasurementType.CONTINUOUS, "Test");
 
-    ObjectNode objectNode1 =  mapper.valueToTree(variable1);
-    ObjectNode objectNode2 = mapper.valueToTree(variable2);
-    List<ObjectNode> variables = Arrays.asList(objectNode1, objectNode2);
+    ObjectNode variableNode1 =  mapper.valueToTree(variable1);
+    ObjectNode variableNode2 = mapper.valueToTree(variable2);
+    List<ObjectNode> variables = Arrays.asList(variableNode1, variableNode2);
     when(trialverseService.getVariablesByOutcomeIds(outcomeIds)).thenReturn(variables);
 
     // Executor
@@ -111,7 +117,8 @@ public class ProblemServiceTest {
     verify(triplestoreService).getTrialverseDrugIds(namespaceId, studyId, interventionUris);
     verify(triplestoreService).getTrialverseOutcomeIds(namespaceId, studyId, outcomeUris);
     verify(trialverseService).getVariablesByOutcomeIds(outcomeIds);
-    verify(trialverseService).getArmNamesByDrugIds(studyId, drugIds);
+    verify(trialverseService).getArmsByDrugIds(studyId, drugIds);
+    verify(trialverseService).getMeasurements(studyId, outcomeIds);
   }
 
   private Problem createExampleProblem(Analysis analysis) {

@@ -1,6 +1,5 @@
 package org.drugis.addis.trialverse.service;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -71,8 +70,8 @@ public class TrialverseServiceTest {
 
   @Test
   public void testGetArmNamesByDrugIds() {
-    trialverseService.getArmNamesByDrugIds(anyInt(), anyList());
-    verify(trialverseRepository).getArmNamesByDrugIds(anyInt(), anyList());
+    trialverseService.getArmsByDrugIds(anyInt(), anyList());
+    verify(trialverseRepository).getArmsByDrugIds(anyInt(), anyList());
   }
 
 }

@@ -8,10 +8,7 @@ import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
-import org.drugis.addis.problems.model.AlternativeEntry;
-import org.drugis.addis.problems.model.CriterionEntry;
-import org.drugis.addis.problems.model.Problem;
-import org.drugis.addis.problems.model.Variable;
+import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
@@ -51,31 +48,33 @@ public class ProblemServiceImpl implements ProblemService {
     for (Intervention intervention : analysis.getSelectedInterventions()) {
       interventionUris.add(intervention.getSemanticInterventionUri());
     }
-
-    List<Long> drugIds = triplestoreService.getTrialverseDrugIds(project.getTrialverseId(), analysis.getStudyId(), interventionUris);
-
-    System.out.println("DEBUG drug ids : " + drugIds);
-    List<String> armNames = trialverseService.getArmNamesByDrugIds(analysis.getStudyId(), drugIds);
-
-    Map<String, AlternativeEntry> alternatives = new HashMap<>();
-    for (String armName : armNames) {
-      alternatives.put(createKey(armName), new AlternativeEntry(armName));
-    }
-
     List<String> outcomeUris = new ArrayList<>(analysis.getSelectedOutcomes().size());
     for (Outcome outcome : analysis.getSelectedOutcomes()) {
       outcomeUris.add(outcome.getSemanticOutcomeUri());
     }
 
+    List<Long> drugIds = triplestoreService.getTrialverseDrugIds(project.getTrialverseId(), analysis.getStudyId(), interventionUris);
+    System.out.println("DEBUG drug ids : " + drugIds);
     List<Long> outcomeIds = triplestoreService.getTrialverseOutcomeIds(project.getTrialverseId(), analysis.getStudyId(), outcomeUris);
     System.out.println("DEBUG outcome ids : " + outcomeIds);
+
+    List<ObjectNode> jsonArms = trialverseService.getArmsByDrugIds(analysis.getStudyId(), drugIds);
     List<ObjectNode> jsonVariables = trialverseService.getVariablesByOutcomeIds(outcomeIds);
+    List<ObjectNode> jsonMeasurements = trialverseService.getMeasurements(analysis.getStudyId(), outcomeIds);
+
     ObjectMapper mapper = new ObjectMapper();
+    Map<String, AlternativeEntry> alternatives = new HashMap<>();
+    for (ObjectNode jsonArm : jsonArms) {
+      Arm arm = mapper.convertValue(jsonArm, Arm.class);
+      alternatives.put(createKey(arm.getName()), new AlternativeEntry(arm.getName()));
+    }
+
     Map<String, CriterionEntry> criteria = new HashMap<>();
     for (ObjectNode variableJSONNode : jsonVariables) {
       Variable variable = mapper.convertValue(variableJSONNode, Variable.class);
       criteria.put(createKey(variable.getName()), createCriterionEntry(variable));
     }
+
     return new Problem(analysis.getName(), alternatives, criteria);
   }
 

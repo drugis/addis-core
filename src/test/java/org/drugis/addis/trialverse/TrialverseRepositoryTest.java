@@ -2,6 +2,7 @@ package org.drugis.addis.trialverse;
 
 import org.drugis.addis.config.JpaTrialverseRepositoryTestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.trialverse.model.Arm;
 import org.drugis.addis.trialverse.model.Namespace;
 import org.drugis.addis.trialverse.model.Study;
 import org.drugis.addis.trialverse.model.Variable;
@@ -62,9 +63,10 @@ public class TrialverseRepositoryTest {
   public void testGetArmNamesByDrugIds() {
     Integer studyId = 1;
     List<Long> drugIds = Arrays.asList(1L, 2L, 3L);
-    List<String> result = trialverseRepository.getArmNamesByDrugIds(studyId, drugIds);
+    List<Arm> result = trialverseRepository.getArmsByDrugIds(studyId, drugIds);
     assertEquals(2, result.size());
-    assertTrue(result.contains("study 1 arm 1"));
+    Arm arm = em.find(Arm.class, 1L);
+    assertTrue(result.contains(arm));
   }
 
   @Test

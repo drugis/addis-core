@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import org.drugis.addis.trialverse.model.Arm;
 import org.drugis.addis.trialverse.model.Variable;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.drugis.addis.trialverse.service.TrialverseService;
@@ -37,7 +38,20 @@ public class TrialverseServiceImpl implements TrialverseService {
   }
 
   @Override
-  public List<String> getArmNamesByDrugIds(Integer studyId, List<Long> drugIds) {
-    return trialverseRepository.getArmNamesByDrugIds(studyId, drugIds);
+  public List<ObjectNode> getArmsByDrugIds(Integer studyId, List<Long> drugIds) {
+    List<Arm> arms = trialverseRepository.getArmsByDrugIds(studyId, drugIds);
+    final ObjectMapper mapper = new ObjectMapper();
+    Collection<ObjectNode> JSONVariables = Collections2.transform(arms, new Function<Arm, ObjectNode>() {
+      @Override
+      public ObjectNode apply(Arm arm) {
+        return (ObjectNode) mapper.valueToTree(arm);
+      }
+    });
+    return new ArrayList<>(JSONVariables);
+  }
+
+  @Override
+  public List<ObjectNode> getMeasurements(Integer studyId, List<Long> outcomeIds) {
+    return null;
   }
 }

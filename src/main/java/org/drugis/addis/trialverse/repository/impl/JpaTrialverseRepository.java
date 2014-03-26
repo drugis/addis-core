@@ -2,6 +2,7 @@ package org.drugis.addis.trialverse.repository.impl;
 
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.trialverse.model.Arm;
 import org.drugis.addis.trialverse.model.Namespace;
 import org.drugis.addis.trialverse.model.Study;
 import org.drugis.addis.trialverse.model.Variable;
@@ -43,12 +44,12 @@ public class JpaTrialverseRepository implements TrialverseRepository {
 
 
   @Override
-  public List<String> getArmNamesByDrugIds(Integer studyId, List<Long> drugIds) {
+  public List<Arm> getArmsByDrugIds(Integer studyId, List<Long> drugIds) {
     if (drugIds.isEmpty()) {
       return Collections.emptyList();
     }
     Query query = em.createNativeQuery("SELECT" +
-            " a.name " +
+            " a.id, a.name " +
             " FROM" +
             "  arms a," +
             "  designs d," +
@@ -63,9 +64,9 @@ public class JpaTrialverseRepository implements TrialverseRepository {
             " AND" +
             "  mm.epoch = d.epoch" +
             " AND" +
-            " t.drug IN :drugIds");
+            " t.drug IN :drugIds", Arm.class);
     query.setParameter("drugIds", drugIds);
-    return (List<String>)query.getResultList();
+    return query.getResultList();
   }
 
   @Override

@@ -10,5 +10,7 @@ import java.util.List;
 public interface TrialverseService {
   public List<ObjectNode> getVariablesByOutcomeIds(List<Long> outcomeIds);
 
-  List<String> getArmNamesByDrugIds(Integer studyId, List<Long> drugIds);
+  public List<ObjectNode> getArmsByDrugIds(Integer studyId, List<Long> drugIds);
+
+  public List<ObjectNode> getMeasurements(Integer studyId, List<Long> outcomeIds);
 }
