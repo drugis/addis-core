@@ -121,8 +121,10 @@ public class ProblemServiceTest {
     String criterion2Title = "Insomnia";
 
     Map<String, CriterionEntry> criteria = new HashMap<>();
-    criteria.put(criterion1Key, mock(CriterionEntry.class, "criteriaEntry1"));
-    criteria.put(criterion2Key, mock(CriterionEntry.class, "criteriaEntry2"));
+    CriterionEntry criterionEntry1 = new CriterionEntry(criterion1Title, null, null);
+    CriterionEntry criterionEntry2 = new CriterionEntry(criterion2Title, null, null);
+    criteria.put(criterion1Key, criterionEntry1);
+    criteria.put(criterion2Key, criterionEntry2);
 
     return new Problem(title, alternatives, criteria);
   }
