@@ -86,7 +86,7 @@ public class JpaTrialverseRepository implements TrialverseRepository {
     }
 
     Query query = em.createNativeQuery("SELECT" +
-      "  m.*, a.name as testName " +
+      "  m.*" +
       " FROM" +
       "  measurements m," +
       "  measurement_moments mm," +

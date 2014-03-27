@@ -85,6 +85,26 @@ public class TrialverseRepositoryTest {
   }
 
   @Test
+  public void testGetOrderedMeasurementsTestForMeasureAttribute() {
+    Integer studyId = 1;
+    List<Long> outcomeIds = Arrays.asList(2L);
+    List<Long> armIds = Arrays.asList(1L);
+    List<Measurement> result = trialverseRepository.getOrderedMeasurements(studyId, outcomeIds, armIds);
+    assertEquals(2, result.size());
+    boolean foundStandardDeviationType = false, foundMeanType = false;
+    for(Measurement measurement : result) {
+      if(measurement.getMeasurementKey().getMeasurementAttribute() == MeasurementAttribute.STANDARD_DEVIATION) {
+        foundStandardDeviationType = true;
+      }
+      if(measurement.getMeasurementKey().getMeasurementAttribute() == MeasurementAttribute.MEAN) {
+        foundMeanType = true;
+      }
+    }
+    assertTrue(foundMeanType);
+    assertTrue(foundStandardDeviationType);
+  }
+
+  @Test
   public void testEmptyOutcomeIdInput() {
     List<Variable> result = trialverseRepository.getVariablesByOutcomeIds(new ArrayList<Long>());
     assertTrue(result.isEmpty());

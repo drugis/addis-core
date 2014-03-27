@@ -1,5 +1,7 @@
 package org.drugis.addis.trialverse.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
@@ -17,15 +19,19 @@ public class MeasurementKey implements Serializable {
   Long measurementMomentId;
   @Column(name = "arm")
   Long armId;
+  @Column(name = "attribute")
+  @Type(type = "org.drugis.addis.trialverse.model.MeasurementAttributeUserType")
+  MeasurementAttribute measurementAttribute;
 
   public MeasurementKey() {
   }
 
-  public MeasurementKey(Long studyId, Long variableId, Long measurementMomentId, Long armId) {
+  public MeasurementKey(Long studyId, Long variableId, Long measurementMomentId, Long armId, MeasurementAttribute measurementAttribute) {
     this.studyId = studyId;
     this.variableId = variableId;
     this.measurementMomentId = measurementMomentId;
     this.armId = armId;
+    this.measurementAttribute = measurementAttribute;
   }
 
   public Long getStudyId() {
@@ -60,14 +66,20 @@ public class MeasurementKey implements Serializable {
     this.armId = armId;
   }
 
+  public MeasurementAttribute getMeasurementAttribute() {
+    return measurementAttribute;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (!(o instanceof MeasurementKey)) return false;
 
     MeasurementKey that = (MeasurementKey) o;
 
     if (!armId.equals(that.armId)) return false;
+    if (measurementAttribute != that.measurementAttribute) return false;
     if (!measurementMomentId.equals(that.measurementMomentId)) return false;
     if (!studyId.equals(that.studyId)) return false;
     if (!variableId.equals(that.variableId)) return false;
@@ -81,6 +93,7 @@ public class MeasurementKey implements Serializable {
     result = 31 * result + variableId.hashCode();
     result = 31 * result + measurementMomentId.hashCode();
     result = 31 * result + armId.hashCode();
+    result = 31 * result + measurementAttribute.hashCode();
     return result;
   }
 }

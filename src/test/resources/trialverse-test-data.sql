@@ -48,9 +48,9 @@ INSERT INTO measurements(study, variable, measurement_moment, arm, attribute, in
                   VALUES(1,     1,        1,                  2,  'rate'       ,  5, NULL);
 
 INSERT INTO measurements(study, variable, measurement_moment, arm, attribute, integer_value, real_value)
-                  VALUES(1,     2,        1,                  1,  'sample size', 40, NULL);
+                  VALUES(1,     2,        1,                  1,  'mean', NULL, 1.2);
 INSERT INTO measurements(study, variable, measurement_moment, arm, attribute, integer_value, real_value)
-                  VALUES(1,     2,        1,                  1,  'rate'       , 12, NULL);
+                  VALUES(1,     2,        1,                  1,  'standard deviation' , NULL, 4.5);
 INSERT INTO measurements(study, variable, measurement_moment, arm, attribute, integer_value, real_value)
                   VALUES(1,     2,        1,                  2,  'sample size', 30, NULL);
 INSERT INTO measurements(study, variable, measurement_moment, arm, attribute, integer_value, real_value)
