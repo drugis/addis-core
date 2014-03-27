@@ -9,8 +9,8 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.*;
-import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.problems.service.ProblemService;
+import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.model.MeasurementType;
@@ -61,44 +61,39 @@ public class ProblemServiceImpl implements ProblemService {
 
     List<ObjectNode> jsonArms = trialverseService.getArmsByDrugIds(analysis.getStudyId(), drugIds);
     List<ObjectNode> jsonVariables = trialverseService.getVariablesByOutcomeIds(outcomeIds);
-    List<ObjectNode> jsonMeasurements = trialverseService.getMeasurements(analysis.getStudyId(), outcomeIds);
 
     ObjectMapper mapper = new ObjectMapper();
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
+    List<Long> armIds = new ArrayList<>(jsonArms.size());
+    List <Arm> armsCache = new ArrayList<>(jsonArms.size());
     for (ObjectNode jsonArm : jsonArms) {
       Arm arm = mapper.convertValue(jsonArm, Arm.class);
+      armIds.add(arm.getId());
+      armsCache.add(arm);
       alternatives.put(createKey(arm.getName()), new AlternativeEntry(arm.getName()));
     }
 
+    List<ObjectNode> jsonMeasurements = trialverseService.getOrderedMeasurements(analysis.getStudyId(), outcomeIds, armIds);
+    System.out.println(jsonMeasurements);
+
     Map<String, CriterionEntry> criteria = new HashMap<>();
+    List<Variable> variableCache = new ArrayList<>();
     for (ObjectNode variableJSONNode : jsonVariables) {
       Variable variable = mapper.convertValue(variableJSONNode, Variable.class);
+      variableCache.add(variable);
       criteria.put(createKey(variable.getName()), createCriterionEntry(variable));
     }
-
     List<Measurement> measurements = new ArrayList<>(jsonMeasurements.size());
     for (ObjectNode measurementJSONNode : jsonMeasurements) {
       Measurement measurement = mapper.convertValue(measurementJSONNode, Measurement.class);
       measurements.add(measurement);
     }
 
-    List<AbstractMeasurementEntry> performanceTable = createPerformanceTable(measurements);
+    PerformanceTableBuilder builder = new PerformanceTableBuilder(variableCache, armsCache, measurements);
+
+    List<AbstractMeasurementEntry> performanceTable = builder.build();
 
     return new Problem(analysis.getName(), alternatives, criteria, performanceTable);
-  }
-
-  private List<AbstractMeasurementEntry> createPerformanceTable(List<Measurement> measurements) {
-    Collections.sort(measurements, new Comparator<Measurement>() {
-      @Override
-      public int compare(Measurement left, Measurement right) {
-        if (left.getVariableId().compareTo(right.getVariableId()) == 0) {
-          return (left.getArmId().compareTo(right.getArmId()));
-        } else {
-          return left.getVariableId().compareTo(right.getVariableId());
-        }
-      }
-    });
-    return new ArrayList<>();
   }
 
   private CriterionEntry createCriterionEntry(Variable variable) throws EnumConstantNotPresentException {

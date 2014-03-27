@@ -78,3 +78,13 @@ CREATE TABLE variables (
     PRIMARY KEY(id),
     FOREIGN KEY(study) REFERENCES studies(id)
 );
+
+CREATE TABLE measurements (
+    study bigint,
+    variable bigint NOT NULL,
+    measurement_moment bigint NOT NULL,
+    arm bigint NOT NULL,
+    attribute character varying NOT NULL,
+    integer_value bigint,
+    real_value double precision
+);

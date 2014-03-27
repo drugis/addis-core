@@ -12,11 +12,28 @@ public class RatePerformance extends AbstractPerformance {
 
   @Override
   public String getType() {
-    return "dnormal";
+    return "dbeta";
   }
 
   @Override
-  public PerformanceParameters getParameters() {
+  public RatePerformanceParameters getParameters() {
     return this.parameters;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    RatePerformance that = (RatePerformance) o;
+
+    if (!parameters.equals(that.parameters)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return parameters.hashCode();
   }
 }

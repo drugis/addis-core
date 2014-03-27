@@ -37,3 +37,21 @@ INSERT INTO variables (id, study, name, description, unit_description, is_primar
                VALUES (1,   1,    'Nausea', 'descr1', 'Millipuke', true, 'RATE', 'TEST');
 INSERT INTO variables (id, study, name, description, unit_description, is_primary, measurement_type, variable_type)
                VALUES (2,   1,    'HAM', 'Pig', 'descr2', false, 'RATE', 'TEST');
+
+INSERT INTO measurements(study, variable, measurement_moment, arm, attribute, integer_value, real_value)
+                  VALUES(1,     1,        1,                  1,  'sample size', 60, NULL);
+INSERT INTO measurements(study, variable, measurement_moment, arm, attribute, integer_value, real_value)
+                  VALUES(1,     1,        1,                  1,  'rate'       , 15, NULL);
+INSERT INTO measurements(study, variable, measurement_moment, arm, attribute, integer_value, real_value)
+                  VALUES(1,     1,        1,                  2,  'sample size', 50, NULL);
+INSERT INTO measurements(study, variable, measurement_moment, arm, attribute, integer_value, real_value)
+                  VALUES(1,     1,        1,                  2,  'rate'       ,  5, NULL);
+
+INSERT INTO measurements(study, variable, measurement_moment, arm, attribute, integer_value, real_value)
+                  VALUES(1,     2,        1,                  1,  'sample size', 40, NULL);
+INSERT INTO measurements(study, variable, measurement_moment, arm, attribute, integer_value, real_value)
+                  VALUES(1,     2,        1,                  1,  'rate'       , 12, NULL);
+INSERT INTO measurements(study, variable, measurement_moment, arm, attribute, integer_value, real_value)
+                  VALUES(1,     2,        1,                  2,  'sample size', 30, NULL);
+INSERT INTO measurements(study, variable, measurement_moment, arm, attribute, integer_value, real_value)
+                  VALUES(1,     2,        1,                  2,  'rate'       ,  2, NULL);

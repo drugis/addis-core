@@ -2,10 +2,7 @@ package org.drugis.addis.trialverse;
 
 import org.drugis.addis.config.JpaTrialverseRepositoryTestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.trialverse.model.Arm;
-import org.drugis.addis.trialverse.model.Namespace;
-import org.drugis.addis.trialverse.model.Study;
-import org.drugis.addis.trialverse.model.Variable;
+import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,6 +73,15 @@ public class TrialverseRepositoryTest {
     List<Variable> result = trialverseRepository.getVariablesByOutcomeIds(outcomeIds);
     assertEquals(2, result.size());
     assertTrue(result.contains(expected));
+  }
+
+  @Test
+  public void testGetOrderedMeasurements() {
+    Integer studyId = 1;
+    List<Long> outcomeIds = Arrays.asList(1L, 2L);
+    List<Long> armIds = Arrays.asList(1L);
+    List<Measurement> result = trialverseRepository.getOrderedMeasurements(studyId, outcomeIds, armIds);
+    assertEquals(4, result.size());
   }
 
   @Test

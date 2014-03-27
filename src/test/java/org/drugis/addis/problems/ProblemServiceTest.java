@@ -10,7 +10,9 @@ import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
+import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
 import org.drugis.addis.problems.service.impl.ProblemServiceImpl;
+import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
@@ -92,6 +94,7 @@ public class ProblemServiceTest {
     ObjectNode armNode1 = mapper.valueToTree(arm1);
     ObjectNode armNode2 = mapper.valueToTree(arm2);
     List<ObjectNode> arms = Arrays.asList(armNode1, armNode2);
+    List<Long> armIds = Arrays.asList(arm1.getId(), arm2.getId());
     when(trialverseService.getArmsByDrugIds(studyId, drugIds)).thenReturn(arms);
 
     Variable variable1 = new Variable(1L, 11L, "HAM-D Responders", "description 1", "my unit is...", true, MeasurementType.RATE, "Test2");
@@ -102,8 +105,21 @@ public class ProblemServiceTest {
     List<ObjectNode> variables = Arrays.asList(variableNode1, variableNode2);
     when(trialverseService.getVariablesByOutcomeIds(outcomeIds)).thenReturn(variables);
 
-    Measurement measurement = new Measurement();
+    Long measurementMomentId = 1L;
+    Measurement measurement1 = new Measurement(1L, variable1.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.RATE, 42L, null);
+    Measurement measurement2 = new Measurement(1L, variable1.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.SAMPLE_SIZE, 68L, null);
+    Measurement measurement3 = new Measurement(1L, variable2.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.MEAN, null, 7.56);
+    Measurement measurement4 = new Measurement(1L, variable2.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.SAMPLE_SIZE, 44L, null);
+    Measurement measurement5 = new Measurement(1L, variable2.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.STANDARD_DEVIATION, null, 2.1);
 
+    ObjectNode measurementNode1 =  mapper.valueToTree(measurement1);
+    ObjectNode measurementNode2 =  mapper.valueToTree(measurement2);
+    ObjectNode measurementNode3 =  mapper.valueToTree(measurement3);
+    ObjectNode measurementNode4 =  mapper.valueToTree(measurement4);
+    ObjectNode measurementNode5 =  mapper.valueToTree(measurement5);
+
+    List<ObjectNode> measurements = Arrays.asList(measurementNode1, measurementNode2, measurementNode3, measurementNode4, measurementNode5);
+    when(trialverseService.getOrderedMeasurements(studyId, outcomeIds, armIds)).thenReturn(measurements);
 
     // Executor
     Problem actualProblem = problemService.getProblem(projectId, analysisId);
@@ -114,14 +130,17 @@ public class ProblemServiceTest {
     List<CriterionEntry> actualCriterionEntries = new ArrayList<>(actualProblem.getCriteria().values());
     assertArrayEquals(expectedAlternativeEntries.toArray(), actualAlternativeEntries.toArray());
     assertArrayEquals(expectedCriterionEntries.toArray(), actualCriterionEntries.toArray());
-    assertEquals(exampleProblem, actualProblem);
+
+    List<AbstractMeasurementEntry> expectedPerformance = exampleProblem.getPerformanceTable();
+    List<AbstractMeasurementEntry> actualPerformance = actualProblem.getPerformanceTable();
+    assertEquals(new HashSet(expectedPerformance), new HashSet(actualPerformance));
 
     verify(analysisRepository).get(projectId, analysisId);
     verify(triplestoreService).getTrialverseDrugIds(namespaceId, studyId, interventionUris);
     verify(triplestoreService).getTrialverseOutcomeIds(namespaceId, studyId, outcomeUris);
     verify(trialverseService).getVariablesByOutcomeIds(outcomeIds);
     verify(trialverseService).getArmsByDrugIds(studyId, drugIds);
-    verify(trialverseService).getMeasurements(studyId, outcomeIds);
+    verify(trialverseService).getOrderedMeasurements(studyId, outcomeIds, armIds);
   }
 
   private Problem createExampleProblem(Analysis analysis) {
@@ -148,7 +167,26 @@ public class ProblemServiceTest {
     criteria.put(criterion1Key, criterionEntry1);
     criteria.put(criterion2Key, criterionEntry2);
 
-    return new Problem(title, alternatives, criteria);
+    Arm arm1 = new Arm(1L, "paroxetine 40 mg/day");
+    Arm arm2 = new Arm(2L, "fluoxetine 20 mg/day");
+
+    Variable variable1 = new Variable(101L, 1L, "HAM-D Responders", "desc", null, false, MeasurementType.RATE, "");
+    Variable variable2 = new Variable(102L, 1L, "Insomnia", "desc", null, false, MeasurementType.CONTINUOUS, "");
+
+    Long measurementMomentId = 1L;
+
+    Measurement measurement1 = new Measurement(1L, variable1.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.RATE, 42L, null);
+    Measurement measurement2 = new Measurement(1L, variable1.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.SAMPLE_SIZE, 68L, null);
+    Measurement measurement3 = new Measurement(1L, variable2.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.MEAN, null, 7.56);
+    Measurement measurement4 = new Measurement(1L, variable2.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.SAMPLE_SIZE, 44L, null);
+    Measurement measurement5 = new Measurement(1L, variable2.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.STANDARD_DEVIATION, null, 2.1);
+
+    List<Variable> variables = Arrays.asList(variable1, variable2);
+    List<Arm> arms = Arrays.asList(arm1, arm2);
+    List<Measurement> measurements = Arrays.asList(measurement1, measurement2, measurement3, measurement4, measurement5);
+    PerformanceTableBuilder builder = new PerformanceTableBuilder(variables, arms, measurements);
+
+    return new Problem(title, alternatives, criteria, builder.build());
   }
 
   private Analysis createAnalysis() {

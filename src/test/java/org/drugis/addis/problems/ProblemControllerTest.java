@@ -5,6 +5,8 @@ import org.drugis.addis.problems.model.AlternativeEntry;
 import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.Problem;
 import org.drugis.addis.problems.service.ProblemService;
+import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
+import org.drugis.addis.problems.service.model.AbstractPerformance;
 import org.drugis.addis.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +19,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.mockito.Mockito.verify;
@@ -48,7 +52,8 @@ public class ProblemControllerTest {
 
   @Test
   public void testGetProblem() throws Exception {
-    Problem problem = new Problem("testProblem", new HashMap<String, AlternativeEntry>(), new HashMap<String, CriterionEntry>());
+    List<AbstractMeasurementEntry> entries = new ArrayList<>();
+    Problem problem = new Problem("testProblem", new HashMap<String, AlternativeEntry>(), new HashMap<String, CriterionEntry>(), entries);
     Integer projectId = 1;
     Integer analysisId = 1;
     when(problemService.getProblem(projectId, analysisId)).thenReturn(problem);

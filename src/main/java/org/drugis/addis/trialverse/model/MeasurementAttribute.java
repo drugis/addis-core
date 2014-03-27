@@ -1,4 +1,4 @@
-package org.drugis.addis.problems.model;
+package org.drugis.addis.trialverse.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -32,7 +32,7 @@ public enum MeasurementAttribute {
   }
 
   @JsonCreator
-  public static MeasurementAttribute fromJson(String text) {
+  public static MeasurementAttribute fromString(String text) {
     switch (text) {
       case "rate":
         return RATE;

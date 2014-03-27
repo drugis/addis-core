@@ -21,4 +21,24 @@ public abstract class AbstractMeasurementEntry {
   }
 
   public abstract AbstractPerformance getPerformance();
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    AbstractMeasurementEntry that = (AbstractMeasurementEntry) o;
+
+    if (!alternative.equals(that.alternative)) return false;
+    if (!criterion.equals(that.criterion)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = alternative.hashCode();
+    result = 31 * result + criterion.hashCode();
+    return result;
+  }
 }

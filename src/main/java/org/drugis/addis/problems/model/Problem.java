@@ -16,13 +16,10 @@ public class Problem {
   private List<AbstractMeasurementEntry> performanceTable;
 
   public Problem(String name, Map<String, AlternativeEntry> alternatives, Map<String, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
-    this.performanceTable = performanceTable;
-  }
-
-  public Problem(String title, Map<String, AlternativeEntry> alternatives, Map<String, CriterionEntry> criteria) {
-    this.title = title;
+    this.title = name;
     this.alternatives = alternatives;
     this.criteria = criteria;
+    this.performanceTable = performanceTable;
   }
 
   public String getTitle() {

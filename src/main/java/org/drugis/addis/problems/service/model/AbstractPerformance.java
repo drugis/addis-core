@@ -8,4 +8,6 @@ public abstract class AbstractPerformance {
   public abstract String getType();
 
   public abstract PerformanceParameters getParameters();
+
+
 }

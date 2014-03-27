@@ -12,7 +12,7 @@ public class RateMeasurementEntry extends AbstractMeasurementEntry {
   }
 
   @Override
-  public AbstractPerformance getPerformance() {
+  public RatePerformance getPerformance() {
     return this.performance;
   }
 }

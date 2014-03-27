@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import org.drugis.addis.trialverse.model.Arm;
+import org.drugis.addis.trialverse.model.Measurement;
 import org.drugis.addis.trialverse.model.Variable;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.drugis.addis.trialverse.service.TrialverseService;
@@ -37,8 +38,9 @@ public class TrialverseServiceImpl implements TrialverseService {
   }
 
   @Override
-  public List<ObjectNode> getMeasurements(Integer studyId, List<Long> outcomeIds) {
-    return null;
+  public List<ObjectNode> getOrderedMeasurements(Integer studyId, List<Long> outcomeIds, List<Long> armIds) {
+    List<Measurement> measurements = trialverseRepository.getOrderedMeasurements(studyId, outcomeIds, armIds);
+    return objectsToNodes(measurements);
   }
 
   private <T> List<ObjectNode> objectsToNodes(List<T> objectList) {
