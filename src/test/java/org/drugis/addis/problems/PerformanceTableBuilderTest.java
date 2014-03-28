@@ -8,8 +8,12 @@ import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
 import org.drugis.addis.problems.service.model.ContinuousPerformanceParameters;
 import org.drugis.addis.problems.service.model.RateMeasurementEntry;
+import org.drugis.addis.util.JSONUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,6 +27,11 @@ import static org.junit.Assert.assertNotNull;
  * Created by daan on 3/27/14.
  */
 public class PerformanceTableBuilderTest {
+
+  @Mock
+  JSONUtils jsonUtils;
+
+  @InjectMocks
   private PerformanceTableBuilder builder;
 
   Arm arm1 = new Arm(1L, 10L, "arm name 1");
@@ -60,6 +69,10 @@ public class PerformanceTableBuilderTest {
     alternativeEntryMap.put(arm1.getId(), alternativeEntry1);
     alternativeEntryMap.put(arm2.getId(), alternativeEntry2);
     builder = new PerformanceTableBuilder(criterionEntryMap, alternativeEntryMap, measurements);
+
+    jsonUtils = new JSONUtils();
+    MockitoAnnotations.initMocks(this);
+
   }
 
   @Test

@@ -8,7 +8,9 @@ import org.drugis.addis.problems.model.Measurement;
 import org.drugis.addis.problems.model.MeasurementAttribute;
 import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.util.JSONUtils;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +19,11 @@ import java.util.Map;
 /**
  * Created by daan on 3/27/14.
  */
+@Component
 public class PerformanceTableBuilder {
+
+  @Inject
+  JSONUtils jsonUtils;
 
   Map<Long, CriterionEntry> criteria = new HashMap<>();
   Map<Long, AlternativeEntry> alternatives = new HashMap<>();
@@ -77,7 +83,7 @@ public class PerformanceTableBuilder {
     Double sigma = standardDeviation.getRealValue() / Math.sqrt(sampleSize.getIntegerValue());
 
     ContinuousPerformance performance = new ContinuousPerformance(new ContinuousPerformanceParameters(mu, sigma));
-    return new ContinuousMeasurementEntry(JSONUtils.createKey(alternativeName), JSONUtils.createKey(criterionName), performance);
+    return new ContinuousMeasurementEntry(jsonUtils.createKey(alternativeName), jsonUtils.createKey(criterionName), performance);
   }
 
   public RateMeasurementEntry createBetaDistributionEntry(AlternativeEntry alternativeEntry, CriterionEntry criterionEntry, Map<MeasurementAttribute, Measurement> measurementMap) {
@@ -91,7 +97,7 @@ public class PerformanceTableBuilder {
     String alternativeName = alternativeEntry.getTitle();
     String criterionName = criterionEntry.getTitle();
     RatePerformance performance = new RatePerformance(new RatePerformanceParameters(alpha, beta));
-    return new RateMeasurementEntry(JSONUtils.createKey(alternativeName), JSONUtils.createKey(criterionName), performance);
+    return new RateMeasurementEntry(jsonUtils.createKey(alternativeName), jsonUtils.createKey(criterionName), performance);
   }
 
 }

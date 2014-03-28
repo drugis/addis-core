@@ -15,7 +15,9 @@ public class JSONUtilsTest {
     String withDosage = "Azilsartan 20.0 mg/day";
     String expectedWithDosage="azilsartan-200-mgday";
 
-    assertEquals(expectedWithParentheses, JSONUtils.createKey(withParentheses));
-    assertEquals(expectedWithDosage, JSONUtils.createKey(withDosage));
+    JSONUtils jsonUtils = new JSONUtils();
+
+    assertEquals(expectedWithParentheses, jsonUtils.createKey(withParentheses));
+    assertEquals(expectedWithDosage, jsonUtils.createKey(withDosage));
   }
 }

@@ -40,6 +40,9 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   PerformanceTableService performanceTableService;
 
+  @Inject
+  JSONUtils jsonUtils;
+
   @Override
   public Problem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
     Project project = projectRepository.getProjectById(projectId);
@@ -48,7 +51,7 @@ public class ProblemServiceImpl implements ProblemService {
     Map<Long, AlternativeEntry> alternativesCache = alternativeService.createAlternatives(project, analysis);
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
     for(AlternativeEntry alternativeEntry : alternativesCache.values()) {
-      alternatives.put(JSONUtils.createKey(alternativeEntry.getTitle()), alternativeEntry);
+      alternatives.put(jsonUtils.createKey(alternativeEntry.getTitle()), alternativeEntry);
     }
 
     List<Pair<Variable, CriterionEntry>> variableCriteriaPairs = criteriaService.createVariableCriteriaPairs(project, analysis);
@@ -58,7 +61,7 @@ public class ProblemServiceImpl implements ProblemService {
     for(Pair<Variable, CriterionEntry> variableCriterionPair : variableCriteriaPairs){
       Variable variable = variableCriterionPair.getLeft();
       CriterionEntry criterionEntry = variableCriterionPair.getRight();
-      criteria.put(JSONUtils.createKey(variable.getName()), criterionEntry);
+      criteria.put(jsonUtils.createKey(variable.getName()), criterionEntry);
       criteriaCache.put(variable.getId(), criterionEntry);
     }
 
