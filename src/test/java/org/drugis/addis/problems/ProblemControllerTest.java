@@ -5,8 +5,7 @@ import org.drugis.addis.problems.model.AlternativeEntry;
 import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.Problem;
 import org.drugis.addis.problems.service.ProblemService;
-import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
-import org.drugis.addis.problems.service.model.AbstractPerformance;
+import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,10 +19,14 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -52,15 +55,23 @@ public class ProblemControllerTest {
 
   @Test
   public void testGetProblem() throws Exception {
-    List<AbstractMeasurementEntry> entries = new ArrayList<>();
-    Problem problem = new Problem("testProblem", new HashMap<String, AlternativeEntry>(), new HashMap<String, CriterionEntry>(), entries);
+    RatePerformance ratePerformance = new RatePerformance(new RatePerformanceParameters(10L, 50L));
+    AbstractMeasurementEntry rateMeasurementEntry = new RateMeasurementEntry("alternative 1", "criterion 1", ratePerformance);
+    ContinuousPerformance continuousPerformance = new ContinuousPerformance(new ContinuousPerformanceParameters(7.5, 2.1));
+    AbstractMeasurementEntry continuousMeasurementEntry = new ContinuousMeasurementEntry("alternative 2", "criterion 2", continuousPerformance);
+    List<AbstractMeasurementEntry> performanceTable = Arrays.asList(rateMeasurementEntry, continuousMeasurementEntry);
+    Problem problem = new Problem("testProblem", new HashMap<String, AlternativeEntry>(), new HashMap<String, CriterionEntry>(), performanceTable);
     Integer projectId = 1;
     Integer analysisId = 1;
     when(problemService.getProblem(projectId, analysisId)).thenReturn(problem);
     mockMvc.perform(get("/projects/1/analyses/1/problem"))
       .andExpect(status().isOk())
       .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(jsonPath("$", notNullValue()));
+      .andExpect(jsonPath("$", notNullValue()))
+      .andExpect(jsonPath("$.title", equalTo(problem.getTitle())))
+      .andExpect(jsonPath("$.performanceTable", hasSize(2)))
+      .andExpect(jsonPath("$.performanceTable[0].performance.type", is("dbeta")))
+      .andExpect(jsonPath("$.performanceTable[1].performance.type", is("dnormal")));
     verify(problemService).getProblem(projectId, analysisId);
   }
 

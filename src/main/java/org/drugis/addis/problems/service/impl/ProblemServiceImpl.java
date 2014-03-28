@@ -16,6 +16,7 @@ import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.model.MeasurementType;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.util.JSONUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -70,7 +71,7 @@ public class ProblemServiceImpl implements ProblemService {
       Arm arm = mapper.convertValue(jsonArm, Arm.class);
       armIds.add(arm.getId());
       armsCache.add(arm);
-      alternatives.put(createKey(arm.getName()), new AlternativeEntry(arm.getName()));
+      alternatives.put(JSONUtils.createKey(arm.getName()), new AlternativeEntry(arm.getName()));
     }
 
     List<ObjectNode> jsonMeasurements = trialverseService.getOrderedMeasurements(analysis.getStudyId(), outcomeIds, armIds);
@@ -81,7 +82,7 @@ public class ProblemServiceImpl implements ProblemService {
     for (ObjectNode variableJSONNode : jsonVariables) {
       Variable variable = mapper.convertValue(variableJSONNode, Variable.class);
       variableCache.add(variable);
-      criteria.put(createKey(variable.getName()), createCriterionEntry(variable));
+      criteria.put(JSONUtils.createKey(variable.getName()), createCriterionEntry(variable));
     }
     List<Measurement> measurements = new ArrayList<>(jsonMeasurements.size());
     for (ObjectNode measurementJSONNode : jsonMeasurements) {
@@ -114,8 +115,5 @@ public class ProblemServiceImpl implements ProblemService {
     return new CriterionEntry(variable.getName(), scale, null);
   }
 
-  private String createKey(String value) {
-    //TODO: Expand properly
-    return value.replace(" ", "-").replace("/", "").toLowerCase();
-  }
+
 }

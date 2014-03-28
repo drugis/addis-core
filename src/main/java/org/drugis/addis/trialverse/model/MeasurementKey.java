@@ -70,11 +70,10 @@ public class MeasurementKey implements Serializable {
     return measurementAttribute;
   }
 
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof MeasurementKey)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     MeasurementKey that = (MeasurementKey) o;
 

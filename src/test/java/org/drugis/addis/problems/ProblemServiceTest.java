@@ -133,7 +133,7 @@ public class ProblemServiceTest {
 
     List<AbstractMeasurementEntry> expectedPerformance = exampleProblem.getPerformanceTable();
     List<AbstractMeasurementEntry> actualPerformance = actualProblem.getPerformanceTable();
-    assertEquals(new HashSet(expectedPerformance), new HashSet(actualPerformance));
+    assertEquals(new HashSet<>(expectedPerformance), new HashSet<>(actualPerformance));
 
     verify(analysisRepository).get(projectId, analysisId);
     verify(triplestoreService).getTrialverseDrugIds(namespaceId, studyId, interventionUris);

@@ -5,6 +5,7 @@ import org.drugis.addis.problems.model.Measurement;
 import org.drugis.addis.problems.model.MeasurementAttribute;
 import org.drugis.addis.problems.model.Variable;
 import org.drugis.addis.problems.service.model.*;
+import org.drugis.addis.util.JSONUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ public class PerformanceTableBuilder {
 
   public PerformanceTableBuilder(List<Variable> variables, List<Arm> arms, List<Measurement> measurements) {
     for (Variable variable : variables) {
-      variableMap.put(new Long(variable.getId()), variable);
+      variableMap.put(variable.getId(), variable);
     }
 
     for (Arm arm : arms) {
@@ -46,6 +47,7 @@ public class PerformanceTableBuilder {
       }
       performanceMap.get(key).put(measurement.getMeasurementAttribute(), measurement);
     }
+    System.out.println("created performance map " + performanceMap);
     return performanceMap;
   }
 
@@ -54,9 +56,12 @@ public class PerformanceTableBuilder {
 
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
     for (Map<MeasurementAttribute, Measurement> measurementMap : measurementsMap.values()) {
+      System.out.println();
       if (measurementMap.get(MeasurementAttribute.RATE) != null) {
+        System.out.println("creating beta entry");
         performanceTable.add(createBetaDistributionEntry(measurementMap));
       } else if (measurementMap.get(MeasurementAttribute.MEAN) != null) {
+        System.out.println("creating normal entry");
         performanceTable.add(createNormalDistributionEntry(measurementMap));
       }
     }
@@ -75,7 +80,7 @@ public class PerformanceTableBuilder {
     Double sigma = standardDeviation.getRealValue();
 
     ContinuousPerformance performance = new ContinuousPerformance(new ContinuousPerformanceParameters(mu, sigma));
-    return new ContinuousMeasurementEntry(armName, variableName, performance);
+    return new ContinuousMeasurementEntry(JSONUtils.createKey(armName), JSONUtils.createKey(variableName), performance);
   }
 
   public RateMeasurementEntry createBetaDistributionEntry(Map<MeasurementAttribute, Measurement> measurementMap) {
@@ -89,7 +94,7 @@ public class PerformanceTableBuilder {
     String armName = armMap.get(rate.getArmId()).getName();
     String variableName = variableMap.get(rate.getVariableId()).getName();
     RatePerformance performance = new RatePerformance(new RatePerformanceParameters(alpha, beta));
-    return new RateMeasurementEntry(armName, variableName, performance);
+    return new RateMeasurementEntry(JSONUtils.createKey(armName), JSONUtils.createKey(variableName), performance);
   }
 
 }

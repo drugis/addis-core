@@ -1,6 +1,7 @@
 package org.drugis.addis.trialverse.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -48,26 +49,27 @@ public class Measurement {
 
   public Long getMeasurementMomentId() {return measurementKey.getMeasurementMomentId(); }
 
+  public MeasurementAttribute getMeasurementAttribute() { return measurementKey.getMeasurementAttribute(); }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof Measurement)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     Measurement that = (Measurement) o;
 
-    if (integerValue != null ? !integerValue.equals(that.integerValue) : that.integerValue != null) return false;
-    if (measurementKey != null ? !measurementKey.equals(that.measurementKey) : that.measurementKey != null)
-      return false;
-    if (realValue != null ? !realValue.equals(that.realValue) : that.realValue != null) return false;
+    if (!integerValue.equals(that.integerValue)) return false;
+    if (!measurementKey.equals(that.measurementKey)) return false;
+    if (!realValue.equals(that.realValue)) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    int result = measurementKey != null ? measurementKey.hashCode() : 0;
-    result = 31 * result + (integerValue != null ? integerValue.hashCode() : 0);
-    result = 31 * result + (realValue != null ? realValue.hashCode() : 0);
+    int result = measurementKey.hashCode();
+    result = 31 * result + integerValue.hashCode();
+    result = 31 * result + realValue.hashCode();
     return result;
   }
 }

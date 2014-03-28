@@ -15,8 +15,8 @@ public class Problem {
   private Map<String, CriterionEntry> criteria;
   private List<AbstractMeasurementEntry> performanceTable;
 
-  public Problem(String name, Map<String, AlternativeEntry> alternatives, Map<String, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
-    this.title = name;
+  public Problem(String title, Map<String, AlternativeEntry> alternatives, Map<String, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
+    this.title = title;
     this.alternatives = alternatives;
     this.criteria = criteria;
     this.performanceTable = performanceTable;
