@@ -5,6 +5,8 @@ import com.google.common.collect.Collections2;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -93,16 +95,16 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<Long> getTrialverseDrugIds(Integer namespaceId, Integer studyId, List<String> drugURIs) {
+  public Map<Long, String> getTrialverseDrugs(Integer namespaceId, Integer studyId, Collection<String> drugURIs) {
     return getTrialverseConceptIds(namespaceId, studyId, AnalysisConcept.DRUG, drugURIs);
   }
 
   @Override
-  public List<Long> getTrialverseOutcomeIds(Integer namespaceId, Integer studyId, List<String> outcomeURIs) {
+  public Map<Long, String> getTrialverseVariables(Integer namespaceId, Integer studyId, Collection<String> outcomeURIs) {
     return getTrialverseConceptIds(namespaceId, studyId, AnalysisConcept.OUTCOME, outcomeURIs);
   }
 
-  private List<Long> getTrialverseConceptIds(Integer namespaceId, Integer studyId, AnalysisConcept analysisConcept, List<String> conceptURIs) {
+  private Map<Long, String> getTrialverseConceptIds(Integer namespaceId, Integer studyId, AnalysisConcept analysisConcept, Collection<String> conceptURIs) {
     Collection<String> strippedUris = Collections2.transform(conceptURIs, new Function<String, String>() {
       @Override
       public String apply(String s) {
@@ -119,13 +121,15 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     String response = triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    List<Long> conceptIds = new ArrayList<>(bindings.size());
+    Map<Long, String> concepts = new HashMap<>(bindings.size());
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
+      String type = JsonPath.read(binding, "$.type.value");
       Long conceptId = extractConceptIdFromUri(uri);
-      conceptIds.add(conceptId);
+      String conceptUUID = subStringAfterLastSlash(type);
+      concepts.put(conceptId, conceptUUID);
     }
-    return conceptIds;
+    return concepts;
   }
 
   private String createFindUsagesQuery(Integer namespaceId, Integer studyId, AnalysisConcept analysisConcept, String URIsToFind) {

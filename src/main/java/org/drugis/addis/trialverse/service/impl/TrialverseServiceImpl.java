@@ -26,19 +26,19 @@ public class TrialverseServiceImpl implements TrialverseService {
   TrialverseRepository trialverseRepository;
 
   @Override
-  public List<ObjectNode> getVariablesByOutcomeIds(List<Long> outcomeIds) {
+  public List<ObjectNode> getVariablesByIds(Collection<Long> outcomeIds) {
     List<Variable> variableList = trialverseRepository.getVariablesByOutcomeIds(outcomeIds);
     return objectsToNodes(variableList);
   }
 
   @Override
-  public List<ObjectNode> getArmsByDrugIds(Integer studyId, List<Long> drugIds) {
+  public List<ObjectNode> getArmsByDrugIds(Integer studyId, Collection<Long> drugIds) {
     List<Arm> arms = trialverseRepository.getArmsByDrugIds(studyId, drugIds);
     return objectsToNodes(arms);
   }
 
   @Override
-  public List<ObjectNode> getOrderedMeasurements(Integer studyId, List<Long> outcomeIds, List<Long> armIds) {
+  public List<ObjectNode> getOrderedMeasurements(Integer studyId, Collection<Long> outcomeIds, Collection<Long> armIds) {
     List<Measurement> measurements = trialverseRepository.getOrderedMeasurements(studyId, outcomeIds, armIds);
     return objectsToNodes(measurements);
   }

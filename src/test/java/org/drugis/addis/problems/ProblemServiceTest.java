@@ -74,28 +74,41 @@ public class ProblemServiceTest {
 
     String outcomeUri1 = exampleAnalysis.getSelectedOutcomes().get(0).getSemanticOutcomeUri();
     String outcomeUri2 = exampleAnalysis.getSelectedOutcomes().get(1).getSemanticOutcomeUri();
-    List<String> outcomeUris = Arrays.asList(outcomeUri1, outcomeUri2);
+    Map<String, Outcome> outcomesByUri = new HashMap<>();
+    Outcome outcome1 = mock(Outcome.class);
+    Outcome outcome2 = mock(Outcome.class);
+    when(outcome1.getName()).thenReturn("outcome 1");
+    when(outcome2.getName()).thenReturn("outcome 2");
+    outcomesByUri.put(outcomeUri1, outcome1);
+    outcomesByUri.put(outcomeUri2, outcome2);
 
-    List<Long> drugIds = Arrays.asList(1001L, 1002L, 1003L);
-    List<Long> outcomeIds = Arrays.asList(2001L, 2002L, 2003L);
+    Map<Long, String> drugs = new HashMap<>();
+    drugs.put(1001L, "uuid1");
+    drugs.put(1002L, "uuid2");
+    drugs.put(1003L, "uuid3");
+
+    Map<Long, String> outcomes = new HashMap<>();
+    drugs.put(2001L, "uuid1");
+    drugs.put(2002L, "uuid2");
+    drugs.put(2003L, "uuid3");
 
     Problem exampleProblem = createExampleProblem(exampleAnalysis);
     Project project = mock(Project.class);
     when(project.getTrialverseId()).thenReturn(namespaceId);
     when(projectRepository.getProjectById(projectId)).thenReturn(project);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(exampleAnalysis);
-    when(triplestoreService.getTrialverseDrugIds(namespaceId, studyId, interventionUris)).thenReturn(drugIds);
-    when(triplestoreService.getTrialverseOutcomeIds(namespaceId, studyId, outcomeUris)).thenReturn(outcomeIds);
+    when(triplestoreService.getTrialverseDrugs(namespaceId, studyId, interventionUris)).thenReturn(drugs);
+    when(triplestoreService.getTrialverseVariables(namespaceId, studyId, outcomesByUri.keySet())).thenReturn(outcomes);
 
     ObjectMapper mapper = new ObjectMapper();
 
-    Arm arm1 = new Arm(1L, "paroxetine 40 mg/day");
-    Arm arm2 = new Arm(2L, "fluoxetine 20 mg/day");
+    Arm arm1 = new Arm(1L, 1001L, "paroxetine 40 mg/day");
+    Arm arm2 = new Arm(2L, 1002L, "fluoxetine 20 mg/day");
     ObjectNode armNode1 = mapper.valueToTree(arm1);
     ObjectNode armNode2 = mapper.valueToTree(arm2);
     List<ObjectNode> arms = Arrays.asList(armNode1, armNode2);
     List<Long> armIds = Arrays.asList(arm1.getId(), arm2.getId());
-    when(trialverseService.getArmsByDrugIds(studyId, drugIds)).thenReturn(arms);
+    when(trialverseService.getArmsByDrugIds(studyId, drugs.keySet())).thenReturn(arms);
 
     Variable variable1 = new Variable(1L, 11L, "HAM-D Responders", "description 1", "my unit is...", true, MeasurementType.RATE, "Test2");
     Variable variable2 = new Variable(2L, 12L, "Insomnia", "description 2", "my unit is...", true, MeasurementType.CONTINUOUS, "Test");
@@ -103,7 +116,7 @@ public class ProblemServiceTest {
     ObjectNode variableNode1 =  mapper.valueToTree(variable1);
     ObjectNode variableNode2 = mapper.valueToTree(variable2);
     List<ObjectNode> variables = Arrays.asList(variableNode1, variableNode2);
-    when(trialverseService.getVariablesByOutcomeIds(outcomeIds)).thenReturn(variables);
+    when(trialverseService.getVariablesByIds(outcomes.keySet())).thenReturn(variables);
 
     Long measurementMomentId = 1L;
     Measurement measurement1 = new Measurement(1L, variable1.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.RATE, 42L, null);
@@ -119,7 +132,7 @@ public class ProblemServiceTest {
     ObjectNode measurementNode5 =  mapper.valueToTree(measurement5);
 
     List<ObjectNode> measurements = Arrays.asList(measurementNode1, measurementNode2, measurementNode3, measurementNode4, measurementNode5);
-    when(trialverseService.getOrderedMeasurements(studyId, outcomeIds, armIds)).thenReturn(measurements);
+    when(trialverseService.getOrderedMeasurements(studyId, outcomes.keySet(), armIds)).thenReturn(measurements);
 
     // Executor
     Problem actualProblem = problemService.getProblem(projectId, analysisId);
@@ -136,11 +149,11 @@ public class ProblemServiceTest {
     assertEquals(new HashSet<>(expectedPerformance), new HashSet<>(actualPerformance));
 
     verify(analysisRepository).get(projectId, analysisId);
-    verify(triplestoreService).getTrialverseDrugIds(namespaceId, studyId, interventionUris);
-    verify(triplestoreService).getTrialverseOutcomeIds(namespaceId, studyId, outcomeUris);
-    verify(trialverseService).getVariablesByOutcomeIds(outcomeIds);
-    verify(trialverseService).getArmsByDrugIds(studyId, drugIds);
-    verify(trialverseService).getOrderedMeasurements(studyId, outcomeIds, armIds);
+    verify(triplestoreService).getTrialverseDrugs(namespaceId, studyId, interventionUris);
+    verify(triplestoreService).getTrialverseVariables(namespaceId, studyId, outcomesByUri.keySet());
+    verify(trialverseService).getVariablesByIds(outcomes.keySet());
+    verify(trialverseService).getArmsByDrugIds(studyId, drugs.keySet());
+    verify(trialverseService).getOrderedMeasurements(studyId, outcomes.keySet(), armIds);
   }
 
   private Problem createExampleProblem(Analysis analysis) {
@@ -151,8 +164,10 @@ public class ProblemServiceTest {
     String alternative2Title = "fluoxetine 20 mg/day";
 
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
-    alternatives.put(alternative1Key, new AlternativeEntry(alternative1Title));
-    alternatives.put(alternative2Key, new AlternativeEntry(alternative2Title));
+    AlternativeEntry alternativeEntry1 = new AlternativeEntry(alternative1Title);
+    AlternativeEntry alternativeEntry2 = new AlternativeEntry(alternative2Title);
+    alternatives.put(alternative1Key, alternativeEntry1);
+    alternatives.put(alternative2Key, alternativeEntry2);
 
 
     String criterion1Key = "ham-d-responders";
@@ -167,8 +182,8 @@ public class ProblemServiceTest {
     criteria.put(criterion1Key, criterionEntry1);
     criteria.put(criterion2Key, criterionEntry2);
 
-    Arm arm1 = new Arm(1L, "paroxetine 40 mg/day");
-    Arm arm2 = new Arm(2L, "fluoxetine 20 mg/day");
+    Arm arm1 = new Arm(1L, 1001L, "paroxetine 40 mg/day");
+    Arm arm2 = new Arm(2L, 1002L, "fluoxetine 20 mg/day");
 
     Variable variable1 = new Variable(101L, 1L, "HAM-D Responders", "desc", null, false, MeasurementType.RATE, "");
     Variable variable2 = new Variable(102L, 1L, "Insomnia", "desc", null, false, MeasurementType.CONTINUOUS, "");
@@ -181,10 +196,17 @@ public class ProblemServiceTest {
     Measurement measurement4 = new Measurement(1L, variable2.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.SAMPLE_SIZE, 44L, null);
     Measurement measurement5 = new Measurement(1L, variable2.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.STANDARD_DEVIATION, null, 2.1);
 
-    List<Variable> variables = Arrays.asList(variable1, variable2);
-    List<Arm> arms = Arrays.asList(arm1, arm2);
     List<Measurement> measurements = Arrays.asList(measurement1, measurement2, measurement3, measurement4, measurement5);
-    PerformanceTableBuilder builder = new PerformanceTableBuilder(variables, arms, measurements);
+
+    Map<Long, CriterionEntry> criteriaCache = new HashMap<>();
+    criteriaCache.put(variable1.getId(), criterionEntry1);
+    criteriaCache.put(variable2.getId(), criterionEntry2);
+
+
+    Map<Long, AlternativeEntry> alternativesCache= new HashMap<>();
+    alternativesCache.put(arm1.getId(), alternativeEntry1);
+    alternativesCache.put(arm2.getId(), alternativeEntry2);
+    PerformanceTableBuilder builder = new PerformanceTableBuilder(criteriaCache, alternativesCache, measurements);
 
     return new Problem(title, alternatives, criteria, builder.build());
   }

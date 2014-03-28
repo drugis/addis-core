@@ -43,61 +43,63 @@ public class ProblemServiceImpl implements ProblemService {
 
   @Override
   public Problem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
+    ObjectMapper mapper = new ObjectMapper();
     Analysis analysis = analysisRepository.get(projectId, analysisId);
     Project project = projectRepository.getProjectById(projectId);
 
-    List<String> interventionUris = new ArrayList<>(analysis.getSelectedInterventions().size());
+    Map<String, Intervention> interventionsByUri = new HashMap<>();
     for (Intervention intervention : analysis.getSelectedInterventions()) {
-      interventionUris.add(intervention.getSemanticInterventionUri());
-    }
-    List<String> outcomeUris = new ArrayList<>(analysis.getSelectedOutcomes().size());
-    for (Outcome outcome : analysis.getSelectedOutcomes()) {
-      outcomeUris.add(outcome.getSemanticOutcomeUri());
+      interventionsByUri.put(intervention.getSemanticInterventionUri(), intervention);
     }
 
-    List<Long> drugIds = triplestoreService.getTrialverseDrugIds(project.getTrialverseId(), analysis.getStudyId(), interventionUris);
-    System.out.println("DEBUG drug ids : " + drugIds);
-    List<Long> outcomeIds = triplestoreService.getTrialverseOutcomeIds(project.getTrialverseId(), analysis.getStudyId(), outcomeUris);
-    System.out.println("DEBUG outcome ids : " + outcomeIds);
-
-    List<ObjectNode> jsonArms = trialverseService.getArmsByDrugIds(analysis.getStudyId(), drugIds);
-    List<ObjectNode> jsonVariables = trialverseService.getVariablesByOutcomeIds(outcomeIds);
-
-    ObjectMapper mapper = new ObjectMapper();
+    Map<Long, String> drugs = triplestoreService.getTrialverseDrugs(project.getTrialverseId(), analysis.getStudyId(), interventionsByUri.keySet());
+    System.out.println("DEBUG drug ids : " + drugs);
+    List<ObjectNode> jsonArms = trialverseService.getArmsByDrugIds(analysis.getStudyId(), drugs.keySet());
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
-    List<Long> armIds = new ArrayList<>(jsonArms.size());
-    List <Arm> armsCache = new ArrayList<>(jsonArms.size());
+    Map<Long, AlternativeEntry> alternativesCache = new HashMap<>();
     for (ObjectNode jsonArm : jsonArms) {
       Arm arm = mapper.convertValue(jsonArm, Arm.class);
-      armIds.add(arm.getId());
-      armsCache.add(arm);
-      alternatives.put(JSONUtils.createKey(arm.getName()), new AlternativeEntry(arm.getName()));
+      String drugUUID = drugs.get(arm.getDrugId());
+      Intervention intervention = interventionsByUri.get(drugUUID);
+      AlternativeEntry alternativeEntry = new AlternativeEntry(intervention.getName());
+      alternativesCache.put(arm.getId(), alternativeEntry);
+      alternatives.put(JSONUtils.createKey(alternativeEntry.getTitle()), alternativeEntry);
     }
 
-    List<ObjectNode> jsonMeasurements = trialverseService.getOrderedMeasurements(analysis.getStudyId(), outcomeIds, armIds);
-    System.out.println(jsonMeasurements);
-
+    Map<String, Outcome> outcomesByUri = new HashMap<>();
+    for (Outcome outcome : analysis.getSelectedOutcomes()) {
+      outcomesByUri.put(outcome.getSemanticOutcomeUri(), outcome);
+    }
+    Map<Long, String> trialverseVariables = triplestoreService.getTrialverseVariables(project.getTrialverseId(), analysis.getStudyId(), outcomesByUri.keySet());
+    System.out.println("DEBUG outcome ids : " + trialverseVariables);
+    List<ObjectNode> jsonVariables = trialverseService.getVariablesByIds(trialverseVariables.keySet());
     Map<String, CriterionEntry> criteria = new HashMap<>();
-    List<Variable> variableCache = new ArrayList<>();
+    Map<Long, CriterionEntry> criteriaCache = new HashMap<>();
     for (ObjectNode variableJSONNode : jsonVariables) {
       Variable variable = mapper.convertValue(variableJSONNode, Variable.class);
-      variableCache.add(variable);
-      criteria.put(JSONUtils.createKey(variable.getName()), createCriterionEntry(variable));
+      String outcomeUUID = trialverseVariables.get(variable.getId());
+      Outcome outcome = outcomesByUri.get(outcomeUUID);
+      CriterionEntry criterionEntry = createCriterionEntry(outcome, variable);
+      criteriaCache.put(variable.getId(), criterionEntry);
+      criteria.put(JSONUtils.createKey(variable.getName()), criterionEntry);
     }
+
+    List<ObjectNode> jsonMeasurements = trialverseService.getOrderedMeasurements(analysis.getStudyId(), trialverseVariables.keySet(), alternativesCache.keySet());
+    System.out.println("DEBUG jsonMeasurements : " + jsonMeasurements);
     List<Measurement> measurements = new ArrayList<>(jsonMeasurements.size());
     for (ObjectNode measurementJSONNode : jsonMeasurements) {
       Measurement measurement = mapper.convertValue(measurementJSONNode, Measurement.class);
       measurements.add(measurement);
     }
 
-    PerformanceTableBuilder builder = new PerformanceTableBuilder(variableCache, armsCache, measurements);
+    PerformanceTableBuilder builder = new PerformanceTableBuilder(criteriaCache, alternativesCache, measurements);
 
     List<AbstractMeasurementEntry> performanceTable = builder.build();
 
     return new Problem(analysis.getName(), alternatives, criteria, performanceTable);
   }
 
-  private CriterionEntry createCriterionEntry(Variable variable) throws EnumConstantNotPresentException {
+  private CriterionEntry createCriterionEntry(Outcome outcome, Variable variable) throws EnumConstantNotPresentException {
     List<Double> scale;
     switch (variable.getMeasurementType()) {
       case RATE:
@@ -112,7 +114,7 @@ public class ProblemServiceImpl implements ProblemService {
         throw new EnumConstantNotPresentException(MeasurementType.class, variable.getMeasurementType().toString());
     }
     // NB: partialvaluefunctions to be filled in by MCDA component, left null here
-    return new CriterionEntry(variable.getName(), scale, null);
+    return new CriterionEntry(outcome.getName(), scale, null);
   }
 
 

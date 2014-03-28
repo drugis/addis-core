@@ -1,6 +1,5 @@
 package org.drugis.addis.trialverse.service;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -59,7 +58,7 @@ public class TrialverseServiceTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     // EXECUTOR
-    List<ObjectNode> serialisedVars = trialverseService.getVariablesByOutcomeIds(outcomeIds);
+    List<ObjectNode> serialisedVars = trialverseService.getVariablesByIds(outcomeIds);
 
     List<Variable> resultVars = objectMapper.readValue(serialisedVars.toString(), new TypeReference<List<Variable>>() {});
     assertEquals(variables, resultVars);

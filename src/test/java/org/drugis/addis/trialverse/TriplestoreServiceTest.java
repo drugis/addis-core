@@ -15,10 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -67,12 +64,15 @@ public class TriplestoreServiceTest {
     List<String> interventionConceptUris = new ArrayList<>();
     String mockResult = loadResource("/triplestoreService/exampleDrugIdResult.json");
     when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
-    List<Long> expected = Arrays.asList(1L, 4L);
+
+    Map<Long, String>  expected = new HashMap<>();
+    expected.put(1L, "e2611534a509251f2e1cnogeendrug");
+    expected.put(4L, "e2611534a509251f2e1cdrug");
 
     // EXECUTOR
-    List<Long> result = triplestoreService.getTrialverseDrugIds(namespaceId, studyId, interventionConceptUris);
+    Map<Long, String> result = triplestoreService.getTrialverseDrugs(namespaceId, studyId, interventionConceptUris);
 
-    assertEquals(new HashSet<>(expected), new HashSet<>(result));
+    assertEquals(expected , result);
   }
 
   @Test
@@ -82,12 +82,15 @@ public class TriplestoreServiceTest {
     List<String> outcomeConceptUris = new ArrayList<>();
     String mockResult = loadResource("/triplestoreService/exampleOutcomeIdResult.json");
     when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
-    List<Long> expected = Arrays.asList(1L, 4L);
+
+    Map<Long, String>  expected = new HashMap<>();
+    expected.put(1L, "e2611534a509251f2e1c8endpoint");
+    expected.put(4L, "e2611534a509251f2e1cadverseEvent");
 
     // EXECUTOR
-    List<Long> result = triplestoreService.getTrialverseOutcomeIds(namespaceId, studyId, outcomeConceptUris);
+    Map<Long, String> result = triplestoreService.getTrialverseVariables(namespaceId, studyId, outcomeConceptUris);
 
-    assertEquals(new HashSet<>(expected), new HashSet<>(result));
+    assertEquals(expected , result);
   }
 
   private String loadResource(String filename) {

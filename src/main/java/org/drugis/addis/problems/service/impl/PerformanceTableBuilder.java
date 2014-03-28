@@ -1,9 +1,11 @@
 package org.drugis.addis.problems.service.impl;
 
-import org.drugis.addis.problems.model.Arm;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.problems.model.AlternativeEntry;
+import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.Measurement;
 import org.drugis.addis.problems.model.MeasurementAttribute;
-import org.drugis.addis.problems.model.Variable;
 import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.util.JSONUtils;
 
@@ -17,31 +19,24 @@ import java.util.Map;
  */
 public class PerformanceTableBuilder {
 
-  Map<Long, Variable> variableMap = new HashMap<>();
-  Map<Long, Arm> armMap = new HashMap<>();
+  Map<Long, CriterionEntry> criteria = new HashMap<>();
+  Map<Long, AlternativeEntry> alternatives = new HashMap<>();
   List<Measurement> measurements;
 
 
-  public PerformanceTableBuilder(List<Variable> variables, List<Arm> arms, List<Measurement> measurements) {
-    for (Variable variable : variables) {
-      variableMap.put(variable.getId(), variable);
-    }
-
-    for (Arm arm : arms) {
-      armMap.put(arm.getId(), arm);
-    }
-
+  public PerformanceTableBuilder(Map<Long, CriterionEntry> criteria, Map<Long, AlternativeEntry> alternatives, List<Measurement> measurements) {
+    this.criteria = criteria;
+    this.alternatives = alternatives;
     this.measurements = measurements;
   }
 
-  public Map<Map<Arm, Variable>, Map<MeasurementAttribute, Measurement>> createPerformanceMap() {
-    Map<Map<Arm, Variable>, Map<MeasurementAttribute, Measurement>> performanceMap = new HashMap<>();
+  public Map<Pair<AlternativeEntry, CriterionEntry>, Map<MeasurementAttribute, Measurement>> createPerformanceMap() {
+    Map<Pair<AlternativeEntry, CriterionEntry>, Map<MeasurementAttribute, Measurement>> performanceMap = new HashMap<>();
 
     for (Measurement measurement : measurements) {
-      Map<Arm, Variable> key = new HashMap<>();
-      Arm arm = armMap.get(measurement.getArmId());
-      Variable variable = variableMap.get(measurement.getVariableId());
-      key.put(arm, variable);
+      AlternativeEntry alternativeEntry = alternatives.get(measurement.getArmId());
+      CriterionEntry criterionEntry= criteria.get(measurement.getVariableId());
+      Pair<AlternativeEntry, CriterionEntry> key = new ImmutablePair<>(alternativeEntry, criterionEntry);
       if (!performanceMap.containsKey(key)) {
         performanceMap.put(key, new HashMap<MeasurementAttribute, Measurement>());
       }
@@ -52,38 +47,40 @@ public class PerformanceTableBuilder {
   }
 
   public List<AbstractMeasurementEntry> build() {
-    Map<Map<Arm, Variable>, Map<MeasurementAttribute, Measurement>> measurementsMap = createPerformanceMap();
-
+    Map<Pair<AlternativeEntry, CriterionEntry>, Map<MeasurementAttribute, Measurement>> measurementsMap = createPerformanceMap();
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
-    for (Map<MeasurementAttribute, Measurement> measurementMap : measurementsMap.values()) {
-      System.out.println();
+
+    for (Map.Entry<Pair<AlternativeEntry, CriterionEntry>, Map<MeasurementAttribute, Measurement>> entry : measurementsMap.entrySet()) {
+      AlternativeEntry alternativeEntry = entry.getKey().getLeft();
+      CriterionEntry criterionEntry = entry.getKey().getRight();
+      Map<MeasurementAttribute, Measurement> measurementMap = entry.getValue();
       if (measurementMap.get(MeasurementAttribute.RATE) != null) {
-        System.out.println("creating beta entry");
-        performanceTable.add(createBetaDistributionEntry(measurementMap));
+        performanceTable.add(createBetaDistributionEntry(alternativeEntry, criterionEntry, measurementMap));
       } else if (measurementMap.get(MeasurementAttribute.MEAN) != null) {
-        System.out.println("creating normal entry");
-        performanceTable.add(createNormalDistributionEntry(measurementMap));
+        performanceTable.add(createNormalDistributionEntry(alternativeEntry, criterionEntry, measurementMap));
       }
     }
+
     return performanceTable;
   }
 
-  public ContinuousMeasurementEntry createNormalDistributionEntry(Map<MeasurementAttribute, Measurement> measurementMap) {
+  public ContinuousMeasurementEntry createNormalDistributionEntry(AlternativeEntry alternativeEntry, CriterionEntry criterionEntry, Map<MeasurementAttribute, Measurement> measurementMap) {
     assert (measurementMap.size() == 3);
     Measurement mean = measurementMap.get(MeasurementAttribute.MEAN);
     Measurement standardDeviation = measurementMap.get(MeasurementAttribute.STANDARD_DEVIATION);
+    Measurement sampleSize = measurementMap.get(MeasurementAttribute.SAMPLE_SIZE);
 
-    String armName = armMap.get(mean.getArmId()).getName();
-    String variableName = variableMap.get(mean.getVariableId()).getName();
+    String alternativeName = alternativeEntry.getTitle();
+    String criterionName = criterionEntry.getTitle();
 
     Double mu = mean.getRealValue();
-    Double sigma = standardDeviation.getRealValue();
+    Double sigma = standardDeviation.getRealValue() / Math.sqrt(sampleSize.getIntegerValue());
 
     ContinuousPerformance performance = new ContinuousPerformance(new ContinuousPerformanceParameters(mu, sigma));
-    return new ContinuousMeasurementEntry(JSONUtils.createKey(armName), JSONUtils.createKey(variableName), performance);
+    return new ContinuousMeasurementEntry(JSONUtils.createKey(alternativeName), JSONUtils.createKey(criterionName), performance);
   }
 
-  public RateMeasurementEntry createBetaDistributionEntry(Map<MeasurementAttribute, Measurement> measurementMap) {
+  public RateMeasurementEntry createBetaDistributionEntry(AlternativeEntry alternativeEntry, CriterionEntry criterionEntry, Map<MeasurementAttribute, Measurement> measurementMap) {
     assert (measurementMap.size() == 2);
     Measurement rate = measurementMap.get(MeasurementAttribute.RATE);
     Measurement sampleSize = measurementMap.get(MeasurementAttribute.SAMPLE_SIZE);
@@ -91,10 +88,10 @@ public class PerformanceTableBuilder {
     Long alpha = rate.getIntegerValue() + 1;
     Long beta = sampleSize.getIntegerValue() - rate.getIntegerValue() + 1;
 
-    String armName = armMap.get(rate.getArmId()).getName();
-    String variableName = variableMap.get(rate.getVariableId()).getName();
+    String alternativeName = alternativeEntry.getTitle();
+    String criterionName = criterionEntry.getTitle();
     RatePerformance performance = new RatePerformance(new RatePerformanceParameters(alpha, beta));
-    return new RateMeasurementEntry(JSONUtils.createKey(armName), JSONUtils.createKey(variableName), performance);
+    return new RateMeasurementEntry(JSONUtils.createKey(alternativeName), JSONUtils.createKey(criterionName), performance);
   }
 
 }

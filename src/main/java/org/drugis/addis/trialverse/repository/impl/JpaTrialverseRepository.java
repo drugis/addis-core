@@ -44,12 +44,12 @@ public class JpaTrialverseRepository implements TrialverseRepository {
 
 
   @Override
-  public List<Arm> getArmsByDrugIds(Integer studyId, List<Long> drugIds) {
+  public List<Arm> getArmsByDrugIds(Integer studyId, Collection<Long> drugIds) {
     if (drugIds.isEmpty()) {
       return Collections.emptyList();
     }
     Query query = em.createNativeQuery("SELECT" +
-            " a.id, a.name " +
+            " a.id, a.name, t.drug " +
             " FROM" +
             "  arms a," +
             "  designs d," +
@@ -70,7 +70,7 @@ public class JpaTrialverseRepository implements TrialverseRepository {
   }
 
   @Override
-  public List<Variable> getVariablesByOutcomeIds(List<Long> outcomeIds) {
+  public List<Variable> getVariablesByOutcomeIds(Collection<Long> outcomeIds) {
     if (outcomeIds.isEmpty()) {
       return Collections.emptyList();
     }
@@ -80,7 +80,7 @@ public class JpaTrialverseRepository implements TrialverseRepository {
   }
 
   @Override
-  public List<Measurement> getOrderedMeasurements(Integer studyId, List<Long> outcomeIds, List<Long> armIds) {
+  public List<Measurement> getOrderedMeasurements(Integer studyId, Collection<Long> outcomeIds, Collection<Long> armIds) {
     if(outcomeIds.isEmpty() || armIds.isEmpty()) {
       return Collections.emptyList();
     }
