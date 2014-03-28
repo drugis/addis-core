@@ -8,12 +8,12 @@ import java.util.List;
 public class CriterionEntry {
   private String title;
   private List<Double> scale;
-  private PartialValueFunction partialValueFunction;
+  private PartialValueFunction pvf;
 
   public CriterionEntry(String title, List<Double> scale, PartialValueFunction partialValueFunction) {
     this.title = title;
     this.scale = scale;
-    this.partialValueFunction = partialValueFunction;
+    this.pvf = partialValueFunction;
   }
 
   public String getTitle() {
@@ -24,8 +24,8 @@ public class CriterionEntry {
     return scale;
   }
 
-  public PartialValueFunction getPartialValueFunction() {
-    return partialValueFunction;
+  public PartialValueFunction getPvf() {
+    return pvf;
   }
 
   @Override
@@ -35,7 +35,7 @@ public class CriterionEntry {
 
     CriterionEntry that = (CriterionEntry) o;
 
-    if (partialValueFunction != null ? !partialValueFunction.equals(that.partialValueFunction) : that.partialValueFunction != null)
+    if (pvf != null ? !pvf.equals(that.pvf) : that.pvf != null)
       return false;
     if (scale != null ? !scale.equals(that.scale) : that.scale != null) return false;
     if (!title.equals(that.title)) return false;
@@ -47,7 +47,7 @@ public class CriterionEntry {
   public int hashCode() {
     int result = title.hashCode();
     result = 31 * result + (scale != null ? scale.hashCode() : 0);
-    result = 31 * result + (partialValueFunction != null ? partialValueFunction.hashCode() : 0);
+    result = 31 * result + (pvf != null ? pvf.hashCode() : 0);
     return result;
   }
 }
