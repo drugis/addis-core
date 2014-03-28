@@ -70,7 +70,13 @@ public class ProblemServiceTest {
 
     String interventionUri1 = exampleAnalysis.getSelectedInterventions().get(0).getSemanticInterventionUri();
     String interventionUri2 = exampleAnalysis.getSelectedInterventions().get(1).getSemanticInterventionUri();
-    List<String> interventionUris = Arrays.asList(interventionUri1, interventionUri2);
+    Map<String, Intervention> interventionByUri = new HashMap<>();
+    Intervention intervention1 = mock(Intervention.class);
+    Intervention intervention2 = mock(Intervention.class);
+    when(intervention1.getName()).thenReturn("intervention 1");
+    when(intervention2.getName()).thenReturn("intervention 2");
+    interventionByUri.put(interventionUri1, intervention1);
+    interventionByUri.put(interventionUri2, intervention2);
 
     String outcomeUri1 = exampleAnalysis.getSelectedOutcomes().get(0).getSemanticOutcomeUri();
     String outcomeUri2 = exampleAnalysis.getSelectedOutcomes().get(1).getSemanticOutcomeUri();
@@ -83,27 +89,25 @@ public class ProblemServiceTest {
     outcomesByUri.put(outcomeUri2, outcome2);
 
     Map<Long, String> drugs = new HashMap<>();
-    drugs.put(1001L, "uuid1");
-    drugs.put(1002L, "uuid2");
-    drugs.put(1003L, "uuid3");
+    drugs.put(1L, "iUri1");
+    drugs.put(2L, "iUri2");
 
     Map<Long, String> outcomes = new HashMap<>();
-    drugs.put(2001L, "uuid1");
-    drugs.put(2002L, "uuid2");
-    drugs.put(2003L, "uuid3");
+    outcomes.put(1L, "oUri1");
+    outcomes.put(2L, "oUri2");
 
     Problem exampleProblem = createExampleProblem(exampleAnalysis);
     Project project = mock(Project.class);
     when(project.getTrialverseId()).thenReturn(namespaceId);
     when(projectRepository.getProjectById(projectId)).thenReturn(project);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(exampleAnalysis);
-    when(triplestoreService.getTrialverseDrugs(namespaceId, studyId, interventionUris)).thenReturn(drugs);
+    when(triplestoreService.getTrialverseDrugs(namespaceId, studyId, interventionByUri.keySet())).thenReturn(drugs);
     when(triplestoreService.getTrialverseVariables(namespaceId, studyId, outcomesByUri.keySet())).thenReturn(outcomes);
 
     ObjectMapper mapper = new ObjectMapper();
 
-    Arm arm1 = new Arm(1L, 1001L, "paroxetine 40 mg/day");
-    Arm arm2 = new Arm(2L, 1002L, "fluoxetine 20 mg/day");
+    Arm arm1 = new Arm(1L, 1L, "paroxetine 40 mg/day");
+    Arm arm2 = new Arm(2L, 2L, "fluoxetine 20 mg/day");
     ObjectNode armNode1 = mapper.valueToTree(arm1);
     ObjectNode armNode2 = mapper.valueToTree(arm2);
     List<ObjectNode> arms = Arrays.asList(armNode1, armNode2);
@@ -132,7 +136,7 @@ public class ProblemServiceTest {
     ObjectNode measurementNode5 =  mapper.valueToTree(measurement5);
 
     List<ObjectNode> measurements = Arrays.asList(measurementNode1, measurementNode2, measurementNode3, measurementNode4, measurementNode5);
-    when(trialverseService.getOrderedMeasurements(studyId, outcomes.keySet(), armIds)).thenReturn(measurements);
+    when(trialverseService.getOrderedMeasurements(studyId, outcomes.keySet(), drugs.keySet())).thenReturn(measurements);
 
     // Executor
     Problem actualProblem = problemService.getProblem(projectId, analysisId);
@@ -149,7 +153,7 @@ public class ProblemServiceTest {
     assertEquals(new HashSet<>(expectedPerformance), new HashSet<>(actualPerformance));
 
     verify(analysisRepository).get(projectId, analysisId);
-    verify(triplestoreService).getTrialverseDrugs(namespaceId, studyId, interventionUris);
+    verify(triplestoreService).getTrialverseDrugs(namespaceId, studyId, interventionByUri.keySet());
     verify(triplestoreService).getTrialverseVariables(namespaceId, studyId, outcomesByUri.keySet());
     verify(trialverseService).getVariablesByIds(outcomes.keySet());
     verify(trialverseService).getArmsByDrugIds(studyId, drugs.keySet());
@@ -182,8 +186,8 @@ public class ProblemServiceTest {
     criteria.put(criterion1Key, criterionEntry1);
     criteria.put(criterion2Key, criterionEntry2);
 
-    Arm arm1 = new Arm(1L, 1001L, "paroxetine 40 mg/day");
-    Arm arm2 = new Arm(2L, 1002L, "fluoxetine 20 mg/day");
+    Arm arm1 = new Arm(1L, 1L, "paroxetine 40 mg/day");
+    Arm arm2 = new Arm(2L, 2L, "fluoxetine 20 mg/day");
 
     Variable variable1 = new Variable(101L, 1L, "HAM-D Responders", "desc", null, false, MeasurementType.RATE, "");
     Variable variable2 = new Variable(102L, 1L, "Insomnia", "desc", null, false, MeasurementType.CONTINUOUS, "");
@@ -212,11 +216,11 @@ public class ProblemServiceTest {
   }
 
   private Analysis createAnalysis() {
-    Outcome outcome1 = new Outcome(1, 1, "outcome1", "motivation", new SemanticOutcome("oUri1", "label"));
-    Outcome outcome2 = new Outcome(2, 1, "outcome2", "motivation", new SemanticOutcome("oUri2", "label"));
+    Outcome outcome1 = new Outcome(1, 1, "HAM-D Responders", "motivation", new SemanticOutcome("oUri1", "label"));
+    Outcome outcome2 = new Outcome(2, 1, "Insomnia", "motivation", new SemanticOutcome("oUri2", "label"));
     List<Outcome> outcomes = Arrays.asList(outcome1, outcome2);
-    Intervention intervention1 = new Intervention(1, 1, "intervention1", "motivation", new SemanticIntervention("iUri1", "label"));
-    Intervention intervention2 = new Intervention(2, 1, "intervention2", "motivation", new SemanticIntervention("iUri2", "label"));
+    Intervention intervention1 = new Intervention(1, 1, "fluoxetine 20 mg/day", "motivation", new SemanticIntervention("iUri1", "label"));
+    Intervention intervention2 = new Intervention(1, 1, "paroxetine 40 mg/day", "motivation", new SemanticIntervention("iUri2", "label"));
     List<Intervention> interventions = Arrays.asList(intervention1, intervention2);
     Analysis analysis = new Analysis(1, 1, "analysisName", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, outcomes, interventions);
     analysis.setStudyId(5);
