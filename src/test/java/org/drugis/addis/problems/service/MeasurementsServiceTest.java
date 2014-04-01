@@ -23,6 +23,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -94,5 +95,8 @@ public class MeasurementsServiceTest {
     List<Measurement> expected = Arrays.asList(measurement);
 
     assertEquals(expected, measurements);
+
+    verify(triplestoreService).getTrialverseVariables(project.getTrialverseId(), analysis.getStudyId(), outcomeMap.keySet());
+    verify(triplestoreService).getTrialverseVariables(project.getTrialverseId(), analysis.getStudyId(), outcomeMap.keySet());
   }
 }
