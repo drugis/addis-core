@@ -66,8 +66,8 @@ public class TriplestoreServiceTest {
     when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
 
     Map<Long, String>  expected = new HashMap<>();
-    expected.put(1L, "e2611534a509251f2e1cnogeendrug");
-    expected.put(4L, "e2611534a509251f2e1cdrug");
+    expected.put(1L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug");
+    expected.put(4L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug");
 
     // EXECUTOR
     Map<Long, String> result = triplestoreService.getTrialverseDrugs(namespaceId, studyId, interventionConceptUris);
@@ -84,8 +84,8 @@ public class TriplestoreServiceTest {
     when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
 
     Map<Long, String>  expected = new HashMap<>();
-    expected.put(1L, "e2611534a509251f2e1c8endpoint");
-    expected.put(4L, "e2611534a509251f2e1cadverseEvent");
+    expected.put(1L, "http://trials.drugis.org/namespace/2/endpoint/e2611534a509251f2e1c8endpoint");
+    expected.put(4L, "http://trials.drugis.org/namespace/2/adverseEvent/e2611534a509251f2e1cadverseEvent");
 
     // EXECUTOR
     Map<Long, String> result = triplestoreService.getTrialverseVariables(namespaceId, studyId, outcomeConceptUris);

@@ -1,19 +1,18 @@
 package org.drugis.addis.trialverse.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by daan on 3/26/14.
  */
 @Entity
 @Table(name = "arms")
+@SecondaryTable(name = "treatments")
 public class Arm {
   @Id
   Long id;
-  @Column(name = "drug")
+
+  @Column(table = "treatments", name = "drug")
   Long drugId;
   String name;
 

@@ -32,6 +32,9 @@ public class PerformanceTableService {
   @Inject
   private TrialverseService trialverseService;
 
+  @Inject
+  PerformanceTableBuilder performanceTableBuilder;
+
   private ObjectMapper mapper = new ObjectMapper();
 
   public List<AbstractMeasurementEntry> createPerformaceTable(Project project, Analysis analysis, Map<Long, AlternativeEntry> alternativesCache, Map<Long, CriterionEntry> criteriaCache) {
@@ -49,8 +52,6 @@ public class PerformanceTableService {
       measurements.add(measurement);
     }
 
-    PerformanceTableBuilder builder = new PerformanceTableBuilder(criteriaCache, alternativesCache, measurements);
-
-    return builder.build();
+    return performanceTableBuilder.build(criteriaCache, alternativesCache, measurements);
   }
 }

@@ -15,6 +15,7 @@
  */
 package org.drugis.addis.config;
 
+import org.drugis.addis.util.JSONUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -41,8 +42,9 @@ import java.util.Properties;
         "org.drugis.addis.security",
         "org.drugis.addis.outcomes",
         "org.drugis.addis.interventions",
-  "org.drugis.addis.analyses",
-  "org.drugis.addis.problems"})
+        "org.drugis.addis.analyses",
+        "org.drugis.addis.problems",
+        "org.drugis.addis.util"})
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security", "org.drugis.addis.interventions"})
 public class MainConfig {
@@ -68,6 +70,11 @@ public class MainConfig {
   @Bean(name = "jtAddisCore")
   public JdbcTemplate jdbcTemplate() {
     return new JdbcTemplate(dataSource());
+  }
+
+  @Bean
+  public JSONUtils jsonUtils() {
+    return new JSONUtils();
   }
 
   @Bean(name = "petppAddisCore")

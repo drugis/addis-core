@@ -5,8 +5,6 @@ import com.google.common.collect.Collections2;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -30,6 +28,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     AnalysisConcept(String searchString) {
       this.searchString = searchString;
     }
+
     public String getSearchString() {
       return this.searchString;
     }
@@ -62,7 +61,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       outcomes.add(new SemanticOutcome((String) JsonPath.read(binding, "$.uri.value"),
-        (String) JsonPath.read(binding, "$.label.value")));
+              (String) JsonPath.read(binding, "$.label.value")));
     }
     return outcomes;
   }
@@ -89,7 +88,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       interventions.add(new SemanticIntervention((String) JsonPath.read(binding, "$.uri.value"),
-        (String) JsonPath.read(binding, "$.label.value")));
+              (String) JsonPath.read(binding, "$.label.value")));
     }
     return interventions;
   }
@@ -124,26 +123,25 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     Map<Long, String> concepts = new HashMap<>(bindings.size());
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
-      String type = JsonPath.read(binding, "$.type.value");
+      String typeUri = JsonPath.read(binding, "$.type.value");
       Long conceptId = extractConceptIdFromUri(uri);
-      String conceptUUID = subStringAfterLastSlash(type);
-      concepts.put(conceptId, conceptUUID);
+      concepts.put(conceptId, typeUri);
     }
     return concepts;
   }
 
   private String createFindUsagesQuery(Integer namespaceId, Integer studyId, AnalysisConcept analysisConcept, String URIsToFind) {
     String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-      "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-      "\n" +
-      "SELECT  * WHERE {\n" +
-      " GRAPH <http://trials.drugis.org/> {\n" +
-      "   ?uri rdf:type ?type .\n" +
-      "   FILTER regex(str(?type), \"namespace/" +
-      namespaceId + "/" + analysisConcept.getSearchString() +  "/(" + URIsToFind + ")\") .\n" +
-      "   FILTER regex(str(?uri), \"/study/" + studyId + "\") .\n" +
-      " }\n" +
-      "}";
+            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "\n" +
+            "SELECT  * WHERE {\n" +
+            " GRAPH <http://trials.drugis.org/> {\n" +
+            "   ?uri rdf:type ?type .\n" +
+            "   FILTER regex(str(?type), \"namespace/" +
+            namespaceId + "/" + analysisConcept.getSearchString() + "/(" + URIsToFind + ")\") .\n" +
+            "   FILTER regex(str(?uri), \"/study/" + studyId + "\") .\n" +
+            " }\n" +
+            "}";
     System.out.println(query);
     return query;
   }

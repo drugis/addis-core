@@ -1,8 +1,6 @@
 package org.drugis.addis.trialverse.repository.impl;
 
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
@@ -13,7 +11,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +46,7 @@ public class JpaTrialverseRepository implements TrialverseRepository {
       return Collections.emptyList();
     }
     Query query = em.createNativeQuery("SELECT" +
-            " a.id, a.name, t.drug " +
+            " a.id, a.name, t.drug" +
             " FROM" +
             "  arms a," +
             "  designs d," +
@@ -81,27 +78,27 @@ public class JpaTrialverseRepository implements TrialverseRepository {
 
   @Override
   public List<Measurement> getOrderedMeasurements(Integer studyId, Collection<Long> outcomeIds, Collection<Long> armIds) {
-    if(outcomeIds.isEmpty() || armIds.isEmpty()) {
+    if (outcomeIds.isEmpty() || armIds.isEmpty()) {
       return Collections.emptyList();
     }
 
     Query query = em.createNativeQuery("SELECT" +
-      "  m.*" +
-      " FROM" +
-      "  measurements m," +
-      "  measurement_moments mm," +
-      "  arms a" +
-      " WHERE" +
-      "  a.id = m.arm" +
-      " AND" +
-      "  mm.id = m.measurement_moment" +
-      " AND" +
-      "  mm.is_primary = TRUE" +
-      " AND" +
-      "  m.variable IN :outcomeIds" +
-      " AND" +
-      "  m.arm IN :armIds" +
-      " ORDER BY m.variable, m.arm, m.attribute", Measurement.class);
+            "  m.*" +
+            " FROM" +
+            "  measurements m," +
+            "  measurement_moments mm," +
+            "  arms a" +
+            " WHERE" +
+            "  a.id = m.arm" +
+            " AND" +
+            "  mm.id = m.measurement_moment" +
+            " AND" +
+            "  mm.is_primary = TRUE" +
+            " AND" +
+            "  m.variable IN :outcomeIds" +
+            " AND" +
+            "  m.arm IN :armIds" +
+            " ORDER BY m.variable, m.arm, m.attribute", Measurement.class);
     query.setParameter("outcomeIds", outcomeIds);
     query.setParameter("armIds", armIds);
     return query.getResultList();
@@ -110,15 +107,16 @@ public class JpaTrialverseRepository implements TrialverseRepository {
   @Override
   public List<Study> queryStudies(Long namespaceId) {
     Query query = em.createNativeQuery("select" +
-      " s.id, s.name, s.title " +
-      " FROM" +
-      " studies s," +
-      " namespaces ns," +
-      " namespace_studies nss" +
-      " WHERE nss.namespace = ns.id " +
-      " AND nss.study = s.id" +
-      " AND nss.namespace = :namespaceId",
-      Study.class);
+                    " s.id, s.name, s.title " +
+                    " FROM" +
+                    " studies s," +
+                    " namespaces ns," +
+                    " namespace_studies nss" +
+                    " WHERE nss.namespace = ns.id " +
+                    " AND nss.study = s.id" +
+                    " AND nss.namespace = :namespaceId",
+            Study.class
+    );
     query.setParameter("namespaceId", namespaceId);
     return query.getResultList();
   }

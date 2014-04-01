@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by daan on 3/27/14.
@@ -68,7 +67,7 @@ public class PerformanceTableBuilderTest {
     alternativeEntryMap = new HashMap<>();
     alternativeEntryMap.put(arm1.getId(), alternativeEntry1);
     alternativeEntryMap.put(arm2.getId(), alternativeEntry2);
-    builder = new PerformanceTableBuilder(criterionEntryMap, alternativeEntryMap, measurements);
+    builder = new PerformanceTableBuilder();
 
     jsonUtils = new JSONUtils();
     MockitoAnnotations.initMocks(this);
@@ -78,7 +77,7 @@ public class PerformanceTableBuilderTest {
   @Test
   public void testCreatePerformanceMap() throws Exception {
     // execution
-    Map<Pair<AlternativeEntry, CriterionEntry>, Map<MeasurementAttribute, Measurement>> performanceMap = builder.createPerformanceMap();
+    Map<Pair<AlternativeEntry, CriterionEntry>, Map<MeasurementAttribute, Measurement>> performanceMap = builder.createPerformanceMap(criterionEntryMap, alternativeEntryMap, measurements);
 
     assertEquals(2, performanceMap.size());
     assertEquals(2, performanceMap.get(performance1Key).size());
@@ -88,7 +87,7 @@ public class PerformanceTableBuilderTest {
 
   @Test
   public void testBuild() throws Exception {
-    List<AbstractMeasurementEntry> performanceTable = builder.build();
+    List<AbstractMeasurementEntry> performanceTable = builder.build(criterionEntryMap, alternativeEntryMap, measurements);
     assertEquals(2, performanceTable.size());
   }
 

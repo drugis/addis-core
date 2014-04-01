@@ -9,7 +9,6 @@ import org.drugis.addis.problems.model.Arm;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
-import org.drugis.addis.util.JSONUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -37,6 +36,8 @@ public class AlternativeService {
     for (Intervention intervention : analysis.getSelectedInterventions()) {
       interventionsByUri.put(intervention.getSemanticInterventionUri(), intervention);
     }
+
+    System.out.println("DEBUG interventionsByUri : " + interventionsByUri);
 
     Map<Long, String> drugs = triplestoreService.getTrialverseDrugs(project.getTrialverseId(), analysis.getStudyId(), interventionsByUri.keySet());
     List<ObjectNode> jsonArms = trialverseService.getArmsByDrugIds(analysis.getStudyId(), drugs.keySet());

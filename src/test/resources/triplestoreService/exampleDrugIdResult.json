@@ -5,11 +5,11 @@
   "results": {
     "bindings": [
       {
-        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/1/drug/4" },
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/1/drug/1" },
         "type": { "type": "uri" , "value": "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug" }
       } ,
       {
-        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/1/drug/1" },
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/1/drug/4" },
          "type": { "type": "uri" , "value": "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug" }
       }
     ]

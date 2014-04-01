@@ -8,7 +8,7 @@ import org.drugis.addis.problems.model.Measurement;
 import org.drugis.addis.problems.model.MeasurementAttribute;
 import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.util.JSONUtils;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -19,24 +19,14 @@ import java.util.Map;
 /**
  * Created by daan on 3/27/14.
  */
-@Component
+@Service
 public class PerformanceTableBuilder {
 
   @Inject
   JSONUtils jsonUtils;
 
-  Map<Long, CriterionEntry> criteria = new HashMap<>();
-  Map<Long, AlternativeEntry> alternatives = new HashMap<>();
-  List<Measurement> measurements;
-
-
-  public PerformanceTableBuilder(Map<Long, CriterionEntry> criteria, Map<Long, AlternativeEntry> alternatives, List<Measurement> measurements) {
-    this.criteria = criteria;
-    this.alternatives = alternatives;
-    this.measurements = measurements;
-  }
-
-  public Map<Pair<AlternativeEntry, CriterionEntry>, Map<MeasurementAttribute, Measurement>> createPerformanceMap() {
+  public Map<Pair<AlternativeEntry, CriterionEntry>, Map<MeasurementAttribute, Measurement>> createPerformanceMap(
+          Map<Long, CriterionEntry> criteria, Map<Long, AlternativeEntry> alternatives, List<Measurement> measurements) {
     Map<Pair<AlternativeEntry, CriterionEntry>, Map<MeasurementAttribute, Measurement>> performanceMap = new HashMap<>();
 
     for (Measurement measurement : measurements) {
@@ -52,8 +42,8 @@ public class PerformanceTableBuilder {
     return performanceMap;
   }
 
-  public List<AbstractMeasurementEntry> build() {
-    Map<Pair<AlternativeEntry, CriterionEntry>, Map<MeasurementAttribute, Measurement>> measurementsMap = createPerformanceMap();
+  public List<AbstractMeasurementEntry> build(Map<Long, CriterionEntry> criteria, Map<Long, AlternativeEntry> alternatives, List<Measurement> measurements) {
+    Map<Pair<AlternativeEntry, CriterionEntry>, Map<MeasurementAttribute, Measurement>> measurementsMap = createPerformanceMap(criteria, alternatives, measurements);
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
 
     for (Map.Entry<Pair<AlternativeEntry, CriterionEntry>, Map<MeasurementAttribute, Measurement>> entry : measurementsMap.entrySet()) {
@@ -97,6 +87,7 @@ public class PerformanceTableBuilder {
     String alternativeName = alternativeEntry.getTitle();
     String criterionName = criterionEntry.getTitle();
     RatePerformance performance = new RatePerformance(new RatePerformanceParameters(alpha, beta));
+    System.out.println("jsonUtils" + jsonUtils);
     return new RateMeasurementEntry(jsonUtils.createKey(alternativeName), jsonUtils.createKey(criterionName), performance);
   }
 
