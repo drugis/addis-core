@@ -30,6 +30,12 @@ public class AlternativeService {
 
   private ObjectMapper mapper = new ObjectMapper();
 
+  /**
+   * Pair study arms with alternatives defined in the analysis.
+   * Make the alternatives accessible by arm ID.
+   *
+   * @return A map keyed with arm IDS with the alternatives as values
+   */
   public Map<Long, AlternativeEntry> createAlternatives(Project project, Analysis analysis) {
 
     Map<String, Intervention> interventionsByUri = new HashMap<>();
