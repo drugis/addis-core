@@ -30,6 +30,9 @@ public class CriteriaService {
 
   private ObjectMapper mapper = new ObjectMapper();
 
+  /**
+   * Match outcomes selected in the analysis to variables from the project namespace in Trialverse.
+   */
   public List<Pair<Variable, CriterionEntry>> createVariableCriteriaPairs(Project project, Analysis analysis) {
     Map<String, Outcome> outcomesByUri = new HashMap<>();
 
@@ -45,8 +48,8 @@ public class CriteriaService {
 
     for (ObjectNode variableJSONNode : jsonVariables) {
       Variable variable = mapper.convertValue(variableJSONNode, Variable.class);
-      String outcomeUUID = trialverseVariables.get(variable.getId());
-      Outcome outcome = outcomesByUri.get(outcomeUUID);
+      String outcomeUri = trialverseVariables.get(variable.getId());
+      Outcome outcome = outcomesByUri.get(outcomeUri);
       CriterionEntry criterionEntry = createCriterionEntry(outcome, variable);
       Pair<Variable, CriterionEntry> pair = new ImmutablePair<>(variable, criterionEntry);
       variableCriteriaPairs.add(pair);
