@@ -1,19 +1,14 @@
 package org.drugis.addis.problems;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.Analysis;
-import org.drugis.addis.analyses.AnalysisType;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.Intervention;
-import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.AlternativeService;
 import org.drugis.addis.problems.service.CriteriaService;
-import org.drugis.addis.problems.service.PerformanceTableService;
+import org.drugis.addis.problems.service.MeasurementsService;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
 import org.drugis.addis.problems.service.impl.ProblemServiceImpl;
@@ -21,11 +16,6 @@ import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
-import org.drugis.addis.trialverse.model.SemanticOutcome;
-import org.drugis.addis.trialverse.service.TrialverseService;
-import org.drugis.addis.trialverse.service.TriplestoreService;
-import org.drugis.addis.trialverse.service.impl.TrialverseServiceImpl;
 import org.drugis.addis.util.JSONUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -34,11 +24,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import javax.inject.Inject;
 import java.util.*;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
@@ -60,7 +47,10 @@ public class ProblemServiceTest {
   CriteriaService criteriaService;
 
   @Mock
-  PerformanceTableService performanceTableService;
+  MeasurementsService measurementsService;
+
+  @Mock
+  private PerformanceTableBuilder performanceTablebuilder;
 
   @Mock
   JSONUtils jsonUtils;
@@ -109,14 +99,18 @@ public class ProblemServiceTest {
     when(criteriaService.createVariableCriteriaPairs(project, analysis)).thenReturn(variableCriteriaPairs);
 
     long variableId = 4L;
-    Map<Long, CriterionEntry> criteraCache = new HashMap<>();
-    criteraCache.put(variableId, criterionEntry);
-    List<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
-    AbstractMeasurementEntry measurementEntry = mock(ContinuousMeasurementEntry.class);
-    performanceTable.add(measurementEntry);
-    when(performanceTableService.createPerformaceTable(project, analysis, alternativesCache, criteraCache)).thenReturn(performanceTable);
+    Map<Long, CriterionEntry> criteriaCache = new HashMap<>();
+    criteriaCache.put(variableId, criterionEntry);
+    List<Measurement> measurements = new ArrayList<>();
+    Measurement measurement = mock(Measurement.class);
+    measurements.add(measurement);
+    when(measurementsService.createMeasurements(project, analysis, alternativesCache)).thenReturn(measurements);
 
     when(variable.getId()).thenReturn(variableId);
+
+    AbstractMeasurementEntry measurementEntry = mock(ContinuousMeasurementEntry.class);
+    List<AbstractMeasurementEntry> performanceTable = Arrays.asList(measurementEntry);
+    when(performanceTablebuilder.build(criteriaCache, alternativesCache, measurements)).thenReturn(performanceTable);
 
     // execute
     Problem actualProblem = problemService.getProblem(projectId, analysisId);
@@ -125,7 +119,8 @@ public class ProblemServiceTest {
     verify(analysisRepository).get(projectId, analysisId);
     verify(alternativeService).createAlternatives(project, analysis);
     verify(criteriaService).createVariableCriteriaPairs(project, analysis);
-    verify(performanceTableService).createPerformaceTable(project, analysis, alternativesCache, criteraCache);
+    verify(measurementsService).createMeasurements(project, analysis, alternativesCache);
+    verify(performanceTablebuilder).build(criteriaCache, alternativesCache, measurements);
 
     assertNotNull(actualProblem);
   }

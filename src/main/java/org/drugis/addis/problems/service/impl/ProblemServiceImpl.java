@@ -8,7 +8,7 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.AlternativeService;
 import org.drugis.addis.problems.service.CriteriaService;
-import org.drugis.addis.problems.service.PerformanceTableService;
+import org.drugis.addis.problems.service.MeasurementsService;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
@@ -17,7 +17,9 @@ import org.drugis.addis.util.JSONUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by daan on 3/21/14.
@@ -38,10 +40,13 @@ public class ProblemServiceImpl implements ProblemService {
   CriteriaService criteriaService;
 
   @Inject
-  PerformanceTableService performanceTableService;
+  PerformanceTableBuilder performanceTableBuilder;
 
   @Inject
   JSONUtils jsonUtils;
+
+  @Inject
+  private MeasurementsService measurementsService;
 
   @Override
   public Problem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
@@ -65,8 +70,8 @@ public class ProblemServiceImpl implements ProblemService {
       criteriaCache.put(variable.getId(), criterionEntry);
     }
 
-    List<AbstractMeasurementEntry> performanceTable = performanceTableService.createPerformaceTable(project, analysis, alternativesCache, criteriaCache);
-
+    List<Measurement> measurements = measurementsService.createMeasurements(project, analysis, alternativesCache);
+    List<AbstractMeasurementEntry> performanceTable = performanceTableBuilder.build(criteriaCache, alternativesCache, measurements);
     return new Problem(analysis.getName(), alternatives, criteria, performanceTable);
   }
 

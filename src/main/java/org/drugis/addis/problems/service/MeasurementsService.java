@@ -5,10 +5,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.drugis.addis.analyses.Analysis;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.AlternativeEntry;
-import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.Measurement;
 import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
-import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -24,7 +22,7 @@ import java.util.Map;
  * Created by connor on 28/03/14.
  */
 @Service
-public class PerformanceTableService {
+public class MeasurementsService {
 
   @Inject
   private TriplestoreService triplestoreService;
@@ -37,7 +35,13 @@ public class PerformanceTableService {
 
   private ObjectMapper mapper = new ObjectMapper();
 
-  public List<AbstractMeasurementEntry> createPerformaceTable(Project project, Analysis analysis, Map<Long, AlternativeEntry> alternativesCache, Map<Long, CriterionEntry> criteriaCache) {
+
+  /**
+   * Retrieve a list of measurements from the project namespace, based on selected outcomes.
+   *
+   * @return
+   */
+  public List<Measurement> createMeasurements(Project project, Analysis analysis, Map<Long, AlternativeEntry> alternativesCache) {
     Map<String, Outcome> outcomesByUri = new HashMap<>();
 
     for (Outcome outcome : analysis.getSelectedOutcomes()) {
@@ -52,6 +56,6 @@ public class PerformanceTableService {
       measurements.add(measurement);
     }
 
-    return performanceTableBuilder.build(criteriaCache, alternativesCache, measurements);
+    return measurements;
   }
 }
