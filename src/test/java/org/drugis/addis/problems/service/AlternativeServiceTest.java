@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by connor on 1-4-14.
@@ -84,7 +83,6 @@ public class AlternativeServiceTest {
   @Test
   public void testCreateAlternatives() throws Exception {
     List<ObjectNode> jsonArms = Arrays.asList(mapper.convertValue(new Arm(1L, drugId, "armName"), ObjectNode.class));
-
     when(triplestoreService.getTrialverseDrugs(project.getTrialverseId(), analysis.getStudyId(), interventionMap.keySet())).
             thenReturn(drugs);
     when(trialverseService.getArmsByDrugIds(analysis.getStudyId(), drugs.keySet())).thenReturn(jsonArms);
@@ -92,9 +90,15 @@ public class AlternativeServiceTest {
 
     Map<Long, AlternativeEntry> alternatives = alternativeService.createAlternatives(project, analysis);
 
+    verify(triplestoreService).getTrialverseDrugs(project.getTrialverseId(), analysis.getStudyId(), interventionMap.keySet());
+    verify(trialverseService).getArmsByDrugIds(analysis.getStudyId(), drugs.keySet());
+    verifyNoMoreInteractions(triplestoreService, trialverseService);
+
     AlternativeEntry alternativeEntry = new AlternativeEntry(interventionName);
     assertEquals(alternativeEntry, alternatives.get(1L));
     assertEquals(1, alternatives.size());
+
+
   }
 
 }
