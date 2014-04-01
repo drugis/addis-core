@@ -18,7 +18,7 @@
       </div>
       <div class="row">
         <div class="columns large-6 nested-view">
-          <select id="criteriaSelect" multiple ui-select2="{ allowClear: editMode.allowEditing}" ng-model="selectedOutcomeIds"
+          <select id="criteriaSelect" multiple ui-select2 ng-model="selectedOutcomeIds"
             data-placeholder="no criteria selected">
             <option ng-repeat="outcome in outcomes" value={{outcome.id}}>{{outcome.name}}</option>
           </select>
@@ -33,6 +33,7 @@
       </div>
       <div class="row">
         <div class="columns large-6 nested-view">
+          <h3>{{editMode.disableEditing}}</h3>
           <select id="interventionsSelect" multiple ui-select2 ng-model="selectedInterventionIds"
                   data-placeholder="no interventions selected">
             <option ng-repeat="intervention in interventions" value={{intervention.id}}>{{intervention.name}}</option>
@@ -48,7 +49,8 @@
       </div>
       <div class="row">
         <div class="columns large-6 nested-view">
-          <select ng-model="analysis.studyId" ng-options="study.id as study.name for study in studies | orderBy:'name'">
+          <select ng-model="analysis.studyId" ng-disabled="editMode.disableEditing"
+                  ng-options="study.id as study.name for study in studies | orderBy:'name'">
           </select>
         </div>
       </div>
