@@ -6,3 +6,7 @@
 	path = src/main/webapp/resources/app/js/bower_components
 	url = https://github.com/drugis/addis-core-bower.git
 	branch = master
+[submodule "mcdaweb-standalone"]
+	path = src/mcdaweb-standalone
+	url = git@github.com:drugis/mcda-elicitation-web.git
+	branch = standalone-client
