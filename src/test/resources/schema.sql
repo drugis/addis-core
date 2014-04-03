@@ -63,3 +63,8 @@ CREATE TABLE Analysis (id SERIAL NOT NULL,
         study VARCHAR,
   PRIMARY KEY (id),
   FOREIGN KEY(projectId) REFERENCES Project(id));
+
+-- changeset reidd:2
+
+CREATE TABLE Scenario (id SERIAL NOT NULL,
+    PRIMARY KEY (id));

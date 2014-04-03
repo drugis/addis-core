@@ -16,3 +16,5 @@ INSERT INTO public.intervention (id, project, name, motivation, semanticInterven
 INSERT INTO public.analysis (id, projectId, name, analysisType) VALUES (1, 1, 'analysis 1', 'Single-study Benefit-Risk');
 INSERT INTO public.analysis (id, projectId, name, analysisType) VALUES (2, 1, 'analysis 2', 'Single-study Benefit-Risk');
 INSERT INTO public.analysis (id, projectId, name, analysisType) VALUES (3 ,2, 'analysis 3', 'Single-study Benefit-Risk');
+
+INSERT INTO public.scenario (id) VALUES (1);
