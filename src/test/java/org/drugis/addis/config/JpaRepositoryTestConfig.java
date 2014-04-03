@@ -26,6 +26,7 @@ import java.util.Properties;
                 "org.drugis.addis.outcomes",
                 "org.drugis.addis.interventions",
                 "org.drugis.addis.analyses",
+                "org.drugis.addis.scenarios",
                 "org.drugis.addis.security"
         })
 @EnableTransactionManagement
@@ -33,7 +34,8 @@ import java.util.Properties;
         "org.drugis.addis.projects",
         "org.drugis.addis.outcomes",
         "org.drugis.addis.interventions",
-        "org.drugis.addis.analyses"
+        "org.drugis.addis.analyses",
+        "org.drugis.addis.scenarios"
 })
 public class JpaRepositoryTestConfig {
 
@@ -74,6 +76,7 @@ public class JpaRepositoryTestConfig {
             "org.drugis.addis.interventions",
             "org.drugis.addis.projects",
             "org.drugis.addis.analyses",
+            "org.drugis.addis.scenarios",
             "org.drugis.addis.security");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
