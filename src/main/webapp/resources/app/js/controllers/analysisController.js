@@ -2,11 +2,11 @@
 define(['underscore'], function() {
   var dependencies = ['$scope', '$stateParams', '$q', '$window', '$location',
     'ProjectsService', 'AnalysisService', 'OutcomeService', 'InterventionService', 'Select2UtilService', 'TrialverseStudyService',
-    'ProblemService', 'jQuery'
+    'ProblemService'
   ];
   var AnalysisController = function($scope, $stateParams, $q, $window, $location,
     ProjectsService, AnalysisService, OutcomeService, InterventionService,
-    Select2UtilService, TrialverseStudyService, ProblemService, jQuery) {
+    Select2UtilService, TrialverseStudyService, ProblemService) {
 
     $scope.loading = {
       loaded: false
@@ -39,8 +39,8 @@ define(['underscore'], function() {
       };
 
       //  angular ui bug work-around, select2-ui does not properly watch for changes in the select2-options 
-      jQuery('#criteriaSelect').select2('readonly', $scope.editMode.disableEditing);
-      jQuery('#interventionsSelect').select2('readonly', $scope.editMode.disableEditing);
+      $('#criteriaSelect').select2('readonly', $scope.editMode.disableEditing);
+      $('#interventionsSelect').select2('readonly', $scope.editMode.disableEditing);
 
       $scope.studies = TrialverseStudyService.query({
         id: $scope.project.trialverseId

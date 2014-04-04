@@ -93,6 +93,10 @@ public class Analysis implements Serializable {
     return selectedInterventions == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(selectedInterventions);
   }
 
+  public void setStudyId(Integer studyId) {
+    this.studyId = studyId;
+  }
+
   public String getProblem() {
     return problem;
   }
