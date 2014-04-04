@@ -77,3 +77,16 @@ CREATE TABLE Analysis_Interventions (
   FOREIGN KEY(AnalysisId) REFERENCES Analysis(id),
   FOREIGN KEY(InterventionId) REFERENCES Intervention(id)
 );
+
+-- changeset reidd:2
+
+CREATE TABLE Scenario (id SERIAL NOT NULL,
+    						workspace INT NOT NULL,
+    						title VARCHAR NOT NULL,
+    						state VARCHAR NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY(workspace) REFERENCES Analysis(id));
+
+-- changeset reidd:3
+
+ALTER TABLE Analysis ADD problem VARCHAR NULL
