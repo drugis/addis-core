@@ -2,10 +2,13 @@ package org.drugis.addis.analyses.controller;
 
 import org.drugis.addis.analyses.Analysis;
 import org.drugis.addis.analyses.AnalysisCommand;
+import org.drugis.addis.analyses.State;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.scenarios.Scenario;
+import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.slf4j.Logger;
@@ -33,6 +36,8 @@ public class AnalysisController extends AbstractAddisCoreController {
   AnalysisRepository analysisRepository;
   @Inject
   AccountRepository accountRepository;
+  @Inject
+  private ScenarioRepository scenarioRepository;
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
   @ResponseBody
@@ -76,7 +81,17 @@ public class AnalysisController extends AbstractAddisCoreController {
   public Analysis update(Principal currentUser, @RequestBody Analysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return analysisRepository.update(user, analysis);
+      Analysis oldAnalysis = analysisRepository.get(analysis.getProjectId(), analysis.getId());
+      if (oldAnalysis.getProblem() != null) {
+        throw new MethodNotAllowedException();
+      }
+
+      Analysis updatedAnalysis = analysisRepository.update(user, analysis);
+      if (analysis.getProblem() != null && oldAnalysis.getProblem() == null) {
+        State state = new State(analysis.getProblem());
+        scenarioRepository.create(analysis.getId(), Scenario.DEFAULT_TITLE, state);
+      }
+      return updatedAnalysis;
     } else {
       throw new MethodNotAllowedException();
     }

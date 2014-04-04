@@ -4,11 +4,14 @@ import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.Analysis;
 import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.analyses.AnalysisType;
+import org.drugis.addis.analyses.State;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.CriteriaRepository;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
+import org.drugis.addis.scenarios.Scenario;
+import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
@@ -58,6 +61,9 @@ public class AnalysisControllerTest {
 
   @Inject
   CriteriaRepository criteriaRepository;
+
+  @Inject
+  ScenarioRepository scenarioRepository;
 
 
   @Autowired
@@ -140,24 +146,23 @@ public class AnalysisControllerTest {
 
 
   @Test
-  public void testUpdateAnalysis() throws Exception {
+  public void testUpdateAnalysisWithoutProblem() throws Exception {
     Integer projectId = 1;
     Integer analysisId = 1;
-    List<Integer> selectedOutcomeIds = Arrays.asList(1, 2, 3);
-    AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL, selectedOutcomeIds);
     List<Outcome> selectedOutcomes = Arrays.asList(
-            new Outcome(1, projectId, "name", "motivation", new SemanticOutcome("uri", "label")),
-            new Outcome(2, projectId, "name", "motivation", new SemanticOutcome("uri", "label")),
-            new Outcome(3, projectId, "name", "motivation", new SemanticOutcome("uri", "label"))
+      new Outcome(1, projectId, "name", "motivation", new SemanticOutcome("uri", "label")),
+      new Outcome(2, projectId, "name", "motivation", new SemanticOutcome("uri", "label")),
+      new Outcome(3, projectId, "name", "motivation", new SemanticOutcome("uri", "label"))
     );
     List<Intervention> selectedInterventions = Arrays.asList(
-            new Intervention(1, projectId, "name", "motivation", new SemanticIntervention("uri", "label")),
-            new Intervention(2, projectId, "name", "motivation", new SemanticIntervention("uri", "label"))
+      new Intervention(1, projectId, "name", "motivation", new SemanticIntervention("uri", "label")),
+      new Intervention(2, projectId, "name", "motivation", new SemanticIntervention("uri", "label"))
     );
-    Analysis analysis = new Analysis(1, analysisCommand.getProjectId(), analysisCommand.getName(), AnalysisType.getByLabel(analysisCommand.getType()), selectedOutcomes, selectedInterventions);
-    String body = TestUtils.createJson(analysis);
-    System.out.println(body);
-    when(analysisRepository.update(gert, analysis)).thenReturn(analysis);
+    Analysis oldAnalysis = new Analysis(1, projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, selectedOutcomes, selectedInterventions);
+    Analysis newAnalysis = new Analysis(1, projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, selectedOutcomes, selectedInterventions, "problem");
+    String body = TestUtils.createJson(newAnalysis);
+    when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
+    when(analysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
             .content(body)
             .principal(user)
@@ -166,8 +171,49 @@ public class AnalysisControllerTest {
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.selectedOutcomes", hasSize(3)))
             .andExpect(jsonPath("$.selectedInterventions", hasSize(2)));
+    verify(analysisRepository).get(projectId, analysisId);
     verify(accountRepository).findAccountByUsername("gert");
-    verify(analysisRepository).update(gert, analysis);
+    verify(analysisRepository).update(gert, newAnalysis);
+  }
+
+
+  @Test
+  public void testUpdateAnalysisWithCreateScenario() throws Exception {
+    Integer projectId = 1;
+    Integer analysisId = 1;
+    Analysis oldAnalysis = new Analysis(1, projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    Analysis newAnalysis = new Analysis(1, projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST, "problem");
+    String body = TestUtils.createJson(newAnalysis);
+    when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
+    when(analysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
+    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
+      .content(body)
+      .principal(user)
+      .contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(analysisRepository).get(projectId, analysisId);
+    verify(scenarioRepository).create(analysisId, Scenario.DEFAULT_TITLE, new State(newAnalysis.getProblem()));
+    verify(analysisRepository).update(gert, newAnalysis);
+  }
+
+  @Test
+  public void testUpdateLockedAnalysisFails() throws Exception {
+    Integer projectId = 1;
+    Integer analysisId = 1;
+    Analysis oldAnalysis = new Analysis(1, projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST, "oldProblem");
+    Analysis newAnalysis = new Analysis(1, projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST, "newProblem");
+    String body = TestUtils.createJson(newAnalysis);
+    when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
+    when(analysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
+    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
+      .content(body)
+      .principal(user)
+      .contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(redirectedUrl("/error/403"));
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(analysisRepository).get(projectId, analysisId);
   }
 
 }

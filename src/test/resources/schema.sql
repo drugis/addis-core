@@ -67,4 +67,12 @@ CREATE TABLE Analysis (id SERIAL NOT NULL,
 -- changeset reidd:2
 
 CREATE TABLE Scenario (id SERIAL NOT NULL,
-    PRIMARY KEY (id));
+    						workspace INT NOT NULL,
+    						title VARCHAR NOT NULL,
+    						state VARCHAR NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY(workspace) REFERENCES Analysis(id));
+
+-- changeset reidd:3
+
+ALTER TABLE Analysis ADD problem VARCHAR NULL

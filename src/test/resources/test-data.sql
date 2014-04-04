@@ -17,4 +17,7 @@ INSERT INTO public.analysis (id, projectId, name, analysisType) VALUES (1, 1, 'a
 INSERT INTO public.analysis (id, projectId, name, analysisType) VALUES (2, 1, 'analysis 2', 'Single-study Benefit-Risk');
 INSERT INTO public.analysis (id, projectId, name, analysisType) VALUES (3 ,2, 'analysis 3', 'Single-study Benefit-Risk');
 
-INSERT INTO public.scenario (id) VALUES (1);
+INSERT INTO public.analysis (id, projectId, name, analysisType, problem) VALUES (4, 1, 'analysis 3', 'Single-study Benefit-Risk', 'problem');
+
+INSERT INTO public.scenario (id, workspace, title, state) VALUES (1, 1, 'Default', 'problem state');
+INSERT INTO public.scenario (id, workspace, title, state) VALUES (2, 1, 'Scenario title', 'problem state modified');

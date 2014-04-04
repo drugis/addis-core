@@ -1,5 +1,6 @@
 package org.drugis.addis.scenarios.repository;
 
+import org.drugis.addis.analyses.State;
 import org.drugis.addis.scenarios.Scenario;
 
 /**
@@ -7,4 +8,6 @@ import org.drugis.addis.scenarios.Scenario;
  */
 public interface ScenarioRepository {
   Scenario get(Integer id);
+
+  Scenario create(Integer id, String title, State state);
 }
