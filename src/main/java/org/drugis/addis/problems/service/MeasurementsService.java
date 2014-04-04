@@ -38,8 +38,6 @@ public class MeasurementsService {
 
   /**
    * Retrieve a list of measurements from the project namespace, based on selected outcomes.
-   *
-   * @return
    */
   public List<Measurement> createMeasurements(Project project, Analysis analysis, Map<Long, AlternativeEntry> alternativesCache) {
     Map<String, Outcome> outcomesByUri = new HashMap<>();

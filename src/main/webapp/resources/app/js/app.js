@@ -13,7 +13,8 @@ define(
     'angular-select2'
   ],
   function (angular, require, $) {
-    var dependencies = ['ui.router', 'addis.controllers', 'addis.directives', 'addis.resources', 'addis.services', 'addis.filters', 'ui.select2'];
+    var dependencies = ['ui.router', 'addis.controllers', 'addis.directives', 'addis.resources',
+      'addis.services', 'addis.filters', 'ui.select2'];
     var app = angular.module('addis', dependencies);
 
     app.run(['$rootScope', '$window', '$http',
@@ -31,7 +32,7 @@ define(
 
     app.config(['$stateProvider', '$urlRouterProvider',
       function ($stateProvider, $urlRouterProvider) {
-        var baseTemplatePath = "app/views/";
+        var baseTemplatePath = 'app/views/';
 
         $stateProvider
           .state('projects', {
