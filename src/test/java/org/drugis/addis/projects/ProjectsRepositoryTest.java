@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.Collection;
 
@@ -27,9 +25,6 @@ import static org.junit.Assert.assertNotNull;
 public class ProjectsRepositoryTest {
   @Autowired
   private ProjectRepository projectRepository;
-
-  @PersistenceContext(unitName = "addisCore")
-  EntityManager em;
 
   @Test
   public void testQuery() {

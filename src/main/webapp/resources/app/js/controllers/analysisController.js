@@ -67,7 +67,10 @@ define(['underscore'], function() {
       });
 
       $scope.createProblem = function() {
-        ProblemService.get($stateParams);
+        var newProblem = ProblemService.get($stateParams);
+        $scope.analysis.problem = newProblem;
+        $scope.analysis.$save();
+        });
       };
 
     });
