@@ -1,10 +1,10 @@
 'use strict';
 define(['underscore'], function() {
-  var dependencies = ['$scope', '$stateParams', '$q', '$window',
+  var dependencies = ['$scope', '$stateParams', '$q', '$window', '$location',
     'ProjectsService', 'AnalysisService', 'OutcomeService', 'InterventionService', 'Select2UtilService', 'TrialverseStudyService',
     'ProblemService', 'jQuery'
   ];
-  var AnalysisController = function($scope, $stateParams, $q, $window,
+  var AnalysisController = function($scope, $stateParams, $q, $window, $location,
     ProjectsService, AnalysisService, OutcomeService, InterventionService,
     Select2UtilService, TrialverseStudyService, ProblemService, jQuery) {
 
@@ -31,7 +31,9 @@ define(['underscore'], function() {
     ]).then(function() {
       $scope.loading.loaded = true;
 
-      $scope.editMode.disableEditing = $window.config.user.id !== $scope.project.owner.id;
+      var userIsOwner = $window.config.user.id === $scope.project.owner.id;
+      $scope.editMode.disableEditing = !userIsOwner || $scope.analysis.problem;
+
       $scope.select2Options = {
         'readonly': $scope.editMode.disableEditing
       };
@@ -67,9 +69,15 @@ define(['underscore'], function() {
       });
 
       $scope.createProblem = function() {
-        var newProblem = ProblemService.get($stateParams);
-        $scope.analysis.problem = newProblem;
-        $scope.analysis.$save();
+        var analysis = $scope.analysis;
+        analysis.problem = ProblemService.get($stateParams);
+        var problem = analysis.problem;
+        problem.$promise.then(function() {
+          analysis.$save(function(analysis) {
+            var newLocation = $location.url() + '/scenarios/' + analysis.scenarios[0].id;
+            $location.url(newLocation);
+          });
+        });
       };
     });
   };
