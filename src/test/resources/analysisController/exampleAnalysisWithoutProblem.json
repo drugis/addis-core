@@ -1,0 +1,45 @@
+{
+  "id": 1,
+  "projectId": 1,
+  "name": "Analysis name",
+  "problem": "",
+  "analysisType": "Single-study Benefit-Risk",
+  "studyId": 45,
+  "selectedOutcomes": [{
+    "id": 6,
+    "project": 1,
+    "name": "Blood pressure change",
+    "motivation": "none",
+    "semanticOutcomeLabel": "SBP mean trough (clinic, sitting)",
+    "semanticOutcomeUri": "http://trials.drugis.org/namespace/2/endpoint/e2611534a509251f2e1c87a0cc151cdb"
+  }, {
+    "id": 7,
+    "project": 1,
+    "name": "Serious AE",
+    "motivation": "motivation",
+    "semanticOutcomeLabel": "SAE",
+    "semanticOutcomeUri": "http://trials.drugis.org/namespace/2/adverseEvent/2c1b99355c6f052ed4a9d904f28c24c7"
+  }, {
+    "id": 8,
+    "project": 1,
+    "name": "Non-serious AE",
+    "motivation": "motivation",
+    "semanticOutcomeLabel": "Non-SAE",
+    "semanticOutcomeUri": "http://trials.drugis.org/namespace/2/adverseEvent/5f771b78f6308e4f100a6d6e239d28e2"
+  }],
+  "selectedInterventions": [{
+    "id": 8,
+    "project": 1,
+    "name": "Edarbi",
+    "motivation": "more motivations",
+    "semanticInterventionLabel": "Azilsartan",
+    "semanticInterventionUri": "http://trials.drugis.org/namespace/2/drug/87fec8a8071915a2e17eddeb1faf8daa"
+  }, {
+    "id": 9,
+    "project": 1,
+    "name": "Placebo",
+    "motivation": "even more motivations",
+    "semanticInterventionLabel": "Placebo",
+    "semanticInterventionUri": "http://trials.drugis.org/namespace/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6"
+  }]
+}

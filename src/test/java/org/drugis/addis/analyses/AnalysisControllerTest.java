@@ -75,8 +75,7 @@ public class AnalysisControllerTest {
 
   @Before
   public void setUp() {
-    reset(accountRepository);
-    reset(analysisRepository);
+    reset(accountRepository, analysisRepository, scenarioRepository, criteriaRepository);
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
@@ -157,13 +156,11 @@ public class AnalysisControllerTest {
     );
     Analysis oldAnalysis = new Analysis(1, projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, selectedOutcomes, selectedInterventions);
     ObjectMapper objectMapper = new ObjectMapper();
-    Analysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequest()), Analysis.class);
-    newAnalysis.setProblem(null);
-
+    Analysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequestWithoutProblem()), Analysis.class);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
     when(analysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(exampleUpdateRequest())
+            .content(exampleUpdateRequestWithoutProblem())
             .principal(user)
             .contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk())
@@ -182,11 +179,11 @@ public class AnalysisControllerTest {
     Integer analysisId = 1;
     Analysis oldAnalysis = new Analysis(1, projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     ObjectMapper objectMapper = new ObjectMapper();
-    Analysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequest()), Analysis.class);
+    Analysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequestWithProblem()), Analysis.class);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
     when(analysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(exampleUpdateRequest())
+            .content(exampleUpdateRequestWithProblem())
             .principal(user)
             .contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk())
@@ -203,11 +200,11 @@ public class AnalysisControllerTest {
     Integer analysisId = 1;
     Analysis oldAnalysis = new Analysis(1, projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST, "oldProblem");
     ObjectMapper objectMapper = new ObjectMapper();
-    Analysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequest()), Analysis.class);
+    Analysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequestWithProblem()), Analysis.class);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
     when(analysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(exampleUpdateRequest())
+            .content(exampleUpdateRequestWithProblem())
             .principal(user)
             .contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(redirectedUrl("/error/403"));
@@ -221,11 +218,11 @@ public class AnalysisControllerTest {
     Integer analysisId = 1;
     Analysis oldAnalysis = new Analysis(1, projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
     ObjectMapper objectMapper = new ObjectMapper();
-    Analysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequest()), Analysis.class);
+    Analysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequestWithProblem()), Analysis.class);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
     when(analysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", 1, 1)
-            .content(exampleUpdateRequest())
+            .content(exampleUpdateRequestWithProblem())
             .principal(user)
             .contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
@@ -234,8 +231,12 @@ public class AnalysisControllerTest {
     verify(analysisRepository).update(gert, newAnalysis);
   }
 
-  String exampleUpdateRequest() {
-    return TestUtils.loadResource(this.getClass(), "/analysisController/exampleAnalysisWithProblem");
+  String exampleUpdateRequestWithProblem() {
+    return TestUtils.loadResource(this.getClass(), "/analysisController/exampleAnalysisWithProblem.json");
+  }
+
+  String exampleUpdateRequestWithoutProblem() {
+    return TestUtils.loadResource(this.getClass(), "/analysisController/exampleAnalysisWithoutProblem.json");
   }
 
 }
