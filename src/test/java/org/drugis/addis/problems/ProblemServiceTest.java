@@ -26,7 +26,9 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.*;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -84,6 +86,7 @@ public class ProblemServiceTest {
     int analysisId = 2;
     Analysis analysis = mock(Analysis.class);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
+    when(analysis.getName()).thenReturn("analysisName");
 
     Map<Long, AlternativeEntry> alternativesCache = new HashMap<>();
     long alternativeEntryKey = 3L;
@@ -94,6 +97,7 @@ public class ProblemServiceTest {
     List<Pair<Variable, CriterionEntry>> variableCriteriaPairs = new ArrayList<>();
     Variable variable = mock(Variable.class);
     CriterionEntry criterionEntry = mock(CriterionEntry.class);
+    when(criterionEntry.getTitle()).thenReturn("Criterion entry");
     Pair<Variable, CriterionEntry> variableCriterionPair = new ImmutablePair<>(variable, criterionEntry);
     variableCriteriaPairs.add(variableCriterionPair);
     when(criteriaService.createVariableCriteriaPairs(project, analysis)).thenReturn(variableCriteriaPairs);
@@ -123,6 +127,13 @@ public class ProblemServiceTest {
     verify(performanceTablebuilder).build(criteriaCache, alternativesCache, measurements);
 
     assertNotNull(actualProblem);
+    assertNotNull(actualProblem.getTitle());
+    assertEquals(analysis.getName(), actualProblem.getTitle());
+    assertNotNull(actualProblem.getAlternatives());
+    assertNotNull(actualProblem.getCriteria());
+
+    Map<String, CriterionEntry> actualCriteria =  actualProblem.getCriteria();
+    assertTrue(actualCriteria.keySet().contains(jsonUtils.createKey(criterionEntry.getTitle())));
   }
 
 }
