@@ -87,7 +87,6 @@ public class PerformanceTableBuilder {
     String alternativeName = alternativeEntry.getTitle();
     String criterionName = criterionEntry.getTitle();
     RatePerformance performance = new RatePerformance(new RatePerformanceParameters(alpha, beta));
-    System.out.println("jsonUtils" + jsonUtils);
     return new RateMeasurementEntry(jsonUtils.createKey(alternativeName), jsonUtils.createKey(criterionName), performance);
   }
 
