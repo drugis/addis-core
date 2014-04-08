@@ -1,5 +1,7 @@
 package org.drugis.addis.problems.model;
 
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 
 import javax.persistence.Entity;
@@ -9,11 +11,15 @@ import java.util.Map;
 /**
  * Created by daan on 3/21/14.
  */
+@JsonDeserialize(using = ProblemDeserializer.class)
 public class Problem {
   private String title;
   private Map<String, AlternativeEntry> alternatives;
   private Map<String, CriterionEntry> criteria;
   private List<AbstractMeasurementEntry> performanceTable;
+
+  public Problem() {
+  }
 
   public Problem(String title, Map<String, AlternativeEntry> alternatives, Map<String, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
     this.title = title;

@@ -87,7 +87,7 @@ public class AnalysisController extends AbstractAddisCoreController {
       }
 
       Analysis updatedAnalysis = analysisRepository.update(user, analysis);
-      if (analysis.getProblem() != null && oldAnalysis.getProblem() == null) {
+      if (analysis.getProblem() != null) {
         State state = new State(analysis.getProblem());
         scenarioRepository.create(analysis.getId(), Scenario.DEFAULT_TITLE, state);
       }

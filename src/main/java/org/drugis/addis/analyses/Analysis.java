@@ -1,7 +1,13 @@
 package org.drugis.addis.analyses;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
+import org.drugis.addis.problems.model.Problem;
+import org.drugis.addis.problems.model.ProblemDeserializer;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -99,6 +105,11 @@ public class Analysis implements Serializable {
 
   public String getProblem() {
     return problem;
+  }
+
+  @JsonDeserialize(using = ProblemDeserializer.class)
+  public void setProblem(String problem) {
+    this.problem = problem;
   }
 
   @Override
