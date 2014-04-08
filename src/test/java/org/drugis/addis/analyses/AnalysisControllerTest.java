@@ -1,14 +1,14 @@
-package org.drugis.addis.analysis;
+package org.drugis.addis.analyses;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drugis.addis.TestUtils;
-import org.drugis.addis.analyses.Analysis;
-import org.drugis.addis.analyses.AnalysisCommand;
-import org.drugis.addis.analyses.AnalysisType;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.CriteriaRepository;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
+import org.drugis.addis.scenarios.Scenario;
+import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
@@ -59,6 +59,9 @@ public class AnalysisControllerTest {
   @Inject
   CriteriaRepository criteriaRepository;
 
+  @Inject
+  ScenarioRepository scenarioRepository;
+
 
   @Autowired
   private WebApplicationContext webApplicationContext;
@@ -66,8 +69,8 @@ public class AnalysisControllerTest {
   private Principal user;
 
   private Account john = new Account(1, "a", "john", "lennon"),
-          paul = new Account(2, "a", "paul", "mc cartney"),
-          gert = new Account(3, "gert", "Gert", "van Valkenhoef");
+    paul = new Account(2, "a", "paul", "mc cartney"),
+    gert = new Account(3, "gert", "Gert", "van Valkenhoef");
 
 
   @Before
@@ -93,11 +96,11 @@ public class AnalysisControllerTest {
     when(analysisRepository.query(projectId)).thenReturn(analyses);
 
     mockMvc.perform(get("/projects/1/analyses").principal(user))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$", hasSize(1)))
-            .andExpect(jsonPath("$[0].id", is(analysis.getId())))
-            .andExpect(jsonPath("$[0].analysisType", is(AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL)));
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$", hasSize(1)))
+      .andExpect(jsonPath("$[0].id", is(analysis.getId())))
+      .andExpect(jsonPath("$[0].analysisType", is(AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL)));
 
     verify(analysisRepository).query(projectId);
     verify(accountRepository).findAccountByUsername("gert");
@@ -107,7 +110,7 @@ public class AnalysisControllerTest {
   public void testUnauthorisedAccessFails() throws Exception {
     when(accountRepository.findAccountByUsername("gert")).thenReturn(null);
     mockMvc.perform(get("/projects/1/analyses").principal(user))
-            .andExpect(redirectedUrl("/error/403"));
+      .andExpect(redirectedUrl("/error/403"));
     verify(accountRepository).findAccountByUsername("gert");
   }
 
@@ -118,9 +121,9 @@ public class AnalysisControllerTest {
     when(analysisRepository.create(gert, analysisCommand)).thenReturn(analysis);
     String body = TestUtils.createJson(analysisCommand);
     mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.id", notNullValue()));
+      .andExpect(status().isCreated())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).create(gert, analysisCommand);
   }
@@ -131,43 +134,185 @@ public class AnalysisControllerTest {
     Integer projectId = 1;
     when(analysisRepository.get(projectId, analysis.getId())).thenReturn(analysis);
     mockMvc.perform(get("/projects/1/analyses/1").principal(user))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.id", is(analysis.getId())));
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.id", is(analysis.getId())));
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(projectId, analysis.getId());
   }
 
 
   @Test
-  public void testUpdateAnalysis() throws Exception {
+  public void testUpdateAnalysisWithoutProblem() throws Exception {
     Integer projectId = 1;
     Integer analysisId = 1;
-    List<Integer> selectedOutcomeIds = Arrays.asList(1, 2, 3);
-    AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL, selectedOutcomeIds);
     List<Outcome> selectedOutcomes = Arrays.asList(
-            new Outcome(1, projectId, "name", "motivation", new SemanticOutcome("uri", "label")),
-            new Outcome(2, projectId, "name", "motivation", new SemanticOutcome("uri", "label")),
-            new Outcome(3, projectId, "name", "motivation", new SemanticOutcome("uri", "label"))
+      new Outcome(1, projectId, "name", "motivation", new SemanticOutcome("uri", "label")),
+      new Outcome(2, projectId, "name", "motivation", new SemanticOutcome("uri", "label")),
+      new Outcome(3, projectId, "name", "motivation", new SemanticOutcome("uri", "label"))
     );
     List<Intervention> selectedInterventions = Arrays.asList(
-            new Intervention(1, projectId, "name", "motivation", new SemanticIntervention("uri", "label")),
-            new Intervention(2, projectId, "name", "motivation", new SemanticIntervention("uri", "label"))
+      new Intervention(1, projectId, "name", "motivation", new SemanticIntervention("uri", "label")),
+      new Intervention(2, projectId, "name", "motivation", new SemanticIntervention("uri", "label"))
     );
-    Analysis analysis = new Analysis(1, analysisCommand.getProjectId(), analysisCommand.getName(), AnalysisType.getByLabel(analysisCommand.getType()), selectedOutcomes, selectedInterventions);
-    String body = TestUtils.createJson(analysis);
-    System.out.println(body);
-    when(analysisRepository.update(gert, analysis)).thenReturn(analysis);
+    Analysis oldAnalysis = new Analysis(1, projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, selectedOutcomes, selectedInterventions);
+    ObjectMapper objectMapper = new ObjectMapper();
+    Analysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequest()), Analysis.class);
+    newAnalysis.setProblem(null);
+
+    when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
+    when(analysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(body)
-            .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.selectedOutcomes", hasSize(3)))
-            .andExpect(jsonPath("$.selectedInterventions", hasSize(2)));
+      .content(body)
+      .principal(user)
+      .contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.selectedOutcomes", hasSize(3)))
+      .andExpect(jsonPath("$.selectedInterventions", hasSize(2)));
+    verify(analysisRepository).get(projectId, analysisId);
     verify(accountRepository).findAccountByUsername("gert");
-    verify(analysisRepository).update(gert, analysis);
+    verify(analysisRepository).update(gert, newAnalysis);
   }
+
+
+  @Test
+  public void testUpdateAnalysisWithCreateScenario() throws Exception {
+    Integer projectId = 1;
+    Integer analysisId = 1;
+    Analysis oldAnalysis = new Analysis(1, projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    ObjectMapper objectMapper = new ObjectMapper();
+    Analysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequest()), Analysis.class);
+    when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
+    when(analysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
+    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
+      .content(exampleUpdateRequest())
+      .principal(user)
+      .contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(analysisRepository).get(projectId, analysisId);
+    verify(scenarioRepository).create(analysisId, Scenario.DEFAULT_TITLE, new State(newAnalysis.getProblem()));
+    verify(analysisRepository).update(gert, newAnalysis);
+  }
+
+  @Test
+  public void testUpdateLockedAnalysisFails() throws Exception {
+    Integer projectId = 1;
+    Integer analysisId = 1;
+    Analysis oldAnalysis = new Analysis(1, projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST, "oldProblem");
+    ObjectMapper objectMapper = new ObjectMapper();
+    Analysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequest()), Analysis.class);
+    when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
+    when(analysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
+    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
+      .content(exampleUpdateRequest())
+      .principal(user)
+      .contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(redirectedUrl("/error/403"));
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(analysisRepository).get(projectId, analysisId);
+  }
+
+  @Test
+  public void Update() throws Exception {
+    Integer projectId = 1;
+    Integer analysisId = 1;
+    Analysis oldAnalysis = new Analysis(1, projectId, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
+    ObjectMapper objectMapper = new ObjectMapper();
+    Analysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequest()), Analysis.class);
+    when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
+    when(analysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
+    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", 1, 1)
+      .content(exampleUpdateRequest())
+      .principal(user)
+      .contentType(WebConstants.APPLICATION_JSON_UTF8))
+    .andExpect(status().isOk());
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(analysisRepository).get(projectId, analysisId);
+    verify(analysisRepository).update(gert, newAnalysis);
+  }
+
+  String exampleUpdateRequest() {
+    return "{\n" +
+      "    \"id\": 1,\n" +
+      "    \"projectId\": 1,\n" +
+      "    \"name\": \"Nasty in the pasty\",\n" +
+      "    \"problem\": {\n" +
+      "        \"title\": \"Nasty in the pasty\",\n" +
+      "        \"alternatives\": {\n" +
+      "            \"placebo\": {\n" +
+      "                \"title\": \"Placebo\"\n" +
+      "            },\n" +
+      "            \"azilsartan\": {\n" +
+      "                \"title\": \"Azilsartan\"\n" +
+      "            }\n" +
+      "        },\n" +
+      "        \"criteria\": {\n" +
+      "            \"sbp-mean-trough-clinic-sitting\": {\n" +
+      "                \"title\": \"Blood pressure\",\n" +
+      "                \"scale\": [null, null],\n" +
+      "                \"pvf\": null\n" +
+      "            }\n" +
+      "        },\n" +
+      "        \"performanceTable\": [{\n" +
+      "            \"alternative\": \"placebo\",\n" +
+      "            \"criterion\": \"blood-pressure\",\n" +
+      "            \"performance\": {\n" +
+      "                \"parameters\": {\n" +
+      "                    \"mu\": -3.04,\n" +
+      "                    \"sigma\": 1.333\n" +
+      "                },\n" +
+      "                \"type\": \"dnormal\"\n" +
+      "            }\n" +
+      "        }, {\n" +
+      "            \"alternative\": \"azilsartan\",\n" +
+      "            \"criterion\": \"blood-pressure\",\n" +
+      "            \"performance\": {\n" +
+      "                \"parameters\": {\n" +
+      "                    \"mu\": -9.58,\n" +
+      "                    \"sigma\": 1.351\n" +
+      "                },\n" +
+      "                \"type\": \"dnormal\"\n" +
+      "            }\n" +
+      "        }]\n" +
+      "    },\n" +
+      "    \"analysisType\": \"Single-study Benefit-Risk\",\n" +
+      "    \"studyId\": 1,\n" +
+      "    \"selectedOutcomes\": [{\n" +
+      "        \"id\": 1,\n" +
+      "        \"project\": 4,\n" +
+      "        \"name\": \"Blood pressure\",\n" +
+      "        \"motivation\": \"We don't like it\",\n" +
+      "        \"semanticOutcomeLabel\": \"SBP mean trough (clinic, sitting)\",\n" +
+      "        \"semanticOutcomeUri\": \"http://trials.drugis.org/namespace/2/endpoint/e2611534a509251f2e1c87a0cc151cdb\"\n" +
+      "    }, {\n" +
+      "        \"id\": 2,\n" +
+      "        \"project\": 4,\n" +
+      "        \"name\": \"Failure\",\n" +
+      "        \"motivation\": \"of teh heart\",\n" +
+      "        \"semanticOutcomeLabel\": \"Myocardial infarction\",\n" +
+      "        \"semanticOutcomeUri\": \"http://trials.drugis.org/namespace/2/adverseEvent/e33bb154707530ca3877afb809fb3a6d\"\n" +
+      "    }],\n" +
+      "    \"selectedInterventions\": [{\n" +
+      "        \"id\": 1,\n" +
+      "        \"project\": 4,\n" +
+      "        \"name\": \"Azilsartan\",\n" +
+      "        \"motivation\": \"\",\n" +
+      "        \"semanticInterventionLabel\": \"Azilsartan\",\n" +
+      "        \"semanticInterventionUri\": \"http://trials.drugis.org/namespace/2/drug/87fec8a8071915a2e17eddeb1faf8daa\"\n" +
+      "    }, {\n" +
+      "        \"id\": 2,\n" +
+      "        \"project\": 4,\n" +
+      "        \"name\": \"Placebo\",\n" +
+      "        \"motivation\": \"\",\n" +
+      "        \"semanticInterventionLabel\": \"Placebo\",\n" +
+      "        \"semanticInterventionUri\": \"http://trials.drugis.org/namespace/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6\"\n" +
+      "    }]\n" +
+      "}";
+  }
+
+
 
 }

@@ -4,7 +4,10 @@ package org.drugis.addis.problems.service.model;
  * Created by daan on 3/27/14.
  */
 public class ContinuousMeasurementEntry extends AbstractMeasurementEntry {
-  private final ContinuousPerformance performance;
+  private ContinuousPerformance performance;
+
+  public ContinuousMeasurementEntry() {
+  }
 
   public ContinuousMeasurementEntry(String alternative, String criterion, ContinuousPerformance performance) {
     super(alternative, criterion);

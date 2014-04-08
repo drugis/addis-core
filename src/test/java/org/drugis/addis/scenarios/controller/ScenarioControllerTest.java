@@ -1,5 +1,6 @@
 package org.drugis.addis.scenarios.controller;
 
+import org.drugis.addis.analyses.State;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
@@ -63,7 +64,7 @@ public class ScenarioControllerTest {
 
   @Test
   public void testGet() throws Exception {
-    Scenario scenario = new Scenario(1);
+    Scenario scenario = new Scenario(1, 1, "Default", new State("problem"));
     when(scenarioRepository.get(scenario.getId())).thenReturn(scenario);
     mockMvc.perform(get("/projects/1/analyses/1/scenarios/" + scenario.getId()).principal(user))
             .andExpect(status().isOk())

@@ -38,13 +38,14 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
-        "org.drugis.addis.projects",
-        "org.drugis.addis.security",
-        "org.drugis.addis.outcomes",
-        "org.drugis.addis.interventions",
-        "org.drugis.addis.analyses",
-        "org.drugis.addis.problems",
-        "org.drugis.addis.util"})
+  "org.drugis.addis.projects",
+  "org.drugis.addis.security",
+  "org.drugis.addis.outcomes",
+  "org.drugis.addis.interventions",
+  "org.drugis.addis.analyses",
+  "org.drugis.addis.problems",
+  "org.drugis.addis.scenarios",
+  "org.drugis.addis.util"})
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security", "org.drugis.addis.interventions"})
 public class MainConfig {
@@ -91,10 +92,10 @@ public class MainConfig {
     em.setJpaProperties(additionalProperties());
     em.setJpaVendorAdapter(vendorAdapter);
     em.setPackagesToScan("org.drugis.addis.projects",
-            "org.drugis.addis.outcomes",
-            "org.drugis.addis.interventions",
-            "org.drugis.addis.security",
-            "org.drugis.addis.analyses");
+      "org.drugis.addis.outcomes",
+      "org.drugis.addis.interventions",
+      "org.drugis.addis.security",
+      "org.drugis.addis.analyses");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());

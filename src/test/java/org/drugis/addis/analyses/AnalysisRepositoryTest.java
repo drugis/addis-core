@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.Assert;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -41,23 +40,33 @@ public class AnalysisRepositoryTest {
   @Test
   public void testQuery() {
     Collection<Analysis> analyses = analysisRepository.query(1);
-    assertEquals(2, analyses.size());
+    assertEquals(3, analyses.size());
     analyses = analysisRepository.query(2);
     assertEquals(1, analyses.size());
   }
 
   @Test
   public void testCreate() throws ResourceDoesNotExistException, MethodNotAllowedException {
-    AnalysisCommand analysisCommand = new AnalysisCommand(1, "newName", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
+    int projectId = 1;
+    AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "newName", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
     Account user = em.find(Account.class, 1);
     Analysis result = analysisRepository.create(user, analysisCommand);
-    assertTrue(analysisRepository.query(1).contains(result));
+    assertTrue(analysisRepository.query(projectId).contains(result));
+    assertEquals(null, result.getProblem());
   }
 
   @Test
   public void testGet() throws ResourceDoesNotExistException, MethodNotAllowedException {
-    Analysis analysis = analysisRepository.get(1, 1);
-    assertEquals(em.find(Analysis.class, 1), analysis);
+    int projectId = 1;
+    int analysisId = 1;
+    Analysis analysis = analysisRepository.get(projectId, analysisId);
+    assertEquals(em.find(Analysis.class, analysisId), analysis);
+    assertEquals(null, analysis.getProblem());
+
+    analysisId = 4;
+    analysis = analysisRepository.get(projectId, analysisId);
+    assertEquals(em.find(Analysis.class, analysisId), analysis);
+    assertEquals("problem", analysis.getProblem());
   }
 
   @Test
@@ -106,6 +115,19 @@ public class AnalysisRepositoryTest {
     assertEquals(updatedAnalysis, result);
   }
 
+  @Test
+  public void testupdateWithProblem() throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Integer analysisId = 1;
+    String problem = "problem";
+    Account user = em.find(Account.class, 1);
+    Analysis analysis = new Analysis(
+      analysisId, 1, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST, problem);
+    Analysis updatedAnalysis = analysisRepository.update(user, analysis);
+    Analysis result = em.find(Analysis.class, analysisId);
+    assertEquals(problem, updatedAnalysis.getProblem());
+    assertEquals(updatedAnalysis, result);
+  }
+
   @Test(expected = ResourceDoesNotExistException.class)
   public void testUpdateInWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = em.find(Account.class, 1);
@@ -148,22 +170,5 @@ public class AnalysisRepositoryTest {
   }
 
 
-  @Test
-  public void post2times() {
-    Account account = em.find(Account.class, 1);
-    Analysis analysis = em.find(Analysis.class, 1);
-    try {
-      analysisRepository.update(account, analysis);
-      em.close();
-      Analysis analysis1 = new Analysis(analysis.getId(), analysis.getProjectId(), analysis.getName(), analysis.getAnalysisType(), analysis.getSelectedOutcomes(), analysis.getSelectedInterventions());
-      analysisRepository.update(account, analysis1);
-    } catch (ResourceDoesNotExistException e) {
-      e.printStackTrace();
-    } catch (MethodNotAllowedException e) {
-      e.printStackTrace();
-      Assert.isTrue(false);
-    }
-
-  }
 
 }
