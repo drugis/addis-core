@@ -7,9 +7,6 @@ public abstract class AbstractMeasurementEntry {
   private String alternative;
   private String criterion;
 
-  protected AbstractMeasurementEntry() {
-  }
-
   protected AbstractMeasurementEntry(String alternative, String criterion) {
     this.alternative = alternative;
     this.criterion = criterion;

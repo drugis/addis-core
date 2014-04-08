@@ -6,9 +6,6 @@ package org.drugis.addis.problems.model;
 public class AlternativeEntry {
   private String title;
 
-  public AlternativeEntry() {
-  }
-
   public AlternativeEntry(String title) {
     this.title = title;
   }

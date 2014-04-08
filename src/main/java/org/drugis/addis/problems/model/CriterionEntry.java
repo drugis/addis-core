@@ -10,9 +10,6 @@ public class CriterionEntry {
   private List<Double> scale;
   private PartialValueFunction pvf;
 
-  public CriterionEntry() {
-  }
-
   public CriterionEntry(String title, List<Double> scale, PartialValueFunction partialValueFunction) {
     this.title = title;
     this.scale = scale;

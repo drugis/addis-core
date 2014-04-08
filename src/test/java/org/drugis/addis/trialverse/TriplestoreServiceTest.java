@@ -1,6 +1,6 @@
 package org.drugis.addis.trialverse;
 
-import org.apache.commons.io.IOUtils;
+import org.drugis.addis.TestUtils;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -13,11 +13,11 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +41,7 @@ public class TriplestoreServiceTest {
 
   @Test
   public void testGetOutcomes() {
-    String mockResult = loadResource("/triplestoreService/exampleOutcomeResult.json");
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
     List<SemanticOutcome> result = triplestoreService.getOutcomes(1L);
     SemanticOutcome result1 = new SemanticOutcome("http://trials.drugis.org/namespace/1/endpoint/test1", "DBP 24-hour mean");
@@ -50,7 +50,7 @@ public class TriplestoreServiceTest {
 
   @Test
   public void testGetInterventions() {
-    String mockResult = loadResource("/triplestoreService/exampleInterventionResult.json");
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleInterventionResult.json");
     when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
     List<SemanticIntervention> result = triplestoreService.getInterventions(1L);
     SemanticIntervention result1 = new SemanticIntervention("http://trials.drugis.org/namespace/1/drug/test1", "Azilsartan");
@@ -62,7 +62,7 @@ public class TriplestoreServiceTest {
     Integer namespaceId = 1;
     Integer studyId = 1;
     List<String> interventionConceptUris = new ArrayList<>();
-    String mockResult = loadResource("/triplestoreService/exampleDrugIdResult.json");
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleDrugIdResult.json");
     when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
 
     Map<Long, String>  expected = new HashMap<>();
@@ -80,7 +80,7 @@ public class TriplestoreServiceTest {
     Integer namespaceId = 1;
     Integer studyId = 1;
     List<String> outcomeConceptUris = new ArrayList<>();
-    String mockResult = loadResource("/triplestoreService/exampleOutcomeIdResult.json");
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeIdResult.json");
     when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
 
     Map<Long, String>  expected = new HashMap<>();
@@ -92,16 +92,4 @@ public class TriplestoreServiceTest {
 
     assertEquals(expected , result);
   }
-
-  private String loadResource(String filename) {
-    try {
-      InputStream stream = getClass().getResourceAsStream(filename);
-      return IOUtils.toString(stream, "UTF-8");
-    } catch (IOException e) {
-      e.printStackTrace();
-      assertTrue(false);
-    }
-    return "";
-  }
-
 }
