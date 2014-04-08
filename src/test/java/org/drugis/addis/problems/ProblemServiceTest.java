@@ -97,7 +97,10 @@ public class ProblemServiceTest {
     List<Pair<Variable, CriterionEntry>> variableCriteriaPairs = new ArrayList<>();
     Variable variable = mock(Variable.class);
     CriterionEntry criterionEntry = mock(CriterionEntry.class);
-    when(criterionEntry.getTitle()).thenReturn("Criterion entry");
+    String criterionEntryTitle = "Criterion entry";
+    when(criterionEntry.getTitle()).thenReturn(criterionEntryTitle);
+    String mockKey = "mockKey";
+    when(jsonUtils.createKey(criterionEntryTitle)).thenReturn(mockKey);
     Pair<Variable, CriterionEntry> variableCriterionPair = new ImmutablePair<>(variable, criterionEntry);
     variableCriteriaPairs.add(variableCriterionPair);
     when(criteriaService.createVariableCriteriaPairs(project, analysis)).thenReturn(variableCriteriaPairs);
@@ -125,6 +128,7 @@ public class ProblemServiceTest {
     verify(criteriaService).createVariableCriteriaPairs(project, analysis);
     verify(measurementsService).createMeasurements(project, analysis, alternativesCache);
     verify(performanceTablebuilder).build(criteriaCache, alternativesCache, measurements);
+    verify(jsonUtils, times(2)).createKey(anyString());
 
     assertNotNull(actualProblem);
     assertNotNull(actualProblem.getTitle());
@@ -133,7 +137,8 @@ public class ProblemServiceTest {
     assertNotNull(actualProblem.getCriteria());
 
     Map<String, CriterionEntry> actualCriteria =  actualProblem.getCriteria();
-    assertTrue(actualCriteria.keySet().contains(jsonUtils.createKey(criterionEntry.getTitle())));
+    assertTrue(actualCriteria.keySet().contains(mockKey));
+    verify(jsonUtils).createKey(criterionEntryTitle);
   }
 
 }
