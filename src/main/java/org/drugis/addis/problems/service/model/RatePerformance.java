@@ -4,6 +4,7 @@ package org.drugis.addis.problems.service.model;
  * Created by daan on 3/26/14.
  */
 public class RatePerformance extends AbstractPerformance {
+  public static final String DBETA = "dbeta";
   private RatePerformanceParameters parameters;
 
   public RatePerformance(RatePerformanceParameters parameters) {
@@ -12,7 +13,7 @@ public class RatePerformance extends AbstractPerformance {
 
   @Override
   public String getType() {
-    return "dbeta";
+    return DBETA;
   }
 
   @Override

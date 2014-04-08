@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -70,8 +69,8 @@ public class ProblemControllerTest {
       .andExpect(jsonPath("$", notNullValue()))
       .andExpect(jsonPath("$.title", equalTo(problem.getTitle())))
       .andExpect(jsonPath("$.performanceTable", hasSize(2)))
-      .andExpect(jsonPath("$.performanceTable[0].performance.type", is("dbeta")))
-      .andExpect(jsonPath("$.performanceTable[1].performance.type", is("dnormal")));
+      .andExpect(jsonPath("$.performanceTable[0].performance.type", is(RatePerformance.DBETA)))
+      .andExpect(jsonPath("$.performanceTable[1].performance.type", is(ContinuousPerformance.DNORM)));
     verify(problemService).getProblem(projectId, analysisId);
   }
 

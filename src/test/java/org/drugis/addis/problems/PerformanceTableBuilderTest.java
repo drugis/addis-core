@@ -4,10 +4,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
-import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
-import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
-import org.drugis.addis.problems.service.model.ContinuousPerformanceParameters;
-import org.drugis.addis.problems.service.model.RateMeasurementEntry;
+import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.util.JSONUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -107,7 +104,7 @@ public class PerformanceTableBuilderTest {
     Long expectedBeta = sampleSizeMeasurement.getIntegerValue() - rateMeasurement.getIntegerValue() + 1L;
     assertEquals(expectedAlpha, entry.getPerformance().getParameters().getAlpha());
     assertEquals(expectedBeta, entry.getPerformance().getParameters().getBeta());
-    assertEquals("dbeta", entry.getPerformance().getType());
+    assertEquals(RatePerformance.DBETA, entry.getPerformance().getType());
   }
 
   @Test
@@ -131,6 +128,6 @@ public class PerformanceTableBuilderTest {
     ContinuousPerformanceParameters parameters = entry.getPerformance().getParameters();
     assertEquals(expectedMu, parameters.getMu());
     assertEquals(expectedSigma, parameters.getSigma());
-    assertEquals("dnormal", entry.getPerformance().getType());
+    assertEquals(ContinuousPerformance.DNORM, entry.getPerformance().getType());
   }
 }
