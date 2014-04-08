@@ -140,6 +140,22 @@ public class AnalysisControllerTest {
     verify(analysisRepository).get(projectId, analysis.getId());
   }
 
+  @Test
+  public void testGetAnalysisWithAProblem() throws Exception {
+
+    String problem = "{\"key\": \"value\"}";
+    Analysis analysis = new Analysis(1, 1, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST, problem);
+    Integer projectId = 1;
+    when(analysisRepository.get(projectId, analysis.getId())).thenReturn(analysis);
+    mockMvc.perform(get("/projects/1/analyses/1").principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.id", is(analysis.getId())))
+            .andExpect(jsonPath("$.problem.key", is("value")));
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(analysisRepository).get(projectId, analysis.getId());
+  }
+
 
   @Test
   public void testUpdateAnalysisWithoutProblem() throws Exception {

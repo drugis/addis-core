@@ -2,7 +2,7 @@
   "id": 1,
   "projectId": 1,
   "name": "Analysis name",
-  "problem": "",
+  "problem": null,
   "analysisType": "Single-study Benefit-Risk",
   "studyId": 45,
   "selectedOutcomes": [{
