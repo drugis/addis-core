@@ -8,7 +8,7 @@ define(function (require) {
     .factory('SemanticInterventionService', require('services/semanticInterventionService'))
     .factory('OutcomeService', require('services/outcomeService'))
     .factory('InterventionService', require('services/interventionService'))
-    .factory('AnalysisService', require('services/analysisService'))
+    .factory('AnalysisResource', require('services/analysisResource'))
     .factory('TrialverseStudyService', require('services/trialverseStudyService'))
     .factory('ProblemService', require('services/problemService'));
 });

@@ -1,11 +1,11 @@
 'use strict';
 define(['underscore'], function() {
   var dependencies = ['$scope', '$stateParams', '$q', '$window', '$location',
-    'ProjectsService', 'AnalysisService', 'OutcomeService', 'InterventionService', 'Select2UtilService', 'TrialverseStudyService',
-    'ProblemService'
+    'ProjectsService', 'AnalysisResource', 'OutcomeService', 'InterventionService',
+    'Select2UtilService', 'TrialverseStudyService', 'ProblemService'
   ];
   var AnalysisController = function($scope, $stateParams, $q, $window, $location,
-    ProjectsService, AnalysisService, OutcomeService, InterventionService,
+    ProjectsService, AnalysisResource, OutcomeService, InterventionService,
     Select2UtilService, TrialverseStudyService, ProblemService) {
 
     $scope.loading = {
@@ -17,7 +17,7 @@ define(['underscore'], function() {
     };
 
     $scope.project = ProjectsService.get($stateParams);
-    $scope.analysis = AnalysisService.get($stateParams);
+    $scope.analysis = AnalysisResource.get($stateParams);
 
     $scope.outcomes = OutcomeService.query($stateParams);
     $scope.interventions = InterventionService.query($stateParams);
@@ -70,14 +70,22 @@ define(['underscore'], function() {
 
       $scope.createProblem = function() {
         var analysis = $scope.analysis;
-        analysis.problem = ProblemService.get($stateParams);
-        var problem = analysis.problem;
-        problem.$promise.then(function() {
-          analysis.$save(function(analysis) {
-            var newLocation = $location.url() + '/scenarios/' + analysis.scenarios[0].id;
-            $location.url(newLocation);
-          });
-        });
+
+        var getDefaultScenario = function(analysis) {
+          // return ScenarioService.query(analysis.id).then(function(scenarios) {
+          //   return scenarios[0];
+          // });
+        };
+
+        var navigate = function(scenario) {
+          var newLocation = $location.url() + '/scenarios/' + scenario.id;
+          $location.url(newLocation);
+        };
+
+        ProblemService.get($stateParams)
+          .then(analysis.$save)
+          .then(getDefaultScenario)
+          .then(navigate);
       };
     });
   };

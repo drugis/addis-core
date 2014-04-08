@@ -8,12 +8,12 @@ define([], function () {
     'OutcomeService',
     'SemanticInterventionService',
     'InterventionService',
-    'AnalysisService',
+    'AnalysisResource',
     '$timeout'
   ];
   var ProjectsController = function ($scope, $state, $stateParams, $window, ProjectsService,
     TrialverseService, TrialverseStudyService, SemanticOutcomeService, OutcomeService,
-    SemanticInterventionService, InterventionService, AnalysisService, $timeout) {
+    SemanticInterventionService, InterventionService, AnalysisResource, $timeout) {
     $scope.loading = {
       loaded: false
     };
@@ -51,7 +51,7 @@ define([], function () {
       });
 
       $scope.studies.$promise.then(function () {
-        $scope.analyses = AnalysisService.query({
+        $scope.analyses = AnalysisResource.query({
           projectId: $scope.project.id
         });
       });
@@ -78,7 +78,7 @@ define([], function () {
 
     $scope.addAnalysis = function (newAnalysis) {
       newAnalysis.projectId = $scope.project.id;
-      var savedAnalysis = AnalysisService.save(newAnalysis);
+      var savedAnalysis = AnalysisResource.save(newAnalysis);
       savedAnalysis.$promise.then(function () {
         $state.go('analysis', {
           projectId: savedAnalysis.projectId,

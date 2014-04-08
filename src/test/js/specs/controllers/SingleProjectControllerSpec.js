@@ -5,7 +5,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
     var scope, state, window,
       projectDeferred, analysisDeferred, studiesDeferred,
       projectsService, trialverseService, semanticOutcomeService, semanticInterventionService,
-      outcomeService, interventionService, analysisService, trialverseStudyService,
+      outcomeService, interventionService, analysisResource, trialverseStudyService,
       mockSemanticOutcomes, mockSemanticInterventions,
       mockProject = {
         id: 1,
@@ -55,9 +55,9 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
       semanticInterventionService.query.and.returnValue(mockSemanticInterventions);
       interventionService = jasmine.createSpyObj('interventionService', ['query', 'save']);
       interventionService.query.and.returnValue(mockInterventions);
-      analysisService = jasmine.createSpyObj('analysisService', ['query', 'save']);
-      analysisService.query.and.returnValue(mockAnalyses);
-      analysisService.save.and.returnValue(mockAnalysis);
+      analysisResource = jasmine.createSpyObj('analysisResource', ['query', 'save']);
+      analysisResource.query.and.returnValue(mockAnalyses);
+      analysisResource.save.and.returnValue(mockAnalysis);
 
       trialverseStudyService = jasmine.createSpyObj('trialverseStudyService', ['query']);
       trialverseStudyService.query.and.returnValue(mockStudies);
@@ -94,7 +94,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
         'OutcomeService': outcomeService,
         'SemanticInterventionService': semanticInterventionService,
         'InterventionService': interventionService,
-        'AnalysisService': analysisService,
+        'AnalysisResource': analysisResource,
         'TrialverseStudyService': trialverseStudyService
       });
 
@@ -207,7 +207,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
         projectId: 1
       });
       scope.addAnalysis(newAnalysis);
-      expect(analysisService.save).toHaveBeenCalledWith(newAnalysisWithProjectId);
+      expect(analysisResource.save).toHaveBeenCalledWith(newAnalysisWithProjectId);
       analysisDeferred.resolve();
       scope.$apply();
       expect(state.go).toHaveBeenCalledWith('analysis', {
