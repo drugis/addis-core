@@ -66,7 +66,7 @@ public class ProblemServiceImpl implements ProblemService {
     for(Pair<Variable, CriterionEntry> variableCriterionPair : variableCriteriaPairs){
       Variable variable = variableCriterionPair.getLeft();
       CriterionEntry criterionEntry = variableCriterionPair.getRight();
-      criteria.put(jsonUtils.createKey(variable.getName()), criterionEntry);
+      criteria.put(jsonUtils.createKey(criterionEntry.getTitle()), criterionEntry);
       criteriaCache.put(variable.getId(), criterionEntry);
     }
 

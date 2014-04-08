@@ -5,6 +5,8 @@ package org.drugis.addis.problems.service.model;
  */
 public class ContinuousPerformance extends AbstractPerformance {
 
+  public static final String DNORM = "dnorm";
+
   private ContinuousPerformanceParameters parameters;
 
   public ContinuousPerformance(ContinuousPerformanceParameters parameters) {
@@ -14,7 +16,7 @@ public class ContinuousPerformance extends AbstractPerformance {
 
   @Override
   public String getType() {
-    return "dnormal";
+    return DNORM;
   }
 
   @Override

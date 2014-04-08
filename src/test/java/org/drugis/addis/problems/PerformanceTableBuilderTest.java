@@ -4,10 +4,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
-import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
-import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
-import org.drugis.addis.problems.service.model.ContinuousPerformanceParameters;
-import org.drugis.addis.problems.service.model.RateMeasurementEntry;
+import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.util.JSONUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by daan on 3/27/14.
@@ -33,11 +31,15 @@ public class PerformanceTableBuilderTest {
   @InjectMocks
   private PerformanceTableBuilder builder;
 
-  Arm arm1 = new Arm(1L, 10L, "arm name 1");
-  Arm arm2 = new Arm(2L, 11L, "arm name 2");
+  String armName1 = "arm name 1";
+  String armName2 = "arm name 2";
+  Arm arm1 = new Arm(1L, 10L, armName1);
+  Arm arm2 = new Arm(2L, 11L, armName2);
 
-  Variable variable1 = new Variable(101L, 1L, "variable name 1", "desc", null, false, MeasurementType.RATE, "");
-  Variable variable2 = new Variable(102L, 1L, "variable name 2", "desc", null, false, MeasurementType.CONTINUOUS, "");
+  String variableName1 = "variable name 1";
+  String variableName2 = "variable name 2";
+  Variable variable1 = new Variable(101L, 1L, variableName1, "desc", null, false, MeasurementType.RATE, "");
+  Variable variable2 = new Variable(102L, 1L, variableName2, "desc", null, false, MeasurementType.CONTINUOUS, "");
 
   Map<Long, CriterionEntry> criterionEntryMap;
   Map<Long, AlternativeEntry> alternativeEntryMap;
@@ -72,6 +74,8 @@ public class PerformanceTableBuilderTest {
     jsonUtils = new JSONUtils();
     MockitoAnnotations.initMocks(this);
 
+
+
   }
 
   @Test
@@ -87,8 +91,22 @@ public class PerformanceTableBuilderTest {
 
   @Test
   public void testBuild() throws Exception {
+    when(jsonUtils.createKey(armName1)).thenReturn(armName1);
+    when(jsonUtils.createKey(armName2)).thenReturn(armName2);
+    when(jsonUtils.createKey(variableName1)).thenReturn(variableName1);
+    when(jsonUtils.createKey(variableName2)).thenReturn(variableName2);
+
     List<AbstractMeasurementEntry> performanceTable = builder.build(criterionEntryMap, alternativeEntryMap, measurements);
+
     assertEquals(2, performanceTable.size());
+    RateMeasurementEntry rateMeasurementEntry = (RateMeasurementEntry) performanceTable.get(0);
+    assertEquals(armName1, rateMeasurementEntry.getAlternative());
+    assertEquals(variableName1, rateMeasurementEntry.getCriterion());
+    assertEquals(RatePerformance.DBETA, rateMeasurementEntry.getPerformance().getType());
+    ContinuousMeasurementEntry continuousMeasurementEntry = (ContinuousMeasurementEntry) performanceTable.get(1);
+    assertEquals(armName1, continuousMeasurementEntry.getAlternative());
+    assertEquals(variableName2, continuousMeasurementEntry.getCriterion());
+    assertEquals(ContinuousPerformance.DNORM, continuousMeasurementEntry.getPerformance().getType());
   }
 
   @Test
@@ -107,7 +125,7 @@ public class PerformanceTableBuilderTest {
     Long expectedBeta = sampleSizeMeasurement.getIntegerValue() - rateMeasurement.getIntegerValue() + 1L;
     assertEquals(expectedAlpha, entry.getPerformance().getParameters().getAlpha());
     assertEquals(expectedBeta, entry.getPerformance().getParameters().getBeta());
-    assertEquals("dbeta", entry.getPerformance().getType());
+    assertEquals(RatePerformance.DBETA, entry.getPerformance().getType());
   }
 
   @Test
@@ -131,6 +149,6 @@ public class PerformanceTableBuilderTest {
     ContinuousPerformanceParameters parameters = entry.getPerformance().getParameters();
     assertEquals(expectedMu, parameters.getMu());
     assertEquals(expectedSigma, parameters.getSigma());
-    assertEquals("dnormal", entry.getPerformance().getType());
+    assertEquals(ContinuousPerformance.DNORM, entry.getPerformance().getType());
   }
 }
