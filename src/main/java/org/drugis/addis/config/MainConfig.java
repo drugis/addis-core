@@ -47,7 +47,7 @@ import java.util.Properties;
   "org.drugis.addis.scenarios",
   "org.drugis.addis.util"})
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security", "org.drugis.addis.interventions"})
+@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security", "org.drugis.addis.interventions", "org.drugis.addis.scenarios"})
 public class MainConfig {
   @Bean(name = "dsAddisCore")
   public DataSource dataSource() {
@@ -95,7 +95,8 @@ public class MainConfig {
       "org.drugis.addis.outcomes",
       "org.drugis.addis.interventions",
       "org.drugis.addis.security",
-      "org.drugis.addis.analyses");
+      "org.drugis.addis.analyses",
+      "org.drugis.addis.scenarios");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
