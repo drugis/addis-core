@@ -1,5 +1,6 @@
 package org.drugis.addis.scenarios.repository;
 
+import org.drugis.addis.analyses.State;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.scenarios.Scenario;
 import org.junit.Before;
@@ -39,5 +40,16 @@ public class ScenarioRepositoryTest {
     Scenario expected = em.find(Scenario.class, id);
     Scenario actual = scenarioRepository.get(id);
     assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testCreate() {
+    int workspaceId = 2;
+    Integer scenarioId = 3;
+    String title = "title";
+    String problem = "Problem";
+    Scenario created = scenarioRepository.create(workspaceId, title, new State(problem));
+    Scenario found = em.find(Scenario.class, scenarioId);
+    assertEquals(found, created);
   }
 }

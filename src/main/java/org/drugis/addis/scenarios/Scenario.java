@@ -3,6 +3,8 @@ package org.drugis.addis.scenarios;
 import org.drugis.addis.analyses.State;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
@@ -14,6 +16,7 @@ public class Scenario {
   public final static String DEFAULT_TITLE = "Default";
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   // refers to analysis but named workspace due to mcda-web
@@ -22,6 +25,10 @@ public class Scenario {
   private String state;
 
   public Scenario() {
+  }
+
+  public Scenario(Integer workspace, String title, State state) {
+    this(null, workspace, title, state);
   }
 
   public Scenario(Integer id, Integer workspace, String title, State state) {
@@ -50,11 +57,11 @@ public class Scenario {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (!(o instanceof Scenario)) return false;
 
     Scenario scenario = (Scenario) o;
 
-    if (!id.equals(scenario.id)) return false;
+    if (id != null ? !id.equals(scenario.id) : scenario.id != null) return false;
     if (!state.equals(scenario.state)) return false;
     if (!title.equals(scenario.title)) return false;
     if (!workspace.equals(scenario.workspace)) return false;
@@ -64,7 +71,7 @@ public class Scenario {
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
+    int result = id != null ? id.hashCode() : 0;
     result = 31 * result + workspace.hashCode();
     result = 31 * result + title.hashCode();
     result = 31 * result + state.hashCode();

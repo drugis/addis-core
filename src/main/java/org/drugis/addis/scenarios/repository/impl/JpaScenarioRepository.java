@@ -24,7 +24,9 @@ public class JpaScenarioRepository implements ScenarioRepository {
   }
 
   @Override
-  public Scenario create(Integer id, String title, State state) {
-    return null;
+  public Scenario create(Integer analysisId, String title, State state) {
+    Scenario scenario = new Scenario(analysisId, title, state);
+    em.persist(scenario);
+    return scenario;
   }
 }

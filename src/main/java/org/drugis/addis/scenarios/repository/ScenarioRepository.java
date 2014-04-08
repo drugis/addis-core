@@ -9,5 +9,5 @@ import org.drugis.addis.scenarios.Scenario;
 public interface ScenarioRepository {
   Scenario get(Integer id);
 
-  Scenario create(Integer id, String title, State state);
+  Scenario create(Integer analysisId, String title, State state);
 }
