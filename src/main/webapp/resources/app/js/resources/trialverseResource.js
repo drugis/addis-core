@@ -1,10 +1,10 @@
 'use strict';
 define([], function () {
   var dependencies = ['$resource'];
-  var TrialverseService = function ($resource) {
+  var TrialverseResource = function ($resource) {
     return $resource('/namespaces/:id', {
       id: '@id'
     });
   };
-  return dependencies.concat(TrialverseService);
+  return dependencies.concat(TrialverseResource);
 });

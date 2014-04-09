@@ -1,12 +1,12 @@
 'use strict';
 define(['underscore'], function() {
   var dependencies = ['$scope', '$stateParams', '$q', '$window', '$location',
-    'ProjectsService', 'AnalysisResource', 'OutcomeService', 'InterventionService',
-    'Select2UtilService', 'TrialverseStudyService', 'ProblemService'
+    'ProjectsResource', 'AnalysisResource', 'OutcomeResource', 'InterventionResource',
+    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource'
   ];
   var AnalysisController = function($scope, $stateParams, $q, $window, $location,
-    ProjectsService, AnalysisResource, OutcomeService, InterventionService,
-    Select2UtilService, TrialverseStudyService, ProblemService) {
+    ProjectsResource, AnalysisResource, OutcomeResource, InterventionResource,
+    Select2UtilService, TrialverseStudyResource, ProblemResource) {
 
     $scope.loading = {
       loaded: false
@@ -16,11 +16,11 @@ define(['underscore'], function() {
       disableEditing: true
     };
 
-    $scope.project = ProjectsService.get($stateParams);
+    $scope.project = ProjectsResource.get($stateParams);
     $scope.analysis = AnalysisResource.get($stateParams);
 
-    $scope.outcomes = OutcomeService.query($stateParams);
-    $scope.interventions = InterventionService.query($stateParams);
+    $scope.outcomes = OutcomeResource.query($stateParams);
+    $scope.interventions = InterventionResource.query($stateParams);
 
     $scope.selectedOutcomeIds = [];
     $scope.selectedInterventionIds = [];
@@ -42,7 +42,7 @@ define(['underscore'], function() {
       $('#criteriaSelect').select2('readonly', $scope.editMode.disableEditing);
       $('#interventionsSelect').select2('readonly', $scope.editMode.disableEditing);
 
-      $scope.studies = TrialverseStudyService.query({
+      $scope.studies = TrialverseStudyResource.query({
         id: $scope.project.trialverseId
       });
       $scope.selectedOutcomeIds = Select2UtilService.objectsToIds($scope.analysis.selectedOutcomes);
@@ -72,7 +72,7 @@ define(['underscore'], function() {
         var analysis = $scope.analysis;
 
         var getDefaultScenario = function(analysis) {
-          // return ScenarioService.query(analysis.id).then(function(scenarios) {
+          // return ScenarioResource.query(analysis.id).then(function(scenarios) {
           //   return scenarios[0];
           // });
         };
@@ -82,7 +82,7 @@ define(['underscore'], function() {
           $location.url(newLocation);
         };
 
-        ProblemService.get($stateParams)
+        ProblemResource.get($stateParams).$promise
           .then(analysis.$save)
           .then(getDefaultScenario)
           .then(navigate);
