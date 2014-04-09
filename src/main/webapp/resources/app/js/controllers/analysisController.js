@@ -1,12 +1,12 @@
 'use strict';
 define(['underscore'], function() {
   var dependencies = ['$scope', '$stateParams', '$q', '$window', '$location',
-    'ProjectsService', 'AnalysisService', 'OutcomeService', 'InterventionService', 'Select2UtilService', 'TrialverseStudyService',
-    'ProblemService'
+    'ProjectsResource', 'AnalysisResource', 'OutcomeResource', 'InterventionResource',
+    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource'
   ];
   var AnalysisController = function($scope, $stateParams, $q, $window, $location,
-    ProjectsService, AnalysisService, OutcomeService, InterventionService,
-    Select2UtilService, TrialverseStudyService, ProblemService) {
+    ProjectsResource, AnalysisResource, OutcomeResource, InterventionResource,
+    Select2UtilService, TrialverseStudyResource, ProblemResource) {
 
     $scope.loading = {
       loaded: false
@@ -16,11 +16,11 @@ define(['underscore'], function() {
       disableEditing: true
     };
 
-    $scope.project = ProjectsService.get($stateParams);
-    $scope.analysis = AnalysisService.get($stateParams);
+    $scope.project = ProjectsResource.get($stateParams);
+    $scope.analysis = AnalysisResource.get($stateParams);
 
-    $scope.outcomes = OutcomeService.query($stateParams);
-    $scope.interventions = InterventionService.query($stateParams);
+    $scope.outcomes = OutcomeResource.query($stateParams);
+    $scope.interventions = InterventionResource.query($stateParams);
 
     $scope.selectedOutcomeIds = [];
     $scope.selectedInterventionIds = [];
@@ -42,7 +42,7 @@ define(['underscore'], function() {
       $('#criteriaSelect').select2('readonly', $scope.editMode.disableEditing);
       $('#interventionsSelect').select2('readonly', $scope.editMode.disableEditing);
 
-      $scope.studies = TrialverseStudyService.query({
+      $scope.studies = TrialverseStudyResource.query({
         id: $scope.project.trialverseId
       });
       $scope.selectedOutcomeIds = Select2UtilService.objectsToIds($scope.analysis.selectedOutcomes);
@@ -70,14 +70,22 @@ define(['underscore'], function() {
 
       $scope.createProblem = function() {
         var analysis = $scope.analysis;
-        analysis.problem = ProblemService.get($stateParams);
-        var problem = analysis.problem;
-        problem.$promise.then(function() {
-          analysis.$save(function(analysis) {
-            var newLocation = $location.url() + '/scenarios/' + analysis.scenarios[0].id;
-            $location.url(newLocation);
-          });
-        });
+
+        var getDefaultScenario = function(analysis) {
+          // return ScenarioResource.query(analysis.id).then(function(scenarios) {
+          //   return scenarios[0];
+          // });
+        };
+
+        var navigate = function(scenario) {
+          var newLocation = $location.url() + '/scenarios/' + scenario.id;
+          $location.url(newLocation);
+        };
+
+        ProblemResource.get($stateParams).$promise
+          .then(analysis.$save)
+          .then(getDefaultScenario)
+          .then(navigate);
       };
     });
   };

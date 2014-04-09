@@ -1,7 +1,7 @@
 define(['angular', 'angular-mocks', 'controllers'],
   function () {
     describe("The projectsController", function () {
-      var scope, window, ctrl, projectsService, trialverseService;
+      var scope, window, ctrl, projectsResource, trialverseResource;
       var mockProjects =
         [
           {name: "testName1", description: "testDesc1"},
@@ -11,16 +11,16 @@ define(['angular', 'angular-mocks', 'controllers'],
       beforeEach(module('addis.controllers'));
 
       beforeEach(inject(function ($controller) {
-        trialverseService = jasmine.createSpyObj('trialverseService', ['query']);
-        projectsService = jasmine.createSpyObj('projectsService', ['query', 'save']);
+        trialverseResource = jasmine.createSpyObj('trialverseResource', ['query']);
+        projectsResource = jasmine.createSpyObj('projectsResource', ['query', 'save']);
 
-        projectsService.query.and.returnValue(mockProjects);
-        trialverseService.query.and.returnValue([{key:'val'}]);
+        projectsResource.query.and.returnValue(mockProjects);
+        trialverseResource.query.and.returnValue([{key:'val'}]);
 
         scope = {};
         window = {config: {user: {id: 12345}}};
 
-        ctrl = $controller('ProjectsController', {$scope: scope, $window: window, 'ProjectsService': projectsService, 'TrialverseService': trialverseService});
+        ctrl = $controller('ProjectsController', {$scope: scope, $window: window, 'ProjectsResource': projectsResource, 'TrialverseResource': trialverseResource});
       }));
 
       it("should make a list of projects available from the resource", function () {
@@ -39,7 +39,7 @@ define(['angular', 'angular-mocks', 'controllers'],
         var newProject = {name: 'testName', description: 'testDescription', namespace: 'testnamespace'};
         scope.model = newProject;
         scope.createProject(newProject);
-        expect(projectsService.save).toHaveBeenCalled();
+        expect(projectsResource.save).toHaveBeenCalled();
         expect(scope.model).toEqual({});
       });
     });

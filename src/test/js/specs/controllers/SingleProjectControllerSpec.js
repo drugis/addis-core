@@ -4,8 +4,8 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
 
     var scope, state, window,
       projectDeferred, analysisDeferred, studiesDeferred,
-      projectsService, trialverseService, semanticOutcomeService, semanticInterventionService,
-      outcomeService, interventionService, analysisService, trialverseStudyService,
+      projectsResource, trialverseResource, semanticOutcomeResource, semanticInterventionResource,
+      outcomeResource, interventionResource, analysisResource, trialverseStudyResource,
       mockSemanticOutcomes, mockSemanticInterventions,
       mockProject = {
         id: 1,
@@ -43,24 +43,24 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
 
       mockSemanticOutcomes = ["a", "b", 'c'];
       mockSemanticInterventions = ["e", "f", 'g'];
-      projectsService = jasmine.createSpyObj('projectsService', ['get', 'save']);
-      projectsService.get.and.returnValue(mockProject);
-      trialverseService = jasmine.createSpyObj('trialverseService', ['get']);
-      trialverseService.get.and.returnValue(mockTrialverse);
-      semanticOutcomeService = jasmine.createSpyObj('semanticOutcomeService', ['query']);
-      semanticOutcomeService.query.and.returnValue(mockSemanticOutcomes);
-      outcomeService = jasmine.createSpyObj('outcomeService', ['query', 'save']);
-      outcomeService.query.and.returnValue(mockOutcomes);
-      semanticInterventionService = jasmine.createSpyObj('semanticInterventionService', ['query']);
-      semanticInterventionService.query.and.returnValue(mockSemanticInterventions);
-      interventionService = jasmine.createSpyObj('interventionService', ['query', 'save']);
-      interventionService.query.and.returnValue(mockInterventions);
-      analysisService = jasmine.createSpyObj('analysisService', ['query', 'save']);
-      analysisService.query.and.returnValue(mockAnalyses);
-      analysisService.save.and.returnValue(mockAnalysis);
+      projectsResource = jasmine.createSpyObj('projectsResource', ['get', 'save']);
+      projectsResource.get.and.returnValue(mockProject);
+      trialverseResource = jasmine.createSpyObj('trialverseResource', ['get']);
+      trialverseResource.get.and.returnValue(mockTrialverse);
+      semanticOutcomeResource = jasmine.createSpyObj('semanticOutcomeResource', ['query']);
+      semanticOutcomeResource.query.and.returnValue(mockSemanticOutcomes);
+      outcomeResource = jasmine.createSpyObj('outcomeResource', ['query', 'save']);
+      outcomeResource.query.and.returnValue(mockOutcomes);
+      semanticInterventionResource = jasmine.createSpyObj('semanticInterventionResource', ['query']);
+      semanticInterventionResource.query.and.returnValue(mockSemanticInterventions);
+      interventionResource = jasmine.createSpyObj('interventionResource', ['query', 'save']);
+      interventionResource.query.and.returnValue(mockInterventions);
+      analysisResource = jasmine.createSpyObj('analysisResource', ['query', 'save']);
+      analysisResource.query.and.returnValue(mockAnalyses);
+      analysisResource.save.and.returnValue(mockAnalysis);
 
-      trialverseStudyService = jasmine.createSpyObj('trialverseStudyService', ['query']);
-      trialverseStudyService.query.and.returnValue(mockStudies);
+      trialverseStudyResource = jasmine.createSpyObj('trialverseStudyResource', ['query']);
+      trialverseStudyResource.query.and.returnValue(mockStudies);
 
       scope = $rootScope;
       scope.createOutcomeModal = jasmine.createSpyObj('createOutcomeModal', ['close']);
@@ -88,20 +88,20 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
         $window: window,
         $state: state,
         $stateParams: mockStateParams,
-        'ProjectsService': projectsService,
-        'TrialverseService': trialverseService,
-        'SemanticOutcomeService': semanticOutcomeService,
-        'OutcomeService': outcomeService,
-        'SemanticInterventionService': semanticInterventionService,
-        'InterventionService': interventionService,
-        'AnalysisService': analysisService,
-        'TrialverseStudyService': trialverseStudyService
+        'ProjectsResource': projectsResource,
+        'TrialverseResource': trialverseResource,
+        'SemanticOutcomeResource': semanticOutcomeResource,
+        'OutcomeResource': outcomeResource,
+        'SemanticInterventionResource': semanticInterventionResource,
+        'InterventionResource': interventionResource,
+        'AnalysisResource': analysisResource,
+        'TrialverseStudyResource': trialverseStudyResource
       });
 
     }));
 
     it('should place project information on the scope', function () {
-      expect(projectsService.get).toHaveBeenCalledWith({
+      expect(projectsResource.get).toHaveBeenCalledWith({
         projectId: mockProject.id
       });
       expect(scope.project).toEqual(mockProject);
@@ -137,14 +137,14 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
       scope.model = newOutcome;
       scope.addOutcome(newOutcome);
       expect(scope.createOutcomeModal.close).toHaveBeenCalled();
-      expect(outcomeService.save).toHaveBeenCalledWith(newOutcomeWithProjectId, jasmine.any(Function));
+      expect(outcomeResource.save).toHaveBeenCalledWith(newOutcomeWithProjectId, jasmine.any(Function));
       expect(scope.model).toEqual({});
     });
 
     it("should place the associated trialverse information on the scope on resolution", function () {
       projectDeferred.resolve();
       scope.$apply();
-      expect(trialverseService.get).toHaveBeenCalledWith({
+      expect(trialverseResource.get).toHaveBeenCalledWith({
         id: mockProject.trialverseId
       });
       expect(scope.trialverse).toEqual(mockTrialverse);
@@ -153,7 +153,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
     it("should place the possible semanticOutcomes on the scope on resolution", function () {
       projectDeferred.resolve();
       scope.$apply();
-      expect(semanticOutcomeService.query).toHaveBeenCalledWith({
+      expect(semanticOutcomeResource.query).toHaveBeenCalledWith({
         id: mockProject.trialverseId
       });
       expect(scope.semanticOutcomes).toEqual(mockSemanticOutcomes);
@@ -184,14 +184,14 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
       scope.model = newIntervention;
       scope.addIntervention(newIntervention);
       expect(scope.createInterventionModal.close).toHaveBeenCalled();
-      expect(interventionService.save).toHaveBeenCalledWith(newInterventionWithProjectId, jasmine.any(Function));
+      expect(interventionResource.save).toHaveBeenCalledWith(newInterventionWithProjectId, jasmine.any(Function));
       expect(scope.model).toEqual({});
     });
 
     it("should place the possible semanticInterventions on the scope on resolution", function () {
       projectDeferred.resolve();
       scope.$apply();
-      expect(semanticInterventionService.query).toHaveBeenCalledWith({
+      expect(semanticInterventionResource.query).toHaveBeenCalledWith({
         id: mockProject.trialverseId
       });
       expect(scope.semanticInterventions).toEqual(mockSemanticInterventions);
@@ -207,7 +207,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
         projectId: 1
       });
       scope.addAnalysis(newAnalysis);
-      expect(analysisService.save).toHaveBeenCalledWith(newAnalysisWithProjectId);
+      expect(analysisResource.save).toHaveBeenCalledWith(newAnalysisWithProjectId);
       analysisDeferred.resolve();
       scope.$apply();
       expect(state.go).toHaveBeenCalledWith('analysis', {
