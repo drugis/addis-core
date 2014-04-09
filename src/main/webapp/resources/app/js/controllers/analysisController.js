@@ -2,11 +2,11 @@
 define(['underscore'], function() {
   var dependencies = ['$scope', '$stateParams', '$q', '$window', '$location',
     'ProjectsResource', 'AnalysisResource', 'OutcomeResource', 'InterventionResource',
-    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource'
+    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'AnalysisService'
   ];
   var AnalysisController = function($scope, $stateParams, $q, $window, $location,
     ProjectsResource, AnalysisResource, OutcomeResource, InterventionResource,
-    Select2UtilService, TrialverseStudyResource, ProblemResource) {
+    Select2UtilService, TrialverseStudyResource, ProblemResource, AnalysisService) {
 
     $scope.loading = {
       loaded: false
@@ -69,23 +69,11 @@ define(['underscore'], function() {
       });
 
       $scope.createProblem = function() {
-        var analysis = $scope.analysis;
-
-        var getDefaultScenario = function(analysis) {
-          // return ScenarioResource.query(analysis.id).then(function(scenarios) {
-          //   return scenarios[0];
-          // });
-        };
-
-        var navigate = function(scenario) {
-          var newLocation = $location.url() + '/scenarios/' + scenario.id;
-          $location.url(newLocation);
-        };
-
-        ProblemResource.get($stateParams).$promise
-          .then(analysis.$save)
-          .then(getDefaultScenario)
-          .then(navigate);
+        AnalysisService
+          .createProblem($scope.analysis)
+          .then(function(newUrl) {
+            $location.url(newUrl);
+          });
       };
     });
   };
