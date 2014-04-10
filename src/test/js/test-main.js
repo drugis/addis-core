@@ -23,7 +23,12 @@ require.config({
     'foundation': 'bower_components/foundation/js/foundation',
     'jasmine': 'bower_components/jasmine/lib/jasmine-core/jasmine',
     'jasmine-html': 'bower_components/jasmine/lib/jasmine-core/jasmine-html',
-    'angular-mocks': 'bower_components/angular-mocks/angular-mocks'
+    'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
+    'mcda' : 'mcda/app/js',
+    'NProgress': 'bower_components/nprogress/nprogress',
+    'd3': 'bower_components/d3/d3.min',
+    'nvd3': 'bower_components/nvd3/nv.d3.min',
+    'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML'
   },
   baseUrl: '/base/app/js',
   shim: {

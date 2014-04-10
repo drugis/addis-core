@@ -6,7 +6,6 @@ define(['angular'], function() {
     var analysisCache;
 
     var getDefaultScenario = function(analysis) {
-      console.log('getDefaultScenario');
       return ScenarioResource.query($stateParams).$promise.then(function(scenarios) {
         return scenarios[0];
       });
