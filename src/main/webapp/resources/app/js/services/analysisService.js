@@ -3,9 +3,11 @@ define(['angular'], function() {
   var dependencies = ['$location', '$stateParams', '$q', 'ProblemResource', 'ScenarioResource'];
   var AnalysisService = function($location, $stateParams, $q, ProblemResource, ScenarioResource) {
 
+    var analysisCache;
+
     var getDefaultScenario = function(analysis) {
       console.log('getDefaultScenario');
-      return ScenarioResource.query(analysis.id).$promise.then(function(scenarios) {
+      return ScenarioResource.query($stateParams).$promise.then(function(scenarios) {
         return scenarios[0];
       });
     };
@@ -14,10 +16,16 @@ define(['angular'], function() {
         $location.url($location.url() + '/scenarios/' + scenario.id);
     };
 
+    var saveAnalysis = function(problem) {
+      analysisCache.problem = problem;
+      return analysisCache.$save();
+    }
+
     return {
       createProblem: function(analysis) {
+        analysisCache = analysis;
         return ProblemResource.get($stateParams).$promise
-          .then(analysis.$save)
+          .then(saveAnalysis)
           .then(getDefaultScenario)
           .then(navigate);
       }
