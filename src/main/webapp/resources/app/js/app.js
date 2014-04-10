@@ -71,6 +71,21 @@ define(
             url: '/projects/:projectId/analyses/:analysisId',
             templateUrl: baseTemplatePath + 'analysis.html',
             controller: 'AnalysisController'
+          })
+          .state('scenario', {
+            url: '/projects/:projectId/analyses/:analysisId/scenarios/:scenarioId',
+            templateUrl: 'app/js/mcda/app/views/' + 'workspace.html',
+            resolve: {
+              currentWorkspace: ['$stateParams', 'RemoteWorkspaces',
+                function($stateParams, Workspaces) {
+                  return Workspaces.get($stateParams.workspaceId);
+                }
+              ],
+              currentScenario: function($stateParams, currentWorkspace) {
+                return currentWorkspace.getScenario($stateParams.scenarioId);
+              }
+            },
+            controller: 'WorkspaceController'
           });
 
         // Default route
