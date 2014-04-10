@@ -10,20 +10,42 @@ define(
     'filters',
     'resources',
     'services',
-    'angular-select2'
+    'angular-select2',
+    'mcda/controllers',
+    'mcda/controllers',
+    'mcda/directives',
+    'mcda/filters',
+    'mcda/services/remoteWorkspaces',
+    'mcda/services/taskDependencies',
+    'mcda/services/errorHandling',
   ],
-  function (angular, require, $) {
-    var dependencies = ['ui.router', 'addis.controllers', 'addis.directives', 'addis.resources',
-      'addis.services', 'addis.filters', 'ui.select2'];
-    var app = angular.module('addis', dependencies);
+  function(angular, require, $) {
+    var mcdaDependencies = [
+      'elicit.remoteWorkspaces',
+      'elicit.directives',
+      'elicit.filters',
+      'elicit.controllers',
+      'elicit.taskDependencies',
+      'elicit.errorHandling'
+    ];
+    var dependencies = [
+      'ui.router',
+      'addis.controllers',
+      'addis.directives',
+      'addis.resources',
+      'addis.services',
+      'addis.filters',
+      'ui.select2'
+    ];
+    var app = angular.module('addis', dependencies.concat(mcdaDependencies));
 
     app.run(['$rootScope', '$window', '$http',
-      function ($rootScope, $window, $http) {
+      function($rootScope, $window, $http) {
         var csrfToken = $window.config._csrf_token;
         var csrfHeader = $window.config._csrf_header;
 
         $http.defaults.headers.common[csrfHeader] = csrfToken;
-        $rootScope.$on('$viewContentLoaded', function () {
+        $rootScope.$on('$viewContentLoaded', function() {
           $(document).foundation();
         });
 
@@ -31,7 +53,7 @@ define(
     ]);
 
     app.config(['$stateProvider', '$urlRouterProvider',
-      function ($stateProvider, $urlRouterProvider) {
+      function($stateProvider, $urlRouterProvider) {
         var baseTemplatePath = 'app/views/';
 
         $stateProvider

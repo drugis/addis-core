@@ -10,7 +10,12 @@ require.config({
     'domReady': 'bower_components/requirejs-domready/domReady',
     'foundation': 'bower_components/foundation/js/foundation.min',
     'select2' : 'bower_components/select2/select2',
-    'angular-select2': 'bower_components/angular-ui-select2/src/select2'
+    'angular-select2': 'bower_components/angular-ui-select2/src/select2',
+    'mcda' : 'mcda/app/js',
+    'NProgress': 'bower_components/nprogress/nprogress',
+    'd3': 'bower_components/d3/d3.min',
+    'nvd3': 'bower_components/nvd3/nv.d3.min',
+    'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML'
   },
   baseUrl: 'app/js',
   shim: {
@@ -20,6 +25,8 @@ require.config({
     'angular-select2': {deps: ['angular', 'select2'], exports: 'angular-select2'},
     'angular-resource': { deps:['angular'], exports: 'angular-resource' },
     'angular-ui-router': { deps:['angular'] },
+    'd3': { exports : 'd3' },
+    'nvd3': { deps: ['d3'], exports : 'nv' },
     'underscore': { exports : '_' },
     'foundation':  { deps: ['jQuery'] },
     'domReady': { exports: 'domReady'}
