@@ -21,3 +21,4 @@ INSERT INTO public.analysis (id, projectId, name, analysisType, problem) VALUES 
 
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (1, 1, 'Default', 'problem state');
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (2, 1, 'Scenario title', 'problem state modified');
+INSERT INTO public.scenario (id, workspace, title, state) VALUES (3, 2, 'Default for different analysis', 'problem state modified');

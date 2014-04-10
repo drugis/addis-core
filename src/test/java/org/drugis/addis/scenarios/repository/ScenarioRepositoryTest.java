@@ -14,7 +14,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
+import java.util.Collection;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by connor on 3-4-14.
@@ -45,11 +49,22 @@ public class ScenarioRepositoryTest {
   @Test
   public void testCreate() {
     int workspaceId = 2;
-    Integer scenarioId = 3;
+    Integer scenarioId = 4;
     String title = "title";
     String problem = "Problem";
     Scenario created = scenarioRepository.create(workspaceId, title, new State(problem));
     Scenario found = em.find(Scenario.class, scenarioId);
     assertEquals(found, created);
+  }
+
+  @Test
+  public void testQuery() {
+    Integer projectId = 1;
+    Integer analysisId = 1;
+    Collection<Scenario> result = scenarioRepository.query(projectId, analysisId);
+    assertNotNull(result);
+    assertEquals(2, result.size());
+    Scenario defaultScenario = em.find(Scenario.class, 1);
+    assertTrue(result.contains(defaultScenario));
   }
 }

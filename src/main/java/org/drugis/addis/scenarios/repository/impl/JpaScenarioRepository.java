@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import java.util.Collection;
 
 /**
  * Created by connor on 3-4-14.
@@ -28,5 +30,17 @@ public class JpaScenarioRepository implements ScenarioRepository {
     Scenario scenario = new Scenario(analysisId, title, state);
     em.persist(scenario);
     return scenario;
+  }
+
+  @Override
+  public Collection<Scenario> query(Integer projectId, Integer analysisId) {
+    TypedQuery<Scenario> query = em.createQuery(
+      "SELECT s FROM Scenario s, Analysis a " +
+        "WHERE s.workspace = :analysisId " +
+        "AND a.id = :analysisId " +
+        "AND a.projectId = :projectId", Scenario.class);
+    query.setParameter("analysisId", analysisId);
+    query.setParameter("projectId", projectId);
+    return query.getResultList();
   }
 }

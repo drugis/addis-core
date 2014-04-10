@@ -20,7 +20,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,15 +65,32 @@ public class ScenarioControllerTest {
     verifyNoMoreInteractions(accountRepository, scenarioRepository);
   }
 
-
   @Test
   public void testGet() throws Exception {
     Scenario scenario = new Scenario(1, 1, "Default", new State("problem"));
     when(scenarioRepository.get(scenario.getId())).thenReturn(scenario);
     mockMvc.perform(get("/projects/1/analyses/1/scenarios/" + scenario.getId()).principal(user))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.id", is(scenario.getId())));
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.id", is(scenario.getId())));
     verify(scenarioRepository).get(scenario.getId());
   }
+
+  @Test
+  public void testQuery() throws Exception {
+    Scenario scenario1 = new Scenario(1, 1, "Default", new State("problem"));
+    Scenario scenario2 = new Scenario(2, 1, "Default", new State("problem"));
+    Integer projectId = 1;
+    Integer analysisId = 1;
+    Collection<Scenario> scenarios = Arrays.asList(scenario1, scenario2);
+    when(scenarioRepository.query(projectId, analysisId)).thenReturn(scenarios);
+    mockMvc.perform(get("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios").principal(user))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$", hasSize(2)))
+      .andExpect(jsonPath("$[0].id", is(scenario1.getId())))
+      .andExpect(jsonPath("$[1].id", is(scenario2.getId())));
+    verify(scenarioRepository).query(projectId, analysisId);
+  }
+
 }

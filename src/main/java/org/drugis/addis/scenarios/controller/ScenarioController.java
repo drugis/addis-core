@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
+import java.util.Collection;
 
 /**
  * Created by connor on 3-4-14.
@@ -26,5 +27,11 @@ public class ScenarioController extends AbstractAddisCoreController {
   @ResponseBody
   public Scenario get(@PathVariable Integer scenarioId) {
     return scenarioRepository.get(scenarioId);
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios", method = RequestMethod.GET)
+  @ResponseBody
+  public Collection<Scenario> query(@PathVariable Integer projectId, @PathVariable Integer analysisId) {
+    return scenarioRepository.query(projectId, analysisId);
   }
 }

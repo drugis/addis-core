@@ -33,7 +33,7 @@ public class JpaAnalysisRepository implements AnalysisRepository {
 
   @Override
   public Collection<Analysis> query(Integer projectId) {
-    TypedQuery<Analysis> query = em.createQuery("FROM Analysis a where a.projectId = :projectId", Analysis.class);
+    TypedQuery<Analysis> query = em.createQuery("FROM Analysis a WHERE a.projectId = :projectId", Analysis.class);
     query.setParameter("projectId", projectId);
     return query.getResultList();
   }
