@@ -1,10 +1,10 @@
 'use strict';
 define(['underscore'], function() {
-  var dependencies = ['$scope', '$stateParams', '$q', '$window', '$location',
+  var dependencies = ['$scope', '$stateParams', '$q', '$window',
     'ProjectsResource', 'AnalysisResource', 'OutcomeResource', 'InterventionResource',
     'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'AnalysisService'
   ];
-  var AnalysisController = function($scope, $stateParams, $q, $window, $location,
+  var AnalysisController = function($scope, $stateParams, $q, $window,
     ProjectsResource, AnalysisResource, OutcomeResource, InterventionResource,
     Select2UtilService, TrialverseStudyResource, ProblemResource, AnalysisService) {
 
@@ -69,11 +69,7 @@ define(['underscore'], function() {
       });
 
       $scope.createProblem = function() {
-        AnalysisService
-          .createProblem($scope.analysis)
-          .then(function(newUrl) {
-            $location.url(newUrl);
-          });
+        AnalysisService.createProblem($scope.analysis);
       };
     });
   };
