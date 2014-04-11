@@ -2,7 +2,8 @@ define(['angular', 'angular-mocks', 'services'], function() {
   describe("The analysis service", function() {
 
     var mockProblemResource,
-      mockScenarioResource;
+      mockScenarioResource,
+      state;
 
     beforeEach(module('addis.services'));
     beforeEach(module('addis.resources'));
@@ -11,17 +12,19 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
       mockProblemResource = jasmine.createSpyObj('ProblemResource', ['get']);
       mockScenarioResource = jasmine.createSpyObj('ScenarioResource', ['query']);
+      state = jasmine.createSpyObj('state', ['go']);
 
 
       module('addis', function($provide) {
         $provide.value('ProblemResource', mockProblemResource);
         $provide.value('ScenarioResource', mockScenarioResource);
+        $provide.value('$state', state);
       });
     });
 
     it('should create the problem, add it to the analysis and save the analysis,' +
       ' and then retrieve the default scenario and navigate to the url for the default scenario',
-      inject(function($rootScope, $q, $location, AnalysisService) {
+      inject(function($rootScope, $q, AnalysisService) {
 
         var problemDeferred = $q.defer();
         var mockProblem = {
@@ -51,7 +54,9 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
         AnalysisService.createProblem(mockAnalysis);
         $rootScope.$apply();
-        expect($location.url()).toEqual('/scenarios/0');
+        expect(state.go).toHaveBeenCalledWith('scenario', {
+          scenarioId: scenarios[0].id
+        });
       }));
 
 

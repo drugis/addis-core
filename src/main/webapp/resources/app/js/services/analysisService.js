@@ -1,7 +1,7 @@
 'use strict';
 define(['angular'], function() {
-  var dependencies = ['$location', '$stateParams', '$q', 'ProblemResource', 'ScenarioResource'];
-  var AnalysisService = function($location, $stateParams, $q, ProblemResource, ScenarioResource) {
+  var dependencies = ['$state', '$stateParams', '$q', 'ProblemResource', 'ScenarioResource'];
+  var AnalysisService = function($state, $stateParams, $q, ProblemResource, ScenarioResource) {
 
     var analysisCache;
 
@@ -12,7 +12,7 @@ define(['angular'], function() {
     };
 
     var navigate = function(scenario) {
-        $location.url($location.url() + '/scenarios/' + scenario.id);
+       $state.go('scenario', {scenarioId: scenario.id.toString()});
     };
 
     var saveAnalysis = function(problem) {
