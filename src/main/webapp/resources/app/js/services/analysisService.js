@@ -12,7 +12,7 @@ define(['angular'], function() {
     };
 
     var navigate = function(scenario) {
-       $state.go('scenario', {scenarioId: scenario.id.toString()});
+       $state.go('scenario', {scenarioId: scenario.id});
     };
 
     var saveAnalysis = function(problem) {
