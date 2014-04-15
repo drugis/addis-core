@@ -58,6 +58,11 @@
           firstName : "${account.firstName}",
           LastName : "${account.lastName}"
         },
+        workspacesRepository : {
+          service : "RemoteWorkspaces",
+          _csrf_token : "${_csrf.token}",
+          _csrf_header : "${_csrf.headerName}"
+        },
         _csrf_token : "${_csrf.token}",
         _csrf_header : "${_csrf.headerName}",
         workspacesRepository : {

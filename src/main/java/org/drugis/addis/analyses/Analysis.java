@@ -24,6 +24,7 @@ public class Analysis implements Serializable {
   private Integer projectId;
   private String name;
 
+  @JsonRawValue
   private String problem;
 
   @Type(type = "org.drugis.addis.analyses.AnalysisTypeUserType")

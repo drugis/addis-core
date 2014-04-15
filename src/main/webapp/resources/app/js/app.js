@@ -3,6 +3,7 @@ define(
   ['angular',
     'require',
     'jQuery',
+    'mcda/config',
     'foundation',
     'angular-ui-router',
     'controllers',
@@ -19,7 +20,7 @@ define(
     'mcda/services/taskDependencies',
     'mcda/services/errorHandling',
   ],
-  function(angular, require, $) {
+  function(angular, require, $, Config) {
     var mcdaDependencies = [
       'elicit.remoteWorkspaces',
       'elicit.directives',
@@ -48,13 +49,24 @@ define(
         $rootScope.$on('$viewContentLoaded', function() {
           $(document).foundation();
         });
-
+        $rootScope.$safeApply = function($scope, fn) {
+          var phase = $scope.$root.$$phase;
+          if(phase == '$apply' || phase == '$digest') {
+            this.$eval(fn);
+          }
+          else {
+            this.$apply(fn);
+          }
+        };
       }
     ]);
 
-    app.config(['$stateProvider', '$urlRouterProvider',
-      function($stateProvider, $urlRouterProvider) {
+    app.constant('Tasks', Config.tasks);
+
+    app.config(['Tasks', '$stateProvider', '$urlRouterProvider',
+      function(Tasks, $stateProvider, $urlRouterProvider) {
         var baseTemplatePath = 'app/views/';
+        var mcdaBaseTemplatePath = 'app/js/mcda/app/views/';
 
         $stateProvider
           .state('projects', {
@@ -74,7 +86,7 @@ define(
           })
           .state('scenario', {
             url: '/projects/:projectId/analyses/:analysisId/scenarios/:scenarioId',
-            templateUrl: 'app/js/mcda/app/views/' + 'workspace.html',
+            templateUrl: mcdaBaseTemplatePath + 'workspace.html',
             resolve: {
               currentWorkspace: ['$stateParams', 'RemoteWorkspaces',
                 function($stateParams, Workspaces) {
@@ -89,6 +101,22 @@ define(
               }
             },
             controller: 'WorkspaceController'
+          });
+
+          _.each(Tasks.available, function(task) {
+            var templateUrl = mcdaBaseTemplatePath + task.templateUrl;
+            $stateProvider.state(task.id, {
+              parent: 'scenario',
+              url: '/' + task.id,
+              templateUrl: templateUrl,
+              controller: task.controller,
+              resolve : {
+                taskDefinition: function(currentScenario, TaskDependencies) {
+                  var def = TaskDependencies.extendTaskDefinition(task);
+                  return def;
+                }
+              }
+            });
           });
 
         // Default route

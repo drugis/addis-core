@@ -12,7 +12,7 @@ public class State {
 
   @Override
   public String toString() {
-    return "{ 'problem': " + problem + "}";
+    return "{ \"problem\": " + problem + "}";
   }
 
   @Override

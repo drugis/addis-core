@@ -1,5 +1,6 @@
 package org.drugis.addis.scenarios;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import org.drugis.addis.analyses.State;
 
 import javax.persistence.Entity;
@@ -22,6 +23,8 @@ public class Scenario {
   // refers to analysis but named workspace due to mcda-web
   private Integer workspace;
   private String title;
+
+  @JsonRawValue
   private String state;
 
   public Scenario() {
