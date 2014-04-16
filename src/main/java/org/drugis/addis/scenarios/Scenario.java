@@ -1,7 +1,9 @@
 package org.drugis.addis.scenarios;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.drugis.addis.analyses.State;
+import org.drugis.addis.util.ObjectToStringDeserializer;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -53,8 +55,17 @@ public class Scenario {
     return title;
   }
 
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
   public String getState() {
     return state;
+  }
+
+  @JsonDeserialize(using = ObjectToStringDeserializer.class)
+  public void setState(String state) {
+    this.state = state;
   }
 
   @Override
@@ -80,4 +91,5 @@ public class Scenario {
     result = 31 * result + state.hashCode();
     return result;
   }
+
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
-import org.drugis.addis.problems.model.ProblemDeserializer;
+import org.drugis.addis.util.ObjectToStringDeserializer;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -106,7 +106,7 @@ public class Analysis implements Serializable {
     return problem;
   }
 
-  @JsonDeserialize(using = ProblemDeserializer.class)
+  @JsonDeserialize(using = ObjectToStringDeserializer.class)
   public void setProblem(String problem) {
     this.problem = problem;
   }

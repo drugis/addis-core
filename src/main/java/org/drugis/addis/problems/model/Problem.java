@@ -3,6 +3,7 @@ package org.drugis.addis.problems.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
+import org.drugis.addis.util.ObjectToStringDeserializer;
 
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.Map;
 /**
  * Created by daan on 3/21/14.
  */
-@JsonDeserialize(using = ProblemDeserializer.class)
+@JsonDeserialize(using = ObjectToStringDeserializer.class)
 public class Problem {
   private String title;
   private Map<String, AlternativeEntry> alternatives;

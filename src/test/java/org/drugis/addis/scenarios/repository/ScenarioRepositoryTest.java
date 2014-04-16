@@ -67,4 +67,17 @@ public class ScenarioRepositoryTest {
     Scenario defaultScenario = em.find(Scenario.class, 1);
     assertTrue(result.contains(defaultScenario));
   }
+
+  @Test
+  public void testUpdate() {
+    String newTitle = "new title";
+    Integer scenarioId = 1;
+    String newState = "{\"newKey\":\"newValue\"}";
+    Scenario result = scenarioRepository.update(scenarioId, newTitle, newState);
+    Scenario updated = em.find(Scenario.class, scenarioId);
+    assertEquals(newTitle, updated.getTitle());
+    assertEquals(newState, updated.getState());
+    assertEquals(result, updated);
+  }
+
 }

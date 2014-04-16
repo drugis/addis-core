@@ -20,14 +20,17 @@ import static org.mockito.Mockito.mock;
 @Configuration
 @EnableWebMvc
 @ComponentScan(excludeFilters = {@ComponentScan.Filter(Configuration.class)}, basePackages = {
-  "org.drugis.addis.error",
-  "org.drugis.addis.projects.controller",
-  "org.drugis.addis.outcomes.controller",
-  "org.drugis.addis.interventions.controller",
-  "org.drugis.addis.analyses.controller",
-  "org.drugis.addis.trialverse.controller",
+        "org.drugis.addis.error",
+        "org.drugis.addis.projects.controller",
+        "org.drugis.addis.projects.service",
+        "org.drugis.addis.outcomes.controller",
+        "org.drugis.addis.interventions.controller",
+        "org.drugis.addis.analyses.controller",
+        "org.drugis.addis.trialverse.controller",
         "org.drugis.addis.problems.controller",
-        "org.drugis.addis.scenarios.controller"})
+        "org.drugis.addis.scenarios.controller",
+        "org.drugis.addis.scenarios.service"
+})
 public class TestConfig {
   @Bean
   public AccountRepository mockAccountRepository() {

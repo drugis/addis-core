@@ -1,16 +1,21 @@
 package org.drugis.addis.scenarios.controller;
 
+import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.State;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
+import org.drugis.addis.scenarios.service.ScenarioService;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -20,7 +25,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -28,6 +32,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -46,8 +51,17 @@ public class ScenarioControllerTest {
   @Inject
   private ScenarioRepository scenarioRepository;
 
-  @Autowired
+  @Mock
+  private ScenarioService scenarioService;
+
+  @Mock
+  private ProjectService projectService;
+
+  @Inject
   private WebApplicationContext webApplicationContext;
+
+  @InjectMocks
+  private ScenarioController scenarioController;
 
   private Principal user;
 
@@ -55,7 +69,13 @@ public class ScenarioControllerTest {
   public void setUp() {
     reset(accountRepository);
     reset(scenarioRepository);
-    mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    scenarioService = mock(ScenarioService.class);
+    projectService = mock(ProjectService.class);
+    scenarioController = new ScenarioController();
+
+    MockitoAnnotations.initMocks(this);
+    mockMvc = MockMvcBuilders.standaloneSetup(scenarioController).build();
+
     user = mock(Principal.class);
   }
 
@@ -70,9 +90,9 @@ public class ScenarioControllerTest {
     Scenario scenario = new Scenario(1, 1, "Default", new State("problem"));
     when(scenarioRepository.get(scenario.getId())).thenReturn(scenario);
     mockMvc.perform(get("/projects/1/analyses/1/scenarios/" + scenario.getId()).principal(user))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(jsonPath("$.id", is(scenario.getId())));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.id", is(scenario.getId())));
     verify(scenarioRepository).get(scenario.getId());
   }
 
@@ -85,12 +105,30 @@ public class ScenarioControllerTest {
     Collection<Scenario> scenarios = Arrays.asList(scenario1, scenario2);
     when(scenarioRepository.query(projectId, analysisId)).thenReturn(scenarios);
     mockMvc.perform(get("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios").principal(user))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(jsonPath("$", hasSize(2)))
-      .andExpect(jsonPath("$[0].id", is(scenario1.getId())))
-      .andExpect(jsonPath("$[1].id", is(scenario2.getId())));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].id", is(scenario1.getId())))
+            .andExpect(jsonPath("$[1].id", is(scenario2.getId())));
     verify(scenarioRepository).query(projectId, analysisId);
+  }
+
+  @Test
+  public void testUpdate() throws Exception {
+    Integer projectId = 1;
+    Integer analysisId = 1;
+    Scenario scenario = new Scenario(1, 1, "Default", new State("{\"key\":\"value\"}"));
+    String content = TestUtils.createJson(scenario);
+    System.out.println(content);
+    mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios/" + scenario.getId())
+            .content(content)
+            .principal(user)
+            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk());
+
+    verify(scenarioService).checkCoordinates(projectId, analysisId, scenario);
+    verify(projectService).checkOwnership(projectId, user);
+    verify(scenarioRepository).update(scenario.getId(), scenario.getTitle(), scenario.getState());
   }
 
 }

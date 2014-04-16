@@ -1,4 +1,4 @@
-package org.drugis.addis.problems.model;
+package org.drugis.addis.util;
 
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * Created by connor on 07/04/14.
  */
-public class ProblemDeserializer extends JsonDeserializer<String> {
+public class ObjectToStringDeserializer extends JsonDeserializer<String> {
   @Override
   public String deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
     ObjectCodec objectCodec = jp.getCodec();
