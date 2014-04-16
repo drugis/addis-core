@@ -54,6 +54,7 @@
     </section>
     <div ui-view></div>
     <script>
+      window.mcdaBasePath = 'app/js/mcda';
       window.patavi = { "WS_URI": "wss://patavi.drugis.org/ws" };
       window.config = {
         user : {
@@ -68,13 +69,7 @@
           _csrf_header : "${_csrf.headerName}"
         },
         _csrf_token : "${_csrf.token}",
-        _csrf_header : "${_csrf.headerName}",
-        workspacesRepository : {
-          service : "RemoteWorkspaces",
-          url : "workspaces/",
-          _csrf_token : "${_csrf.token}",
-          _csrf_header : "${_csrf.headerName}"
-        }
+        _csrf_header : "${_csrf.headerName}"
       };
 
       function signout(){
