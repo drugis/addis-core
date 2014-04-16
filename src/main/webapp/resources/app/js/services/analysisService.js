@@ -1,7 +1,7 @@
 'use strict';
 define(['angular'], function() {
-  var dependencies = ['$state', '$stateParams', '$q', 'ProblemResource', 'ScenarioResource'];
-  var AnalysisService = function($state, $stateParams, $q, ProblemResource, ScenarioResource) {
+  var dependencies = ['$location', '$stateParams', '$q', 'ProblemResource', 'ScenarioResource'];
+  var AnalysisService = function($location, $stateParams, $q, ProblemResource, ScenarioResource) {
 
     var analysisCache;
 

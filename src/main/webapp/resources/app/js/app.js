@@ -90,10 +90,7 @@ define(
             resolve: {
               currentWorkspace: ['$stateParams', 'RemoteWorkspaces',
                 function($stateParams, Workspaces) {
-                  return Workspaces.get({
-                    repository: '/projects/' + $stateParams.projectId + '/analyses',
-                    id: $stateParams.analysisId
-                  });
+                  return Workspaces.get($stateParams.analysisId);
                 }
               ],
               currentScenario: function($stateParams, currentWorkspace) {
