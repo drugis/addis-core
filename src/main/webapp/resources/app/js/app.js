@@ -19,6 +19,7 @@ define(
     'mcda/services/remoteWorkspaces',
     'mcda/services/taskDependencies',
     'mcda/services/errorHandling',
+    'mcda/services/hashCodeService'
   ],
   function(angular, require, $, Config) {
     var mcdaDependencies = [
