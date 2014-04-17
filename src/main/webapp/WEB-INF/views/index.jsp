@@ -63,6 +63,7 @@
           firstName : "${account.firstName}",
           LastName : "${account.lastName}"
         },
+        workspaceName: 'analyses',
         workspacesRepository : {
           service : "RemoteWorkspaces",
           _csrf_token : "${_csrf.token}",
