@@ -31,7 +31,8 @@ require.config({
     'nvd3': { deps: ['d3'], exports : 'nv' },
     'underscore': { exports : '_' },
     'foundation':  { deps: ['jQuery'] },
-    'domReady': { exports: 'domReady'}
+    'domReady': { exports: 'domReady'},
+    'MathJax': {exports: 'MathJax'}
   },
   priority: ['angular']
 });
