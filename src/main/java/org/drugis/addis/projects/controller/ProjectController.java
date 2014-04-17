@@ -1,7 +1,6 @@
 package org.drugis.addis.projects.controller;
 
 import org.drugis.addis.base.AbstractAddisCoreController;
-import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.ProjectCommand;
@@ -41,19 +40,13 @@ public class ProjectController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Project> query(Principal currentUser, @RequestParam(required = false) Integer owner) throws MethodNotAllowedException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
-      return owner == null ? projectsRepository.query() : projectsRepository.queryByOwnerId(owner);
-    } else {
-      throw new MethodNotAllowedException();
-    }
+  public Collection<Project> query(@RequestParam(required = false) Integer owner) {
+    return owner == null ? projectsRepository.query() : projectsRepository.queryByOwnerId(owner);
   }
 
   @RequestMapping(value = "/projects/{projectId}", method = RequestMethod.GET)
   @ResponseBody
-  public Project get(Principal principal, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    projectService.checkOwnership(projectId, principal);
+  public Project get(@PathVariable Integer projectId) throws ResourceDoesNotExistException {
     return projectsRepository.getProjectById(projectId);
   }
 

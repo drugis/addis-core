@@ -98,7 +98,6 @@ public class ProjectsControllerTest {
             .andExpect(jsonPath("$", hasSize(0)));
 
     verify(projectRepository).query();
-    verify(accountRepository).findAccountByUsername("gert");
   }
 
   @Test
@@ -121,7 +120,6 @@ public class ProjectsControllerTest {
             .andExpect(jsonPath("$[0].trialverseId", is(project.getTrialverseId())));
 
     verify(projectRepository).query();
-    verify(accountRepository).findAccountByUsername("gert");
   }
 
   @Test
@@ -138,7 +136,6 @@ public class ProjectsControllerTest {
             .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())));
 
     verify(projectRepository).queryByOwnerId(paul.getId());
-    verify(accountRepository).findAccountByUsername("gert");
   }
 
   @Test
@@ -163,7 +160,6 @@ public class ProjectsControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.id", is(project.getId())));
-    verify(projectService).checkOwnership(project.getId(), user);
     verify(projectRepository).getProjectById(project.getId());
   }
 
@@ -173,7 +169,6 @@ public class ProjectsControllerTest {
     when(projectRepository.getProjectById(projectId)).thenThrow(new ResourceDoesNotExistException());
     mockMvc.perform(get("/projects/1").principal(user))
             .andExpect(redirectedUrl("/error/404"));
-    verify(projectService).checkOwnership(projectId, user);
     verify(projectRepository).getProjectById(projectId);
   }
 
@@ -184,9 +179,9 @@ public class ProjectsControllerTest {
     String requestBody = "{\"name\":\"testname\",\"trialverseId\":1}";
     when(projectRepository.create(gert, projectCommand)).thenReturn(project);
     mockMvc.perform(post("/projects").principal(user).content(requestBody).contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(status().isCreated())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(jsonPath("$.name", is("testname")));
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.name", is("testname")));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).create(gert, projectCommand);
 
