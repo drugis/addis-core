@@ -63,6 +63,7 @@ define(
     ]);
 
     app.constant('Tasks', Config.tasks);
+    app.constant('DEFAULT_VIEW', 'overview');
 
     app.config(['Tasks', '$stateProvider', '$urlRouterProvider',
       function(Tasks, $stateProvider, $urlRouterProvider) {
