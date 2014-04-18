@@ -30,10 +30,13 @@ define(['underscore'], function() {
       $scope.project.$promise,
       $scope.analysis.$promise
     ]).then(function() {
-      $scope.loading.loaded = true;
+      var userIsOwner;
 
-      var userIsOwner = $window.config.user.id === $scope.project.owner.id;
-      $scope.isProblemDefined = $scope.analysis.problem !== undefined;
+      $scope.loading.loaded = true;
+      userIsOwner = $window.config.user.id === $scope.project.owner.id;
+      if($scope.analysis.problem){
+        $scope.isProblemDefined = true;
+      }
       $scope.editMode.disableEditing = !userIsOwner || $scope.isProblemDefined;
 
       $scope.select2Options = {
@@ -72,7 +75,7 @@ define(['underscore'], function() {
 
       $scope.goToDefaultScenarioView = function() {
         var scenario = AnalysisService
-          .getDefaultScenario($scope.analysis)
+          .getDefaultScenario()
           .then(function(scenario) {
             $state.go(DEFAULT_VIEW, {scenarioId: scenario.id});
           });
