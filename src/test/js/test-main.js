@@ -38,6 +38,8 @@ require.config({
     'select2': {deps: ['jQuery'], exports : 'select2'},
     'angular-select2': {deps: ['angular', 'select2'], exports: 'angular-select2'},
     'angular-ui-router': { deps: ['angular']},
+    'd3': { exports : 'd3' },
+    'nvd3': { deps: ['d3'], exports : 'nv' },
     'angular-resource': { deps: ['angular'], exports: 'angular-resource'},
     'angular-mocks': { deps: ['angular'], exports: 'angular.mock' },
     'underscore': { exports : '_'},
