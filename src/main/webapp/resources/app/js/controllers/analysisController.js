@@ -18,10 +18,8 @@ define(['underscore'], function() {
 
     $scope.project = ProjectsResource.get($stateParams);
     $scope.analysis = AnalysisResource.get($stateParams);
-
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.interventions = InterventionResource.query($stateParams);
-
     $scope.selectedOutcomeIds = [];
     $scope.selectedInterventionIds = [];
     $scope.isProblemDefined = false;
