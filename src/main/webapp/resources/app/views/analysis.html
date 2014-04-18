@@ -57,7 +57,10 @@
   </div>
   <div class="row">
     <div class="columns large-12 nested-view">
-      <button ng-click="createProblem()">Perform MCDA Analysis</button>
+      <div ng-switch on="isProblemDefined">
+        <button ng-switch-when="false" ng-click="createProblem()">Perform MCDA Analysis</button>
+        <button ng-switch-when="true" ng-click="goToDefaultScenarioView()">Go to MCDA Analysis</button>
+      </div>
     </div>
   </div>
 </div>

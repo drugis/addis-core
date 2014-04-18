@@ -1,12 +1,12 @@
 'use strict';
 define(['underscore'], function() {
-  var dependencies = ['$scope', '$stateParams', '$q', '$window',
+  var dependencies = ['$scope', '$stateParams', '$state', '$q', '$window',
     'ProjectsResource', 'AnalysisResource', 'OutcomeResource', 'InterventionResource',
-    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'AnalysisService'
+    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'AnalysisService', 'DEFAULT_VIEW'
   ];
-  var AnalysisController = function($scope, $stateParams, $q, $window,
+  var AnalysisController = function($scope, $stateParams, $state, $q, $window,
     ProjectsResource, AnalysisResource, OutcomeResource, InterventionResource,
-    Select2UtilService, TrialverseStudyResource, ProblemResource, AnalysisService) {
+    Select2UtilService, TrialverseStudyResource, ProblemResource, AnalysisService, DEFAULT_VIEW) {
 
     $scope.loading = {
       loaded: false
@@ -24,6 +24,7 @@ define(['underscore'], function() {
 
     $scope.selectedOutcomeIds = [];
     $scope.selectedInterventionIds = [];
+    $scope.isProblemDefined = false;
 
     $q.all([
       $scope.project.$promise,
@@ -32,7 +33,8 @@ define(['underscore'], function() {
       $scope.loading.loaded = true;
 
       var userIsOwner = $window.config.user.id === $scope.project.owner.id;
-      $scope.editMode.disableEditing = !userIsOwner || $scope.analysis.problem;
+      $scope.isProblemDefined = $scope.analysis.problem !== undefined;
+      $scope.editMode.disableEditing = !userIsOwner || $scope.isProblemDefined;
 
       $scope.select2Options = {
         'readonly': $scope.editMode.disableEditing
@@ -67,6 +69,14 @@ define(['underscore'], function() {
           $scope.analysis.$save();
         }
       });
+
+      $scope.goToDefaultScenarioView = function() {
+        var scenario = AnalysisService
+          .getDefaultScenario($scope.analysis)
+          .then(function(scenario) {
+            $state.go(DEFAULT_VIEW, {scenarioId: scenario.id});
+          });
+      }
 
       $scope.createProblem = function() {
         AnalysisService.createProblem($scope.analysis);
