@@ -14,10 +14,6 @@ define(['angular'], function() {
         });
     };
 
-    var navigate = function(scenario) {
-        $location.url($location.url() + '/scenarios/' + scenario.id + '/overview');
-    };
-
     var saveAnalysis = function(problem) {
       analysisCache.problem = problem;
       return analysisCache.$save();
@@ -28,7 +24,6 @@ define(['angular'], function() {
       return ProblemResource.get($stateParams).$promise
         .then(saveAnalysis)
         .then(getDefaultScenario)
-        .then(navigate);
     };
 
     return {

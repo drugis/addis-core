@@ -72,7 +72,7 @@ define(['underscore'], function() {
       });
 
       $scope.goToDefaultScenarioView = function() {
-        var scenario = AnalysisService
+        AnalysisService
           .getDefaultScenario()
           .then(function(scenario) {
             $state.go(DEFAULT_VIEW, {scenarioId: scenario.id});
@@ -80,7 +80,11 @@ define(['underscore'], function() {
       }
 
       $scope.createProblem = function() {
-        AnalysisService.createProblem($scope.analysis);
+        AnalysisService
+          .createProblem($scope.analysis)
+          .then(function(scenario) {
+            $state.go(DEFAULT_VIEW, {scenarioId: scenario.id});
+          });
       };
     });
   };
