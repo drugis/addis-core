@@ -44,6 +44,13 @@ define([], function () {
       });
 
       $scope.loading.loaded = true;
+      $scope.$parent.showBreadcrumbs = true;
+      $scope.$parent.breadcrumbs.length = 0;
+      $scope.$parent.breadcrumbs.push({
+          state: 'addis.project',
+          title: $scope.project.name
+      });
+
       $scope.editMode.allowEditing = $window.config.user.id === $scope.project.owner.id;
 
       $scope.studies = TrialverseStudyResource.query({

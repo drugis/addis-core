@@ -1,12 +1,14 @@
 'use strict';
 define(['underscore'], function() {
   var dependencies = ['$scope', '$stateParams', '$state', '$q', '$window',
-    'ProjectsResource', 'AnalysisResource', 'OutcomeResource', 'InterventionResource',
-    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'AnalysisService', 'DEFAULT_VIEW'
+    'ProjectsResource', 'OutcomeResource', 'InterventionResource',
+    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'AnalysisService', 'DEFAULT_VIEW',
+    'currentAnalysis'
   ];
   var AnalysisController = function($scope, $stateParams, $state, $q, $window,
-    ProjectsResource, AnalysisResource, OutcomeResource, InterventionResource,
-    Select2UtilService, TrialverseStudyResource, ProblemResource, AnalysisService, DEFAULT_VIEW) {
+    ProjectsResource, OutcomeResource, InterventionResource,
+    Select2UtilService, TrialverseStudyResource, ProblemResource, AnalysisService, DEFAULT_VIEW,
+    currentAnalysis) {
 
     $scope.loading = {
       loaded: false
@@ -17,7 +19,7 @@ define(['underscore'], function() {
     };
 
     $scope.project = ProjectsResource.get($stateParams);
-    $scope.analysis = AnalysisResource.get($stateParams);
+    $scope.analysis = currentAnalysis;
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.interventions = InterventionResource.query($stateParams);
     $scope.selectedOutcomeIds = [];
@@ -31,6 +33,9 @@ define(['underscore'], function() {
       var userIsOwner;
 
       $scope.loading.loaded = true;
+      $scope.$parent.breadcrumbs.length = 0;
+      $scope.$parent.breadcrumbs.push({state:'addis.project', title: $scope.project.name});
+      $scope.$parent.breadcrumbs.push({state:'addis.analysis',title: $scope.analysis.name});
       userIsOwner = $window.config.user.id === $scope.project.owner.id;
       if($scope.analysis.problem){
         $scope.isProblemDefined = true;

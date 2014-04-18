@@ -63,7 +63,7 @@ define(
     ]);
 
     app.constant('Tasks', Config.tasks);
-    app.constant('DEFAULT_VIEW', 'overview');
+    app.constant('DEFAULT_VIEW', 'overview' );
 
     app.config(['Tasks', '$stateProvider', '$urlRouterProvider',
       function(Tasks, $stateProvider, $urlRouterProvider) {
@@ -71,24 +71,42 @@ define(
         var mcdaBaseTemplatePath = 'app/js/mcda/app/views/';
 
         $stateProvider
-          .state('projects', {
+            .state('addis', {
+                url: '',
+                abstract: true,
+                templateUrl: baseTemplatePath + 'addis.html',
+                controller: 'AddisController'
+            })
+          .state('addis.projects', {
             url: '/projects',
             templateUrl: baseTemplatePath + 'projects.html',
             controller: 'ProjectsController'
           })
-          .state('project', {
+          .state('addis.project', {
             url: '/projects/:projectId',
             templateUrl: baseTemplatePath + 'project.html',
             controller: 'SingleProjectController'
           })
-          .state('analysis', {
-            url: '/projects/:projectId/analyses/:analysisId',
-            templateUrl: baseTemplatePath + 'analysis.html',
+            .state('addis.analysis', {
+                url: '/projects/:projectId/analyses/:analysisId',
+                templateUrl: baseTemplatePath + 'analysisContainer.html',
+                resolve: {
+                    currentAnalysis: ['$stateParams', 'AnalysisResource',
+                    function($stateParams, AnalysisResource) {
+                      return AnalysisResource.get($stateParams);
+                    }]
+                },
+                controller: function($scope, currentAnalysis) { $scope.analysis = currentAnalysis; },
+                abstract: true
+            })
+          .state('addis.analysis.default', {
+            url: '',
+            templateUrl: baseTemplatePath + 'analysisView.html',
             controller: 'AnalysisController'
           })
-          .state('scenario', {
-            url: '/projects/:projectId/analyses/:analysisId/scenarios/:scenarioId',
-            templateUrl: mcdaBaseTemplatePath + 'workspace.html',
+          .state('addis.analysis.scenario', {
+            url: '/scenarios/:scenarioId',
+            templateUrl: mcdaBaseTemplatePath + 'scenario.html',
             resolve: {
               currentWorkspace: ['$stateParams', 'RemoteWorkspaces',
                 function($stateParams, Workspaces) {
@@ -105,7 +123,7 @@ define(
           _.each(Tasks.available, function(task) {
             var templateUrl = mcdaBaseTemplatePath + task.templateUrl;
             $stateProvider.state(task.id, {
-              parent: 'scenario',
+              parent: 'addis.analysis.scenario',
               url: '/' + task.id,
               templateUrl: templateUrl,
               controller: task.controller,

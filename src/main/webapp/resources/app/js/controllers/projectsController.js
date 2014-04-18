@@ -4,7 +4,7 @@ define([], function() {
   var ProjectsController = function($scope, $window, $location, ProjectsResource, TrialverseResource) {
     $scope.user = $window.config.user;
     $scope.projects = ProjectsResource.query();
-
+    $scope.$parent.showBreadcrumbs = false;
     $scope.trialverse = TrialverseResource.query();
 
     $scope.createProject = function (newProject) {
