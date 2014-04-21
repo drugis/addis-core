@@ -21,7 +21,7 @@
 
 (defn entity-uri
   [namespace entity]
-  (format "http://trials.drugis.org/namespace/%d/%s" namespace (entity-path entity)))
+  (format "http://trials.drugis.org/namespaces/%d/%s" namespace (entity-path entity)))
 
 (defn entity-ref-uri
   [study-id entity-type entity-id]
