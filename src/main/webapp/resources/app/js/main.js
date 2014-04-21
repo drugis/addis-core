@@ -2,9 +2,9 @@
 
 require.config({
   paths: {
-    'jQuery': 'bower_components/jquery/dist/jquery.min',
-    'mcda' : 'mcda/app/js',
-    'jquery-slider' :  'mcda/app/js/lib/jslider/bin/jquery.slider.min',
+    'jQuery': 'bower_components/jquery/jquery.min',
+    'mcda' : 'bower_components/mcda-web/app/js',
+    'jquery-slider' :  'bower_components/mcda-web/app/js/lib/jslider/bin/jquery.slider.min',
     'underscore': 'bower_components/underscore/underscore-min',
     'angular': 'bower_components/angular/angular',
     'angular-resource': 'bower_components/angular-resource/angular-resource',

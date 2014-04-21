@@ -87,7 +87,7 @@ define([], function () {
       newAnalysis.projectId = $scope.project.id;
       var savedAnalysis = AnalysisResource.save(newAnalysis);
       savedAnalysis.$promise.then(function () {
-        $state.go('analysis', {
+        $state.go('addis.analysis', {
           projectId: savedAnalysis.projectId,
           analysisId: savedAnalysis.id
         });
