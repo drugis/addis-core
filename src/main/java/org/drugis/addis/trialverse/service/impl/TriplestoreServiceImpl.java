@@ -46,13 +46,14 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
             "\n" +
             "SELECT  * WHERE {\n" +
-            "GRAPH <http://trials.drugis.org/> {\n" +
+            "GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
             "    ?uri rdfs:label ?label .\n" +
-            "    FILTER regex (str(?uri), \"namespace/"
+            "    FILTER regex (str(?uri), \"namespaces/"
             + namespaceId +
             "/(endpoint|adverseEvent)\", \"i\")\n" +
             "  }\n" +
             "}";
+    System.out.println(query);
     Map<String, String> vars = new HashMap<>();
     vars.put("query", query);
     vars.put("output", "json");
@@ -73,13 +74,14 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
             "\n" +
             "SELECT  * WHERE {\n" +
-            "GRAPH <http://trials.drugis.org/> {\n" +
+            "GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
             "    ?uri rdfs:label ?label .\n" +
-            "    FILTER regex (str(?uri), \"namespace/"
+            "    FILTER regex (str(?uri), \"namespaces/"
             + namespaceId +
             "/(drug)\", \"i\")\n" +
             "  }\n" +
             "}";
+    System.out.println(query);
     Map<String, String> vars = new HashMap<>();
     vars.put("query", query);
     vars.put("output", "json");
@@ -135,9 +137,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
             "\n" +
             "SELECT  * WHERE {\n" +
-            " GRAPH <http://trials.drugis.org/> {\n" +
+            " GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
             "   ?uri rdf:type ?type .\n" +
-            "   FILTER regex(str(?type), \"namespace/" +
+            "   FILTER regex(str(?type), \"namespaces/" +
             namespaceId + "/" + analysisConcept.getSearchString() + "/(" + URIsToFind + ")\") .\n" +
             "   FILTER regex(str(?uri), \"/study/" + studyId + "\") .\n" +
             " }\n" +
