@@ -42,7 +42,6 @@ public class CriteriaService {
 
     Map<Long, String> trialverseVariables = triplestoreService.getTrialverseVariables(project.getTrialverseId(), analysis.getStudyId(), outcomesByUri.keySet());
     List<ObjectNode> jsonVariables = trialverseService.getVariablesByIds(trialverseVariables.keySet());
-    System.out.println("DEBUG outcome ids : " + trialverseVariables);
 
     List<Pair<Variable, CriterionEntry>> variableCriteriaPairs = new ArrayList<>();
 
