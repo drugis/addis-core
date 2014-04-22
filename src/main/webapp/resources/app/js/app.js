@@ -68,7 +68,7 @@ define(
     app.config(['Tasks', '$stateProvider', '$urlRouterProvider',
       function(Tasks, $stateProvider, $urlRouterProvider) {
         var baseTemplatePath = 'app/views/';
-        var mcdaBaseTemplatePath = 'app/js/mcda/app/views/';
+        var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
 
         $stateProvider
             .state('addis', {

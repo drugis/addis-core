@@ -14,7 +14,7 @@
 
     <link rel="stylesheet" type="text/css" href="app/js/bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="app/js/bower_components/nprogress/nprogress.css">
-    <link rel="stylesheet" type="text/css" href="app/js/mcda/app/js/lib/jslider/bin/jquery.slider.min.css">
+    <link rel="stylesheet" type="text/css" href="app/js/bower_components/mcda-web/app/js/lib/jslider/bin/jquery.slider.min.css">
     <link rel="stylesheet" type="text/css" href="app/js/bower_components/nvd3/src/nv.d3.css">
     <link rel="stylesheet" type="text/css" href="<c:url value="/app/css/addis-drugis.css" />">
 
@@ -54,7 +54,7 @@
     </section>
     <div ui-view></div>
     <script>
-      window.mcdaBasePath = 'app/js/mcda';
+      window.mcdaBasePath = 'app/js/bower_components/mcda-web';
       window.patavi = { "WS_URI": "wss://patavi.drugis.org/ws" };
       window.config = {
         user : {
