@@ -2,7 +2,8 @@ define(['angular', 'angular-mocks', 'services'], function() {
   describe("The analysis service", function() {
 
     var mockProblemResource,
-      mockScenarioResource;
+      mockScenarioResource,
+      location;
 
     beforeEach(module('addis.services'));
     beforeEach(module('addis.resources'));
@@ -11,18 +12,18 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
       mockProblemResource = jasmine.createSpyObj('ProblemResource', ['get']);
       mockScenarioResource = jasmine.createSpyObj('ScenarioResource', ['query']);
-
+      mockLocation = jasmine.createSpyObj('$location', ['url']);
 
       module('addis', function($provide) {
         $provide.value('ProblemResource', mockProblemResource);
         $provide.value('ScenarioResource', mockScenarioResource);
+        $provide.value('$location', mockLocation);
       });
     });
 
     it('should create the problem, add it to the analysis and save the analysis,' +
-      ' and then retrieve the default scenario and navigate to the url for the default scenario',
+      ' and then retrieve the default scenario when createProblem is called',
       inject(function($rootScope, $q, $location, AnalysisService) {
-
         var problemDeferred = $q.defer();
         var mockProblem = {
           foo: 'bar',
@@ -49,10 +50,37 @@ define(['angular', 'angular-mocks', 'services'], function() {
         analysisDeferred.resolve(mockAnalysis);
         scenariosDeferred.resolve(scenarios);
 
-        AnalysisService.createProblem(mockAnalysis);
+        var result = AnalysisService.createProblem(mockAnalysis);
+        expect(result.then).not.toBeNull();
+        result.then(function(value) {
+          result = value;
+        });
+        scenariosDeferred.resolve(scenarios);
         $rootScope.$apply();
-        expect($location.url()).toEqual('/scenarios/0');
+        expect(result).toEqual(scenarios[0]);
       }));
+
+    it('should return the default scenario when getDefaultScenario is called',
+      inject(function($rootScope, $q, $location, AnalysisService) {
+        var defaultScenario,
+            scenariosDeferred = $q.defer(),
+            scenarios = [{
+              id: 13
+            }];
+
+        scenarios.$promise = scenariosDeferred.promise;
+        mockScenarioResource.query.and.returnValue(scenarios);
+
+        defaultScenario = AnalysisService.getDefaultScenario()
+        expect(defaultScenario.then).not.toBeNull();
+        defaultScenario.then(function(result) {
+          defaultScenario = result;
+        });
+        scenariosDeferred.resolve(scenarios);
+        $rootScope.$apply();
+
+        expect(defaultScenario).toEqual(scenarios[0]);
+    }));
 
 
   });

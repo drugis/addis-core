@@ -1,16 +1,18 @@
 package org.drugis.addis.scenarios.controller;
 
 import org.drugis.addis.base.AbstractAddisCoreController;
+import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
+import org.drugis.addis.scenarios.service.ScenarioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import java.security.Principal;
 import java.util.Collection;
 
 /**
@@ -23,6 +25,12 @@ public class ScenarioController extends AbstractAddisCoreController {
   @Inject
   ScenarioRepository scenarioRepository;
 
+  @Inject
+  ScenarioService scenarioService;
+
+  @Inject
+  ProjectService projectService;
+
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios/{scenarioId}", method = RequestMethod.GET)
   @ResponseBody
   public Scenario get(@PathVariable Integer scenarioId) {
@@ -34,4 +42,13 @@ public class ScenarioController extends AbstractAddisCoreController {
   public Collection<Scenario> query(@PathVariable Integer projectId, @PathVariable Integer analysisId) {
     return scenarioRepository.query(projectId, analysisId);
   }
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios/{scenarioId}", method = RequestMethod.POST)
+  @ResponseBody
+  public Scenario update(Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody Scenario scenario) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    scenarioService.checkCoordinates(projectId, analysisId, scenario);
+    projectService.checkOwnership(projectId, principal);
+    return scenarioRepository.update(scenario.getId(), scenario.getTitle(), scenario.getState());
+  }
+
 }

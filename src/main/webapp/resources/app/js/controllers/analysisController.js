@@ -1,14 +1,16 @@
 'use strict';
 define(['underscore'], function() {
-  var dependencies = ['$scope', '$stateParams', '$q', '$window',
-    'ProjectsResource', 'AnalysisResource', 'OutcomeResource', 'InterventionResource',
-    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'AnalysisService'
+  var dependencies = ['$scope', '$stateParams', '$state', '$q', '$window',
+    'ProjectsResource', 'OutcomeResource', 'InterventionResource',
+    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'AnalysisService', 'DEFAULT_VIEW',
+    'currentAnalysis'
   ];
-  var AnalysisController = function($scope, $stateParams, $q, $window,
-    ProjectsResource, AnalysisResource, OutcomeResource, InterventionResource,
-    Select2UtilService, TrialverseStudyResource, ProblemResource, AnalysisService) {
+  var AnalysisController = function($scope, $stateParams, $state, $q, $window,
+    ProjectsResource, OutcomeResource, InterventionResource,
+    Select2UtilService, TrialverseStudyResource, ProblemResource, AnalysisService, DEFAULT_VIEW,
+    currentAnalysis) {
 
-    $scope.loading = {
+    $scope.$parent.loading = {
       loaded: false
     };
 
@@ -17,22 +19,26 @@ define(['underscore'], function() {
     };
 
     $scope.project = ProjectsResource.get($stateParams);
-    $scope.analysis = AnalysisResource.get($stateParams);
-
+    $scope.analysis = currentAnalysis;
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.interventions = InterventionResource.query($stateParams);
-
     $scope.selectedOutcomeIds = [];
     $scope.selectedInterventionIds = [];
+    $scope.isProblemDefined = false;
 
     $q.all([
       $scope.project.$promise,
       $scope.analysis.$promise
     ]).then(function() {
-      $scope.loading.loaded = true;
+      var userIsOwner;
 
-      var userIsOwner = $window.config.user.id === $scope.project.owner.id;
-      $scope.editMode.disableEditing = !userIsOwner || $scope.analysis.problem;
+      $scope.$parent.loading.loaded = true;
+      $scope.$parent.project = $scope.project;
+      userIsOwner = $window.config.user.id === $scope.project.owner.id;
+      if($scope.analysis.problem){
+        $scope.isProblemDefined = true;
+      }
+      $scope.editMode.disableEditing = !userIsOwner || $scope.isProblemDefined;
 
       $scope.select2Options = {
         'readonly': $scope.editMode.disableEditing
@@ -68,8 +74,20 @@ define(['underscore'], function() {
         }
       });
 
+      $scope.goToDefaultScenarioView = function() {
+        AnalysisService
+          .getDefaultScenario()
+          .then(function(scenario) {
+            $state.go(DEFAULT_VIEW, {scenarioId: scenario.id});
+          });
+      }
+
       $scope.createProblem = function() {
-        AnalysisService.createProblem($scope.analysis);
+        AnalysisService
+          .createProblem($scope.analysis)
+          .then(function(scenario) {
+            $state.go(DEFAULT_VIEW, {scenarioId: scenario.id});
+          });
       };
     });
   };

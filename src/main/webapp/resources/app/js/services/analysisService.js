@@ -5,14 +5,13 @@ define(['angular'], function() {
 
     var analysisCache;
 
-    var getDefaultScenario = function(analysis) {
-      return ScenarioResource.query($stateParams).$promise.then(function(scenarios) {
-        return scenarios[0];
-      });
-    };
-
-    var navigate = function(scenario) {
-        $location.url($location.url() + '/scenarios/' + scenario.id);
+    var getDefaultScenario = function() {
+      return ScenarioResource
+        .query($stateParams)
+        .$promise
+        .then(function(scenarios) {
+          return scenarios[0];
+        });
     };
 
     var saveAnalysis = function(problem) {
@@ -20,15 +19,16 @@ define(['angular'], function() {
       return analysisCache.$save();
     }
 
-    return {
-      createProblem: function(analysis) {
-        analysisCache = analysis;
-        return ProblemResource.get($stateParams).$promise
-          .then(saveAnalysis)
-          .then(getDefaultScenario)
-          .then(navigate);
-      }
+    var createProblem = function(analysis) {
+      analysisCache = analysis;
+      return ProblemResource.get($stateParams).$promise
+        .then(saveAnalysis)
+        .then(getDefaultScenario)
+    };
 
+    return {
+      createProblem: createProblem,
+      getDefaultScenario: getDefaultScenario
     };
   };
   return dependencies.concat(AnalysisService);

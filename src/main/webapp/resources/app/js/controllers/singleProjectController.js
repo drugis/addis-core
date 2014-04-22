@@ -44,6 +44,7 @@ define([], function () {
       });
 
       $scope.loading.loaded = true;
+
       $scope.editMode.allowEditing = $window.config.user.id === $scope.project.owner.id;
 
       $scope.studies = TrialverseStudyResource.query({

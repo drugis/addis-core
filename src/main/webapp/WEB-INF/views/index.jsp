@@ -13,7 +13,11 @@
     <title>addis.drugis.org</title>
 
     <link rel="stylesheet" type="text/css" href="app/js/bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="app/js/bower_components/nprogress/nprogress.css">
+    <link rel="stylesheet" type="text/css" href="app/js/bower_components/mcda-web/app/js/lib/jslider/bin/jquery.slider.min.css">
+    <link rel="stylesheet" type="text/css" href="app/js/bower_components/nvd3/src/nv.d3.css">
     <link rel="stylesheet" type="text/css" href="<c:url value="/app/css/addis-drugis.css" />">
+
     <script src="app/js/bower_components/requirejs/require.js" data-main="app/js/main.js"></script>
   </head>
 
@@ -50,13 +54,20 @@
     </section>
     <div ui-view></div>
     <script>
-
+      window.mcdaBasePath = 'app/js/bower_components/mcda-web';
+      window.patavi = { "WS_URI": "wss://patavi.drugis.org/ws" };
       window.config = {
         user : {
           id : ${account.id},
           name : "${account.firstName}",
           firstName : "${account.firstName}",
           LastName : "${account.lastName}"
+        },
+        workspaceName: 'analyses',
+        workspacesRepository : {
+          service : "RemoteWorkspaces",
+          _csrf_token : "${_csrf.token}",
+          _csrf_header : "${_csrf.headerName}"
         },
         _csrf_token : "${_csrf.token}",
         _csrf_header : "${_csrf.headerName}"

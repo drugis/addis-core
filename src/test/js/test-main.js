@@ -13,7 +13,7 @@ console.log(tests);
 
 require.config({
   paths: {
-    'jQuery': 'bower_components/jquery/dist/jquery',
+    'jQuery': 'bower_components/jquery/jquery',
     'underscore': 'bower_components/underscore/underscore',
     'angular': 'bower_components/angular/angular',
     'angular-resource': 'bower_components/angular-resource/angular-resource',
@@ -24,7 +24,7 @@ require.config({
     'jasmine': 'bower_components/jasmine/lib/jasmine-core/jasmine',
     'jasmine-html': 'bower_components/jasmine/lib/jasmine-core/jasmine-html',
     'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
-    'mcda' : 'mcda/app/js',
+    'mcda' : 'bower_components/mcda-web/app/js',
     'NProgress': 'bower_components/nprogress/nprogress',
     'd3': 'bower_components/d3/d3.min',
     'nvd3': 'bower_components/nvd3/nv.d3.min',
@@ -38,6 +38,8 @@ require.config({
     'select2': {deps: ['jQuery'], exports : 'select2'},
     'angular-select2': {deps: ['angular', 'select2'], exports: 'angular-select2'},
     'angular-ui-router': { deps: ['angular']},
+    'd3': { exports : 'd3' },
+    'nvd3': { deps: ['d3'], exports : 'nv' },
     'angular-resource': { deps: ['angular'], exports: 'angular-resource'},
     'angular-mocks': { deps: ['angular'], exports: 'angular.mock' },
     'underscore': { exports : '_'},
@@ -56,6 +58,6 @@ require.config({
 window.name = "NG_DEFER_BOOTSTRAP!";
 window.config = {
   _csrf_token : 'token',
-  _csrf_header : 'header'
+  _csrf_header : 'header',
+   workspacesRepository: { service: "LocalWorkspaces" }
 };
-

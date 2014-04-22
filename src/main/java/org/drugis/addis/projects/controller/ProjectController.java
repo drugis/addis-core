@@ -1,11 +1,11 @@
 package org.drugis.addis.projects.controller;
 
 import org.drugis.addis.base.AbstractAddisCoreController;
-import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.ProjectCommand;
 import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.slf4j.Logger;
@@ -31,29 +31,23 @@ public class ProjectController extends AbstractAddisCoreController {
 
   @Inject
   private ProjectRepository projectsRepository;
+
+  @Inject
+  private ProjectService projectService;
+
   @Inject
   private AccountRepository accountRepository;
 
   @RequestMapping(value = "/projects", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Project> query(Principal currentUser, @RequestParam(required = false) Integer owner) throws MethodNotAllowedException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
-      return owner == null ? projectsRepository.query() : projectsRepository.queryByOwnerId(owner);
-    } else {
-      throw new MethodNotAllowedException();
-    }
+  public Collection<Project> query(@RequestParam(required = false) Integer owner) {
+    return owner == null ? projectsRepository.query() : projectsRepository.queryByOwnerId(owner);
   }
 
   @RequestMapping(value = "/projects/{projectId}", method = RequestMethod.GET)
   @ResponseBody
-  public Project get(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
-      return projectsRepository.getProjectById(projectId);
-    } else {
-      throw new MethodNotAllowedException();
-    }
+  public Project get(@PathVariable Integer projectId) throws ResourceDoesNotExistException {
+    return projectsRepository.getProjectById(projectId);
   }
 
   @RequestMapping(value = "/projects", method = RequestMethod.POST)
