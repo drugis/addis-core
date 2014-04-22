@@ -21,7 +21,7 @@ define(
     'mcda/services/errorHandling',
     'mcda/services/hashCodeService'
   ],
-  function(angular, require, $, Config) {
+  function (angular, require, $, Config) {
     var mcdaDependencies = [
       'elicit.remoteWorkspaces',
       'elicit.directives',
@@ -42,17 +42,17 @@ define(
     var app = angular.module('addis', dependencies.concat(mcdaDependencies));
 
     app.run(['$rootScope', '$window', '$http',
-      function($rootScope, $window, $http) {
+      function ($rootScope, $window, $http) {
         var csrfToken = $window.config._csrf_token;
         var csrfHeader = $window.config._csrf_header;
 
         $http.defaults.headers.common[csrfHeader] = csrfToken;
-        $rootScope.$on('$viewContentLoaded', function() {
+        $rootScope.$on('$viewContentLoaded', function () {
           $(document).foundation();
         });
-        $rootScope.$safeApply = function($scope, fn) {
+        $rootScope.$safeApply = function ($scope, fn) {
           var phase = $scope.$root.$$phase;
-          if(phase == '$apply' || phase == '$digest') {
+          if (phase === '$apply' || phase === '$digest') {
             this.$eval(fn);
           }
           else {
@@ -63,78 +63,74 @@ define(
     ]);
 
     app.constant('Tasks', Config.tasks);
-    app.constant('DEFAULT_VIEW', 'overview' );
+    app.constant('DEFAULT_VIEW', 'overview');
 
     app.config(['Tasks', '$stateProvider', '$urlRouterProvider',
-      function(Tasks, $stateProvider, $urlRouterProvider) {
+      function (Tasks, $stateProvider, $urlRouterProvider) {
         var baseTemplatePath = 'app/views/';
         var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
 
         $stateProvider
-            .state('addis', {
-                url: '',
-                abstract: true,
-                templateUrl: baseTemplatePath + 'addis.html',
-                controller: 'AddisController'
-            })
-          .state('addis.projects', {
+          .state('projects', {
             url: '/projects',
             templateUrl: baseTemplatePath + 'projects.html',
             controller: 'ProjectsController'
           })
-          .state('addis.project', {
+          .state('project', {
             url: '/projects/:projectId',
             templateUrl: baseTemplatePath + 'project.html',
             controller: 'SingleProjectController'
           })
-            .state('addis.analysis', {
-                url: '/projects/:projectId/analyses/:analysisId',
-                templateUrl: baseTemplatePath + 'analysisContainer.html',
-                resolve: {
-                    currentAnalysis: ['$stateParams', 'AnalysisResource',
-                    function($stateParams, AnalysisResource) {
-                      return AnalysisResource.get($stateParams);
-                    }]
-                },
-                controller: function($scope, currentAnalysis) { $scope.analysis = currentAnalysis; },
-                abstract: true
-            })
-          .state('addis.analysis.default', {
+          .state('analysis', {
+            url: '/projects/:projectId/analyses/:analysisId',
+            templateUrl: baseTemplatePath + 'analysisContainer.html',
+            resolve: {
+              currentAnalysis: ['$stateParams', 'AnalysisResource',
+                function ($stateParams, AnalysisResource) {
+                  return AnalysisResource.get($stateParams);
+                }]
+            },
+            controller: function ($scope, currentAnalysis) {
+              $scope.analysis = currentAnalysis;
+            },
+            abstract: true
+          })
+          .state('analysis.default', {
             url: '',
             templateUrl: baseTemplatePath + 'analysisView.html',
             controller: 'AnalysisController'
           })
-          .state('addis.analysis.scenario', {
+          .state('analysis.scenario', {
             url: '/scenarios/:scenarioId',
             templateUrl: mcdaBaseTemplatePath + 'scenario.html',
             resolve: {
               currentWorkspace: ['$stateParams', 'RemoteWorkspaces',
-                function($stateParams, Workspaces) {
+                function ($stateParams, Workspaces) {
                   return Workspaces.get($stateParams.analysisId);
                 }
               ],
-              currentScenario: function($stateParams, currentWorkspace) {
+              currentScenario: function ($stateParams, currentWorkspace) {
                 return currentWorkspace.getScenario($stateParams.scenarioId);
               }
             },
             controller: 'WorkspaceController'
           });
 
-          _.each(Tasks.available, function(task) {
-            var templateUrl = mcdaBaseTemplatePath + task.templateUrl;
-            $stateProvider.state(task.id, {
-              parent: 'addis.analysis.scenario',
-              url: '/' + task.id,
-              templateUrl: templateUrl,
-              controller: task.controller,
-              resolve : {
-                taskDefinition: function(currentScenario, TaskDependencies) {
-                  var def = TaskDependencies.extendTaskDefinition(task);
-                  return def;
-                }
+        _.each(Tasks.available, function (task) {
+          var templateUrl = mcdaBaseTemplatePath + task.templateUrl;
+          $stateProvider.state(task.id, {
+            parent: 'analysis.scenario',
+            url: '/' + task.id,
+            templateUrl: templateUrl,
+            controller: task.controller,
+            resolve: {
+              taskDefinition: function (currentScenario, TaskDependencies) {
+                var def = TaskDependencies.extendTaskDefinition(task);
+                return def;
               }
-            });
+            }
           });
+        });
 
         // Default route
         $urlRouterProvider.otherwise('/projects');

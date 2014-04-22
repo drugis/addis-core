@@ -1,3 +1,8 @@
+<ul ng-show="loading.loaded" class="breadcrumbs">
+  <li><a href="#/projects">Projects</a></li>
+  <li class="current active">{{project.name}}</li>
+</ul>
+
 <div class="project-header row">
   <div class="columns large-12">
     <h1 class="inline-header" title="Project title">{{project.name}}</h1>
@@ -27,7 +32,7 @@
           title="{{outcome.motivation}}">
         <div class="row">
           <div class="columns large-6">{{outcome.name}} </div>
-          <div class="columns large-6">{{outcome.semanticOutcomeLabel}} </div>
+          <div class="columns large-6">{{outcome.semanticOutcomeLabel}} </div
         </div>
         </li>
     </ul>

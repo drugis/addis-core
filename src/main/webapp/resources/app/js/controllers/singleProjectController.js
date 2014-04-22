@@ -44,12 +44,6 @@ define([], function () {
       });
 
       $scope.loading.loaded = true;
-      $scope.$parent.showBreadcrumbs = true;
-      $scope.$parent.breadcrumbs.length = 0;
-      $scope.$parent.breadcrumbs.push({
-          state: 'addis.project',
-          title: $scope.project.name
-      });
 
       $scope.editMode.allowEditing = $window.config.user.id === $scope.project.owner.id;
 
@@ -87,7 +81,7 @@ define([], function () {
       newAnalysis.projectId = $scope.project.id;
       var savedAnalysis = AnalysisResource.save(newAnalysis);
       savedAnalysis.$promise.then(function () {
-        $state.go('addis.analysis', {
+        $state.go('analysis', {
           projectId: savedAnalysis.projectId,
           analysisId: savedAnalysis.id
         });

@@ -10,7 +10,7 @@ define(['underscore'], function() {
     Select2UtilService, TrialverseStudyResource, ProblemResource, AnalysisService, DEFAULT_VIEW,
     currentAnalysis) {
 
-    $scope.loading = {
+    $scope.$parent.loading = {
       loaded: false
     };
 
@@ -32,10 +32,8 @@ define(['underscore'], function() {
     ]).then(function() {
       var userIsOwner;
 
-      $scope.loading.loaded = true;
-      $scope.$parent.breadcrumbs.length = 0;
-      $scope.$parent.breadcrumbs.push({state:'addis.project', title: $scope.project.name});
-      $scope.$parent.breadcrumbs.push({state:'addis.analysis',title: $scope.analysis.name});
+      $scope.$parent.loading.loaded = true;
+      $scope.$parent.project = $scope.project;
       userIsOwner = $window.config.user.id === $scope.project.owner.id;
       if($scope.analysis.problem){
         $scope.isProblemDefined = true;

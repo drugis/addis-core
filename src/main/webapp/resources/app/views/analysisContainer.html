@@ -1,3 +1,8 @@
+<ul ng-show="loading.loaded" class="breadcrumbs">
+    <li><a href="#/projects">Projects</a></li>
+    <li><a href="#/projects/{{project.id}}">{{project.name}}</a></li>
+    <li class="current active">{{analysis.name}}</li>
+</ul>
 <div>
   <div class="project-header row">
     <div class="columns large-12">
