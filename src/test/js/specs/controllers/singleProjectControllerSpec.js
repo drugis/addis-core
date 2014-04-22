@@ -210,7 +210,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
       expect(analysisResource.save).toHaveBeenCalledWith(newAnalysisWithProjectId);
       analysisDeferred.resolve();
       scope.$apply();
-      expect(state.go).toHaveBeenCalledWith('analysis', {
+      expect(state.go).toHaveBeenCalledWith('analysis.default', {
         projectId: mockAnalysis.projectId,
         analysisId: mockAnalysis.id
       });
