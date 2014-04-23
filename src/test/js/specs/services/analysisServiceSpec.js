@@ -5,83 +5,198 @@ define(['angular', 'angular-mocks', 'services'], function() {
       mockScenarioResource,
       location;
 
-    beforeEach(module('addis.services'));
-    beforeEach(module('addis.resources'));
+    describe('getProblem', function() {
 
-    beforeEach(function() {
+      beforeEach(module('addis.services'));
+      beforeEach(module('addis.resources'));
 
-      mockProblemResource = jasmine.createSpyObj('ProblemResource', ['get']);
-      mockScenarioResource = jasmine.createSpyObj('ScenarioResource', ['query']);
-      mockLocation = jasmine.createSpyObj('$location', ['url']);
+      beforeEach(function() {
 
-      module('addis', function($provide) {
-        $provide.value('ProblemResource', mockProblemResource);
-        $provide.value('ScenarioResource', mockScenarioResource);
-        $provide.value('$location', mockLocation);
+        mockProblemResource = jasmine.createSpyObj('ProblemResource', ['get']);
+        mockScenarioResource = jasmine.createSpyObj('ScenarioResource', ['query']);
+        mockLocation = jasmine.createSpyObj('$location', ['url']);
+
+        module('addis', function($provide) {
+          $provide.value('ProblemResource', mockProblemResource);
+          $provide.value('ScenarioResource', mockScenarioResource);
+          $provide.value('$location', mockLocation);
+        });
       });
+
+      it('should return a problemResoure',
+        inject(function($rootScope, $q, $location, AnalysisService) {
+          var mockProblem = {
+            $promise: 'promise'
+          };
+          mockProblemResource.get.and.returnValue(mockProblem);
+          expect(AnalysisService.getProblem()).toEqual(mockProblem.$promise);
+        }));
+
     });
 
-    it('should create the problem, add it to the analysis and save the analysis,' +
-      ' and then retrieve the default scenario when createProblem is called',
-      inject(function($rootScope, $q, $location, AnalysisService) {
-        var problemDeferred = $q.defer();
-        var mockProblem = {
-          foo: 'bar',
-          $promise: problemDeferred.promise
-        };
-        mockProblemResource.get.and.returnValue(mockProblem);
+    describe('getDefaultScenario', function() {
 
-        var analysisDeferred = $q.defer();
-        var savedAnalysis = {
-          id: 1,
-          $promise: analysisDeferred.promise
-        };
-        var mockAnalysis = jasmine.createSpyObj('analysis', ['$save']);
-        mockAnalysis.$save.and.returnValue(savedAnalysis);
+      beforeEach(module('addis.services'));
+      beforeEach(module('addis.resources'));
 
-        var scenariosDeferred = $q.defer();
-        var scenarios = [{
-          id: 0
-        }];
-        scenarios.$promise = scenariosDeferred.promise;
-        mockScenarioResource.query.and.returnValue(scenarios);
+      beforeEach(function() {
 
-        problemDeferred.resolve();
-        analysisDeferred.resolve(mockAnalysis);
-        scenariosDeferred.resolve(scenarios);
+        mockProblemResource = jasmine.createSpyObj('ProblemResource', ['get']);
+        mockScenarioResource = jasmine.createSpyObj('ScenarioResource', ['query']);
+        mockLocation = jasmine.createSpyObj('$location', ['url']);
 
-        var result = AnalysisService.createProblem(mockAnalysis);
-        expect(result.then).not.toBeNull();
-        result.then(function(value) {
-          result = value;
+        module('addis', function($provide) {
+          $provide.value('ProblemResource', mockProblemResource);
+          $provide.value('ScenarioResource', mockScenarioResource);
+          $provide.value('$location', mockLocation);
         });
-        scenariosDeferred.resolve(scenarios);
-        $rootScope.$apply();
-        expect(result).toEqual(scenarios[0]);
-      }));
+      });
 
-    it('should return the default scenario when getDefaultScenario is called',
-      inject(function($rootScope, $q, $location, AnalysisService) {
-        var defaultScenario,
+      it('should return the default scenario when getDefaultScenario is called',
+        inject(function($rootScope, $q, $location, AnalysisService) {
+          var defaultScenario,
             scenariosDeferred = $q.defer(),
             scenarios = [{
               id: 13
             }];
 
-        scenarios.$promise = scenariosDeferred.promise;
-        mockScenarioResource.query.and.returnValue(scenarios);
+          scenarios.$promise = scenariosDeferred.promise;
+          mockScenarioResource.query.and.returnValue(scenarios);
 
-        defaultScenario = AnalysisService.getDefaultScenario()
-        expect(defaultScenario.then).not.toBeNull();
-        defaultScenario.then(function(result) {
-          defaultScenario = result;
+          defaultScenario = AnalysisService.getDefaultScenario();
+          expect(defaultScenario.then).not.toBeNull();
+          defaultScenario.then(function(result) {
+            defaultScenario = result;
+          });
+          scenariosDeferred.resolve(scenarios);
+          $rootScope.$apply();
+
+          expect(defaultScenario).toEqual(scenarios[0]);
+        }));
+
+
+    });
+
+    describe("validateAnalysis", function() {
+      beforeEach(function() {
+        stateParams = jasmine.createSpyObj('stateParams', ['foo']);
+        module('addis', function($provide) {
+          $provide.value('$stateParams', stateParams);
         });
-        scenariosDeferred.resolve(scenarios);
-        $rootScope.$apply();
+      });
 
-        expect(defaultScenario).toEqual(scenarios[0]);
-    }));
+      it("should reject analyses that contain fewer than two selectedInterventions and two selectedOutcomes",
+        inject(function($rootScope, $q, $location, $stateParams, AnalysisService) {
+          var invalidAnalysis = {
+            selectedInterventions: [],
+            selectedOutcomes: []
+          };
+          expect(AnalysisService.validateAnalysis(invalidAnalysis)).toBeFalsy();
 
+          invalidAnalysis = {
+            selectedInterventions: [1],
+            selectedOutcomes: []
+          };
+          expect(AnalysisService.validateAnalysis(invalidAnalysis)).toBeFalsy();
 
+          invalidAnalysis = {
+            selectedInterventions: [],
+            selectedOutcomes: [1]
+          };
+          expect(AnalysisService.validateAnalysis(invalidAnalysis)).toBeFalsy();
+
+          invalidAnalysis = {
+            selectedInterventions: [1, 2, 3],
+            selectedOutcomes: []
+          };
+          expect(AnalysisService.validateAnalysis(invalidAnalysis)).toBeFalsy();
+
+          invalidAnalysis = {
+            selectedInterventions: [],
+            selectedOutcomes: [1, 2, 3]
+          };
+          expect(AnalysisService.validateAnalysis(invalidAnalysis)).toBeFalsy();
+
+          var validAnalysis = {
+            selectedInterventions: [1, 2],
+            selectedOutcomes: [1, 2]
+          };
+          expect(AnalysisService.validateAnalysis(invalidAnalysis)).toBeFalsy();
+
+          validAnalysis = {
+            selectedInterventions: [1, 2, 3],
+            selectedOutcomes: [1, 2, 3]
+          };
+          expect(AnalysisService.validateAnalysis(invalidAnalysis)).toBeFalsy();
+        }));
+    });
+
+    describe("validateProblem", function() {
+      beforeEach(function() {
+        stateParams = jasmine.createSpyObj('stateParams', ['foo']);
+        module('addis', function($provide) {
+          $provide.value('$stateParams', stateParams);
+        });
+      });
+
+      it("should reject problems that do not have performance data for each combination of criterion and alternative",
+        inject(function(AnalysisService) {
+          var analysis = {
+            selectedOutcomes: [{
+              name: 'outcome1'
+            }, {
+              name: 'outcome2'
+            }],
+            selectedInterventions: [{
+              name: 'intervention1'
+            }, {
+              name: 'intervention2'
+            }]
+          }
+          var problem = {
+            performanceTable: [{}]
+          };
+          expect(AnalysisService.validateProblem(analysis, problem)).toBeFalsy();
+          problem = {
+            performanceTable: [{
+              'intervention1': 'value',
+              'outcome1': 'value'
+            }, {
+              'intervention1': 'value',
+              'outcome2': 'value'
+            }, {
+              'intervention2': 'value',
+              'outcome1': 'value'
+            }]
+          };
+          expect(AnalysisService.validateProblem(analysis, problem)).toBeFalsy();
+          problem.performanceTable.push({
+            'intervention2': 'value',
+            'outcome2': 'value'
+          });
+          expect(AnalysisService.validateProblem(analysis, problem)).toBeTruthy();
+        }));
+    });
+
+    describe('keyify', function() {
+      beforeEach(function() {
+        stateParams = jasmine.createSpyObj('stateParams', ['foo']);
+        module('addis', function($provide) {
+          $provide.value('$stateParams', stateParams);
+        });
+      });
+
+      it('should remove non-alphanumeric characters', inject(function(AnalysisService) {
+        expect(AnalysisService.keyify("i'm/not$alpha&numeric")).toBe('imnotalphanumeric');
+      }));
+
+      it('should convert whitespace to dashes', inject(function(AnalysisService) {
+        expect(AnalysisService.keyify('a horse a horse my')).toBe('a-horse-a-horse-my');
+      }));
+
+      it('should convert upper case to lowercase', inject(function(AnalysisService) {
+        expect(AnalysisService.keyify('IM NOT SHOUTING')).toBe('im-not-shouting');
+      }));
+    })
   });
 });
