@@ -71,14 +71,14 @@ public class Scenario {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof Scenario)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     Scenario scenario = (Scenario) o;
 
     if (id != null ? !id.equals(scenario.id) : scenario.id != null) return false;
     if (!state.equals(scenario.state)) return false;
     if (!title.equals(scenario.title)) return false;
-    if (!workspace.equals(scenario.workspace)) return false;
+    if (workspace != null ? !workspace.equals(scenario.workspace) : scenario.workspace != null) return false;
 
     return true;
   }
@@ -86,10 +86,9 @@ public class Scenario {
   @Override
   public int hashCode() {
     int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + workspace.hashCode();
+    result = 31 * result + (workspace != null ? workspace.hashCode() : 0);
     result = 31 * result + title.hashCode();
     result = 31 * result + state.hashCode();
     return result;
   }
-
 }

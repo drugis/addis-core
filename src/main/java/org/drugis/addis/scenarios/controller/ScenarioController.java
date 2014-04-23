@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.Collection;
 
@@ -55,11 +56,14 @@ public class ScenarioController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios", method = RequestMethod.POST)
   @ResponseBody
-  public Scenario create(Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody Scenario scenario)
+  public Scenario create(Principal principal, HttpServletResponse response, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody Scenario scenario)
     throws ResourceDoesNotExistException, MethodNotAllowedException {
     scenarioService.checkCoordinates(projectId, analysisId, scenario);
     projectService.checkOwnership(projectId, principal);
-    return scenarioRepository.create(analysisId, scenario.getTitle(), new State(scenario.getState()));
+    Scenario result =scenarioRepository.create(analysisId, scenario.getTitle(), new State(scenario.getState()));
+    response.setStatus(HttpServletResponse.SC_CREATED);
+
+    return result;
   }
 
 }

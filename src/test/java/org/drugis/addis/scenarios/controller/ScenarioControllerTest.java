@@ -1,5 +1,6 @@
 package org.drugis.addis.scenarios.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.State;
 import org.drugis.addis.config.TestConfig;
@@ -120,10 +121,12 @@ public class ScenarioControllerTest {
     Scenario scenario = new Scenario(1, 1, "Default", new State("{\"key\":\"value\"}"));
     String content = TestUtils.createJson(scenario);
     System.out.println(content);
+    when(scenarioRepository.update(scenario.getId(), scenario.getTitle(), scenario.getState())).thenReturn(scenario);
     mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios/" + scenario.getId())
             .content(content)
             .principal(user)
             .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
     verify(scenarioService).checkCoordinates(projectId, analysisId, scenario);
@@ -137,12 +140,36 @@ public class ScenarioControllerTest {
     Integer analysisId = 1;
     Scenario scenario = new Scenario(1, "Default", new State("{\"key\":\"value\"}"));
     String content = TestUtils.createJson(scenario);
+    when(scenarioRepository.create(analysisId, scenario.getTitle(), new State(scenario.getState()))).thenReturn(scenario);
     mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios/")
-      .content(content).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8)).andExpect(status().isOk());
+      .content(content).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(status().isCreated())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$.title", is(scenario.getTitle())));
 
     verify(scenarioService).checkCoordinates(projectId, analysisId, scenario);
     verify(projectService).checkOwnership(projectId, user);
     verify(scenarioRepository).create(analysisId, scenario.getTitle(), new State(scenario.getState()));
   }
+
+  @Test
+  public void testComplex() throws Exception {
+    Integer projectId = 1;
+    Integer analysisId = 1;
+    String content = "{\"title\":\"Scenario z32\",\"state\":{\"problem\":{\"title\":\"foo\",\"alternatives\":{\"plac\":{\"title\":\"plac\"},\"az\":{\"title\":\"az\"}},\"criteria\":{\"nonserious-ads\":{\"title\":\"non-serious ads\",\"scale\":[0,1],\"pvf\":{\"range\":[0.012,0.136],\"type\":\"linear\",\"direction\":\"decreasing\"},\"id\":\"nonserious-ads\",\"w\":\"w_1\"},\"serious-ads\":{\"title\":\"Serious ads\",\"scale\":[0,1],\"pvf\":{\"range\":[0.001,0.037],\"type\":\"linear\",\"direction\":\"decreasing\"},\"id\":\"serious-ads\",\"w\":\"w_2\"}},\"performanceTable\":[{\"alternative\":\"az\",\"criterion\":\"serious-ads\",\"performance\":{\"parameters\":{\"alpha\":2,\"beta\":137},\"type\":\"dbeta\"}},{\"alternative\":\"plac\",\"criterion\":\"serious-ads\",\"performance\":{\"parameters\":{\"alpha\":1,\"beta\":139},\"type\":\"dbeta\"}},{\"alternative\":\"plac\",\"criterion\":\"nonserious-ads\",\"performance\":{\"parameters\":{\"alpha\":4,\"beta\":136},\"type\":\"dbeta\"}},{\"alternative\":\"az\",\"criterion\":\"nonserious-ads\",\"performance\":{\"parameters\":{\"alpha\":10,\"beta\":129},\"type\":\"dbeta\"}}],\"method\":\"scales\"}}}";
+    ObjectMapper mapper = new ObjectMapper();
+    Scenario scenario = mapper.readValue(content, Scenario.class);
+    when(scenarioRepository.create(analysisId, scenario.getTitle(), new State(scenario.getState()))).thenReturn(scenario);
+    mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios/")
+      .content(content).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(status().isCreated());
+    verify(scenarioService).checkCoordinates(projectId, analysisId, scenario);
+    verify(projectService).checkOwnership(projectId, user);
+    verify(scenarioRepository).create(analysisId, "Scenario z32", new State(scenario.getState()));
+  }
+
+
+
+
 
 }
