@@ -1,6 +1,5 @@
 package org.drugis.addis.scenarios.repository.impl;
 
-import org.drugis.addis.analyses.State;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,7 +25,7 @@ public class JpaScenarioRepository implements ScenarioRepository {
   }
 
   @Override
-  public Scenario create(Integer analysisId, String title, State state) {
+  public Scenario create(Integer analysisId, String title, String state) {
     Scenario scenario = new Scenario(analysisId, title, state);
     em.persist(scenario);
     return scenario;

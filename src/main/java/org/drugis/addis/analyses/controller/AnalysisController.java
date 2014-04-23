@@ -2,7 +2,6 @@ package org.drugis.addis.analyses.controller;
 
 import org.drugis.addis.analyses.Analysis;
 import org.drugis.addis.analyses.AnalysisCommand;
-import org.drugis.addis.analyses.State;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -88,8 +87,9 @@ public class AnalysisController extends AbstractAddisCoreController {
 
       Analysis updatedAnalysis = analysisRepository.update(user, analysis);
       if (analysis.getProblem() != null) {
-        State state = new State(analysis.getProblem());
-        scenarioRepository.create(analysis.getId(), Scenario.DEFAULT_TITLE, state);
+        String state = analysis.getProblem();
+        // problem wrapping in state necessary for mcda-web
+        scenarioRepository.create(analysis.getId(), Scenario.DEFAULT_TITLE, "{\"problem\":" + state + "}");
       }
       return updatedAnalysis;
     } else {

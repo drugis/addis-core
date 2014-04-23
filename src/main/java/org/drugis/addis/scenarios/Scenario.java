@@ -2,7 +2,6 @@ package org.drugis.addis.scenarios;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.drugis.addis.analyses.State;
 import org.drugis.addis.util.ObjectToStringDeserializer;
 
 import javax.persistence.Entity;
@@ -32,15 +31,15 @@ public class Scenario {
   public Scenario() {
   }
 
-  public Scenario(Integer workspace, String title, State state) {
+  public Scenario(Integer workspace, String title, String state) {
     this(null, workspace, title, state);
   }
 
-  public Scenario(Integer id, Integer workspace, String title, State state) {
+  public Scenario(Integer id, Integer workspace, String title, String state) {
     this.id = id;
     this.workspace = workspace;
     this.title = title;
-    this.state = state.toString();
+    this.state = state;
   }
 
   public Integer getId() {
@@ -49,6 +48,10 @@ public class Scenario {
 
   public Integer getWorkspace() {
     return workspace;
+  }
+
+  public void setWorkspace(Integer workspace) {
+    this.workspace = workspace;
   }
 
   public String getTitle() {
@@ -91,4 +94,5 @@ public class Scenario {
     result = 31 * result + state.hashCode();
     return result;
   }
+
 }

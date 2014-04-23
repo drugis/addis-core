@@ -204,7 +204,7 @@ public class AnalysisControllerTest {
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(projectId, analysisId);
-    verify(scenarioRepository).create(analysisId, Scenario.DEFAULT_TITLE, new State(newAnalysis.getProblem()));
+    verify(scenarioRepository).create(analysisId, Scenario.DEFAULT_TITLE, "{\"problem\":"+newAnalysis.getProblem()+"}");
     verify(analysisRepository).update(gert, newAnalysis);
   }
 

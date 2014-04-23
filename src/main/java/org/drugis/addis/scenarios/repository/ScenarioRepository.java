@@ -1,6 +1,5 @@
 package org.drugis.addis.scenarios.repository;
 
-import org.drugis.addis.analyses.State;
 import org.drugis.addis.scenarios.Scenario;
 
 import java.util.Collection;
@@ -11,7 +10,7 @@ import java.util.Collection;
 public interface ScenarioRepository {
   Scenario get(Integer id);
 
-  Scenario create(Integer analysisId, String title, State state);
+  Scenario create(Integer analysisId, String title, String state);
 
   Collection<Scenario> query(Integer projectId, Integer analysisId);
 

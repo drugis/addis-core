@@ -1,6 +1,5 @@
 package org.drugis.addis.scenarios.repository;
 
-import org.drugis.addis.analyses.State;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.scenarios.Scenario;
 import org.junit.Before;
@@ -16,9 +15,7 @@ import javax.transaction.Transactional;
 
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by connor on 3-4-14.
@@ -33,11 +30,6 @@ public class ScenarioRepositoryTest {
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;
 
-  @Before
-  public void setUp() throws Exception {
-
-  }
-
   @Test
   public void testGet() throws Exception {
     int id = 1;
@@ -49,11 +41,10 @@ public class ScenarioRepositoryTest {
   @Test
   public void testCreate() {
     int workspaceId = 2;
-    Integer scenarioId = 4;
     String title = "title";
     String problem = "Problem";
-    Scenario created = scenarioRepository.create(workspaceId, title, new State(problem));
-    Scenario found = em.find(Scenario.class, scenarioId);
+    Scenario created = scenarioRepository.create(workspaceId, title, problem);
+    Scenario found = em.find(Scenario.class, created.getId());
     assertEquals(found, created);
   }
 

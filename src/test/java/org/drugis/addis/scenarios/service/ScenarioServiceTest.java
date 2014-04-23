@@ -1,7 +1,6 @@
 package org.drugis.addis.scenarios.service;
 
 import org.drugis.addis.analyses.Analysis;
-import org.drugis.addis.analyses.State;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.Project;
@@ -36,7 +35,7 @@ public class ScenarioServiceTest {
 
   private Integer projectId = 1;
   private Integer analysisId = 2;
-  private Scenario scenario = new Scenario(2, "title", new State("state"));
+  private Scenario scenario = new Scenario(2, "title", "state");
   private Project project = mock(Project.class);
   private Analysis analysis = mock(Analysis.class);
 
@@ -47,6 +46,7 @@ public class ScenarioServiceTest {
     scenarioRepository = mock(ScenarioRepository.class);
 
     scenarioService = new ScenarioServiceImpl();
+
     initMocks(this);
 
     when(analysis.getProjectId()).thenReturn(projectId);
@@ -69,7 +69,7 @@ public class ScenarioServiceTest {
 
   @Test(expected = ResourceDoesNotExistException.class)
   public void testCheckScenarioNotInAnalysis() throws ResourceDoesNotExistException {
-    Scenario wrongAnalysisScenario = new Scenario(3, "title", new State("state"));
+    Scenario wrongAnalysisScenario = new Scenario(3, "title", "state");
     scenarioService.checkCoordinates(projectId, analysisId, wrongAnalysisScenario);
   }
 
