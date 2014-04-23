@@ -1,7 +1,7 @@
 'use strict';
 define([], function () {
   var dependencies = ['$scope', '$state', '$stateParams', '$window',
-    'ProjectsResource',
+    'ProjectResource',
     'TrialverseResource',
     'TrialverseStudyResource',
     'SemanticOutcomeResource',
@@ -11,11 +11,11 @@ define([], function () {
     'AnalysisResource',
     '$timeout'
   ];
-  var ProjectsController = function ($scope, $state, $stateParams, $window, ProjectsResource, TrialverseResource, TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource, AnalysisResource, $timeout) {
+  var ProjectsController = function ($scope, $state, $stateParams, $window, ProjectResource, TrialverseResource, TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource, AnalysisResource, $timeout) {
     $scope.loading = {
       loaded: false
     };
-    $scope.project = ProjectsResource.get($stateParams);
+    $scope.project = ProjectResource.get($stateParams);
     $scope.editMode = {
       allowEditing: false
     };

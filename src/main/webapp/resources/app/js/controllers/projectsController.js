@@ -1,16 +1,16 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$scope', '$window', '$location', 'ProjectsResource', 'TrialverseResource'];
-  var ProjectsController = function($scope, $window, $location, ProjectsResource, TrialverseResource) {
+  var dependencies = ['$scope', '$window', '$location', 'ProjectResource', 'TrialverseResource'];
+  var ProjectsController = function($scope, $window, $location, ProjectResource, TrialverseResource) {
     $scope.user = $window.config.user;
-    $scope.projects = ProjectsResource.query();
+    $scope.projects = ProjectResource.query();
     $scope.trialverse = TrialverseResource.query();
 
     $scope.createProject = function (newProject) {
       // clear modal form by resetting model in current scope
       this.model = {};
-      ProjectsResource.save(newProject, function(savedProject) {
-        $scope.projects = ProjectsResource.query(function(){
+      ProjectResource.save(newProject, function(savedProject) {
+        $scope.projects = ProjectResource.query(function(){
           $scope.createProjectModal.close();
         });
       });

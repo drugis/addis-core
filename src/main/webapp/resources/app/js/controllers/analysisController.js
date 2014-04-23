@@ -1,12 +1,12 @@
 'use strict';
 define(['underscore'], function() {
   var dependencies = ['$scope', '$stateParams', '$state', '$q', '$window',
-    'ProjectsResource', 'OutcomeResource', 'InterventionResource',
+    'ProjectResource', 'OutcomeResource', 'InterventionResource',
     'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'AnalysisService', 'DEFAULT_VIEW',
     'currentAnalysis'
   ];
   var AnalysisController = function($scope, $stateParams, $state, $q, $window,
-    ProjectsResource, OutcomeResource, InterventionResource,
+    ProjectResource, OutcomeResource, InterventionResource,
     Select2UtilService, TrialverseStudyResource, ProblemResource, AnalysisService, DEFAULT_VIEW,
     currentAnalysis) {
 
@@ -18,7 +18,7 @@ define(['underscore'], function() {
       disableEditing: true
     };
 
-    $scope.project = ProjectsResource.get($stateParams);
+    $scope.project = ProjectResource.get($stateParams);
     $scope.analysis = currentAnalysis;
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.interventions = InterventionResource.query($stateParams);

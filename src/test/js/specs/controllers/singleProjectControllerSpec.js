@@ -4,7 +4,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
 
     var scope, state, window,
       projectDeferred, analysisDeferred, studiesDeferred,
-      projectsResource, trialverseResource, semanticOutcomeResource, semanticInterventionResource,
+      projectResource, trialverseResource, semanticOutcomeResource, semanticInterventionResource,
       outcomeResource, interventionResource, analysisResource, trialverseStudyResource,
       mockSemanticOutcomes, mockSemanticInterventions,
       mockProject = {
@@ -43,8 +43,8 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
 
       mockSemanticOutcomes = ["a", "b", 'c'];
       mockSemanticInterventions = ["e", "f", 'g'];
-      projectsResource = jasmine.createSpyObj('projectsResource', ['get', 'save']);
-      projectsResource.get.and.returnValue(mockProject);
+      projectResource = jasmine.createSpyObj('projectResource', ['get', 'save']);
+      projectResource.get.and.returnValue(mockProject);
       trialverseResource = jasmine.createSpyObj('trialverseResource', ['get']);
       trialverseResource.get.and.returnValue(mockTrialverse);
       semanticOutcomeResource = jasmine.createSpyObj('semanticOutcomeResource', ['query']);
@@ -88,7 +88,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
         $window: window,
         $state: state,
         $stateParams: mockStateParams,
-        'ProjectsResource': projectsResource,
+        'ProjectResource': projectResource,
         'TrialverseResource': trialverseResource,
         'SemanticOutcomeResource': semanticOutcomeResource,
         'OutcomeResource': outcomeResource,
@@ -101,7 +101,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
     }));
 
     it('should place project information on the scope', function () {
-      expect(projectsResource.get).toHaveBeenCalledWith({
+      expect(projectResource.get).toHaveBeenCalledWith({
         projectId: mockProject.id
       });
       expect(scope.project).toEqual(mockProject);

@@ -88,10 +88,15 @@ define(
               currentAnalysis: ['$stateParams', 'AnalysisResource',
                 function ($stateParams, AnalysisResource) {
                   return AnalysisResource.get($stateParams);
+                }],
+              currentProject: ['$stateParams', 'ProjectResource',
+                function ($stateParams, ProjectResource) {
+                  return ProjectResource.get($stateParams);
                 }]
             },
-            controller: function ($scope, currentAnalysis) {
+            controller: function ($scope, currentAnalysis, currentProject) {
               $scope.analysis = currentAnalysis;
+              $scope.project = currentProject;
             },
             abstract: true
           })
