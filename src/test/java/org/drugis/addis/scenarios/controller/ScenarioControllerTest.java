@@ -131,4 +131,18 @@ public class ScenarioControllerTest {
     verify(scenarioRepository).update(scenario.getId(), scenario.getTitle(), scenario.getState());
   }
 
+  @Test
+  public void testCreate() throws Exception {
+    Integer projectId = 1;
+    Integer analysisId = 1;
+    Scenario scenario = new Scenario(1, "Default", new State("{\"key\":\"value\"}"));
+    String content = TestUtils.createJson(scenario);
+    mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios/")
+      .content(content).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8)).andExpect(status().isOk());
+
+    verify(scenarioService).checkCoordinates(projectId, analysisId, scenario);
+    verify(projectService).checkOwnership(projectId, user);
+    verify(scenarioRepository).create(analysisId, scenario.getTitle(), new State(scenario.getState()));
+  }
+
 }

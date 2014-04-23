@@ -1,5 +1,6 @@
 package org.drugis.addis.scenarios.controller;
 
+import org.drugis.addis.analyses.State;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -45,10 +46,20 @@ public class ScenarioController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios/{scenarioId}", method = RequestMethod.POST)
   @ResponseBody
-  public Scenario update(Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody Scenario scenario) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public Scenario update(Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody Scenario scenario)
+    throws ResourceDoesNotExistException, MethodNotAllowedException {
     scenarioService.checkCoordinates(projectId, analysisId, scenario);
     projectService.checkOwnership(projectId, principal);
     return scenarioRepository.update(scenario.getId(), scenario.getTitle(), scenario.getState());
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios", method = RequestMethod.POST)
+  @ResponseBody
+  public Scenario create(Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody Scenario scenario)
+    throws ResourceDoesNotExistException, MethodNotAllowedException {
+    scenarioService.checkCoordinates(projectId, analysisId, scenario);
+    projectService.checkOwnership(projectId, principal);
+    return scenarioRepository.create(analysisId, scenario.getTitle(), new State(scenario.getState()));
   }
 
 }

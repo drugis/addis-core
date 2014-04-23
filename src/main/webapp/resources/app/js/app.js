@@ -113,7 +113,7 @@ define(
                 return currentWorkspace.getScenario($stateParams.scenarioId);
               }
             },
-            controller: 'WorkspaceController'
+            controller: 'ScenarioController'
           });
 
         _.each(Tasks.available, function (task) {
