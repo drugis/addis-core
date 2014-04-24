@@ -99,7 +99,7 @@ define(
                 }],
               currentProject: ['$stateParams', 'ProjectResource',
                 function ($stateParams, ProjectResource) {
-                  return ProjectResource.get($stateParams);
+                  return ProjectResource.get({projectId: $stateParams.projectId});
                 }]
             },
             controller: function ($scope, currentAnalysis, currentProject) {
