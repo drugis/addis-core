@@ -18,23 +18,27 @@ define(['angular'], function() {
     };
 
     var keyify = function(input) {
-      return input.replace(/[^a-zA-Z0-9 ]/g, '').replace(/ /g, '-').toLowerCase();
+      var output =  input.replace(/[^a-zA-Z0-9 ]/g, '').replace(/ /g, '-').toLowerCase();
+      return output;
     };
 
     var verifyCell = function(performanceEntry, outcome, intervention) {
-      return performanceEntry[keyify(outcome.name)] && performanceEntry[keyify(intervention.name)];
+      var result = performanceEntry.criterion === keyify(outcome.name) && performanceEntry.alternative === keyify(intervention.name);
+      return result;
     };
 
     var findPerformanceEntry = function(performanceTable, outcome, intervention) {
-      return _.find(performanceTable, function(performanceEntry) {
-        return verifyCell(performanceEntry, outcome, intervention);;
+      var result =  _.find(performanceTable, function(performanceEntry) {
+        return verifyCell(performanceEntry, outcome, intervention);
       });
+      return result;
     };
 
     var checkAllInterventionsForOutcome = function(performanceTable, outcome, selectedInterventions) {
-      return _.every(selectedInterventions, function(intervention) {
+      var result =  _.every(selectedInterventions, function(intervention) {
         return findPerformanceEntry(performanceTable, outcome, intervention);
       });
+      return result;
     };
 
     var validateProblem = function(analysis, problem) {

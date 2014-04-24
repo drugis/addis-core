@@ -152,27 +152,27 @@ define(['angular', 'angular-mocks', 'services'], function() {
             }, {
               name: 'intervention2'
             }]
-          }
+          };
           var problem = {
             performanceTable: [{}]
           };
           expect(AnalysisService.validateProblem(analysis, problem)).toBeFalsy();
           problem = {
             performanceTable: [{
-              'intervention1': 'value',
-              'outcome1': 'value'
+              'alternative': 'intervention1',
+              'criterion': 'outcome1'
             }, {
-              'intervention1': 'value',
-              'outcome2': 'value'
+              'alternative': 'intervention1',
+              'criterion': 'outcome2'
             }, {
-              'intervention2': 'value',
-              'outcome1': 'value'
+              'alternative': 'intervention2',
+              'criterion': 'outcome1'
             }]
           };
           expect(AnalysisService.validateProblem(analysis, problem)).toBeFalsy();
           problem.performanceTable.push({
-            'intervention2': 'value',
-            'outcome2': 'value'
+            'alternative': 'intervention2',
+            'criterion': 'outcome2'
           });
           expect(AnalysisService.validateProblem(analysis, problem)).toBeTruthy();
         }));
@@ -197,6 +197,6 @@ define(['angular', 'angular-mocks', 'services'], function() {
       it('should convert upper case to lowercase', inject(function(AnalysisService) {
         expect(AnalysisService.keyify('IM NOT SHOUTING')).toBe('im-not-shouting');
       }));
-    })
+    });
   });
 });
