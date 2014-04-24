@@ -1,41 +1,62 @@
 'use strict';
 define(['underscore'], function() {
   var dependencies = ['$scope', '$stateParams', '$state', '$q', '$window',
-    'ProjectResource', 'OutcomeResource', 'InterventionResource',
-    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'AnalysisService', 'DEFAULT_VIEW',
-    'currentAnalysis'
+    'OutcomeResource', 'InterventionResource',
+    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'AnalysisService', 'DEFAULT_VIEW'
   ];
   var AnalysisController = function($scope, $stateParams, $state, $q, $window,
-    ProjectResource, OutcomeResource, InterventionResource,
-    Select2UtilService, TrialverseStudyResource, ProblemResource, AnalysisService, DEFAULT_VIEW,
-    currentAnalysis) {
+    OutcomeResource, InterventionResource,
+    Select2UtilService, TrialverseStudyResource, ProblemResource, AnalysisService, DEFAULT_VIEW) {
 
+    var projectIdParam = {
+      projectId: $stateParams.projectId
+    };
+
+    var outcomes = OutcomeResource.query(projectIdParam);
+    var interventions = InterventionResource.query(projectIdParam);
+    var userIsOwner;
+
+    var initialiseOutcomes = function(outcomes) {
+      $scope.outcomes = outcomes;
+      $scope.selectedOutcomeIds = Select2UtilService.objectsToIds($scope.analysis.selectedOutcomes);
+      $scope.$watchCollection('selectedOutcomeIds', function(newValue) {
+        if (newValue.length !== $scope.analysis.selectedOutcomes.length) {
+          $scope.analysis.selectedOutcomes = Select2UtilService.idsToObjects($scope.selectedOutcomeIds, $scope.outcomes);
+          $scope.isValidAnalysis = AnalysisService.validateAnalysis($scope.analysis);
+          $scope.errorMessage = {};
+          $scope.analysis.$save();
+        }
+      });
+    };
+
+    var initialiseInterventions = function(interventions) {
+      $scope.interventions = interventions;
+      $scope.selectedInterventionIds = Select2UtilService.objectsToIds($scope.analysis.selectedInterventions);
+      $scope.$watchCollection('selectedInterventionIds', function(newValue) {
+        if (newValue.length !== $scope.analysis.selectedInterventions.length) {
+          $scope.analysis.selectedInterventions = Select2UtilService.idsToObjects($scope.selectedInterventionIds, $scope.interventions);
+          $scope.isValidAnalysis = AnalysisService.validateAnalysis($scope.analysis);
+          $scope.errorMessage = {};
+          $scope.analysis.$save();
+        }
+      });
+    };
+
+    $scope.analysis = $scope.$parent.analysis;
+    $scope.project = $scope.$parent.project;
     $scope.$parent.loading = {
       loaded: false
     };
-
     $scope.editMode = {
-      disableEditing: true
+      disableEditing: false
     };
-
-    $scope.project = ProjectResource.get($stateParams);
-    $scope.analysis = currentAnalysis;
-    $scope.outcomes = OutcomeResource.query($stateParams);
-    $scope.interventions = InterventionResource.query($stateParams);
-    $scope.selectedOutcomeIds = [];
-    $scope.selectedInterventionIds = [];
     $scope.isProblemDefined = false;
     $scope.isValidAnalysis = false;
     $scope.errorMessage = {};
 
-    $q.all([
-      $scope.project.$promise,
-      $scope.analysis.$promise
-    ]).then(function() {
-      var userIsOwner;
+    $q.all($scope.analysis, $scope.project).then(function() {
 
       $scope.$parent.loading.loaded = true;
-      $scope.$parent.project = $scope.project;
       $scope.isValidAnalysis = AnalysisService.validateAnalysis($scope.analysis);
       userIsOwner = $window.config.user.id === $scope.project.owner.id;
       if ($scope.analysis.problem) {
@@ -54,27 +75,9 @@ define(['underscore'], function() {
       $scope.studies = TrialverseStudyResource.query({
         id: $scope.project.trialverseId
       });
-      $scope.selectedOutcomeIds = Select2UtilService.objectsToIds($scope.analysis.selectedOutcomes);
-      $scope.selectedInterventionIds = Select2UtilService.objectsToIds($scope.analysis.selectedInterventions);
 
-      $scope.$watchCollection('selectedOutcomeIds', function(newValue) {
-        if (newValue.length !== $scope.analysis.selectedOutcomes.length) {
-          $scope.analysis.selectedOutcomes = Select2UtilService.idsToObjects($scope.selectedOutcomeIds, $scope.outcomes);
-          $scope.isValidAnalysis = AnalysisService.validateAnalysis($scope.analysis);
-          $scope.errorMessage = {};
-          $scope.analysis.$save();
-        }
-      });
-
-      $scope.$watchCollection('selectedInterventionIds', function(newValue) {
-
-        if (newValue.length !== $scope.analysis.selectedInterventions.length) {
-          $scope.analysis.selectedInterventions = Select2UtilService.idsToObjects($scope.selectedInterventionIds, $scope.interventions);
-          $scope.isValidAnalysis = AnalysisService.validateAnalysis($scope.analysis);
-          $scope.errorMessage = {};
-          $scope.analysis.$save();
-        }
-      });
+      outcomes.$promise.then(initialiseOutcomes);
+      interventions.$promise.then(initialiseInterventions);
 
       $scope.$watch('analysis.studyId', function(newValue, oldValue) {
         if (oldValue !== newValue) {
@@ -83,7 +86,6 @@ define(['underscore'], function() {
           $scope.analysis.$save();
         }
       });
-
 
       $scope.goToDefaultScenarioView = function() {
         AnalysisService
@@ -107,11 +109,15 @@ define(['underscore'], function() {
                   });
                 });
             } else {
-              $scope.errorMessage = {text: 'The selected study and the selected citeria/alternatives do not match.'};
+              $scope.errorMessage = {
+                text: 'The selected study and the selected citeria/alternatives do not match.'
+              };
             }
           });
       };
     });
+
+
   };
   return dependencies.concat(AnalysisController);
 });
