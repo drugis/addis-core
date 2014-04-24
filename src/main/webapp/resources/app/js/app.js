@@ -50,6 +50,7 @@ define(
         $rootScope.$on('$viewContentLoaded', function () {
           $(document).foundation();
         });
+
         $rootScope.$safeApply = function ($scope, fn) {
           var phase = $scope.$root.$$phase;
           if (phase === '$apply' || phase === '$digest') {
@@ -59,6 +60,13 @@ define(
             this.$apply(fn);
           }
         };
+
+        $rootScope.$on('patavi.error', function(e, message) {
+          $rootScope.$safeApply($rootScope, function() {
+            $rootScope.error = _.extend(message, { close: function() { delete $rootScope.errors; } });
+        });
+
+      });
       }
     ]);
 
