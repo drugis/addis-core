@@ -46,8 +46,8 @@
     <div class="columns large-12 nested-view">
         <div ng-switch on="isProblemDefined">
             <button ng-disabled="!isValidAnalysis" ng-switch-when="false" ng-click="createProblem()">Perform MCDA Analysis</button>
+            <span  class="error-message">{{errorMessage.text}}</span>
             <button ng-switch-when="true" ng-click="goToDefaultScenarioView()">Go to MCDA Analysis</button>
         </div>
-        {{errorMessage.text}}
     </div>
 </div>

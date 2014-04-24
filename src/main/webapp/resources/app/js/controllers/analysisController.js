@@ -26,6 +26,7 @@ define(['underscore'], function() {
     $scope.selectedInterventionIds = [];
     $scope.isProblemDefined = false;
     $scope.isValidAnalysis = false;
+    $scope.errorMessage = {};
 
     $q.all([
       $scope.project.$promise,
@@ -60,14 +61,17 @@ define(['underscore'], function() {
         if (newValue.length !== $scope.analysis.selectedOutcomes.length) {
           $scope.analysis.selectedOutcomes = Select2UtilService.idsToObjects($scope.selectedOutcomeIds, $scope.outcomes);
           $scope.isValidAnalysis = AnalysisService.validateAnalysis($scope.analysis);
+          $scope.errorMessage = {};
           $scope.analysis.$save();
         }
       });
 
       $scope.$watchCollection('selectedInterventionIds', function(newValue) {
+
         if (newValue.length !== $scope.analysis.selectedInterventions.length) {
           $scope.analysis.selectedInterventions = Select2UtilService.idsToObjects($scope.selectedInterventionIds, $scope.interventions);
           $scope.isValidAnalysis = AnalysisService.validateAnalysis($scope.analysis);
+          $scope.errorMessage = {};
           $scope.analysis.$save();
         }
       });
@@ -75,6 +79,7 @@ define(['underscore'], function() {
       $scope.$watch('analysis.studyId', function(newValue, oldValue) {
         if (oldValue !== newValue) {
           $scope.isValidAnalysis = AnalysisService.validateAnalysis($scope.analysis);
+          $scope.errorMessage = {};
           $scope.analysis.$save();
         }
       });
