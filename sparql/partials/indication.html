@@ -1,0 +1,87 @@
+<div class="row">
+  <div class="columns large-12">
+    <h2>Define indication</h2>
+
+    <form>
+      <div class="row">
+        <div class="large-12 columns">
+          <div class="row">
+            <div class="large-1 columns">
+              <label class="right inline">Search</label>
+            </div>
+            <div class="large-3 columns">
+              <select ng-model="source" ng-options="x.label for (key, x) in restrictions">
+              </select>
+            </div>
+            <div class="large-7 columns">
+              <input type="text" ng-model="searchString"></input>
+            </div>
+            <div class="large-1 columns">
+              <input class="button postfix" type="submit" value="Query" ng-click="query()"></input>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="row">
+      <h4>Selected</h4>
+      <ul class="no-bullet">
+        <li ng-repeat="term in selected">
+          <select ng-model="term.transitive" class="large-2">
+            <option value="transitive">Any subterm of</option>
+            <option value="exact">Exactly</option>
+          </select>
+          {{term.label}}
+          <a class="button tiny alert radius" href="" ng-click="remove(term)">X</a>
+        </li>
+      </ul>
+      <input type="button" value="Count instances in TrialVerse" ng-disabled="!selected.length" ng-click="count()"></input>
+      <span ng-bind="termCount"></span>
+    </div>
+
+    <div class="row">
+      <div class="columns large-12">
+        <div class="row">
+          <div class="columns large-4">
+            <h4>Broader</h4>
+            <ul>
+              <li ng-repeat="term in broader"><a href="" ng-click="setCurrent(term)">{{term.label}}</a></li>
+            </ul>
+          </div>
+          <div class="columns large-4">
+            <h4>Terms</h4>
+            <ul>
+              <li ng-repeat="term in terms">
+                <a ng-class="{active: (term == clicked)}" href="" ng-click="getAdjacent(term)">{{term.label}}</a>
+                <a class="button tiny success radius" href="" ng-click="add(term)">+</a>
+               </li>
+            </ul>
+          </div>
+          <div class="columns large-4">
+            <h4>Narrower</h4>
+            <ul>
+              <li ng-repeat="term in narrower"><a href="" ng-click="setCurrent(term)">{{term.label}}</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Debug</h2>
+
+    <textarea style="height: 300px" ng-model="sparql" readonly></textarea>
+
+    <table>
+      <tr>
+        <th>Disease URI</th>
+        <th>Disease Label</th>
+      </tr>
+      <tr ng-repeat="entry in data">
+        <td>{{entry.uri}}</td>
+        <td>{{entry.label}}</td>
+      </tr>
+    </table>
+
+  </div>
+</div>

@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import lombok.Data;
 
 import org.drugis.common.hibernate.PostgresEnumConverter;
+import org.drugis.trialverse.study.types.EpochOffsetType;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -23,14 +24,14 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 @Data
 @TypeDefs({
 	@TypeDef(name="epochOffsetType", typeClass=PostgresEnumConverter.class,
-			parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.EpochOffsetType")}),
+			parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.types.EpochOffsetType")}),
 	@TypeDef(name="interval", typeClass = org.drugis.trialverse.jpa.types.Interval.class)
 })
 public class MeasurementMoment {
-	@EmbeddedId @JsonUnwrapped MeasurementMomentPK measurementMomentPK;
-	@Column String epochName;
-	@Column Boolean isPrimary;
-	@Column @Type(type="epochOffsetType") EpochOffsetType beforeEpoch;
+	@EmbeddedId @JsonUnwrapped private MeasurementMomentPK key;
+	@Column private String epochName;
+	@Column private Boolean isPrimary;
+	@Column @Type(type="epochOffsetType") private EpochOffsetType beforeEpoch;
 
 	@Column
 	@Type(type = "interval")

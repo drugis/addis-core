@@ -11,3 +11,4 @@ dbms/*Example.sql
 /addis2.log
 /trialverse.log
 /studies
+*.swp

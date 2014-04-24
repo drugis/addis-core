@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.drugis.trialverse.concept.Concept;
 import org.drugis.trialverse.study.Measurement;
 import org.drugis.trialverse.study.MeasurementDao;
 import org.drugis.trialverse.study.Study;
@@ -50,11 +51,9 @@ public class StudiesController {
 				@RequestParam(required=false) final UUID variable,
 				@RequestParam(required=false) final String measurementMoment) {
 		if (variable != null && measurementMoment != null) {
-			System.err.println(variable);
-			System.err.println(measurementMoment);
-			return d_measurements.findByStudyIdAndVariableAndMeasurementMoment(id, variable, measurementMoment);
+			return d_measurements.find(id, new Concept(variable), measurementMoment);
 		} else if (variable == null && measurementMoment == null) {
-			return d_measurements.findByStudyId(id);
+			return d_measurements.find(id);
 		} else {
 			throw new RuntimeException();
 		}
@@ -77,4 +76,11 @@ public class StudiesController {
 		return new ResponseEntity<List<Resource<Study>>>(result, HttpStatus.OK);
 	}
 
+	@RequestMapping("/findVariableMappings")
+	@ResponseBody
+	public Object findVariableMappings(
+			@RequestParam final UUID variable,
+			@RequestParam final List<Long> studies) {
+		return d_studies.findVariableMappings(studies, variable);
+	}
 }

@@ -1,3 +1,0 @@
-#!/bin/sh
-
-exec java -classpath /usr/share/java/saxonb-9.1.0.8.jar net.sf.saxon.Transform "$@"
