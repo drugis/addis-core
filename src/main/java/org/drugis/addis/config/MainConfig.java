@@ -38,6 +38,7 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
+        "org.drugis.addis.error",
   "org.drugis.addis.projects",
   "org.drugis.addis.security",
   "org.drugis.addis.outcomes",

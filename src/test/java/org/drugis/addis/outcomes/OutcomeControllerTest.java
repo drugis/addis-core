@@ -94,7 +94,7 @@ public class OutcomeControllerTest {
   public void testUnauthorisedAccessFails() throws Exception {
     when(accountRepository.findAccountByUsername("gert")).thenReturn(null);
     mockMvc.perform(get("/projects/1/outcomes").principal(user))
-      .andExpect(redirectedUrl("/error/403"));
+            .andExpect(status().isForbidden());
     verify(accountRepository).findAccountByUsername("gert");
   }
 

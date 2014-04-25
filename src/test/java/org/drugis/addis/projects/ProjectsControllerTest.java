@@ -168,7 +168,7 @@ public class ProjectsControllerTest {
     int projectId = 1;
     when(projectRepository.getProjectById(projectId)).thenThrow(new ResourceDoesNotExistException());
     mockMvc.perform(get("/projects/1").principal(user))
-            .andExpect(redirectedUrl("/error/404"));
+            .andExpect(status().isNotFound());
     verify(projectRepository).getProjectById(projectId);
   }
 

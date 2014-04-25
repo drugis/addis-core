@@ -107,7 +107,7 @@ public class AnalysisControllerTest {
   public void testUnauthorisedAccessFails() throws Exception {
     when(accountRepository.findAccountByUsername("gert")).thenReturn(null);
     mockMvc.perform(get("/projects/1/analyses").principal(user))
-            .andExpect(redirectedUrl("/error/403"));
+            .andExpect(status().isForbidden());
     verify(accountRepository).findAccountByUsername("gert");
   }
 
@@ -221,7 +221,7 @@ public class AnalysisControllerTest {
             .content(exampleUpdateRequestWithProblem())
             .principal(user)
             .contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(redirectedUrl("/error/403"));
+            .andExpect(status().isForbidden());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(projectId, analysisId);
   }
