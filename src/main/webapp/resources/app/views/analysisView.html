@@ -1,0 +1,67 @@
+<div class="row">
+  <div class="columns large-6 nested-view">
+    <div class="panel callout radius">
+      Choose criteria and alternatives to use in your analysis, and the study from which to extract data.
+    </diV>
+  </div>
+</div>
+<div class="row">
+  <div class="columns large-12 nested-view">
+    <div class="nested-view-header">
+      Selected Criteria
+    </div>
+    <div class="row">
+      <div class="columns large-6 nested-view">
+        <select id="criteriaSelect" multiple ui-select2 ng-model="selectedOutcomeIds" data-placeholder="no criteria selected">
+          <option ng-repeat="outcome in outcomes" value={{outcome.id}}>{{outcome.name}}</option>
+        </select>
+        <div class="panel callout radius">
+          Note that at least two criteria should be selected so that a tradeoff can be made.
+        </diV>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="columns large-12 nested-view">
+    <div class="nested-view-header">
+      Selected Alternatives
+    </div>
+    <div class="row">
+      <div class="columns large-6 nested-view">
+        <select id="interventionsSelect" multiple ui-select2 ng-model="selectedInterventionIds" data-placeholder="no interventions selected">
+          <option ng-repeat="intervention in interventions" value={{intervention.id}}>{{intervention.name}}</option>
+        </select>
+        <div class="panel callout radius">
+          Note that at least two interventions should be selected so that a tradeoff can be made.
+        </diV>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="columns large-12 nested-view">
+    <div class="row">
+      <div class="columns large-6 nested-view">
+        <div class="nested-view-header">
+          Selected Study
+        </div>
+        <select ng-model="analysis.studyId" ng-disabled="editMode.disableEditing" ng-options="study.id as study.name for study in studies | orderBy:'name'">
+        </select>
+        <div class="panel callout radius">
+          <span class="alert round label">Placeholder</span>
+          Choose from which study to take the data for analysis. Note that the selected study must contain data for each of the selected outcomes and alternatives. Currently the system will not allow creation of an analysis if this is not the case. In future releases there will be more informative feedback about problems with the selections.
+        </diV>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="columns large-12 nested-view">
+    <div ng-switch on="isProblemDefined">
+      <button ng-disabled="!isValidAnalysis" ng-switch-when="false" ng-click="createProblem()">Perform MCDA Analysis</button>
+      <span class="error-message">{{errorMessage.text}}</span>
+      <button ng-switch-when="true" ng-click="goToDefaultScenarioView()">Go to MCDA Analysis</button>
+    </div>
+  </div>
+</div>

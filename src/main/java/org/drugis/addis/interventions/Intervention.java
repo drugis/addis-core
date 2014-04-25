@@ -2,10 +2,7 @@ package org.drugis.addis.interventions;
 
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by daan on 3/6/14.

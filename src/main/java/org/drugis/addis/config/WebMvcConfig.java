@@ -28,16 +28,17 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 @Configuration
 @EnableWebMvc
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
-	@Bean
-	public ViewResolver viewResolver() {
-		UrlBasedViewResolver viewResolver = new InternalResourceViewResolver();
-		viewResolver.setViewClass(JstlView.class);
-		viewResolver.setPrefix("/WEB-INF/views/");
-		viewResolver.setSuffix(".jsp");
-		return viewResolver;
-	}
+  @Bean
+  public ViewResolver viewResolver() {
+    UrlBasedViewResolver viewResolver = new InternalResourceViewResolver();
+    viewResolver.setViewClass(JstlView.class);
+    viewResolver.setPrefix("/WEB-INF/views/");
+    viewResolver.setSuffix(".jsp");
+    return viewResolver;
+  }
 
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/app/**").addResourceLocations("/resources/app/");
-	}
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    registry.addResourceHandler("/app/**").addResourceLocations("/resources/app/");
+    registry.addResourceHandler("/mcda/**").addResourceLocations("resources/mcda/");
+  }
 }

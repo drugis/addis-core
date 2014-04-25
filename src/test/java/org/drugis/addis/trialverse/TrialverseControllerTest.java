@@ -4,9 +4,10 @@ package org.drugis.addis.trialverse;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.model.Namespace;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
-import org.drugis.addis.trialverse.model.Trialverse;
+import org.drugis.addis.trialverse.model.Study;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
@@ -70,10 +71,10 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetNamespaces() throws Exception {
-    Trialverse trialverse1 = new Trialverse(1L, "a", "descra");
-    Trialverse trialverse2 = new Trialverse(2L, "b", "descrb");
-    Collection<Trialverse> trialverseCollection = Arrays.asList(trialverse1, trialverse2);
-    when(trialverseRepository.query()).thenReturn(trialverseCollection);
+    Namespace namespace1 = new Namespace(1L, "a", "descra");
+    Namespace namespace2 = new Namespace(2L, "b", "descrb");
+    Collection<Namespace> namespaceCollection = Arrays.asList(namespace1, namespace2);
+    when(trialverseRepository.query()).thenReturn(namespaceCollection);
     mockMvc.perform(get("/namespaces").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
@@ -84,8 +85,8 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetNamespaceById() throws Exception {
-    Trialverse trialverse1 = new Trialverse(1L, "a", "descrea");
-    when(trialverseRepository.get(1L)).thenReturn(trialverse1);
+    Namespace namespace1 = new Namespace(1L, "a", "descrea");
+    when(trialverseRepository.get(1L)).thenReturn(namespace1);
     mockMvc.perform(get("/namespaces/1").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
@@ -115,6 +116,20 @@ public class TrialverseControllerTest {
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0].uri", is(testIntervention.getUri())));
     verify(triplestoreService).getInterventions(namespaceId);
+  }
+
+  @Test
+  public void testQuerySemanticStudies() throws Exception {
+    Long namespaceId = 1L;
+    Study study = new Study(1L, "name", "this is a title");
+    when(trialverseRepository.queryStudies(namespaceId)).thenReturn(Arrays.asList(study));
+    mockMvc.perform(get("/namespaces/" + namespaceId + "/studies").principal(user))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$[0].id", is(1)))
+      .andExpect(jsonPath("$[0].name", is(study.getName())))
+      .andExpect(jsonPath("$[0].title", is(study.getTitle())));
+    verify(trialverseRepository).queryStudies(namespaceId);
   }
 
   @Test

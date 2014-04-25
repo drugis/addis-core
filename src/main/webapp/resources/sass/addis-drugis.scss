@@ -49,11 +49,24 @@ label {
 }
 
 .nested-view li.colored-row {
-  background-color: $addis-grey;
+ background: $addis-grey;
   margin-bottom: 10px;
   padding: 0.5rem 0.25rem 0.5rem 0.5rem;
 }
 
-.table-header h3,h4,h5 {
-    text-align: center;
+.error-message {
+  display: block;
+  color: $drugis-color;
 }
+
+// tables
+// lighten the darken on hover 
+tr.on-hover:hover {
+  background: darken($secondary-color, 5%);
+}
+
+tr.clickable td {
+  color: $primary-color
+}
+
+

@@ -4,6 +4,7 @@ import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.security.Account;
 import org.junit.Test;
@@ -39,23 +40,33 @@ public class AnalysisRepositoryTest {
   @Test
   public void testQuery() {
     Collection<Analysis> analyses = analysisRepository.query(1);
-    assertEquals(2, analyses.size());
+    assertEquals(3, analyses.size());
     analyses = analysisRepository.query(2);
     assertEquals(1, analyses.size());
   }
 
   @Test
   public void testCreate() throws ResourceDoesNotExistException, MethodNotAllowedException {
-    AnalysisCommand analysisCommand = new AnalysisCommand(1, "newName", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
+    int projectId = 1;
+    AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "newName", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
     Account user = em.find(Account.class, 1);
     Analysis result = analysisRepository.create(user, analysisCommand);
-    assertTrue(analysisRepository.query(1).contains(result));
+    assertTrue(analysisRepository.query(projectId).contains(result));
+    assertEquals(null, result.getProblem());
   }
 
   @Test
   public void testGet() throws ResourceDoesNotExistException, MethodNotAllowedException {
-    Analysis analysis = analysisRepository.get(1, 1);
-    assertEquals(em.find(Analysis.class, 1), analysis);
+    int projectId = 1;
+    int analysisId = 1;
+    Analysis analysis = analysisRepository.get(projectId, analysisId);
+    assertEquals(em.find(Analysis.class, analysisId), analysis);
+    assertEquals(null, analysis.getProblem());
+
+    analysisId = 4;
+    analysis = analysisRepository.get(projectId, analysisId);
+    assertEquals(em.find(Analysis.class, analysisId), analysis);
+    assertEquals("problem", analysis.getProblem());
   }
 
   @Test
@@ -63,8 +74,8 @@ public class AnalysisRepositoryTest {
     Integer analysisId = 1;
     Account user = em.find(Account.class, 1);
     Integer projectId = 1;
-    Analysis analysis = new Analysis(analysisId, projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST);
-    Analysis updatedAnalysis = analysisRepository.update(user, analysisId, analysis);
+    Analysis analysis = new Analysis(analysisId, projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    Analysis updatedAnalysis = analysisRepository.update(user, analysis);
     assertEquals(analysis.getProjectId(), updatedAnalysis.getProjectId());
     assertEquals(analysis.getName(), updatedAnalysis.getName());
     assertEquals(analysis.getAnalysisType(), updatedAnalysis.getAnalysisType());
@@ -76,10 +87,12 @@ public class AnalysisRepositoryTest {
     Integer analysisId = 1;
     Account user = em.find(Account.class, 1);
     Integer projectId = 1;
-    Object outcomeId = 1;
+    Integer outcomeId = 1;
+    Integer interventionId = 1;
     List<Outcome> selectedOutcomes = Arrays.asList(em.find(Outcome.class, outcomeId));
-    Analysis analysis = new Analysis(analysisId, projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, selectedOutcomes);
-    Analysis updatedAnalysis = analysisRepository.update(user, analysisId, analysis);
+    List<Intervention> selectedInterventions = Arrays.asList(em.find(Intervention.class, interventionId));
+    Analysis analysis = new Analysis(analysisId, projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, selectedOutcomes, selectedInterventions);
+    Analysis updatedAnalysis = analysisRepository.update(user, analysis);
     Analysis result = em.find(Analysis.class, analysisId);
     assertEquals(analysis.getProjectId(), updatedAnalysis.getProjectId());
     assertEquals(analysis.getName(), updatedAnalysis.getName());
@@ -89,51 +102,73 @@ public class AnalysisRepositoryTest {
   }
 
   @Test
-  public void testSimplerOutcomeMod() throws ResourceDoesNotExistException, MethodNotAllowedException {
-    Account user = em.find(Account.class, 1);
+  public void testUpdateWithInterventions() throws ResourceDoesNotExistException, MethodNotAllowedException {
     Integer analysisId = 1;
+    Account user = em.find(Account.class, 1);
     Integer projectId = 1;
-    Object outcomeId = 1;
-
-    Analysis analysis = analysisRepository.get(projectId, analysisId);
-    analysis.addSelectedOutCome(em.find(Outcome.class, outcomeId));
-    Analysis result = analysisRepository.update(user, analysisId, analysis);
-    assertEquals(1, result.getSelectedOutcomes().size());
-
-    analysis = analysisRepository.get(projectId, analysisId);
-
+    Integer interventionId = 1;
+    List<Intervention> selectedInterventions = Arrays.asList(em.find(Intervention.class, interventionId));
+    Analysis analysis = new Analysis(analysisId, projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, selectedInterventions);
+    Analysis updatedAnalysis = analysisRepository.update(user, analysis);
+    Analysis result = em.find(Analysis.class, analysisId);
+    assertEquals(analysis.getSelectedInterventions(), updatedAnalysis.getSelectedInterventions());
+    assertEquals(updatedAnalysis, result);
   }
 
-//  @Test(expected = ResourceDoesNotExistException.class)
-//  public void testUpdateInWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
-//    Account user = em.find(Account.class, 1);
-//    int projectId = 3;
-//    AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL, Arrays.asList(1, 2));
-//    analysisRepository.update(user, projectId, analysisCommand);
-//  }
-//
-//  @Test(expected = MethodNotAllowedException.class)
-//  public void testUpdateNotOwnedProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
-//    Account user = em.find(Account.class, 1);
-//    int notOwnedProjectId = 2;
-//    AnalysisCommand analysisCommand = new AnalysisCommand(notOwnedProjectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL, Arrays.asList(1, 2));
-//    int analysisId = 3;
-//    analysisRepository.update(user, analysisId, analysisCommand);
-//  }
-//
-//  @Test(expected = ResourceDoesNotExistException.class)
-//  public void testUpdateAnalysisWithNonProjectOutcome() throws ResourceDoesNotExistException, MethodNotAllowedException {
-//    Account user = em.find(Account.class, 2);
-//    int projectId = 2;
-//    int analysisId = 3;
-//    AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL, Arrays.asList(2));
-//    analysisRepository.update(user, analysisId, analysisCommand);
-//  }
+  @Test
+  public void testupdateWithProblem() throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Integer analysisId = 1;
+    String problem = "problem";
+    Account user = em.find(Account.class, 1);
+    Analysis analysis = new Analysis(
+      analysisId, 1, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST, problem);
+    Analysis updatedAnalysis = analysisRepository.update(user, analysis);
+    Analysis result = em.find(Analysis.class, analysisId);
+    assertEquals(problem, updatedAnalysis.getProblem());
+    assertEquals(updatedAnalysis, result);
+  }
+
+  @Test(expected = ResourceDoesNotExistException.class)
+  public void testUpdateInWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Account user = em.find(Account.class, 1);
+    int projectId = 3;
+    Outcome outcome1 = em.find(Outcome.class, 1);
+    Outcome outcome2 = em.find(Outcome.class, 2);
+    Analysis analysis = new Analysis(1, projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Arrays.asList(outcome1, outcome2), Collections.EMPTY_LIST);
+    analysisRepository.update(user, analysis);
+  }
+
+  @Test(expected = MethodNotAllowedException.class)
+  public void testUpdateNotOwnedProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Account user = em.find(Account.class, 1);
+    int notOwnedProjectId = 2;
+    Analysis analysis = new Analysis(notOwnedProjectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    analysisRepository.update(user, analysis);
+  }
+
+  @Test(expected = ResourceDoesNotExistException.class)
+  public void testUpdateAnalysisWithNonProjectOutcome() throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Account user = em.find(Account.class, 2);
+    int projectId = 2;
+    Outcome outcome2 = em.find(Outcome.class, 2);
+    Analysis analysis = new Analysis(3, projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Arrays.asList(outcome2), Collections.EMPTY_LIST);
+    analysisRepository.update(user, analysis);
+  }
+
+  @Test(expected = ResourceDoesNotExistException.class)
+  public void testUpdateAnalysisWithNonProjectIntervention() throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Account user = em.find(Account.class, 2);
+    int projectId = 2;
+    Intervention intervention2 = em.find(Intervention.class, 2);
+    Analysis analysis = new Analysis(3, projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Arrays.asList(intervention2));
+    analysisRepository.update(user, analysis);
+  }
 
   @Test(expected = ResourceDoesNotExistException.class)
   public void testGetFromWrongProjectFails() throws ResourceDoesNotExistException {
     analysisRepository.get(2, 1);
   }
+
 
 
 }

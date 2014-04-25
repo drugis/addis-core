@@ -3,7 +3,6 @@ package org.drugis.addis.interventions;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.interventions.repository.InterventionRepository;
-import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
@@ -95,7 +94,7 @@ public class InterventionControllerTest {
   public void testUnauthorisedAccessFails() throws Exception {
     when(accountRepository.findAccountByUsername("gert")).thenReturn(null);
     mockMvc.perform(get("/projects/1/interventions").principal(user))
-      .andExpect(redirectedUrl("/error/403"));
+            .andExpect(status().isForbidden());
     verify(accountRepository).findAccountByUsername("gert");
   }
 

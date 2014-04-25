@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,18 +17,29 @@ import javax.servlet.http.HttpServletRequest;
 public class AbstractAddisCoreController {
   final static Logger logger = LoggerFactory.getLogger(AbstractAddisCoreController.class);
 
-  @ResponseStatus(HttpStatus.FORBIDDEN)
-  @ExceptionHandler(MethodNotAllowedException.class)
-  public String handleMethodNotAllowed(HttpServletRequest request) {
-    logger.error("Access to resource not authorised.\n{}", request.getRequestURL());
-    return "redirect:/error/403";
+  public static class ErrorResponse {
+    public int code;
+    public String message;
+
+    public ErrorResponse(int code, String message) {
+      this.code = code;
+      this.message = message;
+    }
   }
 
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler(ResourceDoesNotExistException.class)
-  public String handleResourceDoesNotExist(HttpServletRequest request) {
-    logger.error("Access to non-existent resource.\n{}", request.getRequestURL());
-    return "redirect:/error/404";
+  @ResponseBody
+  public ErrorResponse handleResourceDoesNotExist(HttpServletRequest request) {
+    logger.error("Resource not found.\n{}", request.getRequestURL());
+    return new ErrorResponse(404, "Not found");
   }
 
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  @ExceptionHandler(MethodNotAllowedException.class)
+  @ResponseBody
+  public ErrorResponse handleResourceNotOwned(HttpServletRequest request) {
+    logger.error("Access to resource not authorised.\n{}", request.getRequestURL());
+    return new ErrorResponse(403, "Not authorized");
+  }
 }

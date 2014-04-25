@@ -1,14 +1,12 @@
 <ul ng-show="loading.loaded" class="breadcrumbs">
-  <li><a href="#/projects">Projects</a></li>
+  <li><a href="#/projects">Projects</a>
+  </li>
   <li class="current active">{{project.name}}</li>
 </ul>
-
 <div class="project-header row">
   <div class="columns large-12">
     <h1 class="inline-header" title="Project title">{{project.name}}</h1>
-
     <h3 class="subheader inline-header" title="Trialverse namespace">/ {{trialverse.name}}</h3>
-
     <div class="row">
       <div class="columns large-6 small-12">
         <p class="project-description" title="Project description">{{project.description}}</p>
@@ -16,192 +14,213 @@
     </div>
   </div>
 </div>
-
 <div class="row">
   <!-- Outcomes -->
   <div class="nested-view columns large-6">
     <div class="nested-view-header">
       Outcomes
       <button ng-show="editMode.allowEditing" class="small" ng-click="createOutcomeModal.open()"><i
-          class="fa fa-plus"></i> Add outcome
+      class="fa fa-plus"></i> Add outcome
       </button>
     </div>
-    <div class="list-wrapper">
-    <ul class="no-bullet">
-      <li data-tooltip class="colored-row has-tip" ng-repeat="outcome in outcomes"
-          title="{{outcome.motivation}}">
-        <div class="row">
-          <div class="columns large-6">{{outcome.name}} </div>
-          <div class="columns large-6">{{outcome.semanticOutcomeLabel}} </div>
-        </div>
-        </li>
-    </ul>
+
+    <div class="panel callout radius">
+      <span class="alert round label">Placeholder input</span>
+      Define outcomes to use in analyses within this project, based on semantic outcomes from the Trialverse namespace. Currently only one semantic outcome can be selected per outcome. This will be expanded in a future release.
     </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th class="large-1">Name</th>
+          <th class="large-3">Definition</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="outcome in outcomes" data-tooltip class="colored-row has-tip" title="{{outcome.motivation}}">
+          <td>{{outcome.name}}</td>
+          <td>{{outcome.semanticOutcomeLabel}}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <!-- Interventions -->
-  <div class="nested-view columns large-6 border">
+  <div class="nested-view columns large-6">
     <div class="nested-view-header">
       Interventions
       <button ng-show="editMode.allowEditing" class="small" ng-click="createInterventionModal.open()"><i
-          class="fa fa-plus"></i> Add intervention
+      class="fa fa-plus"></i> Add intervention
       </button>
     </div>
-    <ul class="no-bullet">
-      <li data-tooltip class="colored-row has-tip" ng-repeat="intervention in interventions"
-          title="{{intervention.motivation}}">
-        <div class="row">
-          <div class="columns large-6">{{intervention.name}} </div>
-          <div class="columns large-6">{{intervention.semanticInterventionLabel}} </div>
-        </div>
-        </li>
-    </ul>
+
+    <div class="panel callout radius">
+      <span class="alert round label">Placeholder input</span>
+      Define interventions to use in analyses within this project, based on semantic interventions from the Trialverse namespace. Currently only one semantic intervention can be selected per intervention. This will be expanded in a future release.
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="large-1">Name</th>
+          <th class="large-3">Definition</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="intervention in interventions" data-tooltip class="colored-row has-tip" title="{{intervention.motivation}}">
+          <td>{{intervention.name}}</td>
+          <td>{{intervention.semanticInterventionLabel}}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-
 </div>
-
 <!-- Analyses -->
-<!--<div class="row">-->
-<!--<div class="columns large-12 border">-->
+<div class="row">
+  <div class="columns large-12  nested-view">
+    <div class="nested-view-header">
+      Analyses
+      <button ng-show="editMode.allowEditing" class="small" ng-click="createAnalysisModal.open()"><i
+      class="fa fa-plus"></i> Add Analysis
+      </button>
+    </div>
 
-<div class="nested-view columns large-12 border">
-  <div class="row nested-view-header">
-    Analyses
-    <button ng-show="editMode.allowEditing" class="small" ng-click="createAnalysisModal.open()"><i
-        class="fa fa-plus"></i> Add Analysis
-    </button>
+    <div class="panel callout radius">
+      Create an analysis on the basis of the defined outcomes and interventions, and the data in the project's trialverse namespace.
+    </div>
   </div>
 </div>
-
-    <ul class="no-bullet">
-      <li class="row colored-row" ng-repeat="analysis in analyses">
-        <a href="#/projects/{{project.id}}/analyses/{{analysis.id}}">
-          <span class="columns large-4">{{analysis.name}} </span>
-          <span class="columns large-4">{{analysis.analysisType}} </span>
-          <span class="columns large-4">{{analysis.study}} </span>
-        </a>
-      </li>
-    </ul>
-
+<div class="row">
+  <div class="columns large-12">
+    <table>
+      <thead>
+        <tr>
+          <th class="large-5">Name</th>
+          <th class="large-4">Analysis type</th>
+          <th>Data source</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="clickable on-hover" ng-repeat="analysis in analyses" ng-click="goToAnalysis(analysis.id)">
+          <td>{{analysis.name}}</td>
+          <td>{{analysis.analysisType}}</td>
+          <td>{{(studies | filter:{id: analysis.studyId}:true)[0].name}}</td>
+          </a>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
-
-
 <!-- Outcomes modal -->
 <modal model="createOutcomeModal">
-  <h3>Add a new outcome</h3>
-
-  <form name="outcomeForm">
-    <div class="row">
-      <div class="large-10 columns">
-        <label>Name
-          <input type="text" ng-model="model.name">
-        </label>
-      </div>
+<h3>Add a new outcome</h3>
+<form name="outcomeForm">
+  <div class="row">
+    <div class="large-10 columns">
+      <label>Name
+        <input type="text" ng-model="model.name">
+      </label>
     </div>
-    <div class="row">
-      <div class="large-10 columns">
-        <label>Motivation
-          <textarea rows="4" ng-model="model.motivation"></textarea>
-        </label>
-      </div>
+  </div>
+  <div class="row">
+    <div class="large-10 columns">
+      <label>Motivation
+        <textarea rows="4" ng-model="model.motivation"></textarea>
+      </label>
     </div>
-    <div class="row">
-      <div class="large-10 columns">
-        <label>Semantic outcome
-          <select ng-model="model.semanticOutcome"
-                  ng-options="semanticOutcome as semanticOutcome.label for semanticOutcome in semanticOutcomes | orderBy:'label'"></select>
-        </label>
-      </div>
+  </div>
+  <div class="row">
+    <div class="large-10 columns">
+      <label>Semantic outcome
+        <select ng-model="model.semanticOutcome"
+        ng-options="semanticOutcome as semanticOutcome.label for semanticOutcome in semanticOutcomes | orderBy:'label'"></select>
+      </label>
     </div>
-    <div class="row">
-      <ul class="button-group">
-        <li>
-          <button class="button small secondary" ng-click="createOutcomeModal.close()">Cancel</button>
-        </li>
-        <li>
-          <button class="button small success" ng-disabled="!model.name || !model.semanticOutcome"
-                  ng-click="addOutcome(model)">Add outcome
-          </button>
-        </li>
-      </ul>
-    </div>
-  </form>
+  </div>
+  <div class="row">
+    <ul class="button-group">
+      <li>
+        <button class="button small secondary" ng-click="createOutcomeModal.close()">Cancel</button>
+      </li>
+      <li>
+        <button class="button small success" ng-disabled="!model.name || !model.semanticOutcome"
+        ng-click="addOutcome(model)">Add outcome
+        </button>
+      </li>
+    </ul>
+  </div>
+</form>
 </modal>
-
 <!-- Interventions modal -->
 <modal model="createInterventionModal">
-  <h3>Add a new intervention</h3>
-
-  <form name="interventionForm">
-    <div class="row">
-      <div class="large-10 columns">
-        <label>Name
-          <input type="text" ng-model="model.name">
-        </label>
-      </div>
+<h3>Add a new intervention</h3>
+<form name="interventionForm">
+  <div class="row">
+    <div class="large-10 columns">
+      <label>Name
+        <input type="text" ng-model="model.name">
+      </label>
     </div>
-    <div class="row">
-      <div class="large-10 columns">
-        <label>Motivation
-          <textarea rows="4" ng-model="model.motivation"></textarea>
-        </label>
-      </div>
+  </div>
+  <div class="row">
+    <div class="large-10 columns">
+      <label>Motivation
+        <textarea rows="4" ng-model="model.motivation"></textarea>
+      </label>
     </div>
-    <div class="row">
-      <div class="large-10 columns">
-        <label>Semantic intervention
-          <select ng-model="model.semanticIntervention"
-                  ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"></select>
-        </label>
-      </div>
+  </div>
+  <div class="row">
+    <div class="large-10 columns">
+      <label>Semantic intervention
+        <select ng-model="model.semanticIntervention"
+        ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"></select>
+      </label>
     </div>
-    <div class="row">
-      <ul class="button-group">
-        <li>
-          <button class="button small secondary" ng-click="createInterventionModal.close()">Cancel</button>
-        </li>
-        <li>
-          <button type="submit" class="button small success" ng-disabled="!model.name || !model.semanticIntervention"
-                  ng-click="addIntervention(model)">Add intervention
-          </button>
-        </li>
-      </ul>
-    </div>
-  </form>
+  </div>
+  <div class="row">
+    <ul class="button-group">
+      <li>
+        <button class="button small secondary" ng-click="createInterventionModal.close()">Cancel</button>
+      </li>
+      <li>
+        <button type="submit" class="button small success" ng-disabled="!model.name || !model.semanticIntervention"
+        ng-click="addIntervention(model)">Add intervention
+        </button>
+      </li>
+    </ul>
+  </div>
+</form>
 </modal>
-
 <!-- Analyses modal -->
 <modal model="createAnalysisModal">
-  <h3>Add a new analysis</h3>
-
-  <form name="analysisForm">
-    <div class="row">
-      <div class="large-10 columns">
-        <label>Name
-          <input type="text" ng-model="model.name">
-        </label>
-      </div>
+<h3>Add a new analysis</h3>
+<form name="analysisForm">
+  <div class="row">
+    <div class="large-10 columns">
+      <label>Name
+        <input type="text" ng-model="model.name">
+      </label>
     </div>
-    <div class="row">
-      <div class="large-10 columns">
-        <label>Type
-          <select ng-init="model.type=analysisTypes[0].label" ng-model="model.type"
-                  ng-options="type.label as type.label for type in analysisTypes"></select>
-        </label>
-      </div>
+  </div>
+  <div class="row">
+    <div class="large-10 columns">
+      <label>Type
+        <select ng-init="model.type=analysisTypes[0].label" ng-model="model.type"
+        ng-options="type.label as type.label for type in analysisTypes"></select>
+      </label>
     </div>
-    <div class="row">
-      <ul class="button-group">
-        <li>
-          <button class="button small secondary" ng-click="createAnalysisModal.close()">Cancel</button>
-        </li>
-        <li>
-          <button class="button small success" ng-disabled="!model.name || !model.type"
-                  ng-click="addAnalysis(model)">Add analysis
-          </button>
-        </li>
-      </ul>
-    </div>
-  </form>
+  </div>
+  <div class="row">
+    <ul class="button-group">
+      <li>
+        <button class="button small secondary" ng-click="createAnalysisModal.close()">Cancel</button>
+      </li>
+      <li>
+        <button class="button small success" ng-disabled="!model.name || !model.type"
+        ng-click="addAnalysis(model)">Add analysis
+        </button>
+      </li>
+    </ul>
+  </div>
+</form>
 </modal>

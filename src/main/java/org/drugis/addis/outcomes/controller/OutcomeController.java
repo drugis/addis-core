@@ -6,7 +6,6 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.OutcomeCommand;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
-import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.springframework.stereotype.Controller;

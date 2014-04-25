@@ -6,8 +6,12 @@ import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.scenarios.Scenario;
+import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -25,10 +29,14 @@ import java.util.Collection;
 @Transactional("ptmAddisCore")
 public class AnalysisController extends AbstractAddisCoreController {
 
+  final static Logger logger = LoggerFactory.getLogger(AnalysisController.class);
+
   @Inject
   AnalysisRepository analysisRepository;
   @Inject
   AccountRepository accountRepository;
+  @Inject
+  private ScenarioRepository scenarioRepository;
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
   @ResponseBody
@@ -69,10 +77,21 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
-  public Analysis update(Principal currentUser, @PathVariable Integer analysisId, @RequestBody Analysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Analysis update(Principal currentUser, @RequestBody Analysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return analysisRepository.update(user, analysisId, analysis);
+      Analysis oldAnalysis = analysisRepository.get(analysis.getProjectId(), analysis.getId());
+      if (oldAnalysis.getProblem() != null) {
+        throw new MethodNotAllowedException();
+      }
+
+      Analysis updatedAnalysis = analysisRepository.update(user, analysis);
+      if (analysis.getProblem() != null) {
+        String state = analysis.getProblem();
+        // problem wrapping in state necessary for mcda-web
+        scenarioRepository.create(analysis.getId(), Scenario.DEFAULT_TITLE, "{\"problem\":" + state + "}");
+      }
+      return updatedAnalysis;
     } else {
       throw new MethodNotAllowedException();
     }

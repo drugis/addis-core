@@ -4,7 +4,9 @@ import org.apache.commons.lang.StringUtils;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.projects.controller.ProjectController;
 import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.util.WebConstants;
@@ -12,7 +14,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -28,6 +31,7 @@ import java.util.Collections;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -48,8 +52,15 @@ public class ProjectsControllerTest {
   @Inject
   private ProjectRepository projectRepository;
 
-  @Autowired
+  @Mock
+  ProjectService projectService;
+
+  @Inject
   private WebApplicationContext webApplicationContext;
+
+  @InjectMocks
+  private ProjectController projectController;
+
 
   private Principal user;
 
@@ -62,8 +73,11 @@ public class ProjectsControllerTest {
   public void setUp() {
     reset(accountRepository);
     reset(projectRepository);
-    mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    projectService = mock(ProjectService.class);
+    projectController = new ProjectController();
+    mockMvc = MockMvcBuilders.standaloneSetup(projectController).build();
     user = mock(Principal.class);
+    initMocks(this);
     when(user.getName()).thenReturn("gert");
     when(accountRepository.findAccountByUsername("gert")).thenReturn(gert);
   }
@@ -84,7 +98,6 @@ public class ProjectsControllerTest {
             .andExpect(jsonPath("$", hasSize(0)));
 
     verify(projectRepository).query();
-    verify(accountRepository).findAccountByUsername("gert");
   }
 
   @Test
@@ -107,7 +120,6 @@ public class ProjectsControllerTest {
             .andExpect(jsonPath("$[0].trialverseId", is(project.getTrialverseId())));
 
     verify(projectRepository).query();
-    verify(accountRepository).findAccountByUsername("gert");
   }
 
   @Test
@@ -124,7 +136,6 @@ public class ProjectsControllerTest {
             .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())));
 
     verify(projectRepository).queryByOwnerId(paul.getId());
-    verify(accountRepository).findAccountByUsername("gert");
   }
 
   @Test
@@ -149,17 +160,16 @@ public class ProjectsControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.id", is(project.getId())));
-    verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).getProjectById(project.getId());
   }
 
   @Test
   public void testGetNonexistentProject() throws Exception {
-    when(projectRepository.getProjectById(1)).thenThrow(new ResourceDoesNotExistException());
+    int projectId = 1;
+    when(projectRepository.getProjectById(projectId)).thenThrow(new ResourceDoesNotExistException());
     mockMvc.perform(get("/projects/1").principal(user))
-            .andExpect(redirectedUrl("/error/404"));
-    verify(accountRepository).findAccountByUsername(gert.getUsername());
-    verify(projectRepository).getProjectById(1);
+            .andExpect(status().isNotFound());
+    verify(projectRepository).getProjectById(projectId);
   }
 
   @Test
@@ -169,9 +179,9 @@ public class ProjectsControllerTest {
     String requestBody = "{\"name\":\"testname\",\"trialverseId\":1}";
     when(projectRepository.create(gert, projectCommand)).thenReturn(project);
     mockMvc.perform(post("/projects").principal(user).content(requestBody).contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(status().isCreated())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(jsonPath("$.name", is("testname")));
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.name", is("testname")));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).create(gert, projectCommand);
 

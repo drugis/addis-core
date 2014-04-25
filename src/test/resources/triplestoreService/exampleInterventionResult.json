@@ -1,0 +1,23 @@
+{
+  "results": {
+    "bindings": [{
+      "uri": {
+        "type": "uri",
+        "value": "http://trials.drugis.org/namespace/1/drug/test1"
+      },
+      "label": {
+        "type": "literal",
+        "value": "Azilsartan"
+      }
+    }, {
+      "uri": {
+        "type": "uri",
+        "value": "http://trials.drugis.org/namespace/1/drug/test2"
+      },
+      "label": {
+        "type": "literal",
+        "value": "Placebo"
+      }
+    }]
+  }
+}

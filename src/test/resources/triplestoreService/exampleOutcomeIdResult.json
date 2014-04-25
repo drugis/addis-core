@@ -1,0 +1,17 @@
+{
+  "head": {
+    "vars": [ "uri" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/1/adverseEvent/4" },
+        "type": { "type": "uri" , "value": "http://trials.drugis.org/namespace/2/adverseEvent/e2611534a509251f2e1cadverseEvent" }
+      } ,
+      {
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/1/endpoint/1" },
+        "type": { "type": "uri" , "value": "http://trials.drugis.org/namespace/2/endpoint/e2611534a509251f2e1c8endpoint" }
+      }
+    ]
+  }
+}

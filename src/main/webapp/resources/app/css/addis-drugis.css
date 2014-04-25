@@ -9013,12 +9013,23 @@ label {
 
 /* line 51, ../../sass/addis-drugis.scss */
 .nested-view li.colored-row {
-  background-color: #f4f4f4;
+  background: #f4f4f4;
   margin-bottom: 10px;
   padding: 0.5rem 0.25rem 0.5rem 0.5rem;
 }
 
 /* line 57, ../../sass/addis-drugis.scss */
-.table-header h3, h4, h5 {
-  text-align: center;
+.error-message {
+  display: block;
+  color: #cc3333;
+}
+
+/* line 64, ../../sass/addis-drugis.scss */
+tr.on-hover:hover {
+  background: #dadada;
+}
+
+/* line 68, ../../sass/addis-drugis.scss */
+tr.clickable td {
+  color: #452f8c;
 }
