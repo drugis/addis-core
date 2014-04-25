@@ -4083,12 +4083,12 @@ fieldset legend {
 /* line 436, ../../drugis-css/foundation/components/_forms.scss */
 [data-abide] .error small.error, [data-abide] span.error, [data-abide] small.error {
   display: block;
-  padding: rem-calc(6 9 9);
+  padding: 0.375rem 0.5625rem 0.5625rem;
   margin-top: -1px;
   margin-bottom: 1rem;
-  font-size: rem-calc(12);
+  font-size: 0.75rem;
   font-weight: normal;
-  font-style: normal;
+  font-style: italic;
   background: #e66464;
   color: white;
 }
@@ -4100,12 +4100,12 @@ fieldset legend {
 /* line 441, ../../drugis-css/foundation/components/_forms.scss */
 span.error, small.error {
   display: block;
-  padding: rem-calc(6 9 9);
+  padding: 0.375rem 0.5625rem 0.5625rem;
   margin-top: -1px;
   margin-bottom: 1rem;
-  font-size: rem-calc(12);
+  font-size: 0.75rem;
   font-weight: normal;
-  font-style: normal;
+  font-style: italic;
   background: #e66464;
   color: white;
 }
@@ -4125,12 +4125,12 @@ span.error, small.error {
 .error > small,
 .error small.error {
   display: block;
-  padding: rem-calc(6 9 9);
+  padding: 0.375rem 0.5625rem 0.5625rem;
   margin-top: -1px;
   margin-bottom: 1rem;
-  font-size: rem-calc(12);
+  font-size: 0.75rem;
   font-weight: normal;
-  font-style: normal;
+  font-style: italic;
   background: #e66464;
   color: white;
 }
@@ -9013,7 +9013,7 @@ label {
 
 /* line 51, ../../sass/addis-drugis.scss */
 .nested-view li.colored-row {
-  background-color: #f4f4f4;
+  background: #f4f4f4;
   margin-bottom: 10px;
   padding: 0.5rem 0.25rem 0.5rem 0.5rem;
 }
@@ -9022,4 +9022,14 @@ label {
 .error-message {
   display: block;
   color: #cc3333;
+}
+
+/* line 64, ../../sass/addis-drugis.scss */
+tr.on-hover:hover {
+  background: #dadada;
+}
+
+/* line 68, ../../sass/addis-drugis.scss */
+tr.clickable td {
+  color: #452f8c;
 }

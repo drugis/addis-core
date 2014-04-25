@@ -215,5 +215,12 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
         analysisId: mockAnalysis.id
       });
     });
+
+    it("should go to the analysis then the toToAnalysis function is called", function () {
+      var analysisId = 1;
+      state.go.calls.reset();
+      scope.goToAnalysis(analysisId);
+      expect(state.go).toHaveBeenCalledWith('analysis.default', { analysisId : analysisId });
+    });
   });
 });
