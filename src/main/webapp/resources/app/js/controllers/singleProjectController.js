@@ -59,6 +59,12 @@ define([], function () {
 
     });
 
+    $scope.goToAnalysis = function (analysisId) {
+       $state.go('analysis.default', {
+          'analysisId': analysisId
+        });
+    }
+
     $scope.addOutcome = function (newOutcome) {
       newOutcome.projectId = $scope.project.id;
       $scope.createOutcomeModal.close();
