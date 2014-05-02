@@ -83,8 +83,8 @@ define(
       }
     ]);
 
-    app.config(['Tasks', '$stateProvider', '$urlRouterProvider',
-      function(Tasks, $stateProvider, $urlRouterProvider) {
+    app.config(['Tasks', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES',
+      function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES) {
         var baseTemplatePath = 'app/views/';
         var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
 
@@ -116,16 +116,27 @@ define(
                 }
               ]
             },
-            controller: function($scope, currentAnalysis, currentProject) {
+            controller: function($scope, $state, currentAnalysis, currentProject) {
               $scope.analysis = currentAnalysis;
               $scope.project = currentProject;
-            },
-            abstract: true
+              currentAnalysis.$promise.then(function(analysis) {
+                var analysisType = _.find(ANALYSIS_TYPES, function(type) {
+                  return type.label === analysis.analysisType;
+                });
+                $state.go(analysisType.stateName, {
+                  'type': analysis.analysisType,
+                  'analysisId': analysis.id
+                });
+              });
+            }
           })
           .state('analysis.singleStudyBenefitRisk', {
-            url: '',
             templateUrl: baseTemplatePath + 'singleStudyBenefitRiskAnalysisView.html',
             controller: 'SingleStudyBenefitRiskAnalysisController'
+          })
+          .state('analysis.networkMetaAnalysis', {
+            templateUrl: baseTemplatePath + 'networkMetaAnalysisView.html',
+            controller: 'NetworkMetaAnalysisController'
           })
           .state('analysis.scenario', {
             url: '/scenarios/:scenarioId',

@@ -1,6 +1,16 @@
 define(['angular', 'angular-mocks', 'underscore'], function() {
   describe('the SingleProjectController', function() {
-    var controllerArguments;
+    var controllerArguments,
+        analysisTypes = [{
+          label: 'type1',
+          stateName: 'stateName1'
+        }, {
+          label: 'type2',
+          stateName: 'stateName2'
+        }],
+        stateParams = {
+          param: 1
+        };
     beforeEach(module('addis.controllers'));
 
     beforeEach(function() {
@@ -27,16 +37,6 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
           $promise: {
             then: function() {}
           }
-        },
-        analysisTypes = [{
-          label: 'type1',
-          stateName: 'stateName1'
-        }, {
-          label: 'type2',
-          stateName: 'stateName2'
-        }],
-        stateParams = {
-          param: 1
         };
 
       beforeEach(inject(function($controller, $rootScope) {
@@ -134,7 +134,8 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         mockAnalyses = [7, 8, 9],
         mockAnalysis = {
           projectId: 1,
-          id: 2
+          id: 2,
+          analysisType: analysisTypes[0].label
         },
         mockStudy = {
           id: 5,
@@ -200,22 +201,22 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
           }
         };
         state = jasmine.createSpyObj('state', ['go']);
+        controllerArguments.$scope = scope;
+        controllerArguments.$window = window;
+        controllerArguments.$state = state;
+        controllerArguments.$stateParams = mockStateParams;
+        controllerArguments.ProjectResource = projectResource;
+        controllerArguments.TrialverseResource = trialverseResource;
+        controllerArguments.SemanticOutcomeResource = semanticOutcomeResource;
+        controllerArguments.OutcomeResource = outcomeResource;
+        controllerArguments.SemanticInterventionResource = semanticInterventionResource;
+        controllerArguments.InterventionResource = interventionResource;
+        controllerArguments.AnalysisResource = analysisResource;
+        controllerArguments.TrialverseStudyResource = trialverseStudyResource;
+        controllerArguments.ANALYSIS_TYPES = analysisTypes;
 
-        $controller('SingleProjectController', {
-          $scope: scope,
-          $window: window,
-          $state: state,
-          $stateParams: mockStateParams,
-          'ProjectResource': projectResource,
-          'TrialverseResource': trialverseResource,
-          'SemanticOutcomeResource': semanticOutcomeResource,
-          'OutcomeResource': outcomeResource,
-          'SemanticInterventionResource': semanticInterventionResource,
-          'InterventionResource': interventionResource,
-          'AnalysisResource': analysisResource,
-          'TrialverseStudyResource': trialverseStudyResource,
-          ANALYSIS_TYPES: {}
-        });
+
+        $controller('SingleProjectController', controllerArguments);
 
       }));
 
@@ -283,21 +284,18 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
           projectDeferred.resolve();
           scope.$apply();
           var newAnalysis = {
-            name: "name",
-            type: "SingleStudyBenefitRisk",
-            study: "Hansen et al. 2005"
+            id: 2,
+            analysisType: analysisTypes[0].label
           },
             newAnalysisWithProjectId = _.extend(newAnalysis, {
               projectId: 1
             });
+          spyOn(scope, 'goToAnalysis');
           scope.addAnalysis(newAnalysis);
           expect(analysisResource.save).toHaveBeenCalledWith(newAnalysisWithProjectId);
           analysisDeferred.resolve(mockAnalysis);
           scope.$apply();
-          expect(state.go).toHaveBeenCalledWith('analysis.singleStudyBenefitRisk', {
-            projectId: mockAnalysis.projectId,
-            analysisId: mockAnalysis.id
-          });
+          expect(scope.goToAnalysis).toHaveBeenCalledWith(newAnalysis.id, newAnalysis.analysisType);
         });
       });
 

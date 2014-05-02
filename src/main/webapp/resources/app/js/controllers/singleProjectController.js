@@ -64,18 +64,6 @@ define([], function() {
           });
       };
 
-      $scope.addAnalysis = function(newAnalysis) {
-        newAnalysis.projectId = $scope.project.id;
-        AnalysisResource
-          .save(newAnalysis)
-          .$promise.then(function(savedAnalysis) {
-            $state.go('analysis.singleStudyBenefitRisk', {
-              projectId: savedAnalysis.projectId,
-              analysisId: savedAnalysis.id
-            });
-          });
-      };
-
       $scope.addIntervention = function(newIntervention) {
         newIntervention.projectId = $scope.project.id;
         $scope.createInterventionModal.close();
@@ -86,6 +74,15 @@ define([], function() {
             $scope.interventions.push(intervention);
           });
       };
+
+      $scope.addAnalysis = function(newAnalysis) {
+        newAnalysis.projectId = $scope.project.id;
+        AnalysisResource
+          .save(newAnalysis)
+          .$promise.then(function(savedAnalysis) {
+            $scope.goToAnalysis(savedAnalysis.id, savedAnalysis.analysisType);
+          });
+      };
     });
 
     $scope.goToAnalysis = function(analysisId, analysisTypeLabel) {
@@ -93,7 +90,7 @@ define([], function() {
         return type.label === analysisTypeLabel;
       });
       $state.go(analysisType.stateName, {
-        'analysisId': analysisId
+        analysisId: analysisId
       });
     };
   };
