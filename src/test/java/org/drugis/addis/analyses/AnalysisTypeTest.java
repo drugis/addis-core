@@ -12,7 +12,7 @@ public class AnalysisTypeTest {
   @Test
   public void testGetByLabel() throws Exception {
     assertEquals(AnalysisType.SINGLE_STUDY_BENEFIT_RISK, AnalysisType.getByLabel("Single-study Benefit-Risk"));
-    assertEquals(AnalysisType.NETWORK_META_ANALYSIS, AnalysisType.getByLabel("Network meta-Analysis"));
+    assertEquals(AnalysisType.NETWORK_META_ANALYSIS, AnalysisType.getByLabel("Network meta-analysis"));
   }
 
   @Test(expected = Exception.class)

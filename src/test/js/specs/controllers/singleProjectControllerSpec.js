@@ -1,5 +1,5 @@
-define(['angular', 'angular-mocks', 'underscore'], function () {
-  describe('SingleProjectController', function () {
+define(['angular', 'angular-mocks', 'underscore'], function() {
+  describe('SingleProjectController', function() {
     beforeEach(module('addis.controllers'));
 
     var scope, state, window,
@@ -16,7 +16,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
         description: 'testDescription',
         namespace: 'testNamespace',
         trialverseId: 1,
-        $save: function () {}
+        $save: function() {}
       },
       mockTrialverse = {
         id: 1,
@@ -36,7 +36,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
       },
       mockStudies = [mockStudy];
 
-    beforeEach(inject(function ($controller, $q, $rootScope) {
+    beforeEach(inject(function($controller, $q, $rootScope) {
       var mockStateParams = {
         projectId: mockProject.id
       };
@@ -100,14 +100,21 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
 
     }));
 
-    it('should place project information on the scope', function () {
+    it('should place the analysis types on the scope', function() {
+      var singleStudyType = 'Single-study Benefit-Risk';
+      var networkMetaType = 'Network meta-analysis';
+      expect(scope.analysisTypes[0].label).toEqual(networkMetaType);
+      expect(scope.analysisTypes[1].label).toEqual(singleStudyType);
+    });
+
+    it('should place project information on the scope', function() {
       expect(projectResource.get).toHaveBeenCalledWith({
         projectId: mockProject.id
       });
       expect(scope.project).toEqual(mockProject);
     });
 
-    it('should place the outcome and intervention information on the scope once the project has been loaded', function () {
+    it('should place the outcome and intervention information on the scope once the project has been loaded', function() {
       projectDeferred.resolve();
       studiesDeferred.resolve();
       scope.$apply();
@@ -118,14 +125,14 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
     });
 
 
-    it('should tell the scope whether the resource is loaded', function () {
+    it('should tell the scope whether the resource is loaded', function() {
       expect(scope.loading.loaded).toBeFalsy();
       projectDeferred.resolve();
       scope.$apply();
       expect(scope.loading.loaded).toBeTruthy();
     });
 
-    it("should make an update call when an outcome is added", function () {
+    it("should make an update call when an outcome is added", function() {
       var newOutcome = {
         name: "name",
         motivation: "motivation",
@@ -141,7 +148,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
       expect(scope.model).toEqual({});
     });
 
-    it("should place the associated trialverse information on the scope on resolution", function () {
+    it("should place the associated trialverse information on the scope on resolution", function() {
       projectDeferred.resolve();
       scope.$apply();
       expect(trialverseResource.get).toHaveBeenCalledWith({
@@ -150,7 +157,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
       expect(scope.trialverse).toEqual(mockTrialverse);
     });
 
-    it("should place the possible semanticOutcomes on the scope on resolution", function () {
+    it("should place the possible semanticOutcomes on the scope on resolution", function() {
       projectDeferred.resolve();
       scope.$apply();
       expect(semanticOutcomeResource.query).toHaveBeenCalledWith({
@@ -159,20 +166,20 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
       expect(scope.semanticOutcomes).toEqual(mockSemanticOutcomes);
     });
 
-    it("isOwnProject should be true if the project is owned by the logged-in user", function () {
+    it("isOwnProject should be true if the project is owned by the logged-in user", function() {
       projectDeferred.resolve();
       scope.$apply();
       expect(scope.editMode.allowEditing).toBeTruthy();
     });
 
-    it("isOwnProject should be false if the project is not owned by the logged-in user", function () {
+    it("isOwnProject should be false if the project is not owned by the logged-in user", function() {
       window.config.user.id = 2;
       projectDeferred.resolve();
       scope.$apply();
       expect(scope.editMode.allowEditing).toBeFalsy();
     });
 
-    it("should make an update call when an intervention is added", function () {
+    it("should make an update call when an intervention is added", function() {
       var newIntervention = {
         name: "name",
         motivation: "motivation",
@@ -188,7 +195,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
       expect(scope.model).toEqual({});
     });
 
-    it("should place the possible semanticInterventions on the scope on resolution", function () {
+    it("should place the possible semanticInterventions on the scope on resolution", function() {
       projectDeferred.resolve();
       scope.$apply();
       expect(semanticInterventionResource.query).toHaveBeenCalledWith({
@@ -197,7 +204,7 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
       expect(scope.semanticInterventions).toEqual(mockSemanticInterventions);
     });
 
-    it("should make an update call when an analysis is added", function () {
+    it("should make an update call when an analysis is added", function() {
       var newAnalysis = {
         name: "name",
         type: "SingleStudyBenefitRisk",
@@ -216,11 +223,14 @@ define(['angular', 'angular-mocks', 'underscore'], function () {
       });
     });
 
-    it("should go to the analysis then the toToAnalysis function is called", function () {
+    it("should go to the analysis then the toToAnalysis function is called", function() {
       var analysisId = 1;
       state.go.calls.reset();
       scope.goToAnalysis(analysisId);
-      expect(state.go).toHaveBeenCalledWith('analysis.default', { analysisId : analysisId });
+      expect(state.go).toHaveBeenCalledWith('analysis.default', {
+        analysisId: analysisId
+      });
     });
   });
+
 });

@@ -9,10 +9,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum AnalysisType {
   SINGLE_STUDY_BENEFIT_RISK("Single-study Benefit-Risk"),
-  NETWORK_META_ANALYSIS("Network meta-Analysis");
+  NETWORK_META_ANALYSIS("Network meta-analysis");
 
   public static final String SINGLE_STUDY_BENEFIT_RISK_LABEL = "Single-study Benefit-Risk";
-  public static final String NETWORK_META_ANALYSIS_LABEL = "Network meta-Analysis";
+  public static final String NETWORK_META_ANALYSIS_LABEL = "Network meta-analysis";
 
   private String label;
 
