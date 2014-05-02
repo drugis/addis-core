@@ -9,22 +9,19 @@ define([], function() {
     'SemanticInterventionResource',
     'InterventionResource',
     'AnalysisResource',
+    'ANALYSIS_TYPES'
   ];
-  var ProjectsController = function($scope, $state, $stateParams, $window, ProjectResource, TrialverseResource, TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource, AnalysisResource) {
+  var ProjectsController = function($scope, $state, $stateParams, $window, ProjectResource, TrialverseResource, TrialverseStudyResource, SemanticOutcomeResource,
+    OutcomeResource, SemanticInterventionResource, InterventionResource, AnalysisResource, ANALYSIS_TYPES) {
     $scope.loading = {
       loaded: false
     };
-    $scope.project = ProjectResource.get($stateParams);
     $scope.editMode = {
       allowEditing: false
     };
+    $scope.analysisTypes = ANALYSIS_TYPES;
 
-    $scope.analysisTypes = [{
-      label: 'Network meta-analysis',
-    }, {
-      label: 'Single-study Benefit-Risk',
-    }];
-
+    $scope.project = ProjectResource.get($stateParams);
     $scope.project.$promise.then(function() {
       $scope.trialverse = TrialverseResource.get({
         id: $scope.project.trialverseId
@@ -56,40 +53,47 @@ define([], function() {
         });
       });
 
+      $scope.addOutcome = function(newOutcome) {
+        newOutcome.projectId = $scope.project.id;
+        $scope.createOutcomeModal.close();
+        this.model = {};
+        OutcomeResource
+          .save(newOutcome)
+          .$promise.then(function(outcome) {
+            $scope.outcomes.push(outcome);
+          });
+      };
+
+      $scope.addAnalysis = function(newAnalysis) {
+        newAnalysis.projectId = $scope.project.id;
+        AnalysisResource
+          .save(newAnalysis)
+          .$promise.then(function(savedAnalysis) {
+            $state.go('analysis.singleStudyBenefitRisk', {
+              projectId: savedAnalysis.projectId,
+              analysisId: savedAnalysis.id
+            });
+          });
+      };
+
+      $scope.addIntervention = function(newIntervention) {
+        newIntervention.projectId = $scope.project.id;
+        $scope.createInterventionModal.close();
+        this.model = {};
+        InterventionResource
+          .save(newIntervention)
+          .$promise.then(function(intervention) {
+            $scope.interventions.push(intervention);
+          });
+      };
     });
 
-    $scope.goToAnalysis = function(analysisId) {
-      $state.go('analysis.default', {
+    $scope.goToAnalysis = function(analysisId, analysisTypeLabel) {
+      var analysisType = _.find(ANALYSIS_TYPES, function(type) {
+        return type.label === analysisTypeLabel;
+      });
+      $state.go(analysisType.stateName, {
         'analysisId': analysisId
-      });
-    };
-
-    $scope.addOutcome = function(newOutcome) {
-      newOutcome.projectId = $scope.project.id;
-      $scope.createOutcomeModal.close();
-      this.model = {};
-      OutcomeResource.save(newOutcome, function(outcome) {
-        $scope.outcomes.push(outcome);
-      });
-    };
-
-    $scope.addIntervention = function(newIntervention) {
-      newIntervention.projectId = $scope.project.id;
-      $scope.createInterventionModal.close();
-      this.model = {};
-      InterventionResource.save(newIntervention, function(intervention) {
-        $scope.interventions.push(intervention);
-      });
-    };
-
-    $scope.addAnalysis = function(newAnalysis) {
-      newAnalysis.projectId = $scope.project.id;
-      var savedAnalysis = AnalysisResource.save(newAnalysis);
-      savedAnalysis.$promise.then(function() {
-        $state.go('analysis.default', {
-          projectId: savedAnalysis.projectId,
-          analysisId: savedAnalysis.id
-        });
       });
     };
   };

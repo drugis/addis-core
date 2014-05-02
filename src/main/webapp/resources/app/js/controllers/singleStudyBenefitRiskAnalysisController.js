@@ -4,7 +4,7 @@ define(['underscore'], function() {
     'OutcomeResource', 'InterventionResource',
     'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'AnalysisService', 'DEFAULT_VIEW'
   ];
-  var AnalysisController = function($scope, $stateParams, $state, $q, $window,
+  var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $q, $window,
     OutcomeResource, InterventionResource,
     Select2UtilService, TrialverseStudyResource, ProblemResource, AnalysisService, DEFAULT_VIEW) {
 
@@ -119,5 +119,5 @@ define(['underscore'], function() {
 
 
   };
-  return dependencies.concat(AnalysisController);
+  return dependencies.concat(SingleStudyBenefitRiskAnalysisController);
 });

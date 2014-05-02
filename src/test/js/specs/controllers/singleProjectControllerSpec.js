@@ -1,236 +1,352 @@
 define(['angular', 'angular-mocks', 'underscore'], function() {
-  describe('SingleProjectController', function() {
+  describe('the SingleProjectController', function() {
+    var controllerArguments;
     beforeEach(module('addis.controllers'));
 
-    var scope, state, window,
-      projectDeferred, analysisDeferred, studiesDeferred,
-      projectResource, trialverseResource, semanticOutcomeResource, semanticInterventionResource,
-      outcomeResource, interventionResource, analysisResource, trialverseStudyResource,
-      mockSemanticOutcomes, mockSemanticInterventions,
-      mockProject = {
-        id: 1,
-        owner: {
-          id: 1
-        },
-        name: 'projectName',
-        description: 'testDescription',
-        namespace: 'testNamespace',
-        trialverseId: 1,
-        $save: function() {}
-      },
-      mockTrialverse = {
-        id: 1,
-        name: 'trialverseName',
-        description: 'trialverseDescription'
-      },
-      mockOutcomes = [1, 2, 3],
-      mockInterventions = [4, 5, 6],
-      mockAnalyses = [7, 8, 9],
-      mockAnalysis = {
-        projectId: 1,
-        id: 2
-      },
-      mockStudy = {
-        id: 5,
-        name: 'testName'
-      },
-      mockStudies = [mockStudy];
-
-    beforeEach(inject(function($controller, $q, $rootScope) {
-      var mockStateParams = {
-        projectId: mockProject.id
+    beforeEach(function() {
+      controllerArguments = {
+        $scope: {},
+        $state: {},
+        $stateParams: {},
+        ProjectResource: {},
+        TrialverseResource: {},
+        SemanticOutcomeResource: {},
+        OutcomeResource: {},
+        SemanticInterventionResource: {},
+        InterventionResource: {},
+        AnalysisResource: {},
+        TrialverseStudyResource: {},
+        ANALYSIS_TYPES: {}
       };
+    });
 
-      mockSemanticOutcomes = ["a", "b", 'c'];
-      mockSemanticInterventions = ["e", "f", 'g'];
-      projectResource = jasmine.createSpyObj('projectResource', ['get', 'save']);
-      projectResource.get.and.returnValue(mockProject);
-      trialverseResource = jasmine.createSpyObj('trialverseResource', ['get']);
-      trialverseResource.get.and.returnValue(mockTrialverse);
-      semanticOutcomeResource = jasmine.createSpyObj('semanticOutcomeResource', ['query']);
-      semanticOutcomeResource.query.and.returnValue(mockSemanticOutcomes);
-      outcomeResource = jasmine.createSpyObj('outcomeResource', ['query', 'save']);
-      outcomeResource.query.and.returnValue(mockOutcomes);
-      semanticInterventionResource = jasmine.createSpyObj('semanticInterventionResource', ['query']);
-      semanticInterventionResource.query.and.returnValue(mockSemanticInterventions);
-      interventionResource = jasmine.createSpyObj('interventionResource', ['query', 'save']);
-      interventionResource.query.and.returnValue(mockInterventions);
-      analysisResource = jasmine.createSpyObj('analysisResource', ['query', 'save']);
-      analysisResource.query.and.returnValue(mockAnalyses);
-      analysisResource.save.and.returnValue(mockAnalysis);
-
-      trialverseStudyResource = jasmine.createSpyObj('trialverseStudyResource', ['query']);
-      trialverseStudyResource.query.and.returnValue(mockStudies);
-
-      scope = $rootScope;
-      scope.createOutcomeModal = jasmine.createSpyObj('createOutcomeModal', ['close']);
-      scope.createInterventionModal = jasmine.createSpyObj('createInterventionModal', ['close']);
-      scope.createAnalysisModal = jasmine.createSpyObj('createAnalysisModal', ['close']);
-
-      projectDeferred = $q.defer();
-      mockProject.$promise = projectDeferred.promise;
-      analysisDeferred = $q.defer();
-      mockAnalysis.$promise = analysisDeferred.promise;
-      studiesDeferred = $q.defer();
-      mockStudies.$promise = studiesDeferred.promise;
-
-      window = {
-        config: {
-          user: {
-            id: 1
+    describe('when first initialised', function() {
+      var scope,
+        projectResource,
+        mockProject = {
+          $promise: {
+            then: function() {}
           }
-        }
-      };
-      state = jasmine.createSpyObj('state', ['go']);
+        },
+        analysisTypes = [{
+          label: 'type1',
+          stateName: 'stateName1'
+        }, {
+          label: 'type2',
+          stateName: 'stateName2'
+        }],
+        stateParams = {
+          param: 1
+        };
 
-      $controller('SingleProjectController', {
-        $scope: scope,
-        $window: window,
-        $state: state,
-        $stateParams: mockStateParams,
-        'ProjectResource': projectResource,
-        'TrialverseResource': trialverseResource,
-        'SemanticOutcomeResource': semanticOutcomeResource,
-        'OutcomeResource': outcomeResource,
-        'SemanticInterventionResource': semanticInterventionResource,
-        'InterventionResource': interventionResource,
-        'AnalysisResource': analysisResource,
-        'TrialverseStudyResource': trialverseStudyResource
+      beforeEach(inject(function($controller, $rootScope) {
+        projectResource = jasmine.createSpyObj('ProjectResource', ['get']);
+
+        projectResource.get.and.returnValue(mockProject);
+        scope = $rootScope;
+
+        controllerArguments.$scope = scope;
+        controllerArguments.$stateParams = stateParams;
+        controllerArguments.ProjectResource = projectResource;
+        controllerArguments.ANALYSIS_TYPES = analysisTypes;
+
+        $controller('SingleProjectController', controllerArguments);
+      }));
+
+      it('should set loading to false', function() {
+        expect(scope.loading.loaded).toBeFalsy();
       });
 
-    }));
-
-    it('should place the analysis types on the scope', function() {
-      var singleStudyType = 'Single-study Benefit-Risk';
-      var networkMetaType = 'Network meta-analysis';
-      expect(scope.analysisTypes[0].label).toEqual(networkMetaType);
-      expect(scope.analysisTypes[1].label).toEqual(singleStudyType);
-    });
-
-    it('should place project information on the scope', function() {
-      expect(projectResource.get).toHaveBeenCalledWith({
-        projectId: mockProject.id
+      it('should place the analysis types on the scope', function() {
+        expect(scope.analysisTypes[0]).toEqual(analysisTypes[0]);
+        expect(scope.analysisTypes[1]).toEqual(analysisTypes[1]);
       });
-      expect(scope.project).toEqual(mockProject);
-    });
 
-    it('should place the outcome and intervention information on the scope once the project has been loaded', function() {
-      projectDeferred.resolve();
-      studiesDeferred.resolve();
-      scope.$apply();
-      expect(scope.outcomes).toEqual(mockOutcomes);
-      expect(scope.interventions).toEqual(mockInterventions);
-      expect(scope.analyses).toEqual(mockAnalyses);
-      expect(scope.loading.loaded).toBeTruthy();
-    });
-
-
-    it('should tell the scope whether the resource is loaded', function() {
-      expect(scope.loading.loaded).toBeFalsy();
-      projectDeferred.resolve();
-      scope.$apply();
-      expect(scope.loading.loaded).toBeTruthy();
-    });
-
-    it("should make an update call when an outcome is added", function() {
-      var newOutcome = {
-        name: "name",
-        motivation: "motivation",
-        semanticOutcome: "semantics"
-      };
-      var newOutcomeWithProjectId = _.extend({
-        projectId: 1
-      }, newOutcome);
-      scope.model = newOutcome;
-      scope.addOutcome(newOutcome);
-      expect(scope.createOutcomeModal.close).toHaveBeenCalled();
-      expect(outcomeResource.save).toHaveBeenCalledWith(newOutcomeWithProjectId, jasmine.any(Function));
-      expect(scope.model).toEqual({});
-    });
-
-    it("should place the associated trialverse information on the scope on resolution", function() {
-      projectDeferred.resolve();
-      scope.$apply();
-      expect(trialverseResource.get).toHaveBeenCalledWith({
-        id: mockProject.trialverseId
+      it('should place project information on the scope', function() {
+        expect(projectResource.get).toHaveBeenCalledWith(stateParams);
+        expect(scope.project).toEqual(mockProject);
       });
-      expect(scope.trialverse).toEqual(mockTrialverse);
-    });
 
-    it("should place the possible semanticOutcomes on the scope on resolution", function() {
-      projectDeferred.resolve();
-      scope.$apply();
-      expect(semanticOutcomeResource.query).toHaveBeenCalledWith({
-        id: mockProject.trialverseId
+      it('should not initially allow editing', function() {
+        expect(scope.editMode.allowEditing).toBeFalsy();
       });
-      expect(scope.semanticOutcomes).toEqual(mockSemanticOutcomes);
-    });
 
-    it("isOwnProject should be true if the project is owned by the logged-in user", function() {
-      projectDeferred.resolve();
-      scope.$apply();
-      expect(scope.editMode.allowEditing).toBeTruthy();
-    });
 
-    it("isOwnProject should be false if the project is not owned by the logged-in user", function() {
-      window.config.user.id = 2;
-      projectDeferred.resolve();
-      scope.$apply();
-      expect(scope.editMode.allowEditing).toBeFalsy();
-    });
+      // controller functions
+      describe('should have the function', function() {
 
-    it("should make an update call when an intervention is added", function() {
-      var newIntervention = {
-        name: "name",
-        motivation: "motivation",
-        semanticIntervention: "semantics"
-      };
-      var newInterventionWithProjectId = _.extend(newIntervention, {
-        projectId: 1
+        describe('goToAnalysis', function() {
+          var state;
+          beforeEach(inject(function($controller) {
+            controllerArguments.stateParams = {
+              param: 1
+            };
+            state = jasmine.createSpyObj('$state', ['go']);
+            controllerArguments.$state = state;
+            controllerArguments.ANALYSIS_TYPES = analysisTypes;
+            $controller('SingleProjectController', controllerArguments);
+          }));
+
+          it("which should go to the analysis when it is called", function() {
+            var analysisId = 1;
+            state.go.calls.reset();
+            scope.goToAnalysis(analysisId, analysisTypes[0].label);
+            expect(state.go).toHaveBeenCalledWith(analysisTypes[0].stateName, {
+              analysisId: analysisId
+            });
+          });
+        });
+
+
       });
-      scope.model = newIntervention;
-      scope.addIntervention(newIntervention);
-      expect(scope.createInterventionModal.close).toHaveBeenCalled();
-      expect(interventionResource.save).toHaveBeenCalledWith(newInterventionWithProjectId, jasmine.any(Function));
-      expect(scope.model).toEqual({});
+
     });
 
-    it("should place the possible semanticInterventions on the scope on resolution", function() {
-      projectDeferred.resolve();
-      scope.$apply();
-      expect(semanticInterventionResource.query).toHaveBeenCalledWith({
-        id: mockProject.trialverseId
-      });
-      expect(scope.semanticInterventions).toEqual(mockSemanticInterventions);
-    });
 
-    it("should make an update call when an analysis is added", function() {
-      var newAnalysis = {
-        name: "name",
-        type: "SingleStudyBenefitRisk",
-        study: "Hansen et al. 2005"
-      };
-      var newAnalysisWithProjectId = _.extend(newAnalysis, {
-        projectId: 1
-      });
-      scope.addAnalysis(newAnalysis);
-      expect(analysisResource.save).toHaveBeenCalledWith(newAnalysisWithProjectId);
-      analysisDeferred.resolve();
-      scope.$apply();
-      expect(state.go).toHaveBeenCalledWith('analysis.default', {
-        projectId: mockAnalysis.projectId,
-        analysisId: mockAnalysis.id
-      });
-    });
+    describe('after loading the project', function() {
+      var scope, state, window,
+        projectDeferred, analysisDeferred, studiesDeferred,
+        projectResource, trialverseResource, semanticOutcomeResource, semanticInterventionResource,
+        outcomeResource, interventionResource, analysisResource, trialverseStudyResource,
+        mockSemanticOutcomes, mockSemanticInterventions,
+        mockProject = {
+          id: 1,
+          owner: {
+            id: 1
+          },
+          name: 'projectName',
+          description: 'testDescription',
+          namespace: 'testNamespace',
+          trialverseId: 1,
+          $save: function() {}
+        },
+        mockTrialverse = {
+          id: 1,
+          name: 'trialverseName',
+          description: 'trialverseDescription'
+        },
+        mockOutcomes = [1, 2, 3],
+        mockOutcome,
+        outcomeDeferred,
+        mockInterventions = [4, 5, 6],
+        mockIntervention,
+        interventionDeferred,
+        mockAnalyses = [7, 8, 9],
+        mockAnalysis = {
+          projectId: 1,
+          id: 2
+        },
+        mockStudy = {
+          id: 5,
+          name: 'testName'
+        },
+        mockStudies = [mockStudy];
 
-    it("should go to the analysis then the toToAnalysis function is called", function() {
-      var analysisId = 1;
-      state.go.calls.reset();
-      scope.goToAnalysis(analysisId);
-      expect(state.go).toHaveBeenCalledWith('analysis.default', {
-        analysisId: analysisId
+      beforeEach(inject(function($controller, $q, $rootScope) {
+        var mockStateParams = {
+          projectId: mockProject.id
+        };
+
+        mockSemanticOutcomes = ["a", "b", 'c'];
+        mockSemanticInterventions = ["e", "f", 'g'];
+        projectResource = jasmine.createSpyObj('projectResource', ['get', 'save']);
+        projectResource.get.and.returnValue(mockProject);
+        trialverseResource = jasmine.createSpyObj('trialverseResource', ['get']);
+        trialverseResource.get.and.returnValue(mockTrialverse);
+        semanticOutcomeResource = jasmine.createSpyObj('semanticOutcomeResource', ['query']);
+        semanticOutcomeResource.query.and.returnValue(mockSemanticOutcomes);
+        outcomeResource = jasmine.createSpyObj('outcomeResource', ['query', 'save']);
+        outcomeResource.query.and.returnValue(mockOutcomes);
+        semanticInterventionResource = jasmine.createSpyObj('semanticInterventionResource', ['query']);
+        semanticInterventionResource.query.and.returnValue(mockSemanticInterventions);
+        interventionResource = jasmine.createSpyObj('interventionResource', ['query', 'save']);
+        interventionResource.query.and.returnValue(mockInterventions);
+        analysisResource = jasmine.createSpyObj('analysisResource', ['query', 'save']);
+        analysisResource.query.and.returnValue(mockAnalyses);
+        analysisResource.save.and.returnValue(mockAnalysis);
+
+        trialverseStudyResource = jasmine.createSpyObj('trialverseStudyResource', ['query']);
+        trialverseStudyResource.query.and.returnValue(mockStudies);
+
+        scope = $rootScope;
+        scope.createOutcomeModal = jasmine.createSpyObj('createOutcomeModal', ['close']);
+        scope.createInterventionModal = jasmine.createSpyObj('createInterventionModal', ['close']);
+        scope.createAnalysisModal = jasmine.createSpyObj('createAnalysisModal', ['close']);
+
+        projectDeferred = $q.defer();
+        mockProject.$promise = projectDeferred.promise;
+        analysisDeferred = $q.defer();
+        mockAnalysis.$promise = analysisDeferred.promise;
+        studiesDeferred = $q.defer();
+        mockStudies.$promise = studiesDeferred.promise;
+
+        outcomeDeferred = $q.defer();
+        mockOutcome = {
+          $promise: outcomeDeferred.promise
+        };
+        outcomeResource.save.and.returnValue(mockOutcome);
+        interventionDeferred = $q.defer();
+        mockIntervention = {
+          $promise: interventionDeferred.promise
+        };
+        interventionResource.save.and.returnValue(mockIntervention);
+
+
+        window = {
+          config: {
+            user: {
+              id: 1
+            }
+          }
+        };
+        state = jasmine.createSpyObj('state', ['go']);
+
+        $controller('SingleProjectController', {
+          $scope: scope,
+          $window: window,
+          $state: state,
+          $stateParams: mockStateParams,
+          'ProjectResource': projectResource,
+          'TrialverseResource': trialverseResource,
+          'SemanticOutcomeResource': semanticOutcomeResource,
+          'OutcomeResource': outcomeResource,
+          'SemanticInterventionResource': semanticInterventionResource,
+          'InterventionResource': interventionResource,
+          'AnalysisResource': analysisResource,
+          'TrialverseStudyResource': trialverseStudyResource,
+          ANALYSIS_TYPES: {}
+        });
+
+      }));
+
+      it('should place the outcome and intervention information on the scope', function() {
+        projectDeferred.resolve();
+        studiesDeferred.resolve();
+        scope.$apply();
+        expect(scope.outcomes).toEqual(mockOutcomes);
+        expect(scope.interventions).toEqual(mockInterventions);
+        expect(scope.analyses).toEqual(mockAnalyses);
+        expect(scope.loading.loaded).toBeTruthy();
       });
+
+
+      it('should tell the scope whether the resource is loaded', function() {
+        expect(scope.loading.loaded).toBeFalsy();
+        projectDeferred.resolve();
+        scope.$apply();
+        expect(scope.loading.loaded).toBeTruthy();
+      });
+
+      it("should place the associated trialverse information on the scope", function() {
+        projectDeferred.resolve();
+        scope.$apply();
+        expect(trialverseResource.get).toHaveBeenCalledWith({
+          id: mockProject.trialverseId
+        });
+        expect(scope.trialverse).toEqual(mockTrialverse);
+      });
+
+      it("should place the possible semanticOutcomes on the scope on resolution", function() {
+        projectDeferred.resolve();
+        scope.$apply();
+        expect(semanticOutcomeResource.query).toHaveBeenCalledWith({
+          id: mockProject.trialverseId
+        });
+        expect(scope.semanticOutcomes).toEqual(mockSemanticOutcomes);
+      });
+
+      it("isOwnProject should be true if the project is owned by the logged-in user", function() {
+        projectDeferred.resolve();
+        scope.$apply();
+        expect(scope.editMode.allowEditing).toBeTruthy();
+      });
+
+      it("isOwnProject should be false if the project is not owned by the logged-in user", function() {
+        window.config.user.id = 2;
+        projectDeferred.resolve();
+        scope.$apply();
+        expect(scope.editMode.allowEditing).toBeFalsy();
+      });
+
+      it("should place the possible semanticInterventions on the scope on resolution", function() {
+        projectDeferred.resolve();
+        scope.$apply();
+        expect(semanticInterventionResource.query).toHaveBeenCalledWith({
+          id: mockProject.trialverseId
+        });
+        expect(scope.semanticInterventions).toEqual(mockSemanticInterventions);
+      });
+
+      describe('addAnalysis', function() {
+
+        it("should add an analysis and make an update call", function() {
+          projectDeferred.resolve();
+          scope.$apply();
+          var newAnalysis = {
+            name: "name",
+            type: "SingleStudyBenefitRisk",
+            study: "Hansen et al. 2005"
+          },
+            newAnalysisWithProjectId = _.extend(newAnalysis, {
+              projectId: 1
+            });
+          scope.addAnalysis(newAnalysis);
+          expect(analysisResource.save).toHaveBeenCalledWith(newAnalysisWithProjectId);
+          analysisDeferred.resolve(mockAnalysis);
+          scope.$apply();
+          expect(state.go).toHaveBeenCalledWith('analysis.singleStudyBenefitRisk', {
+            projectId: mockAnalysis.projectId,
+            analysisId: mockAnalysis.id
+          });
+        });
+      });
+
+      describe('addOutcome', function() {
+
+        it("should make an update call when an outcome is added", function() {
+          projectDeferred.resolve();
+          scope.$apply();
+          var newOutcome = {
+            property: 'value'
+          };
+          var newOutcomeWithProjectId = _.extend(newOutcome, {
+            projectId: 1
+          });
+
+          scope.model = newOutcome;
+          scope.addOutcome(newOutcome);
+          expect(scope.createOutcomeModal.close).toHaveBeenCalled();
+          expect(scope.model).toEqual({});
+          expect(outcomeResource.save).toHaveBeenCalledWith(newOutcomeWithProjectId);
+
+          outcomeDeferred.resolve(mockOutcome);
+          scope.$apply();
+          expect(scope.outcomes).toContain(mockOutcome);
+        });
+      });
+
+
+      describe('addIntervention', function() {
+        it("should make an update call when an intervention is added", function() {
+          projectDeferred.resolve();
+          scope.$apply();
+          var newIntervention = {
+            key: 'value'
+          };
+          var newInterventionWithProjectId = _.extend(newIntervention, {
+            projectId: 1
+          });
+          scope.model = newIntervention;
+          scope.addIntervention(newIntervention);
+          expect(scope.createInterventionModal.close).toHaveBeenCalled();
+          expect(scope.model).toEqual({});
+          expect(interventionResource.save).toHaveBeenCalledWith(newInterventionWithProjectId);
+          interventionDeferred.resolve(mockIntervention);
+          scope.$apply();
+          expect(scope.interventions).toContain(mockIntervention);
+        });
+      });
+
     });
   });
-
 });
