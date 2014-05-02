@@ -8,9 +8,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Created by connor on 3/11/14.
  */
 public enum AnalysisType {
-  SINGLE_STUDY_BENEFIT_RISK("Single-study Benefit-Risk");
+  SINGLE_STUDY_BENEFIT_RISK("Single-study Benefit-Risk"),
+  NETWORK_META_ANALYSIS("Network meta-Analysis");
 
   public static final String SINGLE_STUDY_BENEFIT_RISK_LABEL = "Single-study Benefit-Risk";
+  public static final String NETWORK_META_ANALYSIS_LABEL = "Network meta-Analysis";
 
   private String label;
 
@@ -33,6 +35,8 @@ public enum AnalysisType {
     switch (label) {
       case SINGLE_STUDY_BENEFIT_RISK_LABEL:
         return SINGLE_STUDY_BENEFIT_RISK;
+      case NETWORK_META_ANALYSIS_LABEL:
+        return NETWORK_META_ANALYSIS;
       default:
         throw new EnumConstantNotPresentException(AnalysisType.class, label);
     }
