@@ -9027,9 +9027,11 @@ label {
 /* line 64, ../../sass/addis-drugis.scss */
 tr.on-hover:hover {
   background: #dadada;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
-/* line 68, ../../sass/addis-drugis.scss */
+/* line 70, ../../sass/addis-drugis.scss */
 tr.clickable td {
   color: #452f8c;
 }

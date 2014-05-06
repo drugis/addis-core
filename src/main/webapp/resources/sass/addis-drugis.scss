@@ -63,10 +63,12 @@ label {
 // lighten the darken on hover 
 tr.on-hover:hover {
   background: darken($secondary-color, 5%);
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 tr.clickable td {
-  color: $primary-color
+  color: $primary-color;
 }
 
 
