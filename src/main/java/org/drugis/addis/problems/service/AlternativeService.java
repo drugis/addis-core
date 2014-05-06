@@ -2,7 +2,7 @@ package org.drugis.addis.problems.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.drugis.addis.analyses.Analysis;
+import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.problems.model.AlternativeEntry;
 import org.drugis.addis.problems.model.Arm;
@@ -36,7 +36,7 @@ public class AlternativeService {
    *
    * @return A map keyed with arm IDS with the alternatives as values
    */
-  public Map<Long, AlternativeEntry> createAlternatives(Project project, Analysis analysis) {
+  public Map<Long, AlternativeEntry> createAlternatives(Project project, SingleStudyBenefitRiskAnalysis analysis) {
 
     Map<String, Intervention> interventionsByUri = new HashMap<>();
     for (Intervention intervention : analysis.getSelectedInterventions()) {

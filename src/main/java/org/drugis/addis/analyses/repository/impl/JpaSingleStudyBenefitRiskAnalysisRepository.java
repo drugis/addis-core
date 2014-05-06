@@ -1,9 +1,8 @@
 package org.drugis.addis.analyses.repository.impl;
 
-import org.drugis.addis.analyses.Analysis;
 import org.drugis.addis.analyses.AnalysisCommand;
-import org.drugis.addis.analyses.AnalysisType;
-import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
@@ -13,6 +12,7 @@ import org.drugis.addis.security.Account;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -26,21 +26,24 @@ import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
  * Created by connor on 3/11/14.
  */
 @Repository
-public class JpaAnalysisRepository implements AnalysisRepository {
+public class JpaSingleStudyBenefitRiskAnalysisRepository implements SingleStudyBenefitRiskAnalysisRepository {
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;
 
+  @Inject
+  AnalysisRepositoryUtils analysisRepositoryUtils;
+
   @Override
-  public Collection<Analysis> query(Integer projectId) {
-    TypedQuery<Analysis> query = em.createQuery("FROM Analysis a WHERE a.projectId = :projectId", Analysis.class);
+  public Collection<SingleStudyBenefitRiskAnalysis> query(Integer projectId) {
+    TypedQuery<SingleStudyBenefitRiskAnalysis> query = em.createQuery("FROM SingleStudyBenefitRiskAnalysis a WHERE a.projectId = :projectId", SingleStudyBenefitRiskAnalysis.class);
     query.setParameter("projectId", projectId);
     return query.getResultList();
   }
 
   @Override
-  public Analysis get(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
-    TypedQuery<Analysis> query = em.createQuery("FROM Analysis a WHERE a.id = :analysisId AND a.projectId = :projectId", Analysis.class);
+  public SingleStudyBenefitRiskAnalysis get(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
+    TypedQuery<SingleStudyBenefitRiskAnalysis> query = em.createQuery("FROM SingleStudyBenefitRiskAnalysis a WHERE a.id = :analysisId AND a.projectId = :projectId", SingleStudyBenefitRiskAnalysis.class);
     query.setParameter("analysisId", analysisId);
     query.setParameter("projectId", projectId);
     try {
@@ -51,15 +54,15 @@ public class JpaAnalysisRepository implements AnalysisRepository {
   }
 
   @Override
-  public Analysis create(Account account, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Analysis newAnalysis = new Analysis(analysisCommand.getProjectId(), analysisCommand.getName(), AnalysisType.getByLabel(analysisCommand.getType()), Collections.EMPTY_LIST, Collections.EMPTY_LIST);
-    checkProjectExistsAndModifiable(account, analysisCommand);
+  public SingleStudyBenefitRiskAnalysis create(Account account, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    SingleStudyBenefitRiskAnalysis newAnalysis = new SingleStudyBenefitRiskAnalysis(analysisCommand.getProjectId(), analysisCommand.getName(), Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    analysisRepositoryUtils.checkProjectExistsAndModifiable(account, analysisCommand, em);
     em.persist(newAnalysis);
     return newAnalysis;
   }
 
   @Override
-  public Analysis update(Account user, Analysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public SingleStudyBenefitRiskAnalysis update(Account user, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
     Project project = em.find(Project.class, analysis.getProjectId());
     if (project == null) {
       throw new ResourceDoesNotExistException();
@@ -71,7 +74,7 @@ public class JpaAnalysisRepository implements AnalysisRepository {
     Integer analysisProjectId = analysis.getProjectId();
 
     // do not allow changing of project ID
-    Analysis oldAnalysis = em.find(Analysis.class, analysis.getId());
+    SingleStudyBenefitRiskAnalysis oldAnalysis = em.find(SingleStudyBenefitRiskAnalysis.class, analysis.getId());
     if (!oldAnalysis.getProjectId().equals(analysisProjectId)) {
       throw new ResourceDoesNotExistException();
     }
@@ -95,16 +98,6 @@ public class JpaAnalysisRepository implements AnalysisRepository {
     }
 
     return em.merge(analysis);
-  }
-
-  private void checkProjectExistsAndModifiable(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
-    Project project = em.find(Project.class, analysisCommand.getProjectId());
-    if (project == null) {
-      throw new ResourceDoesNotExistException();
-    }
-    if (project.getOwner().getId() != user.getId()) {
-      throw new MethodNotAllowedException();
-    }
   }
 
 }

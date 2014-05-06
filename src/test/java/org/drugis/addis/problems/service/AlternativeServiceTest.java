@@ -2,7 +2,7 @@ package org.drugis.addis.problems.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.drugis.addis.analyses.Analysis;
+import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.problems.model.AlternativeEntry;
 import org.drugis.addis.problems.model.Arm;
@@ -45,7 +45,7 @@ public class AlternativeServiceTest {
   private Map<Long, String> drugs;
 
   private Project project;
-  private Analysis analysis;
+  private SingleStudyBenefitRiskAnalysis analysis;
 
 
   @Before
@@ -68,7 +68,7 @@ public class AlternativeServiceTest {
     List<Intervention> interventions = Arrays.asList(intervention);
 
     project = mock(Project.class);
-    analysis = mock(Analysis.class);
+    analysis = mock(SingleStudyBenefitRiskAnalysis.class);
 
     when(project.getTrialverseId()).thenReturn(trialverseId);
     when(analysis.getStudyId()).thenReturn(studyId);

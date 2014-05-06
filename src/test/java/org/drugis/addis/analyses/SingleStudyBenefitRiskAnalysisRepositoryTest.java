@@ -1,6 +1,6 @@
 package org.drugis.addis.analyses;
 
-import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -30,18 +30,18 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
 @ContextConfiguration(classes = {JpaRepositoryTestConfig.class})
-public class AnalysisRepositoryTest {
+public class SingleStudyBenefitRiskAnalysisRepositoryTest {
   @Inject
-  private AnalysisRepository analysisRepository;
+  private SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
 
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;
 
   @Test
   public void testQuery() {
-    Collection<Analysis> analyses = analysisRepository.query(1);
+    Collection<SingleStudyBenefitRiskAnalysis> analyses = singleStudyBenefitRiskAnalysisRepository.query(1);
     assertEquals(3, analyses.size());
-    analyses = analysisRepository.query(2);
+    analyses = singleStudyBenefitRiskAnalysisRepository.query(2);
     assertEquals(1, analyses.size());
   }
 
@@ -50,8 +50,8 @@ public class AnalysisRepositoryTest {
     int projectId = 1;
     AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "newName", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
     Account user = em.find(Account.class, 1);
-    Analysis result = analysisRepository.create(user, analysisCommand);
-    assertTrue(analysisRepository.query(projectId).contains(result));
+    SingleStudyBenefitRiskAnalysis result = singleStudyBenefitRiskAnalysisRepository.create(user, analysisCommand);
+    assertTrue(singleStudyBenefitRiskAnalysisRepository.query(projectId).contains(result));
     assertEquals(null, result.getProblem());
   }
 
@@ -59,13 +59,13 @@ public class AnalysisRepositoryTest {
   public void testGet() throws ResourceDoesNotExistException, MethodNotAllowedException {
     int projectId = 1;
     int analysisId = 1;
-    Analysis analysis = analysisRepository.get(projectId, analysisId);
-    assertEquals(em.find(Analysis.class, analysisId), analysis);
+    SingleStudyBenefitRiskAnalysis analysis = singleStudyBenefitRiskAnalysisRepository.get(projectId, analysisId);
+    assertEquals(em.find(SingleStudyBenefitRiskAnalysis.class, analysisId), analysis);
     assertEquals(null, analysis.getProblem());
 
     analysisId = 4;
-    analysis = analysisRepository.get(projectId, analysisId);
-    assertEquals(em.find(Analysis.class, analysisId), analysis);
+    analysis = singleStudyBenefitRiskAnalysisRepository.get(projectId, analysisId);
+    assertEquals(em.find(SingleStudyBenefitRiskAnalysis.class, analysisId), analysis);
     assertEquals("problem", analysis.getProblem());
   }
 
@@ -74,11 +74,10 @@ public class AnalysisRepositoryTest {
     Integer analysisId = 1;
     Account user = em.find(Account.class, 1);
     Integer projectId = 1;
-    Analysis analysis = new Analysis(analysisId, projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
-    Analysis updatedAnalysis = analysisRepository.update(user, analysis);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
     assertEquals(analysis.getProjectId(), updatedAnalysis.getProjectId());
     assertEquals(analysis.getName(), updatedAnalysis.getName());
-    assertEquals(analysis.getAnalysisType(), updatedAnalysis.getAnalysisType());
     assertEquals(analysis.getSelectedOutcomes(), updatedAnalysis.getSelectedOutcomes());
   }
 
@@ -91,12 +90,11 @@ public class AnalysisRepositoryTest {
     Integer interventionId = 1;
     List<Outcome> selectedOutcomes = Arrays.asList(em.find(Outcome.class, outcomeId));
     List<Intervention> selectedInterventions = Arrays.asList(em.find(Intervention.class, interventionId));
-    Analysis analysis = new Analysis(analysisId, projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, selectedOutcomes, selectedInterventions);
-    Analysis updatedAnalysis = analysisRepository.update(user, analysis);
-    Analysis result = em.find(Analysis.class, analysisId);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", selectedOutcomes, selectedInterventions);
+    SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
+    SingleStudyBenefitRiskAnalysis result = em.find(SingleStudyBenefitRiskAnalysis.class, analysisId);
     assertEquals(analysis.getProjectId(), updatedAnalysis.getProjectId());
     assertEquals(analysis.getName(), updatedAnalysis.getName());
-    assertEquals(analysis.getAnalysisType(), updatedAnalysis.getAnalysisType());
     assertEquals(analysis.getSelectedOutcomes(), updatedAnalysis.getSelectedOutcomes());
     assertEquals(updatedAnalysis, result);
   }
@@ -108,9 +106,9 @@ public class AnalysisRepositoryTest {
     Integer projectId = 1;
     Integer interventionId = 1;
     List<Intervention> selectedInterventions = Arrays.asList(em.find(Intervention.class, interventionId));
-    Analysis analysis = new Analysis(analysisId, projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, selectedInterventions);
-    Analysis updatedAnalysis = analysisRepository.update(user, analysis);
-    Analysis result = em.find(Analysis.class, analysisId);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", Collections.EMPTY_LIST, selectedInterventions);
+    SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
+    SingleStudyBenefitRiskAnalysis result = em.find(SingleStudyBenefitRiskAnalysis.class, analysisId);
     assertEquals(analysis.getSelectedInterventions(), updatedAnalysis.getSelectedInterventions());
     assertEquals(updatedAnalysis, result);
   }
@@ -120,10 +118,10 @@ public class AnalysisRepositoryTest {
     Integer analysisId = 1;
     String problem = "problem";
     Account user = em.find(Account.class, 1);
-    Analysis analysis = new Analysis(
-      analysisId, 1, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST, problem);
-    Analysis updatedAnalysis = analysisRepository.update(user, analysis);
-    Analysis result = em.find(Analysis.class, analysisId);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(
+            analysisId, 1, "new name", Collections.EMPTY_LIST, Collections.EMPTY_LIST, problem);
+    SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
+    SingleStudyBenefitRiskAnalysis result = em.find(SingleStudyBenefitRiskAnalysis.class, analysisId);
     assertEquals(problem, updatedAnalysis.getProblem());
     assertEquals(updatedAnalysis, result);
   }
@@ -134,16 +132,16 @@ public class AnalysisRepositoryTest {
     int projectId = 3;
     Outcome outcome1 = em.find(Outcome.class, 1);
     Outcome outcome2 = em.find(Outcome.class, 2);
-    Analysis analysis = new Analysis(1, projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Arrays.asList(outcome1, outcome2), Collections.EMPTY_LIST);
-    analysisRepository.update(user, analysis);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "new name", Arrays.asList(outcome1, outcome2), Collections.EMPTY_LIST);
+    singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
   }
 
   @Test(expected = MethodNotAllowedException.class)
   public void testUpdateNotOwnedProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = em.find(Account.class, 1);
     int notOwnedProjectId = 2;
-    Analysis analysis = new Analysis(notOwnedProjectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
-    analysisRepository.update(user, analysis);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(notOwnedProjectId, "new name", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
@@ -151,8 +149,8 @@ public class AnalysisRepositoryTest {
     Account user = em.find(Account.class, 2);
     int projectId = 2;
     Outcome outcome2 = em.find(Outcome.class, 2);
-    Analysis analysis = new Analysis(3, projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Arrays.asList(outcome2), Collections.EMPTY_LIST);
-    analysisRepository.update(user, analysis);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(3, projectId, "new name", Arrays.asList(outcome2), Collections.EMPTY_LIST);
+    singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
@@ -160,15 +158,14 @@ public class AnalysisRepositoryTest {
     Account user = em.find(Account.class, 2);
     int projectId = 2;
     Intervention intervention2 = em.find(Intervention.class, 2);
-    Analysis analysis = new Analysis(3, projectId, "new name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK, Collections.EMPTY_LIST, Arrays.asList(intervention2));
-    analysisRepository.update(user, analysis);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(3, projectId, "new name", Collections.EMPTY_LIST, Arrays.asList(intervention2));
+    singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
   public void testGetFromWrongProjectFails() throws ResourceDoesNotExistException {
-    analysisRepository.get(2, 1);
+    singleStudyBenefitRiskAnalysisRepository.get(2, 1);
   }
-
 
 
 }

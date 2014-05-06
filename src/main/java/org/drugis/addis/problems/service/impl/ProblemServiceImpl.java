@@ -2,8 +2,8 @@ package org.drugis.addis.problems.service.impl;
 
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.analyses.Analysis;
-import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.AlternativeService;
@@ -28,7 +28,7 @@ import java.util.Map;
 public class ProblemServiceImpl implements ProblemService {
 
   @Inject
-  AnalysisRepository analysisRepository;
+  SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
 
   @Inject
   ProjectRepository projectRepository;
@@ -51,11 +51,11 @@ public class ProblemServiceImpl implements ProblemService {
   @Override
   public Problem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
     Project project = projectRepository.getProjectById(projectId);
-    Analysis analysis = analysisRepository.get(projectId, analysisId);
+    SingleStudyBenefitRiskAnalysis analysis = singleStudyBenefitRiskAnalysisRepository.get(projectId, analysisId);
 
     Map<Long, AlternativeEntry> alternativesCache = alternativeService.createAlternatives(project, analysis);
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
-    for(AlternativeEntry alternativeEntry : alternativesCache.values()) {
+    for (AlternativeEntry alternativeEntry : alternativesCache.values()) {
       alternatives.put(jsonUtils.createKey(alternativeEntry.getTitle()), alternativeEntry);
     }
 
@@ -63,7 +63,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     Map<String, CriterionEntry> criteria = new HashMap<>();
     Map<Long, CriterionEntry> criteriaCache = new HashMap<>();
-    for(Pair<Variable, CriterionEntry> variableCriterionPair : variableCriteriaPairs){
+    for (Pair<Variable, CriterionEntry> variableCriterionPair : variableCriteriaPairs) {
       Variable variable = variableCriterionPair.getLeft();
       CriterionEntry criterionEntry = variableCriterionPair.getRight();
       criteria.put(jsonUtils.createKey(criterionEntry.getTitle()), criterionEntry);
@@ -74,8 +74,6 @@ public class ProblemServiceImpl implements ProblemService {
     List<AbstractMeasurementEntry> performanceTable = performanceTableBuilder.build(criteriaCache, alternativesCache, measurements);
     return new Problem(analysis.getName(), alternatives, criteria, performanceTable);
   }
-
-
 
 
 }

@@ -2,8 +2,8 @@ package org.drugis.addis.problems;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.analyses.Analysis;
-import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.AlternativeService;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
 public class ProblemServiceTest {
 
   @Mock
-  AnalysisRepository analysisRepository;
+  SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
 
   @Mock
   ProjectRepository projectRepository;
@@ -73,7 +73,7 @@ public class ProblemServiceTest {
 
   @After
   public void cleanUp() {
-    verifyNoMoreInteractions(projectRepository, analysisRepository, alternativeService, criteriaService);
+    verifyNoMoreInteractions(projectRepository, singleStudyBenefitRiskAnalysisRepository, alternativeService, criteriaService);
   }
 
   @Test
@@ -84,8 +84,8 @@ public class ProblemServiceTest {
     when(projectRepository.getProjectById(projectId)).thenReturn(project);
 
     int analysisId = 2;
-    Analysis analysis = mock(Analysis.class);
-    when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
+    SingleStudyBenefitRiskAnalysis analysis = mock(SingleStudyBenefitRiskAnalysis.class);
+    when(singleStudyBenefitRiskAnalysisRepository.get(projectId, analysisId)).thenReturn(analysis);
     when(analysis.getName()).thenReturn("analysisName");
 
     Map<Long, AlternativeEntry> alternativesCache = new HashMap<>();
@@ -123,7 +123,7 @@ public class ProblemServiceTest {
     Problem actualProblem = problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).getProjectById(projectId);
-    verify(analysisRepository).get(projectId, analysisId);
+    verify(singleStudyBenefitRiskAnalysisRepository).get(projectId, analysisId);
     verify(alternativeService).createAlternatives(project, analysis);
     verify(criteriaService).createVariableCriteriaPairs(project, analysis);
     verify(measurementsService).createMeasurements(project, analysis, alternativesCache);
@@ -136,7 +136,7 @@ public class ProblemServiceTest {
     assertNotNull(actualProblem.getAlternatives());
     assertNotNull(actualProblem.getCriteria());
 
-    Map<String, CriterionEntry> actualCriteria =  actualProblem.getCriteria();
+    Map<String, CriterionEntry> actualCriteria = actualProblem.getCriteria();
     assertTrue(actualCriteria.keySet().contains(mockKey));
     verify(jsonUtils).createKey(criterionEntryTitle);
   }

@@ -90,3 +90,32 @@ CREATE TABLE Scenario (id SERIAL NOT NULL,
 -- changeset reidd:3
 
 ALTER TABLE Analysis ADD problem VARCHAR NULL
+-- changeset stroombergc:4
+CREATE TABLE SingleStudyBenefitRiskAnalysis (id SERIAL NOT NULL,
+        projectId INT,
+        name VARCHAR NOT NULL,
+        studyId INT,
+        problem VARCHAR NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(projectId) REFERENCES Project(id));
+
+CREATE TABLE NetworkMetaAnalysis (id SERIAL NOT NULL,
+          projectId INT,
+          name VARCHAR NOT NULL,
+          studyId INT,
+          outcomeId INT,
+          problem VARCHAR NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY(projectId) REFERENCES Project(id),
+    FOREIGN KEY(outcomeId) REFERENCES Outcome(id));
+
+DROP TABLE Analysis CASCADE;
+
+ALTER TABLE Analysis_Outcomes RENAME TO SingleStudyBenefitRiskAnalysis_Outcome;
+ALTER TABLE Analysis_Interventions RENAME TO SingleStudyBenefitRiskAnalysis_Intervention;
+
+ALTER TABLE SingleStudyBenefitRiskAnalysis_Intervention ADD CONSTRAINT ssbr_analysis_interventions_analysisid_fkey FOREIGN KEY (analysisId) REFERENCES SingleStudyBenefitRiskAnalysis(id);
+ALTER TABLE SingleStudyBenefitRiskAnalysis_Outcome ADD CONSTRAINT ssbr_analysis_outcomes_analysisid_fkey FOREIGN KEY (analysisId) REFERENCES SingleStudyBenefitRiskAnalysis(id);
+ALTER TABLE scenario ADD CONSTRAINT ssbr_scenario_workspace_fkey FOREIGN KEY (workspace) REFERENCES SingleStudyBenefitRiskAnalysis(id);
+
+

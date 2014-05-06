@@ -2,7 +2,7 @@ package org.drugis.addis.problems.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.drugis.addis.analyses.Analysis;
+import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.AlternativeEntry;
 import org.drugis.addis.problems.model.Measurement;
@@ -39,7 +39,7 @@ public class MeasurementsService {
   /**
    * Retrieve a list of measurements from the project namespace, based on selected outcomes.
    */
-  public List<Measurement> createMeasurements(Project project, Analysis analysis, Map<Long, AlternativeEntry> alternativesCache) {
+  public List<Measurement> createMeasurements(Project project, SingleStudyBenefitRiskAnalysis analysis, Map<Long, AlternativeEntry> alternativesCache) {
     Map<String, Outcome> outcomesByUri = new HashMap<>();
 
     for (Outcome outcome : analysis.getSelectedOutcomes()) {

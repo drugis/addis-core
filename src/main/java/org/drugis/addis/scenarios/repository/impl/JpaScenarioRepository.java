@@ -34,7 +34,7 @@ public class JpaScenarioRepository implements ScenarioRepository {
   @Override
   public Collection<Scenario> query(Integer projectId, Integer analysisId) {
     TypedQuery<Scenario> query = em.createQuery(
-            "SELECT s FROM Scenario s, Analysis a " +
+            "SELECT s FROM Scenario s, SingleStudyBenefitRiskAnalysis a " +
                     "WHERE s.workspace = :analysisId " +
                     "AND a.id = :analysisId " +
                     "AND a.projectId = :projectId", Scenario.class

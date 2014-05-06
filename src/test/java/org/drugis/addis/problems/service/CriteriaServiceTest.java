@@ -3,7 +3,7 @@ package org.drugis.addis.problems.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.analyses.Analysis;
+import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.MeasurementType;
@@ -47,7 +47,7 @@ public class CriteriaServiceTest {
   private Map<Long, String> trialverseVariables;
   private Outcome outcome;
   private Project project;
-  private Analysis analysis;
+  private SingleStudyBenefitRiskAnalysis analysis;
   private PartialValueFunction partialValueFunction;
   private Map<String, Outcome> outcomeMap;
 
@@ -56,7 +56,7 @@ public class CriteriaServiceTest {
     criteriaService = new CriteriaService();
     initMocks(this);
 
-    analysis = mock(Analysis.class);
+    analysis = mock(SingleStudyBenefitRiskAnalysis.class);
     when(analysis.getStudyId()).thenReturn(studyId);
 
     project = mock(Project.class);

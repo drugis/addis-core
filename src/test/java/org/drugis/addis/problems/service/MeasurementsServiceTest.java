@@ -2,7 +2,7 @@ package org.drugis.addis.problems.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.drugis.addis.analyses.Analysis;
+import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.AlternativeEntry;
 import org.drugis.addis.problems.model.Measurement;
@@ -65,7 +65,7 @@ public class MeasurementsServiceTest {
     Project project = mock(Project.class);
     when(project.getTrialverseId()).thenReturn(trialverseId);
 
-    Analysis analysis = mock(Analysis.class);
+    SingleStudyBenefitRiskAnalysis analysis = mock(SingleStudyBenefitRiskAnalysis.class);
     when(analysis.getStudyId()).thenReturn(studyId);
 
     Outcome outcome = mock(Outcome.class);

@@ -1,8 +1,8 @@
 package org.drugis.addis.analyses.controller;
 
-import org.drugis.addis.analyses.Analysis;
-import org.drugis.addis.analyses.AnalysisCommand;
-import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.*;
+import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
+import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -32,7 +32,9 @@ public class AnalysisController extends AbstractAddisCoreController {
   final static Logger logger = LoggerFactory.getLogger(AnalysisController.class);
 
   @Inject
-  AnalysisRepository analysisRepository;
+  SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
+  @Inject
+  NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
   @Inject
   AccountRepository accountRepository;
   @Inject
@@ -40,10 +42,10 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Analysis> query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Collection<SingleStudyBenefitRiskAnalysis> query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return analysisRepository.query(projectId);
+      return singleStudyBenefitRiskAnalysisRepository.query(projectId);
     } else {
       throw new MethodNotAllowedException();
     }
@@ -51,10 +53,10 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.GET)
   @ResponseBody
-  public Analysis get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer analysisId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public SingleStudyBenefitRiskAnalysis get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer analysisId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return analysisRepository.get(projectId, analysisId);
+      return singleStudyBenefitRiskAnalysisRepository.get(projectId, analysisId);
     } else {
       throw new MethodNotAllowedException();
     }
@@ -63,10 +65,20 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.POST)
   @ResponseBody
-  public Analysis create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId, @RequestBody AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public AbstractAnalysis create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      Analysis analysis = analysisRepository.create(user, analysisCommand);
+      AbstractAnalysis analysis;
+      switch(analysisCommand.getType()) {
+        case AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL:
+          analysis = singleStudyBenefitRiskAnalysisRepository.create(user, analysisCommand);
+          break;
+        case AnalysisType.NETWORK_META_ANALYSIS_LABEL:
+          analysis = networkMetaAnalysisRepository.create(user, analysisCommand);
+          break;
+        default:
+          throw new RuntimeException("unknown analysis type.");
+      }
       response.setStatus(HttpServletResponse.SC_CREATED);
       response.setHeader("Location", request.getRequestURL() + "/");
       return analysis;
@@ -77,15 +89,25 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
-  public Analysis update(Principal currentUser, @RequestBody Analysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public AbstractAnalysis update(Principal currentUser, @RequestBody AbstractAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
+
+    if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
+      SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
+      return updateSingleStudyBenefitRiskAnalysis(currentUser, singleStudyBenefitRiskAnalysis);
+
+    }
+    throw new ResourceDoesNotExistException();
+  }
+
+  public SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Principal currentUser, SingleStudyBenefitRiskAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      Analysis oldAnalysis = analysisRepository.get(analysis.getProjectId(), analysis.getId());
+      SingleStudyBenefitRiskAnalysis oldAnalysis = singleStudyBenefitRiskAnalysisRepository.get(analysis.getProjectId(), analysis.getId());
       if (oldAnalysis.getProblem() != null) {
         throw new MethodNotAllowedException();
       }
 
-      Analysis updatedAnalysis = analysisRepository.update(user, analysis);
+      SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
       if (analysis.getProblem() != null) {
         String state = analysis.getProblem();
         // problem wrapping in state necessary for mcda-web
@@ -96,5 +118,6 @@ public class AnalysisController extends AbstractAddisCoreController {
       throw new MethodNotAllowedException();
     }
   }
+
 
 }

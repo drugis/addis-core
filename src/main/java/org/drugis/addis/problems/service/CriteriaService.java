@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.analyses.Analysis;
+import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.Variable;
@@ -33,7 +33,7 @@ public class CriteriaService {
   /**
    * Match outcomes selected in the analysis to variables from the project namespace in Trialverse.
    */
-  public List<Pair<Variable, CriterionEntry>> createVariableCriteriaPairs(Project project, Analysis analysis) {
+  public List<Pair<Variable, CriterionEntry>> createVariableCriteriaPairs(Project project, SingleStudyBenefitRiskAnalysis analysis) {
     Map<String, Outcome> outcomesByUri = new HashMap<>();
 
     for (Outcome outcome : analysis.getSelectedOutcomes()) {

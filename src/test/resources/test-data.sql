@@ -13,11 +13,11 @@ INSERT INTO public.intervention (id, project, name, motivation, semanticInterven
 INSERT INTO public.intervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri) VALUES (2, 1, 'intervention 2', 'intervention description 2', 'intervention2', 'http://trials.drugis.org/namespaces/1/interventions/2');
 INSERT INTO public.intervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri) VALUES (3, 2, 'intervention 3', 'intervention description 3', 'intervention3', 'http://trials.drugis.org/namespaces/1/interventions/3');
 
-INSERT INTO public.analysis (id, projectId, name, analysisType) VALUES (1, 1, 'analysis 1', 'Single-study Benefit-Risk');
-INSERT INTO public.analysis (id, projectId, name, analysisType) VALUES (2, 1, 'analysis 2', 'Single-study Benefit-Risk');
-INSERT INTO public.analysis (id, projectId, name, analysisType) VALUES (3 ,2, 'analysis 3', 'Single-study Benefit-Risk');
+INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, name) VALUES (1, 1, 'analysis 1');
+INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, name) VALUES (2, 1, 'analysis 2');
+INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, name) VALUES (3 ,2, 'analysis 3');
 
-INSERT INTO public.analysis (id, projectId, name, analysisType, problem) VALUES (4, 1, 'analysis 3', 'Single-study Benefit-Risk', 'problem');
+INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, name, problem) VALUES (4, 1, 'analysis 3', 'problem');
 
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (1, 1, 'Default', 'problem state');
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (2, 1, 'Scenario title', 'problem state modified');

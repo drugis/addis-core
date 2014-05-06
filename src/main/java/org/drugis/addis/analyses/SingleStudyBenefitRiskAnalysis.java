@@ -1,11 +1,11 @@
 package org.drugis.addis.analyses;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.util.ObjectToStringDeserializer;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,7 +16,8 @@ import java.util.List;
  * Created by connor on 3/11/14.
  */
 @Entity
-public class Analysis implements Serializable {
+@JsonTypeName("Single-study Benefit-Risk")
+public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,46 +28,42 @@ public class Analysis implements Serializable {
   @JsonRawValue
   private String problem;
 
-  @Type(type = "org.drugis.addis.analyses.AnalysisTypeUserType")
-  private AnalysisType analysisType;
-
   private Integer studyId;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JoinTable(name = "analysis_outcomes",
+  @JoinTable(name = "singleStudyBenefitRiskAnalysis_Outcome",
           joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
           inverseJoinColumns = {@JoinColumn(name = "outcomeId", referencedColumnName = "id")})
   private List<Outcome> selectedOutcomes;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JoinTable(name = "analysis_interventions",
+  @JoinTable(name = "singleStudyBenefitRiskAnalysis_Intervention",
           joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
           inverseJoinColumns = {@JoinColumn(name = "interventionId", referencedColumnName = "id")})
   private List<Intervention> selectedInterventions;
 
-  public Analysis() {
+  public SingleStudyBenefitRiskAnalysis() {
   }
 
-  public Analysis(Integer id, Integer projectId, String name, AnalysisType analysisType, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions, String problem) {
+  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String name, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions, String problem) {
     this.id = id;
     this.projectId = projectId;
     this.name = name;
-    this.analysisType = analysisType;
     this.selectedOutcomes = selectedOutcomes == null ? this.selectedOutcomes : selectedOutcomes;
     this.selectedInterventions = selectedInterventions == null ? this.selectedInterventions : selectedInterventions;
     this.problem = problem;
   }
 
-  public Analysis(Integer id, Integer projectId, String name, AnalysisType analysisType, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
-    this(id, projectId, name, analysisType, selectedOutcomes, selectedInterventions, null);
+  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String name, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
+    this(id, projectId, name, selectedOutcomes, selectedInterventions, null);
   }
 
-  public Analysis(Integer projectId, String name, AnalysisType analysisType, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
-    this(null, projectId, name, analysisType, selectedOutcomes, selectedInterventions, null);
+  public SingleStudyBenefitRiskAnalysis(Integer projectId, String name, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
+    this(null, projectId, name, selectedOutcomes, selectedInterventions, null);
   }
 
-  public Analysis(Integer projectId, String name, AnalysisType analysisType, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions, String problem) {
-    this(null, projectId, name, analysisType, selectedOutcomes, selectedInterventions, problem);
+  public SingleStudyBenefitRiskAnalysis(Integer projectId, String name, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions, String problem) {
+    this(null, projectId, name, selectedOutcomes, selectedInterventions, problem);
   }
 
   public Integer getId() {
@@ -79,10 +76,6 @@ public class Analysis implements Serializable {
 
   public String getName() {
     return name;
-  }
-
-  public AnalysisType getAnalysisType() {
-    return analysisType;
   }
 
   public Integer getStudyId() {
@@ -116,9 +109,8 @@ public class Analysis implements Serializable {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    Analysis analysis = (Analysis) o;
+    SingleStudyBenefitRiskAnalysis analysis = (SingleStudyBenefitRiskAnalysis) o;
 
-    if (analysisType != analysis.analysisType) return false;
     if (id != null ? !id.equals(analysis.id) : analysis.id != null) return false;
     if (!name.equals(analysis.name)) return false;
     if (problem != null ? !problem.equals(analysis.problem) : analysis.problem != null) return false;
@@ -136,7 +128,6 @@ public class Analysis implements Serializable {
     result = 31 * result + projectId.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + (problem != null ? problem.hashCode() : 0);
-    result = 31 * result + analysisType.hashCode();
     result = 31 * result + (studyId != null ? studyId.hashCode() : 0);
     result = 31 * result + selectedOutcomes.hashCode();
     result = 31 * result + selectedInterventions.hashCode();
