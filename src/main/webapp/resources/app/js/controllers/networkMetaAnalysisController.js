@@ -3,9 +3,9 @@ define([], function() {
   ];
 
   var NetworkMetaAnalysisController = function($scope) {
-    $scope.analysis = $scope.$parent.analysis;
+     $scope.analysis = $scope.$parent.analysis;
     $scope.$parent.loading = {
-      loaded: true
+      loaded: false
     };
   };
 
