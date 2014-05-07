@@ -1,5 +1,6 @@
 <ul ng-show="loading.loaded" class="breadcrumbs">
-  <li><a href="#/projects">Projects</a></li>
+  <li><a href="#/projects">Projects</a>
+  </li>
   <li class="current active">{{project.name}}</li>
 </ul>
 <div class="project-header row">
@@ -21,6 +22,11 @@
       <button ng-show="editMode.allowEditing" class="small" ng-click="createOutcomeModal.open()"><i
       class="fa fa-plus"></i> Add outcome
       </button>
+    </div>
+
+    <div class="panel callout radius">
+      <span class="alert round label">Placeholder input</span>
+      Define outcomes to use in analyses within this project, based on semantic outcomes from the Trialverse namespace. Currently only one semantic outcome can be selected per outcome. This will be expanded in a future release.
     </div>
     
     <table>
@@ -48,6 +54,11 @@
       </button>
     </div>
 
+    <div class="panel callout radius">
+      <span class="alert round label">Placeholder input</span>
+      Define interventions to use in analyses within this project, based on semantic interventions from the Trialverse namespace. Currently only one semantic intervention can be selected per intervention. This will be expanded in a future release.
+    </div>
+
     <table>
       <thead>
         <tr>
@@ -72,6 +83,10 @@
       <button ng-show="editMode.allowEditing" class="small" ng-click="createAnalysisModal.open()"><i
       class="fa fa-plus"></i> Add Analysis
       </button>
+    </div>
+
+    <div class="panel callout radius">
+      Create an analysis on the basis of the defined outcomes and interventions, and the data in the project's trialverse namespace.
     </div>
   </div>
 </div>

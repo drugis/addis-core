@@ -30,7 +30,7 @@
     "nprogress": "~0.1.3",
     "d3": "~3.2.2",
     "nvd3": "~1.1.15-beta",
-    "mcda-web": "https://github.com/ConnorStroomberg/mcda-elicitation-web.git#develop"
+    "mcda-web": "https://github.com/drugis/mcda-elicitation-web.git#0.8.1"
   },
   "resolutions": {
     "angular-resource": "~1.2.11",
