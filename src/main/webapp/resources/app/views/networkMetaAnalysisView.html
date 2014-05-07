@@ -1,6 +1,14 @@
 <div class="row">
-  <div>Select Outcome
-    <select ng-model="selectedOutcome" ng-options="outcome.name for outcome in outcomes"></select>
+  <div class="columns large-12 nested-view">
+    <div class="nested-view-header">
+      Selected Outcome
+    </div>
+    <div class="row">
+      <div class="columns large-6 nested-view">
+        <select ng-model="selectedOutcome"
+              ng-options="outcome.name for outcome in outcomes"
+              data-placeholder="no criteria selected"></select>
+     </div>
     </div>
   </div>
 </div>
