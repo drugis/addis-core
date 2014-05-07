@@ -95,48 +95,41 @@ public class AnalysisController extends AbstractAddisCoreController {
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
   public AbstractAnalysis update(Principal currentUser, @RequestBody AbstractAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
-
-    if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
-      SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
-      return updateSingleStudyBenefitRiskAnalysis(currentUser, singleStudyBenefitRiskAnalysis);
-    } else if (analysis instanceof NetworkMetaAnalysis) {
-      NetworkMetaAnalysis networkMetaAnalysis = (NetworkMetaAnalysis) analysis;
-      return updateNetworkMetaAnalysis(currentUser, networkMetaAnalysis);
-    }
-    throw new ResourceDoesNotExistException();
-  }
-
-  private NetworkMetaAnalysis updateNetworkMetaAnalysis(Principal currentUser, NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      NetworkMetaAnalysis oldAnalysis = (NetworkMetaAnalysis) analysisRepository.get(analysis.getProjectId(), analysis.getId());
-      if (oldAnalysis.getProblem() != null) {
-        throw new MethodNotAllowedException();
+      if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
+        SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
+        return updateSingleStudyBenefitRiskAnalysis(user, singleStudyBenefitRiskAnalysis);
+      } else if (analysis instanceof NetworkMetaAnalysis) {
+        NetworkMetaAnalysis networkMetaAnalysis = (NetworkMetaAnalysis) analysis;
+        return updateNetworkMetaAnalysis(user, networkMetaAnalysis);
       }
-      return networkMetaAnalysisRepository.update(user, analysis);
+      throw new ResourceDoesNotExistException();
     } else {
       throw new MethodNotAllowedException();
     }
   }
 
-  public SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Principal currentUser, SingleStudyBenefitRiskAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
-      SingleStudyBenefitRiskAnalysis oldAnalysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysis.getProjectId(), analysis.getId());
-      if (oldAnalysis.getProblem() != null) {
-        throw new MethodNotAllowedException();
-      }
-
-      SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
-      if (analysis.getProblem() != null) {
-        String state = analysis.getProblem();
-        // problem wrapping in state necessary for mcda-web
-        scenarioRepository.create(analysis.getId(), Scenario.DEFAULT_TITLE, "{\"problem\":" + state + "}");
-      }
-      return updatedAnalysis;
-    } else {
+  private NetworkMetaAnalysis updateNetworkMetaAnalysis(Account user, NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    NetworkMetaAnalysis oldAnalysis = (NetworkMetaAnalysis) analysisRepository.get(analysis.getProjectId(), analysis.getId());
+    if (oldAnalysis.getProblem() != null) {
       throw new MethodNotAllowedException();
     }
+    return networkMetaAnalysisRepository.update(user, analysis);
+  }
+
+  public SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user, SingleStudyBenefitRiskAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    SingleStudyBenefitRiskAnalysis oldAnalysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysis.getProjectId(), analysis.getId());
+    if (oldAnalysis.getProblem() != null) {
+      throw new MethodNotAllowedException();
+    }
+    SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
+    if (analysis.getProblem() != null) {
+      String state = analysis.getProblem();
+      // problem wrapping in state necessary for mcda-web
+      scenarioRepository.create(analysis.getId(), Scenario.DEFAULT_TITLE, "{\"problem\":" + state + "}");
+    }
+    return updatedAnalysis;
   }
 
 
