@@ -11,4 +11,5 @@ import org.drugis.addis.security.Account;
  */
 public interface NetworkMetaAnalysisRepository {
   NetworkMetaAnalysis create(Account user, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException;
+
 }

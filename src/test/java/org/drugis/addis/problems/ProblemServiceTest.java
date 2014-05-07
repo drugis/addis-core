@@ -3,6 +3,7 @@ package org.drugis.addis.problems;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.problems.model.*;
@@ -40,6 +41,9 @@ public class ProblemServiceTest {
   SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
 
   @Mock
+  AnalysisRepository analysisRepository;
+
+  @Mock
   ProjectRepository projectRepository;
 
   @Mock
@@ -73,7 +77,7 @@ public class ProblemServiceTest {
 
   @After
   public void cleanUp() {
-    verifyNoMoreInteractions(projectRepository, singleStudyBenefitRiskAnalysisRepository, alternativeService, criteriaService);
+    verifyNoMoreInteractions(analysisRepository, projectRepository, singleStudyBenefitRiskAnalysisRepository, alternativeService, criteriaService);
   }
 
   @Test
@@ -85,7 +89,7 @@ public class ProblemServiceTest {
 
     int analysisId = 2;
     SingleStudyBenefitRiskAnalysis analysis = mock(SingleStudyBenefitRiskAnalysis.class);
-    when(singleStudyBenefitRiskAnalysisRepository.get(projectId, analysisId)).thenReturn(analysis);
+    when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
     when(analysis.getName()).thenReturn("analysisName");
 
     Map<Long, AlternativeEntry> alternativesCache = new HashMap<>();
@@ -123,7 +127,7 @@ public class ProblemServiceTest {
     Problem actualProblem = problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).getProjectById(projectId);
-    verify(singleStudyBenefitRiskAnalysisRepository).get(projectId, analysisId);
+    verify(analysisRepository).get(projectId, analysisId);
     verify(alternativeService).createAlternatives(project, analysis);
     verify(criteriaService).createVariableCriteriaPairs(project, analysis);
     verify(measurementsService).createMeasurements(project, analysis, alternativesCache);

@@ -12,10 +12,10 @@ import javax.persistence.*;
  * Created by connor on 6-5-14.
  */
 @Entity
-@JsonTypeName("Network meta-analysis")
 public class NetworkMetaAnalysis extends AbstractAnalysis {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @SequenceGenerator(name="analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")
   private Integer id;
   private Integer projectId;
   private String name;

@@ -40,7 +40,7 @@ public class ScenarioRepositoryTest {
 
   @Test
   public void testCreate() {
-    int workspaceId = 2;
+    int workspaceId = -2;
     String title = "title";
     String problem = "Problem";
     Scenario created = scenarioRepository.create(workspaceId, title, problem);
@@ -51,7 +51,7 @@ public class ScenarioRepositoryTest {
   @Test
   public void testQuery() {
     Integer projectId = 1;
-    Integer analysisId = 1;
+    Integer analysisId = -1;
     Collection<Scenario> result = scenarioRepository.query(projectId, analysisId);
     assertNotNull(result);
     assertEquals(2, result.size());

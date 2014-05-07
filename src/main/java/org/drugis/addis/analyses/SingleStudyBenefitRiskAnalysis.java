@@ -16,11 +16,11 @@ import java.util.List;
  * Created by connor on 3/11/14.
  */
 @Entity
-@JsonTypeName("Single-study Benefit-Risk")
-public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis implements Serializable {
+public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @SequenceGenerator(name="analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")
   private Integer id;
   private Integer projectId;
   private String name;

@@ -16,7 +16,5 @@ public interface SingleStudyBenefitRiskAnalysisRepository {
 
   SingleStudyBenefitRiskAnalysis create(Account user, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException;
 
-  SingleStudyBenefitRiskAnalysis get(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException;
-
   SingleStudyBenefitRiskAnalysis update(Account user, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException;
 }

@@ -1,6 +1,7 @@
 package org.drugis.addis.analyses.controller;
 
 import org.drugis.addis.analyses.*;
+import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.base.AbstractAddisCoreController;
@@ -32,6 +33,8 @@ public class AnalysisController extends AbstractAddisCoreController {
   final static Logger logger = LoggerFactory.getLogger(AnalysisController.class);
 
   @Inject
+  AnalysisRepository analysisRepository;
+  @Inject
   SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
   @Inject
   NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
@@ -42,10 +45,10 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<SingleStudyBenefitRiskAnalysis> query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Collection<AbstractAnalysis> query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return singleStudyBenefitRiskAnalysisRepository.query(projectId);
+      return analysisRepository.query(projectId);
     } else {
       throw new MethodNotAllowedException();
     }
@@ -53,10 +56,10 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.GET)
   @ResponseBody
-  public SingleStudyBenefitRiskAnalysis get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer analysisId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public AbstractAnalysis get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer analysisId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return singleStudyBenefitRiskAnalysisRepository.get(projectId, analysisId);
+      return analysisRepository.get(projectId, analysisId);
     } else {
       throw new MethodNotAllowedException();
     }
@@ -102,7 +105,7 @@ public class AnalysisController extends AbstractAddisCoreController {
   public SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Principal currentUser, SingleStudyBenefitRiskAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      SingleStudyBenefitRiskAnalysis oldAnalysis = singleStudyBenefitRiskAnalysisRepository.get(analysis.getProjectId(), analysis.getId());
+      SingleStudyBenefitRiskAnalysis oldAnalysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysis.getProjectId(), analysis.getId());
       if (oldAnalysis.getProblem() != null) {
         throw new MethodNotAllowedException();
       }

@@ -42,18 +42,6 @@ public class JpaSingleStudyBenefitRiskAnalysisRepository implements SingleStudyB
   }
 
   @Override
-  public SingleStudyBenefitRiskAnalysis get(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
-    TypedQuery<SingleStudyBenefitRiskAnalysis> query = em.createQuery("FROM SingleStudyBenefitRiskAnalysis a WHERE a.id = :analysisId AND a.projectId = :projectId", SingleStudyBenefitRiskAnalysis.class);
-    query.setParameter("analysisId", analysisId);
-    query.setParameter("projectId", projectId);
-    try {
-      return query.getSingleResult();
-    } catch (NoResultException e) {
-      throw new ResourceDoesNotExistException();
-    }
-  }
-
-  @Override
   public SingleStudyBenefitRiskAnalysis create(Account account, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
     SingleStudyBenefitRiskAnalysis newAnalysis = new SingleStudyBenefitRiskAnalysis(analysisCommand.getProjectId(), analysisCommand.getName(), Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     analysisRepositoryUtils.checkProjectExistsAndModifiable(account, analysisCommand, em);

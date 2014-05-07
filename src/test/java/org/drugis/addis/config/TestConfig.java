@@ -1,5 +1,6 @@
 package org.drugis.addis.config;
 
+import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.repository.CriteriaRepository;
@@ -54,7 +55,12 @@ public class TestConfig {
   }
 
   @Bean
-  public SingleStudyBenefitRiskAnalysisRepository analysisRepository() {
+  public AnalysisRepository analysisRepository() {
+    return mock(AnalysisRepository.class);
+  }
+
+  @Bean
+  public SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository() {
     return mock(SingleStudyBenefitRiskAnalysisRepository.class);
   }
 

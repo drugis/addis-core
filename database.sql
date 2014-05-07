@@ -90,8 +90,11 @@ CREATE TABLE Scenario (id SERIAL NOT NULL,
 -- changeset reidd:3
 
 ALTER TABLE Analysis ADD problem VARCHAR NULL
+
 -- changeset stroombergc:4
-CREATE TABLE SingleStudyBenefitRiskAnalysis (id SERIAL NOT NULL,
+CREATE SEQUENCE shared_analysis_id_seq;
+
+CREATE TABLE SingleStudyBenefitRiskAnalysis (id INT DEFAULT nextval('shared_analysis_id_seq') NOT NULL,
         projectId INT,
         name VARCHAR NOT NULL,
         studyId INT,
@@ -99,7 +102,7 @@ CREATE TABLE SingleStudyBenefitRiskAnalysis (id SERIAL NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY(projectId) REFERENCES Project(id));
 
-CREATE TABLE NetworkMetaAnalysis (id SERIAL NOT NULL,
+CREATE TABLE NetworkMetaAnalysis (id INT DEFAULT nextval('shared_analysis_id_seq') NOT NULL,
           projectId INT,
           name VARCHAR NOT NULL,
           studyId INT,

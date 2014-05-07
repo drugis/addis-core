@@ -1,6 +1,7 @@
 package org.drugis.addis.scenarios.service;
 
 import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.Project;
@@ -25,7 +26,7 @@ public class ScenarioServiceTest {
   ProjectRepository projectRepository;
 
   @Mock
-  SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
+  AnalysisRepository analysisRepository;
 
   @Mock
   ScenarioRepository scenarioRepository;
@@ -42,7 +43,7 @@ public class ScenarioServiceTest {
   @Before
   public void setUp() throws ResourceDoesNotExistException {
     projectRepository = mock(ProjectRepository.class);
-    singleStudyBenefitRiskAnalysisRepository = mock(SingleStudyBenefitRiskAnalysisRepository.class);
+    analysisRepository = mock(AnalysisRepository.class);
     scenarioRepository = mock(ScenarioRepository.class);
 
     scenarioService = new ScenarioServiceImpl();
@@ -52,7 +53,7 @@ public class ScenarioServiceTest {
     when(analysis.getProjectId()).thenReturn(projectId);
 
     when(projectRepository.getProjectById(projectId)).thenReturn(project);
-    when(singleStudyBenefitRiskAnalysisRepository.get(projectId, analysisId)).thenReturn(analysis);
+    when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
   }
 
   @Test

@@ -3,6 +3,7 @@ package org.drugis.addis.problems.service.impl;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.problems.model.*;
@@ -48,10 +49,13 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   private MeasurementsService measurementsService;
 
+  @Inject
+  private AnalysisRepository analysisRepository;
+
   @Override
   public Problem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
     Project project = projectRepository.getProjectById(projectId);
-    SingleStudyBenefitRiskAnalysis analysis = singleStudyBenefitRiskAnalysisRepository.get(projectId, analysisId);
+    SingleStudyBenefitRiskAnalysis analysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(projectId, analysisId);
 
     Map<Long, AlternativeEntry> alternativesCache = alternativeService.createAlternatives(project, analysis);
     Map<String, AlternativeEntry> alternatives = new HashMap<>();

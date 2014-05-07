@@ -11,7 +11,6 @@
     <spring-social-google-version>1.0.0.M3</spring-social-google-version>
     <org.springframework-version>4.0.1.RELEASE</org.springframework-version>
     <org.springframework.security-version>3.2.0.RC1</org.springframework.security-version>
-    <jackson.version>1.9.13</jackson.version>
     <java-version>1.7</java-version>
     <org.slf4j-version>1.7.5</org.slf4j-version>
     <hibernate-version>4.3.1.Final</hibernate-version>
@@ -170,14 +169,6 @@
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
       <version>1.2</version>
-    </dependency>
-
-
-    <!-- Jackson (Json)-->
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>${jackson.version}</version>
     </dependency>
 
     <!-- JSON PATH -->
