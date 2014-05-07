@@ -15,4 +15,6 @@ public interface NetworkMetaAnalysisRepository {
   NetworkMetaAnalysis create(Account user, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException;
 
   Collection<NetworkMetaAnalysis> query(Integer projectId);
+
+  NetworkMetaAnalysis update(Account user, NetworkMetaAnalysis analysis);
 }

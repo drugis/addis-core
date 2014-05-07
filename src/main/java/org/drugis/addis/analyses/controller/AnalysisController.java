@@ -20,9 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Array;
 import java.security.Principal;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -101,9 +99,24 @@ public class AnalysisController extends AbstractAddisCoreController {
     if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
       SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
       return updateSingleStudyBenefitRiskAnalysis(currentUser, singleStudyBenefitRiskAnalysis);
-
+    } else if (analysis instanceof NetworkMetaAnalysis) {
+      NetworkMetaAnalysis networkMetaAnalysis = (NetworkMetaAnalysis) analysis;
+      return updateNetworkMetaAnalysis(currentUser, networkMetaAnalysis);
     }
     throw new ResourceDoesNotExistException();
+  }
+
+  private NetworkMetaAnalysis updateNetworkMetaAnalysis(Principal currentUser, NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    if (user != null) {
+      NetworkMetaAnalysis oldAnalysis = (NetworkMetaAnalysis) analysisRepository.get(analysis.getProjectId(), analysis.getId());
+      if (oldAnalysis.getProblem() != null) {
+        throw new MethodNotAllowedException();
+      }
+      return networkMetaAnalysisRepository.update(user, analysis);
+    } else {
+      throw new MethodNotAllowedException();
+    }
   }
 
   public SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Principal currentUser, SingleStudyBenefitRiskAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {

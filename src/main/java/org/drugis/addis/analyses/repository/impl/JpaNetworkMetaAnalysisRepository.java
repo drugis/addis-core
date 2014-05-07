@@ -2,7 +2,6 @@ package org.drugis.addis.analyses.repository.impl;
 
 import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
-import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -41,5 +40,10 @@ public class JpaNetworkMetaAnalysisRepository implements NetworkMetaAnalysisRepo
     TypedQuery<NetworkMetaAnalysis> query = em.createQuery("FROM NetworkMetaAnalysis a WHERE a.projectId = :projectId", NetworkMetaAnalysis.class);
     query.setParameter("projectId", projectId);
     return query.getResultList();
+  }
+
+  @Override
+  public NetworkMetaAnalysis update(Account user, NetworkMetaAnalysis analysis) {
+    return null;
   }
 }
