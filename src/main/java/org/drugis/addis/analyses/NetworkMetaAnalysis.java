@@ -47,6 +47,7 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     this(id, projectId, name, null, null);
   }
 
+
   public Integer getId() {
     return id;
   }
@@ -94,4 +95,5 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     result = 31 * result + (outcome != null ? outcome.hashCode() : 0);
     return result;
   }
+
 }

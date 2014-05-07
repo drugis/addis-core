@@ -133,4 +133,5 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     result = 31 * result + selectedInterventions.hashCode();
     return result;
   }
+
 }

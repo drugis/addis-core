@@ -13,4 +13,5 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 @JsonSubTypes({@Type(value = SingleStudyBenefitRiskAnalysis.class, name = "Single-study Benefit-Risk"),
                @Type(value = NetworkMetaAnalysis.class, name = "Network meta-analysis")})
 public abstract class AbstractAnalysis {
+
 }

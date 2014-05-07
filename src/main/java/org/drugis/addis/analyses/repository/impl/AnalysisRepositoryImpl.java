@@ -14,6 +14,9 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -57,6 +60,11 @@ public class AnalysisRepositoryImpl implements AnalysisRepository {
 
   @Override
   public List<AbstractAnalysis> query(Integer projectId) {
-    return null;
+    Collection<SingleStudyBenefitRiskAnalysis> singleStudyBenefitRiskAnalyses = singleStudyBenefitRiskAnalysisRepository.query(projectId);
+    Collection<NetworkMetaAnalysis> networkMetaAnalyses = networkMetaAnalysisRepository.query(projectId);
+    List<AbstractAnalysis> analyses = new ArrayList<>();
+    analyses.addAll(singleStudyBenefitRiskAnalyses);
+    analyses.addAll(networkMetaAnalyses);
+    return analyses;
   }
 }

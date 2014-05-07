@@ -16,7 +16,6 @@ INSERT INTO public.intervention (id, project, name, motivation, semanticInterven
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, name) VALUES (-1, 1, 'analysis 1');
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, name) VALUES (-2, 1, 'analysis 2');
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, name) VALUES (-3 ,2, 'analysis 3');
-
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, name, problem) VALUES (-4, 1, 'analysis 3', 'singlestudy problem');
 
 INSERT INTO public.NetworkMetaAnalysis(id, projectId, name, problem) VALUES (-5, 1, 'nma', 'network problem');

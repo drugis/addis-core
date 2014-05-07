@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.Array;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by connor on 3/11/14.
@@ -45,10 +47,12 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<AbstractAnalysis> query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public AbstractAnalysis [] query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return analysisRepository.query(projectId);
+      List<AbstractAnalysis> abstractAnalysisList = analysisRepository.query(projectId);
+      AbstractAnalysis [] abstractAnalysesArray = new AbstractAnalysis[abstractAnalysisList.size()];
+      return abstractAnalysisList.toArray(abstractAnalysesArray);
     } else {
       throw new MethodNotAllowedException();
     }

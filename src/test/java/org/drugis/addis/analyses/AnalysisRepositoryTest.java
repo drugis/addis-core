@@ -13,7 +13,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by daan on 7-5-14.
@@ -52,6 +56,15 @@ public class AnalysisRepositoryTest {
   @Test(expected = ResourceDoesNotExistException.class)
   public void testGetNonexistentAnalysisFails() throws ResourceDoesNotExistException {
     analysisRepository.get(1, 12345);
+  }
+
+  @Test
+  public void testQuery() {
+    Integer projectId = 1;
+    List<AbstractAnalysis> analyses = analysisRepository.query(projectId);
+    assertEquals(4, analyses.size());
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(-1, 1, "analysis 1", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    assertTrue(analyses.contains(analysis));
   }
 
 }

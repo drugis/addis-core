@@ -112,7 +112,6 @@ public class AnalysisControllerTest {
       .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(jsonPath("$", hasSize(2)))
       .andExpect(jsonPath("$[0].analysisType", Matchers.notNullValue()));
-//      .andExpect(jsonPath("$[0].id", is(singleStudyBenefitRiskAnalysis.getId())));
 
     verify(analysisRepository).query(projectId);
     verify(accountRepository).findAccountByUsername("gert");
