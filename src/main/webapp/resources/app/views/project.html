@@ -101,8 +101,9 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="clickable on-hover" ng-repeat="analysis in analyses" ng-click="goToAnalysis(analysis.id)">
-          <td>{{analysis.name}}</td>
+      <tr class="clickable on-hover" ng-repeat="analysis in analyses"
+          ng-click="goToAnalysis(analysis.id, analysis.analysisType)">
+      <td>{{analysis.name}}</td>
           <td>{{analysis.analysisType}}</td>
           <td>{{(studies | filter:{id: analysis.studyId}:true)[0].name}}</td>
           </a>

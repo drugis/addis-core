@@ -1,5 +1,5 @@
 'use strict';
-define([], function () {
+define([], function() {
   var dependencies = ['$scope', '$state', '$stateParams', '$window',
     'ProjectResource',
     'TrialverseResource',
@@ -9,24 +9,20 @@ define([], function () {
     'SemanticInterventionResource',
     'InterventionResource',
     'AnalysisResource',
-    '$timeout'
+    'ANALYSIS_TYPES'
   ];
-  var ProjectsController = function ($scope, $state, $stateParams, $window, ProjectResource, TrialverseResource, TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource, AnalysisResource, $timeout) {
+  var ProjectsController = function($scope, $state, $stateParams, $window, ProjectResource, TrialverseResource, TrialverseStudyResource, SemanticOutcomeResource,
+    OutcomeResource, SemanticInterventionResource, InterventionResource, AnalysisResource, ANALYSIS_TYPES) {
     $scope.loading = {
       loaded: false
     };
-    $scope.project = ProjectResource.get($stateParams);
     $scope.editMode = {
       allowEditing: false
     };
+    $scope.analysisTypes = ANALYSIS_TYPES;
 
-    $scope.analysisTypes = [
-      {
-        label: 'Single-study Benefit-Risk'
-      }
-    ];
-
-    $scope.project.$promise.then(function () {
+    $scope.project = ProjectResource.get($stateParams);
+    $scope.project.$promise.then(function() {
       $scope.trialverse = TrialverseResource.get({
         id: $scope.project.trialverseId
       });
@@ -51,46 +47,50 @@ define([], function () {
         id: $scope.project.trialverseId
       });
 
-      $scope.studies.$promise.then(function () {
+      $scope.studies.$promise.then(function() {
         $scope.analyses = AnalysisResource.query({
           projectId: $scope.project.id
         });
       });
 
+      $scope.addOutcome = function(newOutcome) {
+        newOutcome.projectId = $scope.project.id;
+        $scope.createOutcomeModal.close();
+        this.model = {};
+        OutcomeResource
+          .save(newOutcome)
+          .$promise.then(function(outcome) {
+            $scope.outcomes.push(outcome);
+          });
+      };
+
+      $scope.addIntervention = function(newIntervention) {
+        newIntervention.projectId = $scope.project.id;
+        $scope.createInterventionModal.close();
+        this.model = {};
+        InterventionResource
+          .save(newIntervention)
+          .$promise.then(function(intervention) {
+            $scope.interventions.push(intervention);
+          });
+      };
+
+      $scope.addAnalysis = function(newAnalysis) {
+        newAnalysis.projectId = $scope.project.id;
+        AnalysisResource
+          .save(newAnalysis)
+          .$promise.then(function(savedAnalysis) {
+            $scope.goToAnalysis(savedAnalysis.id, savedAnalysis.analysisType);
+          });
+      };
     });
 
-    $scope.goToAnalysis = function (analysisId) {
-       $state.go('analysis.default', {
-          'analysisId': analysisId
-        });
-    }
-
-    $scope.addOutcome = function (newOutcome) {
-      newOutcome.projectId = $scope.project.id;
-      $scope.createOutcomeModal.close();
-      this.model = {};
-      OutcomeResource.save(newOutcome, function (outcome) {
-        $scope.outcomes.push(outcome);
+    $scope.goToAnalysis = function(analysisId, analysisTypeLabel) {
+      var analysisType = _.find(ANALYSIS_TYPES, function(type) {
+        return type.label === analysisTypeLabel;
       });
-    };
-
-    $scope.addIntervention = function (newIntervention) {
-      newIntervention.projectId = $scope.project.id;
-      $scope.createInterventionModal.close();
-      this.model = {};
-      InterventionResource.save(newIntervention, function (intervention) {
-        $scope.interventions.push(intervention);
-      });
-    };
-
-    $scope.addAnalysis = function (newAnalysis) {
-      newAnalysis.projectId = $scope.project.id;
-      var savedAnalysis = AnalysisResource.save(newAnalysis);
-      savedAnalysis.$promise.then(function () {
-        $state.go('analysis.default', {
-          projectId: savedAnalysis.projectId,
-          analysisId: savedAnalysis.id
-        });
+      $state.go(analysisType.stateName, {
+        analysisId: analysisId
       });
     };
   };
