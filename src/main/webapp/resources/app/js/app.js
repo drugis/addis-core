@@ -116,19 +116,7 @@ define(
                 }
               ]
             },
-            controller: function($scope, $state, currentAnalysis, currentProject) {
-              $scope.analysis = currentAnalysis;
-              $scope.project = currentProject;
-              currentAnalysis.$promise.then(function(analysis) {
-                var analysisType = _.find(ANALYSIS_TYPES, function(type) {
-                  return type.label === analysis.analysisType;
-                });
-                $state.go(analysisType.stateName, {
-                  'type': analysis.analysisType,
-                  'analysisId': analysis.id
-                });
-              });
-            }
+            controller: 'AnalysisController'
           })
           .state('analysis.singleStudyBenefitRisk', {
             templateUrl: baseTemplatePath + 'singleStudyBenefitRiskAnalysisView.html',
