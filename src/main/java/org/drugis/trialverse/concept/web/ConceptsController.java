@@ -26,53 +26,53 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ExposesResourceFor(Concept.class)
 public class ConceptsController {
 	private interface Fetcher {
-		public List<Concept> fetch(UUID conceptId);
+		public List<Concept> fetch(final UUID conceptId);
 	}
-	
+
 	private final ConceptRepository d_concepts;
-	private final EntityLinks d_entityLinks; 
-		
+	private final EntityLinks d_entityLinks;
+
 	@Autowired
-	public ConceptsController(ConceptRepository concepts, EntityLinks entityLinks) {
+	public ConceptsController(final ConceptRepository concepts, final EntityLinks entityLinks) {
 		Assert.notNull(entityLinks, "EntityLinks must not be null!");
 		Assert.notNull(concepts, "ConceptRepository must not be null!");
 		d_concepts = concepts;
 		d_entityLinks = entityLinks;
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "treatments", method = RequestMethod.GET)
 	public ResponseEntity<List<Resource<Concept>>> getTreatments(
 			final @PathVariable("id") UUID conceptId,
 			final @RequestParam(value="name", required=false) String name) {
 		return fetchConceptsFor(conceptId, new Fetcher() {
-			public List<Concept> fetch(UUID conceptId) {
+			public List<Concept> fetch(final UUID conceptId) {
 				return d_concepts.findTreatmentsByIndication(conceptId, name);
 			}
 		});
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "variables", method = RequestMethod.GET)
 	public ResponseEntity<List<Resource<Concept>>> getVariables(
 			final @PathVariable("id") UUID conceptId,
 			final @RequestParam(value="name", required=false) String name) {
 		return fetchConceptsFor(conceptId, new Fetcher() {
-			public List<Concept> fetch(UUID conceptId) {
+			public List<Concept> fetch(final UUID conceptId) {
 				return d_concepts.findVariablesByIndication(conceptId, name);
 			}
 		});
 	}
 
-	private ResponseEntity<List<Resource<Concept>>> fetchConceptsFor(UUID conceptId, Fetcher fetcher) {
-		Concept concept = d_concepts.findOne(conceptId);
-		if (concept.getType().equals(ConceptType.INDICATION)) { 
-			List<Concept> treatments = fetcher.fetch(conceptId);
-			List<Resource<Concept>> result = new ArrayList<>();
-			for(Concept treatment : treatments) { 
-				Resource<Concept> resource = new Resource<Concept>(treatment);
-				result.add(resource);
+	private ResponseEntity<List<Resource<Concept>>> fetchConceptsFor(final UUID conceptId, final Fetcher fetcher) {
+		final Concept concept = d_concepts.findOne(conceptId);
+		if (concept.getType().equals(ConceptType.INDICATION)) {
+			final List<Concept> treatments = fetcher.fetch(conceptId);
+			final List<Resource<Concept>> result = new ArrayList<>();
+			for(final Concept treatment : treatments) {
+				final Resource<Concept> resource = new Resource<Concept>(treatment);
 				resource.add(d_entityLinks.linkForSingleResource(treatment).withSelfRel());
+				result.add(resource);
 			}
 			return new ResponseEntity<List<Resource<Concept>>>(result, HttpStatus.OK);
 		} else {

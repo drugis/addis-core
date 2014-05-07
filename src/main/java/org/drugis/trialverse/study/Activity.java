@@ -14,6 +14,7 @@ import javax.persistence.OneToMany;
 import lombok.Data;
 
 import org.drugis.common.hibernate.PostgresEnumConverter;
+import org.drugis.trialverse.study.types.ActivityType;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -26,10 +27,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 		fieldVisibility = JsonAutoDetect.Visibility.NON_PRIVATE,
 		isGetterVisibility = JsonAutoDetect.Visibility.PUBLIC_ONLY)
 @TypeDef(name="activityType", typeClass=PostgresEnumConverter.class,
-		 parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.ActivityType")})
+		 parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.types.ActivityType")})
 @Data public class Activity {
-	@EmbeddedId @JsonIgnore ActivityPK activityPK;
-	@Column @Type(type="activityType") ActivityType type;
+	@EmbeddedId @JsonIgnore private  ActivityPK key;
+	@Column @Type(type="activityType") private  ActivityType type;
 
 	@Embeddable
 	@Data private static class ActivityPK implements Serializable {
@@ -42,9 +43,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 		@JoinColumn(name="activityName"),
 		@JoinColumn(name="studyId")
 	})
-	@OneToMany List<Treatment> treatment;
+	@OneToMany private List<Treatment> treatment;
 
 	public String getName() {
-		return activityPK.getName();
+		return key.getName();
 	}
 }

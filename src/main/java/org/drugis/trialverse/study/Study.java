@@ -9,13 +9,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import lombok.Data;
 
 import org.drugis.common.hibernate.PostgresEnumConverter;
 import org.drugis.trialverse.concept.Concept;
+import org.drugis.trialverse.study.types.AllocationType;
+import org.drugis.trialverse.study.types.BlindingType;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -23,21 +25,20 @@ import org.hibernate.annotations.TypeDefs;
 import org.springframework.hateoas.Identifiable;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE)
 @TypeDefs({
 	@TypeDef(name="blindingType", typeClass=PostgresEnumConverter.class,
-			parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.BlindingType")}),
+			parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.types.BlindingType")}),
 	@TypeDef(name="allocationType", typeClass=PostgresEnumConverter.class,
-		parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.AllocationType")})
+		parameters = {@Parameter(name="enumClassName", value="org.drugis.trialverse.study.types.AllocationType")})
 })
 @Data public class Study implements Identifiable<Long> {
-	@Id @JsonIgnore @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
 	@Column private String name;
 	@Column private String title;
-	@OneToOne @JoinColumn(name = "indication_concept") private Concept indication;
+	@ManyToOne @JoinColumn(name = "indication_concept") private Concept indication;
 	@Column private String objective;
 	@Column private Integer numberOfCenters;
 	@Column private String inclusion;
@@ -47,10 +48,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	@Column @Type(type="blindingType")  private BlindingType blindingType;
 	@Column @Type(type="allocationType")  private AllocationType allocationType;
 
-	@OneToMany(mappedBy="armPK.studyId") private List<Arm> arms;
-	@OneToMany(mappedBy="epochPK.studyId") private List<Epoch> epochs;
-	@OneToMany(mappedBy="activityPK.studyId") private List<Activity> activities;
-	@OneToMany(mappedBy="designPK.studyId")  private List<Design> designs;
-	@OneToMany(mappedBy="studyVariablePK.studyId") private List<StudyVariable> variables;
-	@OneToMany(mappedBy="measurementMomentPK.studyId") private List<MeasurementMoment> measurementMoments;
+	@OneToMany(mappedBy="key.studyId") private List<Arm> arms;
+	@OneToMany(mappedBy="key.studyId") private List<Epoch> epochs;
+	@OneToMany(mappedBy="key.studyId") private List<Activity> activities;
+	@OneToMany(mappedBy="key.studyId")  private List<Design> designs;
+	@OneToMany(mappedBy="key.studyId") private List<Variable> variables;
+	@OneToMany(mappedBy="key.studyId") private List<MeasurementMoment> measurementMoments;
 }
