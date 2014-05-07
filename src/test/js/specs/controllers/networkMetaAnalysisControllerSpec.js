@@ -2,7 +2,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
   describe('the network meta-analysis controller', function() {
     var scope,
       analysisDeferred,
-      mockAnalysis = {},
+      mockAnalysis = {$save: function(){}},
       projectDeferred,
       mockProject = {
         id: 11
@@ -11,7 +11,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         analysisId: 1,
         projectId: 11
       },
-      mockOutcomes, outcomeResource;
+      mockOutcomes = [1, 2],
+      outcomeResource;
 
     beforeEach(module('addis.controllers'));
 
@@ -19,8 +20,13 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       analysisDeferred = $q.defer();
       mockAnalysis.$promise = analysisDeferred.promise;
 
+      spyOn(mockAnalysis, '$save');
+
       projectDeferred = $q.defer();
       mockProject.$promise = projectDeferred.promise;
+
+      outcomesDeferred = $q.defer();
+      mockOutcomes.$promise = outcomesDeferred.promise;
 
       scope = $rootScope;
       scope.$parent = {
@@ -28,6 +34,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         project: mockProject
       };
       outcomeResource = jasmine.createSpyObj('OutcomeResource', ['query']);
+      outcomeResource.query.and.returnValue(mockOutcomes);
 
       $controller('NetworkMetaAnalysisController', {
         $scope: scope,
@@ -51,13 +58,20 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
     });
 
-    describe('when the analysis and project are loaded', function() {
+    describe('when the analysis, outcomes and project are loaded', function() {
 
       beforeEach(inject(function($controller) {
         analysisDeferred.resolve(mockAnalysis);
         projectDeferred.resolve(mockProject);
+        outcomesDeferred.resolve(mockOutcomes);
         scope.$apply();
       }));
+
+      it('should save the analysis when the selected outcome changes', function() {
+        scope.selectedOutcome = 1;
+        scope.$apply();
+        expect(scope.analysis.$save).toHaveBeenCalled();
+      });
 
     });
 

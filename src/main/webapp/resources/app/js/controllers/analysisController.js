@@ -11,8 +11,8 @@ define([], function() {
         return type.label === analysis.analysisType;
       });
       $state.go(analysisType.stateName, {
-        'type': analysis.analysisType,
-        'analysisId': analysis.id
+        type: analysis.analysisType,
+        analysisId: analysis.id
       });
     });
     $q.all(currentAnalysis, currentProject).then(function() {
