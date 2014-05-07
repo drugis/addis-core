@@ -11,7 +11,7 @@ import javax.persistence.*;
 /**
  * Created by connor on 6-5-14.
  */
-
+@Entity
 @JsonTypeName("Network meta-analysis")
 public class NetworkMetaAnalysis extends AbstractAnalysis {
   @Id
