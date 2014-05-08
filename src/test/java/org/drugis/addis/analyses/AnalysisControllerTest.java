@@ -225,11 +225,11 @@ public class AnalysisControllerTest {
     );
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", selectedOutcomes, selectedInterventions);
     ObjectMapper objectMapper = new ObjectMapper();
-    SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequestWithoutProblem()), SingleStudyBenefitRiskAnalysis.class);
+    SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem()), SingleStudyBenefitRiskAnalysis.class);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
     when(singleStudyBenefitRiskAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-      .content(exampleUpdateRequestWithoutProblem())
+            .content(exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem())
       .principal(user)
       .contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(status().isOk())
@@ -248,11 +248,11 @@ public class AnalysisControllerTest {
     Integer analysisId = 1;
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     ObjectMapper objectMapper = new ObjectMapper();
-    SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
+    SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
     when(singleStudyBenefitRiskAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-      .content(exampleUpdateRequestWithProblem())
+            .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
       .principal(user)
       .contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(status().isOk())
@@ -269,11 +269,11 @@ public class AnalysisControllerTest {
     Integer analysisId = 1;
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST, "oldProblem");
     ObjectMapper objectMapper = new ObjectMapper();
-    SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
+    SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
     when(singleStudyBenefitRiskAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-      .content(exampleUpdateRequestWithProblem())
+            .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
       .principal(user)
       .contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(status().isForbidden());
@@ -287,11 +287,11 @@ public class AnalysisControllerTest {
     Integer analysisId = 1;
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
     ObjectMapper objectMapper = new ObjectMapper();
-    SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
+    SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
     when(singleStudyBenefitRiskAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", 1, 1)
-      .content(exampleUpdateRequestWithProblem())
+            .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
       .principal(user)
       .contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(status().isOk());
@@ -321,12 +321,33 @@ public class AnalysisControllerTest {
     verify(networkMetaAnalysisRepository).update(gert, newAnalysis);
   }
 
-  String exampleUpdateRequestWithProblem() {
-    return TestUtils.loadResource(this.getClass(), "/analysisController/exampleAnalysisWithProblem.json");
+  @Test
+  public void testUpdateNetworkMetaAnalysisWithProblemFails() throws Exception {
+    Integer analysisId = 1;
+    Integer projectId = 1;
+    ObjectMapper objectMapper = new ObjectMapper();
+    NetworkMetaAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateNetworkMetaAnalysisRequestWithProblem()), NetworkMetaAnalysis.class);
+    when(analysisRepository.get(projectId, analysisId)).thenReturn(newAnalysis);
+    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
+            .content(exampleUpdateNetworkMetaAnalysisRequestWithProblem())
+            .principal(user)
+            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(status().isForbidden());
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(analysisRepository).get(projectId, analysisId);
+    verifyNoMoreInteractions(networkMetaAnalysisRepository);
   }
 
-  String exampleUpdateRequestWithoutProblem() {
-    return TestUtils.loadResource(this.getClass(), "/analysisController/exampleAnalysisWithoutProblem.json");
+  String exampleUpdateSingleStudyBenefitRiskRequestWithProblem() {
+    return TestUtils.loadResource(this.getClass(), "/analysisController/exampleSingleStudyBenefitRiskAnalysisWithProblem.json");
+  }
+
+  String exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem() {
+    return TestUtils.loadResource(this.getClass(), "/analysisController/exampleSingleStudyBenefitRiskAnalysisWithoutProblem.json");
+  }
+
+  String exampleUpdateNetworkMetaAnalysisRequestWithProblem() {
+    return TestUtils.loadResource(this.getClass(), "/analysisController/exampleNetworkMetaAnalysisWithProblem.json");
   }
 
 }

@@ -1,0 +1,35 @@
+{
+  "id": 1,
+  "projectId": 1,
+  "name": "Analysis name",
+  "problem":  [{
+     "study": "Aberg-Wistedt et al., 2000",
+     "treatment": "Sertraline",
+     "responders": 64,
+     "samplesize": 176
+   }, {
+     "study": "Aberg-Wistedt et al., 2000",
+     "treatment": "Paroxetine",
+     "responders": 61,
+     "samplesize": 177
+   }, {
+     "study": "Alves et al., 1999",
+     "treatment": "Fluoxetine",
+     "responders": 9,
+     "samplesize": 47
+   }, {
+     "study": "Alves et al., 1999",
+     "treatment": "Venlafaxine",
+     "responders": 10,
+     "samplesize": 40
+   }],
+  "analysisType": "Network meta-analysis",
+  "outcome": {
+    "id": 6,
+    "project": 1,
+    "name": "Blood pressure change",
+    "motivation": "none",
+    "semanticOutcomeLabel": "SBP mean trough (clinic, sitting)",
+    "semanticOutcomeUri": "http://trials.drugis.org/namespace/2/endpoint/e2611534a509251f2e1c87a0cc151cdb"
+  }
+}
