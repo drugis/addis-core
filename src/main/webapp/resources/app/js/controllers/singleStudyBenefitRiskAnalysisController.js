@@ -14,7 +14,6 @@ define(['underscore'], function() {
 
     var outcomes = OutcomeResource.query(projectIdParam);
     var interventions = InterventionResource.query(projectIdParam);
-    var userIsOwner;
 
     var initialiseOutcomes = function(outcomes) {
       $scope.outcomes = outcomes;
@@ -44,33 +43,23 @@ define(['underscore'], function() {
 
     $scope.analysis = $scope.$parent.analysis;
     $scope.project = $scope.$parent.project;
-    $scope.$parent.loading = {
-      loaded: false
-    };
-    $scope.editMode = {
-      disableEditing: false
-    };
-    $scope.isProblemDefined = false;
     $scope.isValidAnalysis = false;
     $scope.errorMessage = {};
 
-    $q.all($scope.analysis, $scope.project).then(function() {
-
-      $scope.$parent.loading.loaded = true;
+    $q.all([$scope.analysis.$promise, $scope.project.$promise]).then(function() {
       $scope.isValidAnalysis = AnalysisService.validateAnalysis($scope.analysis);
-      userIsOwner = $window.config.user.id === $scope.project.owner.id;
-      if ($scope.analysis.problem) {
-        $scope.isProblemDefined = true;
-      }
-      $scope.editMode.disableEditing = !userIsOwner || $scope.isProblemDefined;
 
       $scope.select2Options = {
-        'readonly': $scope.editMode.disableEditing
+        'readonly': $scope.$parent.editMode.disableEditing
       };
 
       //  angular ui bug work-around, select2-ui does not properly watch for changes in the select2-options 
-      $('#criteriaSelect').select2('readonly', $scope.editMode.disableEditing);
-      $('#interventionsSelect').select2('readonly', $scope.editMode.disableEditing);
+      $('#criteriaSelect')
+        .select2()
+        .select2('readonly', $scope.$parent.editMode.disableEditing);
+      $('#interventionsSelect')
+        .select2()
+        .select2('readonly', $scope.$parent.editMode.disableEditing);
 
       $scope.studies = TrialverseStudyResource.query({
         id: $scope.project.trialverseId
