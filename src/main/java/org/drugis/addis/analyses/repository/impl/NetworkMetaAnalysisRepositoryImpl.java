@@ -19,7 +19,7 @@ import java.util.Collection;
  * Created by connor on 6-5-14.
  */
 @Repository
-public class JpaNetworkMetaAnalysisRepository implements NetworkMetaAnalysisRepository {
+public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRepository {
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;
@@ -30,7 +30,7 @@ public class JpaNetworkMetaAnalysisRepository implements NetworkMetaAnalysisRepo
   @Override
   public NetworkMetaAnalysis create(Account user, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisCommand.getProjectId(), analysisCommand.getName());
-    analysisRepositoryUtils.checkProjectExistsAndModifiable(user, analysisCommand, em);
+    analysisRepositoryUtils.checkProjectExistsAndModifiable(user, analysisCommand.getProjectId(), em);
     em.persist(networkMetaAnalysis);
     return networkMetaAnalysis;
   }
@@ -43,7 +43,21 @@ public class JpaNetworkMetaAnalysisRepository implements NetworkMetaAnalysisRepo
   }
 
   @Override
-  public NetworkMetaAnalysis update(Account user, NetworkMetaAnalysis analysis) {
-    return null;
+  public NetworkMetaAnalysis update(Account user, NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Integer analysisProjectId = analysis.getProjectId();
+    analysisRepositoryUtils.checkProjectExistsAndModifiable(user, analysisProjectId, em);
+
+    // do not allow changing of project ID
+    NetworkMetaAnalysis oldAnalysis = em.find(NetworkMetaAnalysis.class, analysis.getId());
+    if (!oldAnalysis.getProjectId().equals(analysisProjectId)) {
+      throw new ResourceDoesNotExistException();
+    }
+
+    // do not allow selection of outcome that is not in the project
+    if (analysis.getOutcome() != null && !analysis.getOutcome().getProject().equals(analysisProjectId)) {
+      throw new ResourceDoesNotExistException();
+    }
+
+    return em.merge(analysis);
   }
 }

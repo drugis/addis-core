@@ -16,5 +16,5 @@ public interface NetworkMetaAnalysisRepository {
 
   Collection<NetworkMetaAnalysis> query(Integer projectId);
 
-  NetworkMetaAnalysis update(Account user, NetworkMetaAnalysis analysis);
+  NetworkMetaAnalysis update(Account user, NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException;
 }

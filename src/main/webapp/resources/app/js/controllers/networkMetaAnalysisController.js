@@ -7,15 +7,20 @@ define([], function() {
     $scope.outcomes = OutcomeResource.query({
       projectId: $stateParams.projectId
     });
-    $scope.selectedOutcome = {};
 
-    $q.all($scope.analysis, $scope.project, $scope.outcomes).then(function() {
-      $scope.$watch('selectedOutcome', function(newValue, oldValue) {
-        if (newValue !== oldValue) {
-          $scope.analysis.$save();
-        }
-      });
+    function matchOutcome(outcome) {
+      return $scope.analysis.outcome.id === outcome.id;
+    }
+
+    $q.all([$scope.analysis.$promise, $scope.project.$promise, $scope.outcomes.$promise]).then(function() {
+      $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
     });
+
+    $scope.saveAnalysis = function() {
+      $scope.analysis.$save(function() {
+        $scope.analysis.outcome =  _.find($scope.outcomes, matchOutcome);
+      });
+    }
   };
 
   return dependencies.concat(NetworkMetaAnalysisController);

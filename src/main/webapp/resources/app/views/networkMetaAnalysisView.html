@@ -5,9 +5,9 @@
     </div>
     <div class="row">
       <div class="columns large-6 nested-view">
-        <select ng-model="selectedOutcome"
+        <select ng-model="analysis.outcome"
               ng-options="outcome.name for outcome in outcomes"
-              data-placeholder="no criteria selected"></select>
+              ng-change="saveAnalysis()"></select>
      </div>
     </div>
   </div>

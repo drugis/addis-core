@@ -2,7 +2,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
   describe('the network meta-analysis controller', function() {
     var scope,
       analysisDeferred,
-      mockAnalysis = {$save: function(){}},
+      mockAnalysis = {$save: function(){},
+      outcome: {id: 2}},
       projectDeferred,
       mockProject = {
         id: 11
@@ -11,7 +12,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         analysisId: 1,
         projectId: 11
       },
-      mockOutcomes = [1, 2],
+      mockOutcomes = [{id: 1}, {id: 2}],
       outcomeResource;
 
     beforeEach(module('addis.controllers'));
@@ -68,8 +69,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       }));
 
       it('should save the analysis when the selected outcome changes', function() {
-        scope.selectedOutcome = 1;
-        scope.$apply();
+        scope.analysis.outcome = {id: 1};
+        scope.saveAnalysis();
         expect(scope.analysis.$save).toHaveBeenCalled();
       });
 

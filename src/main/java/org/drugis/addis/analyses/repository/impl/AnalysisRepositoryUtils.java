@@ -1,6 +1,5 @@
 package org.drugis.addis.analyses.repository.impl;
 
-import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.Project;
@@ -14,8 +13,8 @@ import javax.persistence.EntityManager;
  */
 @Component
 public class AnalysisRepositoryUtils {
-  public void checkProjectExistsAndModifiable(Account user, AnalysisCommand analysisCommand, EntityManager em) throws ResourceDoesNotExistException, MethodNotAllowedException {
-    Project project = em.find(Project.class, analysisCommand.getProjectId());
+  public void checkProjectExistsAndModifiable(Account user, Integer projectId, EntityManager em) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Project project = em.find(Project.class, projectId);
     if (project == null) {
       throw new ResourceDoesNotExistException();
     }
