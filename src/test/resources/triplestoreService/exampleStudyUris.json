@@ -1,0 +1,24 @@
+{
+  "head": {
+    "vars": [ "uri" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/8/indication/8" }
+      } ,
+      {
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/41/indication/41" }
+      } ,
+      {
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/40/indication/40" }
+      } ,
+      {
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/27/indication/27" }
+      } ,
+      {
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/26/indication/26" }
+      }
+    ]
+  }
+}

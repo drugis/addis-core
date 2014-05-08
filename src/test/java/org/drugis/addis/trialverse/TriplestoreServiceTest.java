@@ -92,4 +92,14 @@ public class TriplestoreServiceTest {
 
     assertEquals(expected , result);
   }
+
+  @Test
+  public void testFindStudiesReferringToConcept() {
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleStudyUris.json");
+    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
+    int namespaceId = 1;
+    List<Integer> studyIds = triplestoreService.findStudiesReferringToConcept(namespaceId, "magic");
+    assertEquals(5, studyIds.size());
+  }
+
 }

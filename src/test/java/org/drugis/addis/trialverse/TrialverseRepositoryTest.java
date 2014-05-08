@@ -57,6 +57,25 @@ public class TrialverseRepositoryTest {
   }
 
   @Test
+  public void testGetStudiesByIds() {
+    Long namespaceId = 1L;
+    Long studyId1 = 1L;
+    Long studyId2 = 2L;
+    Long studyId3 = 3L;
+    Study study1InNamespace = em.find(Study.class, studyId1);
+    Study study2InNamespace = em.find(Study.class, studyId1);
+    Study study3InNamespace = em.find(Study.class, studyId1);
+    List<Study> studiesInNamespace = Arrays.asList(study1InNamespace, study2InNamespace, study3InNamespace);
+    List<Long> studyIds = Arrays.asList(studyId1, studyId2, studyId3);
+    List<Study> studyList = trialverseRepository.getStudiesByIds(namespaceId, studyIds);
+    assertTrue(studyList.containsAll(studiesInNamespace));
+    assertEquals(3, studyList.size());
+    Long studyId4 = 4L;
+    Study studyNotInNamespace = em.find(Study.class, studyId4);
+    assertFalse(studyList.contains(studyNotInNamespace));
+  }
+
+  @Test
   public void testGetArmNamesByDrugIds() {
     Integer studyId = 1;
     List<Long> drugIds = Arrays.asList(1L, 2L, 3L);

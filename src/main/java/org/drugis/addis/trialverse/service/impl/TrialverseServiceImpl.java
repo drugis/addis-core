@@ -6,6 +6,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import org.drugis.addis.trialverse.model.Arm;
 import org.drugis.addis.trialverse.model.Measurement;
+import org.drugis.addis.trialverse.model.Study;
 import org.drugis.addis.trialverse.model.Variable;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.drugis.addis.trialverse.service.TrialverseService;
@@ -41,6 +42,12 @@ public class TrialverseServiceImpl implements TrialverseService {
   public List<ObjectNode> getOrderedMeasurements(Integer studyId, Collection<Long> outcomeIds, Collection<Long> armIds) {
     List<Measurement> measurements = trialverseRepository.getOrderedMeasurements(studyId, outcomeIds, armIds);
     return objectsToNodes(measurements);
+  }
+
+  @Override
+  public List<ObjectNode> getStudiesByIds(Long namespaceId, List<Long> studyIds) {
+    List<Study> studies = trialverseRepository.getStudiesByIds(namespaceId, studyIds);
+    return objectsToNodes(studies);
   }
 
   private <T> List<ObjectNode> objectsToNodes(List<T> objectList) {

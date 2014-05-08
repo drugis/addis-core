@@ -105,6 +105,25 @@ public class JpaTrialverseRepository implements TrialverseRepository {
   }
 
   @Override
+  public List<Study> getStudiesByIds(Long namespaceId, List<Long> studyIds) {
+    Query query = em.createNativeQuery("select" +
+                    " s.id, s.name, s.title " +
+                    " FROM" +
+                    " studies s," +
+                    " namespaces ns," +
+                    " namespace_studies nss" +
+                    " WHERE nss.namespace = ns.id " +
+                    " AND nss.study = s.id" +
+                    " AND nss.namespace = :namespaceId" +
+                    " AND s.id IN :studyIds",
+            Study.class
+    );
+    query.setParameter("namespaceId", namespaceId);
+    query.setParameter("studyIds", studyIds);
+    return query.getResultList();
+  }
+
+  @Override
   public List<Study> queryStudies(Long namespaceId) {
     Query query = em.createNativeQuery("select" +
                     " s.id, s.name, s.title " +

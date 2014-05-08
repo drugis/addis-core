@@ -13,6 +13,8 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by connor on 2/28/14.
@@ -20,22 +22,7 @@ import java.util.*;
 @Service
 public class TriplestoreServiceImpl implements TriplestoreService {
 
-  public enum AnalysisConcept {
-    DRUG("drug"),
-    OUTCOME("(adverseEvent|endpoint)");
-    private final String searchString;
-
-    AnalysisConcept(String searchString) {
-      this.searchString = searchString;
-    }
-
-    public String getSearchString() {
-      return this.searchString;
-    }
-  }
-
   final String triplestoreUri = System.getenv("TRIPLESTORE_URI");
-
   @Inject
   RestTemplate triplestoreTemplate;
 
@@ -148,12 +135,55 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return query;
   }
 
+  public List<Integer> findStudiesReferringToConcept(Integer namespaceId, String conceptUri) {
+    List<Integer> studyIds = new ArrayList<>();
+    String query =
+            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+                    "\n" +
+                    "SELECT * WHERE {\n" +
+                    " GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
+                    "   ?uri rdf:type <" + conceptUri + "> .\n" +
+                    " }\n" +
+                    "}";
+    Map<String, String> vars = new HashMap<>();
+    vars.put("query", query);
+    vars.put("output", "json");
+
+    String response = triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    // extract numerical study id
+    Pattern stringIdPattern = Pattern.compile("http://trials.drugis.org/study/(\\d+)/.*");
+    for (Object binding : bindings) {
+      String uri = JsonPath.read(binding, "$.uri.value");
+      Matcher matcher = stringIdPattern.matcher(uri);
+      matcher.find();
+      String stringId = matcher.group(1);
+      studyIds.add(Integer.valueOf(stringId));
+    }
+
+    return studyIds;
+  }
+
   private Long extractConceptIdFromUri(String uri) {
     return Long.parseLong(subStringAfterLastSlash(uri));
   }
 
   private String subStringAfterLastSlash(String inStr) {
     return inStr.substring(inStr.lastIndexOf("/") + 1);
+  }
+
+  public enum AnalysisConcept {
+    DRUG("drug"),
+    OUTCOME("(adverseEvent|endpoint)");
+    private final String searchString;
+
+    AnalysisConcept(String searchString) {
+      this.searchString = searchString;
+    }
+
+    public String getSearchString() {
+      return this.searchString;
+    }
   }
 
 }
