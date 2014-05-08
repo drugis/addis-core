@@ -3,9 +3,9 @@ package org.drugis.addis.analyses;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.repository.CriteriaRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
-import org.drugis.addis.analyses.repository.CriteriaRepository;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
@@ -282,7 +282,7 @@ public class AnalysisControllerTest {
   }
 
   @Test
-  public void Update() throws Exception {
+  public void testUpdate() throws Exception {
     Integer projectId = 1;
     Integer analysisId = 1;
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
@@ -298,6 +298,27 @@ public class AnalysisControllerTest {
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(projectId, analysisId);
     verify(singleStudyBenefitRiskAnalysisRepository).update(gert, newAnalysis);
+  }
+
+  @Test
+  public void testUpdateNetworkMetaAnalysis() throws Exception {
+    Integer analysisId = 333;
+    Integer projectId = 101;
+    Integer outcomeId = 444;
+    NetworkMetaAnalysis oldAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis name");
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
+    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(oldAnalysis.getId(), oldAnalysis.getProjectId(), oldAnalysis.getName(), outcome);
+    when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
+    when(networkMetaAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
+    String jsonCommand = TestUtils.createJson(newAnalysis);
+    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
+            .content(jsonCommand)
+            .principal(user)
+            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk());
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(analysisRepository).get(projectId, analysisId);
+    verify(networkMetaAnalysisRepository).update(gert, newAnalysis);
   }
 
   String exampleUpdateRequestWithProblem() {

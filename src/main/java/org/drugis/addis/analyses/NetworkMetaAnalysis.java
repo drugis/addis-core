@@ -1,7 +1,6 @@
 package org.drugis.addis.analyses;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.util.ObjectToStringDeserializer;
@@ -43,10 +42,13 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     this.name = name;
   }
 
+  public NetworkMetaAnalysis(Integer id, Integer projectId, String name, Outcome outcome) {
+    this(id, projectId, name, outcome, null);
+  }
+
   public NetworkMetaAnalysis(Integer id, Integer projectId, String name) {
     this(id, projectId, name, null, null);
   }
-
 
   public Integer getId() {
     return id;
@@ -68,6 +70,10 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   @JsonDeserialize(using = ObjectToStringDeserializer.class)
   public void setProblem(String problem) {
     this.problem = problem;
+  }
+
+  public Outcome getOutcome() {
+    return outcome;
   }
 
   @Override
