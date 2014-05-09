@@ -85,8 +85,13 @@ public class TrialverseController {
 
   @RequestMapping(value = "/namespaces/{namespaceId}/studies", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Study> queryStudies(@PathVariable Long namespaceId) {
-    return trialverseRepository.queryStudies(namespaceId);
+  public Collection<Study> queryStudies(Principal currentUser, @PathVariable Long namespaceId) throws MethodNotAllowedException {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    if (user != null) {
+      return trialverseRepository.queryStudies(namespaceId);
+    } else {
+      throw new MethodNotAllowedException();
+    }
   }
 
   @RequestMapping(value = "/namespaces/{namespaceId}/trialData", method = RequestMethod.GET)

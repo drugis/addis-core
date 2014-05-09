@@ -1,6 +1,6 @@
-INSERT INTO public.namespaces (id, name, description) VALUES (1, 'name1', 'description1');
-INSERT INTO public.namespaces (id, name, description) VALUES (2, 'name2', 'description2');
-INSERT INTO public.namespaces (id, name, description) VALUES (3, 'name3', 'description3');
+INSERT INTO namespaces (id, name, description) VALUES (1, 'name1', 'description1');
+INSERT INTO namespaces (id, name, description) VALUES (2, 'name2', 'description2');
+INSERT INTO namespaces (id, name, description) VALUES (3, 'name3', 'description3');
 
 --
 -- Data for Name: studies; Type: TABLE DATA; Schema: public; Owner: trialverse
@@ -12,15 +12,20 @@ INSERT INTO studies VALUES (4, 'Sechter et al, 1999', 'A double-blind comparison
 INSERT INTO studies VALUES (5, 'Coleman et al, 2001', 'A placebo-controlled comparison of the effects on sexual functioning of bupropion sustained release and fluoxetine');
 INSERT INTO studies VALUES (6, 'De Nayer et al, 2002', 'Venlafaxine compared with fluoxetine in outpatients with depression and concomitant anxiety.');
 
-INSERT INTO namespace_studies VALUES(1, 1);
-INSERT INTO namespace_studies VALUES(1, 2);
-INSERT INTO namespace_studies VALUES(1, 3);
-INSERT INTO namespace_studies VALUES(2, 4);
-INSERT INTO namespace_studies VALUES(2, 5);
-INSERT INTO namespace_studies VALUES(2, 6);
+INSERT INTO namespace_studies (namespace, study) VALUES(1, 1);
+INSERT INTO namespace_studies (namespace, study) VALUES(1, 2);
+INSERT INTO namespace_studies (namespace, study) VALUES(1, 3);
+INSERT INTO namespace_studies (namespace, study) VALUES(2, 4);
+INSERT INTO namespace_studies (namespace, study) VALUES(2, 5);
+INSERT INTO namespace_studies (namespace, study) VALUES(2, 6);
 
 INSERT INTO  arms (id, study, name) VALUES(1, 1, 'study 1 arm 1');
 INSERT INTO  arms (id, study, name) VALUES(2, 1, 'study 1 arm 2');
+INSERT INTO  arms (id, study, name) VALUES(3, 2, 'study 2 arm 1');
+INSERT INTO  arms (id, study, name) VALUES(4, 2, 'study 2 arm 2');
+INSERT INTO  arms (id, study, name) VALUES(5, 4, 'study 4 arm 1');
+INSERT INTO  arms (id, study, name) VALUES(6, 4, 'study 4 arm 2');
+INSERT INTO  arms (id, study, name) VALUES(7, 4, 'study 4 arm 3');
 
 INSERT INTO  activities (id, study, name) VALUES(1, 1, 'study 1 activity 1');
 INSERT INTO  activities (id, study, name) VALUES(2, 1, 'study 1 activity 2');

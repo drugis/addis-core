@@ -13,21 +13,6 @@ public class TrialData {
     return trialDataStudies;
   }
 
-  class TrialDataStudy {
-    private List<TrialDataArm> arms;
-
-    public List<TrialDataArm> getArms() {
-      return arms;
-    }
-  }
-
-  class TrialDataArm {
-    private TrialDataMeasurement trialDataMeasurement;
-
-    public TrialDataMeasurement getTrialDataMeasurement() {
-      return trialDataMeasurement;
-    }
-  }
 
   abstract class TrialDataMeasurement {
     private Long sampleSize;

@@ -6,20 +6,23 @@ import javax.persistence.*;
  * Created by connor on 9-5-14.
  */
 @Entity
-@Table(name = "arms")
-public class TrialDataArm {
+@Table(name = "studies")
+public class TrialDataStudy {
+
   @Id
   private Long id;
-  private String name;
-  private Long study;
 
-  public TrialDataArm() {
+  private String name;
+
+  private Long namespace;
+
+  public TrialDataStudy() {
   }
 
-  public TrialDataArm(Long id, Long study, String name) {
+  public TrialDataStudy(Long id, String name, Long namespace) {
     this.id = id;
-    this.study = study;
     this.name = name;
+    this.namespace = namespace;
   }
 
   public Long getId() {
@@ -30,20 +33,20 @@ public class TrialDataArm {
     return name;
   }
 
-  public Long getStudy() {
-    return study;
+  public Long getNamespace() {
+    return namespace;
   }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof TrialDataArm)) return false;
+    if (!(o instanceof TrialDataStudy)) return false;
 
-    TrialDataArm that = (TrialDataArm) o;
+    TrialDataStudy that = (TrialDataStudy) o;
 
     if (!id.equals(that.id)) return false;
     if (!name.equals(that.name)) return false;
-    if (!study.equals(that.study)) return false;
+    if (!namespace.equals(that.namespace)) return false;
 
     return true;
   }
@@ -52,7 +55,7 @@ public class TrialDataArm {
   public int hashCode() {
     int result = id.hashCode();
     result = 31 * result + name.hashCode();
-    result = 31 * result + study.hashCode();
+    result = 31 * result + namespace.hashCode();
     return result;
   }
 }

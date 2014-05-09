@@ -133,11 +133,17 @@ public class TrialverseRepositoryTest {
   public void testGetArms() {
     Long namespaceId = 1L;
     List<TrialDataArm> arms = trialverseRepository.getArms(namespaceId);
+    assertEquals(4, arms.size());
+    Namespace namespace = new Namespace(2L, "name2", "description2");
+  }
+
+  @Test
+  public void testGetArmsForStudies() {
+    Long namespaceId = 1L;
+    List<Long> studyIds = Arrays.asList(1L);
+    List<TrialDataArm> arms = trialverseRepository.getArmsForStudies(namespaceId, studyIds);
     assertEquals(2, arms.size());
-    TrialDataArm arm1 = new TrialDataArm(1L, 1L, "study 1 arm 1");
-    TrialDataArm arm2 = new TrialDataArm(2L, 1L, "study 1 arm 2");
-    assertTrue(arms.contains(arm1));
-    assertTrue(arms.contains(arm2));
+    Namespace namespace = new Namespace(1L, "name1", "description1");
   }
 
 }

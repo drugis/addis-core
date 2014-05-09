@@ -68,11 +68,22 @@ public class JpaTrialverseRepository implements TrialverseRepository {
 
   @Override
   public List<TrialDataArm> getArms(Long namespaceId) {
-    Query query = em.createQuery(
-            "SELECT a.id, a.name, s.id FROM arm a, study s, namespace_studies nss" +
-                    " WHERE a.study = s.id AND nss.study = s.id AND nss.namespace = :namespaceId", TrialDataArm.class
+    Query query = em.createNativeQuery(
+            "SELECT a.id, a.name, a.study FROM arms a, namespace_studies nss" +
+                    " WHERE a.study = nss.study AND nss.namespace = :namespaceId", TrialDataArm.class
     );
     query.setParameter("namespaceId", namespaceId);
+    return query.getResultList();
+  }
+
+  @Override
+  public List<TrialDataArm> getArmsForStudies(Long namespaceId, List<Long> studyIds) {
+    Query query = em.createNativeQuery(
+            "SELECT a.id, a.name, a.study FROM arms a, namespace_studies nss" +
+                    " WHERE a.study = nss.study AND nss.namespace = :namespaceId AND a.study IN :studyIds", TrialDataArm.class
+    );
+    query.setParameter("namespaceId", namespaceId);
+    query.setParameter("studyIds", studyIds);
     return query.getResultList();
   }
 
