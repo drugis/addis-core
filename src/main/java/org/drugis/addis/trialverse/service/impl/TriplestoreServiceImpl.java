@@ -83,16 +83,16 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public Map<Long, String> getTrialverseDrugs(Integer namespaceId, Integer studyId, Collection<String> drugURIs) {
+  public Map<Long, String> getTrialverseDrugs(Long namespaceId, Long studyId, Collection<String> drugURIs) {
     return getTrialverseConceptIds(namespaceId, studyId, AnalysisConcept.DRUG, drugURIs);
   }
 
   @Override
-  public Map<Long, String> getTrialverseVariables(Integer namespaceId, Integer studyId, Collection<String> outcomeURIs) {
+  public Map<Long, String> getTrialverseVariables(Long namespaceId, Long studyId, Collection<String> outcomeURIs) {
     return getTrialverseConceptIds(namespaceId, studyId, AnalysisConcept.OUTCOME, outcomeURIs);
   }
 
-  private Map<Long, String> getTrialverseConceptIds(Integer namespaceId, Integer studyId, AnalysisConcept analysisConcept, Collection<String> conceptURIs) {
+  private Map<Long, String> getTrialverseConceptIds(Long namespaceId, Long studyId, AnalysisConcept analysisConcept, Collection<String> conceptURIs) {
     Collection<String> strippedUris = Collections2.transform(conceptURIs, new Function<String, String>() {
       @Override
       public String apply(String s) {
@@ -119,7 +119,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return concepts;
   }
 
-  private String createFindUsagesQuery(Integer namespaceId, Integer studyId, AnalysisConcept analysisConcept, String URIsToFind) {
+  private String createFindUsagesQuery(Long namespaceId, Long studyId, AnalysisConcept analysisConcept, String URIsToFind) {
     String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
             "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
             "\n" +
@@ -135,8 +135,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return query;
   }
 
-  public List<Integer> findStudiesReferringToConcept(Integer namespaceId, String conceptUri) {
-    List<Integer> studyIds = new ArrayList<>();
+  public List<Long> findStudiesReferringToConcept(Long namespaceId, String conceptUri) {
+    List<Long> studyIds = new ArrayList<>();
     String query =
             "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
                     "\n" +
@@ -158,7 +158,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       Matcher matcher = stringIdPattern.matcher(uri);
       matcher.find();
       String stringId = matcher.group(1);
-      studyIds.add(Integer.valueOf(stringId));
+      studyIds.add(Long.valueOf(stringId));
     }
 
     return studyIds;

@@ -75,7 +75,7 @@ public class CriteriaServiceTest {
     variableId = 22;
     trialverseVariables = new HashMap<>();
     partialValueFunction = null;
-    when(triplestoreService.getTrialverseVariables(project.getTrialverseId(), analysis.getStudyId(), outcomeMap.keySet())).thenReturn(trialverseVariables);
+    when(triplestoreService.getTrialverseVariables(project.getTrialverseId().longValue(), analysis.getStudyId().longValue(), outcomeMap.keySet())).thenReturn(trialverseVariables);
 
   }
 
@@ -83,7 +83,7 @@ public class CriteriaServiceTest {
   @After
   public void cleanUp() {
     verify(trialverseService).getVariablesByIds(trialverseVariables.keySet());
-    verify(triplestoreService).getTrialverseVariables(project.getTrialverseId(), analysis.getStudyId(), outcomeMap.keySet());
+    verify(triplestoreService).getTrialverseVariables(project.getTrialverseId().longValue(), analysis.getStudyId().longValue(), outcomeMap.keySet());
     verifyNoMoreInteractions(triplestoreService, trialverseService);
   }
 

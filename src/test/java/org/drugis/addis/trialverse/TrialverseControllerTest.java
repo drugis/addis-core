@@ -156,7 +156,7 @@ public class TrialverseControllerTest {
   @Test
   public void testGetTrialData() throws Exception {
     TrialData trialData = new TrialData();
-    Integer namespaceId = 1;
+    Long namespaceId = 1L;
     when(trialverseDataService.getTrialData(namespaceId)).thenReturn(trialData);
     mockMvc.perform(get("/namespaces/1/trialData").principal(user))
             .andExpect(status().isOk())
@@ -168,7 +168,7 @@ public class TrialverseControllerTest {
   @Test
   public void testGetTrialDataForOutcome() throws Exception {
     TrialData trialData = new TrialData();
-    Integer namespaceId = 1;
+    Long namespaceId = 1L;
     when(trialverseDataService.getTrialData(namespaceId)).thenReturn(trialData);
     mockMvc.perform(get("/namespaces/1/trialData?outcome='foo'").principal(user))
             .andExpect(status().isOk())

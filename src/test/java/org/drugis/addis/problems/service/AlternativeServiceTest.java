@@ -83,14 +83,14 @@ public class AlternativeServiceTest {
   @Test
   public void testCreateAlternatives() throws Exception {
     List<ObjectNode> jsonArms = Arrays.asList(mapper.convertValue(new Arm(1L, drugId, "armName"), ObjectNode.class));
-    when(triplestoreService.getTrialverseDrugs(project.getTrialverseId(), analysis.getStudyId(), interventionMap.keySet())).
+    when(triplestoreService.getTrialverseDrugs(project.getTrialverseId().longValue(), analysis.getStudyId().longValue(), interventionMap.keySet())).
             thenReturn(drugs);
     when(trialverseService.getArmsByDrugIds(analysis.getStudyId(), drugs.keySet())).thenReturn(jsonArms);
 
 
     Map<Long, AlternativeEntry> alternatives = alternativeService.createAlternatives(project, analysis);
 
-    verify(triplestoreService).getTrialverseDrugs(project.getTrialverseId(), analysis.getStudyId(), interventionMap.keySet());
+    verify(triplestoreService).getTrialverseDrugs(project.getTrialverseId().longValue(), analysis.getStudyId().longValue(), interventionMap.keySet());
     verify(trialverseService).getArmsByDrugIds(analysis.getStudyId(), drugs.keySet());
     verifyNoMoreInteractions(triplestoreService, trialverseService);
 

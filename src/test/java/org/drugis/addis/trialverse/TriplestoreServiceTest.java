@@ -59,46 +59,46 @@ public class TriplestoreServiceTest {
 
   @Test
   public void testGetDrugIds() {
-    Integer namespaceId = 1;
-    Integer studyId = 1;
+    Long namespaceId = 1L;
+    Long studyId = 1L;
     List<String> interventionConceptUris = new ArrayList<>();
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleDrugIdResult.json");
     when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
 
-    Map<Long, String>  expected = new HashMap<>();
+    Map<Long, String> expected = new HashMap<>();
     expected.put(1L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug");
     expected.put(4L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug");
 
     // EXECUTOR
     Map<Long, String> result = triplestoreService.getTrialverseDrugs(namespaceId, studyId, interventionConceptUris);
 
-    assertEquals(expected , result);
+    assertEquals(expected, result);
   }
 
   @Test
   public void testGetOutcomeIds() {
-    Integer namespaceId = 1;
-    Integer studyId = 1;
+    Long namespaceId = 1L;
+    Long studyId = 1L;
     List<String> outcomeConceptUris = new ArrayList<>();
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeIdResult.json");
     when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
 
-    Map<Long, String>  expected = new HashMap<>();
+    Map<Long, String> expected = new HashMap<>();
     expected.put(1L, "http://trials.drugis.org/namespace/2/endpoint/e2611534a509251f2e1c8endpoint");
     expected.put(4L, "http://trials.drugis.org/namespace/2/adverseEvent/e2611534a509251f2e1cadverseEvent");
 
     // EXECUTOR
     Map<Long, String> result = triplestoreService.getTrialverseVariables(namespaceId, studyId, outcomeConceptUris);
 
-    assertEquals(expected , result);
+    assertEquals(expected, result);
   }
 
   @Test
   public void testFindStudiesReferringToConcept() {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleStudyUris.json");
     when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
-    int namespaceId = 1;
-    List<Integer> studyIds = triplestoreService.findStudiesReferringToConcept(namespaceId, "magic");
+    Long namespaceId = 1L;
+    List<Long> studyIds = triplestoreService.findStudiesReferringToConcept(namespaceId, "magic");
     assertEquals(5, studyIds.size());
   }
 

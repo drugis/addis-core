@@ -45,7 +45,7 @@ public class MeasurementsService {
     for (Outcome outcome : analysis.getSelectedOutcomes()) {
       outcomesByUri.put(outcome.getSemanticOutcomeUri(), outcome);
     }
-    Map<Long, String> trialverseVariables = triplestoreService.getTrialverseVariables(project.getTrialverseId(), analysis.getStudyId(), outcomesByUri.keySet());
+    Map<Long, String> trialverseVariables = triplestoreService.getTrialverseVariables(project.getTrialverseId().longValue(), analysis.getStudyId().longValue(), outcomesByUri.keySet());
     List<ObjectNode> jsonMeasurements = trialverseService.getOrderedMeasurements(analysis.getStudyId(), trialverseVariables.keySet(), alternativesCache.keySet());
     List<Measurement> measurements = new ArrayList<>(jsonMeasurements.size());
     System.out.println("DEBUG jsonMeasurements : " + jsonMeasurements);

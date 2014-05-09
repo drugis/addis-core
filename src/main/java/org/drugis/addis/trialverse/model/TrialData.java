@@ -7,10 +7,17 @@ import java.util.List;
  */
 public class TrialData {
 
-  private List<TrialDataStudy> trialDataStudies;
+  private List<Study> studies;
 
-  public List<TrialDataStudy> getTrialDataStudies() {
-    return trialDataStudies;
+  public TrialData() {
+  }
+
+  public TrialData(List<Study> studies) {
+    this.studies = studies;
+  }
+
+  public List<Study> getStudies() {
+    return studies;
   }
 
 

@@ -15,9 +15,9 @@ public interface TriplestoreService {
 
   public List<SemanticIntervention> getInterventions(Long namespaceId);
 
-  public Map<Long, String> getTrialverseDrugs(Integer namespaceId, Integer studyId, Collection<String> interventionURIs);
+  public Map<Long, String> getTrialverseDrugs(Long namespaceId, Long studyId, Collection<String> interventionURIs);
 
-  public Map<Long, String> getTrialverseVariables(Integer namespaceId, Integer studyId, Collection<String> outcomeURIs);
+  public Map<Long, String> getTrialverseVariables(Long namespaceId, Long studyId, Collection<String> outcomeURIs);
 
-  public List<Integer> findStudiesReferringToConcept(Integer namespaceId, String conceptUri);
+  public List<Long> findStudiesReferringToConcept(Long namespaceId, String conceptUri);
 }

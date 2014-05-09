@@ -96,11 +96,14 @@ public class TrialverseController {
 
   @RequestMapping(value = "/namespaces/{namespaceId}/trialData", method = RequestMethod.GET)
   @ResponseBody
-  public TrialData getTrialData(@PathVariable Integer namespaceId, @RequestParam(required = false) String outcomeUri) {
+  public TrialData getTrialData(@PathVariable Long namespaceId, @RequestParam(required = false) String outcomeUri) {
+    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + namespaceId + "  " + outcomeUri);
     if (outcomeUri == null) {
       return trialverseDataService.getTrialData(namespaceId);
     }
-    return trialverseDataService.getTrialData(namespaceId, outcomeUri);
+    TrialData trialData = trialverseDataService.getTrialData(namespaceId, outcomeUri);
+    System.out.println("!!!!!!!!trialData.getStudies().size()!!!!!!!!" + trialData.getStudies().size());
+    return trialData;
   }
 
   @ResponseStatus(HttpStatus.FORBIDDEN)

@@ -16,9 +16,16 @@
 <div class="row">
   <div class="columns large-12 nested-view">
     <table>
-      <tr>
-        <td>data</td>
-      </tr>
+        <thead>
+        <tr>
+            <th class="large-3">Study</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="study in trialData.studies">
+            <td>{{study.name}}</td>
+        </tr>
+        </tbody>
     </table>
   </div>
 </div>

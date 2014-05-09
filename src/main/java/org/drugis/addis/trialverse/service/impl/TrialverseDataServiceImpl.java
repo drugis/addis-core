@@ -27,12 +27,14 @@ public class TrialverseDataServiceImpl implements TrialverseDataService {
   private TrialverseRepository trialverseRepository;
 
   @Override
-  public TrialData getTrialData(Integer namespaceId, String outcomeUri) {
-    return null;
+  public TrialData getTrialData(Long namespaceId, String outcomeUri) {
+    List<Long> studyIds = triplestoreService.findStudiesReferringToConcept(namespaceId, outcomeUri);
+    List<Study> studies = trialverseRepository.getStudiesByIds(namespaceId, studyIds);
+    return new TrialData(studies);
   }
 
   @Override
-  public TrialData getTrialData(Integer namespaceId) {
+  public TrialData getTrialData(Long namespaceId) {
     List<Study> studies = trialverseRepository.queryStudies(Long.valueOf(namespaceId));
     // Map<Study, List<Arm>> arms = trialverseRepository.getArms(namespaceId);
 

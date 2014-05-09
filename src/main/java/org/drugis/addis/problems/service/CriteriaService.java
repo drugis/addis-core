@@ -40,7 +40,7 @@ public class CriteriaService {
       outcomesByUri.put(outcome.getSemanticOutcomeUri(), outcome);
     }
 
-    Map<Long, String> trialverseVariables = triplestoreService.getTrialverseVariables(project.getTrialverseId(), analysis.getStudyId(), outcomesByUri.keySet());
+    Map<Long, String> trialverseVariables = triplestoreService.getTrialverseVariables(project.getTrialverseId().longValue(), analysis.getStudyId().longValue(), outcomesByUri.keySet());
     List<ObjectNode> jsonVariables = trialverseService.getVariablesByIds(trialverseVariables.keySet());
 
     List<Pair<Variable, CriterionEntry>> variableCriteriaPairs = new ArrayList<>();

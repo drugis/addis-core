@@ -45,7 +45,7 @@ public class AlternativeService {
 
     System.out.println("DEBUG interventionsByUri : " + interventionsByUri);
 
-    Map<Long, String> drugs = triplestoreService.getTrialverseDrugs(project.getTrialverseId(), analysis.getStudyId(), interventionsByUri.keySet());
+    Map<Long, String> drugs = triplestoreService.getTrialverseDrugs(project.getTrialverseId().longValue(), analysis.getStudyId().longValue(), interventionsByUri.keySet());
     List<ObjectNode> jsonArms = trialverseService.getArmsByDrugIds(analysis.getStudyId(), drugs.keySet());
 
     System.out.println("DEBUG drug ids : " + drugs);

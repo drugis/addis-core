@@ -13,7 +13,9 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         projectId: 11
       },
       mockOutcomes = [{id: 1}, {id: 2}],
-      outcomeResource;
+      mockTrialData = {studies: [1,2,3]},
+      outcomeResource,
+      trialverseTrialDataResource;
 
     beforeEach(module('addis.controllers'));
 
@@ -37,10 +39,15 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       outcomeResource = jasmine.createSpyObj('OutcomeResource', ['query']);
       outcomeResource.query.and.returnValue(mockOutcomes);
 
+      trialverseTrialDataResource = jasmine.createSpyObj('TrialverseTrialDataResource', ['query']);
+      trialverseTrialDataResource.query.and.returnValue(mockTrialData);
+
+
       $controller('NetworkMetaAnalysisController', {
         $scope: scope,
         $stateParams: mockStateParams,
-        OutcomeResource: outcomeResource
+        OutcomeResource: outcomeResource,
+        TrialverseTrialDataResource: trialverseTrialDataResource
       });
     }));
 
