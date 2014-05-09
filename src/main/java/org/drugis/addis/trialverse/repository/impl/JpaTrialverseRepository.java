@@ -67,6 +67,16 @@ public class JpaTrialverseRepository implements TrialverseRepository {
   }
 
   @Override
+  public List<TrialDataArm> getArms(Long namespaceId) {
+    Query query = em.createQuery(
+            "SELECT a.id, a.name, s.id FROM arm a, study s, namespace_studies nss" +
+                    " WHERE a.study = s.id AND nss.study = s.id AND nss.namespace = :namespaceId", TrialDataArm.class
+    );
+    query.setParameter("namespaceId", namespaceId);
+    return query.getResultList();
+  }
+
+  @Override
   public List<Variable> getVariablesByOutcomeIds(Collection<Long> outcomeIds) {
     if (outcomeIds.isEmpty()) {
       return Collections.emptyList();
@@ -139,4 +149,5 @@ public class JpaTrialverseRepository implements TrialverseRepository {
     query.setParameter("namespaceId", namespaceId);
     return query.getResultList();
   }
+
 }

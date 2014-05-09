@@ -23,4 +23,6 @@ public interface TrialverseRepository {
   public List<Measurement> getOrderedMeasurements(Integer studyId, Collection<Long> outcomeIds, Collection<Long> arms);
 
   public List<Study> getStudiesByIds(Long namespaceId, List<Long> studyIds);
+
+  public List<TrialDataArm> getArms(Long namespaceId);
 }

@@ -129,4 +129,15 @@ public class TrialverseRepositoryTest {
     assertTrue(result.isEmpty());
   }
 
+  @Test
+  public void testGetArms() {
+    Long namespaceId = 1L;
+    List<TrialDataArm> arms = trialverseRepository.getArms(namespaceId);
+    assertEquals(2, arms.size());
+    TrialDataArm arm1 = new TrialDataArm(1L, 1L, "study 1 arm 1");
+    TrialDataArm arm2 = new TrialDataArm(2L, 1L, "study 1 arm 2");
+    assertTrue(arms.contains(arm1));
+    assertTrue(arms.contains(arm2));
+  }
+
 }
