@@ -4,11 +4,9 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
-import org.drugis.addis.trialverse.model.SemanticOutcome;
-import org.drugis.addis.trialverse.model.Study;
-import org.drugis.addis.trialverse.model.Namespace;
+import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
+import org.drugis.addis.trialverse.service.TrialverseDataService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +35,9 @@ public class TrialverseController {
 
   @Inject
   private TriplestoreService triplestoreService;
+
+  @Inject
+  private TrialverseDataService trialverseDataService;
 
   @RequestMapping(value = "/namespaces", method = RequestMethod.GET)
   @ResponseBody
@@ -86,6 +87,15 @@ public class TrialverseController {
   @ResponseBody
   public Collection<Study> queryStudies(@PathVariable Long namespaceId) {
     return trialverseRepository.queryStudies(namespaceId);
+  }
+
+  @RequestMapping(value = "/namespaces/{namespaceId}/trialData", method = RequestMethod.GET)
+  @ResponseBody
+  public TrialData getTrialData(@PathVariable Integer namespaceId, @RequestParam(required = false) String outcomeUri) {
+    if (outcomeUri == null) {
+      return trialverseDataService.getTrialData(namespaceId);
+    }
+    return trialverseDataService.getTrialData(namespaceId, outcomeUri);
   }
 
   @ResponseStatus(HttpStatus.FORBIDDEN)

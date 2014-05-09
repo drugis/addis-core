@@ -4,13 +4,12 @@ package org.drugis.addis.trialverse;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.trialverse.model.Namespace;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
-import org.drugis.addis.trialverse.model.SemanticOutcome;
-import org.drugis.addis.trialverse.model.Study;
+import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
+import org.drugis.addis.trialverse.service.TrialverseDataService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -54,19 +54,25 @@ public class TrialverseControllerTest {
   @Inject
   private TriplestoreService triplestoreService;
 
+  @Inject
+  private TrialverseDataService trialverseDataService;
+
   private Principal user;
 
   private Account gert = new Account(3, "gert", "Gert", "van Valkenhoef");
 
   @Before
   public void setUp() {
-    reset(accountRepository);
-    reset(trialverseRepository);
-    reset(triplestoreService);
+    reset(accountRepository, trialverseRepository, triplestoreService, trialverseDataService);
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
     when(accountRepository.findAccountByUsername("gert")).thenReturn(gert);
+  }
+
+  @After
+  public void cleanUp() {
+    verifyNoMoreInteractions(accountRepository, trialverseRepository, triplestoreService, trialverseDataService);
   }
 
   @Test
@@ -81,6 +87,7 @@ public class TrialverseControllerTest {
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].name", is("a")));
     verify(trialverseRepository).query();
+    verify(accountRepository).findAccountByUsername(user.getName());
   }
 
   @Test
@@ -92,6 +99,7 @@ public class TrialverseControllerTest {
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.name", is("a")));
     verify(trialverseRepository).get(1L);
+    verify(accountRepository).findAccountByUsername(user.getName());
   }
 
   @Test
@@ -104,6 +112,7 @@ public class TrialverseControllerTest {
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0].uri", is(testOutCome.getUri())));
     verify(triplestoreService).getOutcomes(namespaceId);
+    verify(accountRepository).findAccountByUsername(user.getName());
   }
 
   @Test
@@ -116,6 +125,7 @@ public class TrialverseControllerTest {
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0].uri", is(testIntervention.getUri())));
     verify(triplestoreService).getInterventions(namespaceId);
+    verify(accountRepository).findAccountByUsername(user.getName());
   }
 
   @Test
@@ -130,14 +140,41 @@ public class TrialverseControllerTest {
       .andExpect(jsonPath("$[0].name", is(study.getName())))
       .andExpect(jsonPath("$[0].title", is(study.getTitle())));
     verify(trialverseRepository).queryStudies(namespaceId);
+    verify(accountRepository).findAccountByUsername(user.getName());
   }
 
   @Test
   public void testUnauthorisedGetSemanticOutcomesFails() throws Exception {
     Principal haxor = mock(Principal.class);
-    when(haxor.getName()).thenReturn("who?");
+    String userName = "who?";
+    when(haxor.getName()).thenReturn(userName);
     mockMvc.perform(get("/namespaces/1/outcomes").principal(haxor))
             .andExpect(redirectedUrl("/error/403"));
+    verify(accountRepository).findAccountByUsername(userName);
+  }
+
+  @Test
+  public void testGetTrialData() throws Exception {
+    TrialData trialData = new TrialData();
+    Integer namespaceId = 1;
+    when(trialverseDataService.getTrialData(namespaceId)).thenReturn(trialData);
+    mockMvc.perform(get("/namespaces/1/trialData").principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", notNullValue()));
+    verify(trialverseDataService).getTrialData(namespaceId);
+  }
+
+  @Test
+  public void testGetTrialDataForOutcome() throws Exception {
+    TrialData trialData = new TrialData();
+    Integer namespaceId = 1;
+    when(trialverseDataService.getTrialData(namespaceId)).thenReturn(trialData);
+    mockMvc.perform(get("/namespaces/1/trialData?outcome='foo'").principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", notNullValue()));
+    verify(trialverseDataService).getTrialData(namespaceId);
   }
 
 }

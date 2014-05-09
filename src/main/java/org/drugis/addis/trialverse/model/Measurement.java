@@ -1,30 +1,28 @@
 package org.drugis.addis.trialverse.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
 @Entity
 @Table(name = "measurements")
 public class Measurement {
-  @EmbeddedId
-  @JsonIgnore
-  private MeasurementKey measurementKey;
-
   @Column(name = "integer_value")
   Long integerValue;
   @Column(name = "real_value")
   Double realValue;
+  @EmbeddedId
+  @JsonIgnore
+  private MeasurementKey measurementKey;
 
   public Measurement() {
   }
 
   public Measurement(Long studyId, Long variableId, Long measurementMomentId, Long armId, MeasurementAttribute measurementAttribute, Long integerValue, Double realValue) {
-    this.measurementKey = new MeasurementKey(studyId,variableId, measurementMomentId, armId, measurementAttribute);
+    this.measurementKey = new MeasurementKey(studyId, variableId, measurementMomentId, armId, measurementAttribute);
     this.integerValue = integerValue;
     this.realValue = realValue;
   }
@@ -41,15 +39,25 @@ public class Measurement {
     return realValue;
   }
 
-  public Long getStudyId() { return measurementKey.getStudyId(); }
+  public Long getStudyId() {
+    return measurementKey.getStudyId();
+  }
 
-  public Long getVariableId() { return measurementKey.getVariableId(); }
+  public Long getVariableId() {
+    return measurementKey.getVariableId();
+  }
 
-  public Long getArmId() { return measurementKey.getArmId(); }
+  public Long getArmId() {
+    return measurementKey.getArmId();
+  }
 
-  public Long getMeasurementMomentId() {return measurementKey.getMeasurementMomentId(); }
+  public Long getMeasurementMomentId() {
+    return measurementKey.getMeasurementMomentId();
+  }
 
-  public MeasurementAttribute getMeasurementAttribute() { return measurementKey.getMeasurementAttribute(); }
+  public MeasurementAttribute getMeasurementAttribute() {
+    return measurementKey.getMeasurementAttribute();
+  }
 
   @Override
   public boolean equals(Object o) {
