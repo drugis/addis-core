@@ -13,12 +13,11 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
@@ -100,6 +99,20 @@ public class TriplestoreServiceTest {
     Long namespaceId = 1L;
     List<Long> studyIds = triplestoreService.findStudiesReferringToConcept(namespaceId, "magic");
     assertEquals(5, studyIds.size());
+  }
+
+  @Test
+  public void testFindDrugConceptsFilteredByNameSpaceAndStudys() {
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleDrugIdResult.json");
+    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
+
+    Long namespaceId = 1L;
+    List<Long> studyIds = Arrays.asList(1L, 2L, 3L);
+    List<String> interventionsURIs = Arrays.asList("http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug");
+    Map<Long, List<Long>> result = triplestoreService.findStudyInterventions(namespaceId, studyIds, interventionsURIs);
+    assertNotNull(result);
+    assertTrue(result.containsKey(1L));
+    assertTrue(result.get(1L).containsAll(Arrays.asList(1L, 4L)));
   }
 
 }

@@ -20,4 +20,15 @@ public interface TriplestoreService {
   public Map<Long, String> getTrialverseVariables(Long namespaceId, Long studyId, Collection<String> outcomeURIs);
 
   public List<Long> findStudiesReferringToConcept(Long namespaceId, String conceptUri);
+
+  /**
+   * Finds all studies that are part of the given namespace, have an id that is contained within the studyIds list
+   * and have at least one of the given interventions
+   *
+   * @param namespaceId
+   * @param studyIds
+   * @param interventionURIs
+   * @return a map from studyIds to drugIds
+   */
+  public Map<Long, List<Long>> findStudyInterventions(Long namespaceId, List<Long> studyIds, List<String> interventionURIs);
 }

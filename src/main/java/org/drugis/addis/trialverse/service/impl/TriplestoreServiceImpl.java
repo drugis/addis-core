@@ -22,9 +22,25 @@ import java.util.regex.Pattern;
 @Service
 public class TriplestoreServiceImpl implements TriplestoreService {
 
-  final String triplestoreUri = System.getenv("TRIPLESTORE_URI");
+  private final static String triplestoreUri = System.getenv("TRIPLESTORE_URI");
+  private final static Pattern STUDY_ID_FROM_URI_PATTERN = Pattern.compile("http://trials.drugis.org/study/(\\d+)/.*");
+
   @Inject
   RestTemplate triplestoreTemplate;
+
+  public enum AnalysisConcept {
+    DRUG("drug"),
+    OUTCOME("(adverseEvent|endpoint)");
+    private final String searchString;
+
+    AnalysisConcept(String searchString) {
+      this.searchString = searchString;
+    }
+
+    public String getSearchString() {
+      return this.searchString;
+    }
+  }
 
   @Override
   public List<SemanticOutcome> getOutcomes(Long namespaceId) {
@@ -41,11 +57,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "  }\n" +
             "}";
     System.out.println(query);
-    Map<String, String> vars = new HashMap<>();
-    vars.put("query", query);
-    vars.put("output", "json");
-
-    String response = triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
+    String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       outcomes.add(new SemanticOutcome((String) JsonPath.read(binding, "$.uri.value"),
@@ -69,11 +81,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "  }\n" +
             "}";
     System.out.println(query);
-    Map<String, String> vars = new HashMap<>();
-    vars.put("query", query);
-    vars.put("output", "json");
-
-    String response = triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
+    String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       interventions.add(new SemanticIntervention((String) JsonPath.read(binding, "$.uri.value"),
@@ -92,22 +100,50 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return getTrialverseConceptIds(namespaceId, studyId, AnalysisConcept.OUTCOME, outcomeURIs);
   }
 
-  private Map<Long, String> getTrialverseConceptIds(Long namespaceId, Long studyId, AnalysisConcept analysisConcept, Collection<String> conceptURIs) {
-    Collection<String> strippedUris = Collections2.transform(conceptURIs, new Function<String, String>() {
-      @Override
-      public String apply(String s) {
-        return subStringAfterLastSlash(s);
+  @Override
+  public Map<Long, List<Long>> findStudyInterventions(Long namespaceId, List<Long> studyIds, List<String> interventionURIs) {
+    AnalysisConcept drugConcept = AnalysisConcept.DRUG;
+    String conceptOptionsString = buildOptionStringFromConceptURIs(interventionURIs);
+    String studyOptionsString = StringUtils.join(studyIds, "|");
+    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "\n" +
+            "SELECT  * WHERE {\n" +
+            " GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
+            "   ?uri rdf:type ?type .\n" +
+            "   FILTER regex(str(?type), \"namespaces/" +
+            namespaceId + "/" + drugConcept.getSearchString() + "/(" + conceptOptionsString + ")\") .\n" +
+            "   FILTER regex(str(?uri), \"/study/(" + studyOptionsString + ")\") .\n" +
+            " }\n" +
+            "}";
+    System.out.println(query);
+
+    String response = queryTripleStore(query);
+    System.out.println("!!!!!!! AND the responce is: " + response);
+
+    Map<Long, List<Long>> studyInterventions = new HashMap<>();
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    for (Object binding : bindings) {
+      String uri = JsonPath.read(binding, "$.uri.value");
+      Long studyId = findStudyIdInURI(uri);
+      List<Long> interventionsIds = studyInterventions.get(studyId);
+      if (interventionsIds == null) {
+        interventionsIds = new ArrayList<>();
+        studyInterventions.put(studyId, interventionsIds);
       }
-    });
-    String uriOptions = StringUtils.join(strippedUris, "|");
+      Long interventionId = Long.valueOf(subStringAfterLastSlash(uri));
+      interventionsIds.add(interventionId);
+    }
 
-    String query = createFindUsagesQuery(namespaceId, studyId, analysisConcept, uriOptions);
+    return studyInterventions;
+  }
 
-    Map<String, String> vars = new HashMap<>();
-    vars.put("query", query);
-    vars.put("output", "json");
+  private Map<Long, String> getTrialverseConceptIds(Long namespaceId, Long studyId, AnalysisConcept analysisConcept, Collection<String> conceptURIs) {
+    String optionString = buildOptionStringFromConceptURIs(conceptURIs);
+    String query = createFindUsagesQuery(namespaceId, studyId, analysisConcept, optionString);
 
-    String response = triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
+    String response = queryTripleStore(query);
+
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     Map<Long, String> concepts = new HashMap<>(bindings.size());
     for (Object binding : bindings) {
@@ -117,6 +153,23 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       concepts.put(conceptId, typeUri);
     }
     return concepts;
+  }
+
+  private String queryTripleStore(String query) {
+    Map<String, String> vars = new HashMap<>();
+    vars.put("query", query);
+    vars.put("output", "json");
+    return triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
+  }
+
+  private String buildOptionStringFromConceptURIs(Collection<String> conceptURIs) {
+    Collection<String> strippedUris = Collections2.transform(conceptURIs, new Function<String, String>() {
+      @Override
+      public String apply(String s) {
+        return subStringAfterLastSlash(s);
+      }
+    });
+    return StringUtils.join(strippedUris, "|");
   }
 
   private String createFindUsagesQuery(Long namespaceId, Long studyId, AnalysisConcept analysisConcept, String URIsToFind) {
@@ -145,23 +198,23 @@ public class TriplestoreServiceImpl implements TriplestoreService {
                     "   ?uri rdf:type <" + conceptUri + "> .\n" +
                     " }\n" +
                     "}";
-    Map<String, String> vars = new HashMap<>();
-    vars.put("query", query);
-    vars.put("output", "json");
-
-    String response = triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
+    String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    // extract numerical study id
-    Pattern stringIdPattern = Pattern.compile("http://trials.drugis.org/study/(\\d+)/.*");
+
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
-      Matcher matcher = stringIdPattern.matcher(uri);
-      matcher.find();
-      String stringId = matcher.group(1);
-      studyIds.add(Long.valueOf(stringId));
+      Long studyId = findStudyIdInURI(uri);
+      studyIds.add(studyId);
     }
 
     return studyIds;
+  }
+
+  private Long findStudyIdInURI(String uri) {
+    // extract numerical study id
+    Matcher matcher = STUDY_ID_FROM_URI_PATTERN.matcher(uri);
+    matcher.find();
+    return (Long.valueOf(matcher.group(1)));
   }
 
   private Long extractConceptIdFromUri(String uri) {
@@ -170,20 +223,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   private String subStringAfterLastSlash(String inStr) {
     return inStr.substring(inStr.lastIndexOf("/") + 1);
-  }
-
-  public enum AnalysisConcept {
-    DRUG("drug"),
-    OUTCOME("(adverseEvent|endpoint)");
-    private final String searchString;
-
-    AnalysisConcept(String searchString) {
-      this.searchString = searchString;
-    }
-
-    public String getSearchString() {
-      return this.searchString;
-    }
   }
 
 }

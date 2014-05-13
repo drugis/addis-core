@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -166,15 +167,43 @@ public class TrialverseControllerTest {
   }
 
   @Test
-  public void testGetTrialDataForOutcome() throws Exception {
+  public void testGetTrialDataWithOutcomeInQuery() throws Exception {
     TrialData trialData = new TrialData();
     Long namespaceId = 1L;
-    when(trialverseDataService.getTrialData(namespaceId)).thenReturn(trialData);
-    mockMvc.perform(get("/namespaces/1/trialData?outcome='foo'").principal(user))
+    String outcomeUri = "http://someoutcomethisis/12345/abc";
+    when(trialverseDataService.getTrialData(namespaceId, outcomeUri)).thenReturn(trialData);
+    mockMvc.perform(get("/namespaces/1/trialData?outcomeUri=" + outcomeUri).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", notNullValue()));
-    verify(trialverseDataService).getTrialData(namespaceId);
+    verify(trialverseDataService).getTrialData(namespaceId, outcomeUri);
+  }
+
+  @Test
+  public void testGetTrialDataWithInterventionsInQuery() throws Exception {
+    TrialData trialData = new TrialData();
+    Long namespaceId = 1L;
+    List<String> interventionUris = Arrays.asList("uri1", "uri2");
+    when(trialverseDataService.getTrialData(namespaceId, interventionUris)).thenReturn(trialData);
+    mockMvc.perform(get("/namespaces/1/trialData?interventionUris=uri1&interventionUris=uri2").principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", notNullValue()));
+    verify(trialverseDataService).getTrialData(namespaceId, interventionUris);
+  }
+
+  @Test
+  public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Exception {
+    TrialData trialData = new TrialData();
+    Long namespaceId = 1L;
+    List<String> interventionUris = Arrays.asList("uri1", "uri2");
+    String outcomeUri = "http://someoutcomethisis/12345/abc";
+    when(trialverseDataService.getTrialData(namespaceId, outcomeUri, interventionUris)).thenReturn(trialData);
+    mockMvc.perform(get("/namespaces/1/trialData?interventionUris=uri1&interventionUris=uri2&outcomeUri=" + outcomeUri).principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", notNullValue()));
+    verify(trialverseDataService).getTrialData(namespaceId, outcomeUri, interventionUris);
   }
 
 }

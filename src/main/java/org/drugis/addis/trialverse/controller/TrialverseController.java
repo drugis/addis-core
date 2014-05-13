@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by connor on 2/12/14.
@@ -96,14 +97,17 @@ public class TrialverseController {
 
   @RequestMapping(value = "/namespaces/{namespaceId}/trialData", method = RequestMethod.GET)
   @ResponseBody
-  public TrialData getTrialData(@PathVariable Long namespaceId, @RequestParam(required = false) String outcomeUri) {
-    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + namespaceId + "  " + outcomeUri);
-    if (outcomeUri == null) {
+  public TrialData getTrialData(@PathVariable Long namespaceId, @RequestParam(required = false) String outcomeUri,
+                                @RequestParam(required = false) List<String> interventionUris) {
+    if (outcomeUri == null && interventionUris == null) {
       return trialverseDataService.getTrialData(namespaceId);
+    } else if (outcomeUri != null && interventionUris == null) {
+      return trialverseDataService.getTrialData(namespaceId, outcomeUri);
+    } else if (outcomeUri == null && interventionUris != null) {
+      return trialverseDataService.getTrialData(namespaceId, interventionUris);
     }
-    TrialData trialData = trialverseDataService.getTrialData(namespaceId, outcomeUri);
-    System.out.println("!!!!!!!!trialData.getStudies().size()!!!!!!!!" + trialData.getStudies().size());
-    return trialData;
+
+    return trialverseDataService.getTrialData(namespaceId, outcomeUri, interventionUris);
   }
 
   @ResponseStatus(HttpStatus.FORBIDDEN)
