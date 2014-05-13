@@ -3,10 +3,14 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
     var scope,
       analysisDeferred,
       mockAnalysis = {$save: function(){},
-      outcome: {id: 2}},
+      outcome: {
+        id: 2,
+        semanticOutcomeUri: 'semanticOutcomeUri'
+      }},
       projectDeferred,
       mockProject = {
-        id: 11
+        id: 11,
+        trialverseId: 123456
       },
       mockStateParams = {
         analysisId: 1,
@@ -39,8 +43,9 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       outcomeResource = jasmine.createSpyObj('OutcomeResource', ['query']);
       outcomeResource.query.and.returnValue(mockOutcomes);
 
-      trialverseTrialDataResource = jasmine.createSpyObj('TrialverseTrialDataResource', ['query']);
+      trialverseTrialDataResource = jasmine.createSpyObj('TrialverseTrialDataResource', ['query', 'get']);
       trialverseTrialDataResource.query.and.returnValue(mockTrialData);
+      trialverseTrialDataResource.get.and.returnValue(mockTrialData);
 
 
       $controller('NetworkMetaAnalysisController', {
