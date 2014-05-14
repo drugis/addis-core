@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse.service.impl;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.model.Study;
 import org.drugis.addis.trialverse.model.TrialData;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,8 +52,12 @@ public class TrialverseDataServiceImpl implements TrialverseDataService {
   @Override
   public TrialData getTrialData(Long namespaceId, String outcomeUri, List<String> interventionUris) {
     List<Long> studysByOutcome = triplestoreService.findStudiesReferringToConcept(namespaceId, outcomeUri);
-    Map<Long, List<Long>> studyInterventions = triplestoreService.findStudyInterventions(namespaceId, studysByOutcome, interventionUris);
-    List<Study> studies = trialverseRepository.getStudiesByIds(namespaceId, new ArrayList<>(studyInterventions.keySet()));
-    return new TrialData(studies);
+    Map<Long, List<Pair<Long, String>>> studyInterventionKeys = triplestoreService.findStudyInterventions(namespaceId, studysByOutcome, interventionUris);
+    List<Study> studies = trialverseRepository.getStudiesByIds(namespaceId, new ArrayList<>(studyInterventionKeys.keySet()));
+    Map<Study, List<Pair<Long, String>>> studyInterventions = new HashMap<>();
+    for (Study study : studies) {
+      studyInterventions.put(study, studyInterventionKeys.get(study.getId()));
+    }
+    return new TrialData(studyInterventions);
   }
 }

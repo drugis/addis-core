@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse.service;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.model.Study;
 import org.drugis.addis.trialverse.model.TrialData;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
@@ -64,7 +65,7 @@ public class TrialverseDataServiceTest {
     verify(trialverseRepository).getStudiesByIds(namespaceId, studyIds);
     assertNotNull(trialData);
     assertNotNull(trialData.getStudies());
-    assertTrue(trialData.getStudies().containsAll(studies));
+    assertTrue(trialData.getStudies().containsAll(trialData.getStudies()));
   }
 
   @Test
@@ -76,15 +77,12 @@ public class TrialverseDataServiceTest {
     verify(trialverseRepository).queryStudies(namespaceId);
     assertNotNull(trialData);
     assertNotNull(trialData.getStudies());
-    assertTrue(trialData.getStudies().containsAll(studies));
+    assertTrue(trialData.getStudies().containsAll(trialData.getStudies()));
   }
 
   @Test
   public void getTrialDataByInterventions() {
-    List<String> interventionUris = Arrays.asList("u1", "u2");
     //todo
-    //  when(trialverseRepository.queryStudies())
-    TrialData trialData = trialverseDataService.getTrialData(namespaceId, interventionUris);
   }
 
   @Test
@@ -93,17 +91,18 @@ public class TrialverseDataServiceTest {
     List<String> interventionUris = Arrays.asList("u1", "u2");
     List<Long> studyIds = Arrays.asList(1L, 2L, 3L);
     when(triplestoreService.findStudiesReferringToConcept(namespaceId, outcomeUri)).thenReturn(studyIds);
-    Map<Long, List<Long>> studyInterventions = new HashMap<>();
-    studyInterventions.put(1L, Arrays.asList(1L, 2L, 3L));
+    Map<Long, List<Pair<Long, String>>> studyInterventions = new HashMap<>();
+    studyInterventions.put(1L, Arrays.asList(Pair.of(1L, "u1"), Pair.of(2L, "u2"), Pair.of(3L, "u3")));
     when(triplestoreService.findStudyInterventions(namespaceId, studyIds, interventionUris)).thenReturn(studyInterventions);
-    when(trialverseRepository.getStudiesByIds(namespaceId, new ArrayList<>(studyInterventions.keySet()))).thenReturn(studies);
+    when(trialverseRepository.getStudiesByIds(namespaceId, new ArrayList<>(studyInterventions.keySet()))).thenReturn(studies.subList(0, 1));
 
     TrialData trialData = trialverseDataService.getTrialData(namespaceId, outcomeUri, interventionUris);
+
     verify(triplestoreService).findStudiesReferringToConcept(namespaceId, outcomeUri);
     verify(triplestoreService).findStudyInterventions(namespaceId, studyIds, interventionUris);
     verify(trialverseRepository).getStudiesByIds(namespaceId, new ArrayList<>(studyInterventions.keySet()));
     assertNotNull(trialData);
     assertNotNull(trialData.getStudies());
-    assertTrue(trialData.getStudies().containsAll(studies));
+    assertTrue(trialData.getStudies().containsAll(trialData.getStudies()));
   }
 }

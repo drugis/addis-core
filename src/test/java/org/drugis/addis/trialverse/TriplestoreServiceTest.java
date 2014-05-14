@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
@@ -15,9 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 /**
@@ -109,10 +108,10 @@ public class TriplestoreServiceTest {
     Long namespaceId = 1L;
     List<Long> studyIds = Arrays.asList(1L, 2L, 3L);
     List<String> interventionsURIs = Arrays.asList("http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug");
-    Map<Long, List<Long>> result = triplestoreService.findStudyInterventions(namespaceId, studyIds, interventionsURIs);
+    Map<Long, List<Pair<Long, String>>> result = triplestoreService.findStudyInterventions(namespaceId, studyIds, interventionsURIs);
     assertNotNull(result);
     assertTrue(result.containsKey(1L));
-    assertTrue(result.get(1L).containsAll(Arrays.asList(1L, 4L)));
+    assertTrue(result.get(1L).containsAll(Arrays.asList(Pair.of(1L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug"), Pair.of(4L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug"))));
   }
 
 }

@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse.service;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 
@@ -22,13 +23,12 @@ public interface TriplestoreService {
   public List<Long> findStudiesReferringToConcept(Long namespaceId, String conceptUri);
 
   /**
-   * Finds all studies that are part of the given namespace, have an id that is contained within the studyIds list
-   * and have at least one of the given interventions
+   * Finds all studies that:
+   *  - Are part of the given namespace,
+   *  - Have an id that is contained within the studyIds list
+   *  - Report on at least one of the given interventions
    *
-   * @param namespaceId
-   * @param studyIds
-   * @param interventionURIs
-   * @return a map from studyIds to drugIds
+   * @return a map from studyIds to pairs of drugId and drugUri
    */
-  public Map<Long, List<Long>> findStudyInterventions(Long namespaceId, List<Long> studyIds, List<String> interventionURIs);
+  public Map<Long, List<Pair<Long, String>>> findStudyInterventions(Long namespaceId, List<Long> studyIds, List<String> interventionURIs);
 }

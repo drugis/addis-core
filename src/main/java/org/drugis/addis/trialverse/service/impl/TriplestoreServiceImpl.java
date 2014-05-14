@@ -5,6 +5,7 @@ import com.google.common.collect.Collections2;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -101,7 +102,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public Map<Long, List<Long>> findStudyInterventions(Long namespaceId, List<Long> studyIds, List<String> interventionURIs) {
+  public Map<Long, List<Pair<Long, String>>> findStudyInterventions(Long namespaceId, List<Long> studyIds, List<String> interventionURIs) {
     AnalysisConcept drugConcept = AnalysisConcept.DRUG;
     String conceptOptionsString = buildOptionStringFromConceptURIs(interventionURIs);
     String studyOptionsString = StringUtils.join(studyIds, "|");
@@ -121,18 +122,19 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     String response = queryTripleStore(query);
     System.out.println("!!!!!!! AND the responce is: " + response);
 
-    Map<Long, List<Long>> studyInterventions = new HashMap<>();
+    Map<Long, List<Pair<Long, String>>> studyInterventions = new HashMap<>();
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
+      String semanticInterventionUri = JsonPath.read(binding, "$.type.value");
       Long studyId = findStudyIdInURI(uri);
-      List<Long> interventionsIds = studyInterventions.get(studyId);
-      if (interventionsIds == null) {
-        interventionsIds = new ArrayList<>();
-        studyInterventions.put(studyId, interventionsIds);
+      List<Pair<Long, String>> interventions = studyInterventions.get(studyId);
+      if (interventions == null) {
+        interventions = new ArrayList<>();
+        studyInterventions.put(studyId, interventions);
       }
       Long interventionId = Long.valueOf(subStringAfterLastSlash(uri));
-      interventionsIds.add(interventionId);
+      interventions.add(Pair.of(interventionId, semanticInterventionUri));
     }
 
     return studyInterventions;

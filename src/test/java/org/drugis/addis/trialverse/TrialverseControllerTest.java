@@ -22,6 +22,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -156,7 +157,7 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetTrialData() throws Exception {
-    TrialData trialData = new TrialData();
+    TrialData trialData = new TrialData(new ArrayList<Study>());
     Long namespaceId = 1L;
     when(trialverseDataService.getTrialData(namespaceId)).thenReturn(trialData);
     mockMvc.perform(get("/namespaces/1/trialData").principal(user))
@@ -168,7 +169,7 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetTrialDataWithOutcomeInQuery() throws Exception {
-    TrialData trialData = new TrialData();
+    TrialData trialData = new TrialData(new ArrayList<Study>());
     Long namespaceId = 1L;
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     when(trialverseDataService.getTrialData(namespaceId, outcomeUri)).thenReturn(trialData);
@@ -181,7 +182,7 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetTrialDataWithInterventionsInQuery() throws Exception {
-    TrialData trialData = new TrialData();
+    TrialData trialData = new TrialData(new ArrayList<Study>());
     Long namespaceId = 1L;
     List<String> interventionUris = Arrays.asList("uri1", "uri2");
     when(trialverseDataService.getTrialData(namespaceId, interventionUris)).thenReturn(trialData);
@@ -194,7 +195,7 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Exception {
-    TrialData trialData = new TrialData();
+    TrialData trialData = new TrialData(new ArrayList<Study>());
     Long namespaceId = 1L;
     List<String> interventionUris = Arrays.asList("uri1", "uri2");
     String outcomeUri = "http://someoutcomethisis/12345/abc";

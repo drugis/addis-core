@@ -3,6 +3,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
     var scope,
       analysisDeferred,
       interventionDeferred,
+      trailverseTrailDataDefered,
       mockAnalysis = {$save: function(){},
       outcome: {
         id: 2,
@@ -46,6 +47,9 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
       interventionDeferred = $q.defer();
       mockInterventions.$promise = interventionDeferred.promise;
+
+      trailverseTrailDataDefered = $q.defer();
+      mockTrialData.$promise = trailverseTrailDataDefered.promise;
 
       scope = $rootScope;
       scope.$parent = {
@@ -115,7 +119,6 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
               mockInterventions[2].semanticInterventionUri]
           });
         });
-        
       });
 
     });
