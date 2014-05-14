@@ -66,13 +66,16 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       trialverseTrialDataResource.query.and.returnValue(mockTrialData);
       trialverseTrialDataResource.get.and.returnValue(mockTrialData);
 
+      networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows']);
+
 
       $controller('NetworkMetaAnalysisController', {
         $scope: scope,
         $stateParams: mockStateParams,
         OutcomeResource: outcomeResource,
         InterventionResource: interventionResource,
-        TrialverseTrialDataResource: trialverseTrialDataResource
+        TrialverseTrialDataResource: trialverseTrialDataResource,
+        NetworkMetaAnalysisService: networkMetaAnalysisService
       });
     }));
 

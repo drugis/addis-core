@@ -1,7 +1,9 @@
 define([], function() {
-  var dependencies = ['$scope', '$q', '$stateParams', 'OutcomeResource', 'InterventionResource','TrialverseTrialDataResource'];
+  var dependencies = ['$scope', '$q', '$stateParams', 'OutcomeResource', 'InterventionResource',
+  'TrialverseTrialDataResource', 'NetworkMetaAnalysisService'];
 
-  var NetworkMetaAnalysisController = function($scope, $q, $stateParams, OutcomeResource, InterventionResource, TrialverseTrialDataResource) {
+  var NetworkMetaAnalysisController = function($scope, $q, $stateParams, OutcomeResource,
+  InterventionResource, TrialverseTrialDataResource, NetworkMetaAnalysisService) {
     $scope.analysis = $scope.$parent.analysis;
     $scope.project = $scope.$parent.project;
     $scope.outcomes = OutcomeResource.query({
@@ -20,22 +22,6 @@ define([], function() {
       return object.semanticInterventionUri;
     }
 
-    function transformTrialDataToTableRows (studies) {
-      var tableRows = [];
-      angular.forEach(studies, function(study){
-        angular.forEach(study.trialDataInterventions, function(intervention, index){
-          var row = {};
-          if(index === 0) {
-            row.study = study.title;
-            row.rowSpan = study.trialDataInterventions.length;
-          }
-          row.intervention = intervention.drugId;
-          tableRows.push(row);
-        });
-      });
-      return tableRows;
-    }
-
     function reloadTable() {
       TrialverseTrialDataResource
         .get({
@@ -45,7 +31,7 @@ define([], function() {
         })
         .$promise
         .then(function(trialData){
-          $scope.trialData = transformTrialDataToTableRows(trialData.studies);
+          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialData.studies);
         });
     }
 
