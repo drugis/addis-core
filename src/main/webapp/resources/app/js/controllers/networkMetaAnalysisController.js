@@ -1,9 +1,10 @@
 define([], function() {
   var dependencies = ['$scope', '$q', '$stateParams', 'OutcomeResource', 'InterventionResource',
-  'TrialverseTrialDataResource', 'NetworkMetaAnalysisService'];
+    'TrialverseTrialDataResource', 'NetworkMetaAnalysisService'
+  ];
 
   var NetworkMetaAnalysisController = function($scope, $q, $stateParams, OutcomeResource,
-  InterventionResource, TrialverseTrialDataResource, NetworkMetaAnalysisService) {
+    InterventionResource, TrialverseTrialDataResource, NetworkMetaAnalysisService) {
     $scope.analysis = $scope.$parent.analysis;
     $scope.project = $scope.$parent.project;
     $scope.outcomes = OutcomeResource.query({
@@ -30,8 +31,9 @@ define([], function() {
           interventionUris: $scope.interventionUris
         })
         .$promise
-        .then(function(trialData){
-          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialData.studies);
+        .then(NetworkMetaAnalysisService.transformTrialDataToTableRows)
+        .then(function(tableRows) {
+          $scope.trialData = tableRows;
         });
     }
 
