@@ -2,11 +2,11 @@
 define(['underscore'], function() {
   var dependencies = ['$scope', '$stateParams', '$state', '$q', '$window',
     'OutcomeResource', 'InterventionResource',
-    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'AnalysisService', 'DEFAULT_VIEW'
+    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW'
   ];
   var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $q, $window,
     OutcomeResource, InterventionResource,
-    Select2UtilService, TrialverseStudyResource, ProblemResource, AnalysisService, DEFAULT_VIEW) {
+    Select2UtilService, TrialverseStudyResource, ProblemResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW) {
 
     var projectIdParam = {
       projectId: $stateParams.projectId
@@ -21,7 +21,7 @@ define(['underscore'], function() {
       $scope.$watchCollection('selectedOutcomeIds', function(newValue) {
         if (newValue.length !== $scope.analysis.selectedOutcomes.length) {
           $scope.analysis.selectedOutcomes = Select2UtilService.idsToObjects($scope.selectedOutcomeIds, $scope.outcomes);
-          $scope.isValidAnalysis = AnalysisService.validateAnalysis($scope.analysis);
+          $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
           $scope.errorMessage = {};
           $scope.analysis.$save();
         }
@@ -34,7 +34,7 @@ define(['underscore'], function() {
       $scope.$watchCollection('selectedInterventionIds', function(newValue) {
         if (newValue.length !== $scope.analysis.selectedInterventions.length) {
           $scope.analysis.selectedInterventions = Select2UtilService.idsToObjects($scope.selectedInterventionIds, $scope.interventions);
-          $scope.isValidAnalysis = AnalysisService.validateAnalysis($scope.analysis);
+          $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
           $scope.errorMessage = {};
           $scope.analysis.$save();
         }
@@ -47,7 +47,7 @@ define(['underscore'], function() {
     $scope.errorMessage = {};
 
     $q.all([$scope.analysis.$promise, $scope.project.$promise]).then(function() {
-      $scope.isValidAnalysis = AnalysisService.validateAnalysis($scope.analysis);
+      $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
 
       $scope.select2Options = {
         'readonly': $scope.$parent.editMode.disableEditing
@@ -70,14 +70,14 @@ define(['underscore'], function() {
 
       $scope.$watch('analysis.studyId', function(newValue, oldValue) {
         if (oldValue !== newValue) {
-          $scope.isValidAnalysis = AnalysisService.validateAnalysis($scope.analysis);
+          $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
           $scope.errorMessage = {};
           $scope.analysis.$save();
         }
       });
 
       $scope.goToDefaultScenarioView = function() {
-        AnalysisService
+        SingleStudyBenefitRiskAnalysisService
           .getDefaultScenario()
           .then(function(scenario) {
             $state.go(DEFAULT_VIEW, {
@@ -86,12 +86,12 @@ define(['underscore'], function() {
           });
       };
       $scope.createProblem = function() {
-        AnalysisService.getProblem($scope.analysis)
+        SingleStudyBenefitRiskAnalysisService.getProblem($scope.analysis)
           .then(function(problem) {
-            if (AnalysisService.validateProblem($scope.analysis, problem)) {
+            if (SingleStudyBenefitRiskAnalysisService.validateProblem($scope.analysis, problem)) {
               $scope.analysis.problem = problem;
               $scope.analysis.$save()
-                .then(AnalysisService.getDefaultScenario)
+                .then(SingleStudyBenefitRiskAnalysisService.getDefaultScenario)
                 .then(function(scenario) {
                   $state.go(DEFAULT_VIEW, {
                     scenarioId: scenario.id
