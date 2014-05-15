@@ -49,9 +49,9 @@ public class TrialverseServiceTest {
   @Test
   public void testGetVariablesByOutcomeIds() throws IOException {
     Variable variable1 = new Variable(1L, 11L, "Nausea", "description 1", "my unit is...", true,
-      MeasurementType.CONTINUOUS, VariableType.ADVERSE_EVENT);
+            MeasurementType.CONTINUOUS, VariableType.ADVERSE_EVENT);
     Variable variable2 = new Variable(2L, 12L, "HAM-D Responders", "description 2", "my unit is...", true,
-      MeasurementType.RATE, VariableType.ENDPOINT);
+            MeasurementType.RATE, VariableType.ENDPOINT);
     List<Variable> variables = Arrays.asList(variable1, variable2);
     List<Long> outcomeIds = Arrays.asList(1L, 2L);
     when(trialverseRepository.getVariablesByOutcomeIds(outcomeIds)).thenReturn(variables);
@@ -60,7 +60,8 @@ public class TrialverseServiceTest {
     // EXECUTOR
     List<ObjectNode> serialisedVars = trialverseService.getVariablesByIds(outcomeIds);
 
-    List<Variable> resultVars = objectMapper.readValue(serialisedVars.toString(), new TypeReference<List<Variable>>() {});
+    List<Variable> resultVars = objectMapper.readValue(serialisedVars.toString(), new TypeReference<List<Variable>>() {
+    });
     assertEquals(variables, resultVars);
     verify(trialverseRepository).getVariablesByOutcomeIds(outcomeIds);
   }
@@ -81,12 +82,12 @@ public class TrialverseServiceTest {
     Long measurementMomentId = 30L;
     Long armId = 20L;
     MeasurementAttribute attribute = MeasurementAttribute.RATE;
-    Measurement measurement = new Measurement(studyId.longValue(), variableId, measurementMomentId, armId, attribute ,60L, null);
+    Measurement measurement = new Measurement(studyId.longValue(), variableId, measurementMomentId, armId, attribute, 60L, null);
     List<Measurement> measurements = Arrays.asList(measurement);
-    when(trialverseRepository.getOrderedMeasurements(studyId, outcomeIds, armIds)).thenReturn(measurements);
+    when(trialverseRepository.getOrderedMeasurements(outcomeIds, armIds)).thenReturn(measurements);
 
     // execute
-    List<ObjectNode> serialisedResult = trialverseService.getOrderedMeasurements(studyId, outcomeIds, armIds);
+    List<ObjectNode> serialisedResult = trialverseService.getOrderedMeasurements(outcomeIds, armIds);
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -98,7 +99,7 @@ public class TrialverseServiceTest {
     assertEquals(measurement.getMeasurementAttribute(), mapper.convertValue(node.get("measurementAttribute"), MeasurementAttribute.class));
     assertEquals(measurement.getRealValue(), mapper.convertValue(node.get("realValue"), Double.class));
     assertEquals(measurement.getIntegerValue(), mapper.convertValue(node.get("integerValue"), Long.class));
-    verify(trialverseRepository).getOrderedMeasurements(studyId, outcomeIds, armIds);
+    verify(trialverseRepository).getOrderedMeasurements(outcomeIds, armIds);
   }
 
 }

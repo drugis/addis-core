@@ -10,7 +10,7 @@ define(['angular'], function() {
     }
 
     return {
-      transformTrialDataToTableRows: function(triallData) {
+      transformTrialDataToTableRows: function(trialData) {
         var tableRows = [],
           transformTrialDataToTableRowsDefer = $q.defer();
 
@@ -18,11 +18,11 @@ define(['angular'], function() {
           .query($stateParams)
           .$promise
           .then(function(interventions) {
-            angular.forEach(triallData.studies, function(study) {
+            angular.forEach(trialData.trialDataStudies, function(study) {
               angular.forEach(study.trialDataInterventions, function(trialDataIntervention, index) {
                 var row = {};
                 if (index === 0) {
-                  row.study = study.title;
+                  row.study = study.name;
                   row.rowSpan = study.trialDataInterventions.length;
                 }
                 row.intervention = trialDataInterventionToIntervention(trialDataIntervention, interventions).name;

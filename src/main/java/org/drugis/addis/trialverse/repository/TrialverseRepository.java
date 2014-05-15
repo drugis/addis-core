@@ -20,11 +20,13 @@ public interface TrialverseRepository {
 
   public List<Variable> getVariablesByOutcomeIds(Collection<Long> outcomeIds);
 
-  public List<Measurement> getOrderedMeasurements(Integer studyId, Collection<Long> outcomeIds, Collection<Long> arms);
+  public List<Measurement> getOrderedMeasurements(Collection<Long> outcomeIds, Collection<Long> arms);
 
   public List<Study> getStudiesByIds(Long namespaceId, List<Long> studyIds);
 
   public List<TrialDataArm> getArms(Long namespaceId);
 
   public List<TrialDataArm> getArmsForStudies(Long namespaceId, List<Long> studyIds);
+
+  public List<Measurement> getStudyMeasurementsForOutcomes(Collection<Long> studyId, Collection<Long> outcomeIds, Collection<Long> arms);
 }

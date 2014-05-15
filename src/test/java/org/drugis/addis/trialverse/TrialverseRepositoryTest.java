@@ -13,10 +13,12 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by connor on 2/26/14.
@@ -96,26 +98,24 @@ public class TrialverseRepositoryTest {
 
   @Test
   public void testGetOrderedMeasurements() {
-    Integer studyId = 1;
     List<Long> outcomeIds = Arrays.asList(1L, 2L);
     List<Long> armIds = Arrays.asList(1L);
-    List<Measurement> result = trialverseRepository.getOrderedMeasurements(studyId, outcomeIds, armIds);
+    List<Measurement> result = trialverseRepository.getOrderedMeasurements(outcomeIds, armIds);
     assertEquals(4, result.size());
   }
 
   @Test
   public void testGetOrderedMeasurementsTestForMeasureAttribute() {
-    Integer studyId = 1;
     List<Long> outcomeIds = Arrays.asList(2L);
     List<Long> armIds = Arrays.asList(1L);
-    List<Measurement> result = trialverseRepository.getOrderedMeasurements(studyId, outcomeIds, armIds);
+    List<Measurement> result = trialverseRepository.getOrderedMeasurements(outcomeIds, armIds);
     assertEquals(2, result.size());
     boolean foundStandardDeviationType = false, foundMeanType = false;
-    for(Measurement measurement : result) {
-      if(measurement.getMeasurementKey().getMeasurementAttribute() == MeasurementAttribute.STANDARD_DEVIATION) {
+    for (Measurement measurement : result) {
+      if (measurement.getMeasurementKey().getMeasurementAttribute() == MeasurementAttribute.STANDARD_DEVIATION) {
         foundStandardDeviationType = true;
       }
-      if(measurement.getMeasurementKey().getMeasurementAttribute() == MeasurementAttribute.MEAN) {
+      if (measurement.getMeasurementKey().getMeasurementAttribute() == MeasurementAttribute.MEAN) {
         foundMeanType = true;
       }
     }
@@ -140,10 +140,9 @@ public class TrialverseRepositoryTest {
   @Test
   public void testGetArmsForStudies() {
     Long namespaceId = 1L;
-    List<Long> studyIds = Arrays.asList(1L);
+    List<Long> studyIds = Arrays.asList(1L, 2L);
     List<TrialDataArm> arms = trialverseRepository.getArmsForStudies(namespaceId, studyIds);
-    assertEquals(2, arms.size());
-    Namespace namespace = new Namespace(1L, "name1", "description1");
+    assertEquals(4, arms.size());
   }
 
 }

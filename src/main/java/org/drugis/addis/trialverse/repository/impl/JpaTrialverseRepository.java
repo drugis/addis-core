@@ -79,8 +79,14 @@ public class JpaTrialverseRepository implements TrialverseRepository {
   @Override
   public List<TrialDataArm> getArmsForStudies(Long namespaceId, List<Long> studyIds) {
     Query query = em.createNativeQuery(
-            "SELECT a.id, a.name, a.study FROM arms a, namespace_studies nss" +
-                    " WHERE a.study = nss.study AND nss.namespace = :namespaceId AND a.study IN :studyIds", TrialDataArm.class
+            "SELECT " +
+                    " a.id, a.name, a.study" +
+                    " FROM arms a, namespace_studies nss" +
+                    " WHERE" +
+                    " a.study = nss.study" +
+                    " AND nss.namespace = :namespaceId" +
+                    " AND a.study IN :studyIds" +
+                    " AND a.name != '' ", TrialDataArm.class
     );
     query.setParameter("namespaceId", namespaceId);
     query.setParameter("studyIds", studyIds);
@@ -98,7 +104,7 @@ public class JpaTrialverseRepository implements TrialverseRepository {
   }
 
   @Override
-  public List<Measurement> getOrderedMeasurements(Integer studyId, Collection<Long> outcomeIds, Collection<Long> armIds) {
+  public List<Measurement> getOrderedMeasurements(Collection<Long> outcomeIds, Collection<Long> armIds) {
     if (outcomeIds.isEmpty() || armIds.isEmpty()) {
       return Collections.emptyList();
     }
@@ -120,6 +126,37 @@ public class JpaTrialverseRepository implements TrialverseRepository {
             " AND" +
             "  m.arm IN :armIds" +
             " ORDER BY m.variable, m.arm, m.attribute", Measurement.class);
+    query.setParameter("outcomeIds", outcomeIds);
+    query.setParameter("armIds", armIds);
+    return query.getResultList();
+  }
+
+  @Override
+  public List<Measurement> getStudyMeasurementsForOutcomes(Collection<Long> studyIds, Collection<Long> outcomeIds, Collection<Long> armIds) {
+    if (studyIds.isEmpty() || outcomeIds.isEmpty() || armIds.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    Query query = em.createNativeQuery("SELECT" +
+            "  m.*" +
+            " FROM" +
+            "  measurements m," +
+            "  measurement_moments mm," +
+            "  arms a" +
+            " WHERE" +
+            "  a.id = m.arm" +
+            " AND" +
+            "  mm.id = m.measurement_moment" +
+            " AND" +
+            "  mm.is_primary = TRUE" +
+            " AND" +
+            "  m.variable IN :outcomeIds" +
+            " AND" +
+            "  m.arm IN :armIds" +
+            " AND" +
+            " m.study in :studyIds" +
+            " ORDER BY m.variable, m.arm, m.attribute", Measurement.class);
+    query.setParameter("studyIds", studyIds);
     query.setParameter("outcomeIds", outcomeIds);
     query.setParameter("armIds", armIds);
     return query.getResultList();

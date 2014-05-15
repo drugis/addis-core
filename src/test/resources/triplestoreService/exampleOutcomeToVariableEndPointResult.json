@@ -1,0 +1,18 @@
+{
+  "results": {
+    "bindings": [
+      {
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/20/endpoint/304" } ,
+        "type": { "type": "uri" , "value": "http://trials.drugis.org/namespaces/1/endpoint/232145506bf409d7bb931fd35d6122c0" }
+      },
+      {
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/13/endpoint/209" } ,
+        "type": { "type": "uri" , "value": "http://trials.drugis.org/namespaces/1/endpoint/232145506bf409d7bb931fd35d6122c0" }
+      },
+      {
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/5/endpoint/91" } ,
+        "type": { "type": "uri" , "value": "http://trials.drugis.org/namespaces/1/endpoint/232145506bf409d7bb931fd35d6122c0" }
+      }
+    ]
+  }
+}

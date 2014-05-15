@@ -1,6 +1,7 @@
 package org.drugis.addis.trialverse;
 
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -22,10 +23,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -157,7 +155,7 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetTrialData() throws Exception {
-    TrialData trialData = new TrialData(new ArrayList<Study>());
+    TrialData trialData = new TrialData(new ArrayList<TrialDataStudy>());
     Long namespaceId = 1L;
     when(trialverseDataService.getTrialData(namespaceId)).thenReturn(trialData);
     mockMvc.perform(get("/namespaces/1/trialData").principal(user))
@@ -169,7 +167,7 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetTrialDataWithOutcomeInQuery() throws Exception {
-    TrialData trialData = new TrialData(new ArrayList<Study>());
+    TrialData trialData = new TrialData(new ArrayList<TrialDataStudy>());
     Long namespaceId = 1L;
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     when(trialverseDataService.getTrialData(namespaceId, outcomeUri)).thenReturn(trialData);
@@ -182,7 +180,7 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetTrialDataWithInterventionsInQuery() throws Exception {
-    TrialData trialData = new TrialData(new ArrayList<Study>());
+    TrialData trialData = new TrialData(new ArrayList<TrialDataStudy>());
     Long namespaceId = 1L;
     List<String> interventionUris = Arrays.asList("uri1", "uri2");
     when(trialverseDataService.getTrialData(namespaceId, interventionUris)).thenReturn(trialData);
@@ -195,7 +193,14 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Exception {
-    TrialData trialData = new TrialData(new ArrayList<Study>());
+    Map<TrialDataStudy, List<Pair<Long, String>>> studyInterventions = new HashMap<>();
+    List<TrialDataStudy> trialDataStudies = Arrays.asList(new TrialDataStudy(1L, "study name"));
+    Map<Long, List<Pair<Long, String>>> studyInterventionKeys = new HashMap<>();
+    studyInterventionKeys.put(trialDataStudies.get(0).getStudyId(), Arrays.asList(Pair.of(101L, "some-sort-of-uri")));
+    for (TrialDataStudy trialDataStudy : trialDataStudies) {
+      studyInterventions.put(trialDataStudy, studyInterventionKeys.get(trialDataStudy.getStudyId()));
+    }
+    TrialData trialData = new TrialData(studyInterventions);
     Long namespaceId = 1L;
     List<String> interventionUris = Arrays.asList("uri1", "uri2");
     String outcomeUri = "http://someoutcomethisis/12345/abc";

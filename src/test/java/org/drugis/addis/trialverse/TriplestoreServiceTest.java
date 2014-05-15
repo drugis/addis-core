@@ -114,4 +114,32 @@ public class TriplestoreServiceTest {
     assertTrue(result.get(1L).containsAll(Arrays.asList(Pair.of(1L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug"), Pair.of(4L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug"))));
   }
 
+  @Test
+  public void testGetOutComeVariableIdsByStudyForSingleOutcomeAdverseEventType() {
+
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeToVariableAdverseEventResult.json");
+    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
+
+    Long namespaceId = 1L;
+    List<Long> studyIds = Arrays.asList(20L, 13L, 5L);
+    String outcomeConceptUri = "http://trials.drugis.org/namespace/2/adverseEvent/232145506bf409d7bb931fd35d6122c0";
+    List<Pair<Long, Long>> result = triplestoreService.getOutComeVariableIdsByStudyForSingleOutcome(namespaceId, studyIds, outcomeConceptUri);
+    assertEquals(3, result.size());
+    assertTrue(result.containsAll(Arrays.asList(Pair.of(20L, 304L), Pair.of(13L, 209L), Pair.of(5L, 91L))));
+  }
+
+  @Test
+  public void testGetOutComeVariableIdsByStudyForSingleOutcomeEndPointType() {
+
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeToVariableAdverseEventResult.json");
+    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
+
+    Long namespaceId = 1L;
+    List<Long> studyIds = Arrays.asList(20L, 13L, 5L);
+    String outcomeConceptUri = "http://trials.drugis.org/namespace/2/endPoint/232145506bf409d7bb931fd35d6122c0";
+    List<Pair<Long, Long>> result = triplestoreService.getOutComeVariableIdsByStudyForSingleOutcome(namespaceId, studyIds, outcomeConceptUri);
+    assertEquals(3, result.size());
+    assertTrue(result.containsAll(Arrays.asList(Pair.of(20L, 304L), Pair.of(13L, 209L), Pair.of(5L, 91L))));
+  }
+
 }

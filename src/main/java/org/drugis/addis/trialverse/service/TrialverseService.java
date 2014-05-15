@@ -13,7 +13,7 @@ public interface TrialverseService {
 
   public List<ObjectNode> getArmsByDrugIds(Integer studyId, Collection<Long> drugIds);
 
-  public List<ObjectNode> getOrderedMeasurements(Integer studyId, Collection<Long> outcomeIds, Collection<Long> armIds);
+  public List<ObjectNode> getOrderedMeasurements(Collection<Long> outcomeIds, Collection<Long> armIds);
 
   public List<ObjectNode> getStudiesByIds(Long namespaceId, List<Long> studyIds);
 }

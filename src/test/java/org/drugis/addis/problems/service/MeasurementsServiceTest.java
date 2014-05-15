@@ -88,7 +88,7 @@ public class MeasurementsServiceTest {
     Measurement measurement = new Measurement((long) studyId, outcomeId, measurementMomentId, alternativeId, MeasurementAttribute.RATE, integerValue, null);
     ObjectNode jsonNode = mapper.convertValue(measurement, ObjectNode.class);
     List<ObjectNode> jsonMeasurements = Arrays.asList(jsonNode);
-    when(trialverseService.getOrderedMeasurements(studyId, trialverseVariables.keySet(), alternativesCache.keySet())).thenReturn(jsonMeasurements);
+    when(trialverseService.getOrderedMeasurements(trialverseVariables.keySet(), alternativesCache.keySet())).thenReturn(jsonMeasurements);
 
     List<Measurement> measurements = measurementsService.createMeasurements(project, analysis, alternativesCache);
 

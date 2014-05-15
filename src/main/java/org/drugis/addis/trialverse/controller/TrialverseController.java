@@ -106,8 +106,8 @@ public class TrialverseController {
     } else if (outcomeUri == null && interventionUris != null) {
       return trialverseDataService.getTrialData(namespaceId, interventionUris);
     }
-
-    return trialverseDataService.getTrialData(namespaceId, outcomeUri, interventionUris);
+    TrialData trialData = trialverseDataService.getTrialData(namespaceId, outcomeUri, interventionUris);
+    return trialData;
   }
 
   @ResponseStatus(HttpStatus.FORBIDDEN)

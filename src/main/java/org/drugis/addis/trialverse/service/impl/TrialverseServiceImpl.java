@@ -39,8 +39,8 @@ public class TrialverseServiceImpl implements TrialverseService {
   }
 
   @Override
-  public List<ObjectNode> getOrderedMeasurements(Integer studyId, Collection<Long> outcomeIds, Collection<Long> armIds) {
-    List<Measurement> measurements = trialverseRepository.getOrderedMeasurements(studyId, outcomeIds, armIds);
+  public List<ObjectNode> getOrderedMeasurements(Collection<Long> outcomeIds, Collection<Long> armIds) {
+    List<Measurement> measurements = trialverseRepository.getOrderedMeasurements(outcomeIds, armIds);
     return objectsToNodes(measurements);
   }
 

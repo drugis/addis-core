@@ -96,6 +96,34 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return getTrialverseConceptIds(namespaceId, studyId, AnalysisConcept.DRUG, drugURIs);
   }
 
+  public List<Pair<Long, Long>> getOutComeVariableIdsByStudyForSingleOutcome(Long namespaceId, List<Long> studyIds, String outcomeURI) {
+    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "\n" +
+            "SELECT  * WHERE {\n" +
+            " GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
+            "   ?uri rdf:type ?type .\n" +
+            "   FILTER regex(str(?type), \"namespaces/" +
+            namespaceId + "/" + AnalysisConcept.OUTCOME.getSearchString() + "/" + subStringAfterLastSlash(outcomeURI) + "\") .\n" +
+            "   FILTER regex(str(?uri), \"/study/(" + buildOptionStringFromIds(studyIds) + ")\") .\n" +
+            " }\n" +
+            "}";
+
+    System.out.println("getOutComeVariableIdsByStudyForSingleOutcome query: " + query);
+    String response = queryTripleStore(query);
+    System.out.println("getOutComeVariableIdsByStudyForSingleOutcome response: " + response);
+
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    List<Pair<Long, Long>> studyVariablesForOutcome = new ArrayList<>(bindings.size());
+    for (Object binding : bindings) {
+      String uri = JsonPath.read(binding, "$.uri.value");
+      Long studyId = findStudyIdInURI(uri);
+      Long variableId = Long.valueOf(subStringAfterLastSlash(uri));
+      studyVariablesForOutcome.add(Pair.of(studyId, variableId));
+    }
+    return studyVariablesForOutcome;
+  }
+
   @Override
   public Map<Long, String> getTrialverseVariables(Long namespaceId, Long studyId, Collection<String> outcomeURIs) {
     return getTrialverseConceptIds(namespaceId, studyId, AnalysisConcept.OUTCOME, outcomeURIs);
@@ -172,6 +200,10 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       }
     });
     return StringUtils.join(strippedUris, "|");
+  }
+
+  private String buildOptionStringFromIds(Collection<Long> ids) {
+    return StringUtils.join(ids, "|");
   }
 
   private String createFindUsagesQuery(Long namespaceId, Long studyId, AnalysisConcept analysisConcept, String URIsToFind) {
