@@ -1,6 +1,7 @@
 package org.drugis.addis.trialverse;
 
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.security.Account;
@@ -194,7 +195,7 @@ public class TrialverseControllerTest {
   @Test
   public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Exception {
     Map<TrialDataStudy, List<Pair<Long, String>>> studyInterventions = new HashMap<>();
-    List<TrialDataStudy> trialDataStudies = Arrays.asList(new TrialDataStudy(1L, "study name"));
+    List<TrialDataStudy> trialDataStudies = Arrays.asList(new TrialDataStudy(1L, "study name", ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST));
     Map<Long, List<Pair<Long, String>>> studyInterventionKeys = new HashMap<>();
     studyInterventionKeys.put(trialDataStudies.get(0).getStudyId(), Arrays.asList(Pair.of(101L, "some-sort-of-uri")));
     for (TrialDataStudy trialDataStudy : trialDataStudies) {

@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse.service.impl;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
@@ -33,13 +34,21 @@ public class TrialverseDataServiceImpl implements TrialverseDataService {
   public TrialData getTrialData(Long namespaceId, String outcomeUri) {
     List<Long> studyIds = triplestoreService.findStudiesReferringToConcept(namespaceId, outcomeUri);
     List<Study> studies = trialverseRepository.getStudiesByIds(namespaceId, studyIds);
-    return new TrialData(TrialDataStudy.toTrailDataStudy(studies));
+    List<TrialDataStudy> trialDataStudies = new ArrayList<>(studies.size());
+    for (Study study : studies) {
+      trialDataStudies.add(new TrialDataStudy(study.getId(), study.getName(), ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST));
+    }
+    return new TrialData(trialDataStudies);
   }
 
   @Override
   public TrialData getTrialData(Long namespaceId) {
     List<Study> studies = trialverseRepository.queryStudies(Long.valueOf(namespaceId));
-    return new TrialData(TrialDataStudy.toTrailDataStudy(studies));
+    List<TrialDataStudy> trialDataStudies = new ArrayList<>(studies.size());
+    for (Study study : studies) {
+      trialDataStudies.add(new TrialDataStudy(study.getId(), study.getName(), ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST));
+    }
+    return new TrialData(trialDataStudies);
   }
 
   @Override
@@ -54,13 +63,10 @@ public class TrialverseDataServiceImpl implements TrialverseDataService {
     List<Long> studyIdsByOutcome = triplestoreService.findStudiesReferringToConcept(namespaceId, outcomeUri);
 
     Map<Long, List<TrialDataIntervention>> studyInterventions = triplestoreService.findStudyInterventions(namespaceId, studyIdsByOutcome, interventionUris);
-
     List<Study> studies = trialverseRepository.getStudiesByIds(namespaceId, new ArrayList<>(studyInterventions.keySet()));
-    List<TrialDataStudy> trialDataStudies = TrialDataStudy.toTrailDataStudy(studies);
     List<Pair<Long, Long>> studyOutcomeVariableIds = triplestoreService.getOutcomeVariableIdsByStudyForSingleOutcome(namespaceId, studyIdsByOutcome, outcomeUri);
     List<TrialDataArm> trailDataArms = trialverseRepository.getArmsForStudies(namespaceId, studyIdsByOutcome);
     List<Measurement> measurements = trialverseRepository.getStudyMeasurementsForOutcomes(studyIdsByOutcome, getRightSideOfPairList(studyOutcomeVariableIds), buildIdIndexedMap(trailDataArms).keySet());
-
 
     Map<Long, List<Measurement>> measurementsByArm = sortMeasurementsByArm(measurements);
 
@@ -70,9 +76,10 @@ public class TrialverseDataServiceImpl implements TrialverseDataService {
 
     Map<Long, List<TrialDataArm>> studyIdToTrialDataArmMap = buildStudyIdToTrialDataArmMap(trailDataArms);
 
-    for (TrialDataStudy trialDataStudy : trialDataStudies) {
-      trialDataStudy.setTrialDataArms(studyIdToTrialDataArmMap.get(trialDataStudy.getStudyId()));
-      trialDataStudy.setTrialDataInterventions(studyInterventions.get(trialDataStudy.getStudyId()));
+    List<TrialDataStudy> trialDataStudies = new ArrayList<>(studies.size());
+    for (Study study : studies) {
+      Long studyId = study.getId();
+      trialDataStudies.add(new TrialDataStudy(study.getId(), study.getName(), studyInterventions.get(studyId), studyIdToTrialDataArmMap.get(studyId)));
     }
 
     TrialData trialData = new TrialData(trialDataStudies);

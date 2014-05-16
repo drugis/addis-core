@@ -12,14 +12,11 @@ public class TrialDataStudy {
   private List<TrialDataIntervention> trialDataInterventions = new ArrayList<>();
   private List<TrialDataArm> trialDataArms = new ArrayList<>();
 
-  public TrialDataStudy(Long studyId, String name) {
+  public TrialDataStudy(Long studyId, String name, List<TrialDataIntervention> trialDataInterventions, List<TrialDataArm> trialDataArms) {
     this.studyId = studyId;
     this.name = name;
-  }
-
-  public TrialDataStudy(Study study) {
-    this.studyId = study.getId();
-    this.name = study.getName();
+    this.trialDataInterventions = trialDataInterventions;
+    this.trialDataArms = trialDataArms;
   }
 
   public Long getStudyId() {
@@ -38,14 +35,6 @@ public class TrialDataStudy {
     return trialDataArms;
   }
 
-  public void setTrialDataInterventions(List<TrialDataIntervention> trialDataInterventions) {
-    this.trialDataInterventions = trialDataInterventions;
-  }
-
-  public void setTrialDataArms(List<TrialDataArm> trialDataArms) {
-    this.trialDataArms = trialDataArms != null ? trialDataArms : new ArrayList<TrialDataArm>();
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -53,8 +42,8 @@ public class TrialDataStudy {
 
     TrialDataStudy that = (TrialDataStudy) o;
 
-    if (!studyId.equals(that.studyId)) return false;
     if (!name.equals(that.name)) return false;
+    if (!studyId.equals(that.studyId)) return false;
     if (!trialDataArms.equals(that.trialDataArms)) return false;
     if (!trialDataInterventions.equals(that.trialDataInterventions)) return false;
 
@@ -68,13 +57,5 @@ public class TrialDataStudy {
     result = 31 * result + trialDataInterventions.hashCode();
     result = 31 * result + trialDataArms.hashCode();
     return result;
-  }
-
-  public static List<TrialDataStudy> toTrailDataStudy(List<Study> studies) {
-    List<TrialDataStudy> trialDataStudies = new ArrayList<>(studies.size());
-    for (Study study : studies) {
-      trialDataStudies.add(new TrialDataStudy(study));
-    }
-    return trialDataStudies;
   }
 }
