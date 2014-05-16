@@ -2,7 +2,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
   var exampleStudies = [{
     "studyId": 48,
-    "title": "TAK491-301 / NCT00846365",
+    "name": "TAK491-301 / NCT00846365",
     "trialDataInterventions": [{
       "drugId": 109,
       "uri": "http://trials.drugis.org/namespaces/2/drug/87fec8a8071915a2e17eddeb1faf8daa"
@@ -12,14 +12,14 @@ define(['angular', 'angular-mocks', 'services'], function() {
     }]
   }, {
     "studyId": 44,
-    "title": "TAK491-008 / NCT00696241",
+    "name": "TAK491-008 / NCT00696241",
     "trialDataInterventions": [{
       "drugId": 98,
       "uri": "http://trials.drugis.org/namespaces/2/drug/87fec8a8071915a2e17eddeb1faf8daa"
     }]
   }];
 
-  describe("The networkMetaAnalysis service", function() {
+  describe("The networkMetaAnalysisService", function() {
 
     describe('transformTrialDataToTableRows', function() {
 
@@ -35,11 +35,11 @@ define(['angular', 'angular-mocks', 'services'], function() {
         });
       });
 
-      it('should construct table rows from the list of studies',
+      it('should construct table rows from the list of trialDataStudies',
         inject(function($rootScope, $q, NetworkMetaAnalysisService) {
 
           var trialVersStudyData = {};
-          trialVersStudyData.studies = exampleStudies;
+          trialVersStudyData.trialDataStudies = exampleStudies;
           var interventionsDefer = $q.defer();
           var interventions = [{
             name: 'intervention1',
