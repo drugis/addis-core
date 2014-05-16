@@ -22,6 +22,8 @@
                 <th class="large-3">Interventions</th>
                 <th class="large-3">Arms</th>
                 <th ng-show="trialData[0].rate" class="large-2">Rate</th>
+                <th ng-show="trialData[0].mu" class="large-2">&mu;</th>
+                <th ng-show="trialData[0].sigma" class="large-2">&sigma;</th>
                 <th ng-show="trialData[0].sampleSize" class="large-1">N</th>
             </tr>
             </thead>
@@ -33,7 +35,9 @@
                 </td>
                 <td>{{dataRow.arm}}</td>
                 <td ng-show="dataRow.rate">{{dataRow.rate}}</td>
-                <td ng-show="dataRow.sampleSize">{{dataRow.sampleSize}}</td>
+                <td ng-show="trialData[0].mu" class="large-2">{{dataRow.mu}}</td>
+                <td ng-show="trialData[0].sigma" class="large-2">{{dataRow.sigma}}</td>
+                <td ng-show="trialData[0].sampleSize">{{dataRow.sampleSize}}</td>
             </tr>
             </tbody>
         </table>

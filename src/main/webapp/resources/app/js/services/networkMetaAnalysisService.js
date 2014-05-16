@@ -29,6 +29,20 @@ define(['angular'], function() {
       return sampleSizeMeasurement ? sampleSizeMeasurement.integerValue : null;
     }
 
+    function findMuMeasurementValue(measurements) {
+      var sampleSizeMeasurement = _.find(measurements, function(measurement){
+        return measurement.measurementAttribute === 'mean';
+      });
+      return sampleSizeMeasurement ? sampleSizeMeasurement.realValue : null;
+    }
+
+    function findSigmaMeasurementValue(measurements) {
+      var sampleSizeMeasurement = _.find(measurements, function(measurement){
+        return measurement.measurementAttribute === 'standard deviation';
+      });
+      return sampleSizeMeasurement ? sampleSizeMeasurement.realValue : null;
+    }
+
     return {
       transformTrialDataToTableRows: function(trialData) {
         var tableRows = [],
@@ -52,6 +66,8 @@ define(['angular'], function() {
                 row.intervention = trialDataIntervention ? resolveInterventionName(trialDataIntervention, interventions) : 'unmatched';     
                 row.arm = trialDataArm.name
                 row.rate = findRateMeasurementValue(trialDataArm.measurements);
+                row.mu = findMuMeasurementValue(trialDataArm.measurements);
+                row.sigma = findSigmaMeasurementValue(trialDataArm.measurements);
                 row.sampleSize = findSampleSizeMeasurementValue(trialDataArm.measurements);
 
                 tableRows.push(row);
