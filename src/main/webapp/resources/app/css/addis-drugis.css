@@ -9035,3 +9035,8 @@ tr.on-hover:hover {
 tr.clickable td {
   color: #452f8c;
 }
+
+/* line 74, ../../sass/addis-drugis.scss */
+.undefined {
+  font-style: italic;
+}
