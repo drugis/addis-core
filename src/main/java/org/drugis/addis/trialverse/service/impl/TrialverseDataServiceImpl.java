@@ -126,8 +126,8 @@ public class TrialverseDataServiceImpl implements TrialverseDataService {
 
   private <T, O> List<T> getRightSideOfPairList(List<Pair<O, T>> pairList) {
     List<T> rightSizeList = new ArrayList<>(pairList.size());
-    for (Pair<O, T> studyOutcomePair : pairList) {
-      rightSizeList.add(studyOutcomePair.getRight());
+    for (Pair<O, T> pair : pairList) {
+      rightSizeList.add(pair.getRight());
     }
     return rightSizeList;
   }
