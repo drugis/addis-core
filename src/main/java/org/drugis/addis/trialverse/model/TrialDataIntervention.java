@@ -7,9 +7,12 @@ public class TrialDataIntervention {
   private Long drugId;
   private String uri;
 
-  public TrialDataIntervention(Long drugId, String uri) {
+  private Long studyId;
+
+  public TrialDataIntervention(Long drugId, String uri, Long studyId) {
     this.drugId = drugId;
     this.uri = uri;
+    this.studyId = studyId;
   }
 
   public Long getDrugId() {
@@ -20,6 +23,10 @@ public class TrialDataIntervention {
     return uri;
   }
 
+  public Long getStudyId() {
+    return studyId;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -28,6 +35,7 @@ public class TrialDataIntervention {
     TrialDataIntervention that = (TrialDataIntervention) o;
 
     if (!drugId.equals(that.drugId)) return false;
+    if (!studyId.equals(that.studyId)) return false;
     if (!uri.equals(that.uri)) return false;
 
     return true;
@@ -37,6 +45,7 @@ public class TrialDataIntervention {
   public int hashCode() {
     int result = drugId.hashCode();
     result = 31 * result + uri.hashCode();
+    result = 31 * result + studyId.hashCode();
     return result;
   }
 }

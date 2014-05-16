@@ -90,14 +90,14 @@ public class TrialverseDataServiceTest {
     List<String> interventionUris = Arrays.asList("u1", "u2");
     List<Long> studyIds = Arrays.asList(1L, 2L, 3L);
     when(triplestoreService.findStudiesReferringToConcept(namespaceId, outcomeUri)).thenReturn(studyIds);
-    Map<Long, List<Pair<Long, String>>> studyInterventions = new HashMap<>();
-    studyInterventions.put(1L, Arrays.asList(Pair.of(1L, "u1"), Pair.of(2L, "u2"), Pair.of(3L, "u3")));
+    Map<Long, List<TrialDataIntervention>> studyInterventions = new HashMap<>();
+    studyInterventions.put(1L, Arrays.asList(new TrialDataIntervention(1L, "u1", 1L), new TrialDataIntervention(1L, "u1sddgd", 1L), new TrialDataIntervention(2L, "u2", 1L)));
     List<Pair<Long, Long>> outComeVariableIdsByStudyForSingleOutcome = Arrays.asList(Pair.of(1L, 202L));
     when(triplestoreService.findStudyInterventions(namespaceId, studyIds, interventionUris)).thenReturn(studyInterventions);
     List<TrialDataArm> trialDataArms = Arrays.asList(new TrialDataArm(303L, 1L, "trailDataArm"));
     List<Measurement> measurements = Arrays.asList(new Measurement(1L, 404L, 505L, 303L, MeasurementAttribute.RATE, 123L, null));
     when(trialverseRepository.getStudiesByIds(namespaceId, new ArrayList<>(studyInterventions.keySet()))).thenReturn(studies.subList(0, 1));
-    when(triplestoreService.getOutComeVariableIdsByStudyForSingleOutcome(namespaceId, studyIds, outcomeUri)).thenReturn(outComeVariableIdsByStudyForSingleOutcome);
+    when(triplestoreService.getOutcomeVariableIdsByStudyForSingleOutcome(namespaceId, studyIds, outcomeUri)).thenReturn(outComeVariableIdsByStudyForSingleOutcome);
     when(trialverseRepository.getArmsForStudies(namespaceId, studyIds)).thenReturn(trialDataArms);
     when(trialverseRepository.getStudyMeasurementsForOutcomes(new ArrayList<>(studyInterventions.keySet()), Arrays.asList(202L), Arrays.asList(303L))).thenReturn(measurements);
 
@@ -106,7 +106,7 @@ public class TrialverseDataServiceTest {
     verify(triplestoreService).findStudiesReferringToConcept(namespaceId, outcomeUri);
     verify(triplestoreService).findStudyInterventions(namespaceId, studyIds, interventionUris);
     verify(trialverseRepository).getStudiesByIds(namespaceId, new ArrayList<>(studyInterventions.keySet()));
-    verify(triplestoreService).getOutComeVariableIdsByStudyForSingleOutcome(namespaceId, studyIds, outcomeUri);
+    verify(triplestoreService).getOutcomeVariableIdsByStudyForSingleOutcome(namespaceId, studyIds, outcomeUri);
     verify(trialverseRepository).getArmsForStudies(namespaceId, studyIds);
     Map<Long, String> tempMap = new HashMap<>();
     tempMap.put(303L, "anyString");

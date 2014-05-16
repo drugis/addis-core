@@ -200,7 +200,7 @@ public class TrialverseControllerTest {
     for (TrialDataStudy trialDataStudy : trialDataStudies) {
       studyInterventions.put(trialDataStudy, studyInterventionKeys.get(trialDataStudy.getStudyId()));
     }
-    TrialData trialData = new TrialData(studyInterventions);
+    TrialData trialData = new TrialData(trialDataStudies);
     Long namespaceId = 1L;
     List<String> interventionUris = Arrays.asList("uri1", "uri2");
     String outcomeUri = "http://someoutcomethisis/12345/abc";

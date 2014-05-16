@@ -3,6 +3,7 @@ package org.drugis.addis.trialverse.service;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.TrialDataIntervention;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,14 +24,9 @@ public interface TriplestoreService {
   public List<Long> findStudiesReferringToConcept(Long namespaceId, String conceptUri);
 
   /**
-   * Finds all studies that:
-   * - Are part of the given namespace,
-   * - Have an id that is contained within the studyIds list
-   * - Report on at least one of the given interventions
-   *
-   * @return a map from studyIds to pairs of drugId and drugUri
+   * build a map of trialDataInterventions lists that is indexed by studyId
    */
-  public Map<Long, List<Pair<Long, String>>> findStudyInterventions(Long namespaceId, List<Long> studyIds, List<String> interventionURIs);
+  public Map<Long, List<TrialDataIntervention>> findStudyInterventions(Long namespaceId, List<Long> studyIds, List<String> interventionURIs);
 
   /**
    * Get a list for studyId-OutcomeVariable pairs that corresponds to the outcomeconcept is
@@ -40,5 +36,5 @@ public interface TriplestoreService {
    * @param outcomeURI  The outcome concept for which the trialverse variable ids should be resolved
    * @return
    */
-  public List<Pair<Long, Long>> getOutComeVariableIdsByStudyForSingleOutcome(Long namespaceId, List<Long> studyIds, String outcomeURI);
+  public List<Pair<Long, Long>> getOutcomeVariableIdsByStudyForSingleOutcome(Long namespaceId, List<Long> studyIds, String outcomeURI);
 }

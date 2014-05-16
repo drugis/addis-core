@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.TrialDataIntervention;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -96,7 +97,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return getTrialverseConceptIds(namespaceId, studyId, AnalysisConcept.DRUG, drugURIs);
   }
 
-  public List<Pair<Long, Long>> getOutComeVariableIdsByStudyForSingleOutcome(Long namespaceId, List<Long> studyIds, String outcomeURI) {
+  public List<Pair<Long, Long>> getOutcomeVariableIdsByStudyForSingleOutcome(Long namespaceId, List<Long> studyIds, String outcomeURI) {
     String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
             "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
             "\n" +
@@ -109,9 +110,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             " }\n" +
             "}";
 
-    System.out.println("getOutComeVariableIdsByStudyForSingleOutcome query: " + query);
+    System.out.println("getOutcomeVariableIdsByStudyForSingleOutcome query: " + query);
     String response = queryTripleStore(query);
-    System.out.println("getOutComeVariableIdsByStudyForSingleOutcome response: " + response);
+    System.out.println("getOutcomeVariableIdsByStudyForSingleOutcome response: " + response);
 
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     List<Pair<Long, Long>> studyVariablesForOutcome = new ArrayList<>(bindings.size());
@@ -130,8 +131,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public Map<Long, List<Pair<Long, String>>> findStudyInterventions(Long namespaceId, List<Long> studyIds, List<String> interventionURIs) {
-    AnalysisConcept drugConcept = AnalysisConcept.DRUG;
+  public Map<Long, List<TrialDataIntervention>> findStudyInterventions(Long namespaceId, List<Long> studyIds, List<String> interventionURIs) {
     String conceptOptionsString = buildOptionStringFromConceptURIs(interventionURIs);
     String studyOptionsString = StringUtils.join(studyIds, "|");
     String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
@@ -141,31 +141,32 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             " GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
             "   ?uri rdf:type ?type .\n" +
             "   FILTER regex(str(?type), \"namespaces/" +
-            namespaceId + "/" + drugConcept.getSearchString() + "/(" + conceptOptionsString + ")\") .\n" +
+            namespaceId + "/" + AnalysisConcept.DRUG.getSearchString() + "/(" + conceptOptionsString + ")\") .\n" +
             "   FILTER regex(str(?uri), \"/study/(" + studyOptionsString + ")\") .\n" +
             " }\n" +
             "}";
     System.out.println(query);
-
     String response = queryTripleStore(query);
-    System.out.println("!!!!!!! AND the responce is: " + response);
 
-    Map<Long, List<Pair<Long, String>>> studyInterventions = new HashMap<>();
+    Map<Long, List<TrialDataIntervention>> studyInterventionsMap = new HashMap<>();
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
       String semanticInterventionUri = JsonPath.read(binding, "$.type.value");
       Long studyId = findStudyIdInURI(uri);
-      List<Pair<Long, String>> interventions = studyInterventions.get(studyId);
+      Long drugId = Long.valueOf(subStringAfterLastSlash(uri));
+      TrialDataIntervention trialDataIntervention = new TrialDataIntervention(drugId, semanticInterventionUri, studyId);
+
+      List<TrialDataIntervention> interventions = studyInterventionsMap.get(studyId);
       if (interventions == null) {
         interventions = new ArrayList<>();
-        studyInterventions.put(studyId, interventions);
+        studyInterventionsMap.put(studyId, interventions);
       }
-      Long interventionId = Long.valueOf(subStringAfterLastSlash(uri));
-      interventions.add(Pair.of(interventionId, semanticInterventionUri));
+      interventions.add(trialDataIntervention);
     }
 
-    return studyInterventions;
+    return studyInterventionsMap;
   }
 
   private Map<Long, String> getTrialverseConceptIds(Long namespaceId, Long studyId, AnalysisConcept analysisConcept, Collection<String> conceptURIs) {
