@@ -1,33 +1,41 @@
 <div class="row">
-  <div class="columns large-12 nested-view">
-    <div class="nested-view-header">
-      Selected Outcome
+    <div class="columns large-12 nested-view">
+        <div class="nested-view-header">
+            Selected Outcome
+        </div>
+        <div class="row">
+            <div class="columns large-6 nested-view">
+                <select ng-model="analysis.outcome"
+                        ng-options="outcome.name for outcome in outcomes"
+                        ng-disabled="editMode.disableEditing"
+                        ng-change="saveAnalysis()"></select>
+            </div>
+        </div>
     </div>
-    <div class="row">
-      <div class="columns large-6 nested-view">
-        <select ng-model="analysis.outcome"
-              ng-options="outcome.name for outcome in outcomes"
-              ng-disabled="editMode.disableEditing"
-              ng-change="saveAnalysis()"></select>
-     </div>
-    </div>
-  </div>
 </div>
 <div class="row">
-  <div class="columns large-12 nested-view">
-    <table>
-        <thead>
-        <tr>
-            <th class="large-3">Studies</th>
-            <th class="large-3">Interventions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="dataRow in trialData">
-            <td rowspan="dataRow.rowSpan">{{dataRow.study}}</td>
-            <td>{{dataRow.intervention}}</td>
-        </tr>
-        </tbody>
-    </table>
-  </div>
+    <div class="columns large-12 nested-view">
+        <table>
+            <thead>
+            <tr>
+                <th class="large-3">Studies</th>
+                <th class="large-3">Interventions</th>
+                <th class="large-3">Arms</th>
+                <th ng-show="trialData[0].rate" class="large-2">Rate</th>
+                <th ng-show="trialData[0].sampleSize" class="large-1">N</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="dataRow in trialData">
+                <td rowspan="dataRow.studyRowSpan">{{dataRow.study}}</td>
+                <td ng-class="{undefined:dataRow.intervention == 'unmatched'}" rowspan="dataRow.interventionRowSpan">
+                    {{dataRow.intervention}}
+                </td>
+                <td>{{dataRow.arm}}</td>
+                <td ng-show="dataRow.rate">{{dataRow.rate}}</td>
+                <td ng-show="dataRow.sampleSize">{{dataRow.sampleSize}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

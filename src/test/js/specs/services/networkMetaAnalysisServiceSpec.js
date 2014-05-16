@@ -1,21 +1,83 @@
 define(['angular', 'angular-mocks', 'services'], function() {
 
   var exampleStudies = [{
-    "studyId": 48,
-    "name": "TAK491-301 / NCT00846365",
+    "studyId": 27,
+    "name": "Fava et al, 2002",
     "trialDataInterventions": [{
-      "drugId": 109,
-      "uri": "http://trials.drugis.org/namespaces/2/drug/87fec8a8071915a2e17eddeb1faf8daa"
+      "drugId": 58,
+      "uri": "http://trials.drugis.org/namespaces/1/drug/a4b119795fa42c624640a77ce024d9a2",
+      "studyId": 27
     }, {
-      "drugId": 110,
-      "uri": "http://trials.drugis.org/namespaces/2/drug/a977e3a6fa4dc0a34fcf9fb351bc0a0e"
-    }]
-  }, {
-    "studyId": 44,
-    "name": "TAK491-008 / NCT00696241",
-    "trialDataInterventions": [{
-      "drugId": 98,
-      "uri": "http://trials.drugis.org/namespaces/2/drug/87fec8a8071915a2e17eddeb1faf8daa"
+      "drugId": 60,
+      "uri": "http://trials.drugis.org/namespaces/1/drug/a0f638328eeea353bf0ba7f111a167dd",
+      "studyId": 27
+    }],
+    "trialDataArms": [{
+      "id": 86,
+      "name": "Paroxetine",
+      "study": 27,
+      "drugId": 58,
+      "measurements": [{
+        "integerValue": 5,
+        "realValue": null,
+        "measurementMomentId": 53,
+        "studyId": 27,
+        "armId": 86,
+        "variableId": 428,
+        "measurementAttribute": "rate"
+      }, {
+        "integerValue": 96,
+        "realValue": null,
+        "measurementMomentId": 53,
+        "studyId": 27,
+        "armId": 86,
+        "variableId": 428,
+        "measurementAttribute": "sample size"
+      }]
+    }, {
+      "id": 85,
+      "name": "Sertraline",
+      "study": 27,
+      "drugId": 58,
+      "measurements": [{
+        "integerValue": 1,
+        "realValue": null,
+        "measurementMomentId": 53,
+        "studyId": 27,
+        "armId": 85,
+        "variableId": 428,
+        "measurementAttribute": "rate"
+      }, {
+        "integerValue": 96,
+        "realValue": null,
+        "measurementMomentId": 53,
+        "studyId": 27,
+        "armId": 85,
+        "variableId": 428,
+        "measurementAttribute": "sample size"
+      }]
+    }, {
+      "id": 87,
+      "name": "Fluoxetine",
+      "study": 27,
+      "drugId": 60,
+      "measurements": [{
+        "integerValue": 1,
+        "realValue": null,
+        "measurementMomentId": 53,
+        "studyId": 27,
+        "armId": 87,
+        "variableId": 428,
+        "measurementAttribute": "rate"
+      }, {
+        "integerValue": 92,
+        "realValue": null,
+        "measurementMomentId": 53,
+        "studyId": 27,
+        "armId": 87,
+        "variableId": 428,
+        "measurementAttribute": "sample size"
+      }]
     }]
   }];
 
@@ -43,10 +105,10 @@ define(['angular', 'angular-mocks', 'services'], function() {
           var interventionsDefer = $q.defer();
           var interventions = [{
             name: 'intervention1',
-            semanticInterventionUri: 'http://trials.drugis.org/namespaces/2/drug/87fec8a8071915a2e17eddeb1faf8daa'
+            semanticInterventionUri: 'http://trials.drugis.org/namespaces/1/drug/a4b119795fa42c624640a77ce024d9a2'
           }, {
             name: 'intervention2',
-            semanticInterventionUri: 'http://trials.drugis.org/namespaces/2/drug/a977e3a6fa4dc0a34fcf9fb351bc0a0e'
+            semanticInterventionUri: 'http://trials.drugis.org/namespaces/1/drug/a0f638328eeea353bf0ba7f111a167dd'
           }, {
             name: 'intervention3',
             semanticInterventionUri: 'http://trials.drugis.org/namespaces/2/drug/87fec8a8071915a2e17eddeb1faf8daa'
@@ -68,17 +130,24 @@ define(['angular', 'angular-mocks', 'services'], function() {
           $rootScope.$apply();
 
           expect(expectedRows[0]).toEqual({
-            study: "TAK491-301 / NCT00846365",
-            rowSpan: 2,
-            intervention: 'intervention1'
+            study: "Fava et al, 2002",
+            studyRowSpan: 3,
+            intervention: 'intervention1',
+            arm : 'Paroxetine',
+            rate : 5,
+            sampleSize : 96 
           });
           expect(expectedRows[1]).toEqual({
-            intervention: 'intervention2'
+            arm: "Sertraline",
+            intervention: "intervention1",
+            rate: 1,
+            sampleSize: 96,
           });
           expect(expectedRows[2]).toEqual({
-            study: "TAK491-008 / NCT00696241",
-            rowSpan: 1,
-            intervention: 'intervention1'
+            arm: "Fluoxetine",
+            intervention: "intervention2",
+            rate: 1,
+            sampleSize: 92
           });
         })
       );
