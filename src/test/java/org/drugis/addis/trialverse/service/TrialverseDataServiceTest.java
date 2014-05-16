@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse.service;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
@@ -96,10 +97,13 @@ public class TrialverseDataServiceTest {
     when(triplestoreService.findStudyInterventions(namespaceId, studyIds, interventionUris)).thenReturn(studyInterventions);
     List<TrialDataArm> trialDataArms = Arrays.asList(new TrialDataArm(303L, 1L, "trailDataArm"));
     List<Measurement> measurements = Arrays.asList(new Measurement(1L, 404L, 505L, 303L, MeasurementAttribute.RATE, 123L, null));
+    List<Variable> variables = ListUtils.EMPTY_LIST;
+    List<Long> variableIds = Arrays.asList(202L);
     when(trialverseRepository.getStudiesByIds(namespaceId, new ArrayList<>(studyInterventions.keySet()))).thenReturn(studies.subList(0, 1));
     when(triplestoreService.getOutcomeVariableIdsByStudyForSingleOutcome(namespaceId, studyIds, outcomeUri)).thenReturn(outComeVariableIdsByStudyForSingleOutcome);
-    when(trialverseRepository.getArmsForStudies(namespaceId, studyIds)).thenReturn(trialDataArms);
-    when(trialverseRepository.getStudyMeasurementsForOutcomes(new ArrayList<>(studyInterventions.keySet()), Arrays.asList(202L), Arrays.asList(303L))).thenReturn(measurements);
+    when(trialverseRepository.getArmsForStudies(namespaceId, studyIds, variables)).thenReturn(trialDataArms);
+    when(trialverseRepository.getStudyMeasurementsForOutcomes(new ArrayList<>(studyInterventions.keySet()), variableIds, Arrays.asList(303L))).thenReturn(measurements);
+    when(trialverseRepository.getVariablesByOutcomeIds(variableIds)).thenReturn(variables);
 
     TrialData trialData = trialverseDataService.getTrialData(namespaceId, outcomeUri, interventionUris);
 
@@ -107,10 +111,11 @@ public class TrialverseDataServiceTest {
     verify(triplestoreService).findStudyInterventions(namespaceId, studyIds, interventionUris);
     verify(trialverseRepository).getStudiesByIds(namespaceId, new ArrayList<>(studyInterventions.keySet()));
     verify(triplestoreService).getOutcomeVariableIdsByStudyForSingleOutcome(namespaceId, studyIds, outcomeUri);
-    verify(trialverseRepository).getArmsForStudies(namespaceId, studyIds);
+    verify(trialverseRepository).getArmsForStudies(namespaceId, studyIds, variables);
     Map<Long, String> tempMap = new HashMap<>();
     tempMap.put(303L, "anyString");
-    verify(trialverseRepository).getStudyMeasurementsForOutcomes(studyIds, Arrays.asList(202L), tempMap.keySet());
+    verify(trialverseRepository).getStudyMeasurementsForOutcomes(studyIds, variableIds, tempMap.keySet());
+    verify(trialverseRepository).getVariablesByOutcomeIds(variableIds);
 
     assertNotNull(trialData);
     assertNotNull(trialData.getTrialDataStudies());

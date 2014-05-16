@@ -24,9 +24,7 @@ public interface TrialverseRepository {
 
   public List<Study> getStudiesByIds(Long namespaceId, List<Long> studyIds);
 
-  public List<TrialDataArm> getArms(Long namespaceId);
-
-  public List<TrialDataArm> getArmsForStudies(Long namespaceId, List<Long> studyIds);
+  public List<TrialDataArm> getArmsForStudies(Long namespaceId, List<Long> studyIds, List<Variable> variables);
 
   public List<Measurement> getStudyMeasurementsForOutcomes(Collection<Long> studyId, Collection<Long> outcomeIds, Collection<Long> arms);
 }

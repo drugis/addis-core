@@ -11,9 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by connor on 2/26/14.
@@ -67,30 +65,41 @@ public class JpaTrialverseRepository implements TrialverseRepository {
   }
 
   @Override
-  public List<TrialDataArm> getArms(Long namespaceId) {
-    Query query = em.createNativeQuery(
-            "SELECT a.id, a.name, a.study FROM arms a, namespace_studies nss" +
-                    " WHERE a.study = nss.study AND nss.namespace = :namespaceId", TrialDataArm.class
-    );
-    query.setParameter("namespaceId", namespaceId);
-    return query.getResultList();
-  }
+  public List<TrialDataArm> getArmsForStudies(Long namespaceId, List<Long> studyIds, List<Variable> variables) {
+    List<Long> variableIds = new ArrayList<>(variables.size());
+    for (Variable variable : variables) {
+      variableIds.add(variable.getId());
+    }
 
-  @Override
-  public List<TrialDataArm> getArmsForStudies(Long namespaceId, List<Long> studyIds) {
     Query query = em.createNativeQuery(
-            "SELECT " +
-                    " a.id, a.name, a.study" +
-                    " FROM arms a, namespace_studies nss" +
-                    " WHERE" +
-                    " a.study = nss.study" +
-                    " AND nss.namespace = :namespaceId" +
-                    " AND a.study IN :studyIds" +
-                    " AND a.name != '' ", TrialDataArm.class
+            "select " +
+                    " a.id," +
+                    " a.name," +
+                    " a.study," +
+                    " t.drug as drug" +
+                    " FROM arms a RIGHT OUTER JOIN designs d ON (a.id = d.arm)," +
+                    " namespace_studies nss," +
+                    " measurement_moments mm," +
+                    " measurements m," +
+                    " activities ac," +
+                    " treatments t" +
+                    " WHERE a.name != ''" +
+                    " and d.arm = a.id " +
+                    " and d.epoch = mm.epoch" +
+                    " and a.id = m.arm" +
+                    " and mm.is_primary = true" +
+                    " and ac.id = d.activity" +
+                    " and t.activity = ac.id" +
+                    " and nss.namespace = :namespaceId" +
+                    " and a.study IN :studyIds" +
+                    " and m.variable IN :variableIds", TrialDataArm.class
     );
+
     query.setParameter("namespaceId", namespaceId);
     query.setParameter("studyIds", studyIds);
-    return query.getResultList();
+    query.setParameter("variableIds", variableIds);
+    List<TrialDataArm> arms = query.getResultList();
+    return new ArrayList<>(new HashSet<>(arms));
   }
 
   @Override

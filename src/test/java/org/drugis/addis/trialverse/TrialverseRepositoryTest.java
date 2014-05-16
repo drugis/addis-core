@@ -130,19 +130,12 @@ public class TrialverseRepositoryTest {
   }
 
   @Test
-  public void testGetArms() {
-    Long namespaceId = 1L;
-    List<TrialDataArm> arms = trialverseRepository.getArms(namespaceId);
-    assertEquals(4, arms.size());
-    Namespace namespace = new Namespace(2L, "name2", "description2");
-  }
-
-  @Test
   public void testGetArmsForStudies() {
     Long namespaceId = 1L;
     List<Long> studyIds = Arrays.asList(1L, 2L);
-    List<TrialDataArm> arms = trialverseRepository.getArmsForStudies(namespaceId, studyIds);
-    assertEquals(4, arms.size());
+    List<Variable> variables = Arrays.asList(em.find(Variable.class, 1L), em.find(Variable.class, 2L));
+    List<TrialDataArm> arms = trialverseRepository.getArmsForStudies(namespaceId, studyIds, variables);
+    assertEquals(2, arms.size());
   }
 
 }

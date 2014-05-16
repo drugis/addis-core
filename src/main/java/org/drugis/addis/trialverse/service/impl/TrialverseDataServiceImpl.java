@@ -59,13 +59,13 @@ public class TrialverseDataServiceImpl implements TrialverseDataService {
 
   @Override
   public TrialData getTrialData(Long namespaceId, String outcomeUri, List<String> interventionUris) {
-    System.out.println(" !!!!!!!!!!!!!!!!!!!TrialData getTrialData !!!!!!!!!!!!!!!!!!!");
     List<Long> studyIdsByOutcome = triplestoreService.findStudiesReferringToConcept(namespaceId, outcomeUri);
 
     Map<Long, List<TrialDataIntervention>> studyInterventions = triplestoreService.findStudyInterventions(namespaceId, studyIdsByOutcome, interventionUris);
     List<Study> studies = trialverseRepository.getStudiesByIds(namespaceId, new ArrayList<>(studyInterventions.keySet()));
     List<Pair<Long, Long>> studyOutcomeVariableIds = triplestoreService.getOutcomeVariableIdsByStudyForSingleOutcome(namespaceId, studyIdsByOutcome, outcomeUri);
-    List<TrialDataArm> trailDataArms = trialverseRepository.getArmsForStudies(namespaceId, studyIdsByOutcome);
+    List<Variable> variables = trialverseRepository.getVariablesByOutcomeIds(getRightSideOfPairList(studyOutcomeVariableIds));
+    List<TrialDataArm> trailDataArms = trialverseRepository.getArmsForStudies(namespaceId, studyIdsByOutcome, variables);
     List<Measurement> measurements = trialverseRepository.getStudyMeasurementsForOutcomes(studyIdsByOutcome, getRightSideOfPairList(studyOutcomeVariableIds), buildIdIndexedMap(trailDataArms).keySet());
 
     Map<Long, List<Measurement>> measurementsByArm = sortMeasurementsByArm(measurements);

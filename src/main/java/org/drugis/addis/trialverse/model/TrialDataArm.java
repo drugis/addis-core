@@ -1,9 +1,6 @@
 package org.drugis.addis.trialverse.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,11 +9,15 @@ import java.util.List;
  */
 @Entity
 @Table(name = "arms")
+@SecondaryTable(name = "treatments")
 public class TrialDataArm {
   @Id
   private Long id;
   private String name;
   private Long study;
+
+  @Column(table = "treatments", name = "drug")
+  private Long drugId;
 
   @Transient
   private List<Measurement> measurements = new ArrayList<>();
@@ -40,6 +41,10 @@ public class TrialDataArm {
 
   public Long getStudy() {
     return study;
+  }
+
+  public Long getDrugId() {
+    return drugId;
   }
 
   public List<Measurement> getMeasurements() {
