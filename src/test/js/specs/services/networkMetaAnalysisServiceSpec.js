@@ -104,13 +104,13 @@ define(['angular', 'angular-mocks', 'services'], function() {
           trialVersStudyData.trialDataStudies = exampleStudies;
           var interventionsDefer = $q.defer();
           var interventions = [{
-            name: 'intervention1',
+            name: 'intervention 1',
             semanticInterventionUri: 'http://trials.drugis.org/namespaces/1/drug/a4b119795fa42c624640a77ce024d9a2'
           }, {
-            name: 'intervention2',
+            name: 'intervention 2',
             semanticInterventionUri: 'http://trials.drugis.org/namespaces/1/drug/a0f638328eeea353bf0ba7f111a167dd'
           }, {
-            name: 'intervention3',
+            name: 'intervention 3',
             semanticInterventionUri: 'http://trials.drugis.org/namespaces/2/drug/87fec8a8071915a2e17eddeb1faf8daa'
           }];
           interventions.$promise = interventionsDefer.promise;
@@ -129,24 +129,35 @@ define(['angular', 'angular-mocks', 'services'], function() {
           interventionsDefer.resolve(interventions);
           $rootScope.$apply();
 
-          expect(expectedRows[0]).toEqual({
-            study: "Fava et al, 2002",
+          expect(expectedRows[0]).toEqual(
+          {
+            study: 'Fava et al, 2002',
             studyRowSpan: 3,
-            intervention: 'intervention1',
+            intervention: 'intervention 1',
             arm : 'Paroxetine',
             rate : 5,
+            mu: null,
+            sigma: null,
             sampleSize : 96 
           });
-          expect(expectedRows[1]).toEqual({
-            arm: "Sertraline",
-            intervention: "intervention1",
+          
+          expect(expectedRows[1]).toEqual(
+          {
+            arm: 'Sertraline',
+            intervention: 'intervention 1',
             rate: 1,
+            mu: null,
+            sigma: null,
             sampleSize: 96,
           });
-          expect(expectedRows[2]).toEqual({
-            arm: "Fluoxetine",
-            intervention: "intervention2",
+          
+          expect(expectedRows[2]).toEqual(
+          {
+            arm: 'Fluoxetine',
+            intervention: 'intervention 2',
             rate: 1,
+            mu: null,
+            sigma: null,
             sampleSize: 92
           });
         })
