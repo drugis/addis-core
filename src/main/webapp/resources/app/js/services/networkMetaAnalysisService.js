@@ -15,33 +15,12 @@ define(['angular'], function() {
        });
     }
 
-    function findRateMeasurementValue(measurements) {
-      var rateMeasurement = _.find(measurements, function(measurement){
-        return measurement.measurementAttribute === 'rate';
+    function findMeasurementValue(measurements, measurementAttribute, valueType) {
+      var measurement = _.find(measurements, function(measurement){
+        return measurement.measurementAttribute === measurementAttribute;
       });
-      return rateMeasurement !== undefined ? rateMeasurement.integerValue : null;
-    }
-
-    function findSampleSizeMeasurementValue(measurements) {
-      var sampleSizeMeasurement = _.find(measurements, function(measurement){
-        return measurement.measurementAttribute === 'sample size';
-      });
-      return sampleSizeMeasurement !== undefined ? sampleSizeMeasurement.integerValue : null;
-    }
-
-    function findMuMeasurementValue(measurements) {
-      var sampleSizeMeasurement = _.find(measurements, function(measurement){
-        return measurement.measurementAttribute === 'mean';
-      });
-      return sampleSizeMeasurement !== undefined ? sampleSizeMeasurement.realValue : null;
-    }
-
-    function findSigmaMeasurementValue(measurements) {
-      var sampleSizeMeasurement = _.find(measurements, function(measurement){
-        return measurement.measurementAttribute === 'standard deviation';
-      });
-      return sampleSizeMeasurement !== undefined ? sampleSizeMeasurement.realValue : null;
-    }
+      return measurement !== undefined ? measurement[valueType] : null;
+    };
 
     return {
       transformTrialDataToTableRows: function(trialData) {
@@ -65,10 +44,10 @@ define(['angular'], function() {
 
                 row.intervention = trialDataIntervention ? resolveInterventionName(trialDataIntervention, interventions) : 'unmatched';     
                 row.arm = trialDataArm.name
-                row.rate = findRateMeasurementValue(trialDataArm.measurements);
-                row.mu = findMuMeasurementValue(trialDataArm.measurements);
-                row.sigma = findSigmaMeasurementValue(trialDataArm.measurements);
-                row.sampleSize = findSampleSizeMeasurementValue(trialDataArm.measurements);
+                row.rate = findMeasurementValue(trialDataArm.measurements, 'rate', 'integerValue');
+                row.mu = findMeasurementValue(trialDataArm.measurements, 'mean', 'realValue');
+                row.sigma = findMeasurementValue(trialDataArm.measurements, 'standard deviation', 'realValue');
+                row.sampleSize = findMeasurementValue(trialDataArm.measurements, 'sample size', 'integerValue');
 
                 tableRows.push(row);
               });
