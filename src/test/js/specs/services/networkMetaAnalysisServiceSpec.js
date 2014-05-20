@@ -129,36 +129,42 @@ define(['angular', 'angular-mocks', 'services'], function() {
           interventionsDefer.resolve(interventions);
           $rootScope.$apply();
 
-          expect(expectedRows[0]).toEqual(
-          {
+          expect(expectedRows[0]).toEqual({
             study: 'Fava et al, 2002',
             studyRowSpan: 3,
             intervention: 'intervention 1',
-            arm : 'Paroxetine',
-            rate : 5,
-            mu: null,
-            sigma: null,
-            sampleSize : 96 
-          });
-          
-          expect(expectedRows[1]).toEqual(
-          {
-            arm: 'Sertraline',
-            intervention: 'intervention 1',
-            rate: 1,
+            arm: 'Paroxetine',
+            rate: 5,
             mu: null,
             sigma: null,
             sampleSize: 96,
+            firstInterventionRow: true,
+            firstStudyRow: true,
+            interventionRowSpan: 2
           });
-          
-          expect(expectedRows[2]).toEqual(
-          {
-            arm: 'Fluoxetine',
-            intervention: 'intervention 2',
-            rate: 1,
+
+          expect(expectedRows[1]).toEqual({
+            arm: 'Sertraline',
+            intervention: 'intervention 1',
             mu: null,
+            rate: 1,
+            sampleSize: 96,
             sigma: null,
-            sampleSize: 92
+            study: 'Fava et al, 2002',
+            studyRowSpan: 3
+          });
+
+          expect(expectedRows[2]).toEqual({
+            arm: 'Fluoxetine',
+            firstInterventionRow: true,
+            intervention: 'intervention 2',
+            interventionRowSpan: 1,
+            mu: null,
+            rate: 1,
+            sampleSize: 92,
+            sigma: null,
+            study: 'Fava et al, 2002',
+            studyRowSpan: 3
           });
         })
       );
