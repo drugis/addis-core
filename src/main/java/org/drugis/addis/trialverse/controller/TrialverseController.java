@@ -97,17 +97,9 @@ public class TrialverseController {
 
   @RequestMapping(value = "/namespaces/{namespaceId}/trialData", method = RequestMethod.GET)
   @ResponseBody
-  public TrialData getTrialData(@PathVariable Long namespaceId, @RequestParam(required = false) String outcomeUri,
-                                @RequestParam(required = false) List<String> interventionUris) {
-    if (outcomeUri == null && interventionUris == null) {
-      return trialverseDataService.getTrialData(namespaceId);
-    } else if (outcomeUri != null && interventionUris == null) {
-      return trialverseDataService.getTrialData(namespaceId, outcomeUri);
-    } else if (outcomeUri == null && interventionUris != null) {
-      return trialverseDataService.getTrialData(namespaceId, interventionUris);
-    }
-    TrialData trialData = trialverseDataService.getTrialData(namespaceId, outcomeUri, interventionUris);
-    return trialData;
+  public TrialData getTrialData(@PathVariable Long namespaceId, @RequestParam(required = true) String outcomeUri,
+                                @RequestParam(required = true) List<String> interventionUris) {
+    return trialverseDataService.getTrialData(namespaceId, outcomeUri, interventionUris);
   }
 
   @ResponseStatus(HttpStatus.FORBIDDEN)

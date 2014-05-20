@@ -1,6 +1,5 @@
 package org.drugis.addis.trialverse.service.impl;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
@@ -29,33 +28,6 @@ public class TrialverseDataServiceImpl implements TrialverseDataService {
 
   @Inject
   private TrialverseRepository trialverseRepository;
-
-  @Override
-  public TrialData getTrialData(Long namespaceId, String outcomeUri) {
-    List<Long> studyIds = triplestoreService.findStudiesReferringToConcept(namespaceId, outcomeUri);
-    List<Study> studies = trialverseRepository.getStudiesByIds(namespaceId, studyIds);
-    List<TrialDataStudy> trialDataStudies = new ArrayList<>(studies.size());
-    for (Study study : studies) {
-      trialDataStudies.add(new TrialDataStudy(study.getId(), study.getName(), ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST));
-    }
-    return new TrialData(trialDataStudies);
-  }
-
-  @Override
-  public TrialData getTrialData(Long namespaceId) {
-    List<Study> studies = trialverseRepository.queryStudies(Long.valueOf(namespaceId));
-    List<TrialDataStudy> trialDataStudies = new ArrayList<>(studies.size());
-    for (Study study : studies) {
-      trialDataStudies.add(new TrialDataStudy(study.getId(), study.getName(), ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST));
-    }
-    return new TrialData(trialDataStudies);
-  }
-
-  @Override
-  public TrialData getTrialData(Long namespaceId, List<String> interventionUris) {
-    //todo
-    return null;
-  }
 
   @Override
   public TrialData getTrialData(Long namespaceId, String outcomeUri, List<String> interventionUris) {

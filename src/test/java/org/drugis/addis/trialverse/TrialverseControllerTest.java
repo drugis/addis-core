@@ -155,44 +155,6 @@ public class TrialverseControllerTest {
   }
 
   @Test
-  public void testGetTrialData() throws Exception {
-    TrialData trialData = new TrialData(new ArrayList<TrialDataStudy>());
-    Long namespaceId = 1L;
-    when(trialverseDataService.getTrialData(namespaceId)).thenReturn(trialData);
-    mockMvc.perform(get("/namespaces/1/trialData").principal(user))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$", notNullValue()));
-    verify(trialverseDataService).getTrialData(namespaceId);
-  }
-
-  @Test
-  public void testGetTrialDataWithOutcomeInQuery() throws Exception {
-    TrialData trialData = new TrialData(new ArrayList<TrialDataStudy>());
-    Long namespaceId = 1L;
-    String outcomeUri = "http://someoutcomethisis/12345/abc";
-    when(trialverseDataService.getTrialData(namespaceId, outcomeUri)).thenReturn(trialData);
-    mockMvc.perform(get("/namespaces/1/trialData?outcomeUri=" + outcomeUri).principal(user))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$", notNullValue()));
-    verify(trialverseDataService).getTrialData(namespaceId, outcomeUri);
-  }
-
-  @Test
-  public void testGetTrialDataWithInterventionsInQuery() throws Exception {
-    TrialData trialData = new TrialData(new ArrayList<TrialDataStudy>());
-    Long namespaceId = 1L;
-    List<String> interventionUris = Arrays.asList("uri1", "uri2");
-    when(trialverseDataService.getTrialData(namespaceId, interventionUris)).thenReturn(trialData);
-    mockMvc.perform(get("/namespaces/1/trialData?interventionUris=uri1&interventionUris=uri2").principal(user))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$", notNullValue()));
-    verify(trialverseDataService).getTrialData(namespaceId, interventionUris);
-  }
-
-  @Test
   public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Exception {
     Map<TrialDataStudy, List<Pair<Long, String>>> studyInterventions = new HashMap<>();
     List<TrialDataStudy> trialDataStudies = Arrays.asList(new TrialDataStudy(1L, "study name", ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST));

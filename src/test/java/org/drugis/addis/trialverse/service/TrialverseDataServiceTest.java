@@ -53,39 +53,6 @@ public class TrialverseDataServiceTest {
   }
 
   @Test
-  public void getTrialDataByNamespaceIdAndOutcomeUri() {
-    String outcomeUri = "thisisaoutcomeuri";
-    List<Long> studyIds = Arrays.asList(1L, 2L, 3L);
-    when(triplestoreService.findStudiesReferringToConcept(namespaceId, outcomeUri)).thenReturn(studyIds);
-    when(trialverseRepository.getStudiesByIds(namespaceId, studyIds)).thenReturn(studies);
-
-    TrialData trialData = trialverseDataService.getTrialData(namespaceId, outcomeUri);
-
-    verify(triplestoreService).findStudiesReferringToConcept(namespaceId, outcomeUri);
-    verify(trialverseRepository).getStudiesByIds(namespaceId, studyIds);
-    assertNotNull(trialData);
-    assertNotNull(trialData.getTrialDataStudies());
-    assertTrue(trialData.getTrialDataStudies().containsAll(trialData.getTrialDataStudies()));
-  }
-
-  @Test
-  public void getTrialDataByWithNamespace() {
-    when(trialverseRepository.queryStudies(namespaceId)).thenReturn(studies);
-
-    TrialData trialData = trialverseDataService.getTrialData(namespaceId);
-
-    verify(trialverseRepository).queryStudies(namespaceId);
-    assertNotNull(trialData);
-    assertNotNull(trialData.getTrialDataStudies());
-    assertTrue(trialData.getTrialDataStudies().containsAll(trialData.getTrialDataStudies()));
-  }
-
-  @Test
-  public void getTrialDataByInterventions() {
-    //todo
-  }
-
-  @Test
   public void getTrialDataByOutcomeAndInterventions() {
     String outcomeUri = "outcomeUri";
     List<String> interventionUris = Arrays.asList("u1", "u2");
