@@ -19,28 +19,28 @@ define(['angular'], function() {
       var rateMeasurement = _.find(measurements, function(measurement){
         return measurement.measurementAttribute === 'rate';
       });
-      return rateMeasurement ? rateMeasurement.integerValue : null;
+      return rateMeasurement !== undefined ? rateMeasurement.integerValue : null;
     }
 
     function findSampleSizeMeasurementValue(measurements) {
       var sampleSizeMeasurement = _.find(measurements, function(measurement){
         return measurement.measurementAttribute === 'sample size';
       });
-      return sampleSizeMeasurement ? sampleSizeMeasurement.integerValue : null;
+      return sampleSizeMeasurement !== undefined ? sampleSizeMeasurement.integerValue : null;
     }
 
     function findMuMeasurementValue(measurements) {
       var sampleSizeMeasurement = _.find(measurements, function(measurement){
         return measurement.measurementAttribute === 'mean';
       });
-      return sampleSizeMeasurement ? sampleSizeMeasurement.realValue : null;
+      return sampleSizeMeasurement !== undefined ? sampleSizeMeasurement.realValue : null;
     }
 
     function findSigmaMeasurementValue(measurements) {
       var sampleSizeMeasurement = _.find(measurements, function(measurement){
         return measurement.measurementAttribute === 'standard deviation';
       });
-      return sampleSizeMeasurement ? sampleSizeMeasurement.realValue : null;
+      return sampleSizeMeasurement !== undefined ? sampleSizeMeasurement.realValue : null;
     }
 
     return {

@@ -21,10 +21,10 @@
                 <th class="large-3">Studies</th>
                 <th class="large-3">Interventions</th>
                 <th class="large-3">Arms</th>
-                <th ng-show="trialData[0].rate" class="large-2">Rate</th>
-                <th ng-show="trialData[0].mu" class="large-2">&mu;</th>
-                <th ng-show="trialData[0].sigma" class="large-2">&sigma;</th>
-                <th ng-show="trialData[0].sampleSize" class="large-1">N</th>
+                <th ng-show="trialData[0].rate !== null" class="large-2">Rate</th>
+                <th ng-show="trialData[0].mu !== null" class="large-2">&mu;</th>
+                <th ng-show="trialData[0].sigma !== null" class="large-2">&sigma;</th>
+                <th ng-show="trialData[0].sampleSize !== null" class="large-1">N</th>
             </tr>
             </thead>
             <tbody>
@@ -34,10 +34,10 @@
                     {{dataRow.intervention}}
                 </td>
                 <td>{{dataRow.arm}}</td>
-                <td ng-show="dataRow.rate">{{dataRow.rate}}</td>
-                <td ng-show="trialData[0].mu" class="large-2">{{dataRow.mu}}</td>
-                <td ng-show="trialData[0].sigma" class="large-2">{{dataRow.sigma}}</td>
-                <td ng-show="trialData[0].sampleSize">{{dataRow.sampleSize}}</td>
+                <td ng-show="dataRow.rate !== null">{{dataRow.rate}}</td>
+                <td ng-show="trialData[0].mu !== null" class="large-2">{{dataRow.mu}}</td>
+                <td ng-show="trialData[0].sigma !== null" class="large-2">{{dataRow.sigma}}</td>
+                <td ng-show="trialData[0].sampleSize !== null">{{dataRow.sampleSize}}</td>
             </tr>
             </tbody>
         </table>
