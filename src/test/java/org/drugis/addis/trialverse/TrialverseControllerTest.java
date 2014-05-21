@@ -175,4 +175,24 @@ public class TrialverseControllerTest {
     verify(trialverseDataService).getTrialData(namespaceId, outcomeUri, interventionUris);
   }
 
+  @Test
+  public void testGetTrialDataWithOutcomeAndNoInterventionsInQuery() throws Exception {
+    Map<TrialDataStudy, List<Pair<Long, String>>> studyInterventions = new HashMap<>();
+    List<TrialDataStudy> trialDataStudies = Arrays.asList(new TrialDataStudy(1L, "study name", ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST));
+    Map<Long, List<Pair<Long, String>>> studyInterventionKeys = new HashMap<>();
+    studyInterventionKeys.put(trialDataStudies.get(0).getStudyId(), Arrays.asList(Pair.of(101L, "some-sort-of-uri")));
+    for (TrialDataStudy trialDataStudy : trialDataStudies) {
+      studyInterventions.put(trialDataStudy, studyInterventionKeys.get(trialDataStudy.getStudyId()));
+    }
+    TrialData trialData = new TrialData(trialDataStudies);
+    Long namespaceId = 1L;
+    String outcomeUri = "http://someoutcomethisis/12345/abc";
+    when(trialverseDataService.getTrialData(namespaceId, outcomeUri, Collections.EMPTY_LIST)).thenReturn(trialData);
+    mockMvc.perform(get("/namespaces/1/trialData?outcomeUri=" + outcomeUri).principal(user))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$", notNullValue()));
+    verify(trialverseDataService).getTrialData(namespaceId, outcomeUri, Collections.EMPTY_LIST);
+  }
+
 }

@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -98,7 +99,10 @@ public class TrialverseController {
   @RequestMapping(value = "/namespaces/{namespaceId}/trialData", method = RequestMethod.GET)
   @ResponseBody
   public TrialData getTrialData(@PathVariable Long namespaceId, @RequestParam(required = true) String outcomeUri,
-                                @RequestParam(required = true) List<String> interventionUris) {
+                                @RequestParam(required = false) List<String> interventionUris) {
+    if (interventionUris == null) {
+      interventionUris = Collections.emptyList();
+    }
     return trialverseDataService.getTrialData(namespaceId, outcomeUri, interventionUris);
   }
 
