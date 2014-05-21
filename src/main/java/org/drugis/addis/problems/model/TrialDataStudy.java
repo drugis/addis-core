@@ -18,8 +18,8 @@ public class TrialDataStudy {
   public TrialDataStudy(Long studyId, String name, List<TrialDataIntervention> trialDataInterventions, List<TrialDataArm> trialDataArms) {
     this.studyId = studyId;
     this.name = name;
-    this.trialDataInterventions = trialDataInterventions;
-    this.trialDataArms = trialDataArms;
+    this.trialDataInterventions = trialDataInterventions != null ? trialDataInterventions : new ArrayList<TrialDataIntervention>();
+    this.trialDataArms = trialDataArms != null ? trialDataArms : new ArrayList<TrialDataArm>();
   }
 
   public Long getStudyId() {

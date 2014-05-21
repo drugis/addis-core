@@ -9,6 +9,7 @@ import org.drugis.addis.trialverse.model.Measurement;
 import org.drugis.addis.trialverse.model.Study;
 import org.drugis.addis.trialverse.model.Variable;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
+import org.drugis.addis.trialverse.service.TrialverseDataService;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,11 @@ public class TrialverseServiceImpl implements TrialverseService {
 
   @Inject
   TrialverseRepository trialverseRepository;
+
+  @Inject
+  private TrialverseDataService trialverseDataService;
+
+  final ObjectMapper mapper = new ObjectMapper();
 
   @Override
   public List<ObjectNode> getVariablesByIds(Collection<Long> outcomeIds) {
@@ -52,11 +58,10 @@ public class TrialverseServiceImpl implements TrialverseService {
 
   @Override
   public ObjectNode getTrialData(Long namespaceId, String semanticOutcomeUri, List<String> alternativeUris) {
-    return null;
+    return mapper.valueToTree(trialverseDataService.getTrialData(namespaceId, semanticOutcomeUri, alternativeUris));
   }
 
   private <T> List<ObjectNode> objectsToNodes(List<T> objectList) {
-    final ObjectMapper mapper = new ObjectMapper();
     Collection<ObjectNode> JSONVariables = Collections2.transform(objectList, new Function<T, ObjectNode>() {
       @Override
       public ObjectNode apply(T t) {

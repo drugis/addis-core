@@ -79,7 +79,7 @@ public class ProblemServiceImpl implements ProblemService {
     List<String> alternativeUris = new ArrayList<>();
     Collection<Intervention> interventions = interventionRepository.query(project.getId());
     Map<String, String> interventionNamesByUrisMap = new HashMap<>();
-    for(Intervention intervention : interventions) {
+    for (Intervention intervention : interventions) {
       alternativeUris.add(intervention.getSemanticInterventionUri());
       interventionNamesByUrisMap.put(intervention.getSemanticInterventionUri(), intervention.getName());
     }
@@ -90,11 +90,12 @@ public class ProblemServiceImpl implements ProblemService {
     Map<Long, TrialDataIntervention> interventionByDrugIdMap = createInterventionByDrugIdMap(convertedTrialData);
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
+    for (TrialDataStudy trialDataStudy : convertedTrialData.getTrialDataStudies()) {
+        trialDataStudy.getTrialDataArms().size());
 
-    for(TrialDataStudy trialDataStudy :convertedTrialData.getTrialDataStudies()) {
       List<TrialDataArm> filteredArms = filterUnmatchedAndDuplicateArms(trialDataStudy, interventionByDrugIdMap);
 
-      for(TrialDataArm trialDataArm : filteredArms) {
+      for (TrialDataArm trialDataArm : filteredArms) {
         String interventionUri = interventionByDrugIdMap.get(trialDataArm.getDrugId()).getUri();
         String treatmentName = interventionNamesByUrisMap.get(interventionUri);
         entries.add(buildEntry(trialDataStudy.getName(), treatmentName, trialDataArm.getMeasurements()));
@@ -108,11 +109,11 @@ public class ProblemServiceImpl implements ProblemService {
   private AbstractNetworkMetaAnalysisProblemEntry buildEntry(String studyName, String treatmentName, List<Measurement> measurements) {
     Map<MeasurementAttribute, Measurement> measurementAttributeMeasurementMap = Measurement.mapMeasurementsByAttribute(measurements);
     Long sampleSize = measurementAttributeMeasurementMap.get(MeasurementAttribute.SAMPLE_SIZE).getIntegerValue();
-    if(measurementAttributeMeasurementMap.get(MeasurementAttribute.MEAN) != null) {
+    if (measurementAttributeMeasurementMap.get(MeasurementAttribute.MEAN) != null) {
       Double mu = measurementAttributeMeasurementMap.get(MeasurementAttribute.MEAN).getRealValue();
       Double sigma = measurementAttributeMeasurementMap.get(MeasurementAttribute.STANDARD_DEVIATION).getRealValue();
       return new ContinuousNetworkMetaAnalysisProblemEntry(studyName, treatmentName, sampleSize, mu, sigma);
-    } else if(measurementAttributeMeasurementMap.get(MeasurementAttribute.RATE) != null) {
+    } else if (measurementAttributeMeasurementMap.get(MeasurementAttribute.RATE) != null) {
       Long rate = measurementAttributeMeasurementMap.get(MeasurementAttribute.RATE).getIntegerValue();
       return new RateNetworkMetaAnalysisProblemEntry(studyName, treatmentName, sampleSize, rate);
     }
@@ -121,8 +122,9 @@ public class ProblemServiceImpl implements ProblemService {
 
   private Map<Long, TrialDataIntervention> createInterventionByDrugIdMap(TrialData trialData) {
     Map<Long, TrialDataIntervention> interventionByDrugIdMap = new HashMap<>();
-    for(TrialDataStudy study : trialData.getTrialDataStudies()) {
-      for(TrialDataIntervention intervention : study.getTrialDataInterventions()) {
+    for (TrialDataStudy study : trialData.getTrialDataStudies()) {
+
+      for (TrialDataIntervention intervention : study.getTrialDataInterventions()) {
         interventionByDrugIdMap.put(intervention.getDrugId(), intervention);
       }
     }
@@ -131,9 +133,9 @@ public class ProblemServiceImpl implements ProblemService {
 
   private List<TrialDataArm> filterUnmatchedAndDuplicateArms(TrialDataStudy study, Map<Long, TrialDataIntervention> interventionByIdMap) {
     List<TrialDataArm> arms = new ArrayList<>();
-    for(TrialDataArm arm : study.getTrialDataArms())
-    {
-      if(isMatched(arm, interventionByIdMap) && notDuplicateIntervention(arm, arms)) {
+
+    for (TrialDataArm arm : study.getTrialDataArms()) {
+      if (isMatched(arm, interventionByIdMap) && notDuplicateIntervention(arm, arms)) {
         arms.add(arm);
       }
     }
@@ -141,8 +143,8 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private boolean notDuplicateIntervention(TrialDataArm armToFind, List<TrialDataArm> arms) {
-    for(TrialDataArm arm : arms) {
-      if(arm.getDrugId().equals(armToFind.getDrugId())) {
+    for (TrialDataArm arm : arms) {
+      if (arm.getDrugId().equals(armToFind.getDrugId())) {
         return false;
       }
     }

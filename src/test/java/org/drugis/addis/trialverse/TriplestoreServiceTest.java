@@ -16,6 +16,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
@@ -142,5 +144,22 @@ public class TriplestoreServiceTest {
     assertEquals(3, result.size());
     assertTrue(result.containsAll(Arrays.asList(Pair.of(20L, 304L), Pair.of(13L, 209L), Pair.of(5L, 91L))));
   }
+
+  @Test
+  public void testRegEx () {
+    String studyOptionsString = "1|2";
+    String uri1 = "foo/study/1/whatevr";
+    String uri10 = "foo/study/10/whatevr";
+    String uri12 = "foo/study/12/whatevr";
+    String reg = "/study/(" + studyOptionsString + ")/";
+    Pattern pattern = Pattern.compile(reg);
+    Matcher matcher1 = pattern.matcher(uri1);
+    Matcher matcher10 = pattern.matcher(uri10);
+    Matcher matcher12 = pattern.matcher(uri12);
+    assertTrue(matcher1.find());
+    assertFalse(matcher10.find());
+    assertFalse(matcher12.find());
+  }
+
 
 }

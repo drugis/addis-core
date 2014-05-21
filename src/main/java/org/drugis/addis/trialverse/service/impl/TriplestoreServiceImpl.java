@@ -106,7 +106,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "   ?uri rdf:type ?type .\n" +
             "   FILTER regex(str(?type), \"namespaces/" +
             namespaceId + "/" + AnalysisConcept.OUTCOME.getSearchString() + "/" + subStringAfterLastSlash(outcomeURI) + "\") .\n" +
-            "   FILTER regex(str(?uri), \"/study/(" + buildOptionStringFromIds(studyIds) + ")\") .\n" +
+            "   FILTER regex(str(?uri), \"/study/(" + buildOptionStringFromIds(studyIds) + ")/\") .\n" +
             " }\n" +
             "}";
 
@@ -142,7 +142,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "   ?uri rdf:type ?type .\n" +
             "   FILTER regex(str(?type), \"namespaces/" +
             namespaceId + "/" + AnalysisConcept.DRUG.getSearchString() + "/(" + conceptOptionsString + ")\") .\n" +
-            "   FILTER regex(str(?uri), \"/study/(" + studyOptionsString + ")\") .\n" +
+            "   FILTER regex(str(?uri), \"/study/(" + studyOptionsString + ")/\") .\n" +
             " }\n" +
             "}";
     System.out.println(query);
@@ -216,7 +216,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "   ?uri rdf:type ?type .\n" +
             "   FILTER regex(str(?type), \"namespaces/" +
             namespaceId + "/" + analysisConcept.getSearchString() + "/(" + URIsToFind + ")\") .\n" +
-            "   FILTER regex(str(?uri), \"/study/" + studyId + "\") .\n" +
+            "   FILTER regex(str(?uri), \"/study/" + studyId + "/\") .\n" +
             " }\n" +
             "}";
     System.out.println(query);
