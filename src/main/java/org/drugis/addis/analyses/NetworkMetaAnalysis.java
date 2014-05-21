@@ -19,9 +19,6 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   private Integer projectId;
   private String name;
 
-  @JsonRawValue
-  private String problem;
-
   @ManyToOne(targetEntity = Outcome.class)
   @JoinColumn(name = "outcomeId")
   private Outcome outcome;
@@ -29,12 +26,11 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   public NetworkMetaAnalysis() {
   }
 
-  public NetworkMetaAnalysis(Integer id, Integer projectId, String name, Outcome outcome, String problem) {
+  public NetworkMetaAnalysis(Integer id, Integer projectId, String name, Outcome outcome) {
     this.id = id;
     this.projectId = projectId;
     this.name = name;
     this.outcome = outcome;
-    this.problem = problem;
   }
 
   public NetworkMetaAnalysis(Integer projectId, String name) {
@@ -42,12 +38,8 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     this.name = name;
   }
 
-  public NetworkMetaAnalysis(Integer id, Integer projectId, String name, Outcome outcome) {
-    this(id, projectId, name, outcome, null);
-  }
-
   public NetworkMetaAnalysis(Integer id, Integer projectId, String name) {
-    this(id, projectId, name, null, null);
+    this(id, projectId, name, null);
   }
 
   public Integer getId() {
@@ -62,15 +54,6 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     return name;
   }
 
-  @JsonRawValue
-  public String getProblem() {
-    return problem;
-  }
-
-  @JsonDeserialize(using = ObjectToStringDeserializer.class)
-  public void setProblem(String problem) {
-    this.problem = problem;
-  }
 
   public Outcome getOutcome() {
     return outcome;
@@ -86,7 +69,6 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     if (id != null ? !id.equals(that.id) : that.id != null) return false;
     if (!name.equals(that.name)) return false;
     if (outcome != null ? !outcome.equals(that.outcome) : that.outcome != null) return false;
-    if (problem != null ? !problem.equals(that.problem) : that.problem != null) return false;
     if (!projectId.equals(that.projectId)) return false;
 
     return true;
@@ -97,7 +79,6 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     int result = id != null ? id.hashCode() : 0;
     result = 31 * result + projectId.hashCode();
     result = 31 * result + name.hashCode();
-    result = 31 * result + (problem != null ? problem.hashCode() : 0);
     result = 31 * result + (outcome != null ? outcome.hashCode() : 0);
     return result;
   }

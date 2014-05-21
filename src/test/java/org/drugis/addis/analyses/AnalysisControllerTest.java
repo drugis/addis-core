@@ -101,7 +101,7 @@ public class AnalysisControllerTest {
   @Test
   public void testQueryAnalyses() throws Exception {
     SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
-    NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(2, 1, "name", null, null);
+    NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(2, 1, "name", null);
     Integer projectId = 1;
     List<AbstractAnalysis> analyses = Arrays.asList(singleStudyBenefitRiskAnalysis, networkMetaAnalysis);
     when(analysisRepository.query(projectId)).thenReturn(analyses);
@@ -182,7 +182,7 @@ public class AnalysisControllerTest {
   @Test
   public void testGetNMAnalysis() throws Exception {
     Integer projectId = 1;
-    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, projectId, "testName", null, null);
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, projectId, "testName", null);
     when(analysisRepository.get(projectId, analysis.getId())).thenReturn(analysis);
     ResultActions result = mockMvc.perform(get("/projects/1/analyses/1").principal(user));
 
@@ -319,23 +319,6 @@ public class AnalysisControllerTest {
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(projectId, analysisId);
     verify(networkMetaAnalysisRepository).update(gert, newAnalysis);
-  }
-
-  @Test
-  public void testUpdateNetworkMetaAnalysisWithProblemFails() throws Exception {
-    Integer analysisId = 1;
-    Integer projectId = 1;
-    ObjectMapper objectMapper = new ObjectMapper();
-    NetworkMetaAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateNetworkMetaAnalysisRequestWithProblem()), NetworkMetaAnalysis.class);
-    when(analysisRepository.get(projectId, analysisId)).thenReturn(newAnalysis);
-    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(exampleUpdateNetworkMetaAnalysisRequestWithProblem())
-            .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(status().isForbidden());
-    verify(accountRepository).findAccountByUsername("gert");
-    verify(analysisRepository).get(projectId, analysisId);
-    verifyNoMoreInteractions(networkMetaAnalysisRepository);
   }
 
   String exampleUpdateSingleStudyBenefitRiskRequestWithProblem() {

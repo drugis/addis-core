@@ -1,5 +1,9 @@
 package org.drugis.addis.problems.model;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by daan on 3/26/14.
  */
@@ -82,5 +86,13 @@ public class Measurement {
     result = 31 * result + (integerValue != null ? integerValue.hashCode() : 0);
     result = 31 * result + (realValue != null ? realValue.hashCode() : 0);
     return result;
+  }
+
+  public static Map<MeasurementAttribute, Measurement> mapMeasurementsByAttribute(List<Measurement> measurements) {
+    Map<MeasurementAttribute, Measurement> measurementsByAttribute = new HashMap<>();
+    for(Measurement measurement : measurements) {
+      measurementsByAttribute.put(measurement.getMeasurementAttribute(), measurement);
+    }
+    return measurementsByAttribute;
   }
 }

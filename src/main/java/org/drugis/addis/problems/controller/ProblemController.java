@@ -2,7 +2,8 @@ package org.drugis.addis.problems.controller;
 
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.problems.model.Problem;
+import org.drugis.addis.problems.model.AbstractProblem;
+import org.drugis.addis.problems.model.SingleStudyBenefitRiskProblem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ public class ProblemController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problem", method = RequestMethod.GET)
   @ResponseBody
-  public Problem get(@PathVariable Integer projectId, @PathVariable Integer analysisId) throws ResourceDoesNotExistException {
+  public AbstractProblem get(@PathVariable Integer projectId, @PathVariable Integer analysisId) throws ResourceDoesNotExistException {
     return problemService.getProblem(projectId, analysisId);
   }
 }

@@ -112,9 +112,6 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   private NetworkMetaAnalysis updateNetworkMetaAnalysis(Account user, NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
     NetworkMetaAnalysis oldAnalysis = (NetworkMetaAnalysis) analysisRepository.get(analysis.getProjectId(), analysis.getId());
-    if (oldAnalysis.getProblem() != null) {
-      throw new MethodNotAllowedException();
-    }
     return networkMetaAnalysisRepository.update(user, analysis);
   }
 

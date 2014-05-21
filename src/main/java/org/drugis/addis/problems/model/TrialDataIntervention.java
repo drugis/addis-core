@@ -1,0 +1,54 @@
+package org.drugis.addis.problems.model;
+
+/**
+ * Created by connor on 15-5-14.
+ */
+public class TrialDataIntervention {
+  private Long drugId;
+  private String uri;
+
+  private Long studyId;
+
+  public TrialDataIntervention() {
+  }
+
+  public TrialDataIntervention(Long drugId, String uri, Long studyId) {
+    this.drugId = drugId;
+    this.uri = uri;
+    this.studyId = studyId;
+  }
+
+  public Long getDrugId() {
+    return drugId;
+  }
+
+  public String getUri() {
+    return uri;
+  }
+
+  public Long getStudyId() {
+    return studyId;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof TrialDataIntervention)) return false;
+
+    TrialDataIntervention that = (TrialDataIntervention) o;
+
+    if (!drugId.equals(that.drugId)) return false;
+    if (!studyId.equals(that.studyId)) return false;
+    if (!uri.equals(that.uri)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = drugId.hashCode();
+    result = 31 * result + uri.hashCode();
+    result = 31 * result + studyId.hashCode();
+    return result;
+  }
+}

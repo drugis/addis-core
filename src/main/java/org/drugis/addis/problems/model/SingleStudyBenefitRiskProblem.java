@@ -12,13 +12,13 @@ import java.util.Map;
  * Created by daan on 3/21/14.
  */
 @JsonDeserialize(using = ObjectToStringDeserializer.class)
-public class Problem {
+public class SingleStudyBenefitRiskProblem extends AbstractProblem {
   private String title;
   private Map<String, AlternativeEntry> alternatives;
   private Map<String, CriterionEntry> criteria;
   private List<AbstractMeasurementEntry> performanceTable;
 
-  public Problem(String title, Map<String, AlternativeEntry> alternatives, Map<String, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
+  public SingleStudyBenefitRiskProblem(String title, Map<String, AlternativeEntry> alternatives, Map<String, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
     this.title = title;
     this.alternatives = alternatives;
     this.criteria = criteria;
@@ -46,7 +46,7 @@ public class Problem {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    Problem problem = (Problem) o;
+    SingleStudyBenefitRiskProblem problem = (SingleStudyBenefitRiskProblem) o;
 
     if (!alternatives.equals(problem.alternatives)) return false;
     if (!criteria.equals(problem.criteria)) return false;

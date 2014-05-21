@@ -50,6 +50,11 @@ public class TrialverseServiceImpl implements TrialverseService {
     return objectsToNodes(studies);
   }
 
+  @Override
+  public ObjectNode getTrialData(Long namespaceId, String semanticOutcomeUri, List<String> alternativeUris) {
+    return null;
+  }
+
   private <T> List<ObjectNode> objectsToNodes(List<T> objectList) {
     final ObjectMapper mapper = new ObjectMapper();
     Collection<ObjectNode> JSONVariables = Collections2.transform(objectList, new Function<T, ObjectNode>() {

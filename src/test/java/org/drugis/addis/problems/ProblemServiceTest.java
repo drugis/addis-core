@@ -1,11 +1,18 @@
 package org.drugis.addis.problems;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.analyses.AbstractAnalysis;
+import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.AlternativeService;
 import org.drugis.addis.problems.service.CriteriaService;
@@ -17,6 +24,9 @@ import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.trialverse.model.SemanticIntervention;
+import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.util.JSONUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -56,7 +66,13 @@ public class ProblemServiceTest {
   MeasurementsService measurementsService;
 
   @Mock
-  private PerformanceTableBuilder performanceTablebuilder;
+  PerformanceTableBuilder performanceTablebuilder;
+
+  @Mock
+  InterventionRepository interventionRepository;
+
+  @Mock
+  TrialverseService trialverseService;
 
   @Mock
   JSONUtils jsonUtils;
@@ -77,11 +93,12 @@ public class ProblemServiceTest {
 
   @After
   public void cleanUp() {
-    verifyNoMoreInteractions(analysisRepository, projectRepository, singleStudyBenefitRiskAnalysisRepository, alternativeService, criteriaService);
+    verifyNoMoreInteractions(analysisRepository, projectRepository, singleStudyBenefitRiskAnalysisRepository,
+      alternativeService, criteriaService, interventionRepository, trialverseService);
   }
 
   @Test
-  public void testGetProblem() throws ResourceDoesNotExistException {
+  public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException {
 
     int projectId = 1;
     Project project = mock(Project.class);
@@ -124,7 +141,7 @@ public class ProblemServiceTest {
     when(performanceTablebuilder.build(criteriaCache, alternativesCache, measurements)).thenReturn(performanceTable);
 
     // execute
-    Problem actualProblem = problemService.getProblem(projectId, analysisId);
+    SingleStudyBenefitRiskProblem actualProblem = (SingleStudyBenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).getProjectById(projectId);
     verify(analysisRepository).get(projectId, analysisId);
@@ -143,6 +160,64 @@ public class ProblemServiceTest {
     Map<String, CriterionEntry> actualCriteria = actualProblem.getCriteria();
     assertTrue(actualCriteria.keySet().contains(mockKey));
     verify(jsonUtils).createKey(criterionEntryTitle);
+  }
+
+  @Test
+  public void testGetNetworkMetaAnalysisProblem() throws ResourceDoesNotExistException {
+    Long namespaceId = 1L;
+    Integer projectId = 2;
+    Integer analysisId = 3;
+    Long studyId = 101L;
+    Long drugId1 = 420L;
+    Long drugId2 = 430L;
+    Long armId1 = 555L;
+    Long armId2 = 666L;
+    String outcomeUri = "outcomeUri";
+    Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
+    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", outcome);
+    Project project = mock(Project.class);
+    SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
+    SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
+    Intervention intervention1 = new Intervention(1, projectId, "int1", "moti", semanticIntervention1);
+    Intervention intervention2 = new Intervention(2, projectId, "int2", "moti", semanticIntervention2);
+    Collection<Intervention> interventions = Arrays.asList(intervention1, intervention2);
+    ObjectMapper mapper = new ObjectMapper();
+
+    TrialDataIntervention trialDataIntervention1 = new TrialDataIntervention(drugId1, "uri1", studyId);
+    TrialDataIntervention trialDataIntervention2 = new TrialDataIntervention(drugId2, "uri2", studyId);
+    List<TrialDataIntervention> trialdataInterventions = Arrays.asList(trialDataIntervention1, trialDataIntervention2);
+
+    Measurement measurement1 = new Measurement(studyId, 333L, 444L, armId1,MeasurementAttribute.SAMPLE_SIZE, 768784L, null);
+    Measurement measurement2 = new Measurement(studyId, 333L, 444L, armId2,MeasurementAttribute.STANDARD_DEVIATION, null, Math.E);
+    Measurement measurement3 = new Measurement(studyId, 333L, 444L, armId2,MeasurementAttribute.MEAN, null, Math.PI);
+    List<Measurement> measurements1 = Arrays.asList(measurement1, measurement2, measurement3);
+    List<Measurement> measurements2 = Arrays.asList(measurement1, measurement2, measurement3);
+
+    TrialDataArm trialDataArm1 = new TrialDataArm(armId1, studyId, "arm1", drugId1, measurements1);
+    TrialDataArm trialDataArm2 = new TrialDataArm(armId2, studyId, "arm2", drugId2, measurements2);
+    List<TrialDataArm> trialDataArms = Arrays.asList(trialDataArm1, trialDataArm2);
+    TrialDataStudy trialDataStudy1 = new TrialDataStudy(1L, "study1", trialdataInterventions, trialDataArms);
+    List<TrialDataStudy> trialDataStudies = Arrays.asList(trialDataStudy1);
+    TrialData trialData = new TrialData(trialDataStudies);
+    ObjectNode trialdataNode = mapper.convertValue(trialData, ObjectNode.class);
+    when(project.getId()).thenReturn(projectId);
+    when(project.getTrialverseId()).thenReturn(namespaceId.intValue());
+    when(projectRepository.getProjectById(projectId)).thenReturn(project);
+    when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
+    when(interventionRepository.query(projectId)).thenReturn(interventions);
+    when(trialverseService.getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2"))).thenReturn(trialdataNode);
+
+    NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
+
+    verify(projectRepository).getProjectById(projectId);
+    verify(analysisRepository).get(projectId, analysisId);
+    verify(interventionRepository).query(projectId);
+    verify(trialverseService).getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2"));
+
+    assertNotNull(problem);
+    assertEquals(2, problem.getEntries().size());
+    ContinuousNetworkMetaAnalysisProblemEntry entry = new ContinuousNetworkMetaAnalysisProblemEntry("study1", "int1", 768784L, Math.PI, Math.E);
+    assertTrue(problem.getEntries().contains(entry));
   }
 
 }

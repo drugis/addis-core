@@ -16,4 +16,6 @@ public interface TrialverseService {
   public List<ObjectNode> getOrderedMeasurements(Collection<Long> outcomeIds, Collection<Long> armIds);
 
   public List<ObjectNode> getStudiesByIds(Long namespaceId, List<Long> studyIds);
+
+  public ObjectNode getTrialData(Long namespaceId, String semanticOutcomeUri, List<String> alternativeUris);
 }
