@@ -65,6 +65,7 @@ define(['angular'], function() {
 
         if (row.study !== currentStudy) {
           row.firstStudyRow = true;
+          row.firstInterventionRow = true;
           currentStudy = row.study;
           currentInterventionRow = row;
           currentInterventionRow.interventionRowSpan = 0;

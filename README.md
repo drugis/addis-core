@@ -3,7 +3,7 @@ addis-core
 
 ADDIS 2.x core
 
-Make sure the SASS submodule is present:
+Make sure the SASS and Bower submodules are present:
 
     git submodule init
     git submodule update
