@@ -91,8 +91,6 @@ public class ProblemServiceImpl implements ProblemService {
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
     for (TrialDataStudy trialDataStudy : convertedTrialData.getTrialDataStudies()) {
-        trialDataStudy.getTrialDataArms().size());
-
       List<TrialDataArm> filteredArms = filterUnmatchedAndDuplicateArms(trialDataStudy, interventionByDrugIdMap);
 
       for (TrialDataArm trialDataArm : filteredArms) {
