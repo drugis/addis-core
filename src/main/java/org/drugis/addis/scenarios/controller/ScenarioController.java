@@ -58,15 +58,10 @@ public class ScenarioController extends AbstractAddisCoreController {
   public Scenario create(Principal principal, HttpServletResponse response, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody Scenario scenario)
     throws ResourceDoesNotExistException, MethodNotAllowedException {
     scenario.setWorkspace(analysisId);
-    System.out.println("XXXXDEBUGGXZXXXX creation begun");
     scenarioService.checkCoordinates(projectId, analysisId, scenario);
-    System.out.println("XXXXDEBUGGXZXXXX coordinates OK");
     projectService.checkOwnership(projectId, principal);
-    System.out.println("XXXXDEBUGGXZXXXX project ownership OK");
-    Scenario result =scenarioRepository.create(analysisId, scenario.getTitle(), scenario.getState());
+    Scenario result = scenarioRepository.create(analysisId, scenario.getTitle(), scenario.getState());
     response.setStatus(HttpServletResponse.SC_CREATED);
-
-    System.out.println("XXXXDEBUGGXZXXXX creation done: " + result);
     return result;
   }
 

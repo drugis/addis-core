@@ -53,7 +53,7 @@ public class ProjectsControllerTest {
   private ProjectRepository projectRepository;
 
   @Mock
-  ProjectService projectService;
+  private ProjectService projectService;
 
   @Inject
   private WebApplicationContext webApplicationContext;
@@ -75,9 +75,9 @@ public class ProjectsControllerTest {
     reset(projectRepository);
     projectService = mock(ProjectService.class);
     projectController = new ProjectController();
-    mockMvc = MockMvcBuilders.standaloneSetup(projectController).build();
     user = mock(Principal.class);
     initMocks(this);
+    mockMvc = MockMvcBuilders.standaloneSetup(projectController).build();
     when(user.getName()).thenReturn("gert");
     when(accountRepository.findAccountByUsername("gert")).thenReturn(gert);
   }

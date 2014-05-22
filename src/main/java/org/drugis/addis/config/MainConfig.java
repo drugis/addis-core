@@ -38,17 +38,19 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
-        "org.drugis.addis.error",
+  "org.drugis.addis.error",
   "org.drugis.addis.projects",
   "org.drugis.addis.security",
   "org.drugis.addis.outcomes",
+  "org.drugis.addis.models",
   "org.drugis.addis.interventions",
   "org.drugis.addis.analyses",
   "org.drugis.addis.problems",
   "org.drugis.addis.scenarios",
   "org.drugis.addis.util"})
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security", "org.drugis.addis.interventions", "org.drugis.addis.scenarios"})
+@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security",
+  "org.drugis.addis.interventions", "org.drugis.addis.scenarios"})
 public class MainConfig {
   @Bean(name = "dsAddisCore")
   public DataSource dataSource() {

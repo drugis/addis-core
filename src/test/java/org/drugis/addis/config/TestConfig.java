@@ -4,10 +4,13 @@ import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.repository.CriteriaRepository;
+import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
@@ -32,7 +35,9 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.trialverse.controller",
         "org.drugis.addis.problems.controller",
         "org.drugis.addis.scenarios.controller",
-        "org.drugis.addis.scenarios.service"
+        "org.drugis.addis.scenarios.service",
+        "org.drugis.addis.models.controller",
+        "org.drugis.addis.models.service"
 })
 public class TestConfig {
   @Bean
@@ -99,6 +104,5 @@ public class TestConfig {
   public TrialverseDataService mockTrialverseDataService() {
     return mock(TrialverseDataService.class);
   }
-
 }
 

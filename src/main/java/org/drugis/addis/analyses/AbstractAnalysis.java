@@ -14,4 +14,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
                @Type(value = NetworkMetaAnalysis.class, name = "Network meta-analysis")})
 public abstract class AbstractAnalysis {
 
+  protected Integer projectId;
+
+  public Integer getProjectId() {
+    return projectId;
+  }
 }
