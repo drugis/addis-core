@@ -1,6 +1,7 @@
 define(['angular', 'angular-mocks', 'controllers'], function() {
   describe('the network meta-analysis controller', function() {
     var scope,
+      state,
       analysisDeferred,
       interventionDeferred,
       trailverseTrailDataDefered,
@@ -68,9 +69,11 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
       networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows']);
 
+      state = jasmine.createSpyObj('$state', ['go']);
 
       $controller('NetworkMetaAnalysisController', {
         $scope: scope,
+        $state: state,
         $stateParams: mockStateParams,
         OutcomeResource: outcomeResource,
         InterventionResource: interventionResource,
@@ -90,6 +93,12 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
           projectId: mockProject.id
         });
         expect(scope.outcomes).toEqual(mockOutcomes);
+      });
+
+      it('should place a goToModel function on the scope that navigates to the analysis.model state', function() {
+        expect(scope.goToModel).toBeDefined();
+        scope.goToModel();
+        expect(state.go).toHaveBeenCalledWith('analysis.model', {modelId: 1});
       });
 
     });

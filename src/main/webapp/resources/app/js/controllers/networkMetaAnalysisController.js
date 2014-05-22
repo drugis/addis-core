@@ -1,9 +1,9 @@
 define([], function() {
-  var dependencies = ['$scope', '$q', '$stateParams', 'OutcomeResource', 'InterventionResource',
+  var dependencies = ['$scope', '$q', '$state', '$stateParams', 'OutcomeResource', 'InterventionResource',
     'TrialverseTrialDataResource', 'NetworkMetaAnalysisService'
   ];
 
-  var NetworkMetaAnalysisController = function($scope, $q, $stateParams, OutcomeResource,
+  var NetworkMetaAnalysisController = function($scope, $q, $state, $stateParams, OutcomeResource,
     InterventionResource, TrialverseTrialDataResource, NetworkMetaAnalysisService) {
     $scope.analysis = $scope.$parent.analysis;
     $scope.project = $scope.$parent.project;
@@ -58,6 +58,13 @@ define([], function() {
         reloadTable();
       });
     };
+
+    $scope.goToModel = function() {
+      $state.go('analysis.model', {
+        modelId: 1
+      });
+    };
+
   };
 
   return dependencies.concat(NetworkMetaAnalysisController);
