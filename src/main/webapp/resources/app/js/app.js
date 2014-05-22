@@ -12,6 +12,7 @@ define(
     'resources',
     'services',
     'angular-select2',
+    'gemtc-web/controllers',
     'mcda/controllers',
     'mcda/controllers',
     'mcda/directives',
@@ -39,7 +40,10 @@ define(
       'addis.filters',
       'ui.select2'
     ];
-    var app = angular.module('addis', dependencies.concat(mcdaDependencies));
+    var gemtcWebDependencies = [
+      'gemtc.controllers'
+    ];
+    var app = angular.module('addis', dependencies.concat(mcdaDependencies.concat(gemtcWebDependencies)));
 
     app.constant('Tasks', Config.tasks);
     app.constant('DEFAULT_VIEW', 'overview');
@@ -87,6 +91,7 @@ define(
       function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES) {
         var baseTemplatePath = 'app/views/';
         var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
+        var gemtcWebBaseTemplatePath = 'app/js/bower_components/gemtc-web/app/views/';
 
         $stateProvider
           .state('projects', {
@@ -140,6 +145,11 @@ define(
               }
             },
             controller: 'ScenarioController'
+          })
+          .state('analysis.model', {
+            url: '/models/:modelId',
+            templateUrl: gemtcWebBaseTemplatePath + 'modelView.html',
+            controller: 'ModelController'
           });
 
         _.each(Tasks.available, function(task) {
