@@ -1,14 +1,12 @@
 package org.drugis.addis.analyses;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.util.ObjectToStringDeserializer;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,9 +17,10 @@ import java.util.List;
 public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
 
   @Id
-  @SequenceGenerator(name="analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
+  @SequenceGenerator(name = "analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")
   private Integer id;
+  private Integer projectId;
   private String name;
 
   @JsonRawValue
@@ -69,6 +68,11 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     return id;
   }
 
+  @Override
+  public Integer getProjectId() {
+    return projectId;
+  }
+
   public String getName() {
     return name;
   }
@@ -109,7 +113,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     if (id != null ? !id.equals(analysis.id) : analysis.id != null) return false;
     if (!name.equals(analysis.name)) return false;
     if (problem != null ? !problem.equals(analysis.problem) : analysis.problem != null) return false;
-    if (!getProjectId().equals(analysis.getProjectId())) return false;
+    if (!projectId.equals(analysis.projectId)) return false;
     if (!selectedInterventions.equals(analysis.selectedInterventions)) return false;
     if (!selectedOutcomes.equals(analysis.selectedOutcomes)) return false;
     if (studyId != null ? !studyId.equals(analysis.studyId) : analysis.studyId != null) return false;
@@ -120,7 +124,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
   @Override
   public int hashCode() {
     int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + getProjectId().hashCode();
+    result = 31 * result + projectId.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + (problem != null ? problem.hashCode() : 0);
     result = 31 * result + (studyId != null ? studyId.hashCode() : 0);
