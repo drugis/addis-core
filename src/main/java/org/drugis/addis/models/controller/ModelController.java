@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 
 /**
@@ -33,9 +34,11 @@ public class ModelController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.POST)
   @ResponseBody
-  public Model create(Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public Model create(HttpServletResponse response, Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkOwnership(projectId, principal);
     analysisService.checkCoordinates(projectId, analysisId);
-    return modelService.createModel(projectId, analysisId);
+    Model createdModel = modelService.createModel(projectId, analysisId);
+    response.setStatus(HttpServletResponse.SC_CREATED);
+    return createdModel;
   }
 }

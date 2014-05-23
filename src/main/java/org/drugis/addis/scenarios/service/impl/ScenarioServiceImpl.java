@@ -1,9 +1,7 @@
 package org.drugis.addis.scenarios.service.impl;
 
-import org.drugis.addis.analyses.AbstractAnalysis;
 import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
-import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.service.ScenarioService;
