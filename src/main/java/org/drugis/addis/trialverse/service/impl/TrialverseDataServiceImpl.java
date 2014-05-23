@@ -51,7 +51,10 @@ public class TrialverseDataServiceImpl implements TrialverseDataService {
     List<TrialDataStudy> trialDataStudies = new ArrayList<>(studies.size());
     for (Study study : studies) {
       Long studyId = study.getId();
-      trialDataStudies.add(new TrialDataStudy(study.getId(), study.getName(), studyInterventions.get(studyId), studyIdToTrialDataArmMap.get(studyId)));
+      // only include studies having a least one arm
+      if (studyIdToTrialDataArmMap.get(studyId) != null) {
+        trialDataStudies.add(new TrialDataStudy(study.getId(), study.getName(), studyInterventions.get(studyId), studyIdToTrialDataArmMap.get(studyId)));
+      }
     }
 
     TrialData trialData = new TrialData(trialDataStudies);
