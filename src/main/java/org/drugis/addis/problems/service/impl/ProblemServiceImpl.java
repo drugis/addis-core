@@ -130,14 +130,26 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private List<TrialDataArm> filterUnmatchedAndDuplicateArms(TrialDataStudy study, Map<Long, TrialDataIntervention> interventionByIdMap) {
-    List<TrialDataArm> arms = new ArrayList<>();
+    List<TrialDataArm> filteredArms = new ArrayList<>();
 
-    for (TrialDataArm arm : study.getTrialDataArms()) {
-      if (isMatched(arm, interventionByIdMap) && notDuplicateIntervention(arm, arms)) {
-        arms.add(arm);
+    List<TrialDataArm> studyArmsSortedByName = sortTrialDataArmsByName(study.getTrialDataArms());
+
+    for (TrialDataArm arm : studyArmsSortedByName) {
+      if (isMatched(arm, interventionByIdMap) && notDuplicateIntervention(arm, filteredArms)) {
+        filteredArms.add(arm);
       }
     }
-    return arms;
+    return filteredArms;
+  }
+
+  private List<TrialDataArm> sortTrialDataArmsByName(List<TrialDataArm> trialDataArms) {
+    Collections.sort(trialDataArms, new Comparator<TrialDataArm>() {
+      @Override
+      public int compare(TrialDataArm leftTrialDataArm, TrialDataArm rightTrialDataArm) {
+        return leftTrialDataArm.getName().compareTo(rightTrialDataArm.getName());
+      }
+    });
+    return trialDataArms;
   }
 
   private boolean notDuplicateIntervention(TrialDataArm armToFind, List<TrialDataArm> arms) {

@@ -172,6 +172,7 @@ public class ProblemServiceTest {
     Long drugId2 = 430L;
     Long armId1 = 555L;
     Long armId2 = 666L;
+    Long armId3 = 777L;
     String outcomeUri = "outcomeUri";
     Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
     AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", outcome);
@@ -190,12 +191,18 @@ public class ProblemServiceTest {
     Measurement measurement1 = new Measurement(studyId, 333L, 444L, armId1,MeasurementAttribute.SAMPLE_SIZE, 768784L, null);
     Measurement measurement2 = new Measurement(studyId, 333L, 444L, armId2,MeasurementAttribute.STANDARD_DEVIATION, null, Math.E);
     Measurement measurement3 = new Measurement(studyId, 333L, 444L, armId2,MeasurementAttribute.MEAN, null, Math.PI);
+
+    Measurement measurement4 = new Measurement(studyId, 333L, 444L, armId3, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
+    Measurement measurement5 = new Measurement(studyId, 333L, 444L, armId3, MeasurementAttribute.RATE, -1L, null);
+
     List<Measurement> measurements1 = Arrays.asList(measurement1, measurement2, measurement3);
     List<Measurement> measurements2 = Arrays.asList(measurement1, measurement2, measurement3);
+    List<Measurement> measurements3 = Arrays.asList(measurement4, measurement5);
 
-    TrialDataArm trialDataArm1 = new TrialDataArm(armId1, studyId, "arm1", drugId1, measurements1);
-    TrialDataArm trialDataArm2 = new TrialDataArm(armId2, studyId, "arm2", drugId2, measurements2);
-    List<TrialDataArm> trialDataArms = Arrays.asList(trialDataArm1, trialDataArm2);
+    TrialDataArm trialDataArm1 = new TrialDataArm(armId1, studyId, "arm bb", drugId1, measurements1);
+    TrialDataArm trialDataArm2 = new TrialDataArm(armId2, studyId, "arm aa", drugId2, measurements2);
+    TrialDataArm trialDataArm3 = new TrialDataArm(armId3, studyId, "aaa", drugId2, measurements3);
+    List<TrialDataArm> trialDataArms = Arrays.asList(trialDataArm1, trialDataArm2, trialDataArm3);
     TrialDataStudy trialDataStudy1 = new TrialDataStudy(1L, "study1", trialdataInterventions, trialDataArms);
     List<TrialDataStudy> trialDataStudies = Arrays.asList(trialDataStudy1);
     TrialData trialData = new TrialData(trialDataStudies);
@@ -218,6 +225,10 @@ public class ProblemServiceTest {
     assertEquals(2, problem.getEntries().size());
     ContinuousNetworkMetaAnalysisProblemEntry entry = new ContinuousNetworkMetaAnalysisProblemEntry("study1", "int1", 768784L, Math.PI, Math.E);
     assertTrue(problem.getEntries().contains(entry));
+
+    // expect the measurements from arm 3 to be uses as arms using the sames drug ara sorted by alphabet and the first one is used
+    RateNetworkMetaAnalysisProblemEntry rateNetworkMetaAnalysisProblemEntry = (RateNetworkMetaAnalysisProblemEntry) problem.getEntries().get(0);
+    assertEquals(-1L, rateNetworkMetaAnalysisProblemEntry.getResponders().longValue());
   }
 
 }
