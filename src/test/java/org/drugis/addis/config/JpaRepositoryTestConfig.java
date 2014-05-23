@@ -27,7 +27,8 @@ import java.util.Properties;
                 "org.drugis.addis.interventions",
                 "org.drugis.addis.analyses",
                 "org.drugis.addis.scenarios",
-                "org.drugis.addis.security"
+                "org.drugis.addis.security",
+                "org.drugis.addis.models"
         })
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {
@@ -35,7 +36,8 @@ import java.util.Properties;
         "org.drugis.addis.outcomes",
         "org.drugis.addis.interventions",
         "org.drugis.addis.analyses",
-        "org.drugis.addis.scenarios"
+        "org.drugis.addis.scenarios",
+        "org.drugis.addis.models"
 })
 public class JpaRepositoryTestConfig {
 
@@ -77,7 +79,8 @@ public class JpaRepositoryTestConfig {
             "org.drugis.addis.projects",
             "org.drugis.addis.analyses",
             "org.drugis.addis.scenarios",
-            "org.drugis.addis.security");
+            "org.drugis.addis.security",
+            "org.drugis.addis.models");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
