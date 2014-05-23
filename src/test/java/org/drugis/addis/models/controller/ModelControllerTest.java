@@ -82,6 +82,7 @@ public class ModelControllerTest {
       .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.modelId", notNullValue()));
 
+    verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
     verify(modelService).createModel(projectId, analysisId);
   }
