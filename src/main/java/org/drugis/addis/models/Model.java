@@ -12,14 +12,15 @@ import javax.persistence.Id;
 public class Model {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer modelId;
+  private Integer id;
+
   private Integer analysisId;
 
   public Model() {
   }
 
-  public Model(Integer modelId, Integer analysisId) {
-    this.modelId = modelId;
+  public Model(Integer id, Integer analysisId) {
+    this.id = id;
     this.analysisId = analysisId;
   }
 
@@ -27,8 +28,8 @@ public class Model {
     this.analysisId = analysisId;
   }
 
-  public Integer getModelId() {
-    return modelId;
+  public Integer getId() {
+    return id;
   }
 
   public Integer getAnalysisId() {
@@ -43,14 +44,14 @@ public class Model {
     Model model = (Model) o;
 
     if (!analysisId.equals(model.analysisId)) return false;
-    if (modelId != null ? !modelId.equals(model.modelId) : model.modelId != null) return false;
+    if (id != null ? !id.equals(model.id) : model.id != null) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    int result = modelId != null ? modelId.hashCode() : 0;
+    int result = id != null ? id.hashCode() : 0;
     result = 31 * result + analysisId.hashCode();
     return result;
   }

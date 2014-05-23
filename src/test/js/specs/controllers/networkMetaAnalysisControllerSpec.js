@@ -5,11 +5,13 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       analysisDeferred,
       interventionDeferred,
       trailverseTrailDataDefered,
-      mockAnalysis = {$save: function(){},
-      outcome: {
-        id: 2,
-        semanticOutcomeUri: 'semanticOutcomeUri'
-      }},
+      mockAnalysis = {
+        $save: function() {},
+        outcome: {
+          id: 2,
+          semanticOutcomeUri: 'semanticOutcomeUri'
+        }
+      },
       projectDeferred,
       mockProject = {
         id: 11,
@@ -19,18 +21,37 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         analysisId: 1,
         projectId: 11
       },
-      mockOutcomes = [
-        {id: 1, semanticOutcomeUri: 'semanticOutcomeUri-1'},
-        {id: 2, semanticOutcomeUri: 'semanticOutcomeUri-2'}
-      ],
-      mockTrialData = {studies: [1,2,3]},
+      mockOutcomes = [{
+        id: 1,
+        semanticOutcomeUri: 'semanticOutcomeUri-1'
+      }, {
+        id: 2,
+        semanticOutcomeUri: 'semanticOutcomeUri-2'
+      }],
+      mockTrialData = {
+        studies: [1, 2, 3]
+      },
       outcomeResource,
-      mockInterventions = [
-        {id: 1, name: 'intervention-name1', semanticInterventionUri: 'semanticInterventionUri1'},
-        {id: 2, name: 'intervention-name2', semanticInterventionUri: 'semanticInterventionUri2'},
-        {id: 3, name: 'intervention-name3', semanticInterventionUri: 'semanticInterventionUri2'},
-      ],
-      trialverseTrialDataResource;
+      mockInterventions = [{
+        id: 1,
+        name: 'intervention-name1',
+        semanticInterventionUri: 'semanticInterventionUri1'
+      }, {
+        id: 2,
+        name: 'intervention-name2',
+        semanticInterventionUri: 'semanticInterventionUri2'
+      }, {
+        id: 3,
+        name: 'intervention-name3',
+        semanticInterventionUri: 'semanticInterventionUri2'
+      }, ],
+      trialverseTrialDataResource,
+      mockModel = {
+        id: 512,
+        analysisId: 600
+      },
+      modelResource,
+      modelDeferred;
 
     beforeEach(module('addis.controllers'));
 
@@ -69,6 +90,11 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
       networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows']);
 
+      modelResource = jasmine.createSpyObj('modelResource', ['save']);
+      modelDeferred = $q.defer();
+      mockModel.$promise = modelDeferred.promise;
+      modelResource.save.and.returnValue(mockModel);
+
       state = jasmine.createSpyObj('$state', ['go']);
 
       $controller('NetworkMetaAnalysisController', {
@@ -78,7 +104,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         OutcomeResource: outcomeResource,
         InterventionResource: interventionResource,
         TrialverseTrialDataResource: trialverseTrialDataResource,
-        NetworkMetaAnalysisService: networkMetaAnalysisService
+        NetworkMetaAnalysisService: networkMetaAnalysisService,
+        ModelResource: modelResource
       });
     }));
 
@@ -98,7 +125,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       it('should place a goToModel function on the scope that navigates to the analysis.model state', function() {
         expect(scope.goToModel).toBeDefined();
         scope.goToModel();
-        expect(state.go).toHaveBeenCalledWith('analysis.model', {modelId: 1});
+        expect(modelResource.save).toHaveBeenCalledWith(mockStateParams, {});
       });
 
     });
@@ -114,22 +141,36 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       }));
 
       it('should save the analysis when the selected outcome changes', function() {
-        scope.analysis.outcome = {id: 1};
+        scope.analysis.outcome = {
+          id: 1
+        };
         scope.saveAnalysis();
         expect(scope.analysis.$save).toHaveBeenCalled();
       });
 
-      describe('and there is already an outcome defined on the analysis', function () {
-        
-        it('should get the tabledata', function () {
+      describe('and there is already an outcome defined on the analysis', function() {
+
+        it('should get the tabledata', function() {
           expect(trialverseTrialDataResource.get).toHaveBeenCalledWith({
             id: mockProject.trialverseId,
             outcomeUri: mockOutcomes[0].semanticOutcomeUri,
             interventionUris: [
               mockInterventions[0].semanticInterventionUri,
-              mockInterventions[1].semanticInterventionUri, 
-              mockInterventions[2].semanticInterventionUri]
+              mockInterventions[1].semanticInterventionUri,
+              mockInterventions[2].semanticInterventionUri
+            ]
           });
+        });
+      });
+
+      describe('and the go to model button is clicked', function() {
+
+        it('should create a model and go to the model view', function() {
+          scope.goToModel();
+          expect(modelResource.save).toHaveBeenCalledWith(mockStateParams, {});
+          modelDeferred.resolve(mockModel);
+          scope.$apply();
+          expect(state.go).toHaveBeenCalledWith('analysis.model', {modelId: mockModel.id});
         });
       });
 

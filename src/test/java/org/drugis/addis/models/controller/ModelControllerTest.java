@@ -80,7 +80,7 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models").principal(user))
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.modelId", notNullValue()))
+            .andExpect(jsonPath("$.id", notNullValue()))
             .andExpect(jsonPath("$.analysisId", notNullValue()));
 
     verify(analysisService).checkCoordinates(projectId, analysisId);

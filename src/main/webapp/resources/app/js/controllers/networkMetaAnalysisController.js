@@ -1,10 +1,11 @@
+'use strict';
 define([], function() {
   var dependencies = ['$scope', '$q', '$state', '$stateParams', 'OutcomeResource', 'InterventionResource',
-    'TrialverseTrialDataResource', 'NetworkMetaAnalysisService'
+    'TrialverseTrialDataResource', 'NetworkMetaAnalysisService', 'ModelResource'
   ];
 
   var NetworkMetaAnalysisController = function($scope, $q, $state, $stateParams, OutcomeResource,
-    InterventionResource, TrialverseTrialDataResource, NetworkMetaAnalysisService) {
+    InterventionResource, TrialverseTrialDataResource, NetworkMetaAnalysisService, ModelResource) {
     $scope.analysis = $scope.$parent.analysis;
     $scope.project = $scope.$parent.project;
     $scope.outcomes = OutcomeResource.query({
@@ -60,8 +61,11 @@ define([], function() {
     };
 
     $scope.goToModel = function() {
-      $state.go('analysis.model', {
-        modelId: 1
+      var model = ModelResource.save($stateParams, {}); 
+      model.$promise.then(function(model) {
+        $state.go('analysis.model', {
+          modelId: model.id
+        });
       });
     };
 

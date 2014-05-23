@@ -31,6 +31,6 @@ public class JpaModelRepositoryTest {
     Integer analysisId = -5; // from test-data/sql
     Model model = modelRepository.create(analysisId);
     assertEquals(analysisId, model.getAnalysisId());
-    assertNotNull(model.getModelId());
+    assertNotNull(model.getId());
   }
 }
