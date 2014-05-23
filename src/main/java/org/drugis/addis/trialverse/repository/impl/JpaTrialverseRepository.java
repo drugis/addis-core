@@ -92,7 +92,17 @@ public class JpaTrialverseRepository implements TrialverseRepository {
                     " and t.activity = ac.id" +
                     " and nss.namespace = :namespaceId" +
                     " and a.study IN :studyIds" +
-                    " and m.variable IN :variableIds", TrialDataArm.class
+                    " and m.variable IN :variableIds" +
+                    " and a.id NOT IN (select distinct" +
+                    "  arm.id" +
+                    "  from " +
+                    "  arms arm, designs d, activities act, treatments t" +
+                    "   where " +
+                    "     d.arm = arm.id " +
+                    "    and act.id = d.activity" +
+                    "    and t.activity = act.id" +
+                    "    group by arm.id" +
+                    "    having count(arm.id) > 1)", TrialDataArm.class
     );
 
     query.setParameter("namespaceId", namespaceId);
