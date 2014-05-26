@@ -23,6 +23,10 @@
   [namespace entity]
   (format "http://trials.drugis.org/namespaces/%d/%s" namespace (entity-path entity)))
 
+(defn study-uri
+  [study-id]
+  (format "http://trials.drugis.org/study/%d", study-id))
+
 (defn entity-ref-uri
   [study-id entity-type entity-id]
   (format "http://trials.drugis.org/study/%d/%s/%d" study-id entity-type entity-id))
@@ -88,11 +92,12 @@
   (swap! ttl-buffer conj statement))
 
 (defn entity-ref-rdf
-  [entity-ref entity-ref-uri entity-cls-uri]
+  [entity-ref entity-ref-uri entity-cls-uri study-uri]
   [(rdf-uri entity-ref-uri)
    [[(rdf-uri :rdf "type") (rdf-uri entity-cls-uri)]
     [(rdf-uri :rdfs "label") (:name entity-ref)]
-    [(rdf-uri :rdfs "comment") (:description entity-ref)]]])
+    [(rdf-uri :rdfs "comment") (:description entity-ref)]
+    [(rdf-uri "http://trials.drugis.org/partOfStudy") (rdf-uri study-uri)]]])
 
 (defn entity-ref-rdf-callback
   [entity-type-or-fn]
@@ -105,8 +110,9 @@
             study (find-study contexts)
             entity-type (if (fn? entity-type-or-fn) (entity-type-or-fn entity-ref) entity-type-or-fn)
             entity-ref-uri (entity-ref-uri study entity-type sql-id)
-            entity-cls-uri (entity-uri namespace {"name" name :type entity-type})]
-        (append-ttl (entity-ref-rdf entity-ref entity-ref-uri entity-cls-uri))))))
+            entity-cls-uri (entity-uri namespace {"name" name :type entity-type})
+            study-uri (study-uri study)]
+        (append-ttl (entity-ref-rdf entity-ref entity-ref-uri entity-cls-uri study-uri))))))
 
 (defn entities-to-rdf
   [data ttl namespace]
