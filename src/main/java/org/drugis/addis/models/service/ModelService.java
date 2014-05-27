@@ -8,4 +8,6 @@ import org.drugis.addis.models.Model;
  */
 public interface ModelService {
   public Model createModel(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException;
+
+  public Model getModel(Integer analysisId, Integer modelId) throws ResourceDoesNotExistException;
 }

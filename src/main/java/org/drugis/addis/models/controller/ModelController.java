@@ -27,8 +27,10 @@ public class ModelController extends AbstractAddisCoreController {
 
   @Inject
   AnalysisService analysisService;
+
   @Inject
   ProjectService projectService;
+
   @Inject
   ModelService modelService;
 
@@ -40,5 +42,12 @@ public class ModelController extends AbstractAddisCoreController {
     Model createdModel = modelService.createModel(projectId, analysisId);
     response.setStatus(HttpServletResponse.SC_CREATED);
     return createdModel;
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}", method = RequestMethod.GET)
+  @ResponseBody
+  public Model get(@PathVariable Integer analysisId, @PathVariable Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    Model model = modelService.getModel(analysisId, modelId);
+    return model;
   }
 }

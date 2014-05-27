@@ -7,5 +7,7 @@ import org.drugis.addis.models.Model;
  */
 public interface ModelRepository {
 
-  Model create(Integer analysisId);
+  public Model create(Integer analysisId);
+
+  public Model get(Integer modelId);
 }

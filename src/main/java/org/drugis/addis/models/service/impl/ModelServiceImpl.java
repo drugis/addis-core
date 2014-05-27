@@ -20,4 +20,9 @@ public class ModelServiceImpl implements ModelService {
   public Model createModel(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
     return modelRepository.create(analysisId);
   }
+
+  @Override
+  public Model getModel(Integer analysisId, Integer modelId) throws ResourceDoesNotExistException {
+    return modelRepository.get(modelId);
+  }
 }

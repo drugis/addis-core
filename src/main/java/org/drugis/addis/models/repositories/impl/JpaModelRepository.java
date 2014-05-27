@@ -24,4 +24,9 @@ public class JpaModelRepository implements ModelRepository {
     em.persist(model);
     return model;
   }
+
+  @Override
+  public Model get(Integer modelId) {
+    return em.find(Model.class, modelId);
+  }
 }

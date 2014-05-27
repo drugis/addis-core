@@ -33,4 +33,13 @@ public class JpaModelRepositoryTest {
     assertEquals(analysisId, model.getAnalysisId());
     assertNotNull(model.getId());
   }
+
+  @Test
+  public void testGet() {
+    Integer modelId = 1;
+    Integer analysisId = -5;
+    Model result = modelRepository.get(modelId);
+    assertNotNull(result);
+    assertEquals(analysisId, result.getAnalysisId());
+  }
 }

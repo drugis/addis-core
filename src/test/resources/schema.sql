@@ -124,3 +124,11 @@ ALTER TABLE SingleStudyBenefitRiskAnalysis_Interventions ADD CONSTRAINT ssbr_ana
 ALTER TABLE SingleStudyBenefitRiskAnalysis_Outcomes ADD CONSTRAINT ssbr_analysis_outcomes_analysisid_fkey FOREIGN KEY (analysisId) REFERENCES SingleStudyBenefitRiskAnalysis(id);
 ALTER TABLE scenario ADD CONSTRAINT ssbr_scenario_workspace_fkey FOREIGN KEY (workspace) REFERENCES SingleStudyBenefitRiskAnalysis(id);
 
+-- changeset stroombergc:5
+CREATE TABLE Model (
+  id SERIAL NOT NULL,
+  analysisId INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id));
+
+

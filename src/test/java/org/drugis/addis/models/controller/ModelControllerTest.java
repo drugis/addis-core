@@ -1,6 +1,7 @@
 package org.drugis.addis.models.controller;
 
 import org.drugis.addis.analyses.service.AnalysisService;
+import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.service.ModelService;
@@ -24,7 +25,9 @@ import javax.inject.Inject;
 import java.security.Principal;
 
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -49,6 +52,9 @@ public class ModelControllerTest {
   @InjectMocks
   private ModelController modelController;
 
+  @InjectMocks
+  private AbstractAddisCoreController abstractAddisCoreController;
+
   private Principal user;
 
   @Before
@@ -56,11 +62,12 @@ public class ModelControllerTest {
     analysisService = mock(AnalysisService.class);
     projectService = mock(ProjectService.class);
     modelService = mock(ModelService.class);
+    abstractAddisCoreController = new AbstractAddisCoreController();
     modelController = new ModelController();
 
     MockitoAnnotations.initMocks(this);
 
-    mockMvc = MockMvcBuilders.standaloneSetup(modelController).build();
+    mockMvc = MockMvcBuilders.standaloneSetup(abstractAddisCoreController, modelController).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
   }
@@ -86,5 +93,22 @@ public class ModelControllerTest {
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
     verify(modelService).createModel(projectId, analysisId);
+  }
+
+  @Test
+  public void testGet() throws Exception {
+    Integer analysisId = 55;
+    Integer modelId = 12;
+    Model model = new Model(modelId, analysisId);
+
+    when(modelService.getModel(analysisId, model.getId())).thenReturn(model);
+    mockMvc.perform(get("/projects/45/analyses/55/models/12").principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.id", is(modelId)))
+            .andExpect(jsonPath("$.analysisId", is(analysisId)));
+
+
+    verify(modelService).getModel(analysisId, modelId);
   }
 }
