@@ -14,6 +14,8 @@ define(
     'angular-select2',
     'gemtc-web/controllers',
     'gemtc-web/resources',
+    'gemtc-web/constants',
+    'gemtc-web/services',
     'mcda/controllers',
     'mcda/controllers',
     'mcda/directives',
@@ -43,7 +45,9 @@ define(
     ];
     var gemtcWebDependencies = [
       'gemtc.controllers',
-      'gemtc.resources'
+      'gemtc.resources',
+      'gemtc.constants',
+      'gemtc.services'
     ];
     var app = angular.module('addis', dependencies.concat(mcdaDependencies.concat(gemtcWebDependencies)));
 
