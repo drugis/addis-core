@@ -6,12 +6,12 @@ package org.drugis.addis.problems.model;
 public abstract class AbstractNetworkMetaAnalysisProblemEntry {
     private String study;
     private String treatment;
-    private Long samplesize;
+  private Long sampleSize;
 
-  public AbstractNetworkMetaAnalysisProblemEntry(String study, String treatment, Long samplesize) {
+  public AbstractNetworkMetaAnalysisProblemEntry(String study, String treatment, Long sampleSize) {
     this.study = study;
     this.treatment = treatment;
-    this.samplesize = samplesize;
+    this.sampleSize = sampleSize;
   }
 
   public String getStudy() {
@@ -22,8 +22,8 @@ public abstract class AbstractNetworkMetaAnalysisProblemEntry {
     return treatment;
   }
 
-  public Long getSamplesize() {
-    return samplesize;
+  public Long getSampleSize() {
+    return sampleSize;
   }
 
   @Override
@@ -33,7 +33,7 @@ public abstract class AbstractNetworkMetaAnalysisProblemEntry {
 
     AbstractNetworkMetaAnalysisProblemEntry that = (AbstractNetworkMetaAnalysisProblemEntry) o;
 
-    if (!samplesize.equals(that.samplesize)) return false;
+    if (!sampleSize.equals(that.sampleSize)) return false;
     if (!study.equals(that.study)) return false;
     if (!treatment.equals(that.treatment)) return false;
 
@@ -44,7 +44,7 @@ public abstract class AbstractNetworkMetaAnalysisProblemEntry {
   public int hashCode() {
     int result = study.hashCode();
     result = 31 * result + treatment.hashCode();
-    result = 31 * result + samplesize.hashCode();
+    result = 31 * result + sampleSize.hashCode();
     return result;
   }
 }

@@ -1,24 +1,27 @@
 package org.drugis.addis.problems.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Created by daan on 21-5-14.
  */
 public class ContinuousNetworkMetaAnalysisProblemEntry extends AbstractNetworkMetaAnalysisProblemEntry {
-  private Double mu;
-  private Double sigma;
+  private Double mean;
+  private Double stdDev;
 
-  public ContinuousNetworkMetaAnalysisProblemEntry(String study, String treatment, Long samplesize, Double mu, Double sigma) {
+  public ContinuousNetworkMetaAnalysisProblemEntry(String study, String treatment, Long samplesize, Double mean, Double stdDev) {
     super(study, treatment, samplesize);
-    this.mu = mu;
-    this.sigma = sigma;
+    this.mean = mean;
+    this.stdDev = stdDev;
   }
 
-  public Double getMu() {
-    return mu;
+  public Double getMean() {
+    return mean;
   }
 
-  public Double getSigma() {
-    return sigma;
+  @JsonProperty(value = "std.dev")
+  public Double getStdDev() {
+    return stdDev;
   }
 
   @Override
@@ -29,8 +32,8 @@ public class ContinuousNetworkMetaAnalysisProblemEntry extends AbstractNetworkMe
 
     ContinuousNetworkMetaAnalysisProblemEntry that = (ContinuousNetworkMetaAnalysisProblemEntry) o;
 
-    if (!mu.equals(that.mu)) return false;
-    if (!sigma.equals(that.sigma)) return false;
+    if (!mean.equals(that.mean)) return false;
+    if (!stdDev.equals(that.stdDev)) return false;
 
     return true;
   }
@@ -38,8 +41,8 @@ public class ContinuousNetworkMetaAnalysisProblemEntry extends AbstractNetworkMe
   @Override
   public int hashCode() {
     int result = super.hashCode();
-    result = 31 * result + mu.hashCode();
-    result = 31 * result + sigma.hashCode();
+    result = 31 * result + mean.hashCode();
+    result = 31 * result + stdDev.hashCode();
     return result;
   }
 }
