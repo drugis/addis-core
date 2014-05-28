@@ -15,10 +15,14 @@ define([], function() {
       var analysisType = _.find(ANALYSIS_TYPES, function(type) {
         return type.label === analysis.analysisType;
       });
-      $state.go(analysisType.stateName, {
-        type: analysis.analysisType,
-        analysisId: analysis.id
-      });
+
+      if ($state.current && $state.current.name === 'analysis') {
+        $state.go(analysisType.stateName, {
+          type: analysis.analysisType,
+          analysisId: analysis.id
+        });
+      }
+
     });
     $q.all([currentAnalysis.$promise, currentProject.$promise]).then(function() {
       if (currentAnalysis.problem) {

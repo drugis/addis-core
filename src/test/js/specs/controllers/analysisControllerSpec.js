@@ -70,9 +70,32 @@ define(['angular', 'angular-mocks', 'controllers'],
 
       });
 
-      describe('when the analysis is loaded', function() {
+
+      describe('when a non-base analysis state is loaded', function() {
         beforeEach(inject(function($controller) {
           state = jasmine.createSpyObj('$state', ['go']);
+          state.current = {
+            name: 'not base analysis'
+          };
+
+          controllerArguments.$state = state;
+          $controller('AnalysisController', controllerArguments);
+
+          analysisDeferred.resolve(mockAnalysis);
+          scope.$apply();
+        }));
+
+        it('should not navigate', function() {
+          expect(state.go).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('when the base analysis is loaded', function() {
+        beforeEach(inject(function($controller) {
+          state = jasmine.createSpyObj('$state', ['go']);
+          state.current = {
+            name: 'analysis'
+          };
 
           mockAnalysis.analysisType = ANALYSIS_TYPES[0].label;
           mockAnalysis.id = 1;
@@ -90,6 +113,23 @@ define(['angular', 'angular-mocks', 'controllers'],
             analysisId: mockAnalysis.id
           });
         });
+
+      });
+
+      describe('when the analysis is loaded', function() {
+        beforeEach(inject(function($controller) {
+          state = jasmine.createSpyObj('$state', ['go']);
+
+          mockAnalysis.analysisType = ANALYSIS_TYPES[0].label;
+          mockAnalysis.id = 1;
+
+          controllerArguments.$state = state;
+          $controller('AnalysisController', controllerArguments);
+
+          analysisDeferred.resolve(mockAnalysis);
+          scope.$apply();
+        }));
+
 
         it('should only make loading.loaded true when both project and analysis are loaded', function() {
           expect(scope.loading.loaded).toBeFalsy();

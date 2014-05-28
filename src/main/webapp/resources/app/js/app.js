@@ -127,6 +127,7 @@ define(
                 }
               ]
             },
+            // AnalysisController does routing to correct type of analysis view
             controller: 'AnalysisController'
           })
           .state('analysis.singleStudyBenefitRisk', {
