@@ -9059,3 +9059,9 @@ tr.clickable td {
 .undefined {
   font-style: italic;
 }
+
+/* line 78, ../../sass/addis-drugis.scss */
+.table-cell-label {
+  font-weight: bold;
+  text-align: center;
+}
