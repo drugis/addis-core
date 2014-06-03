@@ -16,6 +16,7 @@ define(
     'gemtc-web/resources',
     'gemtc-web/constants',
     'gemtc-web/services',
+    'gemtc-web/directives',
     'mcda/controllers',
     'mcda/controllers',
     'mcda/directives',
@@ -47,7 +48,8 @@ define(
       'gemtc.controllers',
       'gemtc.resources',
       'gemtc.constants',
-      'gemtc.services'
+      'gemtc.services',
+      'gemtc.directives'
     ];
     var app = angular.module('addis', dependencies.concat(mcdaDependencies.concat(gemtcWebDependencies)));
 
