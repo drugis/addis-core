@@ -59,7 +59,35 @@ label {
   color: $drugis-color;
 }
 
-// tables
+//////// Tables /////////////////
+.table-title {
+  margin-left: 2px;
+  font-size: 13px;
+  font-family: inherit;
+  margin-top: 10px;
+  margin-bottom: 2px;
+}
+
+table {
+   border-collapse: collapse;
+  //remove default foundation striping
+  tr:nth-of-type(even) {
+    background-color: transparent !important;
+  }
+
+  tr {
+    td {
+      border: solid 1px $addis-grey-border; 
+      min-width: 200px;
+    }
+  }
+
+}
+
+td.empty-cell {
+  background-color: $addis-grey-border;
+}
+
 // lighten the darken on hover 
 tr.on-hover:hover {
   background: darken($secondary-color, 5%);

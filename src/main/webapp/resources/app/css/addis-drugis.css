@@ -9043,24 +9043,52 @@ label {
   color: #cc3333;
 }
 
-/* line 64, ../../sass/addis-drugis.scss */
+/* line 63, ../../sass/addis-drugis.scss */
+.table-title {
+  margin-left: 2px;
+  font-size: 13px;
+  font-family: inherit;
+  margin-top: 10px;
+  margin-bottom: 2px;
+}
+
+/* line 71, ../../sass/addis-drugis.scss */
+table {
+  border-collapse: collapse;
+}
+/* line 74, ../../sass/addis-drugis.scss */
+table tr:nth-of-type(even) {
+  background-color: transparent !important;
+}
+/* line 79, ../../sass/addis-drugis.scss */
+table tr td {
+  border: solid 1px #dadada;
+  min-width: 200px;
+}
+
+/* line 87, ../../sass/addis-drugis.scss */
+td.empty-cell {
+  background-color: #dadada;
+}
+
+/* line 92, ../../sass/addis-drugis.scss */
 tr.on-hover:hover {
   background: #dadada;
   cursor: pointer;
   text-decoration: underline;
 }
 
-/* line 70, ../../sass/addis-drugis.scss */
+/* line 98, ../../sass/addis-drugis.scss */
 tr.clickable td {
   color: #452f8c;
 }
 
-/* line 74, ../../sass/addis-drugis.scss */
+/* line 102, ../../sass/addis-drugis.scss */
 .undefined {
   font-style: italic;
 }
 
-/* line 78, ../../sass/addis-drugis.scss */
+/* line 106, ../../sass/addis-drugis.scss */
 .table-cell-label {
   font-weight: bold;
   text-align: center;
