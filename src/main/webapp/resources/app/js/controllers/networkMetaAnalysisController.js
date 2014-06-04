@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['d3'], function(d3) {
   var dependencies = ['$scope', '$q', '$state', '$stateParams', 'OutcomeResource', 'InterventionResource',
     'TrialverseTrialDataResource', 'NetworkMetaAnalysisService', 'ModelResource'
   ];
@@ -24,6 +24,73 @@ define([], function() {
       return object.semanticInterventionUri;
     }
 
+    function updateView(trialverseData) {
+      createNetwork(trialverseData);
+      return NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData);
+    }
+
+    function drawLine(enter, fromId, toId, circleData) {
+      enter.append('line')
+        .attr('x1', circleData[fromId].cx)
+        .attr('y1', circleData[fromId].cy)
+        .attr('x2', circleData[toId].cx)
+        .attr('y2', circleData[toId].cy)
+        .attr('stroke', 'black')
+        .attr('stroke-width', Math.random() * 10 + 1);
+    }
+
+    function createNetwork(trialverseData) {
+      var parent = angular.element('#network-graph').parent();
+      var n = 10.0;
+      var angle = 2.0 * Math.PI / n;
+      var originX = parent.width() / 2;
+      var originY = parent.width() / 4;
+      var margin = 100;
+      var circleSize = 15;
+      var radius = originY - margin / 2;
+      var svg = d3.select('#network-graph')
+        .append('svg')
+        .attr('width', parent.width())
+        .attr('height', parent.width() / 2);
+
+      var circleData = [];
+
+      for (var i = 0; i < n; ++i) {
+        circleData.push({
+          id: i,
+          r: Math.random() * circleSize,
+          cx: originX - radius * Math.cos(angle * i),
+          cy: originY + radius * Math.sin(angle * i),
+          label: 'hoi connor lange text ' + i
+        });
+      }
+
+      drawLine(svg, 1, 2, circleData);
+      drawLine(svg, 4, 2, circleData);
+      drawLine(svg, 3, 2, circleData);
+      drawLine(svg, 1, 6, circleData);
+      drawLine(svg, 5, 2, circleData);
+      drawLine(svg, 2, 4, circleData);
+      var enter = svg.selectAll('g')
+        .data(circleData)
+        .enter()
+        .append('g')
+        .attr('transform', function(d) { return 'translate(' + d.cx+','+d.cy+')';});
+
+      enter.append('circle')
+        .style('fill', 'grey')
+        .attr('r', circleSize)
+
+      enter.append('text')
+        .attr('dx', -50)
+        .text(function(d){return d.label;});
+
+
+    }
+
+
+
+
     function reloadTable() {
       TrialverseTrialDataResource
         .get({
@@ -32,7 +99,7 @@ define([], function() {
           interventionUris: $scope.interventionUris
         })
         .$promise
-        .then(NetworkMetaAnalysisService.transformTrialDataToTableRows)
+        .then(updateView)
         .then(function(tableRows) {
           $scope.trialData = tableRows;
         });
@@ -61,7 +128,7 @@ define([], function() {
     };
 
     $scope.goToModel = function() {
-      var model = ModelResource.save($stateParams, {}); 
+      var model = ModelResource.save($stateParams, {});
       model.$promise.then(function(model) {
         $state.go('analysis.model', {
           modelId: model.id
