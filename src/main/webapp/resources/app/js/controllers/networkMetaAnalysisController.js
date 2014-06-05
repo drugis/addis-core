@@ -59,7 +59,9 @@ define(['d3'], function(d3) {
       _.each(network.interventions, function(intervention, i) {
         var circleDatum = {
           id: intervention.name,
-          r: Math.max(circleMaxSize * intervention.sampleSize / (maxSampleSize + 1), circleMinSize),
+          r: maxSampleSize > 0 ? 
+            Math.max(circleMaxSize * Math.sqrt(intervention.sampleSize) / Math.sqrt(maxSampleSize), circleMinSize) :
+            circleMinSize,
           cx: originX - radius * Math.cos(angle * i),
           cy: originY + radius * Math.sin(angle * i)
         };
@@ -85,18 +87,38 @@ define(['d3'], function(d3) {
           return d.r;
         });
 
-      var labelMargin = 3;
+      var labelMargin = 5;
+      var nearCenterMargin = 20;
+
+      function nearCenter(d) {
+        var delta = d.cx - originX;
+        return delta < -nearCenterMargin ? -1 : (delta > nearCenterMargin ? 1 : 0);
+      }
+
+      var cos45 = Math.sqrt(2) * 0.5;
       enter.append('text')
-        .style('direction', function(d){
-          return d.cx >= originX ? 'ltr' : 'rtl';
-        })
-        .attr('dx', function(d){
-          var offset = d.r + labelMargin;
-          return d.cx >= originX ? offset : -offset;
+        .attr('dx', function(d) {
+          var offset = cos45 * d.r + labelMargin;
+          return nearCenter(d) * offset;
         })
         .attr('dy', function(d){
-          var offset = d.r + labelMargin;
-          return d.cy >= originY ? offset : -offset;
+          var offset = (nearCenter(d) == 0 ? d.r : cos45 * d.r) + labelMargin;
+          return (d.cy >= originY ? offset : -offset);
+        })
+        .attr('text-anchor', function(d){
+          switch (nearCenter(d)) {
+            case -1:
+              return 'end';
+            case 0:
+              return 'middle';
+            case 1:
+              return 'start';
+          }
+        })
+        .attr('dominant-baseline', function(d) {
+          if (nearCenter(d) != 0) return 'central';
+          if (d.cy - originY < 0) return 'alphabetic'; // text-after-edge doesn't seem to work in Chrome
+          return 'text-before-edge';
         })
         .style('font-family', 'Droid Sans')
         .style('font-size', 16)
