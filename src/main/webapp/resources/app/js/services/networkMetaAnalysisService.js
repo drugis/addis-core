@@ -1,7 +1,9 @@
 'use strict';
 define(['angular'], function() {
-  var dependencies = ['$stateParams', '$q', 'InterventionResource'];
-  var NetworkMetaAnalysisService = function($stateParams, $q, InterventionResource) {
+  var dependencies = [];
+  var interventionMap = {};
+
+  var NetworkMetaAnalysisService = function() {
 
     function resolveInterventionName(trialDataIntervention, interventionOptions) {
       return _.find(interventionOptions, function(intervention) {
@@ -10,7 +12,7 @@ define(['angular'], function() {
     }
 
     function mapTrialDataArmToIntervention(trialDataArm, trialDataInterventions) {
-      return _.find(trialDataInterventions, function(trialDataIntervention) {
+      return interventionMap[trialDataArm.drugId] ? interventionMap[trialDataArm.drugId] : _.find(trialDataInterventions, function(trialDataIntervention) {
         return trialDataIntervention.drugId === trialDataArm.drugId;
       });
     }
@@ -97,22 +99,104 @@ define(['angular'], function() {
       return rows;
     }
 
-    return {
-      transformTrialDataToTableRows: function(trialData) {
-        var transformTrialDataToTableRowsDefer = $q.defer();
+    function countMatchedArms(study) {
+      return _.filter(study.trialDataArms, function(trialdataArm) {
+        return mapTrialDataArmToIntervention(trialdataArm, study.trialDataInterventions);
+      }).length;
+    }
 
-        InterventionResource
-          .query($stateParams)
-          .$promise
-          .then(function(interventions) {
-            var tableRows = buildTableFromTrialData(trialData, interventions);
+    function filterOneArmStudies(trialData) {
+      return _.filter(trialData, function(study) {
+        return countMatchedArms(study) > 1;
+      });
+    }
 
-            tableRows = sortTableByStudyAndIntervention(tableRows);
-            tableRows = addRenderingHintsToTable(tableRows);
-            transformTrialDataToTableRowsDefer.resolve(tableRows);
+
+    function sumInterventionSampleSizes(trialData, intervention) {
+      var interventionSum = _.reduce(trialData, function(sum, trialDataStudy) {
+        angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
+          var trialDataIntervention = mapTrialDataArmToIntervention(trialDataArm, trialDataStudy.trialDataInterventions);
+          if (trialDataIntervention && trialDataIntervention.uri === intervention.semanticInterventionUri) {
+            sum += findMeasurementValue(trialDataArm.measurements, 'sample size', 'integerValue');
+          }
+        });
+        return sum;
+      }, 0);
+      return interventionSum;
+    }
+
+    function generateEdges(interventions) {
+      var edges = [];
+      _.each(interventions, function(rowIntervention, index) {
+        var rest = interventions.slice(index + 1, interventions.length);
+        _.each(rest, function(colIntervention) {
+          edges.push({
+            from: rowIntervention,
+            to: colIntervention
           });
-        return transformTrialDataToTableRowsDefer.promise;
-      }
+        });
+      });
+
+      return edges;
+    }
+
+    function findArmForIntervention(trialdataArms, trialDataIntervention) {
+      return _.find(trialdataArms, function(trialdataArm) {
+        return trialdataArm.drugId === trialDataIntervention.drugId;
+      });
+    }
+
+    function findTrialDataInterventionForIntervention(trialDataInterventions, intervention) {
+      return _.find(trialDataInterventions, function(trialDataIntervention) {
+        return trialDataIntervention.uri === intervention.semanticInterventionUri;
+      });
+    }
+
+    function studyMeasuresBothInterventions(trialDataStudy, intervention1, intervention2) {
+      var trialDataIntervention1 = findTrialDataInterventionForIntervention(trialDataStudy.trialDataInterventions, intervention1);
+      var trialDataIntervention2 = findTrialDataInterventionForIntervention(trialDataStudy.trialDataInterventions, intervention2);
+      return trialDataIntervention1 && trialDataIntervention2 &&
+        findArmForIntervention(trialDataStudy.trialDataArms, trialDataIntervention1) &&
+        findArmForIntervention(trialDataStudy.trialDataArms, trialDataIntervention2);
+    }
+
+    function attachStudiesForEdges(edges, trialData) {
+      return _.map(edges, function(edge) {
+        var studiesMeasuringEdge = _.filter(trialData, function(trialDataStudy) {
+          return studyMeasuresBothInterventions(trialDataStudy, edge.from, edge.to);
+        });
+        edge.numberOfStudies = studiesMeasuringEdge ? studiesMeasuringEdge.length : 0;
+        return edge;
+      });
+    }
+
+    function transformTrialDataToNetwork(trialData, interventions) {
+      var validTrialData = filterOneArmStudies(trialData.trialDataStudies);
+
+      var network = {
+        interventions: [],
+        edges: generateEdges(interventions)
+      };
+      network.interventions = _.map(interventions, function(intervention) {
+        return {
+          name: intervention.name,
+          sampleSize: sumInterventionSampleSizes(validTrialData, intervention)
+        };
+      });
+      network.edges = attachStudiesForEdges(network.edges, validTrialData);
+      return network;
+    }
+
+    function transformTrialDataToTableRows(trialData, interventions) {
+      var tableRows = buildTableFromTrialData(trialData, interventions);
+      tableRows = sortTableByStudyAndIntervention(tableRows);
+      tableRows = addRenderingHintsToTable(tableRows);
+      return tableRows;
+    }
+
+    return {
+      transformTrialDataToNetwork: transformTrialDataToNetwork,
+      transformTrialDataToTableRows: transformTrialDataToTableRows
     };
   };
   return dependencies.concat(NetworkMetaAnalysisService);
