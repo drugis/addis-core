@@ -1,24 +1,5 @@
 @import url("//fonts.googleapis.com/css?family=Droid+Sans:400,700");
 @import url("//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700");
-/* line 8, ../../sass/addis-settings.scss */
-table.network-meta-analysis-table {
-  border: none;
-  border-spacing: 0px;
-}
-/* line 12, ../../sass/addis-settings.scss */
-table.network-meta-analysis-table tbody tr td {
-  border-bottom: solid 1px;
-  vertical-align: top;
-}
-/* line 17, ../../sass/addis-settings.scss */
-table.network-meta-analysis-table thead tr th {
-  border-bottom: solid 2px;
-}
-/* line 21, ../../sass/addis-settings.scss */
-table.network-meta-analysis-table tr.topborder td {
-  border-top: solid 1px;
-}
-
 /* line 287, ../../drugis-css/foundation/components/_global.scss */
 meta.foundation-mq-small {
   font-family: "/only screen and (max-width: 40em)/";
@@ -9061,7 +9042,7 @@ table tr:nth-of-type(even) {
   background-color: transparent !important;
 }
 /* line 79, ../../sass/addis-drugis.scss */
-table tr td {
+table tr th, table tr td {
   border: solid 1px #dadada;
   min-width: 200px;
 }
@@ -9084,11 +9065,30 @@ tr.clickable td {
 }
 
 /* line 102, ../../sass/addis-drugis.scss */
+table.network-meta-analysis-table {
+  border: none;
+  border-spacing: 0px;
+}
+/* line 106, ../../sass/addis-drugis.scss */
+table.network-meta-analysis-table tbody tr td {
+  border-bottom: solid 1px #dadada;
+  vertical-align: top;
+}
+/* line 111, ../../sass/addis-drugis.scss */
+table.network-meta-analysis-table thead tr th {
+  border-bottom: solid 1px #dadada;
+}
+/* line 115, ../../sass/addis-drugis.scss */
+table.network-meta-analysis-table tr.topborder td {
+  border-top: solid 1px #dadada;
+}
+
+/* line 120, ../../sass/addis-drugis.scss */
 .undefined {
   font-style: italic;
 }
 
-/* line 106, ../../sass/addis-drugis.scss */
+/* line 124, ../../sass/addis-drugis.scss */
 .table-cell-label {
   font-weight: bold;
   text-align: center;
