@@ -76,7 +76,7 @@ table {
   }
 
   tr {
-    td {
+    th, td {
       border: solid 1px $addis-grey-border; 
       min-width: 200px;
     }
@@ -97,6 +97,25 @@ tr.on-hover:hover {
 
 tr.clickable td {
   color: $primary-color;
+}
+
+table.network-meta-analysis-table {
+    border: none ;
+    border-spacing: 0px;
+
+    tbody tr td {
+      border-bottom: solid 1px $addis-grey-border;
+      vertical-align: top;
+    }
+
+    thead tr th  {
+      border-bottom: solid 1px $addis-grey-border;
+      text-align: center;
+    }
+
+    tr.topborder td {
+      border-top: solid 1px $addis-grey-border;
+    }
 }
 
 .undefined {
