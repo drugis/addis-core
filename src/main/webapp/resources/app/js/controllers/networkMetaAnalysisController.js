@@ -85,8 +85,19 @@ define(['d3'], function(d3) {
           return d.r;
         });
 
+      var labelMargin = 3;
       enter.append('text')
-        .attr('dx', -50)
+        .style('direction', function(d){
+          return d.cx >= originX ? 'ltr' : 'rtl';
+        })
+        .attr('dx', function(d){
+          var offset = d.r + labelMargin;
+          return d.cx >= originX ? offset : -offset;
+        })
+        .attr('dy', function(d){
+          var offset = d.r + labelMargin;
+          return d.cy >= originY ? offset : -offset;
+        })
         .style('font-family', 'Droid Sans')
         .style('font-size', 16)
         .text(function(d) {
