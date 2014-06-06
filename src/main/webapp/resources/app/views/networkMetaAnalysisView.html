@@ -1,47 +1,64 @@
 <div class="row">
     <div class="columns large-12 nested-view">
-        <div class="nested-view-header">
-            Selected Outcome
-        </div>
-        <div class="row">
-            <div class="columns large-6 nested-view">
+        <div class="row panel">
+            <div class="columns large-4 medium-6 small-12 nested-view">
+                Selected Outcome
                 <select ng-model="analysis.outcome"
-                        ng-options="outcome.name for outcome in outcomes"
-                        ng-disabled="editMode.disableEditing"
-                        ng-change="saveAnalysis()"></select>
+                ng-options="outcome.name for outcome in outcomes"
+                ng-disabled="editMode.disableEditing"
+                ng-change="saveAnalysis()"></select>
             </div>
-        </div>
-        <div class="row">
-            <div class="columns large-6">
+            <div class="columns medium-6 large-8">
+
                 <button ng-click="goToModel()">Go to GeMTC model</button>
+
             </div>
         </div>
+
         <div class="row">
-        <div class="columns large-4 medium-6 small-12">
-                <div id="network-graph"></div>
+            <div class="columns large-4 medium-6 small-12">
+                <div class="table-title">Network graph</div>
+                <div ng-show="!analysis.outcome"><p>No outcome selected.</p></div>
+                <div ng-show="analysis.outcome" class="addis-graph" id="network-graph"></div>
+            </div>
+            <div class="columns large-4 medium-6 small-12 end">
+              <div class="graph-legend panel callout radius">
+                <p>The network graph shows the evidence network for all selected interventions.
+                 The size of an intervention's circle reflects the total number of participants for that intervention.
+                 Lines signify that interventions are connected through at least one study, with thicker lines indicating
+                 more connecting studies.</p>
             </div>
         </div>
     </div>
 
 </div>
+
+</div>
 <div class="row">
     <div class="columns large-12 nested-view">
+        <div class="table-title">Evidence table</div>
         <table class="network-meta-analysis-table">
             <thead>
-            <tr>
-                <th class="large-3">Studies</th>
-                <th class="large-3">Interventions</th>
-                <th class="large-3">Arms</th>
-                <th ng-show="trialData[0].rate !== null" class="large-2">Rate</th>
-                <th ng-show="trialData[0].mu !== null" class="large-1">&mu;</th>
-                <th ng-show="trialData[0].sigma !== null" class="large-1">&sigma;</th>
-                <th ng-show="trialData[0].sampleSize !== null" class="large-1">N</th>
-            </tr>
+                <tr>
+                    <th class="large-3">Studies</th>
+                    <th class="large-3">Interventions</th>
+                    <th class="large-3">Arms</th>
+                    <th ng-show="trialData[0].rate !== null" class="large-2">Rate</th>
+                    <th ng-show="trialData[0].mu !== null" class="large-1">&mu;</th>
+                    <th ng-show="trialData[0].sigma !== null" class="large-1">&sigma;</th>
+                    <th ng-show="trialData[0].sampleSize !== null" class="large-1">N</th>
+                </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="dataRow in trialData" ng-class="{topborder: dataRow.firstStudyRow}">
-                <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">{{dataRow.study}}</td>
-                <td ng-show="dataRow.firstInterventionRow" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
+                <tr ng-show="!analysis.outcome">
+                    <td colspan="7">No outcome selected.</td>
+                </tr>
+                <tr ng-show="analysis.outcome && !trialData.length">
+                    <td colspan="7">No studies measuring selected outcome.</td>
+                </tr>
+                <tr ng-repeat="dataRow in trialData" ng-class="{topborder: dataRow.firstStudyRow}">
+                    <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">{{dataRow.study}}</td>
+                    <td ng-show="dataRow.firstInterventionRow" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
                     rowspan="{{dataRow.interventionRowSpan}}">
                     {{dataRow.intervention}}
                 </td>
@@ -51,7 +68,7 @@
                 <td ng-show="trialData[0].sigma !== null" class="large-2">{{dataRow.sigma | number: 3}}</td>
                 <td ng-show="trialData[0].sampleSize !== null">{{dataRow.sampleSize}}</td>
             </tr>
-            </tbody>
-        </table>
-    </div>
+        </tbody>
+    </table>
+</div>
 </div>

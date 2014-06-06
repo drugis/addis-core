@@ -9025,6 +9025,67 @@ label {
 }
 
 /* line 63, ../../sass/addis-drugis.scss */
+table {
+  border-collapse: collapse;
+}
+/* line 66, ../../sass/addis-drugis.scss */
+table tr:nth-of-type(even) {
+  background-color: transparent !important;
+}
+/* line 71, ../../sass/addis-drugis.scss */
+table tr th, table tr td {
+  border: solid 1px #dadada;
+  min-width: 200px;
+}
+
+/* line 79, ../../sass/addis-drugis.scss */
+td.empty-cell {
+  background-color: #dadada;
+}
+
+/* line 84, ../../sass/addis-drugis.scss */
+tr.on-hover:hover {
+  background: #dadada;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* line 90, ../../sass/addis-drugis.scss */
+tr.clickable td {
+  color: #452f8c;
+}
+
+/* line 94, ../../sass/addis-drugis.scss */
+table.network-meta-analysis-table {
+  border: none;
+  border-spacing: 0px;
+}
+/* line 98, ../../sass/addis-drugis.scss */
+table.network-meta-analysis-table tbody tr td {
+  border-bottom: solid 1px #dadada;
+  vertical-align: top;
+}
+/* line 103, ../../sass/addis-drugis.scss */
+table.network-meta-analysis-table thead tr th {
+  border-bottom: solid 1px #dadada;
+}
+/* line 107, ../../sass/addis-drugis.scss */
+table.network-meta-analysis-table tr.topborder td {
+  border-top: solid 1px #dadada;
+}
+
+/* line 112, ../../sass/addis-drugis.scss */
+.undefined {
+  font-style: italic;
+}
+
+/* line 116, ../../sass/addis-drugis.scss */
+.table-cell-label {
+  font-weight: bold;
+  text-align: center;
+}
+
+/* line 126, ../../sass/addis-drugis.scss */
 .table-title {
   margin-left: 2px;
   font-size: 14px;
@@ -9033,63 +9094,15 @@ label {
   margin-bottom: 4px;
 }
 
-/* line 71, ../../sass/addis-drugis.scss */
-table {
-  border-collapse: collapse;
-}
-/* line 74, ../../sass/addis-drugis.scss */
-table tr:nth-of-type(even) {
-  background-color: transparent !important;
-}
-/* line 79, ../../sass/addis-drugis.scss */
-table tr th, table tr td {
+/* line 134, ../../sass/addis-drugis.scss */
+.addis-graph {
+  background-color: white;
   border: solid 1px #dadada;
-  min-width: 200px;
+  padding: 0px 20px;
+  margin-bottom: 10px;
 }
 
-/* line 87, ../../sass/addis-drugis.scss */
-td.empty-cell {
-  background-color: #dadada;
-}
-
-/* line 92, ../../sass/addis-drugis.scss */
-tr.on-hover:hover {
-  background: #dadada;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-/* line 98, ../../sass/addis-drugis.scss */
-tr.clickable td {
-  color: #452f8c;
-}
-
-/* line 102, ../../sass/addis-drugis.scss */
-table.network-meta-analysis-table {
-  border: none;
-  border-spacing: 0px;
-}
-/* line 106, ../../sass/addis-drugis.scss */
-table.network-meta-analysis-table tbody tr td {
-  border-bottom: solid 1px #dadada;
-  vertical-align: top;
-}
-/* line 111, ../../sass/addis-drugis.scss */
-table.network-meta-analysis-table thead tr th {
-  border-bottom: solid 1px #dadada;
-}
-/* line 115, ../../sass/addis-drugis.scss */
-table.network-meta-analysis-table tr.topborder td {
-  border-top: solid 1px #dadada;
-}
-
-/* line 120, ../../sass/addis-drugis.scss */
-.undefined {
-  font-style: italic;
-}
-
-/* line 124, ../../sass/addis-drugis.scss */
-.table-cell-label {
-  font-weight: bold;
-  text-align: center;
+/* line 141, ../../sass/addis-drugis.scss */
+.graph-legend {
+  margin-top: 28px;
 }
