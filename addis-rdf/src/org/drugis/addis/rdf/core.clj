@@ -63,12 +63,64 @@
   (let [entities (map #(import-entity % entity-rdf-fn) (vtd/search xml xpath))]
     [(entities-uri-map entities) (entities-rdf entities)]))
 
+(defn studyCharVal
+  [xml charName]
+  (vtd/text (vtd/at xml (str "./characteristics/" charName "/value"))))
+
+(def allocationTypeUri
+  {"RANDOMIZED" (rdf-uri :ontology "allocationRandomized")
+   "NONRANDOMIZED" (rdf-uri :ontology "allocationNonRandomized")})
+
+(defn allocation-rdf [xml]
+  (let [allocation (allocationTypeUri (studyCharVal xml "allocation"))]
+    (if (nil? allocation) [] [[(rdf-uri :ontology "has_allocation") allocation]])))
+
+(def blindingTypeUri
+  {"OPEN" (rdf-uri :ontology "blindingNone")
+   "SINGLE_BLIND" (rdf-uri :ontology "blindingSingle")
+   "DOUBLE_BLIND" (rdf-uri :ontology "blindingDouble")
+   "TRIPLE_BLIND" (rdf-uri :ontology "blindingTriple") })
+
+(defn blinding-rdf [xml]
+  (let [blinding (blindingTypeUri (studyCharVal xml "blinding"))]
+    (if (nil? blinding) [] [[(rdf-uri :ontology "has_blinding") blinding]])))
+
+(defn as-int [string] (if (nil? string) nil (Integer. string)))
+
+(defn centers-rdf [xml]
+  (let [centers (as-int (studyCharVal xml "centers"))]
+    (if (nil? centers) [] [[(rdf-uri :ontology "has_number_of_centers") centers]])))
+
+
 ; TODO: import the interesting stuff
 (defn study-rdf [xml uri entity-uris]
   [[uri
-   [[(rdf-uri :rdf "type") (rdf-uri :ontology "Study")]
-    [(rdf-uri :rdfs "label") (vtd/attr xml :name)]
-    [(rdf-uri :rdfs "comment") (vtd/text (vtd/at xml "./characteristics/title/value"))]]]])
+    (concat
+     [[(rdf-uri :rdf "type") (rdf-uri :ontology "Study")]
+      [(rdf-uri :rdfs "label") (vtd/attr xml :name)]
+      [(rdf-uri :rdfs "comment") (vtd/text (vtd/at xml "./characteristics/title/value"))]]
+      ; # characteristics
+      (allocation-rdf xml)
+      (blinding-rdf xml)
+      (centers-rdf xml)
+      ; objective: new node with rdfs:comment the text
+      ; inclusion: new node with rdfs:comment the text
+      ; exclusion: new node with rdfs:comment the text
+      ; references: not sure?
+      ; source: omit?
+      ; study_start
+      ; study_end
+      ; status
+      ; 
+      ; ## actual stuff
+      [[(rdf-uri :ontology "has_indication") ((:indication entity-uris) (vtd/attr (vtd/at xml "./indication") :name))]] ; FIXME: should be new instance which has rdf:type the entity-uri
+      ; indication
+      ; studyOutcomeMeasures
+      ; arms
+      ; epochs
+      ; activities
+      ; measurements
+      )]])
 
 (defn import-study [xml entity-uris]
   (let [uri (rdf-uri :study (uuid))]

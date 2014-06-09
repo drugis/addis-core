@@ -1,6 +1,8 @@
 (ns org.drugis.addis.rdf.trig
   (:require [clojure.string :refer [join]]))
 
+; TODO: support for the xsd: datatypes
+
 (defn ttl-str [resource]
   (if (sequential? resource) (second resource) (str "\"" resource "\"")))
 
