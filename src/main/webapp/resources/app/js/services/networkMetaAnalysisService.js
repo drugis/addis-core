@@ -184,6 +184,9 @@ define(['angular'], function() {
         };
       });
       network.edges = attachStudiesForEdges(network.edges, validTrialData);
+      network.edges = _.filter(network.edges, function(edge) {
+        return edge.numberOfStudies > 0;
+      });
       return network;
     }
 
@@ -194,9 +197,44 @@ define(['angular'], function() {
       return tableRows;
     }
 
+    function isNetworkDisconnected(network) {
+
+      function findEdgesStartingInNode(node) {
+        return _.filter(network.edges, function(edge) {
+          return edge.from.name === node.name;
+        });
+      }
+
+      function addUnvisitedNodesToToVisitList(edge) {
+        if (!_.contains(visited, edge.to)) {
+          toVisit.push(edge.to);
+        }
+      }
+
+      function areNodeSetsEqual(setA, setB) {
+        var namesA = _.pluck(setA, 'name');
+        var namesB = _.pluck(setB, 'name');
+        return !_.difference(namesA, namesB).length;
+      }
+
+      if (!network.interventions.length) {
+        return true;
+      }
+      var toVisit = [network.interventions[0]];
+      var visited = [];
+      while (toVisit.length) {
+        var node = toVisit.pop();
+        visited.push(node);
+        _.each(findEdgesStartingInNode(node), addUnvisitedNodesToToVisitList);
+      }
+      return !areNodeSetsEqual(network.interventions, visited);
+
+    }
+
     return {
       transformTrialDataToNetwork: transformTrialDataToNetwork,
-      transformTrialDataToTableRows: transformTrialDataToTableRows
+      transformTrialDataToTableRows: transformTrialDataToTableRows,
+      isNetworkDisconnected: isNetworkDisconnected
     };
   };
   return dependencies.concat(NetworkMetaAnalysisService);

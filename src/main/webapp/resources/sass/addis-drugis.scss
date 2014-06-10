@@ -8,6 +8,10 @@
 $addis-grey : $crumb-bg;
 $addis-grey-border : $crumb-border-color;
 
+.alert {
+  color: $alert-color;
+}
+
 .color-stripe {
   background: $drugis-color; 
   height: 0.45rem;
@@ -60,14 +64,6 @@ label {
 }
 
 //////// Tables /////////////////
-.table-title {
-  margin-left: 2px;
-  font-size: 13px;
-  font-family: inherit;
-  margin-top: 10px;
-  margin-bottom: 2px;
-}
-
 table {
    border-collapse: collapse;
   //remove default foundation striping
@@ -110,7 +106,6 @@ table.network-meta-analysis-table {
 
     thead tr th  {
       border-bottom: solid 1px $addis-grey-border;
-      text-align: center;
     }
 
     tr.topborder td {
@@ -125,5 +120,29 @@ table.network-meta-analysis-table {
 .table-cell-label {
   font-weight: bold;
   text-align: center;
+}
+
+/////////////////////// graphs and tables ////////////////////////
+$table-title-font-size: 14px;
+$table-title-margin-top: 10px;
+$table-title-margin-bottom: 4px;
+
+.table-title {
+  margin-left: 2px;
+  font-size: $table-title-font-size;
+  font-family: inherit;
+  margin-top: $table-title-margin-top;
+  margin-bottom: $table-title-margin-bottom;
+}
+
+.addis-graph {
+  background-color: lighten($addis-grey-border, 20%);
+  border: solid 1px $addis-grey-border;
+  padding: 0px 0px;
+  margin-bottom: 10px;
+}
+
+.graph-legend {
+  margin-top: $table-title-font-size + $table-title-margin-top + $table-title-margin-bottom;
 }
 

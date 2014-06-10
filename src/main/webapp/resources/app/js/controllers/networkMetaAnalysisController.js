@@ -6,6 +6,7 @@ define(['d3'], function(d3) {
 
   var NetworkMetaAnalysisController = function($scope, $q, $state, $stateParams, OutcomeResource,
     InterventionResource, TrialverseTrialDataResource, NetworkMetaAnalysisService, ModelResource) {
+    $scope.isNetworkDisconnected = true;
     $scope.analysis = $scope.$parent.analysis;
     $scope.project = $scope.$parent.project;
     $scope.outcomes = OutcomeResource.query({
@@ -40,7 +41,7 @@ define(['d3'], function(d3) {
       var angle = 2.0 * Math.PI / n;
       var originX = parent.width() / 2;
       var originY = parent.width() / 2;
-      var margin = 150;
+      var margin = 200;
       var circleMaxSize = 30;
       var circleMinSize = 5;
       var maxSampleSize = _.max(network.interventions, function(intervention) {
@@ -59,7 +60,9 @@ define(['d3'], function(d3) {
       _.each(network.interventions, function(intervention, i) {
         var circleDatum = {
           id: intervention.name,
-          r: Math.max(circleMaxSize * intervention.sampleSize / (maxSampleSize + 1), circleMinSize),
+          r: maxSampleSize > 0 ? 
+            Math.max(circleMaxSize * Math.sqrt(intervention.sampleSize) / Math.sqrt(maxSampleSize), circleMinSize) :
+            circleMinSize,
           cx: originX - radius * Math.cos(angle * i),
           cy: originY + radius * Math.sin(angle * i)
         };
@@ -85,8 +88,39 @@ define(['d3'], function(d3) {
           return d.r;
         });
 
+      var labelMargin = 5;
+      var nearCenterMargin = 20;
+
+      function nearCenter(d) {
+        var delta = d.cx - originX;
+        return delta < -nearCenterMargin ? -1 : (delta > nearCenterMargin ? 1 : 0);
+      }
+
+      var cos45 = Math.sqrt(2) * 0.5;
       enter.append('text')
-        .attr('dx', -50)
+        .attr('dx', function(d) {
+          var offset = cos45 * d.r + labelMargin;
+          return nearCenter(d) * offset;
+        })
+        .attr('dy', function(d){
+          var offset = (nearCenter(d) == 0 ? d.r : cos45 * d.r) + labelMargin;
+          return (d.cy >= originY ? offset : -offset);
+        })
+        .attr('text-anchor', function(d){
+          switch (nearCenter(d)) {
+            case -1:
+              return 'end';
+            case 0:
+              return 'middle';
+            case 1:
+              return 'start';
+          }
+        })
+        .attr('dominant-baseline', function(d) {
+          if (nearCenter(d) != 0) return 'central';
+          if (d.cy - originY < 0) return 'alphabetic'; // text-after-edge doesn't seem to work in Chrome
+          return 'text-before-edge';
+        })
         .style('font-family', 'Droid Sans')
         .style('font-size', 16)
         .text(function(d) {
@@ -103,7 +137,9 @@ define(['d3'], function(d3) {
         })
         .$promise
         .then(function(trialverseData) {
-          drawNetwork(NetworkMetaAnalysisService.transformTrialDataToNetwork(trialverseData, $scope.interventions));
+          var network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialverseData, $scope.interventions);
+          drawNetwork(network);
+          $scope.isNetworkDisconnected = NetworkMetaAnalysisService.isNetworkDisconnected(network);
           $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, $scope.interventions);
         });
     }

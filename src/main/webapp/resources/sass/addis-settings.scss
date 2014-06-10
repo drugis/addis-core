@@ -4,23 +4,3 @@ $rem-base: 16px;
 
 $row-width: rem-calc(1500);
 $reveal-default-width: 40% !default;
-
-table.network-meta-analysis-table {
-    border: none ;
-    border-spacing: 0px;
-
-    tbody tr td {
-      border-bottom: solid 1px;
-      vertical-align: top;
-    }
-
-    thead tr th  {
-      border-bottom: solid 2px;
-    }
-
-    tr.topborder td {
-      border-top: solid 1px;
-    }
-
-
-}

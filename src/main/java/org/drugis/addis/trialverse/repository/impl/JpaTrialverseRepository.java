@@ -183,6 +183,9 @@ public class JpaTrialverseRepository implements TrialverseRepository {
 
   @Override
   public List<Study> getStudiesByIds(Long namespaceId, List<Long> studyIds) {
+    if (studyIds.isEmpty()) {
+      return Collections.EMPTY_LIST;
+    }
     Query query = em.createNativeQuery("select" +
                     " s.id, s.name, s.title " +
                     " FROM" +

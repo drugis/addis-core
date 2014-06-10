@@ -4,7 +4,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       state,
       analysisDeferred,
       interventionDeferred,
-      trailverseTrailDataDefered,
+      trialverseTrailDataDeferred,
       mockAnalysis = {
         $save: function() {},
         outcome: {
@@ -70,8 +70,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       interventionDeferred = $q.defer();
       mockInterventions.$promise = interventionDeferred.promise;
 
-      trailverseTrailDataDefered = $q.defer();
-      mockTrialData.$promise = trailverseTrailDataDefered.promise;
+      trialverseTrailDataDeferred = $q.defer();
+      mockTrialData.$promise = trialverseTrailDataDeferred.promise;
 
       scope = $rootScope;
       scope.$parent = {
@@ -88,7 +88,12 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       trialverseTrialDataResource.query.and.returnValue(mockTrialData);
       trialverseTrialDataResource.get.and.returnValue(mockTrialData);
 
-      networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows']);
+      networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', 
+        ['transformTrialDataToTableRows', 'transformTrialDataToNetwork', 'isNetworkDisconnected']);
+      var mockNetwork = {interventions : []};
+      networkMetaAnalysisService.transformTrialDataToNetwork.and.returnValue(mockNetwork);
+      networkMetaAnalysisService.transformTrialDataToTableRows.and.returnValue([]);
+      networkMetaAnalysisService.isNetworkDisconnected.and.returnValue(true);
 
       modelResource = jasmine.createSpyObj('modelResource', ['save']);
       modelDeferred = $q.defer();
@@ -128,6 +133,10 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         expect(modelResource.save).toHaveBeenCalledWith(mockStateParams, {});
       });
 
+      it('should set isNetworkDisconnected to true', function() {
+        expect(scope.isNetworkDisconnected).toBeTruthy();
+      });
+
     });
 
     describe('when the analysis, outcomes, interventions and project are loaded', function() {
@@ -148,9 +157,13 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         expect(scope.analysis.$save).toHaveBeenCalled();
       });
 
+
+
       describe('and there is already an outcome defined on the analysis', function() {
 
-        it('should get the tabledata', function() {
+        it('should get the tabledata and transform it to table rows and network', function() {
+
+
           expect(trialverseTrialDataResource.get).toHaveBeenCalledWith({
             id: mockProject.trialverseId,
             outcomeUri: mockOutcomes[0].semanticOutcomeUri,
@@ -160,7 +173,13 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
               mockInterventions[2].semanticInterventionUri
             ]
           });
+          trialverseTrailDataDeferred.resolve();
+          scope.$apply();
+          expect(networkMetaAnalysisService.transformTrialDataToTableRows).toHaveBeenCalled();
+          expect(networkMetaAnalysisService.isNetworkDisconnected).toHaveBeenCalled();
+          expect(networkMetaAnalysisService.transformTrialDataToNetwork).toHaveBeenCalled();
         });
+
       });
 
       describe('and the go to model button is clicked', function() {
