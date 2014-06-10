@@ -198,16 +198,20 @@ define(['angular'], function() {
     }
 
     function isNetworkDisconnected(network) {
+      var toVisit = [network.interventions[0]];
+      var visited = [];
 
-      function findEdgesStartingInNode(node) {
+      function findEdgesConnectedToNode(node) {
         return _.filter(network.edges, function(edge) {
-          return edge.from.name === node.name;
+          return edge.from.name === node.name || edge.to.name === node.name;
         });
       }
 
       function addUnvisitedNodesToToVisitList(edge) {
-        if (!_.contains(visited, edge.to)) {
+        if (!_.findWhere(visited, {name: edge.to.name})) {
           toVisit.push(edge.to);
+        } else if (!_.findWhere(visited, {name: edge.from.name})) {
+          toVisit.push(edge.from);
         }
       }
 
@@ -220,12 +224,12 @@ define(['angular'], function() {
       if (!network.interventions.length) {
         return true;
       }
-      var toVisit = [network.interventions[0]];
-      var visited = [];
+
       while (toVisit.length) {
         var node = toVisit.pop();
         visited.push(node);
-        _.each(findEdgesStartingInNode(node), addUnvisitedNodesToToVisitList);
+        var connectedEdges = findEdgesConnectedToNode(node);
+        _.each(connectedEdges, addUnvisitedNodesToToVisitList);
       }
       return !areNodeSetsEqual(network.interventions, visited);
 
