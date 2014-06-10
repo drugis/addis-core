@@ -537,42 +537,6 @@ define(['angular', 'angular-mocks', 'services'], function() {
         "semanticInterventionUri": "http://trials.drugis.org/namespaces/2/drug/d7d7c477b89a5e4e5a57318743ccc87e"
       },
       "numberOfStudies": 2
-    }, {
-      "from": {
-        "id": 43,
-        "project": 13,
-        "name": "placebo",
-        "motivation": "",
-        "semanticInterventionLabel": "Placebo",
-        "semanticInterventionUri": "http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6"
-      },
-      "to": {
-        "id": 45,
-        "project": 13,
-        "name": "Chlora",
-        "motivation": "",
-        "semanticInterventionLabel": "Chlortalidone",
-        "semanticInterventionUri": "http://trials.drugis.org/namespaces/2/drug/a977e3a6fa4dc0a34fcf9fb351bc0a0e"
-      },
-      "numberOfStudies": 0
-    }, {
-      "from": {
-        "id": 44,
-        "project": 13,
-        "name": "Olmes",
-        "motivation": "",
-        "semanticInterventionLabel": "Olmesartan",
-        "semanticInterventionUri": "http://trials.drugis.org/namespaces/2/drug/d7d7c477b89a5e4e5a57318743ccc87e"
-      },
-      "to": {
-        "id": 45,
-        "project": 13,
-        "name": "Chlora",
-        "motivation": "",
-        "semanticInterventionLabel": "Chlortalidone",
-        "semanticInterventionUri": "http://trials.drugis.org/namespaces/2/drug/a977e3a6fa4dc0a34fcf9fb351bc0a0e"
-      },
-      "numberOfStudies": 0
     }]
   };
 
@@ -683,6 +647,74 @@ define(['angular', 'angular-mocks', 'services'], function() {
         })
       );
 
+    });
+
+    describe('isNetworkDisconnected', function() {
+
+      beforeEach(module('addis.services'));
+
+      it('should return true if the network is connected', inject(function(NetworkMetaAnalysisService) {
+        var network = {
+          interventions: [{
+            name: 'A'
+          }, {
+            name: 'B'
+          }, {
+            name: 'C'
+          }],
+          edges: [{
+            from: {
+              name: 'A'
+            },
+            to: {
+              name: 'B'
+            }
+          }, {
+            from: {
+              name: 'B'
+            },
+            to: {
+              name: 'C'
+            }
+          }]
+        };
+
+        expect(NetworkMetaAnalysisService.isNetworkDisconnected(network)).toBeFalsy();
+
+        network.edges.pop();
+
+        expect(NetworkMetaAnalysisService.isNetworkDisconnected(network)).toBeTruthy();
+      }));
+
+      it('should return false for a network that has two connected subnetworks', inject(function(NetworkMetaAnalysisService) {
+        var network = {
+          interventions: [{
+            name: 'A'
+          }, {
+            name: 'B'
+          }, {
+            name: 'C'
+          }, {
+            name: 'D'
+          }],
+          edges: [{
+            from: {
+              name: 'A'
+            },
+            to: {
+              name: 'B'
+            }
+          }, {
+            from: {
+              name: 'C'
+            },
+            to: {
+              name: 'D'
+            }
+          }]
+        };
+        expect(NetworkMetaAnalysisService.isNetworkDisconnected(network)).toBeTruthy();
+      }));
     });
 
   });

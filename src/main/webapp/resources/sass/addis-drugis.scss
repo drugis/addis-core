@@ -8,6 +8,10 @@
 $addis-grey : $crumb-bg;
 $addis-grey-border : $crumb-border-color;
 
+.alert {
+  color: $alert-color;
+}
+
 .color-stripe {
   background: $drugis-color; 
   height: 0.45rem;

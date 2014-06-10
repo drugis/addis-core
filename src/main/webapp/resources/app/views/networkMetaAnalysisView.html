@@ -7,11 +7,13 @@
                 ng-options="outcome.name for outcome in outcomes"
                 ng-disabled="editMode.disableEditing"
                 ng-change="saveAnalysis()"></select>
+
+                <div class="alert animate-show" ng-show="analysis.outcome && isNetworkDisconnected">Network not
+                    connected.
+                </div>
             </div>
             <div class="columns medium-6 large-8">
-
-                <button ng-click="goToModel()">Go to GeMTC model</button>
-
+                <button ng-disabled="isNetworkDisconnected" ng-click="goToModel()">Go to GeMTC model</button>
             </div>
         </div>
 
