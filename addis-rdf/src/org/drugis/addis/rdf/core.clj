@@ -91,36 +91,51 @@
   (let [centers (as-int (studyCharVal xml "centers"))]
     (if (nil? centers) [] [[(rdf-uri :ontology "has_number_of_centers") centers]])))
 
+; TODO: add rdfs:label and rdfs:comment from the source entity
+(defn study-indication-rdf [xml entity-uris instance-uri]
+  [[instance-uri
+  [[(rdf-uri :rdf "type") ((:indication entity-uris) (vtd/attr (vtd/at xml "./indication") :name))]]]])
+
+; TODO: add rdfs:label and rdfs:comment from the source entity. more info?
+(defn study-outcome-rdf [xml entity-uris instance-uri]
+  (let [entity-name (vtd/attr (vtd/first-child xml) :name)
+        entity-type (vtd/tag (vtd/first-child xml))]
+  [instance-uri
+  [[(rdf-uri :rdf "type") ((entity-uris (keyword entity-type)) entity-name)]]]))
 
 ; TODO: import the interesting stuff
 (defn study-rdf [xml uri entity-uris]
-  [[uri
+  (let [indication-uri (rdf-uri :instance (uuid))
+        study-outcome-uris (apply merge (map (fn [el] {(vtd/attr el :id) (rdf-uri :instance (uuid))}) (vtd/search xml "./studyOutcomeMeasures/studyOutcomeMeasure")))]
     (concat
-     [[(rdf-uri :rdf "type") (rdf-uri :ontology "Study")]
-      [(rdf-uri :rdfs "label") (vtd/attr xml :name)]
-      [(rdf-uri :rdfs "comment") (vtd/text (vtd/at xml "./characteristics/title/value"))]]
-      ; # characteristics
-      (allocation-rdf xml)
-      (blinding-rdf xml)
-      (centers-rdf xml)
-      ; objective: new node with rdfs:comment the text
-      ; inclusion: new node with rdfs:comment the text
-      ; exclusion: new node with rdfs:comment the text
-      ; references: not sure?
-      ; source: omit?
-      ; study_start
-      ; study_end
-      ; status
-      ; 
-      ; ## actual stuff
-      [[(rdf-uri :ontology "has_indication") ((:indication entity-uris) (vtd/attr (vtd/at xml "./indication") :name))]] ; FIXME: should be new instance which has rdf:type the entity-uri
-      ; indication
-      ; studyOutcomeMeasures
-      ; arms
-      ; epochs
-      ; activities
-      ; measurements
-      )]])
+      [[uri
+        (concat
+          [[(rdf-uri :rdf "type") (rdf-uri :ontology "Study")]
+           [(rdf-uri :rdfs "label") (vtd/attr xml :name)]
+           [(rdf-uri :rdfs "comment") (vtd/text (vtd/at xml "./characteristics/title/value"))]]
+          ; # characteristics
+          (allocation-rdf xml)
+          (blinding-rdf xml)
+          (centers-rdf xml)
+          ; objective: new node with rdfs:comment the text
+          ; inclusion: new node with rdfs:comment the text
+          ; exclusion: new node with rdfs:comment the text
+          ; references: not sure?
+          ; source: omit?
+          ; study_start
+          ; study_end
+          ; status
+          ; 
+          ; ## actual stuff
+          [[(rdf-uri :ontology "has_indication") indication-uri]]
+          (map (fn [el] [(rdf-uri :ontology "has_outcome") el]) (vals study-outcome-uris))
+          ; arms
+          ; epochs
+          ; activities
+          ; measurements
+          )]]
+      (study-indication-rdf xml entity-uris indication-uri)
+      (map #(study-outcome-rdf (vtd/at xml (str "./studyOutcomeMeasures/studyOutcomeMeasure[@id='" % "']")) entity-uris (study-outcome-uris %)) (keys study-outcome-uris)))))
 
 (defn import-study [xml entity-uris]
   (let [uri (rdf-uri :study (uuid))]
