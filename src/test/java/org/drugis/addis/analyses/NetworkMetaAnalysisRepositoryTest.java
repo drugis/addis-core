@@ -14,8 +14,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -51,7 +54,7 @@ public class NetworkMetaAnalysisRepositoryTest {
     Collection<NetworkMetaAnalysis> result = networkMetaAnalysisRepository.query(projectId);
     NetworkMetaAnalysis expectedAnalysis = em.find(NetworkMetaAnalysis.class, analysisId);
     assertTrue(result.contains(expectedAnalysis));
-    assertEquals(1, result.size());
+    assertEquals(2, result.size());
   }
 
   @Test
@@ -66,6 +69,29 @@ public class NetworkMetaAnalysisRepositoryTest {
     assertEquals(analysis.getProjectId(), updatedAnalysis.getProjectId());
     assertEquals(analysis.getName(), updatedAnalysis.getName());
     assertEquals(outcome, updatedAnalysis.getOutcome());
+  }
+
+  @Test
+  public void testUpdateExcludedArms() throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Integer analysisId = -6;
+    Account user = em.find(Account.class, 1);
+    Integer projectId = 1;
+    ArmExclusion newArmExclusion1 = new ArmExclusion(analysisId, -601L);
+    ArmExclusion newArmExclusion2 = new ArmExclusion(analysisId, -602L);
+    List<ArmExclusion> armExclusions = Arrays.asList(newArmExclusion1, newArmExclusion2);
+    Outcome outcome = em.find(Outcome.class, 1);
+
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "new name", armExclusions, outcome);
+    NetworkMetaAnalysis updatedAnalysis = networkMetaAnalysisRepository.update(user, analysis);
+    assertEquals(2, updatedAnalysis.getExcludedArms().size());
+
+    TypedQuery<ArmExclusion> query = em.createQuery("from ArmExclusion ae where ae.analysisId = :analysisId", ArmExclusion.class);
+    query.setParameter("analysisId", analysisId);
+
+    List<ArmExclusion> resultList = query.getResultList();
+    assertEquals(2, resultList.size());
+    assertTrue(updatedAnalysis.getExcludedArms().contains(newArmExclusion1));
+    assertTrue(updatedAnalysis.getExcludedArms().contains(newArmExclusion2));
   }
 
   @Test (expected = ResourceDoesNotExistException.class)

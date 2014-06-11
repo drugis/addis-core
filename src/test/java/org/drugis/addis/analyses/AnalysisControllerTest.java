@@ -209,7 +209,6 @@ public class AnalysisControllerTest {
     verify(analysisRepository).get(projectId, analysis.getId());
   }
 
-
   @Test
   public void testUpdateAnalysisWithoutProblem() throws Exception {
     Integer projectId = 1;
@@ -229,7 +228,7 @@ public class AnalysisControllerTest {
     when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
     when(singleStudyBenefitRiskAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem())
+      .content(exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem())
       .principal(user)
       .contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(status().isOk())
@@ -252,7 +251,7 @@ public class AnalysisControllerTest {
     when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
     when(singleStudyBenefitRiskAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
+      .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
       .principal(user)
       .contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(status().isOk())
@@ -273,7 +272,7 @@ public class AnalysisControllerTest {
     when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
     when(singleStudyBenefitRiskAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
+      .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
       .principal(user)
       .contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(status().isForbidden());
@@ -291,7 +290,7 @@ public class AnalysisControllerTest {
     when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
     when(singleStudyBenefitRiskAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", 1, 1)
-            .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
+      .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
       .principal(user)
       .contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(status().isOk());
@@ -312,10 +311,10 @@ public class AnalysisControllerTest {
     when(networkMetaAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
     String jsonCommand = TestUtils.createJson(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-            .content(jsonCommand)
-            .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(status().isOk());
+      .content(jsonCommand)
+      .principal(user)
+      .contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(projectId, analysisId);
     verify(networkMetaAnalysisRepository).update(gert, newAnalysis);

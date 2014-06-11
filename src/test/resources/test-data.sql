@@ -19,9 +19,13 @@ INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, name) VALUES (
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, name, problem) VALUES (-4, 1, 'analysis 3', 'singlestudy problem');
 
 INSERT INTO public.NetworkMetaAnalysis(id, projectId, name, problem) VALUES (-5, 1, 'nma', 'network problem');
+INSERT INTO public.NetworkMetaAnalysis(id, projectId, name, problem) VALUES (-6, 1, 'nma 2', 'network problem');
 
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (1, -1, 'Default', 'problem state');
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (2, -1, 'Scenario title', 'problem state modified');
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (3, -2, 'Default for different analysis', 'problem state modified');
 
 INSERT INTO public.model(id, analysisId) VALUES (1, -5);
+
+INSERT INTO public.armExclusion (id, trialverseId, analysisId) VALUES (-1, -101, -6);
+INSERT INTO public.armExclusion (id, trialverseId, analysisId) VALUES (-2, -102, -6);

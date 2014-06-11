@@ -1,11 +1,10 @@
 package org.drugis.addis.analyses;
 
-import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.drugis.addis.outcomes.Outcome;
-import org.drugis.addis.util.ObjectToStringDeserializer;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by connor on 6-5-14.
@@ -18,6 +17,10 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   private Integer id;
   private Integer projectId;
   private String name;
+
+  @OneToMany
+  @JoinColumn(name = "analysisId")
+  private List<ArmExclusion> excludedArms = new ArrayList<>();
 
   @ManyToOne(targetEntity = Outcome.class)
   @JoinColumn(name = "outcomeId")
@@ -42,6 +45,14 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     this(id, projectId, name, null);
   }
 
+  public NetworkMetaAnalysis(Integer id, Integer projectId, String name, List<ArmExclusion> excludedArms, Outcome outcome) {
+    this.id = id;
+    this.projectId = projectId;
+    this.name = name;
+    this.excludedArms = excludedArms == null ? new ArrayList<ArmExclusion>() : excludedArms;
+    this.outcome = outcome;
+  }
+
   public Integer getId() {
     return id;
   }
@@ -54,6 +65,9 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     return name;
   }
 
+  public List<ArmExclusion> getExcludedArms() {
+    return excludedArms;
+  }
 
   public Outcome getOutcome() {
     return outcome;

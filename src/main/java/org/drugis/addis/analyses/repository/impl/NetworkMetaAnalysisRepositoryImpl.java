@@ -1,6 +1,7 @@
 package org.drugis.addis.analyses.repository.impl;
 
 import org.drugis.addis.analyses.AnalysisCommand;
+import org.drugis.addis.analyses.ArmExclusion;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.Collection;
 
@@ -56,6 +58,15 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
     // do not allow selection of outcome that is not in the project
     if (analysis.getOutcome() != null && !analysis.getOutcome().getProject().equals(analysisProjectId)) {
       throw new ResourceDoesNotExistException();
+    }
+
+    // remove old excludedArms
+    Query query = em.createQuery("delete from ArmExclusion ae where ae.analysisId = :analysisId");
+    query.setParameter("analysisId", analysis.getId());
+    query.executeUpdate();
+
+    for (ArmExclusion armExclusion : analysis.getExcludedArms()) {
+      em.persist(armExclusion);
     }
 
     return em.merge(analysis);

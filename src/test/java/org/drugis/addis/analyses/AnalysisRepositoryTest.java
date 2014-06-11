@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -53,6 +52,16 @@ public class AnalysisRepositoryTest {
     assertEquals(networkMetaAnalysis, castAnalysis);
   }
 
+  @Test
+  public void testGetNetworkMetaAnalysisWithExcludedArms() throws ResourceDoesNotExistException {
+    Integer projectId = 1;
+    Integer analysisId = -6;
+    AbstractAnalysis analysis = analysisRepository.get(projectId, analysisId);
+    NetworkMetaAnalysis castAnalysis = (NetworkMetaAnalysis) analysis;
+    NetworkMetaAnalysis networkMetaAnalysis = em.find(NetworkMetaAnalysis.class, analysisId);
+    assertEquals(networkMetaAnalysis, castAnalysis);
+  }
+
   @Test(expected = ResourceDoesNotExistException.class)
   public void testGetNonexistentAnalysisFails() throws ResourceDoesNotExistException {
     analysisRepository.get(1, 12345);
@@ -62,7 +71,7 @@ public class AnalysisRepositoryTest {
   public void testQuery() {
     Integer projectId = 1;
     List<AbstractAnalysis> analyses = analysisRepository.query(projectId);
-    assertEquals(4, analyses.size());
+    assertEquals(5, analyses.size());
     SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(-1, 1, "analysis 1", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     assertTrue(analyses.contains(analysis));
   }
