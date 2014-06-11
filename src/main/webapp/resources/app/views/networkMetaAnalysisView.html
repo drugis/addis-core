@@ -66,7 +66,9 @@
             rowspan="{{dataRow.interventionRowSpan}}">
           {{dataRow.intervention}}
         </td>
-        <td><input type="checkbox" ng-model="dataRow.included" ng-change="changeArmExclusion(dataRow)"> {{dataRow.arm}}
+        <td>
+          <label><input type="checkbox" ng-model="dataRow.included" ng-change="changeArmExclusion(dataRow)">
+            {{dataRow.arm}}</label>
         </td>
         <td ng-show="dataRow.rate !== null">{{dataRow.rate}}</td>
         <td ng-show="trialData[0].mu !== null" class="large-2">{{dataRow.mu}}</td>

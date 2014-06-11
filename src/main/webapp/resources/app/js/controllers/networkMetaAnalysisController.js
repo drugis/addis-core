@@ -165,7 +165,7 @@ define(['d3'], function(d3) {
     $scope.changeArmExclusion = function(dataRow) {
       if (dataRow.included) {
         for (var i = 0; i < $scope.analysis.excludedArms.length; ++i) {
-          if ($scope.analysis.excludedArms[i].trialverseId === dataRow.id) {
+          if ($scope.analysis.excludedArms[i].trialverseId === dataRow.trialverseId) {
             $scope.analysis.excludedArms.splice(i, 1);
             break;
           }

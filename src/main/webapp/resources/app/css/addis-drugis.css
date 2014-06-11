@@ -8962,135 +8962,153 @@ disabled look for disabled choices in the results dropdown
     background-position: 100% -21px !important;
   }
 }
-/* line 11, ../../sass/addis-drugis.scss */
+/* line 9, ../../sass/addis-drugis.scss */
 .alert {
   color: #e66464;
 }
 
-/* line 15, ../../sass/addis-drugis.scss */
+/* line 12, ../../sass/addis-drugis.scss */
 .color-stripe {
   background: #cc3333;
   height: 0.45rem;
 }
 
-/* line 20, ../../sass/addis-drugis.scss */
+/* line 16, ../../sass/addis-drugis.scss */
 .alert-box-message {
   padding-right: 1.25rem;
 }
 
-/* line 24, ../../sass/addis-drugis.scss */
+/* line 19, ../../sass/addis-drugis.scss */
 label {
   margin-top: 0.5rem;
 }
 
-/* line 28, ../../sass/addis-drugis.scss */
+/* line 22, ../../sass/addis-drugis.scss */
 .inline-header {
   display: inline;
 }
 
-/* line 32, ../../sass/addis-drugis.scss */
+/* line 25, ../../sass/addis-drugis.scss */
 .project-header {
   border-bottom: 1px solid #dadada;
   margin-bottom: 1.25rem;
 }
 
-/* line 37, ../../sass/addis-drugis.scss */
+/* line 29, ../../sass/addis-drugis.scss */
 .project-description {
   padding: 10px 0px;
 }
 
-/* line 41, ../../sass/addis-drugis.scss */
+/* line 32, ../../sass/addis-drugis.scss */
 .nested-view {
   min-height: 4rem;
 }
 
-/* line 45, ../../sass/addis-drugis.scss */
+/* line 35, ../../sass/addis-drugis.scss */
 .nested-view .has-tip {
   font-weight: inherit;
   border-bottom: none;
 }
 
-/* line 50, ../../sass/addis-drugis.scss */
+/* line 39, ../../sass/addis-drugis.scss */
 .nested-view ul {
   border: solid 1px #dadada;
   padding: 0.5rem;
 }
 
-/* line 55, ../../sass/addis-drugis.scss */
+/* line 43, ../../sass/addis-drugis.scss */
 .nested-view li.colored-row {
   background: #f4f4f4;
   margin-bottom: 10px;
   padding: 0.5rem 0.25rem 0.5rem 0.5rem;
 }
 
-/* line 61, ../../sass/addis-drugis.scss */
+/* line 48, ../../sass/addis-drugis.scss */
 .error-message {
   display: block;
   color: #cc3333;
 }
 
-/* line 67, ../../sass/addis-drugis.scss */
+/* line 53, ../../sass/addis-drugis.scss */
 table {
   border-collapse: collapse;
 }
-/* line 70, ../../sass/addis-drugis.scss */
+/* line 56, ../../sass/addis-drugis.scss */
 table tr:nth-of-type(even) {
   background-color: transparent !important;
 }
-/* line 75, ../../sass/addis-drugis.scss */
+/* line 60, ../../sass/addis-drugis.scss */
 table tr th, table tr td {
   border: solid 1px #dadada;
   min-width: 200px;
 }
 
-/* line 83, ../../sass/addis-drugis.scss */
+/* line 66, ../../sass/addis-drugis.scss */
 td.empty-cell {
   background-color: #dadada;
 }
 
-/* line 88, ../../sass/addis-drugis.scss */
+/* line 70, ../../sass/addis-drugis.scss */
 tr.on-hover:hover {
   background: #dadada;
   cursor: pointer;
   text-decoration: underline;
 }
 
-/* line 94, ../../sass/addis-drugis.scss */
+/* line 75, ../../sass/addis-drugis.scss */
 tr.clickable td {
   color: #452f8c;
 }
 
-/* line 98, ../../sass/addis-drugis.scss */
+/* line 78, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table {
   border: none;
   border-spacing: 0px;
 }
-/* line 102, ../../sass/addis-drugis.scss */
+/* line 81, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td {
   border-bottom: solid 1px #dadada;
   vertical-align: top;
 }
-/* line 107, ../../sass/addis-drugis.scss */
+/* line 84, ../../sass/addis-drugis.scss */
+table.network-meta-analysis-table tbody tr td label {
+  display: block;
+  padding-left: 15px;
+  text-indent: -15px;
+  margin: 0;
+}
+/* line 90, ../../sass/addis-drugis.scss */
+table.network-meta-analysis-table tbody tr td input[type="checkbox"] {
+  width: 13px;
+  height: 13px;
+  padding: 0;
+  margin: 0;
+  vertical-align: bottom;
+  position: relative;
+  top: -3px;
+  *overflow: hidden;
+}
+/* line 101, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table thead tr th {
   border-bottom: solid 1px #dadada;
 }
-/* line 111, ../../sass/addis-drugis.scss */
+/* line 104, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tr.topborder td {
   border-top: solid 1px #dadada;
 }
 
-/* line 116, ../../sass/addis-drugis.scss */
+/* line 108, ../../sass/addis-drugis.scss */
 .undefined {
   font-style: italic;
 }
 
-/* line 120, ../../sass/addis-drugis.scss */
+/* line 111, ../../sass/addis-drugis.scss */
 .table-cell-label {
   font-weight: bold;
   text-align: center;
 }
 
-/* line 130, ../../sass/addis-drugis.scss */
+/* line 119, ../../sass/addis-drugis.scss */
 .table-title {
   margin-left: 2px;
   font-size: 14px;
@@ -9099,7 +9117,7 @@ table.network-meta-analysis-table tr.topborder td {
   margin-bottom: 4px;
 }
 
-/* line 138, ../../sass/addis-drugis.scss */
+/* line 126, ../../sass/addis-drugis.scss */
 .addis-graph {
   background-color: white;
   border: solid 1px #dadada;
@@ -9107,7 +9125,7 @@ table.network-meta-analysis-table tr.topborder td {
   margin-bottom: 10px;
 }
 
-/* line 145, ../../sass/addis-drugis.scss */
+/* line 132, ../../sass/addis-drugis.scss */
 .graph-legend {
   margin-top: 28px;
 }
