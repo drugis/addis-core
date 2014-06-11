@@ -320,6 +320,26 @@ public class AnalysisControllerTest {
     verify(networkMetaAnalysisRepository).update(gert, newAnalysis);
   }
 
+  @Test
+  public void testUpdateWithExcludedArms() throws Exception {
+    Integer analysisId = 333;
+    Integer projectId = 101;
+    Integer outcomeId = 444;
+    List<ArmExclusion> armExclusions = Arrays.asList(new ArmExclusion(analysisId, -1L), new ArmExclusion(analysisId, -2L));
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
+    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", armExclusions, outcome);
+    String jsonCommand = TestUtils.createJson(newAnalysis);
+    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
+      .content(jsonCommand)
+      .principal(user)
+      .contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(status().isOk());
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(analysisRepository).get(projectId, analysisId);
+    verify(networkMetaAnalysisRepository).update(gert, newAnalysis);
+  }
+
+
   String exampleUpdateSingleStudyBenefitRiskRequestWithProblem() {
     return TestUtils.loadResource(this.getClass(), "/analysisController/exampleSingleStudyBenefitRiskAnalysisWithProblem.json");
   }
