@@ -32,12 +32,12 @@ public class ArmExclusion implements Serializable {
     return id;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
   public Integer getAnalysisId() {
     return analysisId;
+  }
+
+  public Long getTrialverseId() {
+    return trialverseId;
   }
 
   @Override
@@ -62,15 +62,4 @@ public class ArmExclusion implements Serializable {
     return result;
   }
 
-  public void setAnalysisId(Integer analysisId) {
-    this.analysisId = analysisId;
-  }
-
-  public Long getTrialverseId() {
-    return trialverseId;
-  }
-
-  public void setTrialverseId(Long trialverseId) {
-    this.trialverseId = trialverseId;
-  }
 }

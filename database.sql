@@ -128,3 +128,11 @@ CREATE TABLE Model (
   PRIMARY KEY (id),
   FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id));
 
+-- changeset reidd:6
+CREATE TABLE ArmExclusion (
+  id SERIAL NOT NULL,
+  trialverseId BIGINT NOT NULL,
+  analysisId INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id)
+)

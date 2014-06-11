@@ -15,7 +15,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by connor on 6-5-14.
@@ -65,8 +67,13 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
     query.setParameter("analysisId", analysis.getId());
     query.executeUpdate();
 
-    for (ArmExclusion armExclusion : analysis.getExcludedArms()) {
-      em.persist(armExclusion);
+    List<ArmExclusion> deleteCache = new ArrayList<>(analysis.getExcludedArms());
+    for (ArmExclusion armExclusion : deleteCache) {
+      // recreate because database ids should be cleared
+      ArmExclusion newArmExclusion = new ArmExclusion(armExclusion.getAnalysisId(), armExclusion.getTrialverseId());
+      analysis.getExcludedArms().remove(armExclusion);
+      analysis.getExcludedArms().add(newArmExclusion);
+      em.persist(newArmExclusion);
     }
 
     return em.merge(analysis);

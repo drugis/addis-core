@@ -78,8 +78,12 @@ define(['angular'], function() {
       return table;
     }
 
-    function buildTableFromTrialData(data, interventions) {
+    function buildTableFromTrialData(data, interventions, excludedArms) {
       var rows = [];
+      var exclusionMap = _.reduce(excludedArms, function(exclusions, excludedArm) {
+        exclusions[excludedArm.trialverseId] = true;
+        return exclusions;
+      }, {});
       angular.forEach(data.trialDataStudies, function(study) {
         angular.forEach(study.trialDataArms, function(trialDataArm) {
           var trialDataIntervention = mapTrialDataArmToIntervention(trialDataArm, study.trialDataInterventions);
@@ -88,6 +92,8 @@ define(['angular'], function() {
           row.studyRowSpan = study.trialDataArms.length;
           row.intervention = trialDataIntervention ? resolveInterventionName(trialDataIntervention, interventions) : 'unmatched';
           row.arm = trialDataArm.name;
+          row.trialverseId = trialDataArm.id;
+          row.included = !exclusionMap[trialDataArm.id];
           row.rate = findMeasurementValue(trialDataArm.measurements, 'rate', 'integerValue');
           row.mu = findMeasurementValue(trialDataArm.measurements, 'mean', 'realValue');
           row.sigma = findMeasurementValue(trialDataArm.measurements, 'standard deviation', 'realValue');
@@ -190,8 +196,8 @@ define(['angular'], function() {
       return network;
     }
 
-    function transformTrialDataToTableRows(trialData, interventions) {
-      var tableRows = buildTableFromTrialData(trialData, interventions);
+    function transformTrialDataToTableRows(trialData, interventions, excludedArms) {
+      var tableRows = buildTableFromTrialData(trialData, interventions, excludedArms);
       tableRows = sortTableByStudyAndIntervention(tableRows);
       tableRows = addRenderingHintsToTable(tableRows);
       return tableRows;

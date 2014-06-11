@@ -182,14 +182,15 @@ public class AnalysisControllerTest {
   @Test
   public void testGetNMAnalysis() throws Exception {
     Integer projectId = 1;
-    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, projectId, "testName", null);
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, projectId, "testName", Collections.EMPTY_LIST, null);
     when(analysisRepository.get(projectId, analysis.getId())).thenReturn(analysis);
     ResultActions result = mockMvc.perform(get("/projects/1/analyses/1").principal(user));
 
     result.andExpect(status().isOk())
       .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(jsonPath("$.id", is(analysis.getId())))
-      .andExpect(jsonPath("$.analysisType", is(AnalysisType.NETWORK_META_ANALYSIS_LABEL)));
+      .andExpect(jsonPath("$.analysisType", is(AnalysisType.NETWORK_META_ANALYSIS_LABEL)))
+      .andExpect(jsonPath("$.excludedArms", hasSize(0)));
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(projectId, analysis.getId());
   }

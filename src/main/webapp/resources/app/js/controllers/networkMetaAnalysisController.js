@@ -60,9 +60,8 @@ define(['d3'], function(d3) {
       _.each(network.interventions, function(intervention, i) {
         var circleDatum = {
           id: intervention.name,
-          r: maxSampleSize > 0 ? 
-            Math.max(circleMaxSize * Math.sqrt(intervention.sampleSize) / Math.sqrt(maxSampleSize), circleMinSize) :
-            circleMinSize,
+          r: maxSampleSize > 0 ?
+            Math.max(circleMaxSize * Math.sqrt(intervention.sampleSize) / Math.sqrt(maxSampleSize), circleMinSize) : circleMinSize,
           cx: originX - radius * Math.cos(angle * i),
           cy: originY + radius * Math.sin(angle * i)
         };
@@ -102,11 +101,11 @@ define(['d3'], function(d3) {
           var offset = cos45 * d.r + labelMargin;
           return nearCenter(d) * offset;
         })
-        .attr('dy', function(d){
-          var offset = (nearCenter(d) == 0 ? d.r : cos45 * d.r) + labelMargin;
+        .attr('dy', function(d) {
+          var offset = (nearCenter(d) === 0 ? d.r : cos45 * d.r) + labelMargin;
           return (d.cy >= originY ? offset : -offset);
         })
-        .attr('text-anchor', function(d){
+        .attr('text-anchor', function(d) {
           switch (nearCenter(d)) {
             case -1:
               return 'end';
@@ -117,8 +116,12 @@ define(['d3'], function(d3) {
           }
         })
         .attr('dominant-baseline', function(d) {
-          if (nearCenter(d) != 0) return 'central';
-          if (d.cy - originY < 0) return 'alphabetic'; // text-after-edge doesn't seem to work in Chrome
+          if (nearCenter(d) !== 0) {
+            return 'central';
+          }
+          if (d.cy - originY < 0) {
+            return 'alphabetic';
+          } // text-after-edge doesn't seem to work in Chrome
           return 'text-before-edge';
         })
         .style('font-family', 'Droid Sans')
@@ -137,10 +140,10 @@ define(['d3'], function(d3) {
         })
         .$promise
         .then(function(trialverseData) {
-          var network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialverseData, $scope.interventions);
+          var network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialverseData, $scope.interventions, $scope.analysis.excludedArms);
           drawNetwork(network);
           $scope.isNetworkDisconnected = NetworkMetaAnalysisService.isNetworkDisconnected(network);
-          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, $scope.interventions);
+          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, $scope.interventions, $scope.analysis.excludedArms);
         });
     }
 
@@ -158,6 +161,23 @@ define(['d3'], function(d3) {
           reloadModel();
         }
       });
+
+    $scope.changeArmExclusion = function(dataRow) {
+      if (dataRow.included) {
+        for (var i = 0; i < $scope.analysis.excludedArms.length; ++i) {
+          if ($scope.analysis.excludedArms[i].trialverseId === dataRow.id) {
+            $scope.analysis.excludedArms.splice(i, 1);
+            break;
+          }
+        }
+      } else {
+        $scope.analysis.excludedArms.push({
+          trialverseId: dataRow.trialverseId,
+          analysisId: $scope.analysis.id
+        });
+      }
+      $scope.saveAnalysis();
+    };
 
     $scope.saveAnalysis = function() {
       $scope.analysis.$save(function() {

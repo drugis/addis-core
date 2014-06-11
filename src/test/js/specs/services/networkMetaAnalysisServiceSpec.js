@@ -618,7 +618,9 @@ define(['angular', 'angular-mocks', 'services'], function() {
             sampleSize: 96,
             firstInterventionRow: true,
             firstStudyRow: true,
-            interventionRowSpan: 2
+            interventionRowSpan: 2,
+            included: true,
+            trialverseId: 86
           });
 
           expect(resultRows[1]).toEqual({
@@ -629,7 +631,9 @@ define(['angular', 'angular-mocks', 'services'], function() {
             sampleSize: 96,
             sigma: null,
             study: 'Fava et al, 2002',
-            studyRowSpan: 3
+            studyRowSpan: 3,
+            included: true,
+            trialverseId: 85
           });
 
           expect(resultRows[2]).toEqual({
@@ -642,7 +646,9 @@ define(['angular', 'angular-mocks', 'services'], function() {
             sampleSize: 92,
             sigma: null,
             study: 'Fava et al, 2002',
-            studyRowSpan: 3
+            studyRowSpan: 3,
+            included: true,
+            trialverseId: 87
           });
         })
       );

@@ -18,7 +18,7 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   private Integer projectId;
   private String name;
 
-  @OneToMany
+  @OneToMany(fetch = FetchType.EAGER)
   @JoinColumn(name = "analysisId")
   private List<ArmExclusion> excludedArms = new ArrayList<>();
 
@@ -76,10 +76,11 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof NetworkMetaAnalysis)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     NetworkMetaAnalysis that = (NetworkMetaAnalysis) o;
 
+    if (!excludedArms.equals(that.excludedArms)) return false;
     if (id != null ? !id.equals(that.id) : that.id != null) return false;
     if (!name.equals(that.name)) return false;
     if (outcome != null ? !outcome.equals(that.outcome) : that.outcome != null) return false;
@@ -93,8 +94,8 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     int result = id != null ? id.hashCode() : 0;
     result = 31 * result + projectId.hashCode();
     result = 31 * result + name.hashCode();
+    result = 31 * result + excludedArms.hashCode();
     result = 31 * result + (outcome != null ? outcome.hashCode() : 0);
     return result;
   }
-
 }
