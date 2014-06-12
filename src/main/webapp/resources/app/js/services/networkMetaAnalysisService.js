@@ -214,9 +214,13 @@ define(['angular'], function() {
       }
 
       function addUnvisitedNodesToToVisitList(edge) {
-        if (!_.findWhere(visited, {name: edge.to.name})) {
+        if (!_.findWhere(visited, {
+          name: edge.to.name
+        })) {
           toVisit.push(edge.to);
-        } else if (!_.findWhere(visited, {name: edge.from.name})) {
+        } else if (!_.findWhere(visited, {
+          name: edge.from.name
+        })) {
           toVisit.push(edge.from);
         }
       }
@@ -241,10 +245,28 @@ define(['angular'], function() {
 
     }
 
+    function changeArmExclusion(dataRow, analysis) {
+      if (dataRow.included) {
+        for (var i = 0; i < analysis.excludedArms.length; ++i) {
+          if (analysis.excludedArms[i].trialverseId === dataRow.trialverseId) {
+            analysis.excludedArms.splice(i, 1);
+            break;
+          }
+        }
+      } else {
+        analysis.excludedArms.push({
+          trialverseId: dataRow.trialverseId,
+          analysisId: analysis.id
+        });
+      }
+      return analysis;
+    }
+
     return {
       transformTrialDataToNetwork: transformTrialDataToNetwork,
       transformTrialDataToTableRows: transformTrialDataToTableRows,
-      isNetworkDisconnected: isNetworkDisconnected
+      isNetworkDisconnected: isNetworkDisconnected,
+      changeArmExclusion: changeArmExclusion
     };
   };
   return dependencies.concat(NetworkMetaAnalysisService);

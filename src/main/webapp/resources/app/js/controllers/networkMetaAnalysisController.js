@@ -163,26 +163,20 @@ define(['d3'], function(d3) {
       });
 
     $scope.changeArmExclusion = function(dataRow) {
-      if (dataRow.included) {
-        for (var i = 0; i < $scope.analysis.excludedArms.length; ++i) {
-          if ($scope.analysis.excludedArms[i].trialverseId === dataRow.trialverseId) {
-            $scope.analysis.excludedArms.splice(i, 1);
-            break;
-          }
-        }
-      } else {
-        $scope.analysis.excludedArms.push({
-          trialverseId: dataRow.trialverseId,
-          analysisId: $scope.analysis.id
-        });
-      }
+      $scope.analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, $scope.analysis);
       $scope.saveAnalysis();
+    };
+
+    $scope.saveSelectedOutcome = function() {
+      $scope.analysis.$save(function() {
+        $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
+        reloadModel();
+      });
     };
 
     $scope.saveAnalysis = function() {
       $scope.analysis.$save(function() {
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
-        reloadModel();
       });
     };
 
