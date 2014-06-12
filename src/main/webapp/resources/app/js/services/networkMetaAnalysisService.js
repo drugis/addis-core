@@ -51,14 +51,16 @@ define(['angular'], function() {
       return table;
     }
 
+    // add information to render the table
     function addRenderingHintsToTable(table) {
-      // add information to render the table
-      var currentStudy = 'null';
-      var currentInterventionRow = {
+      var currentStudy = 'null',
+      currentInterventionRow = {
         intervention: null
-      };
-      angular.forEach(table, function(row) {
+      },
+      row;
 
+      for(var i=0; i < table.length; i++){
+        row = table[i];
         if (row.intervention !== currentInterventionRow.intervention || row.intervention === 'unmatched') {
           row.firstInterventionRow = true;
           currentInterventionRow = row;
@@ -74,7 +76,10 @@ define(['angular'], function() {
         }
 
         ++currentInterventionRow.interventionRowSpan;
-      });
+
+        table[i] = row;
+      }
+
       return table;
     }
 
@@ -97,7 +102,7 @@ define(['angular'], function() {
           row.intervention = trialDataIntervention ? resolveInterventionName(trialDataIntervention, interventions) : 'unmatched';
           row.arm = trialDataArm.name;
           row.trialverseId = trialDataArm.id;
-          row.included = !exclusionMap[trialDataArm.id];
+          row.included = !exclusionMap[trialDataArm.id] && row.intervention !== 'unmatched';
           row.rate = findMeasurementValue(trialDataArm.measurements, 'rate', 'integerValue');
           row.mu = findMeasurementValue(trialDataArm.measurements, 'mean', 'realValue');
           row.sigma = findMeasurementValue(trialDataArm.measurements, 'standard deviation', 'realValue');

@@ -97,6 +97,11 @@ table.network-meta-analysis-table {
       top: -3px;
       *overflow: hidden;
     }
+    .alert-message {
+      color: $alert-color;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
   }
   thead tr th {
     border-bottom: solid 1px $addis-grey-border;
@@ -106,7 +111,7 @@ table.network-meta-analysis-table {
   }
 }
 .undefined {
-  font-style: italic;
+  color: darken($addis-grey, 50%);
 }
 .table-cell-label {
   font-weight: bold;

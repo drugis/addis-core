@@ -9088,27 +9088,33 @@ table.network-meta-analysis-table tbody tr td input[type="checkbox"] {
   top: -3px;
   *overflow: hidden;
 }
-/* line 101, ../../sass/addis-drugis.scss */
+/* line 100, ../../sass/addis-drugis.scss */
+table.network-meta-analysis-table tbody tr td .alert-message {
+  color: #e66464;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+/* line 106, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table thead tr th {
   border-bottom: solid 1px #dadada;
 }
-/* line 104, ../../sass/addis-drugis.scss */
+/* line 109, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tr.topborder td {
   border-top: solid 1px #dadada;
 }
 
-/* line 108, ../../sass/addis-drugis.scss */
+/* line 113, ../../sass/addis-drugis.scss */
 .undefined {
-  font-style: italic;
+  color: #747474;
 }
 
-/* line 111, ../../sass/addis-drugis.scss */
+/* line 116, ../../sass/addis-drugis.scss */
 .table-cell-label {
   font-weight: bold;
   text-align: center;
 }
 
-/* line 119, ../../sass/addis-drugis.scss */
+/* line 124, ../../sass/addis-drugis.scss */
 .table-title {
   margin-left: 2px;
   font-size: 14px;
@@ -9117,7 +9123,7 @@ table.network-meta-analysis-table tr.topborder td {
   margin-bottom: 4px;
 }
 
-/* line 126, ../../sass/addis-drugis.scss */
+/* line 131, ../../sass/addis-drugis.scss */
 .addis-graph {
   background-color: white;
   border: solid 1px #dadada;
@@ -9125,7 +9131,7 @@ table.network-meta-analysis-table tr.topborder td {
   margin-bottom: 10px;
 }
 
-/* line 132, ../../sass/addis-drugis.scss */
+/* line 137, ../../sass/addis-drugis.scss */
 .graph-legend {
   margin-top: 28px;
 }
