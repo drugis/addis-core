@@ -78,12 +78,16 @@ define(['angular'], function() {
       return table;
     }
 
-    function buildTableFromTrialData(data, interventions, excludedArms) {
-      var rows = [];
-      var exclusionMap = _.reduce(excludedArms, function(exclusions, excludedArm) {
+    function buildExcludedArmsMap(excludedArms) {
+      return _.reduce(excludedArms, function(exclusions, excludedArm) {
         exclusions[excludedArm.trialverseId] = true;
         return exclusions;
       }, {});
+    }
+
+    function buildTableFromTrialData(data, interventions, excludedArms) {
+      var rows = [];
+      var exclusionMap = buildExcludedArmsMap(excludedArms);
       angular.forEach(data.trialDataStudies, function(study) {
         angular.forEach(study.trialDataArms, function(trialDataArm) {
           var trialDataIntervention = mapTrialDataArmToIntervention(trialDataArm, study.trialDataInterventions);
@@ -117,6 +121,16 @@ define(['angular'], function() {
       });
     }
 
+    function filterExcludedArms(trialDataStudies, excludedArms) {
+      var exclusionMap = buildExcludedArmsMap(excludedArms);
+      return _.map(trialDataStudies, function(study) {
+        var copiedStudy = angular.copy(study);
+        copiedStudy.trialDataArms = _.filter(study.trialDataArms, function(arm) {
+          return !exclusionMap[arm.id];
+        });
+        return copiedStudy;
+      });
+    }
 
     function sumInterventionSampleSizes(trialData, intervention) {
       var interventionSum = _.reduce(trialData, function(sum, trialDataStudy) {
@@ -176,8 +190,9 @@ define(['angular'], function() {
       });
     }
 
-    function transformTrialDataToNetwork(trialData, interventions) {
-      var validTrialData = filterOneArmStudies(trialData.trialDataStudies);
+    function transformTrialDataToNetwork(trialData, interventions, excludedArms) {
+      var validTrialData = filterExcludedArms(trialData.trialDataStudies, excludedArms);
+      validTrialData = filterOneArmStudies(validTrialData);
 
       var network = {
         interventions: [],

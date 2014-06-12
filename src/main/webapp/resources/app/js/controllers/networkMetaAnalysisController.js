@@ -131,6 +131,12 @@ define(['d3'], function(d3) {
         });
     }
 
+    function updateNetwork() {
+      var network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, $scope.interventions, $scope.analysis.excludedArms);
+      drawNetwork(network);
+      $scope.isNetworkDisconnected = NetworkMetaAnalysisService.isNetworkDisconnected(network);
+    }
+
     function reloadModel() {
       TrialverseTrialDataResource
         .get({
@@ -140,9 +146,8 @@ define(['d3'], function(d3) {
         })
         .$promise
         .then(function(trialverseData) {
-          var network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialverseData, $scope.interventions, $scope.analysis.excludedArms);
-          drawNetwork(network);
-          $scope.isNetworkDisconnected = NetworkMetaAnalysisService.isNetworkDisconnected(network);
+          $scope.trialverseData = trialverseData;
+          updateNetwork();
           $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, $scope.interventions, $scope.analysis.excludedArms);
         });
     }
@@ -163,11 +168,14 @@ define(['d3'], function(d3) {
       });
 
     $scope.changeArmExclusion = function(dataRow) {
+      var network;
       $scope.analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, $scope.analysis);
+      updateNetwork();
       $scope.saveAnalysis();
     };
 
     $scope.saveSelectedOutcome = function() {
+      $scope.analysis.excludedArms = [];
       $scope.analysis.$save(function() {
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
         reloadModel();
