@@ -48,9 +48,9 @@ define(['d3'], function(d3) {
         return intervention.sampleSize;
       }).sampleSize;
       var radius = originY - margin / 2;
-      d3.selectAll('svg').remove();
-      var svg = d3.select('#network-graph')
-        .append('svg')
+      d3.select('#network-graph').selectAll('g').remove();
+      d3.select('#network-graph').selectAll('line').remove();
+      var svg = d3.select('#network-graph').select('svg')
         .attr('width', parent.width())
         .attr('height', parent.width());
 
