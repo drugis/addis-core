@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.AbstractAnalysis;
+import org.drugis.addis.analyses.ArmExclusion;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
@@ -170,23 +171,32 @@ public class ProblemServiceTest {
     Long studyId = 101L;
     Long drugId1 = 420L;
     Long drugId2 = 430L;
+    Long drugId3 = 440L;
     Long armId1 = 555L;
     Long armId2 = 666L;
     Long armId3 = 777L;
+    Long armId4 = 888L;
+
     String outcomeUri = "outcomeUri";
     Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
-    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", outcome);
+    ArmExclusion armExclusion1 = new ArmExclusion(analysisId, armId4);
+    List<ArmExclusion> armExclusions = Arrays.asList(armExclusion1);
+    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, outcome);
     Project project = mock(Project.class);
     SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
     SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
+    SemanticIntervention semanticIntervention3 = new SemanticIntervention("uri3", "label3");
     Intervention intervention1 = new Intervention(1, projectId, "int1", "moti", semanticIntervention1);
     Intervention intervention2 = new Intervention(2, projectId, "int2", "moti", semanticIntervention2);
-    Collection<Intervention> interventions = Arrays.asList(intervention1, intervention2);
+    Intervention intervention3 = new Intervention(3, projectId, "int2", "moti", semanticIntervention3);
+    Collection<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
     ObjectMapper mapper = new ObjectMapper();
 
     TrialDataIntervention trialDataIntervention1 = new TrialDataIntervention(drugId1, "uri1", studyId);
     TrialDataIntervention trialDataIntervention2 = new TrialDataIntervention(drugId2, "uri2", studyId);
-    List<TrialDataIntervention> trialdataInterventions = Arrays.asList(trialDataIntervention1, trialDataIntervention2);
+    TrialDataIntervention trialDataIntervention3 = new TrialDataIntervention(drugId3, "uri3", studyId);
+
+    List<TrialDataIntervention> trialdataInterventions = Arrays.asList(trialDataIntervention1, trialDataIntervention2, trialDataIntervention3);
 
     Measurement measurement1 = new Measurement(studyId, 333L, 444L, armId1,MeasurementAttribute.SAMPLE_SIZE, 768784L, null);
     Measurement measurement2 = new Measurement(studyId, 333L, 444L, armId2,MeasurementAttribute.STANDARD_DEVIATION, null, Math.E);
@@ -195,38 +205,44 @@ public class ProblemServiceTest {
     Measurement measurement4 = new Measurement(studyId, 333L, 444L, armId3, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
     Measurement measurement5 = new Measurement(studyId, 333L, 444L, armId3, MeasurementAttribute.RATE, -1L, null);
 
+    Measurement measurement6 = new Measurement(studyId, 333L, 444L, armId4, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
+    Measurement measurement7 = new Measurement(studyId, 333L, 444L, armId4, MeasurementAttribute.RATE, -1L, null);
+
     List<Measurement> measurements1 = Arrays.asList(measurement1, measurement2, measurement3);
     List<Measurement> measurements2 = Arrays.asList(measurement1, measurement2, measurement3);
     List<Measurement> measurements3 = Arrays.asList(measurement4, measurement5);
+    List<Measurement> measurements4 = Arrays.asList(measurement6, measurement7);
 
     TrialDataArm trialDataArm1 = new TrialDataArm(armId1, studyId, "arm bb", drugId1, measurements1);
     TrialDataArm trialDataArm2 = new TrialDataArm(armId2, studyId, "arm aa", drugId2, measurements2);
     TrialDataArm trialDataArm3 = new TrialDataArm(armId3, studyId, "aaa", drugId2, measurements3);
-    List<TrialDataArm> trialDataArms = Arrays.asList(trialDataArm1, trialDataArm2, trialDataArm3);
+    TrialDataArm trialDataArm4 = new TrialDataArm(armId4, studyId, "qqqq", drugId3, measurements4);
+
+    List<TrialDataArm> trialDataArms = Arrays.asList(trialDataArm1, trialDataArm2, trialDataArm3, trialDataArm4);
     TrialDataStudy trialDataStudy1 = new TrialDataStudy(1L, "study1", trialdataInterventions, trialDataArms);
     List<TrialDataStudy> trialDataStudies = Arrays.asList(trialDataStudy1);
     TrialData trialData = new TrialData(trialDataStudies);
-    ObjectNode trialdataNode = mapper.convertValue(trialData, ObjectNode.class);
+    ObjectNode trialDataNode = mapper.convertValue(trialData, ObjectNode.class);
     when(project.getId()).thenReturn(projectId);
     when(project.getTrialverseId()).thenReturn(namespaceId.intValue());
     when(projectRepository.getProjectById(projectId)).thenReturn(project);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
-    when(trialverseService.getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2"))).thenReturn(trialdataNode);
+    when(trialverseService.getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"))).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).getProjectById(projectId);
     verify(analysisRepository).get(projectId, analysisId);
     verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2"));
+    verify(trialverseService).getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"));
 
     assertNotNull(problem);
     assertEquals(2, problem.getEntries().size());
     ContinuousNetworkMetaAnalysisProblemEntry entry = new ContinuousNetworkMetaAnalysisProblemEntry("study1", "int1", 768784L, Math.PI, Math.E);
     assertTrue(problem.getEntries().contains(entry));
 
-    // expect the measurements from arm 3 to be uses as arms using the sames drug ara sorted by alphabet and the first one is used
+    // expect the measurements from arm 3 to be used because arms using the same drug are sorted by alphabet and the first one is used
     RateNetworkMetaAnalysisProblemEntry rateNetworkMetaAnalysisProblemEntry = (RateNetworkMetaAnalysisProblemEntry) problem.getEntries().get(0);
     assertEquals(-1L, rateNetworkMetaAnalysisProblemEntry.getResponders().longValue());
   }

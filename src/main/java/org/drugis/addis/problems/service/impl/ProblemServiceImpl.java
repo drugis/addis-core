@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.AbstractAnalysis;
+import org.drugis.addis.analyses.ArmExclusion;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
@@ -92,6 +93,7 @@ public class ProblemServiceImpl implements ProblemService {
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
     for (TrialDataStudy trialDataStudy : convertedTrialData.getTrialDataStudies()) {
       List<TrialDataArm> filteredArms = filterUnmatchedAndDuplicateArms(trialDataStudy, interventionByDrugIdMap);
+      filteredArms = filterExcludedArms(filteredArms, analysis);
 
       for (TrialDataArm trialDataArm : filteredArms) {
         String interventionUri = interventionByDrugIdMap.get(trialDataArm.getDrugId()).getUri();
@@ -102,6 +104,24 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     return new NetworkMetaAnalysisProblem(entries);
+  }
+
+  private List<TrialDataArm> filterExcludedArms(List<TrialDataArm> trialDataArms, NetworkMetaAnalysis analysis) {
+    List<TrialDataArm> filteredTrialDataArms = new ArrayList<>();
+    List<ArmExclusion> armExclusions = analysis.getExcludedArms();
+    List<Long> armExclusionTrialverseIds = new ArrayList<>(armExclusions.size());
+
+    for (ArmExclusion armExclusion : armExclusions) {
+      armExclusionTrialverseIds.add(armExclusion.getTrialverseId());
+    }
+
+    for (TrialDataArm trialDataArm : trialDataArms) {
+      if (!armExclusionTrialverseIds.contains(trialDataArm.getId())) {
+        filteredTrialDataArms.add(trialDataArm);
+      }
+    }
+
+    return filteredTrialDataArms;
   }
 
   private AbstractNetworkMetaAnalysisProblemEntry buildEntry(String studyName, String treatmentName, List<Measurement> measurements) {
