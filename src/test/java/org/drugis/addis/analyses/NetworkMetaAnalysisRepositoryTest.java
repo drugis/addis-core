@@ -90,8 +90,8 @@ public class NetworkMetaAnalysisRepositoryTest {
 
     List<ArmExclusion> resultList = query.getResultList();
     assertEquals(2, resultList.size());
-    assertTrue(updatedAnalysis.getExcludedArms().contains(newArmExclusion1));
-    assertTrue(updatedAnalysis.getExcludedArms().contains(newArmExclusion2));
+    assertEquals(new Integer(1), updatedAnalysis.getExcludedArms().get(0).getId());
+    assertEquals(new Integer(2), updatedAnalysis.getExcludedArms().get(1).getId());
   }
 
   @Test (expected = ResourceDoesNotExistException.class)

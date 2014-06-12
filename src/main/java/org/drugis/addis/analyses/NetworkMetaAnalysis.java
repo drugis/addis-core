@@ -69,6 +69,10 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     return excludedArms;
   }
 
+  public void setExcludedArms(List<ArmExclusion> excludedArms) {
+    this.excludedArms = excludedArms;
+  }
+
   public Outcome getOutcome() {
     return outcome;
   }

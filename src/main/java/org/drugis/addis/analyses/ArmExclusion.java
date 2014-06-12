@@ -43,12 +43,12 @@ public class ArmExclusion implements Serializable {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (!(o instanceof ArmExclusion)) return false;
 
     ArmExclusion that = (ArmExclusion) o;
 
     if (!analysisId.equals(that.analysisId)) return false;
-    if (!id.equals(that.id)) return false;
+    if (id != null ? !id.equals(that.id) : that.id != null) return false;
     if (!trialverseId.equals(that.trialverseId)) return false;
 
     return true;
@@ -56,10 +56,9 @@ public class ArmExclusion implements Serializable {
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
+    int result = id != null ? id.hashCode() : 0;
     result = 31 * result + analysisId.hashCode();
     result = 31 * result + trialverseId.hashCode();
     return result;
   }
-
 }

@@ -67,14 +67,15 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
     query.setParameter("analysisId", analysis.getId());
     query.executeUpdate();
 
-    List<ArmExclusion> deleteCache = new ArrayList<>(analysis.getExcludedArms());
-    for (ArmExclusion armExclusion : deleteCache) {
+    List<ArmExclusion> newArmExclusionList = new ArrayList<>();
+    for (ArmExclusion armExclusion : analysis.getExcludedArms()) {
       // recreate because database ids should be cleared
       ArmExclusion newArmExclusion = new ArmExclusion(armExclusion.getAnalysisId(), armExclusion.getTrialverseId());
-      analysis.getExcludedArms().remove(armExclusion);
-      analysis.getExcludedArms().add(newArmExclusion);
       em.persist(newArmExclusion);
+      newArmExclusionList.add(newArmExclusion);
     }
+
+    analysis.setExcludedArms(newArmExclusionList);
 
     return em.merge(analysis);
   }
