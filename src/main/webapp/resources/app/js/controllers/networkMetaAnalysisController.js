@@ -36,6 +36,12 @@ define(['d3'], function(d3) {
         .attr('stroke-width', width);
     }
 
+    function tanh(x) {
+      var y = Math.exp(2 * x);
+      return (y - 1) / (y + 1);
+    }
+
+
     function drawNetwork(network) {
       var parent = angular.element('#network-graph').parent();
       var n = network.interventions.length;
@@ -43,12 +49,9 @@ define(['d3'], function(d3) {
       var originX = parent.width() / 2;
       var originY = parent.width() / 2;
       var margin = 200;
+      var radius = originY - margin / 2;
       var circleMaxSize = 30;
       var circleMinSize = 5;
-      var maxSampleSize = _.max(network.interventions, function(intervention) {
-        return intervention.sampleSize;
-      }).sampleSize;
-      var radius = originY - margin / 2;
       d3.select('#network-graph').selectAll('g').remove();
       d3.select('#network-graph').selectAll('line').remove();
       var svg = d3.select('#network-graph').select('svg')
@@ -61,8 +64,7 @@ define(['d3'], function(d3) {
       _.each(network.interventions, function(intervention, i) {
         var circleDatum = {
           id: intervention.name,
-          r: maxSampleSize > 0 ?
-            Math.max(circleMaxSize * Math.sqrt(intervention.sampleSize) / Math.sqrt(maxSampleSize), circleMinSize) : circleMinSize,
+          r: Math.max(circleMinSize, circleMaxSize * tanh(intervention.sampleSize /1000)),
           cx: originX - radius * Math.cos(angle * i),
           cy: originY + radius * Math.sin(angle * i)
         };

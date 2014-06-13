@@ -197,13 +197,13 @@ define(['angular'], function() {
     }
 
     function transformTrialDataToNetwork(trialData, interventions, excludedArms) {
-      var validTrialData = filterExcludedArms(trialData.trialDataStudies, excludedArms);
-      validTrialData = filterOneArmStudies(validTrialData);
-
       var network = {
         interventions: [],
         edges: generateEdges(interventions)
       };
+      var validTrialData = filterExcludedArms(trialData.trialDataStudies, excludedArms);
+      validTrialData = filterOneArmStudies(validTrialData);
+
       network.interventions = _.map(interventions, function(intervention) {
         return {
           name: intervention.name,
@@ -286,9 +286,15 @@ define(['angular'], function() {
     function doesInterventionHaveAmbiguousArms(drugId, trialverseData, analysis) {
       var includedArmsForDrugId = _.reduce(trialverseData.trialDataStudies, function(arms, trialDataStudy) {
         return arms.concat(_.filter(trialDataStudy.trialDataArms, function(trialDataArm) {
-          return trialDataArm.drugId === drugId && isArmIncluded(trialDataArm);
+          return trialDataArm.drugId === drugId && isArmIncluded(trialDataArm) && isMatched(trialDataStudy, trialDataArm);
         }));
       }, []);
+
+      function isMatched(trialDataStudy, trialDataArm) {
+        return _.find(trialDataStudy.trialDataInterventions, function(intervention) {
+          return intervention.drugId === trialDataArm.drugId;
+        });
+      }
 
       function isArmIncluded(trialDataArm) {
         return !_.find(analysis.excludedArms, function(exclusion) {
