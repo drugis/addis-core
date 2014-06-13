@@ -168,14 +168,17 @@ public class ProblemServiceTest {
     Long namespaceId = 1L;
     Integer projectId = 2;
     Integer analysisId = 3;
-    Long studyId = 101L;
+    Long studyId1 = 101L;
+    Long studyId2 = 202L;
     Long drugId1 = 420L;
     Long drugId2 = 430L;
     Long drugId3 = 440L;
+    Long drugId4 = 550L;
     Long armId1 = 555L;
     Long armId2 = 666L;
     Long armId3 = 777L;
     Long armId4 = 888L;
+    Long armId5 = 999L;
 
     String outcomeUri = "outcomeUri";
     Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
@@ -192,35 +195,47 @@ public class ProblemServiceTest {
     Collection<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
     ObjectMapper mapper = new ObjectMapper();
 
-    TrialDataIntervention trialDataIntervention1 = new TrialDataIntervention(drugId1, "uri1", studyId);
-    TrialDataIntervention trialDataIntervention2 = new TrialDataIntervention(drugId2, "uri2", studyId);
-    TrialDataIntervention trialDataIntervention3 = new TrialDataIntervention(drugId3, "uri3", studyId);
+    TrialDataIntervention trialDataIntervention1 = new TrialDataIntervention(drugId1, "uri1", studyId1);
+    TrialDataIntervention trialDataIntervention2 = new TrialDataIntervention(drugId2, "uri2", studyId1);
+    TrialDataIntervention trialDataIntervention3 = new TrialDataIntervention(drugId3, "uri3", studyId1);
 
-    List<TrialDataIntervention> trialdataInterventions = Arrays.asList(trialDataIntervention1, trialDataIntervention2, trialDataIntervention3);
+    TrialDataIntervention trialDataIntervention4 = new TrialDataIntervention(drugId4, "uri3", studyId2);
 
-    Measurement measurement1 = new Measurement(studyId, 333L, 444L, armId1,MeasurementAttribute.SAMPLE_SIZE, 768784L, null);
-    Measurement measurement2 = new Measurement(studyId, 333L, 444L, armId2,MeasurementAttribute.STANDARD_DEVIATION, null, Math.E);
-    Measurement measurement3 = new Measurement(studyId, 333L, 444L, armId2,MeasurementAttribute.MEAN, null, Math.PI);
+    List<TrialDataIntervention> trialdataInterventions1 = Arrays.asList(trialDataIntervention1, trialDataIntervention2, trialDataIntervention3);
+    List<TrialDataIntervention> trialdataInterventions2 = Arrays.asList(trialDataIntervention4);
 
-    Measurement measurement4 = new Measurement(studyId, 333L, 444L, armId3, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
-    Measurement measurement5 = new Measurement(studyId, 333L, 444L, armId3, MeasurementAttribute.RATE, -1L, null);
+    Measurement measurement1 = new Measurement(studyId1, 333L, 444L, armId1,MeasurementAttribute.SAMPLE_SIZE, 768784L, null);
+    Measurement measurement2 = new Measurement(studyId1, 333L, 444L, armId2,MeasurementAttribute.STANDARD_DEVIATION, null, Math.E);
+    Measurement measurement3 = new Measurement(studyId1, 333L, 444L, armId2,MeasurementAttribute.MEAN, null, Math.PI);
 
-    Measurement measurement6 = new Measurement(studyId, 333L, 444L, armId4, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
-    Measurement measurement7 = new Measurement(studyId, 333L, 444L, armId4, MeasurementAttribute.RATE, -1L, null);
+    Measurement measurement4 = new Measurement(studyId1, 333L, 444L, armId3, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
+    Measurement measurement5 = new Measurement(studyId1, 333L, 444L, armId3, MeasurementAttribute.RATE, -1L, null);
+
+    Measurement measurement6 = new Measurement(studyId1, 333L, 444L, armId4, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
+    Measurement measurement7 = new Measurement(studyId1, 333L, 444L, armId4, MeasurementAttribute.RATE, -1L, null);
+
+    Measurement measurement8 = new Measurement(studyId2, 333L, 444L, armId5, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
+    Measurement measurement9 = new Measurement(studyId2, 333L, 444L, armId5, MeasurementAttribute.RATE, -1L, null);
 
     List<Measurement> measurements1 = Arrays.asList(measurement1, measurement2, measurement3);
     List<Measurement> measurements2 = Arrays.asList(measurement1, measurement2, measurement3);
     List<Measurement> measurements3 = Arrays.asList(measurement4, measurement5);
     List<Measurement> measurements4 = Arrays.asList(measurement6, measurement7);
 
-    TrialDataArm trialDataArm1 = new TrialDataArm(armId1, studyId, "arm bb", drugId1, measurements1);
-    TrialDataArm trialDataArm2 = new TrialDataArm(armId2, studyId, "arm aa", drugId2, measurements2);
-    TrialDataArm trialDataArm3 = new TrialDataArm(armId3, studyId, "aaa", drugId2, measurements3);
-    TrialDataArm trialDataArm4 = new TrialDataArm(armId4, studyId, "qqqq", drugId3, measurements4);
+    List<Measurement> measurements5 = Arrays.asList(measurement8, measurement9);
 
-    List<TrialDataArm> trialDataArms = Arrays.asList(trialDataArm1, trialDataArm2, trialDataArm3, trialDataArm4);
-    TrialDataStudy trialDataStudy1 = new TrialDataStudy(1L, "study1", trialdataInterventions, trialDataArms);
-    List<TrialDataStudy> trialDataStudies = Arrays.asList(trialDataStudy1);
+    TrialDataArm trialDataArm1 = new TrialDataArm(armId1, studyId1, "arm bb", drugId1, measurements1);
+    TrialDataArm trialDataArm2 = new TrialDataArm(armId2, studyId1, "arm aa", drugId2, measurements2);
+    TrialDataArm trialDataArm3 = new TrialDataArm(armId3, studyId1, "aaa", drugId2, measurements3);
+    TrialDataArm trialDataArm4 = new TrialDataArm(armId4, studyId1, "qqqq", drugId3, measurements4);
+    TrialDataArm trialDataArm5 = new TrialDataArm(armId5, studyId2, "yyyy", drugId4, measurements5);
+
+    List<TrialDataArm> trialDataArms1 = Arrays.asList(trialDataArm1, trialDataArm2, trialDataArm3, trialDataArm4);
+    List<TrialDataArm> trialDataArms2 = Arrays.asList(trialDataArm5);
+    TrialDataStudy trialDataStudy1 = new TrialDataStudy(1L, "study1", trialdataInterventions1, trialDataArms1);
+    TrialDataStudy trialDataStudy2 = new TrialDataStudy(2L, "study2", trialdataInterventions2, trialDataArms2);
+
+    List<TrialDataStudy> trialDataStudies = Arrays.asList(trialDataStudy1, trialDataStudy2);
     TrialData trialData = new TrialData(trialDataStudies);
     ObjectNode trialDataNode = mapper.convertValue(trialData, ObjectNode.class);
     when(project.getId()).thenReturn(projectId);

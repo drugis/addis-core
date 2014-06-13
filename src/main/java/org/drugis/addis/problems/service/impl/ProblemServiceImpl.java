@@ -95,10 +95,13 @@ public class ProblemServiceImpl implements ProblemService {
       List<TrialDataArm> filteredArms = filterUnmatchedAndDuplicateArms(trialDataStudy, interventionByDrugIdMap);
       filteredArms = filterExcludedArms(filteredArms, analysis);
 
-      for (TrialDataArm trialDataArm : filteredArms) {
-        String interventionUri = interventionByDrugIdMap.get(trialDataArm.getDrugId()).getUri();
-        String treatmentName = interventionNamesByUrisMap.get(interventionUri);
-        entries.add(buildEntry(trialDataStudy.getName(), treatmentName, trialDataArm.getMeasurements()));
+      // do not include studies with fewer than two included and matched arms
+      if(filteredArms.size() >= 2) {
+        for (TrialDataArm trialDataArm : filteredArms) {
+          String interventionUri = interventionByDrugIdMap.get(trialDataArm.getDrugId()).getUri();
+          String treatmentName = interventionNamesByUrisMap.get(interventionUri);
+          entries.add(buildEntry(trialDataStudy.getName(), treatmentName, trialDataArm.getMeasurements()));
+        }
       }
 
     }
