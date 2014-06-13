@@ -16,6 +16,7 @@ define(['d3'], function(d3) {
     $scope.interventions = InterventionResource.query({
       projectId: $stateParams.projectId
     });
+    $scope.tableHasAmbiguousArm = false;
 
     function matchOutcome(outcome) {
       return $scope.analysis.outcome && $scope.analysis.outcome.id === outcome.id;
@@ -168,7 +169,7 @@ define(['d3'], function(d3) {
       });
 
     $scope.changeArmExclusion = function(dataRow) {
-      var network;
+      $scope.tableHasAmbiguousArm = false;
       $scope.analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, $scope.analysis);
       updateNetwork();
       $scope.saveAnalysis();
@@ -195,6 +196,12 @@ define(['d3'], function(d3) {
           modelId: model.id
         });
       });
+    };
+
+    $scope.doesInterventionHaveAmbiguousArms = function(drugId) {
+      var isAmbiguousArm = NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, $scope.trialverseData, $scope.analysis);
+      $scope.tableHasAmbiguousArm = $scope.tableHasAmbiguousArm || isAmbiguousArm;
+      return isAmbiguousArm;
     };
 
   };

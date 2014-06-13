@@ -88,12 +88,18 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       trialverseTrialDataResource.query.and.returnValue(mockTrialData);
       trialverseTrialDataResource.get.and.returnValue(mockTrialData);
 
-      networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', 
-        ['transformTrialDataToTableRows', 'transformTrialDataToNetwork', 'isNetworkDisconnected']);
-      var mockNetwork = {interventions : []};
+      networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows',
+       'transformTrialDataToNetwork', 'isNetworkDisconnected', 'changeArmExclusion', 'doesInterventionHaveAmbiguousArms']);
+      var mockNetwork = {
+        interventions: []
+      };
       networkMetaAnalysisService.transformTrialDataToNetwork.and.returnValue(mockNetwork);
       networkMetaAnalysisService.transformTrialDataToTableRows.and.returnValue([]);
       networkMetaAnalysisService.isNetworkDisconnected.and.returnValue(true);
+      networkMetaAnalysisService.changeArmExclusion.and.returnValue({
+        $save: function() {}
+      });
+    
 
       modelResource = jasmine.createSpyObj('modelResource', ['save']);
       modelDeferred = $q.defer();
@@ -189,7 +195,43 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
           expect(modelResource.save).toHaveBeenCalledWith(mockStateParams, {});
           modelDeferred.resolve(mockModel);
           scope.$apply();
-          expect(state.go).toHaveBeenCalledWith('analysis.model', {modelId: mockModel.id});
+          expect(state.go).toHaveBeenCalledWith('analysis.model', {
+            modelId: mockModel.id
+          });
+        });
+      });
+
+      describe('and the arm is exclusion is changed ', function() {
+
+
+        beforeEach(function() {
+          var dataRow = {};
+          spyOn(scope, 'saveAnalysis');
+          scope.tableHasAmbiguousArm = true;
+          scope.changeArmExclusion(dataRow);
+        });
+
+
+        it('should set tableHasAmbiguousArm to false', function() {
+          expect(scope.tableHasAmbiguousArm).toBeFalsy();
+          expect(networkMetaAnalysisService.changeArmExclusion).toHaveBeenCalled();
+          expect(scope.saveAnalysis).toHaveBeenCalled();
+        });
+      });
+
+      describe('and the doesInterventionHaveAmbiguousArms function is called', function() {
+
+        beforeEach(function() {
+          var drugId = 1;
+          scope.tableHasAmbiguousArm = false;
+          networkMetaAnalysisService.doesInterventionHaveAmbiguousArms.and.returnValue(true);
+          scope.doesInterventionHaveAmbiguousArms(drugId);
+        });
+
+
+        it('should call the doesInterventionHaveAmbiguousArms function on the NetworkMetaAnalysisService', function() {
+          expect(networkMetaAnalysisService.doesInterventionHaveAmbiguousArms).toHaveBeenCalled();
+          expect(scope.tableHasAmbiguousArm).toBeTruthy(); 
         });
       });
 

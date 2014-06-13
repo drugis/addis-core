@@ -1,84 +1,109 @@
 <div class="row">
-  <div class="columns large-12 nested-view">
-    <div class="row panel">
-      <div class="columns large-4 medium-6 small-12 nested-view">
-        Selected Outcome
-        <select ng-model="analysis.outcome" ng-options="outcome.name for outcome in outcomes"
-                ng-disabled="editMode.disableEditing" ng-change="saveSelectedOutcome()"></select>
+    <div class="columns large-12 nested-view">
+        <div class="panel" style="min-height: 130px;">
+            <div class="row ">
+                <div class="columns large-4 medium-6 small-12 nested-view">
+                    Selected Outcome
+                    <select ng-model="analysis.outcome" ng-options="outcome.name for outcome in outcomes"
+                            ng-disabled="editMode.disableEditing" ng-change="saveSelectedOutcome()"></select>
+                </div>
+                <div class="columns medium-6 large-4 end">
+                    <button ng-disabled="tableHasAmbiguousArm || interventions.length < 2 || isNetworkDisconnected"
+                            ng-click="goToModel()">Go to GeMTC
+                        model
+                    </button>
 
-        <div class="alert animate-show" ng-show="analysis.outcome && isNetworkDisconnected">Network not connected.
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="columns large-12">
+
+          <span class="alert animate-show" ng-show="analysis.outcome && isNetworkDisconnected">Network not connected.
+          </span>
+          <span class="alert animate-show" ng-show="interventions.length < 2">Fewer than two interventions defined.
+          </span>
+          <span class="alert animate-show" ng-show="tableHasAmbiguousArm">Ambiguous arms: more than one arm selected for single intervention.
+          </span>
+
+                </div>
+            </div>
         </div>
-        <div class="alert animate-show" ng-show="interventions.length < 2">Fewer than two interventions defined.
+
+        <div class="row">
+            <div class="columns large-4 medium-6 small-12">
+                <div class="table-title">Network graph</div>
+                <div ng-show="!analysis.outcome">
+                    <p>No outcome selected.</p>
+                </div>
+                <div ng-show="analysis.outcome" class="addis-graph" id="network-graph">
+                    <svg></svg>
+                </div>
+            </div>
+            <div class="columns large-4 medium-6 small-12 end">
+                <div class="graph-legend panel callout radius">
+                    <p>The network graph shows the evidence network for all selected interventions. The size of an
+                        intervention's
+                        circle reflects the total number of participants for that intervention. Lines signify that
+                        interventions are
+                        connected through at least one study, with thicker lines indicating more connecting studies.</p>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="columns medium-6 large-8">
-        <button ng-disabled="interventions.length < 2 || isNetworkDisconnected" ng-click="goToModel()">Go to GeMTC
-          model
-        </button>
-      </div>
+
     </div>
-
-    <div class="row">
-      <div class="columns large-4 medium-6 small-12">
-        <div class="table-title">Network graph</div>
-        <div ng-show="!analysis.outcome">
-          <p>No outcome selected.</p>
-        </div>
-        <div ng-show="analysis.outcome" class="addis-graph" id="network-graph">
-          <svg ></svg>
-        </div>
-      </div>
-      <div class="columns large-4 medium-6 small-12 end">
-        <div class="graph-legend panel callout radius">
-          <p>The network graph shows the evidence network for all selected interventions. The size of an intervention's
-            circle reflects the total number of participants for that intervention. Lines signify that interventions are
-            connected through at least one study, with thicker lines indicating more connecting studies.</p>
-        </div>
-      </div>
-    </div>
-
-  </div>
 
 </div>
 <div class="row">
-  <div class="columns large-12 nested-view">
-    <div class="table-title">Evidence table</div>
-    <table class="network-meta-analysis-table">
-      <thead>
-      <tr>
-        <th class="large-3">Studies</th>
-        <th class="large-3">Interventions</th>
-        <th class="large-3">Arms</th>
-        <th ng-show="trialData[0].rate !== null" class="large-2">Rate</th>
-        <th ng-show="trialData[0].mu !== null" class="large-1">&mu;</th>
-        <th ng-show="trialData[0].sigma !== null" class="large-1">&sigma;</th>
-        <th ng-show="trialData[0].sampleSize !== null" class="large-1">N</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr ng-show="!analysis.outcome">
-        <td colspan="7">No outcome selected.</td>
-      </tr>
-      <tr ng-show="analysis.outcome && !trialData.length">
-        <td colspan="7">No studies measuring selected outcome.</td>
-      </tr>
-      <tr ng-repeat="dataRow in trialData" ng-class="{topborder: dataRow.firstStudyRow}">
-        <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">{{dataRow.study}}</td>
-        <td ng-show="dataRow.firstInterventionRow" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
-            rowspan="{{dataRow.interventionRowSpan}}">
-          {{dataRow.intervention}}
-          <div ng-show="dataRow.isAmbiguous" class="alert-message">Ambiguous arms, please choose the arm to include in the problem</div>
-        </td>
-        <td>
-          <label><input type="checkbox" ng-disabled="dataRow.intervention === 'unmatched'" ng-model="dataRow.included" ng-change="changeArmExclusion(dataRow)">
-            {{dataRow.arm}}</label>
-        </td>
-        <td ng-show="dataRow.rate !== null" ng-class="{undefined:dataRow.intervention === 'unmatched'}">{{dataRow.rate}}</td>
-        <td ng-show="trialData[0].mu !== null" class="large-2" ng-class="{undefined:dataRow.intervention === 'unmatched'}">{{dataRow.mu}}</td>
-        <td ng-show="trialData[0].sigma !== null" class="large-2" ng-class="{undefined:dataRow.intervention === 'unmatched'}">{{dataRow.sigma | number: 3}}</td>
-        <td ng-show="trialData[0].sampleSize !== null" ng-class="{undefined:dataRow.intervention === 'unmatched'}">{{dataRow.sampleSize}}</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+    <div class="columns large-12 nested-view">
+        <div class="table-title">Evidence table</div>
+        <table class="network-meta-analysis-table">
+            <thead>
+            <tr>
+                <th class="large-3">Studies</th>
+                <th class="large-3">Interventions</th>
+                <th class="large-3">Arms</th>
+                <th ng-show="trialData[0].rate !== null" class="large-2">Rate</th>
+                <th ng-show="trialData[0].mu !== null" class="large-1">&mu;</th>
+                <th ng-show="trialData[0].sigma !== null" class="large-1">&sigma;</th>
+                <th ng-show="trialData[0].sampleSize !== null" class="large-1">N</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-show="!analysis.outcome">
+                <td colspan="7">No outcome selected.</td>
+            </tr>
+            <tr ng-show="analysis.outcome && !trialData.length">
+                <td colspan="7">No studies measuring selected outcome.</td>
+            </tr>
+            <tr ng-repeat="dataRow in trialData" ng-class="{topborder: dataRow.firstStudyRow}">
+                <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">{{dataRow.study}}</td>
+                <td ng-show="dataRow.firstInterventionRow" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
+                    rowspan="{{dataRow.interventionRowSpan}}">
+                    {{dataRow.intervention}}
+                    <div ng-show="doesInterventionHaveAmbiguousArms(dataRow.drugId)" class="alert-message">Ambiguous
+                        arms, please choose a single arm for inclusion
+                    </div>
+                </td>
+                <td>
+                    <label><input type="checkbox" ng-disabled="dataRow.intervention === 'unmatched'"
+                                  ng-model="dataRow.included" ng-change="changeArmExclusion(dataRow)">
+                        {{dataRow.arm}}</label>
+                </td>
+                <td ng-show="dataRow.rate !== null" ng-class="{undefined:dataRow.intervention === 'unmatched'}">
+                    {{dataRow.rate}}
+                </td>
+                <td ng-show="trialData[0].mu !== null" class="large-2"
+                    ng-class="{undefined:dataRow.intervention === 'unmatched'}">{{dataRow.mu}}
+                </td>
+                <td ng-show="trialData[0].sigma !== null" class="large-2"
+                    ng-class="{undefined:dataRow.intervention === 'unmatched'}">{{dataRow.sigma | number: 3}}
+                </td>
+                <td ng-show="trialData[0].sampleSize !== null"
+                    ng-class="{undefined:dataRow.intervention === 'unmatched'}">{{dataRow.sampleSize}}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

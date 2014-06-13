@@ -54,12 +54,12 @@ define(['angular'], function() {
     // add information to render the table
     function addRenderingHintsToTable(table) {
       var currentStudy = 'null',
-      currentInterventionRow = {
-        intervention: null
-      },
-      row;
+        currentInterventionRow = {
+          intervention: null
+        },
+        row;
 
-      for(var i=0; i < table.length; i++){
+      for (var i = 0; i < table.length; i++) {
         row = table[i];
         if (row.intervention !== currentInterventionRow.intervention || row.intervention === 'unmatched') {
           row.firstInterventionRow = true;
@@ -100,6 +100,7 @@ define(['angular'], function() {
           row.study = study.name;
           row.studyRowSpan = study.trialDataArms.length;
           row.intervention = trialDataIntervention ? resolveInterventionName(trialDataIntervention, interventions) : 'unmatched';
+          row.drugId = trialDataArm.drugId;
           row.arm = trialDataArm.name;
           row.trialverseId = trialDataArm.id;
           row.included = !exclusionMap[trialDataArm.id] && row.intervention !== 'unmatched';
@@ -282,11 +283,27 @@ define(['angular'], function() {
       return analysis;
     }
 
+    function doesInterventionHaveAmbiguousArms(drugId, trialverseData, analysis) {
+      var includedArmsForDrugId = _.reduce(trialverseData.trialDataStudies, function(arms, trialDataStudy) {
+        return arms.concat(_.filter(trialDataStudy.trialDataArms, function(trialDataArm) {
+          return trialDataArm.drugId === drugId && isArmIncluded(trialDataArm);
+        }));
+      }, []);
+
+      function isArmIncluded(trialDataArm) {
+        return !_.find(analysis.excludedArms, function(exclusion) {
+          return exclusion.trialverseId === trialDataArm.id;
+        });
+      }
+      return includedArmsForDrugId.length > 1;
+    }
+
     return {
       transformTrialDataToNetwork: transformTrialDataToNetwork,
       transformTrialDataToTableRows: transformTrialDataToTableRows,
       isNetworkDisconnected: isNetworkDisconnected,
-      changeArmExclusion: changeArmExclusion
+      changeArmExclusion: changeArmExclusion,
+      doesInterventionHaveAmbiguousArms: doesInterventionHaveAmbiguousArms
     };
   };
   return dependencies.concat(NetworkMetaAnalysisService);
