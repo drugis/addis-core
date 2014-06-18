@@ -64,7 +64,7 @@ define(['d3'], function(d3) {
       _.each(network.interventions, function(intervention, i) {
         var circleDatum = {
           id: intervention.name,
-          r: Math.max(circleMinSize, circleMaxSize * tanh(intervention.sampleSize / 1000)),
+          r: circleMinSize + ((circleMaxSize - circleMinSize) * tanh(intervention.sampleSize / 1000)),
           cx: originX - radius * Math.cos(angle * i),
           cy: originY + radius * Math.sin(angle * i)
         };
