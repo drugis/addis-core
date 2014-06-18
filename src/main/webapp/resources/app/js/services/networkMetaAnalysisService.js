@@ -121,9 +121,35 @@ define(['angular'], function() {
       }).length;
     }
 
+    function isMatchedTrialDataIntervention(trialDataIntervention, study) {
+      for(var i = 0; i < study.trialDataArms.length; i++) {
+        if(trialDataIntervention.drugId === study.trialDataArms[i].drugId) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    function countMatchedInterventions(study) {
+      var numberOfMatchedInterventions = 0;
+      angular.forEach(study.trialDataInterventions, function(trialDataIntervention){
+        if (isMatchedTrialDataIntervention(trialDataIntervention, study)) {
+          numberOfMatchedInterventions++;
+        }
+      });
+      return numberOfMatchedInterventions;
+    }
+
     function filterOneArmStudies(trialData) {
       return _.filter(trialData, function(study) {
         return countMatchedArms(study) > 1;
+      });
+    }
+
+    function filterStudiesHavingLessThanTwoMatchedInterventions(trialData) {
+      return _.filter(trialData, function(study) {
+        return countMatchedInterventions(study) > 1;
       });
     }
 
@@ -202,6 +228,7 @@ define(['angular'], function() {
         edges: generateEdges(interventions)
       };
       var validTrialData = filterExcludedArms(trialData.trialDataStudies, excludedArms);
+      validTrialData = filterStudiesHavingLessThanTwoMatchedInterventions(validTrialData);
       validTrialData = filterOneArmStudies(validTrialData);
 
       network.interventions = _.map(interventions, function(intervention) {
@@ -286,7 +313,7 @@ define(['angular'], function() {
     function doesModelHaveAmbiguousArms(trialverseData, analysis) {
       var hasAmbiguousArms = false;
       var drugIdSet = {};
-      angular.forEach(trialverseData.trialDataStudies, function(trialDataStudy){
+      angular.forEach(trialverseData.trialDataStudies, function(trialDataStudy) {
         angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
           drugIdSet[trialDataArm.drugId] = true;
         });
