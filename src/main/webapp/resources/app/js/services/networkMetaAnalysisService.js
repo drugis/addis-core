@@ -115,36 +115,20 @@ define(['angular'], function() {
       return rows;
     }
 
-    function countMatchedArms(study) {
-      return _.filter(study.trialDataArms, function(trialdataArm) {
-        return mapTrialDataArmToIntervention(trialdataArm, study.trialDataInterventions);
-      }).length;
-    }
-
     function isMatchedTrialDataIntervention(trialDataIntervention, study) {
-      for(var i = 0; i < study.trialDataArms.length; i++) {
-        if(trialDataIntervention.drugId === study.trialDataArms[i].drugId) {
-          return true;
-        }
-      }
-
-      return false;
+      return _.find(study.trialDataArms, function(trialDataArm) {
+        return trialDataIntervention.drugId === trialDataArm.drugId;
+      });
     }
 
     function countMatchedInterventions(study) {
       var numberOfMatchedInterventions = 0;
       angular.forEach(study.trialDataInterventions, function(trialDataIntervention){
         if (isMatchedTrialDataIntervention(trialDataIntervention, study)) {
-          numberOfMatchedInterventions++;
+          ++numberOfMatchedInterventions;
         }
       });
       return numberOfMatchedInterventions;
-    }
-
-    function filterOneArmStudies(trialData) {
-      return _.filter(trialData, function(study) {
-        return countMatchedArms(study) > 1;
-      });
     }
 
     function filterStudiesHavingLessThanTwoMatchedInterventions(trialData) {
@@ -229,7 +213,6 @@ define(['angular'], function() {
       };
       var validTrialData = filterExcludedArms(trialData.trialDataStudies, excludedArms);
       validTrialData = filterStudiesHavingLessThanTwoMatchedInterventions(validTrialData);
-      validTrialData = filterOneArmStudies(validTrialData);
 
       network.interventions = _.map(interventions, function(intervention) {
         return {
