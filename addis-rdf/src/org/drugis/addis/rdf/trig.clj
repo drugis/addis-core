@@ -3,15 +3,32 @@
 
 ; TODO: support for the xsd: datatypes
 
+(declare write-pairs)
+
+(defn ttl-object-str [prefixes resource indent]
+  (if (sequential? resource)
+    (({:uri (fn [x] x)
+       :anon (fn [x] (str "\n" indent "[\n" (write-pairs prefixes x indent) "\n" indent "]")) ; anonymous node
+       :coll (fn [x] (str "\n" indent "(" (join "" (map #(ttl-object-str prefixes % (str indent "  ")) x)) "\n" indent ")"))} ; RDF collection
+      (first resource))
+     (second resource))
+    (str "\"" resource "\"")))
+
 (defn ttl-str [resource]
-  (if (sequential? resource) (second resource) (str "\"" resource "\"")))
+  (if (and (sequential? resource) (= :uri (first resource)))
+    (second resource)
+    (throw (Throwable. "Can only have URIs for graph, subject, and predicate positions"))))
+
+; write pairs (predicate-object pairs)
+(defn write-pairs [prefixes pairs indent]
+  (let [intermediate (map (fn [[k v]] (str indent "  " (ttl-str k) " " (ttl-object-str prefixes v (str indent "  " "  ")))) pairs)]
+    (join " ;\n" intermediate)))
 
 ; write triples regarding a single subject
 (defn write-triples 
   ([prefixes triples] (write-triples prefixes triples ""))
   ([prefixes triples indent]
-   (let [intermediate (map (fn [[k v]] (str indent "  " (ttl-str k) " " (ttl-str v))) (second triples))
-         triple-str (join " ;\n" intermediate)]
+   (let [triple-str (write-pairs prefixes (second triples) indent)]
      (str indent (ttl-str (first triples)) "\n" triple-str " .\n"))))
 
 ; write a list of prefixes
@@ -34,3 +51,9 @@
 (defn rdf-uri
   ([uri] [:uri (str "<" uri ">")])
   ([prefix resource] [:uri (str (name prefix) ":" resource)]))
+
+(defn rdf-anon
+  [pairs] [:anon pairs])
+
+(defn rdf-coll
+  [resources] [:coll resources])
