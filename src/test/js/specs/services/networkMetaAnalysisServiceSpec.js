@@ -834,5 +834,30 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
     });
 
+    describe('doesModelHaveAmbiguousArms', function() {
+      beforeEach(module('addis.services'));
+
+      it('should return true if there are ambiguous arms for the model', inject(function(NetworkMetaAnalysisService) {
+        var trialverseData = {
+          trialDataStudies: [{
+            trialDataArms: [{
+              drugId: 1
+            }, {
+              drugId: 1
+            }],
+            trialDataInterventions: [{
+              drugId: 1
+            }],
+          }]
+        };
+        var analysis = {
+          excludedArms: []
+        };
+        expect(NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, analysis)).toBeTruthy();
+      }));
+
+
+    });
+
   });
 });

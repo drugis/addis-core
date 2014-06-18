@@ -292,7 +292,7 @@ define(['angular'], function() {
         });
       });
 
-      angular.forEach(_.keys(drugIdSet), function(drugId) {
+      angular.forEach(_.map(_.keys(drugIdSet), Number), function(drugId) {
         hasAmbiguousArms = hasAmbiguousArms || doesInterventionHaveAmbiguousArms(drugId, trialverseData, analysis);
       });
 

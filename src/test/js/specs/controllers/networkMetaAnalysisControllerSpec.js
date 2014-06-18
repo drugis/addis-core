@@ -89,7 +89,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       trialverseTrialDataResource.get.and.returnValue(mockTrialData);
 
       networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows',
-       'transformTrialDataToNetwork', 'isNetworkDisconnected', 'changeArmExclusion', 'doesInterventionHaveAmbiguousArms']);
+       'transformTrialDataToNetwork', 'isNetworkDisconnected', 'changeArmExclusion', 'doesInterventionHaveAmbiguousArms',
+       'doesModelHaveAmbiguousArms']);
       var mockNetwork = {
         interventions: []
       };
@@ -99,6 +100,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       networkMetaAnalysisService.changeArmExclusion.and.returnValue({
         $save: function() {}
       });
+      networkMetaAnalysisService.doesInterventionHaveAmbiguousArms.and.returnValue(true);
     
 
       modelResource = jasmine.createSpyObj('modelResource', ['save']);
@@ -231,7 +233,6 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
         it('should call the doesInterventionHaveAmbiguousArms function on the NetworkMetaAnalysisService', function() {
           expect(networkMetaAnalysisService.doesInterventionHaveAmbiguousArms).toHaveBeenCalled();
-          expect(scope.tableHasAmbiguousArm).toBeTruthy(); 
         });
       });
 

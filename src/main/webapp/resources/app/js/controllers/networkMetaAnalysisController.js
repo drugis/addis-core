@@ -184,13 +184,13 @@ define(['d3'], function(d3) {
       $scope.analysis.$save(function() {
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
         reloadModel();
-        $scope.tableHasAmbiguousArm = doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
       });
     };
 
     $scope.saveAnalysis = function() {
       $scope.analysis.$save(function() {
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
+        $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
       });
     };
 
