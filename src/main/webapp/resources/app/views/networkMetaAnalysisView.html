@@ -5,7 +5,7 @@
                 <div class="columns large-4 medium-6 small-12 nested-view">
                     Selected Outcome
                     <select ng-model="analysis.outcome" ng-options="outcome.name for outcome in outcomes"
-                            ng-disabled="editMode.disableEditing" ng-change="saveSelectedOutcome()"></select>
+                            ng-disabled="editMode.disableEditing" ng-change="changeSelectedOutcome()"></select>
                 </div>
                 <div class="columns medium-6 large-4 end">
                     <button ng-disabled="tableHasAmbiguousArm || interventions.length < 2 || isNetworkDisconnected"

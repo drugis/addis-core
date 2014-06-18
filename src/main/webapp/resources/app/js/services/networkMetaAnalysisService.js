@@ -283,6 +283,22 @@ define(['angular'], function() {
       return analysis;
     }
 
+    function doesModelHaveAmbiguousArms(trialverseData, analysis) {
+      var hasAmbiguousArms = false;
+      var drugIdSet = {};
+      angular.forEach(trialverseData.trialDataStudies, function(trialDataStudy){
+        angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
+          drugIdSet[trialDataArm.drugId] = true;
+        });
+      });
+
+      angular.forEach(_.keys(drugIdSet), function(drugId) {
+        hasAmbiguousArms = hasAmbiguousArms || doesInterventionHaveAmbiguousArms(drugId, trialverseData, analysis);
+      });
+
+      return hasAmbiguousArms;
+    }
+
     function doesInterventionHaveAmbiguousArms(drugId, trialverseData, analysis) {
       var includedArmsForDrugId = _.reduce(trialverseData.trialDataStudies, function(arms, trialDataStudy) {
         return arms.concat(_.filter(trialDataStudy.trialDataArms, function(trialDataArm) {
@@ -309,7 +325,8 @@ define(['angular'], function() {
       transformTrialDataToTableRows: transformTrialDataToTableRows,
       isNetworkDisconnected: isNetworkDisconnected,
       changeArmExclusion: changeArmExclusion,
-      doesInterventionHaveAmbiguousArms: doesInterventionHaveAmbiguousArms
+      doesInterventionHaveAmbiguousArms: doesInterventionHaveAmbiguousArms,
+      doesModelHaveAmbiguousArms: doesModelHaveAmbiguousArms
     };
   };
   return dependencies.concat(NetworkMetaAnalysisService);

@@ -64,7 +64,7 @@ define(['d3'], function(d3) {
       _.each(network.interventions, function(intervention, i) {
         var circleDatum = {
           id: intervention.name,
-          r: Math.max(circleMinSize, circleMaxSize * tanh(intervention.sampleSize /1000)),
+          r: Math.max(circleMinSize, circleMaxSize * tanh(intervention.sampleSize / 1000)),
           cx: originX - radius * Math.cos(angle * i),
           cy: originY + radius * Math.sin(angle * i)
         };
@@ -152,6 +152,7 @@ define(['d3'], function(d3) {
           $scope.trialverseData = trialverseData;
           updateNetwork();
           $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, $scope.interventions, $scope.analysis.excludedArms);
+          $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
         });
     }
 
@@ -177,11 +178,13 @@ define(['d3'], function(d3) {
       $scope.saveAnalysis();
     };
 
-    $scope.saveSelectedOutcome = function() {
+    $scope.changeSelectedOutcome = function() {
+      $scope.tableHasAmbiguousArm = false;
       $scope.analysis.excludedArms = [];
       $scope.analysis.$save(function() {
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
         reloadModel();
+        $scope.tableHasAmbiguousArm = doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
       });
     };
 
@@ -201,9 +204,7 @@ define(['d3'], function(d3) {
     };
 
     $scope.doesInterventionHaveAmbiguousArms = function(drugId) {
-      var isAmbiguousArm = NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, $scope.trialverseData, $scope.analysis);
-      $scope.tableHasAmbiguousArm = $scope.tableHasAmbiguousArm || isAmbiguousArm;
-      return isAmbiguousArm;
+      return NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, $scope.trialverseData, $scope.analysis);
     };
 
   };

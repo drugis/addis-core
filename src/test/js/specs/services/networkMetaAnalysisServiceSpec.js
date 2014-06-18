@@ -782,7 +782,10 @@ define(['angular', 'angular-mocks', 'services'], function() {
               drugId: 1
             }, {
               drugId: 1
-            }]
+            }],
+            trialDataInterventions: [{
+              drugId: 1
+            }],
           }]
         };
         var analysis = {
@@ -822,7 +825,9 @@ define(['angular', 'angular-mocks', 'services'], function() {
           }]
         };
         var analysis = {
-          excludedArms: [{trialverseId: 3}]
+          excludedArms: [{
+            trialverseId: 3
+          }]
         };
         expect(NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, trialverseData, analysis)).toBeFalsy();
       }));
