@@ -1,0 +1,13 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# List all labeled entities in *the* dataset(s)
+SELECT ?s ?label WHERE {
+  GRAPH ?dataset {
+    ?dataset a ontology:Dataset .
+  }
+  GRAPH ?dataset {
+    ?s rdfs:label ?label .
+  }
+}

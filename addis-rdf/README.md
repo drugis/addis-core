@@ -1,36 +1,38 @@
 # addis-rdf
 
-FIXME: description
+Convert ADDIS 1.x datafiles (.addis files) to RDF.
 
 ## Installation
 
-Download from http://example.com/FIXME.
+You need Leiningen. You probably also want to make sure you have Apache Jena installed and have the command line tools on your path (try `arq --help`).
 
 ## Usage
 
-FIXME: explanation
-
-    $ java -jar addis-rdf-0.1.0-standalone.jar [args]
+Use `lein run`. See `importHypertension.sh` and `importDepression.sh` for examples.
 
 ## Options
 
-FIXME: listing of options this app accepts.
+```
+ Switches               Default            Desc                
+ --------               -------            ----                
+ -h, --no-help, --help  false              Show Help           
+ -f, --file                                ADDIS 1.x file      
+ -n, --name                                Dataset short name  
+ -t, --title            ADDIS data import  Dataset description 
+ -r, --rdf              out.trig           RDF (TriG) file    
+```
 
 ## Examples
 
-...
+```
+./importDepression.sh
+arq --data=depression.trig --query=query.sparql
+```
 
 ### Bugs
 
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+Many things are not yet imported; many more are untested; unit tests are non-existent.
 
 ## License
 
-Copyright © 2014 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Copyright (c) 2014 Gert van Valkenhoef. GNU GPL Version 3 or later.

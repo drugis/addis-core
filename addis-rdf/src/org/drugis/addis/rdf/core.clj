@@ -3,7 +3,7 @@
             [clojure.java.io :refer [as-file]]
             [clojure.string :refer [blank?]]
             [riveted.core :as vtd]
-            [org.drugis.addis.rdf.trig :refer [write-trig rdf-uri]]))
+            [org.drugis.addis.rdf.trig :refer [write-trig rdf-uri rdf-anon rdf-coll]]))
 
 (defn uuid [] (str (java.util.UUID/randomUUID)))
 
@@ -103,10 +103,53 @@
   [instance-uri
   [[(rdf-uri :rdf "type") ((entity-uris (keyword entity-type)) entity-name)]]]))
 
+; TODO: add rdfs:label and rdfs:comment from the source entity. more info?
+(defn study-drug-rdf [drug-name entity-uris instance-uri]
+  [instance-uri
+   [[(rdf-uri :rdf "type") ((entity-uris :drug) drug-name)]]])
+
+(defn activity-other-rdf [xml study-drug-uris]
+  [[(rdf-uri :rdf "type") (rdf-uri :ontology "StudyActivity")]
+   [(rdf-uri :rdfs "comment") (vtd/text xml)]])
+
+(defn activity-predefined-rdf [xml study-drug-uris]
+  ({"RANDOMIZATION" [[(rdf-uri :rdf "type") (rdf-uri :ontology "RandomizationActivity")]]
+   "SCREENING" [[(rdf-uri :rdf "type") (rdf-uri :ontology "ScreeningActivity")]]
+   "WASH_OUT" [[(rdf-uri :rdf "type") (rdf-uri :ontology "WashOutActivity")]]
+   "FOLLOW_UP" [[(rdf-uri :rdf "type") (rdf-uri :ontology "FollowUpActivity")]]}
+   (vtd/text xml)))
+
+; TODO: dosing, units
+(defn treatment-rdf [xml study-drug-uris]
+  (rdf-anon [[(rdf-uri :ontology "treatment_has_drug") (study-drug-uris (vtd/attr (vtd/at xml "./drug") :name))]]))
+
+(defn activity-treatment-rdf [xml study-drug-uris]
+  [[(rdf-uri :rdf "type") (rdf-uri :ontology "TreatmentActivity")]
+   [(rdf-uri :ontology "administeredDrugs") (rdf-coll (map #(treatment-rdf % study-drug-uris) (vtd/search xml "./drugTreatment")))]])
+
+(def activity-rdf
+  {"predefined" activity-predefined-rdf
+   "other" activity-other-rdf
+   "treatment" activity-treatment-rdf})
+
+(defn study-activity-rdf [xml activity-uri entity-uris arm-uris epoch-uris study-drug-uris]
+  (let [activity (vtd/first-child (vtd/at xml "./activity"))
+        activity-type (vtd/tag activity)]
+  [activity-uri
+   (apply concat
+          ((activity-rdf activity-type) activity study-drug-uris)
+          (map (fn [xml] [
+                          [(rdf-uri :ontology "applied_to_arm") (arm-uris (vtd/attr xml "arm"))]
+                          [(rdf-uri :ontology "applied_in_epoch") (epoch-uris (vtd/attr xml "epoch"))]])
+               (vtd/search xml "./usedBy")))]))
+
 ; TODO: import the interesting stuff
 (defn study-rdf [xml uri entity-uris]
   (let [indication-uri (rdf-uri :instance (uuid))
-        study-outcome-uris (apply merge (map (fn [el] {(vtd/attr el :id) (rdf-uri :instance (uuid))}) (vtd/search xml "./studyOutcomeMeasures/studyOutcomeMeasure")))]
+        study-outcome-uris (apply merge (map (fn [el] {(vtd/attr el :id) (rdf-uri :instance (uuid))}) (vtd/search xml "./studyOutcomeMeasures/studyOutcomeMeasure")))
+        arm-uris (apply merge (map (fn [el] {(vtd/attr el :name) (rdf-uri :arm (uuid))}) (vtd/search xml "./arms/arm")))
+        epoch-uris (apply merge (map (fn [el] {(vtd/attr el :name) (rdf-uri :epoch (uuid))}) (vtd/search xml "./epochs/epoch")))
+        study-drug-uris (apply merge (map (fn [el] {(vtd/attr el :name) (rdf-uri :drug (uuid))}) (vtd/search xml "./activities/studyActivity/activity/treatment/drugTreatment/drug")))]
     (concat
       [[uri
         (concat
@@ -129,13 +172,14 @@
           ; ## actual stuff
           [[(rdf-uri :ontology "has_indication") indication-uri]]
           (map (fn [el] [(rdf-uri :ontology "has_outcome") el]) (vals study-outcome-uris))
-          ; arms
-          ; epochs
-          ; activities
+          (map (fn [el] [(rdf-uri :ontology "has_arm") el]) (vals arm-uris)) ; TODO: arm sizes
+          (map (fn [el] [(rdf-uri :ontology "has_epoch") el]) (vals epoch-uris)) ; TODO: duration
           ; measurements
           )]]
       (study-indication-rdf xml entity-uris indication-uri)
-      (map #(study-outcome-rdf (vtd/at xml (str "./studyOutcomeMeasures/studyOutcomeMeasure[@id='" % "']")) entity-uris (study-outcome-uris %)) (keys study-outcome-uris)))))
+      (map #(study-outcome-rdf (vtd/at xml (str "./studyOutcomeMeasures/studyOutcomeMeasure[@id='" % "']")) entity-uris (study-outcome-uris %)) (keys study-outcome-uris))
+      (map #(study-drug-rdf % entity-uris (study-drug-uris %)) (keys study-drug-uris))
+      (map #(study-activity-rdf % (rdf-uri :activity (uuid)) entity-uris arm-uris epoch-uris study-drug-uris) (vtd/search xml "./activities/studyActivity")))))
 
 (defn import-study [xml entity-uris]
   (let [uri (rdf-uri :study (uuid))]
@@ -155,6 +199,10 @@
                   :ontology "http://trials.drugis.org/ontology#"
                   :dataset "http://trials.drugis.org/datasets/"
                   :study "http://trials.drugis.org/studies/"
+                  :arm "http://trials.drugis.org/arms/"
+                  :epoch "http://trials.drugis.org/epochs/"
+                  :activity "http://trials.drugis.org/activities/"
+                  :drug "http://trials.drugis.org/drugs/"
                   :instance "http://trials.drugis.org/instances/"
                   :entity "http://trials.drugis.org/entities/"
                   :atc "http://www.whocc.no/ATC2011/"
