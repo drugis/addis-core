@@ -253,7 +253,7 @@ public class ProblemServiceTest {
     verify(trialverseService).getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"));
 
     assertNotNull(problem);
-    assertEquals(2, problem.getEntries().size());
+    assertEquals(3, problem.getEntries().size());
     ContinuousNetworkMetaAnalysisProblemEntry entry = new ContinuousNetworkMetaAnalysisProblemEntry("study1", "int1", 768784L, Math.PI, Math.E);
     assertTrue(problem.getEntries().contains(entry));
 
