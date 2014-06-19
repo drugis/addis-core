@@ -17,6 +17,7 @@ define(['d3'], function(d3) {
       projectId: $stateParams.projectId
     });
     $scope.tableHasAmbiguousArm = false;
+    $scope.hasLessThanTwoInterventions = false;
 
     $q
       .all([
@@ -180,6 +181,7 @@ define(['d3'], function(d3) {
           var includedInterventions = getIncludedIntervention($scope.interventions);
           $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis.excludedArms);
           $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
+          $scope.hasLessThanTwoInterventions = getIncludedIntervention($scope.interventions).length < 2;
         });
     }
 

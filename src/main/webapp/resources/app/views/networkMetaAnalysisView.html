@@ -30,20 +30,21 @@
                 <div class="row">
                     <div class="columns large-6 medium-6 small-12">
                         <button class="button expand"
-                                ng-disabled="tableHasAmbiguousArm || interventions.length < 2 || isNetworkDisconnected"
+                                ng-disabled="tableHasAmbiguousArm || interventions.length < 2 || isNetworkDisconnected || hasLessThanTwoInterventions "
                                 ng-click="goToModel()">
                             Go to GeMTC model
                         </button>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="columns large-6  medium-6 small-12">
+                    <div class="columns large-12  medium-12 small-12">
                         <span class="alert animate-show" ng-show="analysis.outcome && isNetworkDisconnected">Network not connected.
                         </span>
                         <span class="alert animate-show" ng-show="interventions.length < 2">Fewer than two interventions defined.
                         </span>
                         <span class="alert animate-show" ng-show="tableHasAmbiguousArm">Ambiguous arms: more than one arm selected for single intervention.
                         </span>
+                        <span class="alert animate-show" ng-show="hasLessThanTwoInterventions">A least two interventions are needen to perform the analysis</span>
                     </div>
                 </div>
 
