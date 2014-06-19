@@ -3,7 +3,7 @@
             [clojure.java.io :refer [as-file]]
             [clojure.string :refer [blank?]]
             [riveted.core :as vtd]
-            [org.drugis.addis.rdf.trig :refer [write-trig rdf-uri rdf-anon rdf-coll]]))
+            [org.drugis.addis.rdf.trig :refer [write-trig rdf-uri rdf-blank rdf-coll]]))
 
 (defn uuid [] (str (java.util.UUID/randomUUID)))
 
@@ -121,7 +121,7 @@
 
 ; TODO: dosing, units
 (defn treatment-rdf [xml study-drug-uris]
-  (rdf-anon [[(rdf-uri :ontology "treatment_has_drug") (study-drug-uris (vtd/attr (vtd/at xml "./drug") :name))]]))
+  (rdf-blank [[(rdf-uri :ontology "treatment_has_drug") (study-drug-uris (vtd/attr (vtd/at xml "./drug") :name))]]))
 
 (defn activity-treatment-rdf [xml study-drug-uris]
   [[(rdf-uri :rdf "type") (rdf-uri :ontology "TreatmentActivity")]
