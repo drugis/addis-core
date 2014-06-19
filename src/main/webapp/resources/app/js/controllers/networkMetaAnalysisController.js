@@ -18,12 +18,31 @@ define(['d3'], function(d3) {
     });
     $scope.tableHasAmbiguousArm = false;
 
+    $q
+      .all([
+        $scope.analysis.$promise,
+        $scope.project.$promise,
+        $scope.outcomes.$promise,
+        $scope.interventions.$promise
+      ])
+      .then(function() {
+        $scope.interventions =
+          NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.excludedInterventions);
+        $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
+        if ($scope.analysis.outcome) {
+          reloadModel();
+        }
+      });
+
     function matchOutcome(outcome) {
       return $scope.analysis.outcome && $scope.analysis.outcome.id === outcome.id;
     }
 
-    function getSemanticInterventionUri(object) {
-      return object.semanticInterventionUri;
+    function addIncludedInterventionUri(memo, intervention) {
+      if (intervention.isIncluded) {
+        memo.push(intervention.semanticInterventionUri);
+      }
+      return memo;
     }
 
     function drawEdge(enter, fromId, toId, width, circleData) {
@@ -40,7 +59,6 @@ define(['d3'], function(d3) {
       var y = Math.exp(2 * x);
       return (y - 1) / (y + 1);
     }
-
 
     function drawNetwork(network) {
       var parent = angular.element('#network-graph').parent();
@@ -134,48 +152,55 @@ define(['d3'], function(d3) {
         });
     }
 
+    function getIncludedIntervention(interventions) {
+      return _.filter(interventions, function(intervention){
+        return intervention.isIncluded;
+      });
+    }
+
     function updateNetwork() {
-      var network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, $scope.interventions, $scope.analysis.excludedArms);
+      var includedInterventions = getIncludedIntervention($scope.interventions);
+      var network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis.excludedArms);
       drawNetwork(network);
       $scope.isNetworkDisconnected = NetworkMetaAnalysisService.isNetworkDisconnected(network);
     }
 
     function reloadModel() {
+      var includedInterventionUris = _.reduce($scope.interventions, addIncludedInterventionUri, []);
       TrialverseTrialDataResource
         .get({
           id: $scope.project.trialverseId,
           outcomeUri: $scope.analysis.outcome.semanticOutcomeUri,
-          interventionUris: $scope.interventionUris
+          interventionUris: includedInterventionUris
         })
         .$promise
         .then(function(trialverseData) {
           $scope.trialverseData = trialverseData;
           updateNetwork();
-          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, $scope.interventions, $scope.analysis.excludedArms);
+          var includedInterventions = getIncludedIntervention($scope.interventions);
+          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis.excludedArms);
           $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
         });
     }
-
-    $q
-      .all([
-        $scope.analysis.$promise,
-        $scope.project.$promise,
-        $scope.outcomes.$promise,
-        $scope.interventions.$promise
-      ])
-      .then(function() {
-        $scope.interventionUris = _.map($scope.interventions, getSemanticInterventionUri);
-        $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
-        if ($scope.analysis.outcome) {
-          reloadModel();
-        }
-      });
 
     $scope.changeArmExclusion = function(dataRow) {
       $scope.tableHasAmbiguousArm = false;
       $scope.analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, $scope.analysis);
       updateNetwork();
-      $scope.saveAnalysis();
+      $scope.analysis.$save(function() {
+        $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
+        $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
+      });
+    };
+
+    $scope.changeInterventionExclusion = function() {
+      $scope.analysis.excludedInterventions =
+        NetworkMetaAnalysisService.buildInterventionExclusions($scope.interventions, $scope.analysis);
+      $scope.analysis.$save(function() {
+        $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
+        $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
+        reloadModel();
+      });
     };
 
     $scope.changeSelectedOutcome = function() {
@@ -184,13 +209,6 @@ define(['d3'], function(d3) {
       $scope.analysis.$save(function() {
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
         reloadModel();
-      });
-    };
-
-    $scope.saveAnalysis = function() {
-      $scope.analysis.$save(function() {
-        $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
-        $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
       });
     };
 

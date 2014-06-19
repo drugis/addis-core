@@ -92,6 +92,9 @@ define(['angular'], function() {
 
     function buildTableFromTrialData(data, interventions, excludedArms) {
       var rows = [];
+      if(interventions.length < 1) {
+        return rows;
+      }
       var exclusionMap = buildExcludedArmsMap(excludedArms);
       angular.forEach(data.trialDataStudies, function(study) {
         angular.forEach(study.trialDataArms, function(trialDataArm) {
@@ -123,7 +126,7 @@ define(['angular'], function() {
 
     function countMatchedInterventions(study) {
       var numberOfMatchedInterventions = 0;
-      angular.forEach(study.trialDataInterventions, function(trialDataIntervention){
+      angular.forEach(study.trialDataInterventions, function(trialDataIntervention) {
         if (isMatchedTrialDataIntervention(trialDataIntervention, study)) {
           ++numberOfMatchedInterventions;
         }
@@ -293,6 +296,18 @@ define(['angular'], function() {
       return analysis;
     }
 
+    function buildInterventionExclusions(interventions, analysis) {
+      return _.reduce(interventions, function(accumulator, intervention) {
+        if (!intervention.isIncluded) {
+          accumulator.push({
+            analysisId: analysis.id,
+            interventionId: intervention.id
+          });
+        }
+        return accumulator;
+      }, []);
+    }
+
     function doesModelHaveAmbiguousArms(trialverseData, analysis) {
       var hasAmbiguousArms = false;
       var drugIdSet = {};
@@ -330,11 +345,24 @@ define(['angular'], function() {
       return includedArmsForDrugId.length > 1;
     }
 
+    function addInclusionsToInterventions(interventions, exclusions) {
+      var exclusionMap = _.object(_.map(exclusions, function(exclusion) {
+        return [exclusion.interventionId, exclusion];
+      }));
+
+      angular.forEach(interventions, function(intervention) {
+        intervention.isIncluded = !exclusionMap[intervention.id];
+      });
+      return interventions;
+    }
+
     return {
       transformTrialDataToNetwork: transformTrialDataToNetwork,
       transformTrialDataToTableRows: transformTrialDataToTableRows,
       isNetworkDisconnected: isNetworkDisconnected,
+      addInclusionsToInterventions: addInclusionsToInterventions,
       changeArmExclusion: changeArmExclusion,
+      buildInterventionExclusions: buildInterventionExclusions,
       doesInterventionHaveAmbiguousArms: doesInterventionHaveAmbiguousArms,
       doesModelHaveAmbiguousArms: doesModelHaveAmbiguousArms
     };

@@ -29,3 +29,5 @@ INSERT INTO public.model(id, analysisId) VALUES (1, -5);
 
 INSERT INTO public.armExclusion (id, trialverseId, analysisId) VALUES (-1, -101, -6);
 INSERT INTO public.armExclusion (id, trialverseId, analysisId) VALUES (-2, -102, -6);
+
+INSERT INTO public.interventionExclusion (id, interventionId, analysisId) VALUES (-1, 2, -6);

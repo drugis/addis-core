@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.analyses.AbstractAnalysis;
-import org.drugis.addis.analyses.ArmExclusion;
-import org.drugis.addis.analyses.NetworkMetaAnalysis;
-import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -38,9 +35,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -95,7 +90,7 @@ public class ProblemServiceTest {
   @After
   public void cleanUp() {
     verifyNoMoreInteractions(analysisRepository, projectRepository, singleStudyBenefitRiskAnalysisRepository,
-      alternativeService, criteriaService, interventionRepository, trialverseService);
+            alternativeService, criteriaService, interventionRepository, trialverseService);
   }
 
   @Test
@@ -184,7 +179,8 @@ public class ProblemServiceTest {
     Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
     ArmExclusion armExclusion1 = new ArmExclusion(analysisId, armId4);
     List<ArmExclusion> armExclusions = Arrays.asList(armExclusion1);
-    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, outcome);
+    List<InterventionExclusion> interventionExclusions = Collections.EMPTY_LIST;
+    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, interventionExclusions, outcome);
     Project project = mock(Project.class);
     SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
     SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
@@ -204,9 +200,9 @@ public class ProblemServiceTest {
     List<TrialDataIntervention> trialdataInterventions1 = Arrays.asList(trialDataIntervention1, trialDataIntervention2, trialDataIntervention3);
     List<TrialDataIntervention> trialdataInterventions2 = Arrays.asList(trialDataIntervention4);
 
-    Measurement measurement1 = new Measurement(studyId1, 333L, 444L, armId1,MeasurementAttribute.SAMPLE_SIZE, 768784L, null);
-    Measurement measurement2 = new Measurement(studyId1, 333L, 444L, armId2,MeasurementAttribute.STANDARD_DEVIATION, null, Math.E);
-    Measurement measurement3 = new Measurement(studyId1, 333L, 444L, armId2,MeasurementAttribute.MEAN, null, Math.PI);
+    Measurement measurement1 = new Measurement(studyId1, 333L, 444L, armId1, MeasurementAttribute.SAMPLE_SIZE, 768784L, null);
+    Measurement measurement2 = new Measurement(studyId1, 333L, 444L, armId2, MeasurementAttribute.STANDARD_DEVIATION, null, Math.E);
+    Measurement measurement3 = new Measurement(studyId1, 333L, 444L, armId2, MeasurementAttribute.MEAN, null, Math.PI);
 
     Measurement measurement4 = new Measurement(studyId1, 333L, 444L, armId3, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
     Measurement measurement5 = new Measurement(studyId1, 333L, 444L, armId3, MeasurementAttribute.RATE, -1L, null);

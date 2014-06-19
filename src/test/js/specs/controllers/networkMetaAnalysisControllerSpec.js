@@ -43,7 +43,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       }, {
         id: 3,
         name: 'intervention-name3',
-        semanticInterventionUri: 'semanticInterventionUri2'
+        semanticInterventionUri: 'semanticInterventionUri3'
       }, ],
       trialverseTrialDataResource,
       mockModel = {
@@ -89,8 +89,15 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       trialverseTrialDataResource.get.and.returnValue(mockTrialData);
 
       networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows',
-       'transformTrialDataToNetwork', 'isNetworkDisconnected', 'changeArmExclusion', 'doesInterventionHaveAmbiguousArms',
-       'doesModelHaveAmbiguousArms']);
+        'transformTrialDataToNetwork',
+        'isNetworkDisconnected',
+        'addInclusionsToInterventions',
+        'changeArmExclusion',
+        'buildInterventionExclusions',
+        'doesInterventionHaveAmbiguousArms',
+        'doesModelHaveAmbiguousArms'
+      ]);
+
       var mockNetwork = {
         interventions: []
       };
@@ -101,7 +108,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         $save: function() {}
       });
       networkMetaAnalysisService.doesInterventionHaveAmbiguousArms.and.returnValue(true);
-    
+      networkMetaAnalysisService.addInclusionsToInterventions.and.returnValue(mockInterventions);
 
       modelResource = jasmine.createSpyObj('modelResource', ['save']);
       modelDeferred = $q.defer();
@@ -158,28 +165,18 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       }));
 
       it('should save the analysis when the selected outcome changes', function() {
-        scope.analysis.outcome = {
-          id: 1
-        };
-        scope.saveAnalysis();
+        mockAnalysis.outcome = mockOutcomes[0];
+        scope.changeSelectedOutcome();
         expect(scope.analysis.$save).toHaveBeenCalled();
       });
-
-
 
       describe('and there is already an outcome defined on the analysis', function() {
 
         it('should get the tabledata and transform it to table rows and network', function() {
-
-
           expect(trialverseTrialDataResource.get).toHaveBeenCalledWith({
             id: mockProject.trialverseId,
             outcomeUri: mockOutcomes[0].semanticOutcomeUri,
-            interventionUris: [
-              mockInterventions[0].semanticInterventionUri,
-              mockInterventions[1].semanticInterventionUri,
-              mockInterventions[2].semanticInterventionUri
-            ]
+            interventionUris: [  ]
           });
           trialverseTrailDataDeferred.resolve();
           scope.$apply();
@@ -208,7 +205,6 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
         beforeEach(function() {
           var dataRow = {};
-          spyOn(scope, 'saveAnalysis');
           scope.tableHasAmbiguousArm = true;
           scope.changeArmExclusion(dataRow);
         });
@@ -217,7 +213,6 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         it('should set tableHasAmbiguousArm to false', function() {
           expect(scope.tableHasAmbiguousArm).toBeFalsy();
           expect(networkMetaAnalysisService.changeArmExclusion).toHaveBeenCalled();
-          expect(scope.saveAnalysis).toHaveBeenCalled();
         });
       });
 

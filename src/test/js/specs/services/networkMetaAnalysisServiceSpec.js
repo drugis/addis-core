@@ -771,7 +771,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
     });
 
-    describe('doesInterventionHasAmbiguousArms', function() {
+    describe('doesInterventionHaveAmbiguousArms', function() {
       beforeEach(module('addis.services'));
 
       it('should return true if there are ambiguous arms for the intervention', inject(function(NetworkMetaAnalysisService) {
@@ -856,7 +856,45 @@ define(['angular', 'angular-mocks', 'services'], function() {
         expect(NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, analysis)).toBeTruthy();
       }));
 
+    });
 
+    describe('addInclusionsToInterventions', function() {
+      beforeEach(module('addis.services'));
+
+      it('should add inclusions to interventions', inject(function(NetworkMetaAnalysisService) {
+        var exclusions = [{
+          interventionId: 43
+        }];
+        var includedInterventions = NetworkMetaAnalysisService.addInclusionsToInterventions(networkInterventions, exclusions);
+        expect(includedInterventions[0].isIncluded).toBeFalsy();
+        expect(includedInterventions[1].isIncluded).toBeTruthy();
+        expect(includedInterventions[2].isIncluded).toBeTruthy();
+      }));
+    });
+
+    describe('buildInterventionExclusions', function() {
+      beforeEach(module('addis.services'));
+
+      it('should create a new list of intervention exclusions', inject(function(NetworkMetaAnalysisService) {
+        var interventions = [{
+          id: 1,
+          isIncluded: true
+        }, {
+          id: 2,
+          isIncluded: false
+        }, {
+          id: 3,
+          isIncluded: true
+        }];
+        var analysis = {
+          id: 4
+        };
+        var interventionExclusions = NetworkMetaAnalysisService.buildInterventionExclusions(interventions, analysis);
+        expect(interventionExclusions).toEqual([{
+          analysisId: analysis.id,
+          interventionId: 2
+        }]);
+      }));
     });
 
   });

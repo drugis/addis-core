@@ -72,7 +72,7 @@ public class NetworkMetaAnalysisRepositoryTest {
   }
 
   @Test
-  public void testUpdateExcludedArms() throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void testUpdateExcludedArmsAndInterventions() throws ResourceDoesNotExistException, MethodNotAllowedException {
     Integer analysisId = -6;
     Account user = em.find(Account.class, 1);
     Integer projectId = 1;
@@ -80,8 +80,10 @@ public class NetworkMetaAnalysisRepositoryTest {
     ArmExclusion newArmExclusion2 = new ArmExclusion(analysisId, -602L);
     List<ArmExclusion> armExclusions = Arrays.asList(newArmExclusion1, newArmExclusion2);
     Outcome outcome = em.find(Outcome.class, 1);
+    InterventionExclusion newInterventionExclusion = new InterventionExclusion(analysisId, 2);
+    List<InterventionExclusion> interventionExclusions = Arrays.asList(newInterventionExclusion);
 
-    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "new name", armExclusions, outcome);
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "new name", armExclusions, interventionExclusions, outcome);
     NetworkMetaAnalysis updatedAnalysis = networkMetaAnalysisRepository.update(user, analysis);
     assertEquals(2, updatedAnalysis.getExcludedArms().size());
 
@@ -92,6 +94,7 @@ public class NetworkMetaAnalysisRepositoryTest {
     assertEquals(2, resultList.size());
     assertEquals(new Integer(1), updatedAnalysis.getExcludedArms().get(0).getId());
     assertEquals(new Integer(2), updatedAnalysis.getExcludedArms().get(1).getId());
+    assertEquals(new Integer(1), updatedAnalysis.getExcludedInterventions().get(0).getId());
   }
 
   @Test (expected = ResourceDoesNotExistException.class)

@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 public class NetworkMetaAnalysis extends AbstractAnalysis {
   @Id
-  @SequenceGenerator(name="analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
+  @SequenceGenerator(name = "analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")
   private Integer id;
   private Integer projectId;
@@ -21,6 +21,10 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   @OneToMany(fetch = FetchType.EAGER)
   @JoinColumn(name = "analysisId")
   private List<ArmExclusion> excludedArms = new ArrayList<>();
+
+  @OneToMany(fetch = FetchType.EAGER)
+  @JoinColumn(name = "analysisId")
+  private List<InterventionExclusion> excludedInterventions = new ArrayList<>();
 
   @ManyToOne(targetEntity = Outcome.class)
   @JoinColumn(name = "outcomeId")
@@ -45,11 +49,12 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     this(id, projectId, name, null);
   }
 
-  public NetworkMetaAnalysis(Integer id, Integer projectId, String name, List<ArmExclusion> excludedArms, Outcome outcome) {
+  public NetworkMetaAnalysis(Integer id, Integer projectId, String name, List<ArmExclusion> excludedArms, List<InterventionExclusion> excludedInterventions, Outcome outcome) {
     this.id = id;
     this.projectId = projectId;
     this.name = name;
     this.excludedArms = excludedArms == null ? new ArrayList<ArmExclusion>() : excludedArms;
+    this.excludedInterventions = excludedInterventions == null ? new ArrayList<InterventionExclusion>() : excludedInterventions;
     this.outcome = outcome;
   }
 
@@ -70,7 +75,15 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   }
 
   public void setExcludedArms(List<ArmExclusion> excludedArms) {
-    this.excludedArms = excludedArms;
+    this.excludedArms = excludedArms == null ? new ArrayList<ArmExclusion>() : excludedArms;
+  }
+
+  public List<InterventionExclusion> getExcludedInterventions() {
+    return excludedInterventions;
+  }
+
+  public void setExcludedInterventions(List<InterventionExclusion> excludedInterventions) {
+    this.excludedInterventions = excludedInterventions == null ? new ArrayList<InterventionExclusion>() : excludedInterventions;
   }
 
   public Outcome getOutcome() {

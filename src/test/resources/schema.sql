@@ -138,4 +138,14 @@ CREATE TABLE ArmExclusion (
   analysisId INT NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id)
-)
+);
+
+-- changeset reidd:7
+CREATE TABLE InterventionExclusion (
+  id SERIAL NOT NULL,
+  interventionId INT NOT NULL,
+  analysisId INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id),
+  FOREIGN KEY(interventionId) REFERENCES Intervention(id)
+);

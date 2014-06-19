@@ -2,6 +2,7 @@ package org.drugis.addis.analyses.repository.impl;
 
 import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.analyses.ArmExclusion;
+import org.drugis.addis.analyses.InterventionExclusion;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -62,20 +63,32 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
       throw new ResourceDoesNotExistException();
     }
 
-    // remove old excludedArms
-    Query query = em.createQuery("delete from ArmExclusion ae where ae.analysisId = :analysisId");
-    query.setParameter("analysisId", analysis.getId());
-    query.executeUpdate();
+    // remove old
+    Query deleteArmExclusionsQuery = em.createQuery("delete from ArmExclusion ae where ae.analysisId = :analysisId");
+    deleteArmExclusionsQuery.setParameter("analysisId", analysis.getId());
+    deleteArmExclusionsQuery.executeUpdate();
 
+    Query deleteInterventionExclusionsQuery = em.createQuery("delete from InterventionExclusion ie where ie.analysisId = :analysisId");
+    deleteInterventionExclusionsQuery.setParameter("analysisId", analysis.getId());
+    deleteInterventionExclusionsQuery.executeUpdate();
+
+    // add new
     List<ArmExclusion> newArmExclusionList = new ArrayList<>();
     for (ArmExclusion armExclusion : analysis.getExcludedArms()) {
-      // recreate because database ids should be cleared
       ArmExclusion newArmExclusion = new ArmExclusion(armExclusion.getAnalysisId(), armExclusion.getTrialverseId());
       em.persist(newArmExclusion);
       newArmExclusionList.add(newArmExclusion);
     }
 
+    List<InterventionExclusion> newInterventionExclusionList = new ArrayList<>();
+    for (InterventionExclusion interventionExclusion : analysis.getExcludedInterventions()) {
+      InterventionExclusion newInterventionExclusion = new InterventionExclusion(interventionExclusion.getAnalysisId(), interventionExclusion.getInterventionId());
+      em.persist(newInterventionExclusion);
+      newInterventionExclusionList.add(newInterventionExclusion);
+    }
+
     analysis.setExcludedArms(newArmExclusionList);
+    analysis.setExcludedInterventions(newInterventionExclusionList);
 
     return em.merge(analysis);
   }
