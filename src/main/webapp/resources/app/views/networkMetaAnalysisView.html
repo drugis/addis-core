@@ -18,9 +18,9 @@
 
                         <div class="checkbox-group">
                             <div ng-repeat="intervention in interventions">
-                                <input type="checkbox" ng-model="intervention.isIncluded"
-                                       ng-change="changeInterventionExclusion()">
-                                <label>{{intervention.name}}</label>
+                                <label><input type="checkbox" ng-model="intervention.isIncluded"
+                                              ng-change="changeInterventionExclusion()">
+                                    {{intervention.name}}</label>
                             </div>
                         </div>
 
