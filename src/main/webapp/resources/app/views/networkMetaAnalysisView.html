@@ -1,44 +1,72 @@
 <div class="row">
     <div class="columns large-12">
-        <div class="panel" style="min-height: 130px;">
-            <div class="row ">
-                <div class="columns large-4 medium-6 small-12">
-                    Selected Outcome
-                    <select ng-model="analysis.outcome" ng-options="outcome.name for outcome in outcomes"
-                            ng-disabled="editMode.disableEditing" ng-change="changeSelectedOutcome()"></select>
-                </div>
-                <div class="columns medium-6 large-4 end">
-                    <button ng-disabled="tableHasAmbiguousArm || interventions.length < 2 || isNetworkDisconnected"
-                            ng-click="goToModel()">Go to GeMTC
-                        model
-                    </button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="columns large-12">
-                    <span class="alert animate-show" ng-show="analysis.outcome && isNetworkDisconnected">Network not connected.
-                    </span>
-                    <span class="alert animate-show" ng-show="interventions.length < 2">Fewer than two interventions defined.
-                    </span>
-                    <span class="alert animate-show" ng-show="tableHasAmbiguousArm">Ambiguous arms: more than one arm selected for single intervention.
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="columns large-8 medium-6 small-12">
+        <div class="row" data-equalizer>
+            <div class="columns large-6 medium-6 small-12" data-equalizer-watch>
                 <div class="row">
-                    <div class="columns large-6">
-                        <div class="table-title">Network graph</div>
+                    <div class="columns large-10">
+                        <label>Selected Outcome</label>
+                        <select ng-model="analysis.outcome" ng-options="outcome.name for outcome in outcomes"
+                                ng-disabled="editMode.disableEditing" ng-change="changeSelectedOutcome()"></select>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="columns large-10">
+
+                        <label>Included interventions</label>
+
+                        <div class="checkbox-group">
+                            <div ng-repeat="intervention in interventions">
+                                <input type="checkbox" ng-model="intervention.isIncluded"
+                                       ng-change="changeInterventionExclusion()">
+                                <label>{{intervention.name}}</label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="columns large-6 medium-6 small-12">
+                        <button class="button expand"
+                                ng-disabled="tableHasAmbiguousArm || interventions.length < 2 || isNetworkDisconnected"
+                                ng-click="goToModel()">
+                            Go to GeMTC model
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="columns large-6  medium-6 small-12">
+                        <span class="alert animate-show" ng-show="analysis.outcome && isNetworkDisconnected">Network not connected.
+                        </span>
+                        <span class="alert animate-show" ng-show="interventions.length < 2">Fewer than two interventions defined.
+                        </span>
+                        <span class="alert animate-show" ng-show="tableHasAmbiguousArm">Ambiguous arms: more than one arm selected for single intervention.
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+            <label>Network graph</label>
+
+            <div class="columns large-6 medium-6 small-11 addis-graph" data-equalizer-watch>
+                <div class="row">
+                    <div class="columns large-6 large-centered ">
+
+
                         <div ng-show="!analysis.outcome">
                             <p>No outcome selected.</p>
                         </div>
-                        <div ng-show="analysis.outcome" class="addis-graph" id="network-graph">
+                        <div ng-show="analysis.outcome" id="network-graph">
                             <svg></svg>
                         </div>
                     </div>
-                    <div class="columns large-6">
-                        <div class="graph-legend panel callout radius">
+                </div>
+                <div class="row">
+                    <div class="columns large-12">
+                        <div class="graph-legend text-smaller">
                             <p>The network graph shows the evidence network for all selected interventions. The size of
                                 an
                                 intervention's
@@ -51,16 +79,9 @@
                     </div>
                 </div>
             </div>
-            <div class="columns large-4 medium-6 small-12">
-                <ul>
-                    <li ng-repeat="intervention in interventions"><label><input type="checkbox"
-                                                                                ng-model="intervention.isIncluded"
-                                                                                ng-change="changeInterventionExclusion()">{{intervention.name}}</label>
-                    </li>
-                </ul>
-            </div>
         </div>
     </div>
+</div>
 </div>
 <div class="row">
     <div class="columns large-12">

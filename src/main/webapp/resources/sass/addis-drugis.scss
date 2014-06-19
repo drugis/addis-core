@@ -45,6 +45,12 @@ label {
   margin-bottom: 10px;
   padding: 0.5rem 0.25rem 0.5rem 0.5rem;
 }
+
+.checkbox-group {
+  padding-left: 0.5rem;
+  padding-bottom: 1rem;
+}
+
 .error-message {
   display: block;
   color: $drugis-color;
@@ -134,5 +140,5 @@ $table-title-font-size: 14px;
   margin-bottom: 10px;
 }
 .graph-legend {
-  margin-top: $table-title-font-size + $table-title-margin-top + $table-title-margin-bottom;
+  padding: 0.5rem 1rem;
 }

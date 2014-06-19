@@ -9023,61 +9023,67 @@ label {
   padding: 0.5rem 0.25rem 0.5rem 0.5rem;
 }
 
-/* line 48, ../../sass/addis-drugis.scss */
+/* line 49, ../../sass/addis-drugis.scss */
+.checkbox-group {
+  padding-left: 0.5rem;
+  padding-bottom: 1rem;
+}
+
+/* line 54, ../../sass/addis-drugis.scss */
 .error-message {
   display: block;
   color: #cc3333;
 }
 
-/* line 53, ../../sass/addis-drugis.scss */
+/* line 59, ../../sass/addis-drugis.scss */
 table {
   border-collapse: collapse;
 }
-/* line 56, ../../sass/addis-drugis.scss */
+/* line 62, ../../sass/addis-drugis.scss */
 table tr:nth-of-type(even) {
   background-color: transparent !important;
 }
-/* line 60, ../../sass/addis-drugis.scss */
+/* line 66, ../../sass/addis-drugis.scss */
 table tr th, table tr td {
   border: solid 1px #dadada;
   min-width: 200px;
 }
 
-/* line 66, ../../sass/addis-drugis.scss */
+/* line 72, ../../sass/addis-drugis.scss */
 td.empty-cell {
   background-color: #dadada;
 }
 
-/* line 70, ../../sass/addis-drugis.scss */
+/* line 76, ../../sass/addis-drugis.scss */
 tr.on-hover:hover {
   background: #dadada;
   cursor: pointer;
   text-decoration: underline;
 }
 
-/* line 75, ../../sass/addis-drugis.scss */
+/* line 81, ../../sass/addis-drugis.scss */
 tr.clickable td {
   color: #452f8c;
 }
 
-/* line 78, ../../sass/addis-drugis.scss */
+/* line 84, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table {
   border: none;
   border-spacing: 0px;
 }
-/* line 81, ../../sass/addis-drugis.scss */
+/* line 87, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td {
   border-bottom: solid 1px #dadada;
   vertical-align: top;
 }
-/* line 84, ../../sass/addis-drugis.scss */
+/* line 90, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td label {
   display: block;
   padding-left: 15px;
   text-indent: -15px;
   margin: 0;
 }
-/* line 90, ../../sass/addis-drugis.scss */
+/* line 96, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td input[type="checkbox"] {
   width: 13px;
   height: 13px;
@@ -9088,32 +9094,32 @@ table.network-meta-analysis-table tbody tr td input[type="checkbox"] {
   top: -3px;
   *overflow: hidden;
 }
-/* line 100, ../../sass/addis-drugis.scss */
+/* line 106, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td .alert-message {
   color: #e66464;
   padding-top: 1px;
 }
-/* line 105, ../../sass/addis-drugis.scss */
+/* line 111, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table thead tr th {
   border-bottom: solid 1px #dadada;
 }
-/* line 108, ../../sass/addis-drugis.scss */
+/* line 114, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tr.topborder td {
   border-top: solid 1px #dadada;
 }
 
-/* line 112, ../../sass/addis-drugis.scss */
+/* line 118, ../../sass/addis-drugis.scss */
 .undefined {
   color: #747474;
 }
 
-/* line 115, ../../sass/addis-drugis.scss */
+/* line 121, ../../sass/addis-drugis.scss */
 .table-cell-label {
   font-weight: bold;
   text-align: center;
 }
 
-/* line 123, ../../sass/addis-drugis.scss */
+/* line 129, ../../sass/addis-drugis.scss */
 .table-title {
   margin-left: 2px;
   font-size: 14px;
@@ -9122,7 +9128,7 @@ table.network-meta-analysis-table tr.topborder td {
   margin-bottom: 4px;
 }
 
-/* line 130, ../../sass/addis-drugis.scss */
+/* line 136, ../../sass/addis-drugis.scss */
 .addis-graph {
   background-color: white;
   border: solid 1px #dadada;
@@ -9130,7 +9136,7 @@ table.network-meta-analysis-table tr.topborder td {
   margin-bottom: 10px;
 }
 
-/* line 136, ../../sass/addis-drugis.scss */
+/* line 142, ../../sass/addis-drugis.scss */
 .graph-legend {
-  margin-top: 28px;
+  padding: 0.5rem 1rem;
 }
