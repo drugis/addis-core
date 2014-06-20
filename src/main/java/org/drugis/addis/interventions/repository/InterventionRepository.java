@@ -6,13 +6,13 @@ import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.interventions.InterventionCommand;
 import org.drugis.addis.security.Account;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by daan on 3/7/14.
  */
 public interface InterventionRepository {
-  Collection<Intervention> query(Integer projectId);
+  List<Intervention> query(Integer projectId);
 
   Intervention get(Integer projectId, Integer interventionId) throws ResourceDoesNotExistException;
 

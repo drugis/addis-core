@@ -4,10 +4,7 @@ package org.drugis.addis.problems.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.analyses.AbstractAnalysis;
-import org.drugis.addis.analyses.ArmExclusion;
-import org.drugis.addis.analyses.NetworkMetaAnalysis;
-import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -78,8 +75,10 @@ public class ProblemServiceImpl implements ProblemService {
 
   private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) {
     List<String> alternativeUris = new ArrayList<>();
-    Collection<Intervention> interventions = interventionRepository.query(project.getId());
+    List<Intervention> interventions = interventionRepository.query(project.getId());
     Map<String, String> interventionNamesByUrisMap = new HashMap<>();
+
+    interventions = filterExcludedInterventions(interventions, analysis.getExcludedInterventions());
 
     for (Intervention intervention : interventions) {
       alternativeUris.add(intervention.getSemanticInterventionUri());
@@ -87,7 +86,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     ObjectNode trialData = trialverseService.getTrialData(Long.valueOf(project.getTrialverseId()),
-      analysis.getOutcome().getSemanticOutcomeUri(), alternativeUris);
+            analysis.getOutcome().getSemanticOutcomeUri(), alternativeUris);
 
     ObjectMapper mapper = new ObjectMapper();
     TrialData convertedTrialData = mapper.convertValue(trialData, TrialData.class);
@@ -155,6 +154,23 @@ public class ProblemServiceImpl implements ProblemService {
       }
     }
     return interventionByDrugIdMap;
+  }
+
+  private List<Intervention> filterExcludedInterventions(List<Intervention> interventions, List<InterventionExclusion> exclusions) {
+    List<Intervention> filteredInterventions = new ArrayList<>();
+
+    Map<Integer, InterventionExclusion> exclusionMap = new HashMap<>(exclusions.size());
+    for (InterventionExclusion interventionExclusion : exclusions) {
+      exclusionMap.put(interventionExclusion.getInterventionId(), interventionExclusion);
+    }
+
+    for (Intervention intervention : interventions) {
+      if (exclusionMap.get(intervention.getId()) == null) {
+        filteredInterventions.add(intervention);
+      }
+    }
+
+    return filteredInterventions;
   }
 
   private List<TrialDataArm> filterUnmatchedArms(TrialDataStudy study, Map<Long, TrialDataIntervention> interventionByIdMap) {
