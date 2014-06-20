@@ -9132,11 +9132,10 @@ table.network-meta-analysis-table tr.topborder td {
 .addis-graph {
   background-color: white;
   border: solid 1px #dadada;
-  padding: 0px 0px;
   margin-bottom: 10px;
 }
 
-/* line 142, ../../sass/addis-drugis.scss */
+/* line 141, ../../sass/addis-drugis.scss */
 .graph-legend {
   padding: 0.5rem 1rem;
 }
