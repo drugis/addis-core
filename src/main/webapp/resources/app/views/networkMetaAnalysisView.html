@@ -37,9 +37,10 @@
                         </span>
                         <span class="alert animate-show" ng-show="interventions.length < 2">Fewer than two interventions defined.
                         </span>
-                        <span class="alert animate-show" ng-show="tableHasAmbiguousArm">Ambiguous arms: more than one arm selected for single intervention.
+                        <span class="alert animate-show"
+                              ng-show="tableHasAmbiguousArm && interventions.length > 1 && !hasLessThanTwoInterventions">Ambiguous arms: more than one arm selected for single intervention.
                         </span>
-                        <span class="alert animate-show" ng-show="hasLessThanTwoInterventions">A least two interventions are needen to perform the analysis</span>
+                        <span class="alert animate-show" ng-show="hasLessThanTwoInterventions">A least two interventions are needed to perform the analysis</span>
                     </div>
                 </div>
             </div>
