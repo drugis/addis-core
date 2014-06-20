@@ -16,7 +16,7 @@
                         <div class="checkbox-group">
                             <div ng-repeat="intervention in interventions">
                                 <label><input type="checkbox" ng-model="intervention.isIncluded"
-                                              ng-change="changeInterventionExclusion()">
+                                              ng-change="changeInterventionExclusion(intervention)">
                                     {{intervention.name}}</label>
                             </div>
                         </div>
@@ -43,6 +43,7 @@
                     </div>
                 </div>
             </div>
+
             <label>Network graph</label>
 
             <div class="columns large-6 medium-6 small-11" data-equalizer-watch>

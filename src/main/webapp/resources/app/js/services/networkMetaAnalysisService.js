@@ -92,7 +92,7 @@ define(['angular'], function() {
 
     function buildTableFromTrialData(data, interventions, excludedArms) {
       var rows = [];
-      if(interventions.length < 1) {
+      if (interventions.length < 1) {
         return rows;
       }
       var exclusionMap = buildExcludedArmsMap(excludedArms);
@@ -356,6 +356,34 @@ define(['angular'], function() {
       return interventions;
     }
 
+    function cleanUpExcludedArms(intervention, analysis, trialverseData) {
+
+      var armsMatchingIntervention = {};
+
+      angular.forEach(trialverseData.trialDataStudies, function(trialDataStudy) {
+        var drugIdForInterventionInStudy;
+
+        angular.forEach(trialDataStudy.trialDataInterventions, function(trialDataIntervention) {
+          if (trialDataIntervention.uri === intervention.semanticInterventionUri) {
+            drugIdForInterventionInStudy = trialDataIntervention.drugId;
+          }
+        });
+
+        if (drugIdForInterventionInStudy) {
+          angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
+            if (trialDataArm.drugId === drugIdForInterventionInStudy) {
+              armsMatchingIntervention[trialDataArm.id] = true;
+            }
+          });
+        }
+      });
+
+      return _.filter(analysis.excludedArms, function(excludedArm) {
+        return !armsMatchingIntervention[excludedArm.trialverseId];
+      });
+
+    }
+
     return {
       transformTrialDataToNetwork: transformTrialDataToNetwork,
       transformTrialDataToTableRows: transformTrialDataToTableRows,
@@ -364,7 +392,8 @@ define(['angular'], function() {
       changeArmExclusion: changeArmExclusion,
       buildInterventionExclusions: buildInterventionExclusions,
       doesInterventionHaveAmbiguousArms: doesInterventionHaveAmbiguousArms,
-      doesModelHaveAmbiguousArms: doesModelHaveAmbiguousArms
+      doesModelHaveAmbiguousArms: doesModelHaveAmbiguousArms,
+      cleanUpExcludedArms: cleanUpExcludedArms
     };
   };
   return dependencies.concat(NetworkMetaAnalysisService);

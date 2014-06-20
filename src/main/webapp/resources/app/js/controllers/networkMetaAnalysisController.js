@@ -154,7 +154,7 @@ define(['d3'], function(d3) {
     }
 
     function getIncludedIntervention(interventions) {
-      return _.filter(interventions, function(intervention){
+      return _.filter(interventions, function(intervention) {
         return intervention.isIncluded;
       });
     }
@@ -195,9 +195,12 @@ define(['d3'], function(d3) {
       });
     };
 
-    $scope.changeInterventionExclusion = function() {
+    $scope.changeInterventionExclusion = function(intervention) {
       $scope.analysis.excludedInterventions =
         NetworkMetaAnalysisService.buildInterventionExclusions($scope.interventions, $scope.analysis);
+      if (!intervention.isIncluded) {
+        $scope.analysis.excludedArms = NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, $scope.analysis, $scope.trialverseData);
+      }
       $scope.analysis.$save(function() {
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
         $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);

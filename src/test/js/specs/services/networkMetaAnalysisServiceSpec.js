@@ -897,5 +897,69 @@ define(['angular', 'angular-mocks', 'services'], function() {
       }));
     });
 
+    describe('cleanUpExcludedArms', function() {
+      beforeEach(module('addis.services'));
+
+      it('should remove armExclusions that match the intervention', inject(function(NetworkMetaAnalysisService) {
+        var study1 = {
+          trialDataInterventions: [{
+            drugId: 1,
+            uri: "uri1"
+          }, {
+            drugId: 2,
+            uri: "uri2"
+          }, ],
+          trialDataArms: [{
+            drugId: 1,
+            id: 10
+          }, {
+            drugId: 2,
+            id: 11
+          }, {
+            drugId: 2,
+            id: 12
+          }]
+        };
+        var study2 = {
+          trialDataInterventions: [{
+            drugId: 3,
+            uri: "uri1"
+          }, {
+            drugId: 4,
+            uri: "uri3"
+          }],
+          trialDataArms: [{
+            drugId: 7,
+            id: 20
+          }, {
+            drugId: 3,
+            id: 21
+          }]
+        };
+        var trialverseData = {
+          trialDataStudies: [study1, study2]
+        };
+        var analysis = {
+          excludedArms: [{
+            trialverseId: 10
+          }, {
+            trialverseId: 21
+          }, {
+            trialverseId: 20
+          }]
+        };
+        var intervention = {
+          semanticInterventionUri: "uri1"
+        };
+
+        var expectedArmExclusions = [{
+          trialverseId: 20
+        }];
+
+        expect(NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, analysis, trialverseData)).toEqual(expectedArmExclusions);
+
+      }));
+    });
+
   });
 });
