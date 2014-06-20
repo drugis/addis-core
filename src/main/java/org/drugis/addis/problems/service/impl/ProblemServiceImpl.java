@@ -63,7 +63,7 @@ public class ProblemServiceImpl implements ProblemService {
 
   @Override
   public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
-    Project project = projectRepository.getProjectById(projectId);
+    Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(projectId, analysisId);
     if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
       return getSingleStudyBenefitRiskProblem(project, (SingleStudyBenefitRiskAnalysis) analysis);
@@ -99,7 +99,7 @@ public class ProblemServiceImpl implements ProblemService {
       filteredArms = filterExcludedArms(filteredArms, analysis);
 
       // do not include studies with fewer than two included and matched arms
-      if(filteredArms.size() >= 2) {
+      if (filteredArms.size() >= 2) {
 
         for (TrialDataArm trialDataArm : filteredArms) {
           String interventionUri = interventionByDrugIdMap.get(trialDataArm.getDrugId()).getUri();

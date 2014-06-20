@@ -13,7 +13,7 @@ import java.util.Collection;
 public interface ProjectRepository {
   Collection<Project> query();
 
-  Project getProjectById(Integer projectId) throws ResourceDoesNotExistException;
+  Project get(Integer projectId) throws ResourceDoesNotExistException;
 
   Collection<Project> queryByOwnerId(Integer ownerId);
 

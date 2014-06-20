@@ -155,21 +155,21 @@ public class ProjectsControllerTest {
   @Test
   public void testGetSingleProject() throws Exception {
     Project project = new Project(1, john, "name", "desc", 1);
-    when(projectRepository.getProjectById(project.getId())).thenReturn(project);
+    when(projectRepository.get(project.getId())).thenReturn(project);
     mockMvc.perform(get("/projects/" + project.getId()).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.id", is(project.getId())));
-    verify(projectRepository).getProjectById(project.getId());
+    verify(projectRepository).get(project.getId());
   }
 
   @Test
   public void testGetNonexistentProject() throws Exception {
     int projectId = 1;
-    when(projectRepository.getProjectById(projectId)).thenThrow(new ResourceDoesNotExistException());
+    when(projectRepository.get(projectId)).thenThrow(new ResourceDoesNotExistException());
     mockMvc.perform(get("/projects/1").principal(user))
             .andExpect(status().isNotFound());
-    verify(projectRepository).getProjectById(projectId);
+    verify(projectRepository).get(projectId);
   }
 
   @Test

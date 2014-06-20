@@ -4,6 +4,7 @@ import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.CriteriaRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.models.repositories.ModelRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
@@ -57,6 +58,11 @@ public class TestConfig {
   @Bean
   public OutcomeRepository outcomeRepository() {
     return mock(OutcomeRepository.class);
+  }
+
+  @Bean
+  public AnalysisService analysisService() {
+    return mock(AnalysisService.class);
   }
 
   @Bean

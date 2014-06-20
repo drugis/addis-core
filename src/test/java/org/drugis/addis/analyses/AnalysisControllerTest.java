@@ -6,6 +6,7 @@ import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.CriteriaRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
@@ -59,6 +60,9 @@ public class AnalysisControllerTest {
 
   @Inject
   private AnalysisRepository analysisRepository;
+
+  @Inject
+  private AnalysisService analysisService;
 
   @Inject
   private SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
@@ -129,28 +133,28 @@ public class AnalysisControllerTest {
   public void testCreateSingleStudyBenefitRiskAnalysis() throws Exception {
     SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
-    when(singleStudyBenefitRiskAnalysisRepository.create(gert, analysisCommand)).thenReturn(analysis);
+    when(analysisService.createSingleStudyBenefitRiskAnalysis(gert, analysisCommand)).thenReturn(analysis);
     String body = TestUtils.createJson(analysisCommand);
     mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
-    verify(singleStudyBenefitRiskAnalysisRepository).create(gert, analysisCommand);
+    verify(analysisService).createSingleStudyBenefitRiskAnalysis(gert, analysisCommand);
   }
 
   @Test
   public void testCreateNetworkMetaAnalysis() throws Exception {
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "name");
     AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.NETWORK_META_ANALYSIS_LABEL);
-    when(networkMetaAnalysisRepository.create(gert, analysisCommand)).thenReturn(analysis);
+    when(analysisService.createNetworkMetaAnalysis(gert, analysisCommand)).thenReturn(analysis);
     String body = TestUtils.createJson(analysisCommand);
     mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
-    verify(networkMetaAnalysisRepository).create(gert, analysisCommand);
+    verify(analysisService).createNetworkMetaAnalysis(gert, analysisCommand);
   }
 
   @Test(expected = NestedServletException.class)
@@ -309,7 +313,7 @@ public class AnalysisControllerTest {
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(oldAnalysis.getId(), oldAnalysis.getProjectId(), oldAnalysis.getName(), outcome);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
-    when(networkMetaAnalysisRepository.update(gert, newAnalysis)).thenReturn(newAnalysis);
+    when(analysisService.updateNetworkMetaAnalysis(gert, newAnalysis)).thenReturn(newAnalysis);
     String jsonCommand = TestUtils.createJson(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
             .content(jsonCommand)
@@ -317,8 +321,7 @@ public class AnalysisControllerTest {
             .contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
-    verify(analysisRepository).get(projectId, analysisId);
-    verify(networkMetaAnalysisRepository).update(gert, newAnalysis);
+    verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
   }
 
   @Test
@@ -337,8 +340,7 @@ public class AnalysisControllerTest {
             .contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
-    verify(analysisRepository).get(projectId, analysisId);
-    verify(networkMetaAnalysisRepository).update(gert, newAnalysis);
+    verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
   }
 
 

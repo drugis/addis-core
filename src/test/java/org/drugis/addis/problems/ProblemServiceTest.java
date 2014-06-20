@@ -98,7 +98,7 @@ public class ProblemServiceTest {
 
     int projectId = 1;
     Project project = mock(Project.class);
-    when(projectRepository.getProjectById(projectId)).thenReturn(project);
+    when(projectRepository.get(projectId)).thenReturn(project);
 
     int analysisId = 2;
     SingleStudyBenefitRiskAnalysis analysis = mock(SingleStudyBenefitRiskAnalysis.class);
@@ -139,7 +139,7 @@ public class ProblemServiceTest {
     // execute
     SingleStudyBenefitRiskProblem actualProblem = (SingleStudyBenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
-    verify(projectRepository).getProjectById(projectId);
+    verify(projectRepository).get(projectId);
     verify(analysisRepository).get(projectId, analysisId);
     verify(alternativeService).createAlternatives(project, analysis);
     verify(criteriaService).createVariableCriteriaPairs(project, analysis);
@@ -185,14 +185,14 @@ public class ProblemServiceTest {
     ObjectNode trialDataNode = mapper.convertValue(trialData, ObjectNode.class);
     when(project.getId()).thenReturn(projectId);
     when(project.getTrialverseId()).thenReturn(namespaceId.intValue());
-    when(projectRepository.getProjectById(projectId)).thenReturn(project);
+    when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(trialverseService.getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"))).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
-    verify(projectRepository).getProjectById(projectId);
+    verify(projectRepository).get(projectId);
     verify(analysisRepository).get(projectId, analysisId);
     verify(interventionRepository).query(projectId);
     verify(trialverseService).getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"));
@@ -238,14 +238,14 @@ public class ProblemServiceTest {
     ObjectMapper mapper = new ObjectMapper();
     ObjectNode trialDataNode = mapper.convertValue(trialData, ObjectNode.class);
 
-    when(projectRepository.getProjectById(projectId)).thenReturn(project);
+    when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(trialverseService.getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri3"))).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
-    verify(projectRepository).getProjectById(projectId);
+    verify(projectRepository).get(projectId);
     verify(analysisRepository).get(projectId, analysisId);
     verify(interventionRepository).query(projectId);
     verify(trialverseService).getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri3"));

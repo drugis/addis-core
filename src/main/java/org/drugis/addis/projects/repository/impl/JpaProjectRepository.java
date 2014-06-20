@@ -29,7 +29,7 @@ public class JpaProjectRepository implements ProjectRepository {
   }
 
   @Override
-  public Project getProjectById(Integer projectId) throws ResourceDoesNotExistException {
+  public Project get(Integer projectId) throws ResourceDoesNotExistException {
     Project project = em.find(Project.class, projectId);
     if (project == null) {
       throw new ResourceDoesNotExistException();

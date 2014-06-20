@@ -27,9 +27,17 @@ public class ProjectServiceImpl implements ProjectService {
   @Override
   public void checkOwnership(Integer projectId, Principal principal) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(principal.getName());
-    Project project = projectRepository.getProjectById(projectId);
+    Project project = projectRepository.get(projectId);
 
     if (project == null || !project.getOwner().equals(user)) {
+      throw new MethodNotAllowedException();
+    }
+  }
+
+  @Override
+  public void checkProjectExistsAndModifiable(Account user, Integer projectId) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Project project = projectRepository.get(projectId);
+    if (!project.getOwner().getId().equals(user.getId())) {
       throw new MethodNotAllowedException();
     }
   }

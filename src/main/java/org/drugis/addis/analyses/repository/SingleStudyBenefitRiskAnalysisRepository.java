@@ -14,7 +14,7 @@ import java.util.Collection;
 public interface SingleStudyBenefitRiskAnalysisRepository {
   Collection<SingleStudyBenefitRiskAnalysis> query(Integer projectId);
 
-  SingleStudyBenefitRiskAnalysis create(Account user, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException;
+  SingleStudyBenefitRiskAnalysis create(AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException;
 
   SingleStudyBenefitRiskAnalysis update(Account user, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException;
 }

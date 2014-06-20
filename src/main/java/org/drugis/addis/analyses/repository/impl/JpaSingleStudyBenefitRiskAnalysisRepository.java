@@ -12,7 +12,6 @@ import org.drugis.addis.security.Account;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -30,9 +29,6 @@ public class JpaSingleStudyBenefitRiskAnalysisRepository implements SingleStudyB
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;
 
-  @Inject
-  AnalysisRepositoryUtils analysisRepositoryUtils;
-
   @Override
   public Collection<SingleStudyBenefitRiskAnalysis> query(Integer projectId) {
     TypedQuery<SingleStudyBenefitRiskAnalysis> query = em.createQuery("FROM SingleStudyBenefitRiskAnalysis a WHERE a.projectId = :projectId", SingleStudyBenefitRiskAnalysis.class);
@@ -41,9 +37,8 @@ public class JpaSingleStudyBenefitRiskAnalysisRepository implements SingleStudyB
   }
 
   @Override
-  public SingleStudyBenefitRiskAnalysis create(Account account, AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public SingleStudyBenefitRiskAnalysis create(AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
     SingleStudyBenefitRiskAnalysis newAnalysis = new SingleStudyBenefitRiskAnalysis(analysisCommand.getProjectId(), analysisCommand.getName(), Collections.EMPTY_LIST, Collections.EMPTY_LIST);
-    analysisRepositoryUtils.checkProjectExistsAndModifiable(account, analysisCommand.getProjectId(), em);
     em.persist(newAnalysis);
     return newAnalysis;
   }
