@@ -59,7 +59,7 @@ public class NetworkMetaAnalysisRepositoryTest {
 
   @Test
   public void testUpdate() throws ResourceDoesNotExistException, MethodNotAllowedException {
-    Integer analysisId = -5;
+    Integer analysisId = -6;
     Account user = em.find(Account.class, 1);
     Integer projectId = 1;
     Outcome outcome = em.find(Outcome.class, 1);
@@ -69,6 +69,15 @@ public class NetworkMetaAnalysisRepositoryTest {
     assertEquals(analysis.getProjectId(), updatedAnalysis.getProjectId());
     assertEquals(analysis.getName(), updatedAnalysis.getName());
     assertEquals(outcome, updatedAnalysis.getOutcome());
+  }
+
+  @Test(expected = MethodNotAllowedException.class)
+  public void testUpdateLockedAnalysis() throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Integer projectId = 1;
+    Account user = em.find(Account.class, 1);
+    Integer lockedAnalysisId = -5;
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(lockedAnalysisId, projectId, "this is not happening", null);
+    networkMetaAnalysisRepository.update(user, analysis);
   }
 
   @Test
@@ -99,7 +108,7 @@ public class NetworkMetaAnalysisRepositoryTest {
 
   @Test (expected = ResourceDoesNotExistException.class)
   public void testUpdateWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
-    Integer analysisId = -5;
+    Integer analysisId = -6;
     Account user = em.find(Account.class, 1);
     Outcome outcome = em.find(Outcome.class, 1);
     Integer wrongProject = 3;
@@ -109,7 +118,7 @@ public class NetworkMetaAnalysisRepositoryTest {
 
   @Test(expected = ResourceDoesNotExistException.class)
   public void testUpdateWithOutcomeInWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
-    Integer analysisId = -5;
+    Integer analysisId = -6;
     Account user = em.find(Account.class, 1);
     Integer projectId = 1;
     Outcome outcome = em.find(Outcome.class, 3);
