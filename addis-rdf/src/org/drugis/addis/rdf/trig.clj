@@ -65,12 +65,34 @@
   [prefixes graphs]
     (join "\n\n" (concat [(write-prefixes prefixes)] (map #(write-graph prefixes %) graphs))))
 
-(defn rdf-uri
+(defn iri
+  "Generate an RDF IRI."
   ([uri] [:uri (str "<" uri ">")])
   ([prefix resource] [:uri (str (name prefix) ":" resource)]))
 
-(defn rdf-blank
-  [pairs] [:blank pairs])
+(defn lit
+  "Generate an RDF literal of the given value."
+  [value]
+  value)
 
-(defn rdf-coll
+(defn coll
+  "Generate an RDF collection from the given sequence of resources."
   [resources] [:coll resources])
+
+(defn iri? [x]
+  "True if x is an IRI."
+  (and (sequential? x) (= :uri (first x))))
+
+(defn spo 
+  "Generate a named node with a number of predicate-object pairs.
+  s may be (i) an IRI or (ii) the result of a previous call to spo.
+  In the latter case, the predicate-object pairs are appended to the predicate-object pair list of s."
+  [s & po*]
+  (if (and (sequential? s) (iri? (first s)))
+    [(first s) (concat (second s) po*)]
+    [s po*]))
+
+(defn _po
+  "Generate a blank node with a number of predicate-object pairs."
+  [& po*]
+  (apply spo :blank po*))

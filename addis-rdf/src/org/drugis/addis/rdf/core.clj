@@ -3,40 +3,37 @@
             [clojure.java.io :refer [as-file]]
             [clojure.string :refer [blank?]]
             [riveted.core :as vtd]
-            [org.drugis.addis.rdf.trig :refer [write-trig rdf-uri rdf-blank rdf-coll]]))
+            [org.drugis.addis.rdf.trig :as trig]))
 
 (defn uuid [] (str (java.util.UUID/randomUUID)))
 
 (defn drug-rdf [xml uri]
-  [uri
-   (concat 
-     [[(rdf-uri :rdf "type") (rdf-uri :owl "Class")]
-      [(rdf-uri :rdfs "label") (vtd/attr xml :name)]
-      [(rdf-uri :rdfs "subClassOf") (rdf-uri :ontology "Drug")]]
-     (let [atcCode (vtd/attr xml :atcCode)]
-       (if (not (or (nil? atcCode) (blank? atcCode)))
-         [[(rdf-uri :owl "sameAs") (rdf-uri :atc atcCode)]]
-         [])))])
+  (let [atcCode (vtd/attr xml :atcCode)
+        subj (if (or (nil? atcCode) (blank? atcCode))
+               uri
+               (trig/spo uri [(trig/iri :owl "sameAs") (trig/iri :atc atcCode)]))]
+    (trig/spo subj
+         [(trig/iri :rdf "type") (trig/iri :owl "Class")]
+         [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
+         [(trig/iri :rdfs "subClassOf") (trig/iri :ontology "Drug")])))
 
 (defn indication-rdf [xml uri]
-  [uri
-   (concat
-     [[(rdf-uri :rdf "type") (rdf-uri :owl "Class")]
-      [(rdf-uri :rdfs "label") (vtd/attr xml :name)]
-      [(rdf-uri :rdfs "subClassOf") (rdf-uri :ontology "Indication")]]
-     (let [snomedCode (vtd/attr xml :code)]
-       (if (not (or (nil? snomedCode) (blank? snomedCode)))
-         [[(rdf-uri :owl "sameAs") (rdf-uri :snomed snomedCode)]]
-         [])))])
+  (let [snomedCode (vtd/attr xml :code)
+        subj (if (or (nil? snomedCode) (blank? snomedCode))
+               uri
+               (trig/spo uri [(trig/iri :owl "sameAs") (trig/iri :snomed snomedCode)]))]
+    (trig/spo subj 
+         [(trig/iri :rdf "type") (trig/iri :owl "Class")]
+         [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
+         [(trig/iri :rdfs "subClassOf") (trig/iri :ontology "Indication")])))
 
 ; TODO: rate/continuous/etc, unitOfMeasurement, direction?
 (defn variable-rdf [xml uri superClass]
-  [uri
-   [[(rdf-uri :rdf "type") (rdf-uri :owl "Class")]
-    [(rdf-uri :rdfs "label") (vtd/attr xml :name)]
-    [(rdf-uri :rdfs "comment") (vtd/attr xml :description)]
-    [(rdf-uri :rdfs "subClassOf") (rdf-uri :ontology superClass)]]
-   ])
+  (trig/spo uri 
+       [(trig/iri :rdf "type") (trig/iri :owl "Class")]
+       [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
+       [(trig/iri :rdfs "comment") (trig/lit (vtd/attr xml :description))]
+       [(trig/iri :rdfs "subClassOf") (trig/iri :ontology superClass)]))
 
 (defn endpoint-rdf [xml uri]
   (variable-rdf xml uri "Endpoint"))
@@ -48,7 +45,7 @@
   (variable-rdf xml uri "PopulationCharacteristic"))
 
 (defn import-entity [xml rdf-fn]
-  (let [uri (rdf-uri :entity (uuid))]
+  (let [uri (trig/iri :entity (uuid))]
     {:id (vtd/attr xml :name)
      :uri uri
      :rdf (rdf-fn xml uri)}))
@@ -68,94 +65,106 @@
   (vtd/text (vtd/at xml (str "./characteristics/" charName "/value"))))
 
 (def allocationTypeUri
-  {"RANDOMIZED" (rdf-uri :ontology "allocationRandomized")
-   "NONRANDOMIZED" (rdf-uri :ontology "allocationNonRandomized")})
+  {"RANDOMIZED" (trig/iri :ontology "allocationRandomized")
+   "NONRANDOMIZED" (trig/iri :ontology "allocationNonRandomized")})
 
-(defn allocation-rdf [xml]
+(defn allocation-rdf [subj xml]
   (let [allocation (allocationTypeUri (studyCharVal xml "allocation"))]
-    (if (nil? allocation) [] [[(rdf-uri :ontology "has_allocation") allocation]])))
+    (if allocation
+      (trig/spo subj [(trig/iri :ontology "has_allocation") allocation])
+      subj)))
 
 (def blindingTypeUri
-  {"OPEN" (rdf-uri :ontology "blindingNone")
-   "SINGLE_BLIND" (rdf-uri :ontology "blindingSingle")
-   "DOUBLE_BLIND" (rdf-uri :ontology "blindingDouble")
-   "TRIPLE_BLIND" (rdf-uri :ontology "blindingTriple") })
+  {"OPEN" (trig/iri :ontology "blindingNone")
+   "SINGLE_BLIND" (trig/iri :ontology "blindingSingle")
+   "DOUBLE_BLIND" (trig/iri :ontology "blindingDouble")
+   "TRIPLE_BLIND" (trig/iri :ontology "blindingTriple") })
 
-(defn blinding-rdf [xml]
+(defn blinding-rdf [subj xml]
   (let [blinding (blindingTypeUri (studyCharVal xml "blinding"))]
-    (if (nil? blinding) [] [[(rdf-uri :ontology "has_blinding") blinding]])))
+    (if blinding
+      (trig/spo subj [(trig/iri :ontology "has_blinding") blinding])
+      subj)))
 
 (defn as-int [string] (if (nil? string) nil (Integer. string)))
 
-(defn centers-rdf [xml]
+(defn centers-rdf [subj xml]
   (let [centers (as-int (studyCharVal xml "centers"))]
-    (if (nil? centers) [] [[(rdf-uri :ontology "has_number_of_centers") centers]])))
+    (if centers
+      (trig/spo subj [(trig/iri :ontology "has_number_of_centers") (trig/lit centers)])
+      subj)))
 
 ; TODO: add rdfs:label and rdfs:comment from the source entity
 (defn study-indication-rdf [xml entity-uris instance-uri]
-  [[instance-uri
-  [[(rdf-uri :rdf "type") ((:indication entity-uris) (vtd/attr (vtd/at xml "./indication") :name))]]]])
+  (let [entity-uri ((:indication entity-uris) (vtd/attr (vtd/at xml "./indication") :name))]
+    (trig/spo instance-uri [(trig/iri :rdf "type") entity-uri])))
 
 ; TODO: add rdfs:label and rdfs:comment from the source entity. more info?
 (defn study-outcome-rdf [xml entity-uris instance-uri]
   (let [entity-name (vtd/attr (vtd/first-child xml) :name)
-        entity-type (vtd/tag (vtd/first-child xml))]
-  [instance-uri
-  [[(rdf-uri :rdf "type") ((entity-uris (keyword entity-type)) entity-name)]]]))
+        entity-type (vtd/tag (vtd/first-child xml))
+        entity-uri ((entity-uris (keyword entity-type)) entity-name)]
+    (trig/spo instance-uri [(trig/iri :rdf "type") entity-uri])))
 
 ; TODO: add rdfs:label and rdfs:comment from the source entity. more info?
 (defn study-drug-rdf [drug-name entity-uris instance-uri]
-  [instance-uri
-   [[(rdf-uri :rdf "type") ((entity-uris :drug) drug-name)]]])
+  (trig/spo instance-uri [(trig/iri :rdf "type") ((entity-uris :drug) drug-name)]))
 
-(defn activity-other-rdf [xml study-drug-uris]
-  [[(rdf-uri :rdf "type") (rdf-uri :ontology "StudyActivity")]
-   [(rdf-uri :rdfs "comment") (vtd/text xml)]])
+(defn activity-other-rdf [subj xml study-drug-uris]
+  (trig/spo subj
+       [(trig/iri :rdf "type") (trig/iri :ontology "StudyActivity")]
+       [(trig/iri :rdfs "comment") (trig/lit (vtd/text xml))]))
 
-(defn activity-predefined-rdf [xml study-drug-uris]
-  ({"RANDOMIZATION" [[(rdf-uri :rdf "type") (rdf-uri :ontology "RandomizationActivity")]]
-   "SCREENING" [[(rdf-uri :rdf "type") (rdf-uri :ontology "ScreeningActivity")]]
-   "WASH_OUT" [[(rdf-uri :rdf "type") (rdf-uri :ontology "WashOutActivity")]]
-   "FOLLOW_UP" [[(rdf-uri :rdf "type") (rdf-uri :ontology "FollowUpActivity")]]}
-   (vtd/text xml)))
+(defn activity-predefined-rdf [subj xml study-drug-uris]
+  (let [activity-predefined {"RANDOMIZATION" "RandomizationActivity"
+                             "SCREENING" "ScreeningActivity"
+                             "WASH_OUT" "WashOutActivity"
+                             "FOLLOW_UP" "FollowUpActivity"}]
+    (trig/spo subj [(trig/iri :rdf "type") (trig/iri :ontology (activity-predefined (vtd/text xml)))])))
 
 ; TODO: dosing, units
 (defn treatment-rdf [xml study-drug-uris]
-  (rdf-blank [[(rdf-uri :ontology "treatment_has_drug") (study-drug-uris (vtd/attr (vtd/at xml "./drug") :name))]]))
+  (trig/_po [(trig/iri :ontology "treatment_has_drug") (study-drug-uris (vtd/attr (vtd/at xml "./drug") :name))]))
 
-(defn activity-treatment-rdf [xml study-drug-uris]
-  [[(rdf-uri :rdf "type") (rdf-uri :ontology "TreatmentActivity")]
-   [(rdf-uri :ontology "administeredDrugs") (rdf-coll (map #(treatment-rdf % study-drug-uris) (vtd/search xml "./drugTreatment")))]])
+(defn activity-treatment-rdf [subj xml study-drug-uris]
+  (let [drugs-coll (trig/coll (map #(treatment-rdf % study-drug-uris) (vtd/search xml "./drugTreatment")))]
+    (trig/spo subj 
+              [(trig/iri :rdf "type") (trig/iri :ontology "TreatmentActivity")]
+              [(trig/iri :ontology "administeredDrugs") drugs-coll])))
 
 (def activity-rdf
   {"predefined" activity-predefined-rdf
    "other" activity-other-rdf
    "treatment" activity-treatment-rdf})
 
+(defn activity-used-by-rdf
+  [subj xml arm-uris epoch-uris]
+  (trig/spo subj
+            [(trig/iri :ontology "applied_to_arm") (arm-uris (vtd/attr xml "arm"))]
+            [(trig/iri :ontology "applied_in_epoch") (epoch-uris (vtd/attr xml "epoch"))]))
+
 (defn study-activity-rdf [xml activity-uri entity-uris arm-uris epoch-uris study-drug-uris]
   (let [activity (vtd/first-child (vtd/at xml "./activity"))
-        activity-type (vtd/tag activity)]
-  [activity-uri
-   (apply concat
-          ((activity-rdf activity-type) activity study-drug-uris)
-          (map (fn [xml] [
-                          [(rdf-uri :ontology "applied_to_arm") (arm-uris (vtd/attr xml "arm"))]
-                          [(rdf-uri :ontology "applied_in_epoch") (epoch-uris (vtd/attr xml "epoch"))]])
-               (vtd/search xml "./usedBy")))]))
+        activity-type (vtd/tag activity)
+        used-by (fn [subj xml] (activity-used-by-rdf subj xml arm-uris epoch-uris))
+        subj ((activity-rdf activity-type) activity-uri activity study-drug-uris)]
+    (reduce used-by subj (vtd/search xml "./usedBy"))))
+
+(defn spo-each [subj pred obj*]
+  (reduce (fn [subj obj] (trig/spo subj [pred obj])) subj obj*))
 
 ; TODO: import the interesting stuff
 (defn study-rdf [xml uri entity-uris]
-  (let [indication-uri (rdf-uri :instance (uuid))
-        study-outcome-uris (apply merge (map (fn [el] {(vtd/attr el :id) (rdf-uri :instance (uuid))}) (vtd/search xml "./studyOutcomeMeasures/studyOutcomeMeasure")))
-        arm-uris (apply merge (map (fn [el] {(vtd/attr el :name) (rdf-uri :arm (uuid))}) (vtd/search xml "./arms/arm")))
-        epoch-uris (apply merge (map (fn [el] {(vtd/attr el :name) (rdf-uri :epoch (uuid))}) (vtd/search xml "./epochs/epoch")))
-        study-drug-uris (apply merge (map (fn [el] {(vtd/attr el :name) (rdf-uri :drug (uuid))}) (vtd/search xml "./activities/studyActivity/activity/treatment/drugTreatment/drug")))]
+  (let [indication-uri (trig/iri :instance (uuid))
+        study-outcome-uris (apply merge (map (fn [el] {(vtd/attr el :id) (trig/iri :instance (uuid))}) (vtd/search xml "./studyOutcomeMeasures/studyOutcomeMeasure")))
+        arm-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :arm (uuid))}) (vtd/search xml "./arms/arm")))
+        epoch-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :epoch (uuid))}) (vtd/search xml "./epochs/epoch")))
+        study-drug-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :drug (uuid))}) (vtd/search xml "./activities/studyActivity/activity/treatment/drugTreatment/drug")))]
     (concat
-      [[uri
-        (concat
-          [[(rdf-uri :rdf "type") (rdf-uri :ontology "Study")]
-           [(rdf-uri :rdfs "label") (vtd/attr xml :name)]
-           [(rdf-uri :rdfs "comment") (vtd/text (vtd/at xml "./characteristics/title/value"))]]
+      [(-> uri
+           (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Study")]
+                     [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
+                     [(trig/iri :rdfs "comment") (trig/lit (vtd/text (vtd/at xml "./characteristics/title/value")))])
           ; # characteristics
           (allocation-rdf xml)
           (blinding-rdf xml)
@@ -170,19 +179,19 @@
           ; status
           ; 
           ; ## actual stuff
-          [[(rdf-uri :ontology "has_indication") indication-uri]]
-          (map (fn [el] [(rdf-uri :ontology "has_outcome") el]) (vals study-outcome-uris))
-          (map (fn [el] [(rdf-uri :ontology "has_arm") el]) (vals arm-uris)) ; TODO: arm sizes
-          (map (fn [el] [(rdf-uri :ontology "has_epoch") el]) (vals epoch-uris)) ; TODO: duration
+          (trig/spo [(trig/iri :ontology "has_indication") indication-uri])
+          (spo-each (trig/iri :ontology "has_outcome") (vals study-outcome-uris))
+          (spo-each (trig/iri :ontology "has_arm") (vals arm-uris)) ; TODO: arm sizes
+          (spo-each (trig/iri :ontology "has_epoch") (vals epoch-uris)) ; TODO: duration
           ; measurements
-          )]]
-      (study-indication-rdf xml entity-uris indication-uri)
+          )]
+      [(study-indication-rdf xml entity-uris indication-uri)]
       (map #(study-outcome-rdf (vtd/at xml (str "./studyOutcomeMeasures/studyOutcomeMeasure[@id='" % "']")) entity-uris (study-outcome-uris %)) (keys study-outcome-uris))
       (map #(study-drug-rdf % entity-uris (study-drug-uris %)) (keys study-drug-uris))
-      (map #(study-activity-rdf % (rdf-uri :activity (uuid)) entity-uris arm-uris epoch-uris study-drug-uris) (vtd/search xml "./activities/studyActivity")))))
+      (map #(study-activity-rdf % (trig/iri :activity (uuid)) entity-uris arm-uris epoch-uris study-drug-uris) (vtd/search xml "./activities/studyActivity")))))
 
 (defn import-study [xml entity-uris]
-  (let [uri (rdf-uri :study (uuid))]
+  (let [uri (trig/iri :study (uuid))]
     {:id (vtd/attr xml :name)
      :uri uri
      :rdf [uri (study-rdf xml uri entity-uris)]}))
@@ -218,13 +227,11 @@
                      :adverseEvent adverseEvent-uri-map
                      :populationCharacteristic populationCharacteristic-uri-map}
         [studies-uri-map studies-graphs] (import-studies xml "/addis-data/studies/study" entity-uris)
-        contains-studies (map (fn [study-uri] [(rdf-uri :ontology "contains_study") study-uri]) (vals studies-uri-map))
-        dataset-rdf [[(rdf-uri :dataset dataset-id)
-                      (concat
-                        [[(rdf-uri :rdf "type") (rdf-uri :ontology "Dataset")]
-                         [(rdf-uri :rdfs "label") label]
-                         [(rdf-uri :rdfs "comment") description]]
-                        contains-studies)]]
+        dataset-rdf [(-> (trig/iri :dataset dataset-id)
+                         (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Dataset")]
+                                   [(trig/iri :rdfs "label") label]
+                                   [(trig/iri :rdfs "comment") description])
+                         (spo-each (trig/iri :ontology "contains_study") (vals studies-uri-map)))]
         meta-graph (concat 
                      indications-rdf
                      drugs-rdf
@@ -233,7 +240,7 @@
                      populationCharacteristics-rdf
                      dataset-rdf)]
     (str
-      (write-trig prefixes (cons [(rdf-uri :dataset dataset-id) meta-graph] studies-graphs)))))
+      (trig/write-trig prefixes (cons [(trig/iri :dataset dataset-id) meta-graph] studies-graphs)))))
 
 (defn -main
   [& args]
