@@ -48,6 +48,11 @@
    (let [triple-str (write-pairs prefixes (second triples) indent)]
      (str indent (ttl-str (first triples)) "\n" triple-str " ."))))
 
+(defn write-triples-list
+  ([prefixes triples-list] (write-triples-list prefixes triples-list ""))
+  ([prefixes triples-list indent]
+   (join "\n\n" (map #(write-triples prefixes % indent) triples-list))))
+
 ; write a list of prefixes
 (defn write-prefixes [prefixes]
   (let [write-prefix (fn [[prefix uri]] (format "@prefix %s: <%s> ." (name prefix)  uri))]
@@ -55,11 +60,11 @@
 
 (defn write-ttl
   [prefixes statements]
-      (join "\n\n" (concat [(write-prefixes prefixes) ""] (map #(write-triples prefixes %) statements))))
+  (join "\n\n" [(write-prefixes prefixes) (write-triples-list prefixes statements)]))
 
 (defn write-graph
   [prefixes graph]
-    (join "\n\n" (concat [(str (ttl-str (first graph)) " {")] (map #(write-triples prefixes % _indent_) (second graph)) ["}"])))
+    (join "\n\n" [(str (ttl-str (first graph)) " {") (write-triples-list prefixes (second graph) "  ") "}"]))
 
 (defn write-trig
   [prefixes graphs]
@@ -96,3 +101,8 @@
   "Generate a blank node with a number of predicate-object pairs."
   [& po*]
   (apply spo :blank po*))
+
+(defn graph
+  "Generate a graph with the given IRI and triples"
+  [g triples]
+  [g triples])

@@ -2,6 +2,7 @@
   (:use clojure.test)
   (:use org.drugis.addis.rdf.trig))
 
+; TODO: actually blank nodes are also allowed in the subject position
 (deftest test-ttl-str 
   (is (= (ttl-str (iri "http://example.com/8")) "<http://example.com/8>") "Handles plain URIs")
   (is (= (ttl-str (iri :rdfs "comment")) "rdfs:comment") "Handles QName URIs")
@@ -76,5 +77,35 @@
              "  ex:8\n    ex:lessThan [\n      ex:lessThan ex:10\n    ] .")))
     (testing "Triples generated through chaining"
       (is (= (write-triples prefixes (spo (spo (iri :ex 8) [(iri :ex "lessThan") (iri :ex 9)]) [(iri :rdf "value") (lit 8)])
-             "ex:8\n  ex:lessThan ex:9 ;\n  rdf:value 8 ."))))
-  ))
+             "ex:8\n  ex:lessThan ex:9 ;\n  rdf:value 8 ."))))))
+
+(deftest test-write-triples-list
+  (let [prefixes {:ex "http://example.com/"}]
+    (is (= (write-triples-list prefixes [(spo (iri :ex 8) [(iri :ex "lessThan") (iri :ex 9)])])
+           "ex:8\n  ex:lessThan ex:9 ."))
+    (is (= (write-triples-list prefixes [(spo (iri :ex 8) [(iri :ex "lessThan") (iri :ex 9)])
+                                         (spo (iri :ex 7) [(iri :ex "lessThan") (iri :ex 8)])])
+           "ex:8\n  ex:lessThan ex:9 .\n\nex:7\n  ex:lessThan ex:8 ."))
+    (is (= (write-triples-list prefixes [(spo (iri :ex 8) [(iri :ex "lessThan") (iri :ex 9)])
+                                         (spo (iri :ex 7) [(iri :ex "lessThan") (iri :ex 8)])] "  ")
+           "  ex:8\n    ex:lessThan ex:9 .\n\n  ex:7\n    ex:lessThan ex:8 ."))))
+
+(deftest test-write-prefixes
+  (is (= (write-prefixes {:ex "http://example.com/"})
+         "@prefix ex: <http://example.com/> ."))
+  (is (= (write-prefixes (array-map :ex "http://example.com/"
+                                    :rdfs "http://www.w3.org/2000/01/rdf-schema#" ))
+         "@prefix ex: <http://example.com/> .\n@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .")))
+
+(deftest test-write-ttl
+  (let [prefixes {:ex "http://example.com/"}]
+    (is (= (write-ttl prefixes [(spo (iri :ex 8) [(iri :ex "lessThan") (iri :ex 9)])
+                                (spo (iri :ex 7) [(iri :ex "lessThan") (iri :ex 8)])])
+           "@prefix ex: <http://example.com/> .\n\nex:8\n  ex:lessThan ex:9 .\n\nex:7\n  ex:lessThan ex:8 ."))))
+
+(deftest test-write-graph
+  (let [prefixes {:ex "http://example.com/"}]
+    (is (= (write-graph prefixes (graph (iri :ex "n")
+                                        [(spo (iri :ex 8) [(iri :ex "lessThan") (iri :ex 9)])
+                                        (spo (iri :ex 7) [(iri :ex "lessThan") (iri :ex 8)])]))
+           "ex:n {\n\n  ex:8\n    ex:lessThan ex:9 .\n\n  ex:7\n    ex:lessThan ex:8 .\n\n}"))))

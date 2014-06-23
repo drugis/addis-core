@@ -194,7 +194,7 @@
   (let [uri (trig/iri :study (uuid))]
     {:id (vtd/attr xml :name)
      :uri uri
-     :rdf [uri (study-rdf xml uri entity-uris)]}))
+     :rdf (trig/graph uri (study-rdf xml uri entity-uris))}))
 
 (defn import-studies [xml xpath entity-uris]
   (let [studies (map #(import-study % entity-uris) (vtd/search xml xpath))]
@@ -240,7 +240,7 @@
                      populationCharacteristics-rdf
                      dataset-rdf)]
     (str
-      (trig/write-trig prefixes (cons [(trig/iri :dataset dataset-id) meta-graph] studies-graphs)))))
+      (trig/write-trig prefixes (cons (trig/graph (trig/iri :dataset dataset-id) meta-graph) studies-graphs)))))
 
 (defn -main
   [& args]
