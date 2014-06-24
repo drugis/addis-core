@@ -114,7 +114,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       modelDeferred = $q.defer();
       mockModel.$promise = modelDeferred.promise;
       modelResource.save.and.returnValue(mockModel);
-      modelResource.query.and.returnValue([mockTrialData]);
+      modelResource.query.and.returnValue([mockModel]);
 
       state = jasmine.createSpyObj('$state', ['go']);
 
@@ -153,20 +153,21 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         expect(scope.isNetworkDisconnected).toBeTruthy();
       });
 
-      it('should query the model to see if the analyis is used in a model', function(){
+      it('should query the model to see if the analyis is used in a model', function() {
         expect(scope.hasModel).toBeDefined();
         expect(modelResource.query).toHaveBeenCalledWith(mockStateParams);
       });
 
     });
 
-    describe('when the analysis, outcomes, interventions and project are loaded', function() {
+    describe('when the analysis, outcomes, interventions, project, models are loaded', function() {
 
       beforeEach(inject(function($controller) {
         analysisDeferred.resolve(mockAnalysis);
         projectDeferred.resolve(mockProject);
         interventionDeferred.resolve(mockInterventions);
         outcomesDeferred.resolve(mockOutcomes);
+        modelDeferred.resolve(mockModel);
         scope.$apply();
       }));
 
@@ -182,7 +183,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
           expect(trialverseTrialDataResource.get).toHaveBeenCalledWith({
             id: mockProject.trialverseId,
             outcomeUri: mockOutcomes[0].semanticOutcomeUri,
-            interventionUris: [  ]
+            interventionUris: []
           });
           trialverseTrailDataDeferred.resolve();
           scope.$apply();
@@ -202,6 +203,16 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
           scope.$apply();
           expect(state.go).toHaveBeenCalledWith('analysis.model', {
             modelId: mockModel.id
+          });
+        });
+      });
+
+      describe('and the go to model button is clicked', function() {
+
+        it('should go to the model view', function() {
+          scope.goToModel();
+          expect(state.go).toHaveBeenCalledWith('analysis.model', {
+              modelId: mockModel.id
           });
         });
       });

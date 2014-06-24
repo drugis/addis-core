@@ -15,7 +15,7 @@
 
             <div class="checkbox-group">
               <div ng-repeat="intervention in interventions">
-                <label><input type="checkbox" ng-model="intervention.isIncluded" ng-disabled="hasModel"
+                <label><input type="checkbox" ng-model="intervention.isIncluded" ng-disabled="editMode.disableEditing || hasModel"
                               ng-change="changeInterventionExclusion(intervention)">
                   {{intervention.name}}</label>
               </div>
@@ -25,7 +25,7 @@
         <div class="row">
           <div class="columns large-6 medium-6 small-12">
             <button ng-show="!hasModel" class="button expand"
-                    ng-disabled="tableHasAmbiguousArm || interventions.length < 2 || isNetworkDisconnected || hasLessThanTwoInterventions "
+                    ng-disabled="editMode.disableEditing || tableHasAmbiguousArm || interventions.length < 2 || isNetworkDisconnected || hasLessThanTwoInterventions "
                     ng-click="createModelAndGoToModel()">
               Create GeMTC model
             </button>
@@ -117,7 +117,7 @@
           </div>
         </td>
         <td>
-          <label><input type="checkbox" ng-disabled="dataRow.intervention === 'unmatched' || hasModel"
+          <label><input type="checkbox" ng-disabled="editMode.disableEditing || dataRow.intervention === 'unmatched' || hasModel"
                         ng-model="dataRow.included" ng-change="changeArmExclusion(dataRow)">
             {{dataRow.arm}}</label>
         </td>

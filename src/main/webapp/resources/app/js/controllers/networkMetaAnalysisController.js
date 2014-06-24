@@ -9,7 +9,10 @@ define(['d3'], function(d3) {
     $scope.isNetworkDisconnected = true;
     $scope.analysis = $scope.$parent.analysis;
     $scope.project = $scope.$parent.project;
-    $scope.models = ModelResource.query({projectId: $stateParams.projectId, analysisId: $stateParams.analysisId});
+    $scope.models = ModelResource.query({
+      projectId: $stateParams.projectId,
+      analysisId: $stateParams.analysisId
+    });
     $scope.outcomes = OutcomeResource.query({
       projectId: $stateParams.projectId
     });
@@ -231,8 +234,8 @@ define(['d3'], function(d3) {
 
     $scope.goToModel = function() {
       $state.go('analysis.model', {
-          modelId: $scope.models[0].id
-        });
+        modelId: $scope.models[0].id
+      });
     }
 
     $scope.doesInterventionHaveAmbiguousArms = function(drugId) {
