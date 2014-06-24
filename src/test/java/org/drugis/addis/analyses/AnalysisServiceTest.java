@@ -83,7 +83,7 @@ public class AnalysisServiceTest {
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, wrongProject, "new name", outcome);
     NetworkMetaAnalysis oldAnalysis = mock(NetworkMetaAnalysis.class);
 
-    when(modelRepository.findByAnalysis(analysis)).thenReturn(null);
+    when(modelRepository.findByAnalysis(analysis.getId())).thenReturn(null);
     when(oldAnalysis.getProjectId()).thenReturn(projectId);
     when(analysisRepository.get(wrongProject, analysisId)).thenReturn(oldAnalysis);
 
@@ -99,7 +99,7 @@ public class AnalysisServiceTest {
     Integer modelId = 83473458;
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "new name", outcome);
     Model model = mock(Model.class);
-    when(modelRepository.findByAnalysis(analysis)).thenReturn(model);
+    when(modelRepository.findByAnalysis(analysis.getId())).thenReturn(model);
     when(modelRepository.get(modelId)).thenReturn(null);
     analysisService.updateNetworkMetaAnalysis(user, analysis);
   }

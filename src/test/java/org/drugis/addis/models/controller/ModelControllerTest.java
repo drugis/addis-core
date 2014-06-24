@@ -18,12 +18,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
@@ -110,5 +115,30 @@ public class ModelControllerTest {
 
 
     verify(modelService).getModel(analysisId, modelId);
+  }
+
+  @Test
+  public void testQueryWithModelResult() throws Exception {
+    Integer analysisId = 55;
+    Model model = new Model(-1, analysisId);
+    List<Model> models = Arrays.asList(model);
+    when(modelService.query(analysisId)).thenReturn(models);
+    mockMvc.perform(get("/projects/45/analyses/55/models").principal(user))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(jsonPath("$[0].id", notNullValue()));
+    verify(modelService).query(analysisId);
+
+  }
+
+  @Test
+  public void testQueryWithNoModelResult() throws Exception {
+    Integer analysisId = 55;
+    when(modelService.query(analysisId)).thenReturn(Collections.EMPTY_LIST);
+    ResultActions resultActions = mockMvc.perform(get("/projects/45/analyses/55/models").principal(user));
+    resultActions
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$", empty()));
+    verify(modelService).query(analysisId);
   }
 }

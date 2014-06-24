@@ -1,6 +1,5 @@
 package org.drugis.addis.models.repositories.impl;
 
-import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.repositories.ModelRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,9 +33,9 @@ public class JpaModelRepository implements ModelRepository {
   }
 
   @Override
-  public Model findByAnalysis(NetworkMetaAnalysis networkMetaAnalysis) {
+  public Model findByAnalysis(Integer networkMetaAnalysisId) {
     TypedQuery<Model> query = em.createQuery("FROM Model m WHERE m.analysisId = :analysisId", Model.class);
-    query.setParameter("analysisId", networkMetaAnalysis.getId());
+    query.setParameter("analysisId", networkMetaAnalysisId);
     List<Model> resultList = query.getResultList();
     if (resultList.isEmpty()) {
       // no model found for given analysis

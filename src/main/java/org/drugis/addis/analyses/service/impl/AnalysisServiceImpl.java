@@ -51,7 +51,7 @@ public class AnalysisServiceImpl implements AnalysisService {
     Integer analysisProjectId = analysis.getProjectId();
     projectService.checkProjectExistsAndModifiable(user, analysisProjectId);
 
-    if (modelRepository.findByAnalysis(analysis) != null) {
+    if (modelRepository.findByAnalysis(analysis.getId()) != null) {
       // can not update locked exception
       throw new MethodNotAllowedException();
     }
