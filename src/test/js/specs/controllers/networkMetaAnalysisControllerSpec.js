@@ -153,6 +153,11 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         expect(scope.isNetworkDisconnected).toBeTruthy();
       });
 
+      it('should query the model to see if the analyis is used in a model', function(){
+        expect(scope.hasModel).toBeDefined();
+        expect(modelResource.query).toHaveBeenCalledWith(mockStateParams);
+      });
+
     });
 
     describe('when the analysis, outcomes, interventions and project are loaded', function() {
