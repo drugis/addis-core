@@ -14,7 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by daan on 3/7/14.
@@ -27,7 +27,7 @@ public class JpaInterventionRepository implements InterventionRepository {
   EntityManager em;
 
   @Override
-  public Collection<Intervention> query(Integer projectId) {
+  public List<Intervention> query(Integer projectId) {
     TypedQuery<Intervention> query = em.createQuery("FROM Intervention i where i.project = :projectId", Intervention.class);
     query.setParameter("projectId", projectId);
     return query.getResultList();

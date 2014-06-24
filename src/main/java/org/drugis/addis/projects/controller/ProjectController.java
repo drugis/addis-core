@@ -47,7 +47,7 @@ public class ProjectController extends AbstractAddisCoreController {
   @RequestMapping(value = "/projects/{projectId}", method = RequestMethod.GET)
   @ResponseBody
   public Project get(@PathVariable Integer projectId) throws ResourceDoesNotExistException {
-    return projectsRepository.getProjectById(projectId);
+    return projectsRepository.get(projectId);
   }
 
   @RequestMapping(value = "/projects", method = RequestMethod.POST)

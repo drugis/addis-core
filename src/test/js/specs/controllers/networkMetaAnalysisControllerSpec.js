@@ -4,7 +4,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       state,
       analysisDeferred,
       interventionDeferred,
-      trailverseTrailDataDefered,
+      trialverseTrailDataDeferred,
       mockAnalysis = {
         $save: function() {},
         outcome: {
@@ -43,7 +43,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       }, {
         id: 3,
         name: 'intervention-name3',
-        semanticInterventionUri: 'semanticInterventionUri2'
+        semanticInterventionUri: 'semanticInterventionUri3'
       }, ],
       trialverseTrialDataResource,
       mockModel = {
@@ -70,8 +70,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       interventionDeferred = $q.defer();
       mockInterventions.$promise = interventionDeferred.promise;
 
-      trailverseTrailDataDefered = $q.defer();
-      mockTrialData.$promise = trailverseTrailDataDefered.promise;
+      trialverseTrailDataDeferred = $q.defer();
+      mockTrialData.$promise = trialverseTrailDataDeferred.promise;
 
       scope = $rootScope;
       scope.$parent = {
@@ -88,7 +88,27 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       trialverseTrialDataResource.query.and.returnValue(mockTrialData);
       trialverseTrialDataResource.get.and.returnValue(mockTrialData);
 
-      networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows']);
+      networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows',
+        'transformTrialDataToNetwork',
+        'isNetworkDisconnected',
+        'addInclusionsToInterventions',
+        'changeArmExclusion',
+        'buildInterventionExclusions',
+        'doesInterventionHaveAmbiguousArms',
+        'doesModelHaveAmbiguousArms'
+      ]);
+
+      var mockNetwork = {
+        interventions: []
+      };
+      networkMetaAnalysisService.transformTrialDataToNetwork.and.returnValue(mockNetwork);
+      networkMetaAnalysisService.transformTrialDataToTableRows.and.returnValue([]);
+      networkMetaAnalysisService.isNetworkDisconnected.and.returnValue(true);
+      networkMetaAnalysisService.changeArmExclusion.and.returnValue({
+        $save: function() {}
+      });
+      networkMetaAnalysisService.doesInterventionHaveAmbiguousArms.and.returnValue(true);
+      networkMetaAnalysisService.addInclusionsToInterventions.and.returnValue(mockInterventions);
 
       modelResource = jasmine.createSpyObj('modelResource', ['save']);
       modelDeferred = $q.defer();
@@ -128,6 +148,10 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         expect(modelResource.save).toHaveBeenCalledWith(mockStateParams, {});
       });
 
+      it('should set isNetworkDisconnected to true', function() {
+        expect(scope.isNetworkDisconnected).toBeTruthy();
+      });
+
     });
 
     describe('when the analysis, outcomes, interventions and project are loaded', function() {
@@ -141,26 +165,26 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       }));
 
       it('should save the analysis when the selected outcome changes', function() {
-        scope.analysis.outcome = {
-          id: 1
-        };
-        scope.saveAnalysis();
+        mockAnalysis.outcome = mockOutcomes[0];
+        scope.changeSelectedOutcome();
         expect(scope.analysis.$save).toHaveBeenCalled();
       });
 
       describe('and there is already an outcome defined on the analysis', function() {
 
-        it('should get the tabledata', function() {
+        it('should get the tabledata and transform it to table rows and network', function() {
           expect(trialverseTrialDataResource.get).toHaveBeenCalledWith({
             id: mockProject.trialverseId,
             outcomeUri: mockOutcomes[0].semanticOutcomeUri,
-            interventionUris: [
-              mockInterventions[0].semanticInterventionUri,
-              mockInterventions[1].semanticInterventionUri,
-              mockInterventions[2].semanticInterventionUri
-            ]
+            interventionUris: [  ]
           });
+          trialverseTrailDataDeferred.resolve();
+          scope.$apply();
+          expect(networkMetaAnalysisService.transformTrialDataToTableRows).toHaveBeenCalled();
+          expect(networkMetaAnalysisService.isNetworkDisconnected).toHaveBeenCalled();
+          expect(networkMetaAnalysisService.transformTrialDataToNetwork).toHaveBeenCalled();
         });
+
       });
 
       describe('and the go to model button is clicked', function() {
@@ -170,7 +194,40 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
           expect(modelResource.save).toHaveBeenCalledWith(mockStateParams, {});
           modelDeferred.resolve(mockModel);
           scope.$apply();
-          expect(state.go).toHaveBeenCalledWith('analysis.model', {modelId: mockModel.id});
+          expect(state.go).toHaveBeenCalledWith('analysis.model', {
+            modelId: mockModel.id
+          });
+        });
+      });
+
+      describe('and the arm is exclusion is changed ', function() {
+
+
+        beforeEach(function() {
+          var dataRow = {};
+          scope.tableHasAmbiguousArm = true;
+          scope.changeArmExclusion(dataRow);
+        });
+
+
+        it('should set tableHasAmbiguousArm to false', function() {
+          expect(scope.tableHasAmbiguousArm).toBeFalsy();
+          expect(networkMetaAnalysisService.changeArmExclusion).toHaveBeenCalled();
+        });
+      });
+
+      describe('and the doesInterventionHaveAmbiguousArms function is called', function() {
+
+        beforeEach(function() {
+          var drugId = 1;
+          scope.tableHasAmbiguousArm = false;
+          networkMetaAnalysisService.doesInterventionHaveAmbiguousArms.and.returnValue(true);
+          scope.doesInterventionHaveAmbiguousArms(drugId);
+        });
+
+
+        it('should call the doesInterventionHaveAmbiguousArms function on the NetworkMetaAnalysisService', function() {
+          expect(networkMetaAnalysisService.doesInterventionHaveAmbiguousArms).toHaveBeenCalled();
         });
       });
 

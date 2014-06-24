@@ -1,11 +1,10 @@
 package org.drugis.addis.analyses;
 
-import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.drugis.addis.outcomes.Outcome;
-import org.drugis.addis.util.ObjectToStringDeserializer;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by connor on 6-5-14.
@@ -13,11 +12,19 @@ import javax.persistence.*;
 @Entity
 public class NetworkMetaAnalysis extends AbstractAnalysis {
   @Id
-  @SequenceGenerator(name="analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
+  @SequenceGenerator(name = "analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")
   private Integer id;
   private Integer projectId;
   private String name;
+
+  @OneToMany(fetch = FetchType.EAGER)
+  @JoinColumn(name = "analysisId")
+  private List<ArmExclusion> excludedArms = new ArrayList<>();
+
+  @OneToMany(fetch = FetchType.EAGER)
+  @JoinColumn(name = "analysisId")
+  private List<InterventionExclusion> excludedInterventions = new ArrayList<>();
 
   @ManyToOne(targetEntity = Outcome.class)
   @JoinColumn(name = "outcomeId")
@@ -42,6 +49,15 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     this(id, projectId, name, null);
   }
 
+  public NetworkMetaAnalysis(Integer id, Integer projectId, String name, List<ArmExclusion> excludedArms, List<InterventionExclusion> excludedInterventions, Outcome outcome) {
+    this.id = id;
+    this.projectId = projectId;
+    this.name = name;
+    this.excludedArms = excludedArms == null ? new ArrayList<ArmExclusion>() : excludedArms;
+    this.excludedInterventions = excludedInterventions == null ? new ArrayList<InterventionExclusion>() : excludedInterventions;
+    this.outcome = outcome;
+  }
+
   public Integer getId() {
     return id;
   }
@@ -54,6 +70,21 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     return name;
   }
 
+  public List<ArmExclusion> getExcludedArms() {
+    return excludedArms;
+  }
+
+  public void setExcludedArms(List<ArmExclusion> excludedArms) {
+    this.excludedArms = excludedArms == null ? new ArrayList<ArmExclusion>() : excludedArms;
+  }
+
+  public List<InterventionExclusion> getExcludedInterventions() {
+    return excludedInterventions;
+  }
+
+  public void setExcludedInterventions(List<InterventionExclusion> excludedInterventions) {
+    this.excludedInterventions = excludedInterventions == null ? new ArrayList<InterventionExclusion>() : excludedInterventions;
+  }
 
   public Outcome getOutcome() {
     return outcome;
@@ -62,10 +93,11 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof NetworkMetaAnalysis)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     NetworkMetaAnalysis that = (NetworkMetaAnalysis) o;
 
+    if (!excludedArms.equals(that.excludedArms)) return false;
     if (id != null ? !id.equals(that.id) : that.id != null) return false;
     if (!name.equals(that.name)) return false;
     if (outcome != null ? !outcome.equals(that.outcome) : that.outcome != null) return false;
@@ -79,8 +111,8 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     int result = id != null ? id.hashCode() : 0;
     result = 31 * result + projectId.hashCode();
     result = 31 * result + name.hashCode();
+    result = 31 * result + excludedArms.hashCode();
     result = 31 * result + (outcome != null ? outcome.hashCode() : 0);
     return result;
   }
-
 }

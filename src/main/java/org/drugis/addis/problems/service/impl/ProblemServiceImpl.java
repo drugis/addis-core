@@ -4,9 +4,7 @@ package org.drugis.addis.problems.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.analyses.AbstractAnalysis;
-import org.drugis.addis.analyses.NetworkMetaAnalysis;
-import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -65,7 +63,7 @@ public class ProblemServiceImpl implements ProblemService {
 
   @Override
   public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
-    Project project = projectRepository.getProjectById(projectId);
+    Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(projectId, analysisId);
     if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
       return getSingleStudyBenefitRiskProblem(project, (SingleStudyBenefitRiskAnalysis) analysis);
@@ -77,31 +75,60 @@ public class ProblemServiceImpl implements ProblemService {
 
   private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) {
     List<String> alternativeUris = new ArrayList<>();
-    Collection<Intervention> interventions = interventionRepository.query(project.getId());
+    List<Intervention> interventions = interventionRepository.query(project.getId());
     Map<String, String> interventionNamesByUrisMap = new HashMap<>();
+
+    interventions = filterExcludedInterventions(interventions, analysis.getExcludedInterventions());
+
     for (Intervention intervention : interventions) {
       alternativeUris.add(intervention.getSemanticInterventionUri());
       interventionNamesByUrisMap.put(intervention.getSemanticInterventionUri(), intervention.getName());
     }
+
     ObjectNode trialData = trialverseService.getTrialData(Long.valueOf(project.getTrialverseId()),
-      analysis.getOutcome().getSemanticOutcomeUri(), alternativeUris);
+            analysis.getOutcome().getSemanticOutcomeUri(), alternativeUris);
+
     ObjectMapper mapper = new ObjectMapper();
     TrialData convertedTrialData = mapper.convertValue(trialData, TrialData.class);
     Map<Long, TrialDataIntervention> interventionByDrugIdMap = createInterventionByDrugIdMap(convertedTrialData);
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
+
     for (TrialDataStudy trialDataStudy : convertedTrialData.getTrialDataStudies()) {
-      List<TrialDataArm> filteredArms = filterUnmatchedAndDuplicateArms(trialDataStudy, interventionByDrugIdMap);
+      List<TrialDataArm> filteredArms = filterUnmatchedArms(trialDataStudy, interventionByDrugIdMap);
+      filteredArms = filterExcludedArms(filteredArms, analysis);
 
-      for (TrialDataArm trialDataArm : filteredArms) {
-        String interventionUri = interventionByDrugIdMap.get(trialDataArm.getDrugId()).getUri();
-        String treatmentName = interventionNamesByUrisMap.get(interventionUri);
-        entries.add(buildEntry(trialDataStudy.getName(), treatmentName, trialDataArm.getMeasurements()));
+      // do not include studies with fewer than two included and matched arms
+      if (filteredArms.size() >= 2) {
+
+        for (TrialDataArm trialDataArm : filteredArms) {
+          String interventionUri = interventionByDrugIdMap.get(trialDataArm.getDrugId()).getUri();
+          String treatmentName = interventionNamesByUrisMap.get(interventionUri);
+          entries.add(buildEntry(trialDataStudy.getName(), treatmentName, trialDataArm.getMeasurements()));
+        }
+
       }
-
     }
 
     return new NetworkMetaAnalysisProblem(entries);
+  }
+
+  private List<TrialDataArm> filterExcludedArms(List<TrialDataArm> trialDataArms, NetworkMetaAnalysis analysis) {
+    List<TrialDataArm> filteredTrialDataArms = new ArrayList<>();
+    List<ArmExclusion> armExclusions = analysis.getExcludedArms();
+    List<Long> armExclusionTrialverseIds = new ArrayList<>(armExclusions.size());
+
+    for (ArmExclusion armExclusion : armExclusions) {
+      armExclusionTrialverseIds.add(armExclusion.getTrialverseId());
+    }
+
+    for (TrialDataArm trialDataArm : trialDataArms) {
+      if (!armExclusionTrialverseIds.contains(trialDataArm.getId())) {
+        filteredTrialDataArms.add(trialDataArm);
+      }
+    }
+
+    return filteredTrialDataArms;
   }
 
   private AbstractNetworkMetaAnalysisProblemEntry buildEntry(String studyName, String treatmentName, List<Measurement> measurements) {
@@ -129,16 +156,34 @@ public class ProblemServiceImpl implements ProblemService {
     return interventionByDrugIdMap;
   }
 
-  private List<TrialDataArm> filterUnmatchedAndDuplicateArms(TrialDataStudy study, Map<Long, TrialDataIntervention> interventionByIdMap) {
+  private List<Intervention> filterExcludedInterventions(List<Intervention> interventions, List<InterventionExclusion> exclusions) {
+    List<Intervention> filteredInterventions = new ArrayList<>();
+
+    Map<Integer, InterventionExclusion> exclusionMap = new HashMap<>(exclusions.size());
+    for (InterventionExclusion interventionExclusion : exclusions) {
+      exclusionMap.put(interventionExclusion.getInterventionId(), interventionExclusion);
+    }
+
+    for (Intervention intervention : interventions) {
+      if (exclusionMap.get(intervention.getId()) == null) {
+        filteredInterventions.add(intervention);
+      }
+    }
+
+    return filteredInterventions;
+  }
+
+  private List<TrialDataArm> filterUnmatchedArms(TrialDataStudy study, Map<Long, TrialDataIntervention> interventionByIdMap) {
     List<TrialDataArm> filteredArms = new ArrayList<>();
 
     List<TrialDataArm> studyArmsSortedByName = sortTrialDataArmsByName(study.getTrialDataArms());
 
     for (TrialDataArm arm : studyArmsSortedByName) {
-      if (isMatched(arm, interventionByIdMap) && notDuplicateIntervention(arm, filteredArms)) {
+      if (isMatched(arm, interventionByIdMap)) {
         filteredArms.add(arm);
       }
     }
+
     return filteredArms;
   }
 
@@ -150,15 +195,6 @@ public class ProblemServiceImpl implements ProblemService {
       }
     });
     return trialDataArms;
-  }
-
-  private boolean notDuplicateIntervention(TrialDataArm armToFind, List<TrialDataArm> arms) {
-    for (TrialDataArm arm : arms) {
-      if (arm.getDrugId().equals(armToFind.getDrugId())) {
-        return false;
-      }
-    }
-    return true;
   }
 
   private boolean isMatched(TrialDataArm arm, Map<Long, TrialDataIntervention> interventionByIdMap) {

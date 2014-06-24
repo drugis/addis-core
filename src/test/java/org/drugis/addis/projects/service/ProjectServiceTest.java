@@ -48,7 +48,7 @@ public class ProjectServiceTest {
 
     when(mockProject.getOwner()).thenReturn(account);
     when(principal.getName()).thenReturn(username);
-    when(projectRepository.getProjectById(projectId)).thenReturn(mockProject);
+    when(projectRepository.get(projectId)).thenReturn(mockProject);
     when(accountRepository.findAccountByUsername(username)).thenReturn(account);
   }
 

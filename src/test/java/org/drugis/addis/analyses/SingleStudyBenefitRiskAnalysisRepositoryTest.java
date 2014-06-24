@@ -53,8 +53,7 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
   public void testCreate() throws ResourceDoesNotExistException, MethodNotAllowedException {
     int projectId = 1;
     AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "newName", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
-    Account user = em.find(Account.class, 1);
-    SingleStudyBenefitRiskAnalysis result = singleStudyBenefitRiskAnalysisRepository.create(user, analysisCommand);
+    SingleStudyBenefitRiskAnalysis result = singleStudyBenefitRiskAnalysisRepository.create(analysisCommand);
     assertTrue(singleStudyBenefitRiskAnalysisRepository.query(projectId).contains(result));
     assertEquals(null, result.getProblem());
   }

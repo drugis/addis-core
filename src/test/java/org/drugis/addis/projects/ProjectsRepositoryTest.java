@@ -51,12 +51,12 @@ public class ProjectsRepositoryTest {
 
   @Test(expected = ResourceDoesNotExistException.class)
   public void testGetNonexistentProjectFails() throws Exception {
-    projectRepository.getProjectById(3213);
+    projectRepository.get(3213);
   }
 
   @Test
   public void testGetProjectById() throws Exception {
-    Project result = projectRepository.getProjectById(1);
+    Project result = projectRepository.get(1);
 
     assertEquals(new Integer(1), result.getId());
     assertEquals("testname 1", result.getName());

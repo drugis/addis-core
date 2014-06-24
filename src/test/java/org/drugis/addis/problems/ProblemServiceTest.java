@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.analyses.AbstractAnalysis;
-import org.drugis.addis.analyses.NetworkMetaAnalysis;
-import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -37,9 +35,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -94,7 +90,7 @@ public class ProblemServiceTest {
   @After
   public void cleanUp() {
     verifyNoMoreInteractions(analysisRepository, projectRepository, singleStudyBenefitRiskAnalysisRepository,
-      alternativeService, criteriaService, interventionRepository, trialverseService);
+            alternativeService, criteriaService, interventionRepository, trialverseService);
   }
 
   @Test
@@ -102,7 +98,7 @@ public class ProblemServiceTest {
 
     int projectId = 1;
     Project project = mock(Project.class);
-    when(projectRepository.getProjectById(projectId)).thenReturn(project);
+    when(projectRepository.get(projectId)).thenReturn(project);
 
     int analysisId = 2;
     SingleStudyBenefitRiskAnalysis analysis = mock(SingleStudyBenefitRiskAnalysis.class);
@@ -143,7 +139,7 @@ public class ProblemServiceTest {
     // execute
     SingleStudyBenefitRiskProblem actualProblem = (SingleStudyBenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
-    verify(projectRepository).getProjectById(projectId);
+    verify(projectRepository).get(projectId);
     verify(analysisRepository).get(projectId, analysisId);
     verify(alternativeService).createAlternatives(project, analysis);
     verify(criteriaService).createVariableCriteriaPairs(project, analysis);
@@ -167,68 +163,152 @@ public class ProblemServiceTest {
     Long namespaceId = 1L;
     Integer projectId = 2;
     Integer analysisId = 3;
-    Long studyId = 101L;
-    Long drugId1 = 420L;
-    Long drugId2 = 430L;
-    Long armId1 = 555L;
-    Long armId2 = 666L;
-    Long armId3 = 777L;
+
+    TrialData trialData = createMockTrialData();
+
     String outcomeUri = "outcomeUri";
     Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
-    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", outcome);
+    ArmExclusion armExclusion1 = new ArmExclusion(analysisId, 888L); // trialDataArm with armId4
+    List<ArmExclusion> armExclusions = Arrays.asList(armExclusion1);
+
+    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, Collections.EMPTY_LIST, outcome);
     Project project = mock(Project.class);
     SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
     SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
+    SemanticIntervention semanticIntervention3 = new SemanticIntervention("uri3", "label3");
     Intervention intervention1 = new Intervention(1, projectId, "int1", "moti", semanticIntervention1);
     Intervention intervention2 = new Intervention(2, projectId, "int2", "moti", semanticIntervention2);
-    Collection<Intervention> interventions = Arrays.asList(intervention1, intervention2);
+    Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
+    List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
     ObjectMapper mapper = new ObjectMapper();
 
-    TrialDataIntervention trialDataIntervention1 = new TrialDataIntervention(drugId1, "uri1", studyId);
-    TrialDataIntervention trialDataIntervention2 = new TrialDataIntervention(drugId2, "uri2", studyId);
-    List<TrialDataIntervention> trialdataInterventions = Arrays.asList(trialDataIntervention1, trialDataIntervention2);
+    ObjectNode trialDataNode = mapper.convertValue(trialData, ObjectNode.class);
+    when(project.getId()).thenReturn(projectId);
+    when(project.getTrialverseId()).thenReturn(namespaceId.intValue());
+    when(projectRepository.get(projectId)).thenReturn(project);
+    when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
+    when(interventionRepository.query(projectId)).thenReturn(interventions);
+    when(trialverseService.getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"))).thenReturn(trialDataNode);
 
-    Measurement measurement1 = new Measurement(studyId, 333L, 444L, armId1,MeasurementAttribute.SAMPLE_SIZE, 768784L, null);
-    Measurement measurement2 = new Measurement(studyId, 333L, 444L, armId2,MeasurementAttribute.STANDARD_DEVIATION, null, Math.E);
-    Measurement measurement3 = new Measurement(studyId, 333L, 444L, armId2,MeasurementAttribute.MEAN, null, Math.PI);
+    NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
-    Measurement measurement4 = new Measurement(studyId, 333L, 444L, armId3, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
-    Measurement measurement5 = new Measurement(studyId, 333L, 444L, armId3, MeasurementAttribute.RATE, -1L, null);
+    verify(projectRepository).get(projectId);
+    verify(analysisRepository).get(projectId, analysisId);
+    verify(interventionRepository).query(projectId);
+    verify(trialverseService).getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"));
+
+    assertNotNull(problem);
+    assertEquals(3, problem.getEntries().size());
+    ContinuousNetworkMetaAnalysisProblemEntry entry = new ContinuousNetworkMetaAnalysisProblemEntry("study1", "int1", 768784L, Math.PI, Math.E);
+    assertTrue(problem.getEntries().contains(entry));
+  }
+
+  @Test
+  public void testGetNetworkAnalysisProblemWithInterventionExclusions() throws ResourceDoesNotExistException {
+    Long namespaceId = 1L;
+    Integer projectId = 2;
+    Integer analysisId = 3;
+
+    String outcomeUri = "outcomeUri";
+    Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
+
+    SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
+    SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
+    SemanticIntervention semanticIntervention3 = new SemanticIntervention("uri3", "label3");
+    Intervention intervention1 = new Intervention(1, projectId, "int1", "moti", semanticIntervention1);
+    Intervention intervention2 = new Intervention(2, projectId, "int2", "moti", semanticIntervention2);
+    Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
+    List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
+
+    Project project = mock(Project.class);
+    when(project.getId()).thenReturn(projectId);
+    when(project.getTrialverseId()).thenReturn(namespaceId.intValue());
+
+    InterventionExclusion interventionExclusion = new InterventionExclusion(analysisId, intervention2.getId());
+    List<InterventionExclusion> interventionExclusions = Arrays.asList(interventionExclusion);
+    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", Collections.EMPTY_LIST, interventionExclusions, outcome);
+
+
+    TrialData trialData = createMockTrialData();
+    TrialDataStudy trialDataStudy = trialData.getTrialDataStudies().get(0);
+    List<TrialDataIntervention> trialDataInterventions = trialDataStudy.getTrialDataInterventions();
+    // remove excluded intervention from trialdata as well (HACKY)
+    trialDataInterventions.set(1, new TrialDataIntervention(-666L, "iamnothere", -666L));
+    trialDataStudy.getTrialDataInterventions();
+    ObjectMapper mapper = new ObjectMapper();
+    ObjectNode trialDataNode = mapper.convertValue(trialData, ObjectNode.class);
+
+    when(projectRepository.get(projectId)).thenReturn(project);
+    when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
+    when(interventionRepository.query(projectId)).thenReturn(interventions);
+    when(trialverseService.getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri3"))).thenReturn(trialDataNode);
+
+    NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
+
+    verify(projectRepository).get(projectId);
+    verify(analysisRepository).get(projectId, analysisId);
+    verify(interventionRepository).query(projectId);
+    verify(trialverseService).getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri3"));
+
+    assertEquals(2, problem.getEntries().size());
+  }
+
+  private TrialData createMockTrialData() {
+    Long studyId1 = 101L;
+    Long studyId2 = 202L;
+    Long drugId1 = 420L;
+    Long drugId2 = 430L;
+    Long drugId3 = 440L;
+    Long drugId4 = 550L;
+    Long armId1 = 555L;
+    Long armId2 = 666L;
+    Long armId3 = 777L;
+    Long armId4 = 888L;
+    Long armId5 = 999L;
+
+    TrialDataIntervention trialDataIntervention1 = new TrialDataIntervention(drugId1, "uri1", studyId1);
+    TrialDataIntervention trialDataIntervention2 = new TrialDataIntervention(drugId2, "uri2", studyId1);
+    TrialDataIntervention trialDataIntervention3 = new TrialDataIntervention(drugId3, "uri3", studyId1);
+
+    TrialDataIntervention trialDataIntervention4 = new TrialDataIntervention(drugId4, "uri3", studyId2);
+
+    List<TrialDataIntervention> trialdataInterventions1 = Arrays.asList(trialDataIntervention1, trialDataIntervention2, trialDataIntervention3);
+    List<TrialDataIntervention> trialdataInterventions2 = Arrays.asList(trialDataIntervention4);
+
+    Measurement measurement1 = new Measurement(studyId1, 333L, 444L, armId1, MeasurementAttribute.SAMPLE_SIZE, 768784L, null);
+    Measurement measurement2 = new Measurement(studyId1, 333L, 444L, armId2, MeasurementAttribute.STANDARD_DEVIATION, null, Math.E);
+    Measurement measurement3 = new Measurement(studyId1, 333L, 444L, armId2, MeasurementAttribute.MEAN, null, Math.PI);
+
+    Measurement measurement4 = new Measurement(studyId1, 333L, 444L, armId3, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
+    Measurement measurement5 = new Measurement(studyId1, 333L, 444L, armId3, MeasurementAttribute.RATE, -1L, null);
+
+    Measurement measurement6 = new Measurement(studyId1, 333L, 444L, armId4, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
+    Measurement measurement7 = new Measurement(studyId1, 333L, 444L, armId4, MeasurementAttribute.RATE, -1L, null);
+
+    Measurement measurement8 = new Measurement(studyId2, 333L, 444L, armId5, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
+    Measurement measurement9 = new Measurement(studyId2, 333L, 444L, armId5, MeasurementAttribute.RATE, -1L, null);
 
     List<Measurement> measurements1 = Arrays.asList(measurement1, measurement2, measurement3);
     List<Measurement> measurements2 = Arrays.asList(measurement1, measurement2, measurement3);
     List<Measurement> measurements3 = Arrays.asList(measurement4, measurement5);
+    List<Measurement> measurements4 = Arrays.asList(measurement6, measurement7);
 
-    TrialDataArm trialDataArm1 = new TrialDataArm(armId1, studyId, "arm bb", drugId1, measurements1);
-    TrialDataArm trialDataArm2 = new TrialDataArm(armId2, studyId, "arm aa", drugId2, measurements2);
-    TrialDataArm trialDataArm3 = new TrialDataArm(armId3, studyId, "aaa", drugId2, measurements3);
-    List<TrialDataArm> trialDataArms = Arrays.asList(trialDataArm1, trialDataArm2, trialDataArm3);
-    TrialDataStudy trialDataStudy1 = new TrialDataStudy(1L, "study1", trialdataInterventions, trialDataArms);
-    List<TrialDataStudy> trialDataStudies = Arrays.asList(trialDataStudy1);
-    TrialData trialData = new TrialData(trialDataStudies);
-    ObjectNode trialdataNode = mapper.convertValue(trialData, ObjectNode.class);
-    when(project.getId()).thenReturn(projectId);
-    when(project.getTrialverseId()).thenReturn(namespaceId.intValue());
-    when(projectRepository.getProjectById(projectId)).thenReturn(project);
-    when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
-    when(interventionRepository.query(projectId)).thenReturn(interventions);
-    when(trialverseService.getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2"))).thenReturn(trialdataNode);
+    List<Measurement> measurements5 = Arrays.asList(measurement8, measurement9);
 
-    NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
+    TrialDataArm trialDataArm1 = new TrialDataArm(armId1, studyId1, "arm bb", drugId1, measurements1);
+    TrialDataArm trialDataArm2 = new TrialDataArm(armId2, studyId1, "arm aa", drugId2, measurements2);
+    TrialDataArm trialDataArm3 = new TrialDataArm(armId3, studyId1, "aaa", drugId2, measurements3);
+    TrialDataArm trialDataArm4 = new TrialDataArm(armId4, studyId1, "qqqq", drugId3, measurements4);
 
-    verify(projectRepository).getProjectById(projectId);
-    verify(analysisRepository).get(projectId, analysisId);
-    verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2"));
+    TrialDataArm trialDataArm5 = new TrialDataArm(armId5, studyId2, "yyyy", drugId4, measurements5);
 
-    assertNotNull(problem);
-    assertEquals(2, problem.getEntries().size());
-    ContinuousNetworkMetaAnalysisProblemEntry entry = new ContinuousNetworkMetaAnalysisProblemEntry("study1", "int1", 768784L, Math.PI, Math.E);
-    assertTrue(problem.getEntries().contains(entry));
+    List<TrialDataArm> trialDataArms1 = Arrays.asList(trialDataArm1, trialDataArm2, trialDataArm3, trialDataArm4);
+    List<TrialDataArm> trialDataArms2 = Arrays.asList(trialDataArm5);
+    TrialDataStudy trialDataStudy1 = new TrialDataStudy(1L, "study1", trialdataInterventions1, trialDataArms1);
+    TrialDataStudy trialDataStudy2 = new TrialDataStudy(2L, "study2", trialdataInterventions2, trialDataArms2);
 
-    // expect the measurements from arm 3 to be uses as arms using the sames drug ara sorted by alphabet and the first one is used
-    RateNetworkMetaAnalysisProblemEntry rateNetworkMetaAnalysisProblemEntry = (RateNetworkMetaAnalysisProblemEntry) problem.getEntries().get(0);
-    assertEquals(-1L, rateNetworkMetaAnalysisProblemEntry.getResponders().longValue());
+    List<TrialDataStudy> trialDataStudies = Arrays.asList(trialDataStudy1, trialDataStudy2);
+    return new TrialData(trialDataStudies);
   }
 
 }

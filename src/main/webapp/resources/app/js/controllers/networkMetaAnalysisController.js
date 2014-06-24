@@ -6,6 +6,7 @@ define(['d3'], function(d3) {
 
   var NetworkMetaAnalysisController = function($scope, $q, $state, $stateParams, OutcomeResource,
     InterventionResource, TrialverseTrialDataResource, NetworkMetaAnalysisService, ModelResource) {
+    $scope.isNetworkDisconnected = true;
     $scope.analysis = $scope.$parent.analysis;
     $scope.project = $scope.$parent.project;
     $scope.outcomes = OutcomeResource.query({
@@ -15,95 +16,8 @@ define(['d3'], function(d3) {
     $scope.interventions = InterventionResource.query({
       projectId: $stateParams.projectId
     });
-
-    function matchOutcome(outcome) {
-      return $scope.analysis.outcome && $scope.analysis.outcome.id === outcome.id;
-    }
-
-    function getSemanticInterventionUri(object) {
-      return object.semanticInterventionUri;
-    }
-
-    function updateView(trialverseData) {
-      createNetwork(trialverseData);
-      return NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData);
-    }
-
-    function drawLine(enter, fromId, toId, circleData) {
-      enter.append('line')
-        .attr('x1', circleData[fromId].cx)
-        .attr('y1', circleData[fromId].cy)
-        .attr('x2', circleData[toId].cx)
-        .attr('y2', circleData[toId].cy)
-        .attr('stroke', 'black')
-        .attr('stroke-width', Math.random() * 10 + 1);
-    }
-
-    function createNetwork(trialverseData) {
-      var parent = angular.element('#network-graph').parent();
-      var n = 10.0;
-      var angle = 2.0 * Math.PI / n;
-      var originX = parent.width() / 2;
-      var originY = parent.width() / 4;
-      var margin = 100;
-      var circleSize = 15;
-      var radius = originY - margin / 2;
-      var svg = d3.select('#network-graph')
-        .append('svg')
-        .attr('width', parent.width())
-        .attr('height', parent.width() / 2);
-
-      var circleData = [];
-
-      for (var i = 0; i < n; ++i) {
-        circleData.push({
-          id: i,
-          r: Math.random() * circleSize,
-          cx: originX - radius * Math.cos(angle * i),
-          cy: originY + radius * Math.sin(angle * i),
-          label: 'hoi connor lange text ' + i
-        });
-      }
-
-      drawLine(svg, 1, 2, circleData);
-      drawLine(svg, 4, 2, circleData);
-      drawLine(svg, 3, 2, circleData);
-      drawLine(svg, 1, 6, circleData);
-      drawLine(svg, 5, 2, circleData);
-      drawLine(svg, 2, 4, circleData);
-      var enter = svg.selectAll('g')
-        .data(circleData)
-        .enter()
-        .append('g')
-        .attr('transform', function(d) { return 'translate(' + d.cx+','+d.cy+')';});
-
-      enter.append('circle')
-        .style('fill', 'grey')
-        .attr('r', circleSize)
-
-      enter.append('text')
-        .attr('dx', -50)
-        .text(function(d){return d.label;});
-
-
-    }
-
-
-
-
-    function reloadTable() {
-      TrialverseTrialDataResource
-        .get({
-          id: $scope.project.trialverseId,
-          outcomeUri: $scope.analysis.outcome.semanticOutcomeUri,
-          interventionUris: $scope.interventionUris
-        })
-        .$promise
-        .then(updateView)
-        .then(function(tableRows) {
-          $scope.trialData = tableRows;
-        });
-    }
+    $scope.tableHasAmbiguousArm = false;
+    $scope.hasLessThanTwoInterventions = false;
 
     $q
       .all([
@@ -113,17 +27,193 @@ define(['d3'], function(d3) {
         $scope.interventions.$promise
       ])
       .then(function() {
-        $scope.interventionUris = _.map($scope.interventions, getSemanticInterventionUri);
+        $scope.interventions =
+          NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.excludedInterventions);
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
         if ($scope.analysis.outcome) {
-          reloadTable();
+          reloadModel();
         }
       });
 
-    $scope.saveAnalysis = function() {
+    function matchOutcome(outcome) {
+      return $scope.analysis.outcome && $scope.analysis.outcome.id === outcome.id;
+    }
+
+    function addIncludedInterventionUri(memo, intervention) {
+      if (intervention.isIncluded) {
+        memo.push(intervention.semanticInterventionUri);
+      }
+      return memo;
+    }
+
+    function drawEdge(enter, fromId, toId, width, circleData) {
+      enter.append('line')
+        .attr('x1', circleData[fromId].cx)
+        .attr('y1', circleData[fromId].cy)
+        .attr('x2', circleData[toId].cx)
+        .attr('y2', circleData[toId].cy)
+        .attr('stroke', 'black')
+        .attr('stroke-width', width);
+    }
+
+    function tanh(x) {
+      var y = Math.exp(2 * x);
+      return (y - 1) / (y + 1);
+    }
+
+    function drawNetwork(network) {
+      var parent = angular.element('#network-graph').parent();
+      var n = network.interventions.length;
+      var angle = 2.0 * Math.PI / n;
+      var originX = parent.width() / 2;
+      var originY = parent.width() / 2;
+      var margin = 200;
+      var radius = originY - margin / 2;
+      var circleMaxSize = 30;
+      var circleMinSize = 5;
+      d3.select('#network-graph').selectAll('g').remove();
+      d3.select('#network-graph').selectAll('line').remove();
+      var svg = d3.select('#network-graph').select('svg')
+        .attr('width', parent.width())
+        .attr('height', parent.width());
+
+
+      var circleData = [];
+
+      _.each(network.interventions, function(intervention, i) {
+        var circleDatum = {
+          id: intervention.name,
+          r: circleMinSize + ((circleMaxSize - circleMinSize) * tanh(intervention.sampleSize / 10000)),
+          cx: originX - radius * Math.cos(angle * i),
+          cy: originY + radius * Math.sin(angle * i)
+        };
+        circleData[intervention.name] = circleDatum;
+        circleData.push(circleDatum);
+      });
+
+      _.each(network.edges, function(edge) {
+        drawEdge(svg, edge.from.name, edge.to.name, edge.numberOfStudies, circleData);
+      });
+
+      var enter = svg.selectAll('g')
+        .data(circleData)
+        .enter()
+        .append('g')
+        .attr('transform', function(d) {
+          return 'translate(' + d.cx + ',' + d.cy + ')';
+        });
+
+      enter.append('circle')
+        .style('fill', 'grey')
+        .attr('r', function(d) {
+          return d.r;
+        });
+
+      var labelMargin = 5;
+      var nearCenterMargin = 20;
+
+      function nearCenter(d) {
+        var delta = d.cx - originX;
+        return delta < -nearCenterMargin ? -1 : (delta > nearCenterMargin ? 1 : 0);
+      }
+
+      var cos45 = Math.sqrt(2) * 0.5;
+      enter.append('text')
+        .attr('dx', function(d) {
+          var offset = cos45 * d.r + labelMargin;
+          return nearCenter(d) * offset;
+        })
+        .attr('dy', function(d) {
+          var offset = (nearCenter(d) === 0 ? d.r : cos45 * d.r) + labelMargin;
+          return (d.cy >= originY ? offset : -offset);
+        })
+        .attr('text-anchor', function(d) {
+          switch (nearCenter(d)) {
+            case -1:
+              return 'end';
+            case 0:
+              return 'middle';
+            case 1:
+              return 'start';
+          }
+        })
+        .attr('dominant-baseline', function(d) {
+          if (nearCenter(d) !== 0) {
+            return 'central';
+          }
+          if (d.cy - originY < 0) {
+            return 'alphabetic';
+          } // text-after-edge doesn't seem to work in Chrome
+          return 'text-before-edge';
+        })
+        .style('font-family', 'Droid Sans')
+        .style('font-size', 16)
+        .text(function(d) {
+          return d.id;
+        });
+    }
+
+    function getIncludedIntervention(interventions) {
+      return _.filter(interventions, function(intervention) {
+        return intervention.isIncluded;
+      });
+    }
+
+    function updateNetwork() {
+      var includedInterventions = getIncludedIntervention($scope.interventions);
+      var network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis.excludedArms);
+      drawNetwork(network);
+      $scope.isNetworkDisconnected = NetworkMetaAnalysisService.isNetworkDisconnected(network);
+    }
+
+    function reloadModel() {
+      var includedInterventionUris = _.reduce($scope.interventions, addIncludedInterventionUri, []);
+      TrialverseTrialDataResource
+        .get({
+          id: $scope.project.trialverseId,
+          outcomeUri: $scope.analysis.outcome.semanticOutcomeUri,
+          interventionUris: includedInterventionUris
+        })
+        .$promise
+        .then(function(trialverseData) {
+          $scope.trialverseData = trialverseData;
+          updateNetwork();
+          var includedInterventions = getIncludedIntervention($scope.interventions);
+          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis.excludedArms);
+          $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
+          $scope.hasLessThanTwoInterventions = getIncludedIntervention($scope.interventions).length < 2;
+        });
+    }
+
+    $scope.changeArmExclusion = function(dataRow) {
+      $scope.tableHasAmbiguousArm = false;
+      $scope.analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, $scope.analysis);
+      updateNetwork();
       $scope.analysis.$save(function() {
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
-        reloadTable();
+        $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
+      });
+    };
+
+    $scope.changeInterventionExclusion = function(intervention) {
+      $scope.analysis.excludedInterventions =
+        NetworkMetaAnalysisService.buildInterventionExclusions($scope.interventions, $scope.analysis);
+      if (!intervention.isIncluded) {
+        $scope.analysis.excludedArms = NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, $scope.analysis, $scope.trialverseData);
+      }
+      $scope.analysis.$save(function() {
+        $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
+        $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
+        reloadModel();
+      });
+    };
+
+    $scope.changeSelectedOutcome = function() {
+      $scope.tableHasAmbiguousArm = false;
+      $scope.analysis.excludedArms = [];
+      $scope.analysis.$save(function() {
+        $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
+        reloadModel();
       });
     };
 
@@ -134,6 +224,10 @@ define(['d3'], function(d3) {
           modelId: model.id
         });
       });
+    };
+
+    $scope.doesInterventionHaveAmbiguousArms = function(drugId) {
+      return NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, $scope.trialverseData, $scope.analysis);
     };
 
   };

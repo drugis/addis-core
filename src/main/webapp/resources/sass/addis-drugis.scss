@@ -1,110 +1,143 @@
-@import "settings";
-@import "addis-settings";
-@import "foundation";
-@import "drugis";
-@import "main";
-@import "foundation-select2";
-
-$addis-grey : $crumb-bg;
-$addis-grey-border : $crumb-border-color;
-
+@import"settings";
+ @import"addis-settings";
+ @import"foundation";
+ @import"drugis";
+ @import"main";
+ @import"foundation-select2";
+ $addis-grey : $crumb-bg;
+ $addis-grey-border : $crumb-border-color;
+ .alert {
+  color: $alert-color;
+}
 .color-stripe {
-  background: $drugis-color; 
+  background: $drugis-color;
   height: 0.45rem;
 }
-
 .alert-box-message {
   padding-right: 1.25rem;
 }
-
 label {
   margin-top: 0.5rem;
 }
-
 .inline-header {
   display: inline;
 }
-
 .project-header {
   border-bottom: 1px solid $addis-grey-border;
   margin-bottom: 1.25rem;
 }
-
 .project-description {
   padding: 10px 0px;
 }
-
 .nested-view {
   min-height: 4rem;
 }
-
 .nested-view .has-tip {
   font-weight: inherit;
   border-bottom: none;
 }
-
 .nested-view ul {
   border: solid 1px $addis-grey-border;
   padding: 0.5rem;
 }
-
 .nested-view li.colored-row {
- background: $addis-grey;
+  background: $addis-grey;
   margin-bottom: 10px;
   padding: 0.5rem 0.25rem 0.5rem 0.5rem;
+}
+
+.checkbox-group {
+  padding-left: 0.5rem;
+  padding-bottom: 1rem;
 }
 
 .error-message {
   display: block;
   color: $drugis-color;
 }
-
-//////// Tables /////////////////
-.table-title {
-  margin-left: 2px;
-  font-size: 13px;
-  font-family: inherit;
-  margin-top: 10px;
-  margin-bottom: 2px;
-}
-
+//////// Tables ///////////////// 
 table {
-   border-collapse: collapse;
-  //remove default foundation striping
+  border-collapse: collapse;
+  //remove default foundation striping 
   tr:nth-of-type(even) {
     background-color: transparent !important;
   }
-
   tr {
-    td {
-      border: solid 1px $addis-grey-border; 
+    th, td {
+      border: solid 1px $addis-grey-border;
       min-width: 200px;
     }
   }
-
 }
-
 td.empty-cell {
   background-color: $addis-grey-border;
 }
-
 // lighten the darken on hover 
 tr.on-hover:hover {
   background: darken($secondary-color, 5%);
   cursor: pointer;
   text-decoration: underline;
 }
-
 tr.clickable td {
   color: $primary-color;
 }
-
-.undefined {
-  font-style: italic;
+table.network-meta-analysis-table {
+  border: none;
+  border-spacing: 0px;
+  tbody tr td {
+    border-bottom: solid 1px $addis-grey-border;
+    vertical-align: top;
+    label {
+      display: block;
+      padding-left: 15px;
+      text-indent: -15px;
+      margin: 0;
+    }
+    input[type="checkbox"] {
+      width: 13px;
+      height: 13px;
+      padding: 0;
+      margin:0;
+      vertical-align: bottom;
+      position: relative;
+      top: -3px;
+      *overflow: hidden;
+    }
+    .alert-message {
+      color: $alert-color;
+      padding-top: 1px;
+    }
+  }
+  thead tr th {
+    border-bottom: solid 1px $addis-grey-border;
+  }
+  tr.topborder td {
+    border-top: solid 1px $addis-grey-border;
+  }
 }
-
+.undefined {
+  color: darken($addis-grey, 50%);
+}
 .table-cell-label {
   font-weight: bold;
   text-align: center;
 }
-
+/////////////////////// graphs and tables //////////////////////// 
+$table-title-font-size: 14px;
+ $table-title-margin-top: 10px;
+ $table-title-margin-bottom: 4px;
+ .table-title {
+  margin-left: 2px;
+  font-size: $table-title-font-size;
+  font-family: inherit;
+  margin-top: $table-title-margin-top;
+  margin-bottom: $table-title-margin-bottom;
+}
+.addis-graph {
+  background-color: lighten($addis-grey-border, 20%);
+  border: solid 1px $addis-grey-border;
+  margin-bottom: 10px;
+}
+.graph-legend {
+  padding: 0.5rem 1rem;
+}

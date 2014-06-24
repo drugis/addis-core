@@ -4,6 +4,7 @@ import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -41,6 +42,8 @@ public class AnalysisController extends AbstractAddisCoreController {
   @Inject
   AccountRepository accountRepository;
   @Inject
+  AnalysisService analysisService;
+  @Inject
   private ScenarioRepository scenarioRepository;
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
@@ -76,10 +79,10 @@ public class AnalysisController extends AbstractAddisCoreController {
       AbstractAnalysis analysis;
       switch(analysisCommand.getType()) {
         case AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL:
-          analysis = singleStudyBenefitRiskAnalysisRepository.create(user, analysisCommand);
+          analysis = analysisService.createSingleStudyBenefitRiskAnalysis(user, analysisCommand);
           break;
         case AnalysisType.NETWORK_META_ANALYSIS_LABEL:
-          analysis = networkMetaAnalysisRepository.create(user, analysisCommand);
+          analysis = analysisService.createNetworkMetaAnalysis(user, analysisCommand);
           break;
         default:
           throw new RuntimeException("unknown analysis type.");
@@ -101,18 +104,12 @@ public class AnalysisController extends AbstractAddisCoreController {
         SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
         return updateSingleStudyBenefitRiskAnalysis(user, singleStudyBenefitRiskAnalysis);
       } else if (analysis instanceof NetworkMetaAnalysis) {
-        NetworkMetaAnalysis networkMetaAnalysis = (NetworkMetaAnalysis) analysis;
-        return updateNetworkMetaAnalysis(user, networkMetaAnalysis);
+        return analysisService.updateNetworkMetaAnalysis(user, (NetworkMetaAnalysis) analysis);
       }
       throw new ResourceDoesNotExistException();
     } else {
       throw new MethodNotAllowedException();
     }
-  }
-
-  private NetworkMetaAnalysis updateNetworkMetaAnalysis(Account user, NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
-    NetworkMetaAnalysis oldAnalysis = (NetworkMetaAnalysis) analysisRepository.get(analysis.getProjectId(), analysis.getId());
-    return networkMetaAnalysisRepository.update(user, analysis);
   }
 
   public SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user, SingleStudyBenefitRiskAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {

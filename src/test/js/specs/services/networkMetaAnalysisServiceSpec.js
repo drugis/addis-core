@@ -81,55 +81,533 @@ define(['angular', 'angular-mocks', 'services'], function() {
     }]
   }];
 
+  var exampleNetworkStudies = [{
+    "studyId": 44,
+    "name": "TAK491-008 / NCT00696241",
+    "trialDataInterventions": [{
+      "drugId": 100,
+      "uri": "http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6",
+      "studyId": 44
+    }, {
+      "drugId": 99,
+      "uri": "http://trials.drugis.org/namespaces/2/drug/d7d7c477b89a5e4e5a57318743ccc87e",
+      "studyId": 44
+    }],
+    "trialDataArms": [{
+      "id": 144,
+      "name": "Azilsartan Medoxomil 40 mg QD",
+      "study": 44,
+      "drugId": 98,
+      "measurements": [{
+        "integerValue": null,
+        "realValue": -14.47,
+        "measurementMomentId": 86,
+        "armId": 144,
+        "variableId": 698,
+        "measurementAttribute": "mean",
+        "studyId": 44
+      }, {
+        "integerValue": 276,
+        "realValue": null,
+        "measurementMomentId": 86,
+        "armId": 144,
+        "variableId": 698,
+        "measurementAttribute": "sample size",
+        "studyId": 44
+      }, {
+        "integerValue": null,
+        "realValue": 15.815811834996014,
+        "measurementMomentId": 86,
+        "armId": 144,
+        "variableId": 698,
+        "measurementAttribute": "standard deviation",
+        "studyId": 44
+      }]
+    }, {
+      "id": 145,
+      "name": "Azilsartan Medoxomil 80 mg QD",
+      "study": 44,
+      "drugId": 98,
+      "measurements": [{
+        "integerValue": null,
+        "realValue": -17.58,
+        "measurementMomentId": 86,
+        "armId": 145,
+        "variableId": 698,
+        "measurementAttribute": "mean",
+        "studyId": 44
+      }, {
+        "integerValue": 279,
+        "realValue": null,
+        "measurementMomentId": 86,
+        "armId": 145,
+        "variableId": 698,
+        "measurementAttribute": "sample size",
+        "studyId": 44
+      }, {
+        "integerValue": null,
+        "realValue": 15.818018554800092,
+        "measurementMomentId": 86,
+        "armId": 145,
+        "variableId": 698,
+        "measurementAttribute": "standard deviation",
+        "studyId": 44
+      }]
+    }, {
+      "id": 146,
+      "name": "Olmesartan 40 mg QD",
+      "study": 44,
+      "drugId": 99,
+      "measurements": [{
+        "integerValue": null,
+        "realValue": -14.87,
+        "measurementMomentId": 86,
+        "armId": 146,
+        "variableId": 698,
+        "measurementAttribute": "mean",
+        "studyId": 44
+      }, {
+        "integerValue": 280,
+        "realValue": null,
+        "measurementMomentId": 86,
+        "armId": 146,
+        "variableId": 698,
+        "measurementAttribute": "sample size",
+        "studyId": 44
+      }, {
+        "integerValue": null,
+        "realValue": 15.812874501494028,
+        "measurementMomentId": 86,
+        "armId": 146,
+        "variableId": 698,
+        "measurementAttribute": "standard deviation",
+        "studyId": 44
+      }]
+    }, {
+      "id": 147,
+      "name": "Placebo QD",
+      "study": 44,
+      "drugId": 100,
+      "measurements": [{
+        "integerValue": null,
+        "realValue": -2.06,
+        "measurementMomentId": 86,
+        "armId": 147,
+        "variableId": 698,
+        "measurementAttribute": "mean",
+        "studyId": 44
+      }, {
+        "integerValue": 140,
+        "realValue": null,
+        "measurementMomentId": 86,
+        "armId": 147,
+        "variableId": 698,
+        "measurementAttribute": "sample size",
+        "studyId": 44
+      }, {
+        "integerValue": null,
+        "realValue": 15.819597340008373,
+        "measurementMomentId": 86,
+        "armId": 147,
+        "variableId": 698,
+        "measurementAttribute": "standard deviation",
+        "studyId": 44
+      }]
+    }, {
+      "id": 143,
+      "name": "Azilsartan Medoxomil 20 mg QD",
+      "study": 44,
+      "drugId": 98,
+      "measurements": [{
+        "integerValue": null,
+        "realValue": -14.28,
+        "measurementMomentId": 86,
+        "armId": 143,
+        "variableId": 698,
+        "measurementAttribute": "mean",
+        "studyId": 44
+      }, {
+        "integerValue": 274,
+        "realValue": null,
+        "measurementMomentId": 86,
+        "armId": 143,
+        "variableId": 698,
+        "measurementAttribute": "sample size",
+        "studyId": 44
+      }, {
+        "integerValue": null,
+        "realValue": 15.824615761527987,
+        "measurementMomentId": 86,
+        "armId": 143,
+        "variableId": 698,
+        "measurementAttribute": "standard deviation",
+        "studyId": 44
+      }]
+    }]
+  }, {
+    "studyId": 45,
+    "name": "TAK491-011 / NCT00591253",
+    "trialDataInterventions": [{
+      "drugId": 102,
+      "uri": "http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6",
+      "studyId": 45
+    }],
+    "trialDataArms": [{
+      "id": 149,
+      "name": "Azilsartan Medoxomil 40 mg QD",
+      "study": 45,
+      "drugId": 101,
+      "measurements": [{
+        "integerValue": null,
+        "realValue": -9.51,
+        "measurementMomentId": 88,
+        "armId": 149,
+        "variableId": 731,
+        "measurementAttribute": "mean",
+        "studyId": 45
+      }, {
+        "integerValue": 134,
+        "realValue": null,
+        "measurementMomentId": 88,
+        "armId": 149,
+        "variableId": 731,
+        "measurementAttribute": "sample size",
+        "studyId": 45
+      }, {
+        "integerValue": null,
+        "realValue": 15.395863080711,
+        "measurementMomentId": 88,
+        "armId": 149,
+        "variableId": 731,
+        "measurementAttribute": "standard deviation",
+        "studyId": 45
+      }]
+    }, {
+      "id": 150,
+      "name": "Azilsartan Medoxomil 80 mg QD",
+      "study": 45,
+      "drugId": 101,
+      "measurements": [{
+        "integerValue": null,
+        "realValue": -9.58,
+        "measurementMomentId": 88,
+        "armId": 150,
+        "variableId": 731,
+        "measurementAttribute": "mean",
+        "studyId": 45
+      }, {
+        "integerValue": 130,
+        "realValue": null,
+        "measurementMomentId": 88,
+        "armId": 150,
+        "variableId": 731,
+        "measurementAttribute": "sample size",
+        "studyId": 45
+      }, {
+        "integerValue": null,
+        "realValue": 15.403769993089353,
+        "measurementMomentId": 88,
+        "armId": 150,
+        "variableId": 731,
+        "measurementAttribute": "standard deviation",
+        "studyId": 45
+      }]
+    }, {
+      "id": 151,
+      "name": "Placebo QD",
+      "study": 45,
+      "drugId": 102,
+      "measurements": [{
+        "integerValue": null,
+        "realValue": -3.04,
+        "measurementMomentId": 88,
+        "armId": 151,
+        "variableId": 731,
+        "measurementAttribute": "mean",
+        "studyId": 45
+      }, {
+        "integerValue": 133,
+        "realValue": null,
+        "measurementMomentId": 88,
+        "armId": 151,
+        "variableId": 731,
+        "measurementAttribute": "sample size",
+        "studyId": 45
+      }, {
+        "integerValue": null,
+        "realValue": 15.37290593869617,
+        "measurementMomentId": 88,
+        "armId": 151,
+        "variableId": 731,
+        "measurementAttribute": "standard deviation",
+        "studyId": 45
+      }]
+    }]
+  }, {
+    "studyId": 46,
+    "name": "TAK491-019 / NCT00696436",
+    "trialDataInterventions": [{
+      "drugId": 106,
+      "uri": "http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6",
+      "studyId": 46
+    }, {
+      "drugId": 105,
+      "uri": "http://trials.drugis.org/namespaces/2/drug/d7d7c477b89a5e4e5a57318743ccc87e",
+      "studyId": 46
+    }],
+    "trialDataArms": [{
+      "id": 156,
+      "name": "Olmesartan 40 mg QD",
+      "study": 46,
+      "drugId": 105,
+      "measurements": [{
+        "integerValue": null,
+        "realValue": -13.2,
+        "measurementMomentId": 90,
+        "armId": 156,
+        "variableId": 758,
+        "measurementAttribute": "mean",
+        "studyId": 46
+      }, {
+        "integerValue": 283,
+        "realValue": null,
+        "measurementMomentId": 90,
+        "armId": 156,
+        "variableId": 758,
+        "measurementAttribute": "sample size",
+        "studyId": 46
+      }, {
+        "integerValue": null,
+        "realValue": 15.729134591578775,
+        "measurementMomentId": 90,
+        "armId": 156,
+        "variableId": 758,
+        "measurementAttribute": "standard deviation",
+        "studyId": 46
+      }]
+    }, {
+      "id": 155,
+      "name": "Valsartan 320 mg QD",
+      "study": 46,
+      "drugId": 104,
+      "measurements": [{
+        "integerValue": null,
+        "realValue": -11.31,
+        "measurementMomentId": 90,
+        "armId": 155,
+        "variableId": 758,
+        "measurementAttribute": "mean",
+        "studyId": 46
+      }, {
+        "integerValue": 271,
+        "realValue": null,
+        "measurementMomentId": 90,
+        "armId": 155,
+        "variableId": 758,
+        "measurementAttribute": "sample size",
+        "studyId": 46
+      }, {
+        "integerValue": null,
+        "realValue": 15.721284139662384,
+        "measurementMomentId": 90,
+        "armId": 155,
+        "variableId": 758,
+        "measurementAttribute": "standard deviation",
+        "studyId": 46
+      }]
+    }, {
+      "id": 157,
+      "name": "Placebo QD",
+      "study": 46,
+      "drugId": 106,
+      "measurements": [{
+        "integerValue": null,
+        "realValue": -1.83,
+        "measurementMomentId": 90,
+        "armId": 157,
+        "variableId": 758,
+        "measurementAttribute": "mean",
+        "studyId": 46
+      }, {
+        "integerValue": 148,
+        "realValue": null,
+        "measurementMomentId": 90,
+        "armId": 157,
+        "variableId": 758,
+        "measurementAttribute": "sample size",
+        "studyId": 46
+      }, {
+        "integerValue": null,
+        "realValue": 15.730023903351194,
+        "measurementMomentId": 90,
+        "armId": 157,
+        "variableId": 758,
+        "measurementAttribute": "standard deviation",
+        "studyId": 46
+      }]
+    }, {
+      "id": 154,
+      "name": "Azilsartan Medoxomil 80 mg QD",
+      "study": 46,
+      "drugId": 103,
+      "measurements": [{
+        "integerValue": null,
+        "realValue": -16.74,
+        "measurementMomentId": 90,
+        "armId": 154,
+        "variableId": 758,
+        "measurementAttribute": "mean",
+        "studyId": 46
+      }, {
+        "integerValue": 270,
+        "realValue": null,
+        "measurementMomentId": 90,
+        "armId": 154,
+        "variableId": 758,
+        "measurementAttribute": "sample size",
+        "studyId": 46
+      }, {
+        "integerValue": null,
+        "realValue": 15.725114625973317,
+        "measurementMomentId": 90,
+        "armId": 154,
+        "variableId": 758,
+        "measurementAttribute": "standard deviation",
+        "studyId": 46
+      }]
+    }, {
+      "id": 153,
+      "name": "Azilsartan Medoxomil 40 mg QD",
+      "study": 46,
+      "drugId": 103,
+      "measurements": [{
+        "integerValue": null,
+        "realValue": -16.38,
+        "measurementMomentId": 90,
+        "armId": 153,
+        "variableId": 758,
+        "measurementAttribute": "mean",
+        "studyId": 46
+      }, {
+        "integerValue": 269,
+        "realValue": null,
+        "measurementMomentId": 90,
+        "armId": 153,
+        "variableId": 758,
+        "measurementAttribute": "sample size",
+        "studyId": 46
+      }, {
+        "integerValue": null,
+        "realValue": 15.728769468715601,
+        "measurementMomentId": 90,
+        "armId": 153,
+        "variableId": 758,
+        "measurementAttribute": "standard deviation",
+        "studyId": 46
+      }]
+    }]
+  }];
+
+  var expectedNetwork = {
+    "interventions": [{
+      "name": "placebo",
+      "sampleSize": 288
+    }, {
+      "name": "Olmes",
+      "sampleSize": 563
+    }, {
+      "name": "Chlora",
+      "sampleSize": 0
+    }],
+    "edges": [{
+      "from": {
+        "id": 43,
+        "project": 13,
+        "name": "placebo",
+        "motivation": "",
+        "semanticInterventionLabel": "Placebo",
+        "semanticInterventionUri": "http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6"
+      },
+      "to": {
+        "id": 44,
+        "project": 13,
+        "name": "Olmes",
+        "motivation": "",
+        "semanticInterventionLabel": "Olmesartan",
+        "semanticInterventionUri": "http://trials.drugis.org/namespaces/2/drug/d7d7c477b89a5e4e5a57318743ccc87e"
+      },
+      "numberOfStudies": 2
+    }]
+  };
+
+  function exampleInterventions() {
+    return [{
+      name: 'intervention 1',
+      semanticInterventionUri: 'http://trials.drugis.org/namespaces/1/drug/a4b119795fa42c624640a77ce024d9a2'
+    }, {
+      name: 'intervention 2',
+      semanticInterventionUri: 'http://trials.drugis.org/namespaces/1/drug/a0f638328eeea353bf0ba7f111a167dd'
+    }, {
+      name: 'intervention 3',
+      semanticInterventionUri: 'http://trials.drugis.org/namespaces/2/drug/87fec8a8071915a2e17eddeb1faf8daa'
+    }];
+  }
+
+  var networkInterventions = [{
+    "id": 43,
+    "project": 13,
+    "name": "placebo",
+    "motivation": "",
+    "semanticInterventionLabel": "Placebo",
+    "semanticInterventionUri": "http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6"
+  }, {
+    "id": 44,
+    "project": 13,
+    "name": "Olmes",
+    "motivation": "",
+    "semanticInterventionLabel": "Olmesartan",
+    "semanticInterventionUri": "http://trials.drugis.org/namespaces/2/drug/d7d7c477b89a5e4e5a57318743ccc87e"
+  }, {
+    "id": 45,
+    "project": 13,
+    "name": "Chlora",
+    "motivation": "",
+    "semanticInterventionLabel": "Chlortalidone",
+    "semanticInterventionUri": "http://trials.drugis.org/namespaces/2/drug/a977e3a6fa4dc0a34fcf9fb351bc0a0e"
+  }];
+
   describe("The networkMetaAnalysisService", function() {
+
+    describe('transformTrialDataToNetwork', function() {
+      beforeEach(module('addis.services'));
+
+      it('should construct the evidence network from the list of trialDataStudies', inject(function(NetworkMetaAnalysisService) {
+        var trialVerseStudyData = {
+          trialDataStudies: exampleNetworkStudies
+        };
+
+        var network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialVerseStudyData, networkInterventions);
+
+        expect(network).toEqual(expectedNetwork);
+      }));
+
+    });
 
     describe('transformTrialDataToTableRows', function() {
 
       beforeEach(module('addis.services'));
-      beforeEach(module('addis.resources'));
-
-      beforeEach(function() {
-
-        mockInterventionResource = jasmine.createSpyObj('InterventionResource', ['query']);
-
-        module('addis', function($provide) {
-          $provide.value('InterventionResource', mockInterventionResource);
-        });
-      });
 
       it('should construct table rows from the list of trialDataStudies',
         inject(function($rootScope, $q, NetworkMetaAnalysisService) {
 
           var trialVersStudyData = {};
           trialVersStudyData.trialDataStudies = exampleStudies;
-          var interventionsDefer = $q.defer();
-          var interventions = [{
-            name: 'intervention 1',
-            semanticInterventionUri: 'http://trials.drugis.org/namespaces/1/drug/a4b119795fa42c624640a77ce024d9a2'
-          }, {
-            name: 'intervention 2',
-            semanticInterventionUri: 'http://trials.drugis.org/namespaces/1/drug/a0f638328eeea353bf0ba7f111a167dd'
-          }, {
-            name: 'intervention 3',
-            semanticInterventionUri: 'http://trials.drugis.org/namespaces/2/drug/87fec8a8071915a2e17eddeb1faf8daa'
-          }];
-          interventions.$promise = interventionsDefer.promise;
-          mockInterventionResource.query.and.returnValue(interventions);
-
+          var interventions = exampleInterventions();
 
           // Execute
-          var resultPromise = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialVersStudyData);
+          var resultRows = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialVersStudyData, interventions);
 
-          // Expect promise
-          expect(resultPromise.then).not.toBeNull();
-          var expectedRows;
-          resultPromise.then(function(result) {
-            expectedRows = result;
-          });
-          interventionsDefer.resolve(interventions);
-          $rootScope.$apply();
-
-          expect(expectedRows[0]).toEqual({
+          expect(resultRows[0]).toEqual({
             study: 'Fava et al, 2002',
             studyRowSpan: 3,
             intervention: 'intervention 1',
@@ -140,10 +618,13 @@ define(['angular', 'angular-mocks', 'services'], function() {
             sampleSize: 96,
             firstInterventionRow: true,
             firstStudyRow: true,
-            interventionRowSpan: 2
+            interventionRowSpan: 2,
+            included: true,
+            trialverseId: 86,
+            drugId: 58
           });
 
-          expect(expectedRows[1]).toEqual({
+          expect(resultRows[1]).toEqual({
             arm: 'Sertraline',
             intervention: 'intervention 1',
             mu: null,
@@ -151,10 +632,13 @@ define(['angular', 'angular-mocks', 'services'], function() {
             sampleSize: 96,
             sigma: null,
             study: 'Fava et al, 2002',
-            studyRowSpan: 3
+            studyRowSpan: 3,
+            included: true,
+            trialverseId: 85,
+            drugId: 58
           });
 
-          expect(expectedRows[2]).toEqual({
+          expect(resultRows[2]).toEqual({
             arm: 'Fluoxetine',
             firstInterventionRow: true,
             intervention: 'intervention 2',
@@ -164,11 +648,317 @@ define(['angular', 'angular-mocks', 'services'], function() {
             sampleSize: 92,
             sigma: null,
             study: 'Fava et al, 2002',
-            studyRowSpan: 3
+            studyRowSpan: 3,
+            included: true,
+            trialverseId: 87,
+            drugId: 60
           });
         })
       );
 
+    });
+
+    describe('isNetworkDisconnected', function() {
+
+      beforeEach(module('addis.services'));
+
+      it('should return true if the network is connected', inject(function(NetworkMetaAnalysisService) {
+        var network = {
+          interventions: [{
+            name: 'A'
+          }, {
+            name: 'B'
+          }, {
+            name: 'C'
+          }],
+          edges: [{
+            from: {
+              name: 'A'
+            },
+            to: {
+              name: 'B'
+            }
+          }, {
+            from: {
+              name: 'B'
+            },
+            to: {
+              name: 'C'
+            }
+          }]
+        };
+
+        expect(NetworkMetaAnalysisService.isNetworkDisconnected(network)).toBeFalsy();
+
+        network.edges.pop();
+
+        expect(NetworkMetaAnalysisService.isNetworkDisconnected(network)).toBeTruthy();
+      }));
+
+      it('should return false for a network that has two connected subnetworks', inject(function(NetworkMetaAnalysisService) {
+        var network = {
+          interventions: [{
+            name: 'A'
+          }, {
+            name: 'B'
+          }, {
+            name: 'C'
+          }, {
+            name: 'D'
+          }],
+          edges: [{
+            from: {
+              name: 'A'
+            },
+            to: {
+              name: 'B'
+            }
+          }, {
+            from: {
+              name: 'C'
+            },
+            to: {
+              name: 'D'
+            }
+          }]
+        };
+        expect(NetworkMetaAnalysisService.isNetworkDisconnected(network)).toBeTruthy();
+      }));
+    });
+
+    describe('changeArmExclusion', function() {
+
+      beforeEach(module('addis.services'));
+
+      it('should add an excluded arm if dataRow.included is false', inject(function(NetworkMetaAnalysisService) {
+        var dataRow = {
+          included: false,
+          trialverseId: -1
+        };
+
+        var analysis = {
+          id: 1,
+          excludedArms: [{
+            trialverseId: -2,
+            analysisId: 1
+          }],
+        };
+
+        analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, analysis);
+        expect(analysis.excludedArms.length).toBe(2);
+      }));
+
+      it('should remove an excluded arm if datarow.included = true for the corresponding arm', inject(function(NetworkMetaAnalysisService) {
+        var dataRow = {
+          included: true,
+          trialverseId: -2
+        };
+
+        var analysis = {
+          id: 1,
+          excludedArms: [{
+            trialverseId: -2,
+            analysisId: 1
+          }, {
+            trialverseId: -3,
+            analysisId: 1
+          }],
+        };
+        analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, analysis);
+        expect(analysis.excludedArms.length).toBe(1);
+        expect(analysis.excludedArms[0].trialverseId).toBe(-3);
+      }));
+
+    });
+
+    describe('doesInterventionHaveAmbiguousArms', function() {
+      beforeEach(module('addis.services'));
+
+      it('should return true if there are ambiguous arms for the intervention', inject(function(NetworkMetaAnalysisService) {
+        var drugId = 1;
+        var trialverseData = {
+          trialDataStudies: [{
+            trialDataArms: [{
+              drugId: 1
+            }, {
+              drugId: 1
+            }],
+            trialDataInterventions: [{
+              drugId: 1
+            }],
+          }]
+        };
+        var analysis = {
+          excludedArms: []
+        };
+        expect(NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, trialverseData, analysis)).toBeTruthy();
+      }));
+
+      it('should return false if there are no ambiguous arms for the intervention', inject(function(NetworkMetaAnalysisService) {
+        var drugId = 1;
+        var trialverseData = {
+          trialDataStudies: [{
+            trialDataArms: [{
+              drugId: 1
+            }, {
+              drugId: 2
+            }]
+          }]
+        };
+        var analysis = {
+          excludedArms: []
+        };
+        expect(NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, trialverseData, analysis)).toBeFalsy();
+      }));
+
+      it('should return false if the ambiguity has been resolved through exclusion', inject(function(NetworkMetaAnalysisService) {
+        var drugId = 1;
+        var trialverseData = {
+          trialDataStudies: [{
+            trialDataArms: [{
+              id: 3,
+              drugId: 1
+            }, {
+              id: 4,
+              drugId: 1
+            }]
+          }]
+        };
+        var analysis = {
+          excludedArms: [{
+            trialverseId: 3
+          }]
+        };
+        expect(NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, trialverseData, analysis)).toBeFalsy();
+      }));
+
+    });
+
+    describe('doesModelHaveAmbiguousArms', function() {
+      beforeEach(module('addis.services'));
+
+      it('should return true if there are ambiguous arms for the model', inject(function(NetworkMetaAnalysisService) {
+        var trialverseData = {
+          trialDataStudies: [{
+            trialDataArms: [{
+              drugId: 1
+            }, {
+              drugId: 1
+            }],
+            trialDataInterventions: [{
+              drugId: 1
+            }],
+          }]
+        };
+        var analysis = {
+          excludedArms: []
+        };
+        expect(NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, analysis)).toBeTruthy();
+      }));
+
+    });
+
+    describe('addInclusionsToInterventions', function() {
+      beforeEach(module('addis.services'));
+
+      it('should add inclusions to interventions', inject(function(NetworkMetaAnalysisService) {
+        var exclusions = [{
+          interventionId: 43
+        }];
+        var includedInterventions = NetworkMetaAnalysisService.addInclusionsToInterventions(networkInterventions, exclusions);
+        expect(includedInterventions[0].isIncluded).toBeFalsy();
+        expect(includedInterventions[1].isIncluded).toBeTruthy();
+        expect(includedInterventions[2].isIncluded).toBeTruthy();
+      }));
+    });
+
+    describe('buildInterventionExclusions', function() {
+      beforeEach(module('addis.services'));
+
+      it('should create a new list of intervention exclusions', inject(function(NetworkMetaAnalysisService) {
+        var interventions = [{
+          id: 1,
+          isIncluded: true
+        }, {
+          id: 2,
+          isIncluded: false
+        }, {
+          id: 3,
+          isIncluded: true
+        }];
+        var analysis = {
+          id: 4
+        };
+        var interventionExclusions = NetworkMetaAnalysisService.buildInterventionExclusions(interventions, analysis);
+        expect(interventionExclusions).toEqual([{
+          analysisId: analysis.id,
+          interventionId: 2
+        }]);
+      }));
+    });
+
+    describe('cleanUpExcludedArms', function() {
+      beforeEach(module('addis.services'));
+
+      it('should remove armExclusions that match the intervention', inject(function(NetworkMetaAnalysisService) {
+        var study1 = {
+          trialDataInterventions: [{
+            drugId: 1,
+            uri: "uri1"
+          }, {
+            drugId: 2,
+            uri: "uri2"
+          }, ],
+          trialDataArms: [{
+            drugId: 1,
+            id: 10
+          }, {
+            drugId: 2,
+            id: 11
+          }, {
+            drugId: 2,
+            id: 12
+          }]
+        };
+        var study2 = {
+          trialDataInterventions: [{
+            drugId: 3,
+            uri: "uri1"
+          }, {
+            drugId: 4,
+            uri: "uri3"
+          }],
+          trialDataArms: [{
+            drugId: 7,
+            id: 20
+          }, {
+            drugId: 3,
+            id: 21
+          }]
+        };
+        var trialverseData = {
+          trialDataStudies: [study1, study2]
+        };
+        var analysis = {
+          excludedArms: [{
+            trialverseId: 10
+          }, {
+            trialverseId: 21
+          }, {
+            trialverseId: 20
+          }]
+        };
+        var intervention = {
+          semanticInterventionUri: "uri1"
+        };
+
+        var expectedArmExclusions = [{
+          trialverseId: 20
+        }];
+
+        expect(NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, analysis, trialverseData)).toEqual(expectedArmExclusions);
+
+      }));
     });
 
   });

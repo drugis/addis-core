@@ -1,5 +1,6 @@
 package org.drugis.addis.models;
 
+import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.models.repositories.ModelRepository;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import javax.transaction.Transactional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
@@ -41,5 +43,17 @@ public class JpaModelRepositoryTest {
     Model result = modelRepository.get(modelId);
     assertNotNull(result);
     assertEquals(analysisId, result.getAnalysisId());
+  }
+
+  @Test
+  public void testFindByAnalysis() {
+    NetworkMetaAnalysis networkMetaAnalysisWithModel = em.find(NetworkMetaAnalysis.class, -5);
+    Model model = modelRepository.findByAnalysis(networkMetaAnalysisWithModel);
+    assertNotNull(model);
+    assertEquals(networkMetaAnalysisWithModel.getId(), model.getAnalysisId());
+
+    NetworkMetaAnalysis networkMetaAnalysisWithWithOutModel = em.find(NetworkMetaAnalysis.class, -6);
+    model = modelRepository.findByAnalysis(networkMetaAnalysisWithWithOutModel);
+    assertNull(model);
   }
 }
