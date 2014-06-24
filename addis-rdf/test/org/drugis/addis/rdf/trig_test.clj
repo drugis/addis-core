@@ -2,7 +2,7 @@
   (:use clojure.test)
   (:use org.drugis.addis.rdf.trig))
 
-; TODO: actually blank nodes are also allowed in the subject position
+; TODO: actually blank nodes are also allowed in the subject position (but not the predicate position)
 (deftest test-ttl-str 
   (is (= (ttl-str (iri "http://example.com/8")) "<http://example.com/8>") "Handles plain URIs")
   (is (= (ttl-str (iri :rdfs "comment")) "rdfs:comment") "Handles QName URIs")
@@ -107,5 +107,5 @@
   (let [prefixes {:ex "http://example.com/"}]
     (is (= (write-graph prefixes (graph (iri :ex "n")
                                         [(spo (iri :ex 8) [(iri :ex "lessThan") (iri :ex 9)])
-                                        (spo (iri :ex 7) [(iri :ex "lessThan") (iri :ex 8)])]))
+                                         (spo (iri :ex 7) [(iri :ex "lessThan") (iri :ex 8)])]))
            "ex:n {\n\n  ex:8\n    ex:lessThan ex:9 .\n\n  ex:7\n    ex:lessThan ex:8 .\n\n}"))))

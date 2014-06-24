@@ -165,26 +165,26 @@
            (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Study")]
                      [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
                      [(trig/iri :rdfs "comment") (trig/lit (vtd/text (vtd/at xml "./characteristics/title/value")))])
-          ; # characteristics
-          (allocation-rdf xml)
-          (blinding-rdf xml)
-          (centers-rdf xml)
-          ; objective: new node with rdfs:comment the text
-          ; inclusion: new node with rdfs:comment the text
-          ; exclusion: new node with rdfs:comment the text
-          ; references: not sure?
-          ; source: omit?
-          ; study_start
-          ; study_end
-          ; status
-          ; 
-          ; ## actual stuff
-          (trig/spo [(trig/iri :ontology "has_indication") indication-uri])
-          (spo-each (trig/iri :ontology "has_outcome") (vals study-outcome-uris))
-          (spo-each (trig/iri :ontology "has_arm") (vals arm-uris)) ; TODO: arm sizes
-          (spo-each (trig/iri :ontology "has_epoch") (vals epoch-uris)) ; TODO: duration
-          ; measurements
-          )]
+           ; # characteristics
+           (allocation-rdf xml)
+           (blinding-rdf xml)
+           (centers-rdf xml)
+           ; objective: new node with rdfs:comment the text
+           ; inclusion: new node with rdfs:comment the text
+           ; exclusion: new node with rdfs:comment the text
+           ; references: not sure?
+           ; source: omit?
+           ; study_start
+           ; study_end
+           ; status
+           ; 
+           ; ## actual stuff
+           (trig/spo [(trig/iri :ontology "has_indication") indication-uri])
+           (spo-each (trig/iri :ontology "has_outcome") (vals study-outcome-uris))
+           (spo-each (trig/iri :ontology "has_arm") (vals arm-uris)) ; TODO: arm sizes
+           (spo-each (trig/iri :ontology "has_epoch") (vals epoch-uris)) ; TODO: duration
+           ; measurements
+           )]
       [(study-indication-rdf xml entity-uris indication-uri)]
       (map #(study-outcome-rdf (vtd/at xml (str "./studyOutcomeMeasures/studyOutcomeMeasure[@id='" % "']")) entity-uris (study-outcome-uris %)) (keys study-outcome-uris))
       (map #(study-drug-rdf % entity-uris (study-drug-uris %)) (keys study-drug-uris))
