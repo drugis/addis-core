@@ -110,10 +110,11 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       networkMetaAnalysisService.doesInterventionHaveAmbiguousArms.and.returnValue(true);
       networkMetaAnalysisService.addInclusionsToInterventions.and.returnValue(mockInterventions);
 
-      modelResource = jasmine.createSpyObj('modelResource', ['save']);
+      modelResource = jasmine.createSpyObj('modelResource', ['save', 'query']);
       modelDeferred = $q.defer();
       mockModel.$promise = modelDeferred.promise;
       modelResource.save.and.returnValue(mockModel);
+      modelResource.query.and.returnValue([mockTrialData]);
 
       state = jasmine.createSpyObj('$state', ['go']);
 
@@ -142,9 +143,9 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         expect(scope.outcomes).toEqual(mockOutcomes);
       });
 
-      it('should place a goToModel function on the scope that navigates to the analysis.model state', function() {
-        expect(scope.goToModel).toBeDefined();
-        scope.goToModel();
+      it('should place a createModelAndGoToModel function on the scope that navigates to the analysis.model state', function() {
+        expect(scope.createModelAndGoToModel).toBeDefined();
+        scope.createModelAndGoToModel();
         expect(modelResource.save).toHaveBeenCalledWith(mockStateParams, {});
       });
 
@@ -187,10 +188,10 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
       });
 
-      describe('and the go to model button is clicked', function() {
+      describe('and the create model button is clicked', function() {
 
         it('should create a model and go to the model view', function() {
-          scope.goToModel();
+          scope.createModelAndGoToModel();
           expect(modelResource.save).toHaveBeenCalledWith(mockStateParams, {});
           modelDeferred.resolve(mockModel);
           scope.$apply();
