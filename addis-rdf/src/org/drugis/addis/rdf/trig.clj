@@ -1,14 +1,34 @@
 (ns org.drugis.addis.rdf.trig
-  (:require [clojure.string :refer [join]])
-  (:require [clojure.data.json :refer [write-str]]))
+  (:require [clojure.string :refer [join]]))
 
 (declare write-pairs)
 
 (def _indent_ "  ")
 
+(defn- encode-char [c]
+  (let [cp (int c)
+        throw-cp (fn [] (throw (IllegalArgumentException. (str "Invalid code point. " (format "0x%x" cp)))))]
+    (cond
+      ;; String escape sequences
+      (= c \\) "\\\\"
+      (= c \") "\\\""
+      (= c \') "\\'"
+      (= c \tab) "\\t"
+      (= c \backspace) "\\b"
+      (= c \newline) "\\n"
+      (= c \return) "\\r"
+      (= c \formfeed) "\\f"
+      (< cp 32) (throw-cp)
+      (< cp 128) c
+      (< cp 0xfff) (format "\\u%04x" cp)
+      (< cp 0x10fff) (format "\\U%08x" cp)
+      :else (throw-cp))))
+
+(defn write-str [string]
+  (str "\"" (join (map encode-char string)) "\""))
+
 (defn ttl-object-str
-  "Resource to Turtle string for object position.
-  WARNING: string literals are escaped using a JSON escaping algorithm, which may not be correct in exotic cases."
+  "Resource to Turtle string for object position."
   ([prefixes resource] (ttl-object-str prefixes resource ""))
   ([prefixes resource indent]
    (let [indent+ (str indent _indent_)]
@@ -25,8 +45,7 @@
          (instance? Boolean resource) (str resource)
          (integer? resource) (str resource)
          (float? resource) (format "%e" (double resource))
-         (string? resource) (write-str resource)
-         )))))
+         (string? resource) (write-str resource))))))
 
 (defn ttl-str
   "Resource to Turtle string for subject and predicate positions"
