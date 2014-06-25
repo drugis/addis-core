@@ -26,7 +26,7 @@ SELECT ?studyLabel ?armLabel ?epochLabel WHERE {
         ontology:applied_to_arm ?arm ;
         ontology:applied_in_epoch ?epoch
       ] ;
-      ontology:administeredDrugs ([ ontology:treatment_has_drug ?instance ]) .
+      ontology:administered_drugs ([ ontology:treatment_has_drug ?instance ]) .
 
     ?epoch rdfs:label ?epochLabel .
     ?arm rdfs:label ?armLabel .

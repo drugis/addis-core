@@ -147,7 +147,7 @@
   (let [drugs-coll (trig/coll (map #(treatment-rdf % study-drug-uris) (vtd/search xml "./drugTreatment")))]
     (trig/spo subj 
               [(trig/iri :rdf "type") (trig/iri :ontology "TreatmentActivity")]
-              [(trig/iri :ontology "administeredDrugs") drugs-coll])))
+              [(trig/iri :ontology "administered_drugs") drugs-coll])))
 
 (def activity-rdf
   {"predefined" activity-predefined-rdf
