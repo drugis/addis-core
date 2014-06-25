@@ -170,6 +170,28 @@
 (defn spo-each [subj pred obj*]
   (reduce (fn [subj obj] (trig/spo subj [pred obj])) subj obj*))
 
+(defn arm-receives-treatment
+  [studyNode epochName armName]
+  (let [usedBys (vtd/search studyNode "./activities/studyActivity/usedBy")
+        usedBy (first (filter #(and (= armName (vtd/attr % :arm)) (= epochName (vtd/attr % :epoch))) usedBys))]
+    (and (not (nil? usedBy)) (not (nil? (vtd/at usedBy "../activity/treatment"))))))
+
+(defn is-treatment-epoch
+  [studyNode epochName]
+  (let [arms (map #(vtd/attr % :name) (vtd/search studyNode "./arms/arm"))]
+    (every? #(arm-receives-treatment studyNode epochName %) arms)))
+
+(defn find-first-treatment-epoch
+  [studyNode]
+  (let [epochNames (map  #(vtd/attr % :name) (vtd/search studyNode "./epochs/epoch"))]
+    (first (filter #(is-treatment-epoch studyNode %) epochNames))))
+
+(defn primary-epoch-rdf
+  [subj uri]
+  (if uri
+    (trig/spo subj [(trig/iri :ontology "has_primary_epoch") uri])
+    subj))
+
 ; TODO: import the interesting stuff
 (defn study-rdf [xml uri entity-uris]
   (let [indication-uri (trig/iri :instance (uuid))
@@ -177,6 +199,7 @@
         arm-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :arm (uuid))}) (vtd/search xml "./arms/arm")))
         epochs (map #(vtd/attr % :name) (vtd/search xml "./epochs/epoch"))
         epoch-uris (apply merge (map (fn [epoch] {epoch (trig/iri :epoch (uuid))}) epochs))
+        primary-epoch (find-first-treatment-epoch xml)
         study-drug-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :drug (uuid))}) (vtd/search xml "./activities/studyActivity/activity/treatment/drugTreatment/drug")))]
     (concat
       [(-> uri
@@ -201,6 +224,7 @@
            (spo-each (trig/iri :ontology "has_outcome") (vals study-outcome-uris))
            (spo-each (trig/iri :ontology "has_arm") (vals arm-uris)) ; TODO: arm sizes
            (trig/spo [(trig/iri :ontology "has_epochs") (trig/coll (map epoch-uris epochs))]) ; TODO: duration
+           (primary-epoch-rdf (epoch-uris primary-epoch))
            ; measurements
            )]
       [(study-indication-rdf xml entity-uris indication-uri)]
