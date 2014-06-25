@@ -196,11 +196,11 @@
 (defn study-rdf [xml uri entity-uris]
   (let [indication-uri (trig/iri :instance (uuid))
         study-outcome-uris (apply merge (map (fn [el] {(vtd/attr el :id) (trig/iri :instance (uuid))}) (vtd/search xml "./studyOutcomeMeasures/studyOutcomeMeasure")))
-        arm-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :arm (uuid))}) (vtd/search xml "./arms/arm")))
+        arm-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :instance (uuid))}) (vtd/search xml "./arms/arm")))
         epochs (map #(vtd/attr % :name) (vtd/search xml "./epochs/epoch"))
-        epoch-uris (apply merge (map (fn [epoch] {epoch (trig/iri :epoch (uuid))}) epochs))
+        epoch-uris (apply merge (map (fn [epoch] {epoch (trig/iri :instance (uuid))}) epochs))
         primary-epoch (find-first-treatment-epoch xml)
-        study-drug-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :drug (uuid))}) (vtd/search xml "./activities/studyActivity/activity/treatment/drugTreatment/drug")))]
+        study-drug-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :instance (uuid))}) (vtd/search xml "./activities/studyActivity/activity/treatment/drugTreatment/drug")))]
     (concat
       [(-> uri
            (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Study")]
@@ -232,7 +232,7 @@
       (map #(study-epoch-rdf % (epoch-uris %)) epochs)
       (map #(study-outcome-rdf (vtd/at xml (str "./studyOutcomeMeasures/studyOutcomeMeasure[@id='" % "']")) entity-uris (study-outcome-uris %)) (keys study-outcome-uris))
       (map #(study-drug-rdf % entity-uris (study-drug-uris %)) (keys study-drug-uris))
-      (map #(study-activity-rdf % (trig/iri :activity (uuid)) entity-uris arm-uris epoch-uris study-drug-uris) (vtd/search xml "./activities/studyActivity")))))
+      (map #(study-activity-rdf % (trig/iri :instance (uuid)) entity-uris arm-uris epoch-uris study-drug-uris) (vtd/search xml "./activities/studyActivity")))))
 
 (defn import-study [xml entity-uris]
   (let [uri (trig/iri :study (uuid))]
@@ -252,10 +252,6 @@
                   :ontology "http://trials.drugis.org/ontology#"
                   :dataset "http://trials.drugis.org/datasets/"
                   :study "http://trials.drugis.org/studies/"
-                  :arm "http://trials.drugis.org/arms/"
-                  :epoch "http://trials.drugis.org/epochs/"
-                  :activity "http://trials.drugis.org/activities/"
-                  :drug "http://trials.drugis.org/drugs/"
                   :instance "http://trials.drugis.org/instances/"
                   :entity "http://trials.drugis.org/entities/"
                   :atc "http://www.whocc.no/ATC2011/"
