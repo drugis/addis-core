@@ -94,21 +94,32 @@
       (trig/spo subj [(trig/iri :ontology "has_number_of_centers") (trig/lit centers)])
       subj)))
 
-; TODO: add rdfs:label and rdfs:comment from the source entity
 (defn study-indication-rdf [xml entity-uris instance-uri]
-  (let [entity-uri ((:indication entity-uris) (vtd/attr (vtd/at xml "./indication") :name))]
-    (trig/spo instance-uri [(trig/iri :rdf "type") entity-uri])))
+  (let [entity-name (vtd/attr (vtd/at xml "./indication") :name)
+        entity-uri ((:indication entity-uris) entity-name)]
+    (trig/spo instance-uri
+              [(trig/iri :rdf "type") entity-uri]
+              [(trig/iri :rdfs "label") entity-name])))
 
-; TODO: add rdfs:label and rdfs:comment from the source entity. more info?
 (defn study-outcome-rdf [xml entity-uris instance-uri]
   (let [entity-name (vtd/attr (vtd/first-child xml) :name)
         entity-type (vtd/tag (vtd/first-child xml))
-        entity-uri ((entity-uris (keyword entity-type)) entity-name)]
-    (trig/spo instance-uri [(trig/iri :rdf "type") entity-uri])))
+        entity-uri ((entity-uris (keyword entity-type)) entity-name)
+        description (vtd/attr (vtd/at xml (str "//addis-data/" entity-type "s/*[@name='" entity-name "']")) :description)]
+    (trig/spo instance-uri
+              [(trig/iri :rdf "type") entity-uri]
+              [(trig/iri :rdfs "label") entity-name]
+              [(trig/iri :rdfs "comment") (trig/lit description)])))
 
-; TODO: add rdfs:label and rdfs:comment from the source entity. more info?
 (defn study-drug-rdf [drug-name entity-uris instance-uri]
-  (trig/spo instance-uri [(trig/iri :rdf "type") ((entity-uris :drug) drug-name)]))
+  (trig/spo instance-uri
+            [(trig/iri :rdf "type") ((entity-uris :drug) drug-name)]
+            [(trig/iri :rdfs "label") drug-name]))
+
+(defn study-arm-rdf [arm-name instance-uri]
+  (trig/spo instance-uri
+            [(trig/iri :rdfs "label") arm-name]
+            [(trig/iri :rdf "type") (trig/iri :ontology "Arm")]))
 
 (defn activity-other-rdf [subj xml study-drug-uris]
   (trig/spo subj
@@ -139,9 +150,9 @@
 
 (defn activity-used-by-rdf
   [subj xml arm-uris epoch-uris]
-  (trig/spo subj
-            [(trig/iri :ontology "applied_to_arm") (arm-uris (vtd/attr xml "arm"))]
-            [(trig/iri :ontology "applied_in_epoch") (epoch-uris (vtd/attr xml "epoch"))]))
+  (let [used-by (trig/_po [(trig/iri :ontology "applied_to_arm") (arm-uris (vtd/attr xml "arm"))]
+                          [(trig/iri :ontology "applied_in_epoch") (epoch-uris (vtd/attr xml "epoch"))])]
+    (trig/spo subj [(trig/iri :ontology "activity_application") used-by])))
 
 (defn study-activity-rdf [xml activity-uri entity-uris arm-uris epoch-uris study-drug-uris]
   (let [activity (vtd/first-child (vtd/at xml "./activity"))
@@ -187,6 +198,7 @@
            )]
       [(study-indication-rdf xml entity-uris indication-uri)]
       (map #(study-outcome-rdf (vtd/at xml (str "./studyOutcomeMeasures/studyOutcomeMeasure[@id='" % "']")) entity-uris (study-outcome-uris %)) (keys study-outcome-uris))
+      (map #(study-arm-rdf % (arm-uris %)) (keys arm-uris))
       (map #(study-drug-rdf % entity-uris (study-drug-uris %)) (keys study-drug-uris))
       (map #(study-activity-rdf % (trig/iri :activity (uuid)) entity-uris arm-uris epoch-uris study-drug-uris) (vtd/search xml "./activities/studyActivity")))))
 
