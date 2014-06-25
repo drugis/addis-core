@@ -4,18 +4,21 @@
 
 ; TODO: actually blank nodes are also allowed in the subject position (but not the predicate position)
 (deftest test-ttl-str 
-  (is (= (ttl-str (iri "http://example.com/8")) "<http://example.com/8>") "Handles plain URIs")
-  (is (= (ttl-str (iri :rdfs "comment")) "rdfs:comment") "Handles QName URIs")
-  (is (thrown? IllegalArgumentException (ttl-str (lit "testing..."))) "Literals not allowed")
-  (is (thrown? IllegalArgumentException (ttl-str (lit 3))) "Literals not allowed")
-  (is (thrown? IllegalArgumentException (ttl-str (coll [(iri "http://example.com/8")]))) "Collections not allowed")
-  (is (thrown? IllegalArgumentException (ttl-str (_po [(iri :rdfs "comment") "no comment"]))) "Blank node property lists not allowed"))
+  (let [prefixes {:rdfs "http://www.w3.org/2000/01/rdf-schema#" :ex "http://example.com/"}]
+    (is (= (ttl-str prefixes (iri "http://example.com/8")) "<http://example.com/8>") "Handles plain URIs")
+    (is (= (ttl-str prefixes (iri :rdfs "comment")) "rdfs:comment") "Handles QName URIs")
+    (is (thrown? IllegalArgumentException (ttl-str prefixes (iri :rdf "type"))) "Check whether prefixes in supplied list")
+    (is (thrown? IllegalArgumentException (ttl-str prefixes (lit "testing..."))) "Literals not allowed")
+    (is (thrown? IllegalArgumentException (ttl-str prefixes (lit 3))) "Literals not allowed")
+    (is (thrown? IllegalArgumentException (ttl-str prefixes (coll [(iri "http://example.com/8")]))) "Collections not allowed")
+    (is (thrown? IllegalArgumentException (ttl-str prefixes (_po [(iri :rdfs "comment") "no comment"]))) "Blank node property lists not allowed")))
 
 (deftest test-ttl-object-str
   (let [prefixes {:xsd "http://www.w3.org/2001/XMLSchema#" :rdfs "http://www.w3.org/2000/01/rdf-schema#" :ex "http://example.com/"}]
     (testing "References and literals"
       (is (= (ttl-object-str prefixes (iri "http://example.com/8")) "<http://example.com/8>") "Handles plain URIs")
       (is (= (ttl-object-str prefixes (iri :rdfs "comment")) "rdfs:comment") "Handles QName URIs")
+      (is (thrown? IllegalArgumentException (ttl-object-str prefixes (iri :rdf "type"))) "Check whether prefixes in supplied list")
       (is (= (ttl-object-str prefixes (lit "testing...")) "\"testing...\"") "Handles string literals")
       (is (= (ttl-object-str prefixes (lit "\"testing\"")) "\"\\\"testing\\\"\"") "Escapes quotes in string literals")
       (is (= (ttl-object-str prefixes (lit "đ")) "\"\\u0111\"") "Escapes unicode in string literals")
