@@ -11,7 +11,7 @@
     (is (thrown? IllegalArgumentException (ttl-str prefixes (lit "testing..."))) "Literals not allowed")
     (is (thrown? IllegalArgumentException (ttl-str prefixes (lit 3))) "Literals not allowed")
     (is (thrown? IllegalArgumentException (ttl-str prefixes (coll [(iri "http://example.com/8")]))) "Collections not allowed")
-    (is (thrown? IllegalArgumentException (ttl-str prefixes (_po [(iri :rdfs "comment") "no comment"]))) "Blank node property lists not allowed")))
+    (is (thrown? IllegalArgumentException (ttl-str prefixes (_po [(iri :rdfs "comment") (lit "no comment")]))) "Blank node property lists not allowed")))
 
 (deftest test-ttl-object-str
   (let [prefixes {:xsd "http://www.w3.org/2001/XMLSchema#" :rdfs "http://www.w3.org/2000/01/rdf-schema#" :ex "http://example.com/"}]
@@ -39,23 +39,23 @@
              "(\n    ex:8\n    ex:9\n  )")
           "Collection with multiple members (indented)"))
     (testing "Blank node property list"
-      (is (= (ttl-object-str prefixes (_po [(iri :rdfs "comment") "no comment"]))
+      (is (= (ttl-object-str prefixes (_po [(iri :rdfs "comment") (lit "no comment")]))
              "[\n  rdfs:comment \"no comment\"\n]")
           "Blank node with single property (unindentend)")
-      (is (= (ttl-object-str prefixes (_po [(iri :rdfs "comment") "no comment"] [(iri :rdfs "label") "label"]))
+      (is (= (ttl-object-str prefixes (_po [(iri :rdfs "comment") (lit "no comment")] [(iri :rdfs "label") (lit "label")]))
              "[\n  rdfs:comment \"no comment\" ;\n  rdfs:label \"label\"\n]")
           "Blank node with multiple properties (unindented)")
-      (is (= (ttl-object-str prefixes (_po [(iri :rdfs "comment") "no comment"]) "  ")
+      (is (= (ttl-object-str prefixes (_po [(iri :rdfs "comment") (lit "no comment")]) "  ")
              "[\n    rdfs:comment \"no comment\"\n  ]")
           "Blank node with single property (indentend)")
-      (is (= (ttl-object-str prefixes (_po [(iri :rdfs "comment") "no comment"] [(iri :rdfs "label") "label"]) "  ")
+      (is (= (ttl-object-str prefixes (_po [(iri :rdfs "comment") (lit "no comment")] [(iri :rdfs "label") (lit "label")]) "  ")
              "[\n    rdfs:comment \"no comment\" ;\n    rdfs:label \"label\"\n  ]")
           "Blank node with multiple properties (indented)"))
     (testing "Collections of blank nodes"
-      (is (= (ttl-object-str prefixes (coll [(_po [(iri :rdfs "comment") "no comment"])]))
+      (is (= (ttl-object-str prefixes (coll [(_po [(iri :rdfs "comment") (lit "no comment")])]))
              "(\n  [\n    rdfs:comment \"no comment\"\n  ]\n)")))
     (testing "Nested blank nodes"
-      (is (= (ttl-object-str prefixes (_po [(iri :ex "onceSaid") (_po [(iri :rdfs "comment") "no comment"])]))
+      (is (= (ttl-object-str prefixes (_po [(iri :ex "onceSaid") (_po [(iri :rdfs "comment") (lit "no comment")])]))
              "[\n  ex:onceSaid [\n    rdfs:comment \"no comment\"\n  ]\n]")))
     ; TODO: test more cases - these are the ones used by "core"
     ))
@@ -112,3 +112,14 @@
                                         [(spo (iri :ex 8) [(iri :ex "lessThan") (iri :ex 9)])
                                          (spo (iri :ex 7) [(iri :ex "lessThan") (iri :ex 8)])]))
            "ex:n {\n\n  ex:8\n    ex:lessThan ex:9 .\n\n  ex:7\n    ex:lessThan ex:8 .\n\n}"))))
+
+(deftest test-dsl
+  (is (thrown? IllegalArgumentException
+               (spo (coll [(iri :ex 8)]) [(iri :ex "lessThan") (iri :ex 9)]))
+      "Cannot have collection as subject")
+  (is (thrown? IllegalArgumentException
+               (spo (lit "je moeder") [(iri :ex "lessThan") (iri :ex 9)]))
+      "Cannot have literal as subject")
+  (is (thrown? IllegalArgumentException
+               (spo (lit 3) [(iri :ex "lessThan") (iri :ex 9)]))
+      "Cannot have literal as subject"))

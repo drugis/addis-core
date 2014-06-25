@@ -55,12 +55,12 @@
            :coll (let [collection (second resource)
                        members (map #(ttl-object-str prefixes % indent+) collection)
                        content (str indent+ (join (str "\n" indent+) members))]
-                   (str "(\n" content "\n" indent ")")))
-         (cond
-           (instance? Boolean resource) (str resource)
-           (integer? resource) (str resource)
-           (float? resource) (format "%e" (double resource))
-           (string? resource) (write-str resource))))))
+                   (str "(\n" content "\n" indent ")"))
+           :lit (let [x (second resource)] (cond
+                 (instance? Boolean x) (str x)
+                 (integer? x) (str x)
+                 (float? x) (format "%e" (double x))
+                 (string? x) (write-str x))))))))
 
 (defn ttl-str
   "Resource to Turtle string for subject and predicate positions"
@@ -112,7 +112,7 @@
 (defn lit
   "Generate an RDF literal of the given value."
   [value]
-  value)
+  [:lit value])
 
 (defn coll
   "Generate an RDF collection from the given sequence of resources."
@@ -125,7 +125,9 @@
   [s & po*]
   (if (and (sequential? s) (iri? (first s)))
     [(first s) (concat (second s) po*)]
-    [s po*]))
+    (cond
+     (or (iri? s) (= :blank s)) [s po*]
+     :else (throw (IllegalArgumentException. "Not a valid subject")))))
 
 (defn _po
   "Generate a blank node with a number of predicate-object pairs."
