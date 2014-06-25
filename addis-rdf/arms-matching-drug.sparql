@@ -11,16 +11,18 @@ SELECT ?studyLabel ?armLabel WHERE {
     ?dataset ontology:contains_study ?study .
   }
   GRAPH ?dataset { # Dummy drug select
-    ?drug rdfs:subClassOf ontology:Drug .
-    ?drug rdfs:label "Fluoxetine" .
+    ?drug
+      rdfs:subClassOf ontology:Drug ;
+      rdfs:label "Fluoxetine" .
   }
   GRAPH ?study {
     ?study rdfs:label ?studyLabel .
+
     ?instance a ?drug .
     ?study ontology:has_arm ?arm .
-    ?activity ontology:activity_application [ ontology:applied_to_arm ?arm ] .
-    ?activity a ontology:TreatmentActivity .
-    ?activity ontology:administeredDrugs ([ ontology:treatment_has_drug ?instance ]) .
+    ?activity a ontology:TreatmentActivity ;
+      ontology:activity_application [ ontology:applied_to_arm ?arm ] ;
+      ontology:administeredDrugs ([ ontology:treatment_has_drug ?instance ]) .
     ?arm rdfs:label ?armLabel .
   }
 }
