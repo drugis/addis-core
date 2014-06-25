@@ -1,0 +1,14 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?s ?label WHERE {
+  GRAPH ?dataset {
+    ?dataset a ontology:Dataset .
+  }
+  GRAPH ?dataset {
+    { ?s rdfs:subClassOf ontology:Endpoint } UNION { ?s rdfs:subClassOf ontology:AdverseEvent } .
+    ?s rdfs:label ?label .
+  }
+}

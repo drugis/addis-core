@@ -1,0 +1,26 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?studyLabel ?armLabel WHERE {
+  GRAPH ?dataset {
+    ?dataset a ontology:Dataset .
+  }
+  GRAPH ?dataset { # Dummy study select
+    ?dataset ontology:contains_study ?study .
+  }
+  GRAPH ?dataset { # Dummy drug select
+    ?drug rdfs:subClassOf ontology:Drug .
+    ?drug rdfs:label "Fluoxetine" .
+  }
+  GRAPH ?study {
+    ?study rdfs:label ?studyLabel .
+    ?instance a ?drug .
+    ?study ontology:has_arm ?arm .
+    ?activity ontology:activity_application [ ontology:applied_to_arm ?arm ] .
+    ?activity a ontology:TreatmentActivity .
+    ?activity ontology:administeredDrugs ([ ontology:treatment_has_drug ?instance ]) .
+    ?arm rdfs:label ?armLabel .
+  }
+}
