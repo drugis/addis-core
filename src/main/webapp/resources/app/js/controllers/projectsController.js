@@ -16,25 +16,6 @@ define([], function() {
       });
     };
 
-    var ws = new WebSocket('ws://localhost:8080/handler');
-
-    ws2 = new WebSocket('ws://localhost:3000/ws');
-
-    $scope.sendMessage2 = function() {
-      ws2.send('test yo');
-    };   
-
-    ws.onopen = function(event) {
-      console.log('open' + event);
-    };
-
-    ws.onmessage = function(event) {
-      console.log('message' + event);
-    };
-
-    $scope.sendMessage = function() {
-      ws.send('test yo');
-    };   
   };
   return dependencies.concat(ProjectsController);
 });

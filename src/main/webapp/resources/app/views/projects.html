@@ -1,107 +1,113 @@
 <div class="row">
-  <div class="columns">
-    <alert type="info">
-      <strong>Disclaimer:</strong> this is <em>beta</em> software. We store your projects on our servers. While we try
-      our best to keep them secure and compatible with future versions, we can make no guarantees.
-    </alert>
-  </div>
+    <div class="columns">
+        <alert type="info">
+            <strong>Disclaimer:</strong> this is <em>beta</em> software. We store your projects on our servers. While we
+            try
+            our best to keep them secure and compatible with future versions, we can make no guarantees.
+        </alert>
+    </div>
 </div>
 
 <div class="row">
-  <div class="columns large-12">
-    <div class="row">
-      <div class="columns large-2">
-      <h3>Your projects</h3>
-      </div>
-      <div>
-        <a id="create-project-btn" class="button" ng-click="createProjectModal.open()"><i class="fa fa-plus"></i> Create
-          project</a>
-          <button ng-click="sendMessage()">test socket</button>
-          <button ng-click="sendMessage2()">test socket</button>
-      </div>
-    </div>
-    <div class="panel callout">
-      <p>A project consists of a number of analyses based on a PICO definition (Population, Interventions, Comparisons, Outcomes).</p>
-
-      <p>Currently, each project is based on a "TrialVerse namespace", which is a collection of clinical trials data with the associated meta-data.
-      The two example "namespaces" currently available contain data imported from the example datasets that were available in ADDIS 1.16:</p>
-
-      <ul>
-        <li>Hansen 2005: 46 clinical trials included in a 2005 systematic review of anti-depressants.</li>
-        <li>Edarbi EPAR: Phase 2/3 clinical trials reported in Edarbi's European Public Assessment Report (EPAR).</li>
-      </ul>
-
-      <p>Eventually, we will allow users to define their own sets of clinical trials and meta-data.</p>
-
-      <p>You can now define your own projects and look at (but not modify) other people's projects.</p>
-    </div>
-
-    <div class="panel">
-      <ul>
-        <li ng-show="!(projects | ownProjectsFilter:user.id).length">No projects</li>
-        <li ng-repeat="project in projects | ownProjectsFilter:user.id ">
-          <a href="#/projects/{{project.id}}">
-            <span title="project name">{{project.name}} </span> -
-            <span title="project description">{{project.description}} </span>
-          </a>
-        </li>
-      </ul>
-    </div>
-
-    <h3>Other projects</h3>
-
-    <div class="panel">
-      <ul>
-        <li ng-show="!(projects | ownProjectsFilter:user.id:true).length">No other projects</li>
-        <li ng-repeat="project in projects | ownProjectsFilter:user.id:true">
-          <a href="#/projects/{{project.id}}">
-            <span title="project name">{{project.name}}</span> -
-            <span title="project description">{{project.description}}</span>
-            <span title="user name">({{project.owner.firstName}} {{project.owner.lastName}})</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-
-      <div ui-view></div>
-
-  </div>
-  <modal model="createProjectModal">
-    <h3>Create a new project</h3>
-
-    <form name="projectForm">
-      <div class="row">
-      <div class="large-8 columns">
-          <label>Name
-            <input type="text" ng-model="model.name">
-          </label>
+    <div class="columns large-12">
+        <div class="row">
+            <div class="columns large-2">
+                <h3>Your projects</h3>
+            </div>
+            <div>
+                <a id="create-project-btn" class="button" ng-click="createProjectModal.open()"><i
+                        class="fa fa-plus"></i> Create
+                    project</a>
+            </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="large-6 columns">
-          <label>Description
-            <textarea rows="4" ng-model="model.description"></textarea>
-          </label>
+        <div class="panel callout">
+            <p>A project consists of a number of analyses based on a PICO definition (Population, Interventions,
+                Comparisons, Outcomes).</p>
+
+            <p>Currently, each project is based on a "TrialVerse namespace", which is a collection of clinical trials
+                data with the associated meta-data.
+                The two example "namespaces" currently available contain data imported from the example datasets that
+                were available in ADDIS 1.16:</p>
+
+            <ul>
+                <li>Hansen 2005: 46 clinical trials included in a 2005 systematic review of anti-depressants.</li>
+                <li>Edarbi EPAR: Phase 2/3 clinical trials reported in Edarbi's European Public Assessment Report
+                    (EPAR).
+                </li>
+            </ul>
+
+            <p>Eventually, we will allow users to define their own sets of clinical trials and meta-data.</p>
+
+            <p>You can now define your own projects and look at (but not modify) other people's projects.</p>
         </div>
-      </div>
-      <div class="row">
-        <div class="large-6 columns">
-          <label>TrialVerse namespace
-            <select ng-model="model.trialverseId" ng-options="tv.id as tv.name for tv in trialverse"></select>
-          </label>
-          <ul class="button-group">
-            <li>
-              <button class="button small secondary" ng-click="createProjectModal.close()">Cancel</button>
-            </li>
-            <li>
-              <button class="button small success" ng-disabled="!model.name || !model.trialverseId"
-                      ng-click="createProject(model)">Create
-                project
-              </button>
-            </li>
-          </ul>
+
+        <div class="panel">
+            <ul>
+                <li ng-show="!(projects | ownProjectsFilter:user.id).length">No projects</li>
+                <li ng-repeat="project in projects | ownProjectsFilter:user.id ">
+                    <a href="#/projects/{{project.id}}">
+                        <span title="project name">{{project.name}} </span> -
+                        <span title="project description">{{project.description}} </span>
+                    </a>
+                </li>
+            </ul>
         </div>
-      </div>
-    </form>
-  </modal>
+
+        <h3>Other projects</h3>
+
+        <div class="panel">
+            <ul>
+                <li ng-show="!(projects | ownProjectsFilter:user.id:true).length">No other projects</li>
+                <li ng-repeat="project in projects | ownProjectsFilter:user.id:true">
+                    <a href="#/projects/{{project.id}}">
+                        <span title="project name">{{project.name}}</span> -
+                        <span title="project description">{{project.description}}</span>
+                        <span title="user name">({{project.owner.firstName}} {{project.owner.lastName}})</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div ui-view></div>
+
+    </div>
+    <modal model="createProjectModal">
+        <h3>Create a new project</h3>
+
+        <form name="projectForm">
+            <div class="row">
+                <div class="large-8 columns">
+                    <label>Name
+                        <input type="text" ng-model="model.name">
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-6 columns">
+                    <label>Description
+                        <textarea rows="4" ng-model="model.description"></textarea>
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-6 columns">
+                    <label>TrialVerse namespace
+                        <select ng-model="model.trialverseId"
+                                ng-options="tv.id as tv.name for tv in trialverse"></select>
+                    </label>
+                    <ul class="button-group">
+                        <li>
+                            <button class="button small secondary" ng-click="createProjectModal.close()">Cancel</button>
+                        </li>
+                        <li>
+                            <button class="button small success" ng-disabled="!model.name || !model.trialverseId"
+                                    ng-click="createProject(model)">Create
+                                project
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+    </modal>
 </div>
