@@ -38,7 +38,7 @@ public class JpaModelRepositoryTest {
   public void testGet() {
     Integer modelId = 1;
     Integer analysisId = -5;
-    Model result = modelRepository.get(modelId);
+    Model result = modelRepository.find(modelId);
     assertNotNull(result);
     assertEquals(analysisId, result.getAnalysisId());
   }

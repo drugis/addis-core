@@ -28,7 +28,8 @@ import java.util.Properties;
                 "org.drugis.addis.analyses",
                 "org.drugis.addis.scenarios",
                 "org.drugis.addis.security",
-                "org.drugis.addis.models"
+                "org.drugis.addis.models",
+                "org.drugis.addis.problems"
         })
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {

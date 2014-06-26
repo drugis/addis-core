@@ -9,7 +9,7 @@ public interface ModelRepository {
 
   public Model create(Integer analysisId);
 
-  public Model get(Integer modelId);
+  public Model find(Integer modelId);
 
   public Model findByAnalysis(Integer networkMetaAnalysisId);
 }

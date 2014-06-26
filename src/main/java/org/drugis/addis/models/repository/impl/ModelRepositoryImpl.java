@@ -27,7 +27,7 @@ public class ModelRepositoryImpl implements org.drugis.addis.models.repository.M
   }
 
   @Override
-  public Model get(Integer modelId) {
+  public Model find(Integer modelId) {
     return em.find(Model.class, modelId);
   }
 

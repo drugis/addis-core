@@ -100,7 +100,7 @@ public class AnalysisServiceTest {
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "new name", outcome);
     Model model = mock(Model.class);
     when(modelRepository.findByAnalysis(analysis.getId())).thenReturn(model);
-    when(modelRepository.get(modelId)).thenReturn(null);
+    when(modelRepository.find(modelId)).thenReturn(null);
     analysisService.updateNetworkMetaAnalysis(user, analysis);
   }
 

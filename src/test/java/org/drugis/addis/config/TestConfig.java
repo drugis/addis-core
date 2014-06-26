@@ -6,7 +6,9 @@ import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.interventions.repository.InterventionRepository;
-import org.drugis.addis.models.repositories.ModelRepository;
+import org.drugis.addis.models.repository.ModelRepository;
+import org.drugis.addis.models.repository.PataviTaskRepository;
+import org.drugis.addis.models.service.PataviTaskService;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.repository.ProjectRepository;
@@ -114,5 +116,14 @@ public class TestConfig {
   public ModelRepository mockModelRepository() {
     return mock(ModelRepository.class);
   }
+  @Bean
+  public PataviTaskRepository mockPataviTaskRepository() {
+    return mock(PataviTaskRepository.class);
+  }
+  @Bean
+  public PataviTaskService mockPataviTaskService() {
+    return mock(PataviTaskService.class);
+  }
+
 }
 

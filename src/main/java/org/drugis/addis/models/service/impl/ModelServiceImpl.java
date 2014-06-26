@@ -25,7 +25,7 @@ public class ModelServiceImpl implements ModelService {
 
   @Override
   public Model getModel(Integer analysisId, Integer modelId) throws ResourceDoesNotExistException {
-    return modelRepository.get(modelId);
+    return modelRepository.find(modelId);
   }
 
   @Override
