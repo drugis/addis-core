@@ -146,3 +146,17 @@ CREATE TABLE InterventionExclusion (
   FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id),
   FOREIGN KEY(interventionId) REFERENCES Intervention(id)
 );
+
+-- changeset gertvv:8
+ALTER TABLE NetworkMetaAnalysis DROP COLUMN studyId;
+ALTER TABLE NetworkMetaAnalysis DROP COLUMN problem;
+
+CREATE TABLE patavi_tasks (
+  id SERIAL NOT NULL,
+  modelId INT NOT NULL,
+  method varchar,
+  problem TEXT,
+  results TEXT,
+  PRIMARY KEY(id),
+  FOREIGN KEY(modelId) REFERENCES Model(id)
+);

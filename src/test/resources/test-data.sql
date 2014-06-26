@@ -18,8 +18,8 @@ INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, name) VALUES (
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, name) VALUES (-3 ,2, 'analysis 3');
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, name, problem) VALUES (-4, 1, 'analysis 3', 'singlestudy problem');
 
-INSERT INTO public.NetworkMetaAnalysis(id, projectId, name, problem) VALUES (-5, 1, 'nma', 'network problem');
-INSERT INTO public.NetworkMetaAnalysis(id, projectId, name, problem) VALUES (-6, 1, 'nma 2', 'network problem');
+INSERT INTO public.NetworkMetaAnalysis(id, projectId, name) VALUES (-5, 1, 'nma');
+INSERT INTO public.NetworkMetaAnalysis(id, projectId, name) VALUES (-6, 1, 'nma 2');
 
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (1, -1, 'Default', 'problem state');
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (2, -1, 'Scenario title', 'problem state modified');
