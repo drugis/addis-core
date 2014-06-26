@@ -24,7 +24,7 @@ import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
  * Created by connor on 3/11/14.
  */
 @Repository
-public class JpaSingleStudyBenefitRiskAnalysisRepository implements SingleStudyBenefitRiskAnalysisRepository {
+public class SingleStudyBenefitRiskAnalysisRepositoryImpl implements org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository {
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;

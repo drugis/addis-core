@@ -38,15 +38,15 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
-  "org.drugis.addis.error",
-  "org.drugis.addis.projects",
-  "org.drugis.addis.security",
-  "org.drugis.addis.outcomes",
-  "org.drugis.addis.models",
-  "org.drugis.addis.interventions",
-  "org.drugis.addis.analyses",
-  "org.drugis.addis.problems",
-  "org.drugis.addis.scenarios",
+        "org.drugis.addis.error",
+        "org.drugis.addis.projects",
+        "org.drugis.addis.security",
+        "org.drugis.addis.outcomes",
+        "org.drugis.addis.models",
+        "org.drugis.addis.interventions",
+        "org.drugis.addis.analyses",
+        "org.drugis.addis.problems",
+        "org.drugis.addis.scenarios",
         "org.drugis.addis.util"})
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security",
@@ -96,10 +96,10 @@ public class MainConfig {
     em.setJpaVendorAdapter(vendorAdapter);
     em.setPackagesToScan(
             "org.drugis.addis.projects",
-      "org.drugis.addis.outcomes",
-      "org.drugis.addis.interventions",
-      "org.drugis.addis.security",
-      "org.drugis.addis.analyses",
+            "org.drugis.addis.outcomes",
+            "org.drugis.addis.interventions",
+            "org.drugis.addis.security",
+            "org.drugis.addis.analyses",
             "org.drugis.addis.scenarios",
             "org.drugis.addis.models");
     em.setDataSource(dataSource());

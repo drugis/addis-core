@@ -30,7 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Repository
-public class JdbcAccountRepository implements AccountRepository {
+public class AccountRepositoryImpl implements AccountRepository {
 
   @Inject
   @Qualifier("jtAddisCore")

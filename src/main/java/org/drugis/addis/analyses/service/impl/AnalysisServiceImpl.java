@@ -10,7 +10,7 @@ import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisReposi
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.models.repositories.ModelRepository;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.springframework.stereotype.Service;
@@ -41,7 +41,7 @@ public class AnalysisServiceImpl implements AnalysisService {
   @Override
   public void checkCoordinates(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
     AbstractAnalysis analysis = analysisRepository.get(projectId, analysisId);
-    if(!analysis.getProjectId().equals(projectId)) {
+    if (!analysis.getProjectId().equals(projectId)) {
       throw new ResourceDoesNotExistException();
     }
   }

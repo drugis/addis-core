@@ -6,7 +6,7 @@ import org.drugis.addis.analyses.service.impl.AnalysisServiceImpl;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.repositories.ModelRepository;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;

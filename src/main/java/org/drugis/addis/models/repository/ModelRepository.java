@@ -1,4 +1,4 @@
-package org.drugis.addis.models.repositories;
+package org.drugis.addis.models.repository;
 
 import org.drugis.addis.models.Model;
 

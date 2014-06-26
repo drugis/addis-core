@@ -17,7 +17,7 @@ import java.util.*;
  * Created by connor on 2/26/14.
  */
 @Repository
-public class JpaTrialverseRepository implements TrialverseRepository {
+public class TrialverseRepositoryImpl implements TrialverseRepository {
 
   @PersistenceContext(unitName = "trialverse")
   @Qualifier("emTrialverse")

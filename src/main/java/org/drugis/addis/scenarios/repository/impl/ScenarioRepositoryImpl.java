@@ -14,7 +14,7 @@ import java.util.Collection;
  * Created by connor on 3-4-14.
  */
 @Repository
-public class JpaScenarioRepository implements ScenarioRepository {
+public class ScenarioRepositoryImpl implements ScenarioRepository {
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;

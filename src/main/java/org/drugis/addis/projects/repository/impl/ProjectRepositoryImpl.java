@@ -17,7 +17,7 @@ import java.util.Collection;
  * Created by daan on 2/20/14.
  */
 @Repository
-public class JpaProjectRepository implements ProjectRepository {
+public class ProjectRepositoryImpl implements ProjectRepository {
 
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")

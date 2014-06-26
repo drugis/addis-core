@@ -20,7 +20,7 @@ import java.util.Collection;
  * Created by daan on 3/7/14.
  */
 @Repository
-public class JpaOutcomeRepository implements OutcomeRepository {
+public class OutcomeRepositoryImpl implements OutcomeRepository {
 
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")

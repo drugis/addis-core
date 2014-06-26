@@ -2,7 +2,7 @@ package org.drugis.addis.models.service.impl;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.repositories.ModelRepository;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.springframework.stereotype.Service;
 

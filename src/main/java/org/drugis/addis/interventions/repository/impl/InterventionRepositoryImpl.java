@@ -20,7 +20,7 @@ import java.util.List;
  * Created by daan on 3/7/14.
  */
 @Repository
-public class JpaInterventionRepository implements InterventionRepository {
+public class InterventionRepositoryImpl implements org.drugis.addis.interventions.repository.InterventionRepository {
 
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")

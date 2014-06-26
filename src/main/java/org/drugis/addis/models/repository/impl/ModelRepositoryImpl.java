@@ -1,7 +1,6 @@
-package org.drugis.addis.models.repositories.impl;
+package org.drugis.addis.models.repository.impl;
 
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.repositories.ModelRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +13,7 @@ import java.util.List;
  * Created by connor on 23-5-14.
  */
 @Repository
-public class JpaModelRepository implements ModelRepository {
+public class ModelRepositoryImpl implements org.drugis.addis.models.repository.ModelRepository {
 
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")

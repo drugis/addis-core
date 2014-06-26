@@ -2,7 +2,7 @@ package org.drugis.addis.models;
 
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
-import org.drugis.addis.models.repositories.ModelRepository;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

@@ -1,7 +1,7 @@
 package org.drugis.addis.models.service;
 
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.repositories.ModelRepository;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.impl.ModelServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
