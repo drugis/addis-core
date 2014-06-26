@@ -9,6 +9,7 @@ define(
     'controllers',
     'directives',
     'filters',
+    'interceptors',
     'resources',
     'services',
     'angular-select2',
@@ -42,6 +43,8 @@ define(
       'addis.resources',
       'addis.services',
       'addis.filters',
+      'addis.interceptors',
+      'addis.directives',
       'ui.select2'
     ];
     var gemtcWebDependencies = [
@@ -95,11 +98,13 @@ define(
       }
     ]);
 
-    app.config(['Tasks', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES',
-      function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES) {
+    app.config(['Tasks', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES', '$httpProvider',
+      function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider) {
         var baseTemplatePath = 'app/views/';
         var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
         var gemtcWebBaseTemplatePath = 'app/js/bower_components/gemtc-web/app/views/';
+
+        $httpProvider.interceptors.push('SessionExpiredInterceptor');
 
         $stateProvider
           .state('projects', {
