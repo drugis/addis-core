@@ -115,11 +115,11 @@
 
 (deftest test-dsl
   (is (thrown? IllegalArgumentException
-               (spo (coll [(iri :ex 8)]) [(iri :ex "lessThan") (iri :ex 9)]))
-      "Cannot have collection as subject")
-  (is (thrown? IllegalArgumentException
-               (spo (lit "je moeder") [(iri :ex "lessThan") (iri :ex 9)]))
+               (spo (lit "hello") [(iri :ex "lessThan") (iri :ex 9)]))
       "Cannot have literal as subject")
   (is (thrown? IllegalArgumentException
                (spo (lit 3) [(iri :ex "lessThan") (iri :ex 9)]))
       "Cannot have literal as subject"))
+  (is (thrown? IllegalArgumentException
+               (spo (coll [(iri :ex 8)]) [(iri :ex "lessThan") (iri :ex 9)]))
+      "Cannot have collection as subject")

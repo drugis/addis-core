@@ -116,6 +116,7 @@
             [(trig/iri :rdf "type") ((entity-uris :drug) drug-name)]
             [(trig/iri :rdfs "label") drug-name]))
 
+; TODO: arm size
 (defn study-arm-rdf [arm-name instance-uri]
   (trig/spo instance-uri
             [(trig/iri :rdfs "label") arm-name]
@@ -192,6 +193,44 @@
     (trig/spo subj [(trig/iri :ontology "has_primary_epoch") uri])
     subj))
 
+(defn study-measurement-moment-rdf
+  [uri mm epoch-uris]
+  (trig/spo uri 
+            [(trig/iri :ontology "relative_to_epoch") (epoch-uris (:epochName mm))]
+            [(trig/iri :ontology "relative_to_anchor") (trig/lit (:relativeTo mm))] ; TODO: proper typing
+            [(trig/iri :ontology "time_offset") (trig/lit (:howLong mm))])) ; TODO: proper typing
+
+(defn when-taken-key [xml]
+  {:howLong (vtd/attr xml :howLong)
+   :relativeTo (vtd/attr xml :relativeTo)
+   :epochName (vtd/attr (vtd/at xml "./epoch") :name)})
+
+(defn study-measurement-rdf
+  [xml subj study-outcome-uris arm-uris mm-uris]
+  (let [som-id (vtd/attr (vtd/at xml "./studyOutcomeMeasure") :id)
+        som-uri (study-outcome-uris som-id)
+        arm-name (vtd/attr (vtd/at xml "./arm") :name)
+        arm-uri (arm-uris arm-name)
+        when-taken-key (when-taken-key (vtd/at xml "./whenTaken"))
+        mm-uri (mm-uris when-taken-key)
+        measurement (trig/spo subj
+                              [(trig/iri :ontology "of_outcome") som-uri]
+                              [(trig/iri :ontology "of_arm") arm-uri]
+                              [(trig/iri :ontology "of_moment") mm-uri])
+        cont (vtd/at xml "./continuousMeasurement")
+        rate (vtd/at xml "./rateMeasurement")
+        catg (vtd/at xml "./categoricalMeasurement")]
+    (cond
+     cont (trig/spo measurement 
+                    [(trig/iri :ontology "mean") (trig/lit (Double. (vtd/attr cont :mean)))]
+                    [(trig/iri :ontology "standard_deviation") (trig/lit (Double. (vtd/attr cont :stdDev)))]
+                    [(trig/iri :ontology "sample_size") (trig/lit (Integer. (vtd/attr cont :sampleSize)))])
+     rate (trig/spo measurement 
+                    [(trig/iri :ontology "count") (trig/lit (Integer. (vtd/attr rate :rate)))]
+                    [(trig/iri :ontology "sample_size") (trig/lit (Integer. (vtd/attr rate :sampleSize)))])
+     :else measurement) ; TODO: categorical measurements
+))
+
 ; TODO: import the interesting stuff
 (defn study-rdf [xml uri entity-uris]
   (let [indication-uri (trig/iri :instance (uuid))
@@ -200,7 +239,8 @@
         epochs (map #(vtd/attr % :name) (vtd/search xml "./epochs/epoch"))
         epoch-uris (apply merge (map (fn [epoch] {epoch (trig/iri :instance (uuid))}) epochs))
         primary-epoch (find-first-treatment-epoch xml)
-        study-drug-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :instance (uuid))}) (vtd/search xml "./activities/studyActivity/activity/treatment/drugTreatment/drug")))]
+        study-drug-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :instance (uuid))}) (vtd/search xml "./activities/studyActivity/activity/treatment/drugTreatment/drug")))
+        measurement-moment-uris (apply merge (map (fn [el] {(when-taken-key el) (trig/iri :instance (uuid))}) (vtd/search xml "./studyOutcomeMeasures/studyOutcomeMeasure/whenTaken")))]
     (concat
       [(-> uri
            (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Study")]
@@ -219,20 +259,22 @@
            ; study_end
            ; status
            ; 
-           ; ## actual stuff
            (trig/spo [(trig/iri :ontology "has_indication") indication-uri])
            (spo-each (trig/iri :ontology "has_outcome") (vals study-outcome-uris))
-           (spo-each (trig/iri :ontology "has_arm") (vals arm-uris)) ; TODO: arm sizes
-           (trig/spo [(trig/iri :ontology "has_epochs") (trig/coll (map epoch-uris epochs))]) ; TODO: duration
+           (spo-each (trig/iri :ontology "has_arm") (vals arm-uris))
+           (trig/spo [(trig/iri :ontology "has_epochs") (trig/coll (map epoch-uris epochs))])
            (primary-epoch-rdf (epoch-uris primary-epoch))
-           ; measurements
            )]
       [(study-indication-rdf xml entity-uris indication-uri)]
       (map #(study-arm-rdf % (arm-uris %)) (keys arm-uris))
       (map #(study-epoch-rdf % (epoch-uris %)) epochs)
       (map #(study-outcome-rdf (vtd/at xml (str "./studyOutcomeMeasures/studyOutcomeMeasure[@id='" % "']")) entity-uris (study-outcome-uris %)) (keys study-outcome-uris))
       (map #(study-drug-rdf % entity-uris (study-drug-uris %)) (keys study-drug-uris))
-      (map #(study-activity-rdf % (trig/iri :instance (uuid)) entity-uris arm-uris epoch-uris study-drug-uris) (vtd/search xml "./activities/studyActivity")))))
+      (map #(study-activity-rdf % (trig/iri :instance (uuid)) entity-uris arm-uris epoch-uris study-drug-uris) (vtd/search xml "./activities/studyActivity"))
+      (map #(study-measurement-moment-rdf (measurement-moment-uris %) % epoch-uris) (keys measurement-moment-uris))
+      (map #(study-measurement-rdf % (trig/iri :instance (uuid)) study-outcome-uris arm-uris measurement-moment-uris) (vtd/search xml "./measurements/measurement"))
+      )))
+
 
 (defn import-study [xml entity-uris]
   (let [uri (trig/iri :study (uuid))]
