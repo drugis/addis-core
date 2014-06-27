@@ -114,6 +114,12 @@
   [value]
   [:lit value])
 
+(defn- wrap-objects
+  [[pred obj]]
+  (if (sequential? obj)
+    [pred obj]
+    [pred (lit obj)]))
+
 (defn coll
   "Generate an RDF collection from the given sequence of resources."
   [resources] [:coll resources])
@@ -124,9 +130,9 @@
   In the latter case, the predicate-object pairs are appended to the predicate-object pair list of s."
   [s & po*]
   (if (and (sequential? s) (iri? (first s)))
-    [(first s) (concat (second s) po*)]
+    [(first s) (concat (second s) (map wrap-objects po*))]
     (cond
-     (or (iri? s) (= :blank s)) [s po*]
+     (or (iri? s) (= :blank s)) [s (map wrap-objects po*)]
      :else (throw (IllegalArgumentException. "Not a valid subject")))))
 
 (defn _po

@@ -115,11 +115,13 @@
 
 (deftest test-dsl
   (is (thrown? IllegalArgumentException
+               (spo (coll [(iri :ex 8)]) [(iri :ex "lessThan") (iri :ex 9)]))
+      "Cannot have collection as subject")
+  (is (thrown? IllegalArgumentException
                (spo (lit "hello") [(iri :ex "lessThan") (iri :ex 9)]))
       "Cannot have literal as subject")
   (is (thrown? IllegalArgumentException
                (spo (lit 3) [(iri :ex "lessThan") (iri :ex 9)]))
-      "Cannot have literal as subject"))
-  (is (thrown? IllegalArgumentException
-               (spo (coll [(iri :ex 8)]) [(iri :ex "lessThan") (iri :ex 9)]))
-      "Cannot have collection as subject")
+      "Cannot have literal as subject")
+  (is (= (spo (iri :ex 8) [(iri :rdf "value") (lit 8)]) (spo (iri :ex 8) [(iri :rdf "value") 8]))
+      "Literals in object position automatically wrapped"))
