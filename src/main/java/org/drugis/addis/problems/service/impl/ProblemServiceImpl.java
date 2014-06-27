@@ -32,22 +32,22 @@ import java.util.*;
 public class ProblemServiceImpl implements ProblemService {
 
   @Inject
-  SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
+  private SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
 
   @Inject
-  ProjectRepository projectRepository;
+  private ProjectRepository projectRepository;
 
   @Inject
-  AlternativeService alternativeService;
+  private AlternativeService alternativeService;
 
   @Inject
-  CriteriaService criteriaService;
+  private CriteriaService criteriaService;
 
   @Inject
-  PerformanceTableBuilder performanceTableBuilder;
+  private PerformanceTableBuilder performanceTableBuilder;
 
   @Inject
-  JSONUtils jsonUtils;
+  private JSONUtils jsonUtils;
 
   @Inject
   private MeasurementsService measurementsService;
