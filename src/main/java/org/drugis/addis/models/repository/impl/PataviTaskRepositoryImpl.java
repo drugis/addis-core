@@ -1,5 +1,7 @@
 package org.drugis.addis.models.repository.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drugis.addis.models.PataviTask;
 import org.drugis.addis.models.repository.PataviTaskRepository;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
@@ -17,6 +19,8 @@ import java.util.List;
 @Repository
 public class PataviTaskRepositoryImpl implements PataviTaskRepository {
 
+  public final static String GEMTC_METHOD = "gemtc";
+
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;
@@ -30,8 +34,10 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   @Override
-  public PataviTask createPataviTask(Integer modelId, NetworkMetaAnalysisProblem problem) {
-    PataviTask newPataviTask = new PataviTask(modelId, problem.toString());
+  public PataviTask createPataviTask(Integer modelId, NetworkMetaAnalysisProblem problem) throws JsonProcessingException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    String problemString = objectMapper.writeValueAsString(problem);
+    PataviTask newPataviTask = new PataviTask(modelId, GEMTC_METHOD, problemString);
     em.persist(newPataviTask);
     em.flush();
     return newPataviTask;

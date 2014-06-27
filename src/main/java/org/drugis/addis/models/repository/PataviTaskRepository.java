@@ -1,5 +1,6 @@
 package org.drugis.addis.models.repository;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drugis.addis.models.PataviTask;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 
@@ -8,7 +9,7 @@ import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
  */
 
 public interface PataviTaskRepository {
-  public PataviTask findPataviTask( Integer modelId);
+  public PataviTask findPataviTask(Integer modelId);
 
-  public PataviTask createPataviTask(Integer modelId, NetworkMetaAnalysisProblem problem);
+  public PataviTask createPataviTask(Integer modelId, NetworkMetaAnalysisProblem problem) throws JsonProcessingException;
 }

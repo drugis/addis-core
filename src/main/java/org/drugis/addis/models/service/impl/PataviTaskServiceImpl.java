@@ -1,5 +1,6 @@
 package org.drugis.addis.models.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.PataviTask;
 import org.drugis.addis.models.PataviTaskUriHolder;
@@ -17,7 +18,7 @@ import javax.inject.Inject;
  */
 @Service
 public class PataviTaskServiceImpl implements PataviTaskService {
-  private final static String PATAVI_URI_BASE = System.getenv("PATAVI_URI");
+  public final static String PATAVI_URI_BASE = System.getenv("PATAVI_URI");
 
   @Inject
   ModelRepository modelRepository;
@@ -29,7 +30,7 @@ public class PataviTaskServiceImpl implements PataviTaskService {
   ProblemService problemService;
 
   @Override
-  public PataviTaskUriHolder getPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws ResourceDoesNotExistException {
+  public PataviTaskUriHolder getPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws ResourceDoesNotExistException, JsonProcessingException {
     if(modelRepository.find(modelId) == null) {
       throw new ResourceDoesNotExistException();
     }

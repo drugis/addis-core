@@ -156,7 +156,7 @@ CREATE TABLE PataviTask (
   modelId INT NOT NULL,
   method varchar,
   problem TEXT,
-  results TEXT,
+  result TEXT,
   PRIMARY KEY(id),
   FOREIGN KEY(modelId) REFERENCES Model(id)
 );

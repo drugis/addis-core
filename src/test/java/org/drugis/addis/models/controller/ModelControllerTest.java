@@ -64,9 +64,6 @@ public class ModelControllerTest {
 
   @Before
   public void setUp() {
-    analysisService = mock(AnalysisService.class);
-    projectService = mock(ProjectService.class);
-    modelService = mock(ModelService.class);
     abstractAddisCoreController = new AbstractAddisCoreController();
     modelController = new ModelController();
 
@@ -124,9 +121,9 @@ public class ModelControllerTest {
     List<Model> models = Arrays.asList(model);
     when(modelService.query(analysisId)).thenReturn(models);
     mockMvc.perform(get("/projects/45/analyses/55/models").principal(user))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(jsonPath("$[0].id", notNullValue()));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$[0].id", notNullValue()));
     verify(modelService).query(analysisId);
 
   }
@@ -137,8 +134,8 @@ public class ModelControllerTest {
     when(modelService.query(analysisId)).thenReturn(Collections.EMPTY_LIST);
     ResultActions resultActions = mockMvc.perform(get("/projects/45/analyses/55/models").principal(user));
     resultActions
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$", empty()));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", empty()));
     verify(modelService).query(analysisId);
   }
 }

@@ -1,11 +1,13 @@
 package org.drugis.addis.models.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.PataviTask;
 import org.drugis.addis.models.PataviTaskUriHolder;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.repository.PataviTaskRepository;
+import org.drugis.addis.models.repository.impl.PataviTaskRepositoryImpl;
 import org.drugis.addis.models.service.impl.PataviTaskServiceImpl;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 import org.drugis.addis.problems.service.ProblemService;
@@ -50,7 +52,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test
-  public void testFindTaskWhenThereIsNoTask() throws ResourceDoesNotExistException {
+  public void testFindTaskWhenThereIsNoTask() throws ResourceDoesNotExistException, JsonProcessingException {
     Integer modelId = -2;
     String uri = "uri";
     Model model = mock(Model.class);
@@ -58,7 +60,7 @@ public class PataviTaskServiceTest {
     Integer projectId = -6;
     Integer analysisId = -7;
     NetworkMetaAnalysisProblem networkMetaAnalysisProblem = mock(NetworkMetaAnalysisProblem.class);
-    PataviTask pataviTask = new PataviTask(modelId, problem);
+    PataviTask pataviTask = new PataviTask(modelId, PataviTaskRepositoryImpl.GEMTC_METHOD, problem);
     when(networkMetaAnalysisProblem.toString()).thenReturn(problem);
     when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
     when(modelRepository.find(modelId)).thenReturn(model);
@@ -73,14 +75,14 @@ public class PataviTaskServiceTest {
   }
 
   @Test
-  public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException {
+  public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException, JsonProcessingException {
     Integer modelId = -2;
     String uri = "uri";
     String problem = "Yo";
     Model model = mock(Model.class);
     Integer projectId = -6;
     Integer analysisId = -7;
-    PataviTask pataviTask = new PataviTask(modelId, problem);
+    PataviTask pataviTask = new PataviTask(modelId, PataviTaskRepositoryImpl.GEMTC_METHOD, problem);
     when(modelRepository.find(modelId)).thenReturn(model);
     when(pataviTaskRepository.findPataviTask(modelId)).thenReturn(pataviTask);
     PataviTaskUriHolder result = pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId);
@@ -90,7 +92,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
-  public void testFindTaskForInvalidModel() throws ResourceDoesNotExistException {
+  public void testFindTaskForInvalidModel() throws ResourceDoesNotExistException, JsonProcessingException {
     Integer projectId = -6;
     Integer analysisId = -7;
     Integer invalidModelId = -2;
