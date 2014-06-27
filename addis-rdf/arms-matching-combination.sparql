@@ -11,14 +11,19 @@ SELECT ?studyLabel ?armLabel ?epochLabel WHERE {
     ?dataset ontology:contains_study ?study .
   }
   GRAPH ?dataset { # Dummy drug select
-    ?drug
+    ?drug1
       rdfs:subClassOf ontology:Drug ;
       rdfs:label "Azilsartan" .
+    ?drug2
+      rdfs:subClassOf ontology:Drug ;
+      rdfs:label "Chlortalidone" .
   }
   GRAPH ?study {
     ?study rdfs:label ?studyLabel .
 
-    ?drugInstance a ?drug .
+    ?drug1Instance a ?drug1 .
+    ?drug2Instance a ?drug2 .
+
     ?study ontology:has_arm ?arm .
     ?study ontology:has_primary_epoch ?epoch .
     ?activity a ontology:TreatmentActivity ;
@@ -26,10 +31,11 @@ SELECT ?studyLabel ?armLabel ?epochLabel WHERE {
         ontology:applied_to_arm ?arm ;
         ontology:applied_in_epoch ?epoch
       ] ;
-      ontology:administered_drugs/rdf:rest*/rdf:first [ ontology:treatment_has_drug ?drugInstance ] .
+      ontology:administered_drugs/rdf:rest*/rdf:first [ ontology:treatment_has_drug ?drug1Instance ] ;
+      ontology:administered_drugs/rdf:rest*/rdf:first [ ontology:treatment_has_drug ?drug2Instance ] .
 
-    MINUS { # limit to collections of exactly 1 element(s)
-      ?activity ontology:administered_drugs/rdf:rest{1}/rdf:first ?x .
+    MINUS { # limit to collections of exactly 2 element(s)
+      ?activity ontology:administered_drugs/rdf:rest{2}/rdf:first ?x .
     }
 
     ?epoch rdfs:label ?epochLabel .

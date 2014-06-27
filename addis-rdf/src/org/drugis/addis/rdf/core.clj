@@ -215,7 +215,7 @@
         mm-uri (mm-uris when-taken-key)
         measurement (trig/spo subj
                               [(trig/iri :ontology "of_outcome") som-uri]
-                              [(trig/iri :ontology "of_arm") arm-uri]
+                              [(trig/iri :ontology "of_arm") (if arm-uri arm-uri (trig/lit "OVERALL"))]
                               [(trig/iri :ontology "of_moment") mm-uri])
         cont (vtd/at xml "./continuousMeasurement")
         rate (vtd/at xml "./rateMeasurement")
