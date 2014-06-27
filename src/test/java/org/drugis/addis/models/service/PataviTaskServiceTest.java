@@ -6,9 +6,10 @@ import org.drugis.addis.models.PataviTask;
 import org.drugis.addis.models.PataviTaskUriHolder;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.repository.PataviTaskRepository;
-import org.drugis.addis.outcomes.repository.impl.PataviTaskServiceImpl;
+import org.drugis.addis.models.service.impl.PataviTaskServiceImpl;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 import org.drugis.addis.problems.service.ProblemService;
+import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +20,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class PataviTaskServiceImplTest {
+public class PataviTaskServiceTest {
+  @Mock
+  private TriplestoreService triplestoreService;
 
   @Mock
   private ProblemService problemService;
@@ -36,9 +39,6 @@ public class PataviTaskServiceImplTest {
 
   @Before
   public void setUp() throws ResourceDoesNotExistException {
-    modelRepository = mock(ModelRepository.class);
-    pataviTaskRepository = mock(PataviTaskRepository.class);
-    problemService = mock(ProblemService.class);
     pataviTaskService = new PataviTaskServiceImpl();
     initMocks(this);
     reset(modelRepository, pataviTaskRepository, problemService);

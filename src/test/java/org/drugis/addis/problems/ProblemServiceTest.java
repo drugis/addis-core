@@ -79,9 +79,6 @@ public class ProblemServiceTest {
   @Before
   public void setUp() {
     problemService = new ProblemServiceImpl();
-    alternativeService = new AlternativeService();
-    criteriaService = new CriteriaService();
-    jsonUtils = new JSONUtils();
     MockitoAnnotations.initMocks(this);
 
     when(jsonUtils.createKey(anyString())).thenReturn("key1", "key2", "key3");

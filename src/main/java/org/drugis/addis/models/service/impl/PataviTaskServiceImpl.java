@@ -1,4 +1,4 @@
-package org.drugis.addis.outcomes.repository.impl;
+package org.drugis.addis.models.service.impl;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.PataviTask;

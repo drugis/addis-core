@@ -1,6 +1,5 @@
 package org.drugis.addis.config;
 
-import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +22,6 @@ import java.util.Properties;
 @Configuration
 @ComponentScan(basePackages = {
         "org.drugis.addis.trialverse.repository",
-        "org.drugis.addis.security",
         "org.drugis.addis.trialverse.model"},
         excludeFilters = {@ComponentScan.Filter(Configuration.class)})
 @EnableTransactionManagement
@@ -50,11 +48,6 @@ public class JpaTrialverseRepositoryTestConfig {
   @Bean(name = "jtTrialverse")
   public JdbcTemplate jdbcTemplate() {
     return new JdbcTemplate(dataSource());
-  }
-
-  @Bean(name = "jtAddisCore")
-  public JdbcTemplate jdbcTemplateMock() {
-    return Mockito.mock(JdbcTemplate.class);
   }
 
   @Bean

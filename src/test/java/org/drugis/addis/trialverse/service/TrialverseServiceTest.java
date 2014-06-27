@@ -3,16 +3,16 @@ package org.drugis.addis.trialverse.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.drugis.addis.config.TrialverseServiceTestConfig;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
-import org.drugis.addis.trialverse.service.impl.TrialverseServiceImpl;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -20,26 +20,21 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyList;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by connor on 25-3-14.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TrialverseServiceTestConfig.class})
 public class TrialverseServiceTest {
 
-  @Mock
+  @Inject
   TrialverseRepository trialverseRepository;
 
-  @InjectMocks
+  @Inject
   TrialverseService trialverseService;
 
-  @Before
-  public void setUp() {
-    trialverseService = new TrialverseServiceImpl();
-    MockitoAnnotations.initMocks(this);
-  }
 
   @After
   public void tearDown() {

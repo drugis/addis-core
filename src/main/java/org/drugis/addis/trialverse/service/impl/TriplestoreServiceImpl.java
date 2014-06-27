@@ -6,12 +6,12 @@ import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.model.TrialDataIntervention;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -28,7 +28,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private final static Pattern STUDY_ID_FROM_URI_PATTERN = Pattern.compile("http://trials.drugis.org/study/(\\d+)/.*");
 
   @Inject
-  RestTemplate triplestoreTemplate;
+  RestOperationsFactory restOperationsFactory;
 
   public enum AnalysisConcept {
     DRUG("drug"),
@@ -190,7 +190,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     Map<String, String> vars = new HashMap<>();
     vars.put("query", query);
     vars.put("output", "json");
-    return triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
+    return restOperationsFactory.build().getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
   }
 
   private String buildOptionStringFromConceptURIs(Collection<String> conceptURIs) {

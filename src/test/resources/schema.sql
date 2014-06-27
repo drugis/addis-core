@@ -154,7 +154,7 @@ CREATE TABLE InterventionExclusion (
 ALTER TABLE NetworkMetaAnalysis DROP COLUMN studyId;
 ALTER TABLE NetworkMetaAnalysis DROP COLUMN problem;
 
-CREATE TABLE pataviTasks (
+CREATE TABLE PataviTask (
   id SERIAL NOT NULL,
   modelId INT NOT NULL,
   method varchar,
