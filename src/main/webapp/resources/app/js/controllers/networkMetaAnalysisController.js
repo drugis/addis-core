@@ -28,7 +28,7 @@ define(['d3'], function(d3) {
       .all([
         $scope.analysis.$promise,
         $scope.project.$promise,
-        $scope.models.promise,
+        $scope.models.$promise,
         $scope.outcomes.$promise,
         $scope.interventions.$promise
       ])
