@@ -26,15 +26,22 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
 import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.social.security.SpringSocialConfigurer;
 
 import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -50,42 +57,43 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
     auth.jdbcAuthentication()
-            .dataSource(dataSource)
-            .usersByUsernameQuery("SELECT username, password, TRUE FROM Account WHERE username = ?")
-            .authoritiesByUsernameQuery("SELECT Account.username, COALESCE(AccountRoles.role, 'ROLE_USER') FROM Account" +
-                    " LEFT OUTER JOIN AccountRoles ON Account.id = AccountRoles.accountId WHERE Account.username = ?")
-            .passwordEncoder(passwordEncoder());
+      .dataSource(dataSource)
+      .usersByUsernameQuery("SELECT username, password, TRUE FROM Account WHERE username = ?")
+      .authoritiesByUsernameQuery("SELECT Account.username, COALESCE(AccountRoles.role, 'ROLE_USER') FROM Account" +
+        " LEFT OUTER JOIN AccountRoles ON Account.id = AccountRoles.accountId WHERE Account.username = ?")
+      .passwordEncoder(passwordEncoder());
   }
 
   @Override
   public void configure(WebSecurity web) throws Exception {
     web
-            .ignoring()
-            .antMatchers("/resources/**");
+      .ignoring()
+      .antMatchers("/resources/**");
   }
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http
-            .formLogin()
-            .loginPage("/signin")
-            .loginProcessingUrl("/signin/authenticate")
-            .failureUrl("/signin?param.error=bad_credentials")
-            .defaultSuccessUrl("/")
-            .and()
-            .logout()
-            .logoutUrl("/signout")
-            .deleteCookies("JSESSIONID")
-            .and()
-            .authorizeRequests()
-            .antMatchers("/favicon.ico", "/resources/**", "/app/**", "/auth/**", "/signin", "/signup", "/error/**").permitAll()
-            .antMatchers("/monitoring").hasRole("MONITORING")
-            .antMatchers("/**").authenticated()
-            .and()
-            .rememberMe()
-            .and()
-            .apply(new SpringSocialConfigurer())
-            .and().setSharedObject(ApplicationContext.class, context);
+      .formLogin()
+        .loginPage("/signin")
+        .loginProcessingUrl("/signin/authenticate")
+        .failureUrl("/signin?param.error=bad_credentials")
+        .defaultSuccessUrl("/")
+      .and().logout()
+        .logoutUrl("/signout")
+        .deleteCookies("JSESSIONID")
+      .and().authorizeRequests()
+        .antMatchers("/", "/favicon.ico", "/app/**", "/auth/**", "/signin").permitAll()
+        .antMatchers("/monitoring").hasRole("MONITORING")
+        .antMatchers("/**").authenticated()
+      .and().rememberMe()
+      .and().exceptionHandling()
+        .authenticationEntryPoint(new Http403ForbiddenEntryPoint())
+      .and().apply(
+        new SpringSocialConfigurer()
+          .postLoginUrl("/")
+          .alwaysUsePostLoginUrl(true))
+      .and().setSharedObject(ApplicationContext.class, context);
   }
 
   @Bean

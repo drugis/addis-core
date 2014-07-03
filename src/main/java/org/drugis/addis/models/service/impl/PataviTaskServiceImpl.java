@@ -39,6 +39,7 @@ public class PataviTaskServiceImpl implements PataviTaskService {
       NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
       pataviTask = pataviTaskRepository.createPataviTask(modelId, problem);
     }
+    System.out.println("!!!!!!!!!!!!!" + PATAVI_URI_BASE);
     return new PataviTaskUriHolder(PATAVI_URI_BASE + pataviTask.getId());
   }
 }
