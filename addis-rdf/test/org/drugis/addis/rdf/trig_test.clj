@@ -2,16 +2,15 @@
   (:use clojure.test)
   (:use org.drugis.addis.rdf.trig))
 
-; TODO: actually blank nodes are also allowed in the subject position (but not the predicate position)
-(deftest test-ttl-str 
+(deftest test-iri-str 
   (let [prefixes {:rdfs "http://www.w3.org/2000/01/rdf-schema#" :ex "http://example.com/"}]
-    (is (= (ttl-str prefixes (iri "http://example.com/8")) "<http://example.com/8>") "Handles plain URIs")
-    (is (= (ttl-str prefixes (iri :rdfs "comment")) "rdfs:comment") "Handles QName URIs")
-    (is (thrown? IllegalArgumentException (ttl-str prefixes (iri :rdf "type"))) "Check whether prefixes in supplied list")
-    (is (thrown? IllegalArgumentException (ttl-str prefixes (lit "testing..."))) "Literals not allowed")
-    (is (thrown? IllegalArgumentException (ttl-str prefixes (lit 3))) "Literals not allowed")
-    (is (thrown? IllegalArgumentException (ttl-str prefixes (coll [(iri "http://example.com/8")]))) "Collections not allowed")
-    (is (thrown? IllegalArgumentException (ttl-str prefixes (_po [(iri :rdfs "comment") (lit "no comment")]))) "Blank node property lists not allowed")))
+    (is (= (iri-str prefixes (iri "http://example.com/8")) "<http://example.com/8>") "Handles plain URIs")
+    (is (= (iri-str prefixes (iri :rdfs "comment")) "rdfs:comment") "Handles QName URIs")
+    (is (thrown? IllegalArgumentException (iri-str prefixes (iri :rdf "type"))) "Check whether prefixes in supplied list")
+    (is (thrown? IllegalArgumentException (iri-str prefixes (lit "testing..."))) "Literals not allowed")
+    (is (thrown? IllegalArgumentException (iri-str prefixes (lit 3))) "Literals not allowed")
+    (is (thrown? IllegalArgumentException (iri-str prefixes (coll [(iri "http://example.com/8")]))) "Collections not allowed")
+    (is (thrown? IllegalArgumentException (iri-str prefixes (_po [(iri :rdfs "comment") (lit "no comment")]))) "Blank node property lists not allowed")))
 
 (deftest test-ttl-object-str
   (let [prefixes {:xsd "http://www.w3.org/2001/XMLSchema#" :rdfs "http://www.w3.org/2000/01/rdf-schema#" :ex "http://example.com/"}]
@@ -80,7 +79,13 @@
              "  ex:8\n    ex:lessThan [\n      ex:lessThan ex:10\n    ] .")))
     (testing "Triples generated through chaining"
       (is (= (write-triples prefixes (spo (spo (iri :ex 8) [(iri :ex "lessThan") (iri :ex 9)]) [(iri :rdf "value") (lit 8)])
-             "ex:8\n  ex:lessThan ex:9 ;\n  rdf:value 8 ."))))))
+             "ex:8\n  ex:lessThan ex:9 ;\n  rdf:value 8 ."))))
+    (testing "Triples generated through chaining on blank node"
+      (is (= (write-triples prefixes (spo  (iri :ex 7) [(iri :ex "lessThan") (spo (_po [(iri :ex "lessThan") (iri :ex 9)]) [(iri :rdf "value") (lit 8)])])
+             "ex:7 ex:lessThan [\n  ex:lessThan ex:9 ;\n  rdf:value 8\n] ."))))
+    (testing "Triples with blank node as subject"
+      (is (= (write-triples prefixes (_po [(iri :ex "lessThan") (iri :ex 9)] [(iri :rdf "value") (lit 8)]))
+             "[]\n  ex:lessThan ex:9 ;\n  rdf:value 8 .")))))
 
 (deftest test-write-triples-list
   (let [prefixes {:ex "http://example.com/"}]
@@ -114,14 +119,33 @@
            "ex:n {\n\n  ex:8\n    ex:lessThan ex:9 .\n\n  ex:7\n    ex:lessThan ex:8 .\n\n}"))))
 
 (deftest test-dsl
-  (is (thrown? IllegalArgumentException
+  (is (thrown-with-msg? IllegalArgumentException #"^Invalid subject.*"
                (spo (coll [(iri :ex 8)]) [(iri :ex "lessThan") (iri :ex 9)]))
       "Cannot have collection as subject")
-  (is (thrown? IllegalArgumentException
+  (is (thrown-with-msg? IllegalArgumentException #"^Invalid subject.*"
                (spo (lit "hello") [(iri :ex "lessThan") (iri :ex 9)]))
       "Cannot have literal as subject")
-  (is (thrown? IllegalArgumentException
+  (is (thrown-with-msg? IllegalArgumentException #"^Invalid subject.*"
                (spo (lit 3) [(iri :ex "lessThan") (iri :ex 9)]))
       "Cannot have literal as subject")
+  (is (thrown-with-msg? IllegalArgumentException #"^Invalid subject.*"
+               (spo 3 [(iri :ex "lessThan") (iri :ex 9)]))
+      "Cannot have literal as subject")
+  (is (thrown-with-msg? IllegalArgumentException #"^Invalid predicate.*"
+               (spo (iri :ex 8) [(lit "HORSES") (iri :ex 9)]))
+      "Cannot have literal as predicate")
+  (is (thrown-with-msg? IllegalArgumentException #"^Invalid predicate.*"
+               (spo (iri :ex 8) [(coll []) (iri :ex 9)]))
+      "Cannot have collection as predicate")
+  (is (thrown-with-msg? IllegalArgumentException #"^Invalid predicate.*"
+               (spo (iri :ex 8) [(_po) (iri :ex 9)]))
+      "Cannot have blank node as predicate")
   (is (= (spo (iri :ex 8) [(iri :rdf "value") (lit 8)]) (spo (iri :ex 8) [(iri :rdf "value") 8]))
-      "Literals in object position automatically wrapped"))
+      "Integer literal in object position automatically wrapped")
+  (is (= (spo (iri :ex 8) [(iri :rdf "value") (lit 1.5)]) (spo (iri :ex 8) [(iri :rdf "value") 1.5]))
+      "Double literal in object position automatically wrapped")
+  (is (= (spo (iri :ex 8) [(iri :rdf "value") (lit "8")]) (spo (iri :ex 8) [(iri :rdf "value") "8"]))
+      "String literal in object position automatically wrapped")
+  (is (thrown-with-msg? IllegalArgumentException #"^Invalid object.*"
+               (spo (iri :ex 8) [(iri :ex "lessThan") (spo (iri :ex 9) [(iri :ex "lessThan") (iri :ex 10)])]))
+      "Cannot have triples as object"))

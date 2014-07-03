@@ -1,9 +1,28 @@
 (ns org.drugis.addis.rdf.trig
   (:require [clojure.string :refer [join]]))
 
-(defn iri? [x]
+(defn- iri? [x]
   "True if x is an IRI."
   (and (sequential? x) (or (= :uri (first x)) (= :qname (first x)))))
+
+(defn- lit? [x]
+  "True if x is a literal."
+  (and (sequential? x) (= :lit (first x))))
+
+(defn- triples? [x]
+  "True if x is triples"
+  (and (sequential? x) (or (iri? (first x)) (= :blank (first x)))))
+
+(defn- blank? [x]
+  "True if x is a description of a blank node"
+  (and (triples? x) (= :blank (first x))))
+
+(defn- col? [x]
+  "True if x is a collection"
+  (and (sequential? x) (= :coll (first x))))
+
+(defn- resource? [x]
+  (or (iri? x) (lit? x) (blank? x) (col? x)))
 
 (declare write-pairs)
 
@@ -62,17 +81,18 @@
                  (float? x) (format "%e" (double x))
                  (string? x) (write-str x))))))))
 
-(defn ttl-str
-  "Resource to Turtle string for subject and predicate positions"
+(defn ttl-subject-str
+  "Resource to Turtle string for subject position"
   [prefixes resource]
-  (if (iri? resource)
-    (iri-str prefixes resource)
-    (throw (IllegalArgumentException. "Can only have URIs for graph, subject, and predicate positions"))))
+  (cond
+    (iri? resource) (iri-str prefixes resource)
+    (= :blank resource) "[]"))
+    
 
 ; write pairs (predicate-object pairs)
 (defn write-pairs [prefixes pairs indent]
   (let [indent+ (str indent _indent_)
-        intermediate (map (fn [[k v]] (str indent+ (ttl-str prefixes k) " " (ttl-object-str prefixes v indent+))) pairs)]
+        intermediate (map (fn [[k v]] (str indent+ (iri-str prefixes k) " " (ttl-object-str prefixes v indent+))) pairs)]
     (join " ;\n" intermediate)))
 
 ; write triples regarding a single subject
@@ -80,7 +100,7 @@
   ([prefixes triples] (write-triples prefixes triples ""))
   ([prefixes triples indent]
    (let [triple-str (write-pairs prefixes (second triples) indent)]
-     (str indent (ttl-str prefixes (first triples)) "\n" triple-str " ."))))
+     (str indent (ttl-subject-str prefixes (first triples)) "\n" triple-str " ."))))
 
 (defn write-triples-list
   ([prefixes triples-list] (write-triples-list prefixes triples-list ""))
@@ -98,7 +118,7 @@
 
 (defn write-graph
   [prefixes graph]
-    (join "\n\n" [(str (ttl-str prefixes (first graph)) " {") (write-triples-list prefixes (second graph) "  ") "}"]))
+    (join "\n\n" [(str (iri-str prefixes (first graph)) " {") (write-triples-list prefixes (second graph) "  ") "}"]))
 
 (defn write-trig
   [prefixes graphs]
@@ -114,11 +134,16 @@
   [value]
   [:lit value])
 
-(defn- wrap-objects
+(defn- auto-lit? [x]
+  (or (instance? Boolean x) (integer? x) (float? x) (string? x)))
+
+(defn- check-pair 
   [[pred obj]]
-  (if (sequential? obj)
-    [pred obj]
-    [pred (lit obj)]))
+  (cond
+    (not (iri? pred)) (throw (IllegalArgumentException. (str "Invalid predicate " pred)))
+    (resource? obj) [pred obj]
+    (auto-lit? obj) [pred (lit obj)]
+    :else (throw (IllegalArgumentException. (str "Invalid object " obj)))))
 
 (defn coll
   "Generate an RDF collection from the given sequence of resources."
@@ -129,11 +154,11 @@
   s may be (i) an IRI or (ii) the result of a previous call to spo.
   In the latter case, the predicate-object pairs are appended to the predicate-object pair list of s."
   [s & po*]
-  (if (and (sequential? s) (iri? (first s)))
-    [(first s) (concat (second s) (map wrap-objects po*))]
+  (if (triples? s)
+    [(first s) (concat (second s) (doall (map check-pair po*)))]
     (cond
-     (or (iri? s) (= :blank s)) [s (map wrap-objects po*)]
-     :else (throw (IllegalArgumentException. "Not a valid subject")))))
+     (or (iri? s) (= :blank s)) [s (doall (map check-pair po*))]
+     :else (throw (IllegalArgumentException. (str "Invalid subject " s))))))
 
 (defn _po
   "Generate a blank node with a number of predicate-object pairs."
