@@ -7,11 +7,9 @@ import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.models.repository.ModelRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -28,9 +26,6 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;
-
-  @Inject
-  ModelRepository modelRepository;
 
   @Override
   public NetworkMetaAnalysis create(AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
