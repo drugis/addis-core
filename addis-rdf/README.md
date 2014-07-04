@@ -68,6 +68,12 @@ Find measurements of "HAM-D Responders" outcome in Fluoxetine arms (depression e
 arq --data=depression.trig --query=measurements.sparql
 ```
 
+Generate an RDF/XML representation of the TriG (without named graphs):
+
+```
+trig depression.trig | sed 's/ <[^>]*> .$/ ./' | rdfcat -t - >depression.rdf
+```
+
 ## Bugs
 
 Many things are not yet imported; many more are untested; unit tests are non-existent.
