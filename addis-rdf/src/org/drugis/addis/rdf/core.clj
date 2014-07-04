@@ -116,17 +116,20 @@
             [(trig/iri :rdf "type") ((entity-uris :drug) drug-name)]
             [(trig/iri :rdfs "label") drug-name]))
 
-; TODO: arm size
 (defn study-arm-rdf [arm-name instance-uri]
   (trig/spo instance-uri
             [(trig/iri :rdfs "label") arm-name]
             [(trig/iri :rdf "type") (trig/iri :ontology "Arm")]))
 
-; TODO: duration, etc.
-(defn study-epoch-rdf [epoch-name instance-uri]
-  (trig/spo instance-uri
-            [(trig/iri :rdfs "label") epoch-name]
-            [(trig/iri :rdf "type") (trig/iri :ontology "Epoch")]))
+(defn study-epoch-rdf [xml instance-uri]
+  (let [epoch-name (vtd/attr xml :name)
+        duration (vtd/text (vtd/at xml "./duration"))
+        subj (if duration
+               (trig/spo instance-uri [(trig/iri :ontology "duration") (trig/lit duration)])
+               instance-uri)]
+  (trig/spo subj 
+            [(trig/iri :rdfs "label") (trig/lit epoch-name)]
+            [(trig/iri :rdf "type") (trig/iri :ontology "Epoch")])))
 
 (defn activity-other-rdf [subj xml study-drug-uris]
   (trig/spo subj
@@ -231,6 +234,20 @@
      :else measurement) ; TODO: categorical measurements
 ))
 
+(defn participant-flow-rdf
+  [instance-uri arm-uri epoch-uri nr-starting]
+  (if nr-starting
+    (trig/spo instance-uri
+              [(trig/iri :rdf "type") (trig/iri :ontology "ParticipantFlow")]
+              [(trig/iri :ontology "participants_starting") (trig/lit nr-starting)]
+              [(trig/iri :ontology "of_arm") arm-uri]
+              [(trig/iri :ontology "in_epoch") epoch-uri])))
+
+(defn arm-size
+  [xml arm-name]
+  (let [size (vtd/attr (vtd/at xml (str "./arms/arm[@name='" arm-name "']")) :size)]
+    (if size (Integer. size) nil)))
+
 ; TODO: import the interesting stuff
 (defn study-rdf [xml uri entity-uris]
   (let [indication-uri (trig/iri :instance (uuid))
@@ -267,7 +284,8 @@
            )]
       [(study-indication-rdf xml entity-uris indication-uri)]
       (map #(study-arm-rdf % (arm-uris %)) (keys arm-uris))
-      (map #(study-epoch-rdf % (epoch-uris %)) epochs)
+      (filter (comp not nil?) (map #(participant-flow-rdf (trig/iri :instance (uuid)) (arm-uris %) (epoch-uris primary-epoch) (arm-size xml %)) (keys arm-uris)))
+      (map #(study-epoch-rdf (vtd/at xml (str "./epochs/epoch[@name='" % "']")) (epoch-uris %)) epochs)
       (map #(study-outcome-rdf (vtd/at xml (str "./studyOutcomeMeasures/studyOutcomeMeasure[@id='" % "']")) entity-uris (study-outcome-uris %)) (keys study-outcome-uris))
       (map #(study-drug-rdf % entity-uris (study-drug-uris %)) (keys study-drug-uris))
       (map #(study-activity-rdf % (trig/iri :instance (uuid)) entity-uris arm-uris epoch-uris study-drug-uris) (vtd/search xml "./activities/studyActivity"))
