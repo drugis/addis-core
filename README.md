@@ -27,6 +27,7 @@ sudo -u postgres psql -c "CREATE DATABASE trialverse ENCODING 'utf-8' OWNER tria
 ```
 
 Set up the environment:
+(NB: the Patavi URI assumes caching of patavi results via addis. If that is not desired omit ```/staged/```)
 
 ```
 export TRIALVERSE_DB_CHANGELOG=database.sql
@@ -35,6 +36,7 @@ export TRIALVERSE_DB_URL=jdbc:postgresql://localhost/trialverse
 export TRIALVERSE_DB_USERNAME=trialverse
 export TRIALVERSE_DB_PASSWORD=develop
 export TRIPLESTORE_URI=http://localhost:3030/ds/query
+export PATAVI_URI=http://localhost:3000/ws/staged/
 
 export ADDIS_CORE_DB_CHANGELOG=database.sql
 export ADDIS_CORE_DB_DRIVER=org.postgresql.Driver

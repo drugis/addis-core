@@ -168,7 +168,6 @@ public class ProblemServiceTest {
     ArmExclusion armExclusion1 = new ArmExclusion(analysisId, 888L); // trialDataArm with armId4
     List<ArmExclusion> armExclusions = Arrays.asList(armExclusion1);
 
-    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, Collections.EMPTY_LIST, outcome);
     Project project = mock(Project.class);
     SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
     SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
@@ -177,6 +176,14 @@ public class ProblemServiceTest {
     Intervention intervention2 = new Intervention(2, projectId, "int2", "moti", semanticIntervention2);
     Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
     List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
+
+    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysisId, intervention1.getId());
+    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysisId, intervention2.getId());
+    InterventionInclusion interventionInclusion3 = new InterventionInclusion(analysisId, intervention3.getId());
+    List<InterventionInclusion> interventionInclusions = Arrays.asList(interventionInclusion1, interventionInclusion2, interventionInclusion3);
+
+    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, interventionInclusions, outcome);
+
     ObjectMapper mapper = new ObjectMapper();
 
     ObjectNode trialDataNode = mapper.convertValue(trialData, ObjectNode.class);
@@ -201,7 +208,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNetworkAnalysisProblemWithInterventionExclusions() throws ResourceDoesNotExistException {
+  public void testGetNetworkAnalysisProblemWithInterventionInclusions() throws ResourceDoesNotExistException {
     Long namespaceId = 1L;
     Integer projectId = 2;
     Integer analysisId = 3;
@@ -221,9 +228,10 @@ public class ProblemServiceTest {
     when(project.getId()).thenReturn(projectId);
     when(project.getTrialverseId()).thenReturn(namespaceId.intValue());
 
-    InterventionExclusion interventionExclusion = new InterventionExclusion(analysisId, intervention2.getId());
-    List<InterventionExclusion> interventionExclusions = Arrays.asList(interventionExclusion);
-    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", Collections.EMPTY_LIST, interventionExclusions, outcome);
+    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysisId, intervention1.getId());
+    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysisId, intervention3.getId());
+    List<InterventionInclusion> interventionInclusions = Arrays.asList(interventionInclusion1, interventionInclusion2);
+    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", Collections.EMPTY_LIST, interventionInclusions, outcome);
 
 
     TrialData trialData = createMockTrialData();

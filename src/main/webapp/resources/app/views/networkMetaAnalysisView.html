@@ -18,7 +18,7 @@
                             <div ng-repeat="intervention in interventions">
                                 <label><input type="checkbox" ng-model="intervention.isIncluded"
                                               ng-disabled="editMode.disableEditing || hasModel"
-                                              ng-change="changeInterventionExclusion(intervention)">
+                                              ng-change="changeInterventionInclusion(intervention)">
                                     {{intervention.name}}</label>
                             </div>
                         </div>

@@ -9,7 +9,7 @@ import javax.persistence.Id;
  * Created by connor on 18-6-14.
  */
 @Entity
-public class InterventionExclusion {
+public class InterventionInclusion {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -18,10 +18,10 @@ public class InterventionExclusion {
 
   private Integer interventionId;
 
-  public InterventionExclusion() {
+  public InterventionInclusion() {
   }
 
-  public InterventionExclusion(Integer analysisId, Integer interventionId) {
+  public InterventionInclusion(Integer analysisId, Integer interventionId) {
     this.analysisId = analysisId;
     this.interventionId = interventionId;
   }
@@ -41,9 +41,9 @@ public class InterventionExclusion {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof InterventionExclusion)) return false;
+    if (!(o instanceof InterventionInclusion)) return false;
 
-    InterventionExclusion that = (InterventionExclusion) o;
+    InterventionInclusion that = (InterventionInclusion) o;
 
     if (!analysisId.equals(that.analysisId)) return false;
     if (id != null ? !id.equals(that.id) : that.id != null) return false;

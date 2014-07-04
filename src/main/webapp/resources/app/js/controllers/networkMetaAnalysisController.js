@@ -34,7 +34,7 @@ define(['d3'], function(d3) {
       ])
       .then(function() {
         $scope.hasModel = $scope.models.length > 0;
-        $scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.excludedInterventions);
+        $scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.includedInterventions);
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
         if ($scope.analysis.outcome) {
           reloadModel();
@@ -159,14 +159,14 @@ define(['d3'], function(d3) {
         });
     }
 
-    function getIncludedIntervention(interventions) {
+    function getIncludedInterventions(interventions) {
       return _.filter(interventions, function(intervention) {
         return intervention.isIncluded;
       });
     }
 
     function updateNetwork() {
-      var includedInterventions = getIncludedIntervention($scope.interventions);
+      var includedInterventions = getIncludedInterventions($scope.interventions);
       var network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis.excludedArms);
       drawNetwork(network);
       $scope.isNetworkDisconnected = NetworkMetaAnalysisService.isNetworkDisconnected(network);
@@ -184,10 +184,10 @@ define(['d3'], function(d3) {
         .then(function(trialverseData) {
           $scope.trialverseData = trialverseData;
           updateNetwork();
-          var includedInterventions = getIncludedIntervention($scope.interventions);
+          var includedInterventions = getIncludedInterventions($scope.interventions);
           $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis.excludedArms);
           $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
-          $scope.hasLessThanTwoInterventions = getIncludedIntervention($scope.interventions).length < 2;
+          $scope.hasLessThanTwoInterventions = getIncludedInterventions($scope.interventions).length < 2;
         });
     }
 
@@ -201,9 +201,9 @@ define(['d3'], function(d3) {
       });
     };
 
-    $scope.changeInterventionExclusion = function(intervention) {
-      $scope.analysis.excludedInterventions =
-        NetworkMetaAnalysisService.buildInterventionExclusions($scope.interventions, $scope.analysis);
+    $scope.changeInterventionInclusion = function(intervention) {
+      $scope.analysis.includedInterventions =
+        NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);
       if (!intervention.isIncluded) {
         $scope.analysis.excludedArms = NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, $scope.analysis, $scope.trialverseData);
       }

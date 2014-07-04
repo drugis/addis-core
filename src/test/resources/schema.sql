@@ -163,3 +163,15 @@ CREATE TABLE PataviTask (
   PRIMARY KEY(id),
   FOREIGN KEY(modelId) REFERENCES Model(id)
 );
+
+-- changeset reidd:9
+DROP TABLE InterventionExclusion CASCADE;
+
+CREATE TABLE InterventionInclusion (
+  id SERIAL NOT NULL,
+  interventionId INT NOT NULL,
+  analysisId INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id),
+  FOREIGN KEY(interventionId) REFERENCES Intervention(id)
+);

@@ -76,10 +76,10 @@ public class NetworkMetaAnalysisRepositoryTest {
     ArmExclusion newArmExclusion2 = new ArmExclusion(analysisId, -602L);
     List<ArmExclusion> armExclusions = Arrays.asList(newArmExclusion1, newArmExclusion2);
     Outcome outcome = em.find(Outcome.class, 1);
-    InterventionExclusion newInterventionExclusion = new InterventionExclusion(analysisId, 2);
-    List<InterventionExclusion> interventionExclusions = Arrays.asList(newInterventionExclusion);
+    InterventionInclusion newInterventionInclusion = new InterventionInclusion(analysisId, 2);
+    List<InterventionInclusion> interventionInclusions = Arrays.asList(newInterventionInclusion);
 
-    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "new name", armExclusions, interventionExclusions, outcome);
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "new name", armExclusions, interventionInclusions, outcome);
     NetworkMetaAnalysis updatedAnalysis = networkMetaAnalysisRepository.update(analysis);
     assertEquals(2, updatedAnalysis.getExcludedArms().size());
 
@@ -90,7 +90,7 @@ public class NetworkMetaAnalysisRepositoryTest {
     assertEquals(2, resultList.size());
     assertEquals(new Integer(1), updatedAnalysis.getExcludedArms().get(0).getId());
     assertEquals(new Integer(2), updatedAnalysis.getExcludedArms().get(1).getId());
-    assertEquals(new Integer(1), updatedAnalysis.getExcludedInterventions().get(0).getId());
+    assertEquals(new Integer(1), updatedAnalysis.getIncludedInterventions().get(0).getId());
   }
 
 

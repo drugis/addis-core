@@ -78,7 +78,7 @@ public class ProblemServiceImpl implements ProblemService {
     List<Intervention> interventions = interventionRepository.query(project.getId());
     Map<String, String> interventionNamesByUrisMap = new HashMap<>();
 
-    interventions = filterExcludedInterventions(interventions, analysis.getExcludedInterventions());
+    interventions = filterExcludedInterventions(interventions, analysis.getIncludedInterventions());
 
     for (Intervention intervention : interventions) {
       alternativeUris.add(intervention.getSemanticInterventionUri());
@@ -156,16 +156,16 @@ public class ProblemServiceImpl implements ProblemService {
     return interventionByDrugIdMap;
   }
 
-  private List<Intervention> filterExcludedInterventions(List<Intervention> interventions, List<InterventionExclusion> exclusions) {
+  private List<Intervention> filterExcludedInterventions(List<Intervention> interventions, List<InterventionInclusion> inclusions) {
     List<Intervention> filteredInterventions = new ArrayList<>();
 
-    Map<Integer, InterventionExclusion> exclusionMap = new HashMap<>(exclusions.size());
-    for (InterventionExclusion interventionExclusion : exclusions) {
-      exclusionMap.put(interventionExclusion.getInterventionId(), interventionExclusion);
+    Map<Integer, InterventionInclusion> inclusionMap = new HashMap<>(inclusions.size());
+    for (InterventionInclusion interventionInclusion : inclusions) {
+      inclusionMap.put(interventionInclusion.getInterventionId(), interventionInclusion);
     }
 
     for (Intervention intervention : interventions) {
-      if (exclusionMap.get(intervention.getId()) == null) {
+      if (inclusionMap.get(intervention.getId()) != null) {
         filteredInterventions.add(intervention);
       }
     }

@@ -2,7 +2,7 @@ package org.drugis.addis.analyses.repository.impl;
 
 import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.analyses.ArmExclusion;
-import org.drugis.addis.analyses.InterventionExclusion;
+import org.drugis.addis.analyses.InterventionInclusion;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -49,9 +49,9 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
     deleteArmExclusionsQuery.setParameter("analysisId", analysis.getId());
     deleteArmExclusionsQuery.executeUpdate();
 
-    Query deleteInterventionExclusionsQuery = em.createQuery("delete from InterventionExclusion ie where ie.analysisId = :analysisId");
-    deleteInterventionExclusionsQuery.setParameter("analysisId", analysis.getId());
-    deleteInterventionExclusionsQuery.executeUpdate();
+    Query deleteInterventionInclusionsQuery = em.createQuery("delete from InterventionInclusion ii where ii.analysisId = :analysisId");
+    deleteInterventionInclusionsQuery.setParameter("analysisId", analysis.getId());
+    deleteInterventionInclusionsQuery.executeUpdate();
 
     // add new
     List<ArmExclusion> newArmExclusionList = new ArrayList<>();
@@ -61,15 +61,15 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
       newArmExclusionList.add(newArmExclusion);
     }
 
-    List<InterventionExclusion> newInterventionExclusionList = new ArrayList<>();
-    for (InterventionExclusion interventionExclusion : analysis.getExcludedInterventions()) {
-      InterventionExclusion newInterventionExclusion = new InterventionExclusion(interventionExclusion.getAnalysisId(), interventionExclusion.getInterventionId());
-      em.persist(newInterventionExclusion);
-      newInterventionExclusionList.add(newInterventionExclusion);
+    List<InterventionInclusion> newInterventionInclusionList = new ArrayList<>();
+    for (InterventionInclusion interventionInclusion : analysis.getIncludedInterventions()) {
+      InterventionInclusion newInterventionInclusion = new InterventionInclusion(interventionInclusion.getAnalysisId(), interventionInclusion.getInterventionId());
+      em.persist(newInterventionInclusion);
+      newInterventionInclusionList.add(newInterventionInclusion);
     }
 
     analysis.setExcludedArms(newArmExclusionList);
-    analysis.setExcludedInterventions(newInterventionExclusionList);
+    analysis.setIncludedInterventions(newInterventionInclusionList);
 
     return em.merge(analysis);
   }

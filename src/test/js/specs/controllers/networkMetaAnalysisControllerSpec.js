@@ -93,9 +93,10 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         'isNetworkDisconnected',
         'addInclusionsToInterventions',
         'changeArmExclusion',
-        'buildInterventionExclusions',
+        'buildInterventionInclusions',
         'doesInterventionHaveAmbiguousArms',
-        'doesModelHaveAmbiguousArms'
+        'doesModelHaveAmbiguousArms',
+        'cleanUpExcludedArms'
       ]);
 
       var mockNetwork = {
@@ -191,7 +192,6 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
           expect(networkMetaAnalysisService.isNetworkDisconnected).toHaveBeenCalled();
           expect(networkMetaAnalysisService.transformTrialDataToNetwork).toHaveBeenCalled();
         });
-
       });
 
       describe('and the create model button is clicked', function() {
@@ -212,24 +212,33 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         it('should go to the model view', function() {
           scope.goToModel();
           expect(state.go).toHaveBeenCalledWith('analysis.model', {
-              modelId: mockModel.id
+            modelId: mockModel.id
           });
         });
       });
 
-      describe('and the arm is exclusion is changed ', function() {
-
-
+      describe('and the arm exclusion is changed ', function() {
         beforeEach(function() {
           var dataRow = {};
           scope.tableHasAmbiguousArm = true;
           scope.changeArmExclusion(dataRow);
         });
 
-
         it('should set tableHasAmbiguousArm to false', function() {
           expect(scope.tableHasAmbiguousArm).toBeFalsy();
           expect(networkMetaAnalysisService.changeArmExclusion).toHaveBeenCalled();
+        });
+      });
+
+      describe('and the intervention inclusion is changed', function() {
+        it('should update the analysis\' included interventions, clean up its arm exclusions when applicable and save the analysis', function() {
+          var intervention = {
+            isIncluded: false
+          };
+          scope.changeInterventionInclusion(intervention);
+          expect(networkMetaAnalysisService.buildInterventionInclusions).toHaveBeenCalled();
+          expect(networkMetaAnalysisService.cleanUpExcludedArms).toHaveBeenCalled();
+          expect(scope.analysis.$save).toHaveBeenCalled();
         });
       });
 

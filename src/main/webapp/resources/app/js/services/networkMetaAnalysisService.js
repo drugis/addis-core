@@ -296,9 +296,9 @@ define(['angular'], function() {
       return analysis;
     }
 
-    function buildInterventionExclusions(interventions, analysis) {
+    function buildInterventionInclusions(interventions, analysis) {
       return _.reduce(interventions, function(accumulator, intervention) {
-        if (!intervention.isIncluded) {
+        if (intervention.isIncluded) {
           accumulator.push({
             analysisId: analysis.id,
             interventionId: intervention.id
@@ -345,13 +345,13 @@ define(['angular'], function() {
       return includedArmsForDrugId.length > 1;
     }
 
-    function addInclusionsToInterventions(interventions, exclusions) {
-      var exclusionMap = _.object(_.map(exclusions, function(exclusion) {
-        return [exclusion.interventionId, exclusion];
+    function addInclusionsToInterventions(interventions, inclusions) {
+      var inclusionMap = _.object(_.map(inclusions, function(inclusion) {
+        return [inclusion.interventionId, true];
       }));
 
       angular.forEach(interventions, function(intervention) {
-        intervention.isIncluded = !exclusionMap[intervention.id];
+        intervention.isIncluded = inclusionMap[intervention.id];
       });
       return interventions;
     }
@@ -390,7 +390,7 @@ define(['angular'], function() {
       isNetworkDisconnected: isNetworkDisconnected,
       addInclusionsToInterventions: addInclusionsToInterventions,
       changeArmExclusion: changeArmExclusion,
-      buildInterventionExclusions: buildInterventionExclusions,
+      buildInterventionInclusions: buildInterventionInclusions,
       doesInterventionHaveAmbiguousArms: doesInterventionHaveAmbiguousArms,
       doesModelHaveAmbiguousArms: doesModelHaveAmbiguousArms,
       cleanUpExcludedArms: cleanUpExcludedArms
