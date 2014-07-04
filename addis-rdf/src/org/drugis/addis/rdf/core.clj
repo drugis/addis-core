@@ -248,12 +248,13 @@
   (let [size (vtd/attr (vtd/at xml (str "./arms/arm[@name='" arm-name "']")) :size)]
     (if size (Integer. size) nil)))
 
-; TODO: import the interesting stuff
+; TODO: import the boring stuff
 (defn study-rdf [xml uri entity-uris]
   (let [indication-uri (trig/iri :instance (uuid))
         study-outcome-uris (apply merge (map (fn [el] {(vtd/attr el :id) (trig/iri :instance (uuid))}) (vtd/search xml "./studyOutcomeMeasures/studyOutcomeMeasure")))
         arm-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :instance (uuid))}) (vtd/search xml "./arms/arm")))
         epochs (map #(vtd/attr % :name) (vtd/search xml "./epochs/epoch"))
+        epoch-xmls (apply merge (map (fn [xml] {(vtd/attr xml :name) xml}) (vtd/search xml "./epochs/epoch")))
         epoch-uris (apply merge (map (fn [epoch] {epoch (trig/iri :instance (uuid))}) epochs))
         primary-epoch (find-first-treatment-epoch xml)
         study-drug-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :instance (uuid))}) (vtd/search xml "./activities/studyActivity/activity/treatment/drugTreatment/drug")))
@@ -285,7 +286,7 @@
       [(study-indication-rdf xml entity-uris indication-uri)]
       (map #(study-arm-rdf % (arm-uris %)) (keys arm-uris))
       (filter (comp not nil?) (map #(participant-flow-rdf (trig/iri :instance (uuid)) (arm-uris %) (epoch-uris primary-epoch) (arm-size xml %)) (keys arm-uris)))
-      (map #(study-epoch-rdf (vtd/at xml (str "./epochs/epoch[@name='" % "']")) (epoch-uris %)) epochs)
+      (map #(study-epoch-rdf (epoch-xmls %) (epoch-uris %)) epochs)
       (map #(study-outcome-rdf (vtd/at xml (str "./studyOutcomeMeasures/studyOutcomeMeasure[@id='" % "']")) entity-uris (study-outcome-uris %)) (keys study-outcome-uris))
       (map #(study-drug-rdf % entity-uris (study-drug-uris %)) (keys study-drug-uris))
       (map #(study-activity-rdf % (trig/iri :instance (uuid)) entity-uris arm-uris epoch-uris study-drug-uris) (vtd/search xml "./activities/studyActivity"))
