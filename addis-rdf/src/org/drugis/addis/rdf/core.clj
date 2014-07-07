@@ -86,12 +86,41 @@
       (trig/spo subj [(trig/iri :ontology "has_blinding") blinding])
       subj)))
 
+(def statusTypeUri
+  {"NOT_YET_RECRUITING" (trig/iri :ontology "statusNotYetRecruiting")
+   "RECRUITING" (trig/iri :ontology "statusRecruiting")
+   "ENROLLING" (trig/iri :ontology "statusEnrolling")
+   "ACTIVE" (trig/iri :ontology "statusActive")
+   "COMPLETED" (trig/iri :ontology "statusCompleted")
+   "SUSPENDED" (trig/iri :ontogogy "statusSuspended")
+   "TERMINATED" (trig/iri :ontology "statusTerminated")
+   "WITHDRAWN" (trig/iri :ontology "statusWithdrawn")
+   "UNKNOWN" (trig/iri :ontology "statusUnknown")})
+
+(defn status-rdf [subj xml]
+  (let [status (statusTypeUri (studyCharVal xml "status"))]
+    (if status
+      (trig/spo subj [(trig/iri :ontology "status") status])
+      subj)))
+
 (defn as-int [string] (if (nil? string) nil (Integer. string)))
 
 (defn centers-rdf [subj xml]
   (let [centers (as-int (studyCharVal xml "centers"))]
     (if centers
       (trig/spo subj [(trig/iri :ontology "has_number_of_centers") (trig/lit centers)])
+      subj)))
+
+(defn date-start-rdf [subj xml]
+  (let [start-date (studyCharVal xml "study_start")]
+    (if start-date 
+      (trig/spo subj [(trig/iri :ontology "has_start_date") (trig/lit start-date (trig/iri :xsd "date"))])
+      subj)))
+
+(defn date-end-rdf [subj xml]
+  (let [end-date (studyCharVal xml "study_end")]
+    (if end-date 
+      (trig/spo subj [(trig/iri :ontology "has_end_date") (trig/lit end-date (trig/iri :xsd "date"))])
       subj)))
 
 (defn objective-rdf [subj xml]
@@ -218,7 +247,7 @@
   (trig/spo uri 
             [(trig/iri :ontology "relative_to_epoch") (epoch-uris (:epochName mm))]
             [(trig/iri :ontology "relative_to_anchor") (trig/lit (:relativeTo mm))] ; TODO: proper typing
-            [(trig/iri :ontology "time_offset") (trig/lit (:howLong mm))])) ; TODO: proper typing
+            [(trig/iri :ontology "time_offset") (trig/lit (:howLong mm) (trig/iri :xsd "duration"))])) ; TODO: negative offset from end?
 
 (defn when-taken-key [xml]
   {:howLong (vtd/attr xml :howLong)
@@ -265,7 +294,6 @@
   (let [size (vtd/attr (vtd/at xml (str "./arms/arm[@name='" arm-name "']")) :size)]
     (if size (Integer. size) nil)))
 
-; TODO: import the boring stuff
 (defn study-rdf [xml uri entity-uris]
   (let [indication-uri (trig/iri :instance (uuid))
         study-outcome-uris (apply merge (map (fn [el] {(vtd/attr el :id) (trig/iri :instance (uuid))}) (vtd/search xml "./studyOutcomeMeasures/studyOutcomeMeasure")))
@@ -281,18 +309,15 @@
            (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Study")]
                      [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
                      [(trig/iri :rdfs "comment") (trig/lit (vtd/text (vtd/at xml "./characteristics/title/value")))])
-           ; # characteristics
            (allocation-rdf xml)
            (blinding-rdf xml)
            (centers-rdf xml)
            (objective-rdf xml)
            (eligibility-rdf xml)
            (publications-rdf xml)
-           ; source: omit?
-           ; study_start
-           ; study_end
-           ; status
-           ; 
+           (date-start-rdf xml)
+           (date-end-rdf xml)
+           (status-rdf xml)
            (trig/spo [(trig/iri :ontology "has_indication") indication-uri])
            (spo-each (trig/iri :ontology "has_outcome") (vals study-outcome-uris))
            (spo-each (trig/iri :ontology "has_arm") (vals arm-uris))
@@ -307,8 +332,7 @@
       (map #(study-drug-rdf % entity-uris (study-drug-uris %)) (keys study-drug-uris))
       (map #(study-activity-rdf % (trig/iri :instance (uuid)) entity-uris arm-uris epoch-uris study-drug-uris) (vtd/search xml "./activities/studyActivity"))
       (map #(study-measurement-moment-rdf (measurement-moment-uris %) % epoch-uris) (keys measurement-moment-uris))
-      (map #(study-measurement-rdf % (trig/iri :instance (uuid)) study-outcome-uris arm-uris measurement-moment-uris) (vtd/search xml "./measurements/measurement"))
-      )))
+      (map #(study-measurement-rdf % (trig/iri :instance (uuid)) study-outcome-uris arm-uris measurement-moment-uris) (vtd/search xml "./measurements/measurement")))))
 
 
 (defn import-study [xml entity-uris]
@@ -325,6 +349,7 @@
   (let [dataset-id (uuid)
         prefixes {:rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                   :rdfs "http://www.w3.org/2000/01/rdf-schema#"
+                  :xsd "http://www.w3.org/2001/XMLSchema#"
                   :owl "http://www.w3.org/2002/07/owl#"
                   :ontology "http://trials.drugis.org/ontology#"
                   :dataset "http://trials.drugis.org/datasets/"

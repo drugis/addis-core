@@ -2,6 +2,7 @@ PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX dataset: <http://trials.drugis.org/datasets/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> 
 
 PREFIX entity: <http://trials.drugis.org/entities/>
 PREFIX instance: <http://trials.drugis.org/instances/>
@@ -47,7 +48,7 @@ SELECT ?studyLabel ?armLabel ?epochLabel ?outcomeLabel ?mean ?stdDev ?count ?sam
     ?measurementMoment
       ontology:relative_to_epoch ?epoch ;
       ontology:relative_to_anchor "BEFORE_EPOCH_END" ;
-      ontology:time_offset "P0D" .
+      ontology:time_offset "P0D"^^xsd:duration .
 
     ?measurement
       ontology:of_moment ?measurementMoment ;
