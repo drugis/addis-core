@@ -94,6 +94,23 @@
       (trig/spo subj [(trig/iri :ontology "has_number_of_centers") (trig/lit centers)])
       subj)))
 
+(defn objective-rdf [subj xml]
+  (let [objective (studyCharVal xml "objective")]
+    (trig/spo subj [(trig/iri :ontology "has_objective")
+                    (trig/_po [(trig/iri :rdfs "comment") (trig/lit objective)])])))
+
+(defn eligibility-rdf [subj xml]
+  (let [inclusion (studyCharVal xml "inclusion")
+        exclusion (studyCharVal xml "exclusion")
+        eligibility (str "Inclusion criteria:\n\n" inclusion "\n\nExclusion criteria:\n\n" exclusion)]
+    (trig/spo subj [(trig/iri :ontology "has_eligibility_criteria")
+                    (trig/_po [(trig/iri :rdfs "comment") (trig/lit eligibility)])])))
+
+(defn publications-rdf [subj xml]
+  (let [pmids (map #(str "http://pubmed.com/" (vtd/text %)) (vtd/search xml "./characteristics/references/pubMedId"))
+        pairs (map (fn [x] [(trig/iri :ontology "has_publication") (trig/_po [(trig/iri :ontology "has_id") (trig/iri x)])]) pmids)]
+    (apply trig/spo subj pairs)))
+
 (defn study-indication-rdf [xml entity-uris instance-uri]
   (let [entity-name (vtd/attr (vtd/at xml "./indication") :name)
         entity-uri ((:indication entity-uris) entity-name)]
@@ -268,10 +285,9 @@
            (allocation-rdf xml)
            (blinding-rdf xml)
            (centers-rdf xml)
-           ; objective: new node with rdfs:comment the text
-           ; inclusion: new node with rdfs:comment the text
-           ; exclusion: new node with rdfs:comment the text
-           ; references: not sure?
+           (objective-rdf xml)
+           (eligibility-rdf xml)
+           (publications-rdf xml)
            ; source: omit?
            ; study_start
            ; study_end
