@@ -1,11 +1,23 @@
 (ns org.drugis.addis.rdf.core
   (:require [clojure.tools.cli :refer [cli]]
             [clojure.java.io :refer [as-file]]
-            [clojure.string :refer [blank?]]
+            [clojure.string :refer [blank? lower-case]]
             [riveted.core :as vtd]
             [org.drugis.addis.rdf.trig :as trig]))
 
 (defn uuid [] (str (java.util.UUID/randomUUID)))
+
+(defn unit-rdf [xml uri]
+  (let [unit-name (vtd/attr xml :name)
+        unit-symbol (vtd/attr xml :symbol)
+        subj (cond
+               (= unit-name "gram") (trig/spo uri [(trig/iri :owl "sameAs") (trig/iri :qudt "Gram")])
+               (= unit-name "liter") (trig/spo uri [(trig/iri :owl "sameAs") (trig/iri :qudt "Liter")])
+               :else uri)]
+    (trig/spo subj 
+              [(trig/iri :rdf "type") (trig/iri :owl "Class")]
+              [(trig/iri :rdfs "label") (trig/lit unit-name)]
+              [(trig/iri :qudt "symbol") (trig/lit unit-symbol)])))
 
 (defn drug-rdf [xml uri]
   (let [atcCode (vtd/attr xml :atcCode)
@@ -162,6 +174,24 @@
             [(trig/iri :rdf "type") ((entity-uris :drug) drug-name)]
             [(trig/iri :rdfs "label") drug-name]))
 
+(defn dose-unit-key [xml]
+  {:prefix (vtd/attr xml :scaleModifier)
+   :baseUnit (vtd/attr (vtd/at xml "./unit") :name)})
+
+(def unitPrefix
+  {"MEGA"  1e6
+   "KILO"  1e3
+   "UNIT"  1e0
+   "MILLI" 1e-3
+   "MICRO" 1e-6
+   "NANO"  1e-9})
+
+(defn study-unit-rdf [unit-key entity-uris instance-uri]
+  (trig/spo instance-uri
+            [(trig/iri :rdf "type") ((entity-uris :unit) (:baseUnit unit-key))]
+            [(trig/iri :rdfs "label") (str (lower-case (:prefix unit-key)) (:baseUnit unit-key))]
+            [(trig/iri :qudt "conversionMultiplier") (unitPrefix (:prefix unit-key))]))
+
 (defn study-arm-rdf [arm-name instance-uri]
   (trig/spo instance-uri
             [(trig/iri :rdfs "label") arm-name]
@@ -177,24 +207,39 @@
             [(trig/iri :rdfs "label") (trig/lit epoch-name)]
             [(trig/iri :rdf "type") (trig/iri :ontology "Epoch")])))
 
-(defn activity-other-rdf [subj xml study-drug-uris]
+(defn activity-other-rdf [subj xml study-drug-uris unit-uris]
   (trig/spo subj
        [(trig/iri :rdf "type") (trig/iri :ontology "StudyActivity")]
        [(trig/iri :rdfs "comment") (trig/lit (vtd/text xml))]))
 
-(defn activity-predefined-rdf [subj xml study-drug-uris]
+(defn activity-predefined-rdf [subj xml study-drug-uris unit-uris]
   (let [activity-predefined {"RANDOMIZATION" "RandomizationActivity"
                              "SCREENING" "ScreeningActivity"
                              "WASH_OUT" "WashOutActivity"
                              "FOLLOW_UP" "FollowUpActivity"}]
     (trig/spo subj [(trig/iri :rdf "type") (trig/iri :ontology (activity-predefined (vtd/text xml)))])))
 
-; TODO: dosing, units
-(defn treatment-rdf [xml study-drug-uris]
-  (trig/_po [(trig/iri :ontology "treatment_has_drug") (study-drug-uris (vtd/attr (vtd/at xml "./drug") :name))]))
+(defn dose-rdf [xml attr unit-uris]
+  (trig/_po [(trig/iri :rdf "value") (trig/lit (Double. (vtd/attr xml attr)))]
+            [(trig/iri :ontology "units") (unit-uris (dose-unit-key (vtd/at xml "./doseUnit")))]
+            [(trig/iri :ontology "dosingPeriodicity") (trig/lit (vtd/attr (vtd/at xml "./doseUnit") :perTime) (trig/iri :xsd "duration"))]))
 
-(defn activity-treatment-rdf [subj xml study-drug-uris]
-  (let [drugs-coll (trig/coll (map #(treatment-rdf % study-drug-uris) (vtd/search xml "./drugTreatment")))]
+(defn treatment-rdf [xml study-drug-uris unit-uris]
+  (let [subj (trig/_po [(trig/iri :ontology "treatment_has_drug") (study-drug-uris (vtd/attr (vtd/at xml "./drug") :name))])
+        fixedDose (vtd/at xml "./fixedDose")
+        flexibleDose (vtd/at xml "./flexibleDose")]
+    (cond
+      fixedDose (trig/spo subj
+                          [(trig/iri :rdf "type") (trig/iri :ontology "FixedDoseDrugTreatment")]
+                          [(trig/iri :ontology "treatment_dose") (dose-rdf fixedDose :quantity unit-uris)])
+      flexibleDose (trig/spo subj
+                             [(trig/iri :rdf "type") (trig/iri :ontology "TitratedDoseDrugTreatment")]
+                             [(trig/iri :ontology "treatment_min_dose") (dose-rdf flexibleDose :minDose unit-uris)]
+                             [(trig/iri :ontology "treatment_max_dose") (dose-rdf flexibleDose :maxDose unit-uris)])
+      :else subj)))
+
+(defn activity-treatment-rdf [subj xml study-drug-uris unit-uris]
+  (let [drugs-coll (trig/coll (map #(treatment-rdf % study-drug-uris unit-uris) (vtd/search xml "./drugTreatment")))]
     (trig/spo subj 
               [(trig/iri :rdf "type") (trig/iri :ontology "TreatmentActivity")]
               [(trig/iri :ontology "administered_drugs") drugs-coll])))
@@ -210,11 +255,11 @@
                           [(trig/iri :ontology "applied_in_epoch") (epoch-uris (vtd/attr xml "epoch"))])]
     (trig/spo subj [(trig/iri :ontology "activity_application") used-by])))
 
-(defn study-activity-rdf [xml activity-uri entity-uris arm-uris epoch-uris study-drug-uris]
+(defn study-activity-rdf [xml activity-uri entity-uris arm-uris epoch-uris study-drug-uris unit-uris]
   (let [activity (vtd/first-child (vtd/at xml "./activity"))
         activity-type (vtd/tag activity)
         used-by (fn [subj xml] (activity-used-by-rdf subj xml arm-uris epoch-uris))
-        subj ((activity-rdf activity-type) activity-uri activity study-drug-uris)]
+        subj ((activity-rdf activity-type) activity-uri activity study-drug-uris unit-uris)]
     (reduce used-by subj (vtd/search xml "./usedBy"))))
 
 (defn spo-each [subj pred obj*]
@@ -242,12 +287,21 @@
     (trig/spo subj [(trig/iri :ontology "has_primary_epoch") uri])
     subj))
 
+(def anchorUri
+  {"FROM_EPOCH_START" (trig/iri :ontology "anchorEpochStart")
+   "BEFORE_EPOCH_END" (trig/iri :ontology "anchorEpochEnd")})
+
 (defn study-measurement-moment-rdf
   [uri mm epoch-uris]
   (trig/spo uri 
             [(trig/iri :ontology "relative_to_epoch") (epoch-uris (:epochName mm))]
-            [(trig/iri :ontology "relative_to_anchor") (trig/lit (:relativeTo mm))] ; TODO: proper typing
-            [(trig/iri :ontology "time_offset") (trig/lit (:howLong mm) (trig/iri :xsd "duration"))])) ; TODO: negative offset from end?
+            [(trig/iri :ontology "relative_to_anchor") (anchorUri (:relativeTo mm))]
+            [(trig/iri :ontology "time_offset")
+             (trig/lit
+               (if (= (:relativeTo mm) "BEFORE_EPOCH_END")
+                 (str "-" (:howLong mm))
+                 (:howLong mm))
+               (trig/iri :xsd "duration"))]))
 
 (defn when-taken-key [xml]
   {:howLong (vtd/attr xml :howLong)
@@ -303,7 +357,8 @@
         epoch-uris (apply merge (map (fn [epoch] {epoch (trig/iri :instance (uuid))}) epochs))
         primary-epoch (find-first-treatment-epoch xml)
         study-drug-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :instance (uuid))}) (vtd/search xml "./activities/studyActivity/activity/treatment/drugTreatment/drug")))
-        measurement-moment-uris (apply merge (map (fn [el] {(when-taken-key el) (trig/iri :instance (uuid))}) (vtd/search xml "./studyOutcomeMeasures/studyOutcomeMeasure/whenTaken")))]
+        measurement-moment-uris (apply merge (map (fn [el] {(when-taken-key el) (trig/iri :instance (uuid))}) (vtd/search xml "./studyOutcomeMeasures/studyOutcomeMeasure/whenTaken")))
+        study-unit-uris (apply merge (map (fn [el] {(dose-unit-key el) (trig/iri :instance (uuid))}) (vtd/search xml "./activities/studyActivity/activity/treatment/drugTreatment/*[self::flexibleDose|self::fixedDose]/doseUnit")))]
     (concat
       [(-> uri
            (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Study")]
@@ -330,7 +385,8 @@
       (map #(study-epoch-rdf (epoch-xmls %) (epoch-uris %)) epochs)
       (map #(study-outcome-rdf (vtd/at xml (str "./studyOutcomeMeasures/studyOutcomeMeasure[@id='" % "']")) entity-uris (study-outcome-uris %)) (keys study-outcome-uris))
       (map #(study-drug-rdf % entity-uris (study-drug-uris %)) (keys study-drug-uris))
-      (map #(study-activity-rdf % (trig/iri :instance (uuid)) entity-uris arm-uris epoch-uris study-drug-uris) (vtd/search xml "./activities/studyActivity"))
+      (map #(study-unit-rdf % entity-uris (study-unit-uris %)) (keys study-unit-uris))
+      (map #(study-activity-rdf % (trig/iri :instance (uuid)) entity-uris arm-uris epoch-uris study-drug-uris study-unit-uris) (vtd/search xml "./activities/studyActivity"))
       (map #(study-measurement-moment-rdf (measurement-moment-uris %) % epoch-uris) (keys measurement-moment-uris))
       (map #(study-measurement-rdf % (trig/iri :instance (uuid)) study-outcome-uris arm-uris measurement-moment-uris) (vtd/search xml "./measurements/measurement")))))
 
@@ -351,6 +407,7 @@
                   :rdfs "http://www.w3.org/2000/01/rdf-schema#"
                   :xsd "http://www.w3.org/2001/XMLSchema#"
                   :owl "http://www.w3.org/2002/07/owl#"
+                  :qudt "http://qudt.org/schema/qudt#"
                   :ontology "http://trials.drugis.org/ontology#"
                   :dataset "http://trials.drugis.org/datasets/"
                   :study "http://trials.drugis.org/studies/"
@@ -358,6 +415,7 @@
                   :entity "http://trials.drugis.org/entities/"
                   :atc "http://www.whocc.no/ATC2011/"
                   :snomed "http://www.ihtsdo.org/SCT_"}
+        [unit-uri-map units-rdf] (import-entities xml "/addis-data/units/unit" unit-rdf)
         [indication-uri-map indications-rdf] (import-entities xml "/addis-data/indications/indication" indication-rdf)
         [drug-uri-map drugs-rdf] (import-entities xml "/addis-data/drugs/drug" drug-rdf)
         [endpoint-uri-map endpoints-rdf] (import-entities xml "/addis-data/endpoints/endpoint" endpoint-rdf)
@@ -367,7 +425,8 @@
                      :drug drug-uri-map
                      :endpoint endpoint-uri-map
                      :adverseEvent adverseEvent-uri-map
-                     :populationCharacteristic populationCharacteristic-uri-map}
+                     :populationCharacteristic populationCharacteristic-uri-map
+                     :unit unit-uri-map}
         [studies-uri-map studies-graphs] (import-studies xml "/addis-data/studies/study" entity-uris)
         dataset-rdf [(-> (trig/iri :dataset dataset-id)
                          (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Dataset")]
@@ -375,6 +434,7 @@
                                    [(trig/iri :rdfs "comment") description])
                          (spo-each (trig/iri :ontology "contains_study") (vals studies-uri-map)))]
         meta-graph (concat 
+                     units-rdf
                      indications-rdf
                      drugs-rdf
                      endpoints-rdf

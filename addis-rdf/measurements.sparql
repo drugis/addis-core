@@ -47,8 +47,8 @@ SELECT ?studyLabel ?armLabel ?epochLabel ?outcomeLabel ?mean ?stdDev ?count ?sam
 
     ?measurementMoment
       ontology:relative_to_epoch ?epoch ;
-      ontology:relative_to_anchor "BEFORE_EPOCH_END" ;
-      ontology:time_offset "P0D"^^xsd:duration .
+      ontology:relative_to_anchor ontology:anchorEpochEnd ;
+      ontology:time_offset "-P0D"^^xsd:duration .
 
     ?measurement
       ontology:of_moment ?measurementMoment ;
