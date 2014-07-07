@@ -23,7 +23,11 @@
       (is (= (ttl-object-str prefixes (lit "đ")) "\"\\u0111\"") "Escapes unicode in string literals")
       (is (= (ttl-object-str prefixes (lit 3)) "3") "Handles integer literals")
       (is (= (ttl-object-str prefixes (lit 3.0)) (format "%e" 3.0)) "Handles double literals")
-      (is (= (ttl-object-str prefixes (lit false)) "false") "Handles boolean literals"))
+      (is (= (ttl-object-str prefixes (lit false)) "false") "Handles boolean literals")
+      (is (= (ttl-object-str prefixes (lit "2014-07-07T11:01:23" (iri :xsd "dateTime")))
+             "\"2014-07-07T11:01:23\"^^xsd:dateTime") "Handles custom data types")
+      (is (= (ttl-object-str prefixes (lit "2014-07-07T11:01:23" (iri "http://www.w3.org/2001/XMLSchema#dateTime")))
+             "\"2014-07-07T11:01:23\"^^<http://www.w3.org/2001/XMLSchema#dateTime>") "Handles custom data types"))
     (testing "Collections"
       (is (= (ttl-object-str prefixes (coll [(iri "http://example.com/8")]))
              "(\n  <http://example.com/8>\n)")

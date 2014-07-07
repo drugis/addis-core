@@ -5,7 +5,7 @@
   "True if x is an IRI."
   (and (sequential? x) (or (= :uri (first x)) (= :qname (first x)))))
 
-(defn- lit? [x]
+(defn- lit?[x]
   "True if x is a literal."
   (and (sequential? x) (= :lit (first x))))
 
@@ -75,11 +75,15 @@
                        members (map #(ttl-object-str prefixes % indent+) collection)
                        content (str indent+ (join (str "\n" indent+) members))]
                    (str "(\n" content "\n" indent ")"))
-           :lit (let [x (second resource)] (cond
-                 (instance? Boolean x) (str x)
-                 (integer? x) (str x)
-                 (float? x) (format "%e" (double x))
-                 (string? x) (write-str x))))))))
+           :lit (let [value (second resource)
+                      data-type (nth resource 2 nil)]
+                  (if data-type
+                    (str (write-str value) "^^" (iri-str prefixes data-type))
+                    (cond
+                      (instance? Boolean value) (str value)
+                      (integer? value) (str value)
+                      (float? value) (format "%e" (double value))
+                      (string? value) (write-str value)))))))))
 
 (defn ttl-subject-str
   "Resource to Turtle string for subject position"
@@ -131,8 +135,10 @@
 
 (defn lit
   "Generate an RDF literal of the given value."
-  [value]
-  [:lit value])
+  ([value]
+   [:lit value])
+  ([value data-type]
+   [:lit value data-type]))
 
 (defn- auto-lit? [x]
   (or (instance? Boolean x) (integer? x) (float? x) (string? x)))
