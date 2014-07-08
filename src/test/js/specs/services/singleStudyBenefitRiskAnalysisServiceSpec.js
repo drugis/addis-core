@@ -143,14 +143,18 @@ define(['angular', 'angular-mocks', 'services'], function() {
         inject(function(SingleStudyBenefitRiskAnalysisService) {
           var analysis = {
             selectedOutcomes: [{
-              name: 'outcome1'
+              name: 'outcome1',
+              semanticOutcomeUri: 'outcomeUri1'
             }, {
-              name: 'outcome2'
+              name: 'outcome2',
+              semanticOutcomeUri: 'outcomeUri2'
             }],
             selectedInterventions: [{
-              name: 'intervention1'
+              name: 'intervention1',
+              semanticInterventionUri: 'interventionUri1'
             }, {
-              name: 'intervention2'
+              name: 'intervention2',
+              semanticInterventionUri: 'interventionUri2'
             }]
           };
           var problem = {
@@ -159,20 +163,20 @@ define(['angular', 'angular-mocks', 'services'], function() {
           expect(SingleStudyBenefitRiskAnalysisService.validateProblem(analysis, problem)).toBeFalsy();
           problem = {
             performanceTable: [{
-              'alternative': 'intervention1',
-              'criterion': 'outcome1'
+              alternativeUri: 'interventionUri1',
+              criterionUri: 'outcomeUri1'
             }, {
-              'alternative': 'intervention1',
-              'criterion': 'outcome2'
+              alternativeUri: 'interventionUri1',
+              criterionUri: 'outcomeUri2'
             }, {
-              'alternative': 'intervention2',
-              'criterion': 'outcome1'
+              alternativeUri: 'interventionUri2',
+              criterionUri: 'outcomeUri1'
             }]
           };
           expect(SingleStudyBenefitRiskAnalysisService.validateProblem(analysis, problem)).toBeFalsy();
           problem.performanceTable.push({
-            'alternative': 'intervention2',
-            'criterion': 'outcome2'
+            alternativeUri: 'interventionUri2',
+            criterionUri: 'outcomeUri2'
           });
           expect(SingleStudyBenefitRiskAnalysisService.validateProblem(analysis, problem)).toBeTruthy();
         }));

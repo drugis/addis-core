@@ -72,6 +72,6 @@ public class CriteriaService {
         throw new EnumConstantNotPresentException(MeasurementType.class, variable.getMeasurementType().toString());
     }
     // NB: partialvaluefunctions to be filled in by MCDA component, left null here
-    return new CriterionEntry(outcome.getName(), scale, null);
+    return new CriterionEntry(outcome.getSemanticOutcomeUri(), outcome.getName(), scale, null);
   }
 }

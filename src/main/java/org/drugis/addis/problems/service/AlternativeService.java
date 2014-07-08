@@ -56,7 +56,7 @@ public class AlternativeService {
       Arm arm = mapper.convertValue(jsonArm, Arm.class);
       String drugUUID = drugs.get(arm.getDrugId());
       Intervention intervention = interventionsByUri.get(drugUUID);
-      AlternativeEntry alternativeEntry = new AlternativeEntry(intervention.getName());
+      AlternativeEntry alternativeEntry = new AlternativeEntry(intervention.getSemanticInterventionUri(), intervention.getName());
       alternativesCache.put(arm.getId(), alternativeEntry);
     }
 

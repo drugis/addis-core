@@ -7,10 +7,8 @@ import org.drugis.addis.problems.model.CriterionEntry;
 import org.drugis.addis.problems.model.Measurement;
 import org.drugis.addis.problems.model.MeasurementAttribute;
 import org.drugis.addis.problems.service.model.*;
-import org.drugis.addis.util.JSONUtils;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,9 +19,6 @@ import java.util.Map;
  */
 @Service
 public class PerformanceTableBuilder {
-
-  @Inject
-  JSONUtils jsonUtils;
 
   public Map<Pair<AlternativeEntry, CriterionEntry>, Map<MeasurementAttribute, Measurement>> createPerformanceMap(
           Map<Long, CriterionEntry> criteria, Map<Long, AlternativeEntry> alternatives, List<Measurement> measurements) {
@@ -66,14 +61,11 @@ public class PerformanceTableBuilder {
     Measurement standardDeviation = measurementMap.get(MeasurementAttribute.STANDARD_DEVIATION);
     Measurement sampleSize = measurementMap.get(MeasurementAttribute.SAMPLE_SIZE);
 
-    String alternativeName = alternativeEntry.getTitle();
-    String criterionName = criterionEntry.getTitle();
-
     Double mu = mean.getRealValue();
     Double sigma = standardDeviation.getRealValue() / Math.sqrt(sampleSize.getIntegerValue());
 
     ContinuousPerformance performance = new ContinuousPerformance(new ContinuousPerformanceParameters(mu, sigma));
-    return new ContinuousMeasurementEntry(jsonUtils.createKey(alternativeName), jsonUtils.createKey(criterionName), performance);
+    return new ContinuousMeasurementEntry(alternativeEntry.getAlternativeUri(), criterionEntry.getCriterionUri(), performance);
   }
 
   public RateMeasurementEntry createBetaDistributionEntry(AlternativeEntry alternativeEntry, CriterionEntry criterionEntry, Map<MeasurementAttribute, Measurement> measurementMap) {
@@ -84,10 +76,8 @@ public class PerformanceTableBuilder {
     Long alpha = rate.getIntegerValue() + 1;
     Long beta = sampleSize.getIntegerValue() - rate.getIntegerValue() + 1;
 
-    String alternativeName = alternativeEntry.getTitle();
-    String criterionName = criterionEntry.getTitle();
     RatePerformance performance = new RatePerformance(new RatePerformanceParameters(alpha, beta));
-    return new RateMeasurementEntry(jsonUtils.createKey(alternativeName), jsonUtils.createKey(criterionName), performance);
+    return new RateMeasurementEntry(alternativeEntry.getAlternativeUri(), criterionEntry.getCriterionUri(), performance);
   }
 
 }

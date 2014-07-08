@@ -41,6 +41,7 @@ public class AlternativeServiceTest {
 
   private long drugId;
   private String interventionName;
+  private String interventionUri;
   private Map<String, Intervention> interventionMap;
   private Map<Long, String> drugs;
 
@@ -58,7 +59,7 @@ public class AlternativeServiceTest {
     int studyId = 101;
     drugId = 2L;
     interventionName = "intervention name";
-    String interventionUri = "intervention uri";
+    interventionUri = "intervention uri";
     interventionMap = new HashMap<>();
     drugs = new HashMap<>();
     drugs.put(drugId, interventionUri);
@@ -94,7 +95,7 @@ public class AlternativeServiceTest {
     verify(trialverseService).getArmsByDrugIds(analysis.getStudyId(), drugs.keySet());
     verifyNoMoreInteractions(triplestoreService, trialverseService);
 
-    AlternativeEntry alternativeEntry = new AlternativeEntry(interventionName);
+    AlternativeEntry alternativeEntry = new AlternativeEntry(interventionUri, interventionName);
     assertEquals(alternativeEntry, alternatives.get(1L));
     assertEquals(1, alternatives.size());
 

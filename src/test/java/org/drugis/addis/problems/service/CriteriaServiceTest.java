@@ -101,7 +101,7 @@ public class CriteriaServiceTest {
     assertEquals(1, result.size());
     assertEquals(variable, result.get(0).getLeft());
     List<Double> rateScale = Arrays.asList(0.0, 1.0);
-    CriterionEntry expectedCriterionEntry = new CriterionEntry(outcome.getName(), rateScale, partialValueFunction);
+    CriterionEntry expectedCriterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri(), outcome.getName(), rateScale, partialValueFunction);
     assertEquals(expectedCriterionEntry, result.get(0).getRight());
 
   }
@@ -119,7 +119,7 @@ public class CriteriaServiceTest {
     assertEquals(1, result.size());
     assertEquals(variable, result.get(0).getLeft());
     List<Double> continousScale = Arrays.asList(null, null);
-    CriterionEntry expectedCriterionEntry = new CriterionEntry(outcome.getName(), continousScale, partialValueFunction);
+    CriterionEntry expectedCriterionEntry = new CriterionEntry(outcome.getSemanticOutcomeUri(), outcome.getName(), continousScale, partialValueFunction);
     assertEquals(expectedCriterionEntry, result.get(0).getRight());
 
   }

@@ -53,9 +53,13 @@ public class ProblemControllerTest {
   @Test
   public void testGetSingleStudybenefitRiskProblem() throws Exception {
     RatePerformance ratePerformance = new RatePerformance(new RatePerformanceParameters(10L, 50L));
-    AbstractMeasurementEntry rateMeasurementEntry = new RateMeasurementEntry("alternative 1", "criterion 1", ratePerformance);
+    String alternativeUri1 = "Alt uri 1";
+    String alternativeUri2 = "Alt uri 2";
+    String criterionUri1 = "Crit uri 1";
+    String criterionUri2 = "Crit uri 2";
+    AbstractMeasurementEntry rateMeasurementEntry = new RateMeasurementEntry(alternativeUri1, criterionUri1, ratePerformance);
     ContinuousPerformance continuousPerformance = new ContinuousPerformance(new ContinuousPerformanceParameters(7.5, 2.1));
-    AbstractMeasurementEntry continuousMeasurementEntry = new ContinuousMeasurementEntry("alternative 2", "criterion 2", continuousPerformance);
+    AbstractMeasurementEntry continuousMeasurementEntry = new ContinuousMeasurementEntry(alternativeUri2, criterionUri2, continuousPerformance);
     List<AbstractMeasurementEntry> performanceTable = Arrays.asList(rateMeasurementEntry, continuousMeasurementEntry);
     SingleStudyBenefitRiskProblem problem = new SingleStudyBenefitRiskProblem("testProblem", new HashMap<String, AlternativeEntry>(), new HashMap<String, CriterionEntry>(), performanceTable);
     Integer projectId = 1;

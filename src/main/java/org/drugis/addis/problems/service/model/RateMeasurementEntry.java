@@ -6,8 +6,8 @@ package org.drugis.addis.problems.service.model;
 public class RateMeasurementEntry extends AbstractMeasurementEntry {
   private RatePerformance performance;
 
-  public RateMeasurementEntry(String alternative, String criterion, RatePerformance performance) {
-    super(alternative, criterion);
+  public RateMeasurementEntry(String alternativeUri, String criterionUri, RatePerformance performance) {
+    super(alternativeUri, criterionUri);
     this.performance = performance;
   }
 

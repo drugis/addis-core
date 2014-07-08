@@ -4,20 +4,20 @@ package org.drugis.addis.problems.service.model;
  * Created by daan on 3/26/14.
  */
 public abstract class AbstractMeasurementEntry {
-  private String alternative;
-  private String criterion;
+  private String alternativeUri;
+  private String criterionUri;
 
-  protected AbstractMeasurementEntry(String alternative, String criterion) {
-    this.alternative = alternative;
-    this.criterion = criterion;
+  protected AbstractMeasurementEntry(String alternativeUri, String criterionUri) {
+    this.alternativeUri = alternativeUri;
+    this.criterionUri = criterionUri;
   }
 
-  public String getAlternative() {
-    return this.alternative;
+  public String getAlternativeUri() {
+    return this.alternativeUri;
   }
 
-  public String getCriterion() {
-    return this.criterion;
+  public String getCriterionUri() {
+    return this.criterionUri;
   }
 
   public abstract AbstractPerformance getPerformance();
@@ -29,16 +29,16 @@ public abstract class AbstractMeasurementEntry {
 
     AbstractMeasurementEntry that = (AbstractMeasurementEntry) o;
 
-    if (!alternative.equals(that.alternative)) return false;
-    if (!criterion.equals(that.criterion)) return false;
+    if (!alternativeUri.equals(that.alternativeUri)) return false;
+    if (!criterionUri.equals(that.criterionUri)) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    int result = alternative.hashCode();
-    result = 31 * result + criterion.hashCode();
+    int result = alternativeUri.hashCode();
+    result = 31 * result + criterionUri.hashCode();
     return result;
   }
 }

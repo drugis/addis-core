@@ -19,7 +19,6 @@ import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.service.TrialverseService;
-import org.drugis.addis.util.JSONUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -45,9 +44,6 @@ public class ProblemServiceImpl implements ProblemService {
 
   @Inject
   private PerformanceTableBuilder performanceTableBuilder;
-
-  @Inject
-  private JSONUtils jsonUtils;
 
   @Inject
   private MeasurementsService measurementsService;
@@ -205,7 +201,7 @@ public class ProblemServiceImpl implements ProblemService {
     Map<Long, AlternativeEntry> alternativesCache = alternativeService.createAlternatives(project, analysis);
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
     for (AlternativeEntry alternativeEntry : alternativesCache.values()) {
-      alternatives.put(jsonUtils.createKey(alternativeEntry.getTitle()), alternativeEntry);
+      alternatives.put(alternativeEntry.getAlternativeUri(), alternativeEntry);
     }
 
     List<Pair<Variable, CriterionEntry>> variableCriteriaPairs = criteriaService.createVariableCriteriaPairs(project, analysis);
@@ -215,7 +211,7 @@ public class ProblemServiceImpl implements ProblemService {
     for (Pair<Variable, CriterionEntry> variableCriterionPair : variableCriteriaPairs) {
       Variable variable = variableCriterionPair.getLeft();
       CriterionEntry criterionEntry = variableCriterionPair.getRight();
-      criteria.put(jsonUtils.createKey(criterionEntry.getTitle()), criterionEntry);
+      criteria.put(criterionEntry.getCriterionUri(), criterionEntry);
       criteriaCache.put(variable.getId(), criterionEntry);
     }
 

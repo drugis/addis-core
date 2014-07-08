@@ -5,11 +5,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
 import org.drugis.addis.problems.service.model.*;
-import org.drugis.addis.util.JSONUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
@@ -18,15 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by daan on 3/27/14.
  */
 public class PerformanceTableBuilderTest {
-
-  @Mock
-  JSONUtils jsonUtils;
 
   @InjectMocks
   private PerformanceTableBuilder builder;
@@ -35,6 +29,11 @@ public class PerformanceTableBuilderTest {
   String armName2 = "arm name 2";
   Arm arm1 = new Arm(1L, 10L, armName1);
   Arm arm2 = new Arm(2L, 11L, armName2);
+
+  String alternativeUri1 = "altUri1";
+  String alternativeUri2 = "altUri2";
+  private String criterionUri1 = "critUri1";
+  private String criterionUri2 = "critUri2";
 
   String variableName1 = "variable name 1";
   String variableName2 = "variable name 2";
@@ -52,10 +51,10 @@ public class PerformanceTableBuilderTest {
   Measurement measurement4 = new Measurement(1L, variable2.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.SAMPLE_SIZE, 44L, null);
   Measurement measurement5 = new Measurement(1L, variable2.getId(), measurementMomentId, arm1.getId(), MeasurementAttribute.STANDARD_DEVIATION, null, 2.1);
 
-  CriterionEntry criterionEntry1 = new CriterionEntry(variable1.getName(), null, null);
-  CriterionEntry criterionEntry2 = new CriterionEntry(variable2.getName(), null, null);
-  AlternativeEntry alternativeEntry1 = new AlternativeEntry(arm1.getName());
-  AlternativeEntry alternativeEntry2 = new AlternativeEntry(arm2.getName());
+  CriterionEntry criterionEntry1 = new CriterionEntry(criterionUri1, variable1.getName(), null, null);
+  CriterionEntry criterionEntry2 = new CriterionEntry(criterionUri2, variable2.getName(), null, null);
+  AlternativeEntry alternativeEntry1 = new AlternativeEntry(alternativeUri1, arm1.getName());
+  AlternativeEntry alternativeEntry2 = new AlternativeEntry(alternativeUri2, arm2.getName());
   Pair<AlternativeEntry, CriterionEntry> performance1Key = new ImmutablePair<>(alternativeEntry1, criterionEntry1);
   Pair<AlternativeEntry, CriterionEntry> performance2Key = new ImmutablePair<>(alternativeEntry1, criterionEntry2);
 
@@ -71,7 +70,6 @@ public class PerformanceTableBuilderTest {
     alternativeEntryMap.put(arm2.getId(), alternativeEntry2);
     builder = new PerformanceTableBuilder();
 
-    jsonUtils = new JSONUtils();
     MockitoAnnotations.initMocks(this);
 
 
@@ -91,21 +89,16 @@ public class PerformanceTableBuilderTest {
 
   @Test
   public void testBuild() throws Exception {
-    when(jsonUtils.createKey(armName1)).thenReturn(armName1);
-    when(jsonUtils.createKey(armName2)).thenReturn(armName2);
-    when(jsonUtils.createKey(variableName1)).thenReturn(variableName1);
-    when(jsonUtils.createKey(variableName2)).thenReturn(variableName2);
-
     List<AbstractMeasurementEntry> performanceTable = builder.build(criterionEntryMap, alternativeEntryMap, measurements);
 
     assertEquals(2, performanceTable.size());
     RateMeasurementEntry rateMeasurementEntry = (RateMeasurementEntry) performanceTable.get(0);
-    assertEquals(armName1, rateMeasurementEntry.getAlternative());
-    assertEquals(variableName1, rateMeasurementEntry.getCriterion());
+    assertEquals(alternativeUri1, rateMeasurementEntry.getAlternativeUri());
+    assertEquals(criterionUri1, rateMeasurementEntry.getCriterionUri());
     assertEquals(RatePerformance.DBETA, rateMeasurementEntry.getPerformance().getType());
     ContinuousMeasurementEntry continuousMeasurementEntry = (ContinuousMeasurementEntry) performanceTable.get(1);
-    assertEquals(armName1, continuousMeasurementEntry.getAlternative());
-    assertEquals(variableName2, continuousMeasurementEntry.getCriterion());
+    assertEquals(alternativeUri1, continuousMeasurementEntry.getAlternativeUri());
+    assertEquals(criterionUri2, continuousMeasurementEntry.getCriterionUri());
     assertEquals(ContinuousPerformance.DNORM, continuousMeasurementEntry.getPerformance().getType());
   }
 

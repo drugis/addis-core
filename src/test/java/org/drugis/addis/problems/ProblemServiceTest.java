@@ -25,7 +25,6 @@ import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.service.TrialverseService;
-import org.drugis.addis.util.JSONUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,9 +69,6 @@ public class ProblemServiceTest {
   @Mock
   TrialverseService trialverseService;
 
-  @Mock
-  JSONUtils jsonUtils;
-
   @InjectMocks
   ProblemService problemService;
 
@@ -81,7 +77,6 @@ public class ProblemServiceTest {
     problemService = new ProblemServiceImpl();
     MockitoAnnotations.initMocks(this);
 
-    when(jsonUtils.createKey(anyString())).thenReturn("key1", "key2", "key3");
   }
 
   @After
@@ -113,8 +108,6 @@ public class ProblemServiceTest {
     CriterionEntry criterionEntry = mock(CriterionEntry.class);
     String criterionEntryTitle = "Criterion entry";
     when(criterionEntry.getTitle()).thenReturn(criterionEntryTitle);
-    String mockKey = "mockKey";
-    when(jsonUtils.createKey(criterionEntryTitle)).thenReturn(mockKey);
     Pair<Variable, CriterionEntry> variableCriterionPair = new ImmutablePair<>(variable, criterionEntry);
     variableCriteriaPairs.add(variableCriterionPair);
     when(criteriaService.createVariableCriteriaPairs(project, analysis)).thenReturn(variableCriteriaPairs);
@@ -142,7 +135,6 @@ public class ProblemServiceTest {
     verify(criteriaService).createVariableCriteriaPairs(project, analysis);
     verify(measurementsService).createMeasurements(project, analysis, alternativesCache);
     verify(performanceTablebuilder).build(criteriaCache, alternativesCache, measurements);
-    verify(jsonUtils, times(2)).createKey(anyString());
 
     assertNotNull(actualProblem);
     assertNotNull(actualProblem.getTitle());
@@ -151,8 +143,7 @@ public class ProblemServiceTest {
     assertNotNull(actualProblem.getCriteria());
 
     Map<String, CriterionEntry> actualCriteria = actualProblem.getCriteria();
-    assertTrue(actualCriteria.keySet().contains(mockKey));
-    verify(jsonUtils).createKey(criterionEntryTitle);
+    assertTrue(actualCriteria.keySet().contains(criterionEntry.getCriterionUri()));
   }
 
   @Test
