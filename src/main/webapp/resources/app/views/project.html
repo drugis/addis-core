@@ -134,7 +134,8 @@
       <div class="large-10 columns">
         <label>Semantic outcome
           <select ng-model="model.semanticOutcome"
-          ng-options="semanticOutcome as semanticOutcome.label for semanticOutcome in semanticOutcomes | orderBy:'label'"></select>
+          ng-options="semanticOutcome as semanticOutcome.label for semanticOutcome in semanticOutcomes | orderBy:'label'"
+           ng-change="model.name = model.semanticOutcome.label"></select>
         </label>
       </div>
     </div>
@@ -174,7 +175,7 @@
       <div class="large-10 columns">
         <label>Semantic intervention
           <select ng-model="model.semanticIntervention"
-          ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"></select>
+          ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'" ng-change="model.name = model.semanticIntervention.label"></select>
         </label>
       </div>
     </div>
