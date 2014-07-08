@@ -1,18 +1,17 @@
 package org.drugis.addis.analyses.repository.impl;
 
 import org.drugis.addis.analyses.AnalysisCommand;
-import org.drugis.addis.analyses.ArmExclusion;
 import org.drugis.addis.analyses.InterventionInclusion;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.Intervention;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +30,14 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
   public NetworkMetaAnalysis create(AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisCommand.getProjectId(), analysisCommand.getName());
     em.persist(networkMetaAnalysis);
-    return networkMetaAnalysis;
+
+    TypedQuery<Intervention> query = em.createQuery("FROM Intervention i where i.project = :projectId", Intervention.class);
+    query.setParameter("projectId", analysisCommand.getProjectId());
+    for(Intervention intervention: query.getResultList()) {
+      InterventionInclusion newInterventionInclusion = new InterventionInclusion(networkMetaAnalysis, intervention.getId());
+      networkMetaAnalysis.getIncludedInterventions().add(newInterventionInclusion);
+    }
+    return update(networkMetaAnalysis);
   }
 
   @Override
@@ -43,34 +49,6 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
 
   @Override
   public NetworkMetaAnalysis update(NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
-
-    // remove old
-    Query deleteArmExclusionsQuery = em.createQuery("delete from ArmExclusion ae where ae.analysisId = :analysisId");
-    deleteArmExclusionsQuery.setParameter("analysisId", analysis.getId());
-    deleteArmExclusionsQuery.executeUpdate();
-
-    Query deleteInterventionInclusionsQuery = em.createQuery("delete from InterventionInclusion ii where ii.analysisId = :analysisId");
-    deleteInterventionInclusionsQuery.setParameter("analysisId", analysis.getId());
-    deleteInterventionInclusionsQuery.executeUpdate();
-
-    // add new
-    List<ArmExclusion> newArmExclusionList = new ArrayList<>();
-    for (ArmExclusion armExclusion : analysis.getExcludedArms()) {
-      ArmExclusion newArmExclusion = new ArmExclusion(armExclusion.getAnalysisId(), armExclusion.getTrialverseId());
-      em.persist(newArmExclusion);
-      newArmExclusionList.add(newArmExclusion);
-    }
-
-    List<InterventionInclusion> newInterventionInclusionList = new ArrayList<>();
-    for (InterventionInclusion interventionInclusion : analysis.getIncludedInterventions()) {
-      InterventionInclusion newInterventionInclusion = new InterventionInclusion(interventionInclusion.getAnalysisId(), interventionInclusion.getInterventionId());
-      em.persist(newInterventionInclusion);
-      newInterventionInclusionList.add(newInterventionInclusion);
-    }
-
-    analysis.setExcludedArms(newArmExclusionList);
-    analysis.setIncludedInterventions(newInterventionInclusionList);
-
     return em.merge(analysis);
   }
 }

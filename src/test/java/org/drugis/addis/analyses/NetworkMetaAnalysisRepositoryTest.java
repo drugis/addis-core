@@ -5,8 +5,10 @@ import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.outcomes.Outcome;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -14,10 +16,9 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.sql.DataSource;
 import javax.transaction.Transactional;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -26,6 +27,7 @@ import static org.junit.Assert.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ContextConfiguration(classes = {JpaRepositoryTestConfig.class})
 public class NetworkMetaAnalysisRepositoryTest {
 
@@ -43,6 +45,8 @@ public class NetworkMetaAnalysisRepositoryTest {
     assertNotNull(analysis);
     NetworkMetaAnalysis expectedAnalysis = em.find(NetworkMetaAnalysis.class, analysis.getId());
     assertEquals(expectedAnalysis, analysis);
+    assertEquals(2, analysis.getIncludedInterventions().size());
+    assertEquals(2, expectedAnalysis.getIncludedInterventions().size());
   }
 
   @Test
@@ -72,26 +76,38 @@ public class NetworkMetaAnalysisRepositoryTest {
   public void testUpdateExcludedArmsAndInterventions() throws ResourceDoesNotExistException, MethodNotAllowedException {
     Integer analysisId = -6;
     Integer projectId = 1;
-    ArmExclusion newArmExclusion1 = new ArmExclusion(analysisId, -601L);
-    ArmExclusion newArmExclusion2 = new ArmExclusion(analysisId, -602L);
-    List<ArmExclusion> armExclusions = Arrays.asList(newArmExclusion1, newArmExclusion2);
     Outcome outcome = em.find(Outcome.class, 1);
-    InterventionInclusion newInterventionInclusion = new InterventionInclusion(analysisId, 2);
-    List<InterventionInclusion> interventionInclusions = Arrays.asList(newInterventionInclusion);
+    NetworkMetaAnalysis analysis = em.find(NetworkMetaAnalysis.class, analysisId);
 
-    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "new name", armExclusions, interventionInclusions, outcome);
+    //new NetworkMetaAnalysis(analysisId, projectId, "new name", new ArrayList<ArmExclusion>(), new ArrayList<InterventionInclusion>(), outcome);
+    ArmExclusion newArmExclusion1 = new ArmExclusion(analysis, -601L);
+    ArmExclusion newArmExclusion2 = new ArmExclusion(analysis, -602L);
+    analysis.getExcludedArms().clear();
+    analysis.getExcludedArms().add(newArmExclusion1);
+    analysis.getExcludedArms().add(newArmExclusion2);
+
+    int interventionId = 2;
+    InterventionInclusion newInterventionInclusion = new InterventionInclusion(analysis, interventionId);
+
+    analysis.getIncludedInterventions().clear();
+    analysis.getIncludedInterventions().add(newInterventionInclusion);
+
     NetworkMetaAnalysis updatedAnalysis = networkMetaAnalysisRepository.update(analysis);
     assertEquals(2, updatedAnalysis.getExcludedArms().size());
 
-    TypedQuery<ArmExclusion> query = em.createQuery("from ArmExclusion ae where ae.analysisId = :analysisId", ArmExclusion.class);
+    TypedQuery<ArmExclusion> query = em.createQuery("from ArmExclusion ae where ae.analysis.id = :analysisId", ArmExclusion.class);
     query.setParameter("analysisId", analysisId);
-
     List<ArmExclusion> resultList = query.getResultList();
+
+    TypedQuery<InterventionInclusion> query2 = em.createQuery("from InterventionInclusion ii where ii.analysis.id = :analysisId", InterventionInclusion.class);
+    query2.setParameter("analysisId", analysisId);
+    List<InterventionInclusion> resultList2 = query2.getResultList();
+
     assertEquals(2, resultList.size());
     assertEquals(new Integer(1), updatedAnalysis.getExcludedArms().get(0).getId());
     assertEquals(new Integer(2), updatedAnalysis.getExcludedArms().get(1).getId());
     assertEquals(new Integer(1), updatedAnalysis.getIncludedInterventions().get(0).getId());
+    assertEquals(new Integer(interventionId), updatedAnalysis.getIncludedInterventions().get(0).getInterventionId());
   }
-
 
 }

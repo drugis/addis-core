@@ -1,9 +1,11 @@
 package org.drugis.addis.analyses;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -14,17 +16,21 @@ public class ArmExclusion implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @JsonIgnore
   private Integer id;
 
-  private Integer analysisId;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "analysisId")
+  @JsonIgnore
+  private NetworkMetaAnalysis analysis;
 
   private Long trialverseId;
 
   public ArmExclusion() {
   }
 
-  public ArmExclusion(Integer analysisId, Long trialverseId) {
-    this.analysisId = analysisId;
+  public ArmExclusion(NetworkMetaAnalysis analysis, Long trialverseId) {
+    this.analysis = analysis;
     this.trialverseId = trialverseId;
   }
 
@@ -32,22 +38,26 @@ public class ArmExclusion implements Serializable {
     return id;
   }
 
-  public Integer getAnalysisId() {
-    return analysisId;
+  public NetworkMetaAnalysis getAnalysis() {
+    return analysis;
   }
 
   public Long getTrialverseId() {
     return trialverseId;
   }
 
+  public void setAnalysis(NetworkMetaAnalysis analysis) {
+    this.analysis = analysis;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof ArmExclusion)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     ArmExclusion that = (ArmExclusion) o;
 
-    if (!analysisId.equals(that.analysisId)) return false;
+    if (analysis != null ? !analysis.equals(that.analysis) : that.analysis != null) return false;
     if (id != null ? !id.equals(that.id) : that.id != null) return false;
     if (!trialverseId.equals(that.trialverseId)) return false;
 
@@ -57,7 +67,7 @@ public class ArmExclusion implements Serializable {
   @Override
   public int hashCode() {
     int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + analysisId.hashCode();
+    result = 31 * result + (analysis != null ? analysis.getId().hashCode() : 0);
     result = 31 * result + trialverseId.hashCode();
     return result;
   }

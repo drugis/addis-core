@@ -175,3 +175,4 @@ CREATE TABLE InterventionInclusion (
   FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id),
   FOREIGN KEY(interventionId) REFERENCES Intervention(id)
 );
+

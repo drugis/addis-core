@@ -235,6 +235,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
           var intervention = {
             isIncluded: false
           };
+          scope.trialverseData = {};
           scope.changeInterventionInclusion(intervention);
           expect(networkMetaAnalysisService.buildInterventionInclusions).toHaveBeenCalled();
           expect(networkMetaAnalysisService.cleanUpExcludedArms).toHaveBeenCalled();

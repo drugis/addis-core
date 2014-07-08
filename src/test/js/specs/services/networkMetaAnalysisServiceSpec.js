@@ -891,10 +891,8 @@ define(['angular', 'angular-mocks', 'services'], function() {
         };
         var interventionExclusions = NetworkMetaAnalysisService.buildInterventionInclusions(interventions, analysis);
         expect(interventionExclusions).toEqual([{
-          analysisId: analysis.id,
           interventionId: 1
         },{
-          analysisId: analysis.id,
           interventionId: 3
         }]);
       }));

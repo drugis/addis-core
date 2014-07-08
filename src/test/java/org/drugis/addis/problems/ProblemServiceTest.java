@@ -165,8 +165,9 @@ public class ProblemServiceTest {
 
     String outcomeUri = "outcomeUri";
     Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
-    ArmExclusion armExclusion1 = new ArmExclusion(analysisId, 888L); // trialDataArm with armId4
-    List<ArmExclusion> armExclusions = Arrays.asList(armExclusion1);
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", new ArrayList<ArmExclusion>(), new ArrayList<InterventionInclusion>(), outcome);
+
+    analysis.getExcludedArms().add(new ArmExclusion(analysis, 888L)); // trialDataArm with armId4
 
     Project project = mock(Project.class);
     SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
@@ -177,12 +178,10 @@ public class ProblemServiceTest {
     Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
     List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
 
-    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysisId, intervention1.getId());
-    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysisId, intervention2.getId());
-    InterventionInclusion interventionInclusion3 = new InterventionInclusion(analysisId, intervention3.getId());
-    List<InterventionInclusion> interventionInclusions = Arrays.asList(interventionInclusion1, interventionInclusion2, interventionInclusion3);
-
-    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, interventionInclusions, outcome);
+    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis, intervention1.getId());
+    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention2.getId());
+    InterventionInclusion interventionInclusion3 = new InterventionInclusion(analysis, intervention3.getId());
+    analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2, interventionInclusion3));
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -215,6 +214,7 @@ public class ProblemServiceTest {
 
     String outcomeUri = "outcomeUri";
     Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", Collections.EMPTY_LIST, new ArrayList<InterventionInclusion>(), outcome);
 
     SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
     SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
@@ -228,11 +228,9 @@ public class ProblemServiceTest {
     when(project.getId()).thenReturn(projectId);
     when(project.getTrialverseId()).thenReturn(namespaceId.intValue());
 
-    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysisId, intervention1.getId());
-    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysisId, intervention3.getId());
-    List<InterventionInclusion> interventionInclusions = Arrays.asList(interventionInclusion1, interventionInclusion2);
-    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", Collections.EMPTY_LIST, interventionInclusions, outcome);
-
+    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis, intervention1.getId());
+    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention3.getId());
+    analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2));
 
     TrialData trialData = createMockTrialData();
     TrialDataStudy trialDataStudy = trialData.getTrialDataStudies().get(0);

@@ -1,9 +1,9 @@
 package org.drugis.addis.analyses;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
 
 /**
  * Created by connor on 18-6-14.
@@ -12,17 +12,21 @@ import javax.persistence.Id;
 public class InterventionInclusion {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @JsonIgnore
   private Integer id;
 
-  private Integer analysisId;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "analysisId")
+  @JsonIgnore
+  private NetworkMetaAnalysis analysis;
 
   private Integer interventionId;
 
   public InterventionInclusion() {
   }
 
-  public InterventionInclusion(Integer analysisId, Integer interventionId) {
-    this.analysisId = analysisId;
+  public InterventionInclusion(NetworkMetaAnalysis analysis, Integer interventionId) {
+    this.analysis = analysis;
     this.interventionId = interventionId;
   }
 
@@ -30,8 +34,8 @@ public class InterventionInclusion {
     return id;
   }
 
-  public Integer getAnalysisId() {
-    return analysisId;
+  public NetworkMetaAnalysis getAnalysis() {
+    return analysis;
   }
 
   public Integer getInterventionId() {
@@ -45,7 +49,7 @@ public class InterventionInclusion {
 
     InterventionInclusion that = (InterventionInclusion) o;
 
-    if (!analysisId.equals(that.analysisId)) return false;
+    if (!analysis.equals(that.analysis)) return false;
     if (id != null ? !id.equals(that.id) : that.id != null) return false;
     if (!interventionId.equals(that.interventionId)) return false;
 
@@ -55,8 +59,12 @@ public class InterventionInclusion {
   @Override
   public int hashCode() {
     int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + analysisId.hashCode();
+    result = 31 * result + analysis.hashCode();
     result = 31 * result + interventionId.hashCode();
     return result;
+  }
+
+  public void setAnalysis(NetworkMetaAnalysis analysis) {
+    this.analysis = analysis;
   }
 }

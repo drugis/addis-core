@@ -1,5 +1,6 @@
 package org.drugis.addis.analyses;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.drugis.addis.outcomes.Outcome;
 
 import javax.persistence.*;
@@ -18,12 +19,10 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   private Integer projectId;
   private String name;
 
-  @OneToMany(fetch = FetchType.EAGER)
-  @JoinColumn(name = "analysisId")
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis", orphanRemoval = true)
   private List<ArmExclusion> excludedArms = new ArrayList<>();
 
-  @OneToMany(fetch = FetchType.EAGER)
-  @JoinColumn(name = "analysisId")
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis", orphanRemoval = true)
   private List<InterventionInclusion> includedInterventions = new ArrayList<>();
 
   @ManyToOne(targetEntity = Outcome.class)
@@ -74,16 +73,8 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     return excludedArms;
   }
 
-  public void setExcludedArms(List<ArmExclusion> excludedArms) {
-    this.excludedArms = excludedArms == null ? new ArrayList<ArmExclusion>() : excludedArms;
-  }
-
   public List<InterventionInclusion> getIncludedInterventions() {
     return includedInterventions;
-  }
-
-  public void setIncludedInterventions(List<InterventionInclusion> includedInterventions) {
-    this.includedInterventions = includedInterventions == null ? new ArrayList<InterventionInclusion>() : includedInterventions;
   }
 
   public Outcome getOutcome() {

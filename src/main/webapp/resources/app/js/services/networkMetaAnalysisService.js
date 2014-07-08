@@ -289,8 +289,7 @@ define(['angular'], function() {
         }
       } else {
         analysis.excludedArms.push({
-          trialverseId: dataRow.trialverseId,
-          analysisId: analysis.id
+          trialverseId: dataRow.trialverseId
         });
       }
       return analysis;
@@ -300,7 +299,6 @@ define(['angular'], function() {
       return _.reduce(interventions, function(accumulator, intervention) {
         if (intervention.isIncluded) {
           accumulator.push({
-            analysisId: analysis.id,
             interventionId: intervention.id
           });
         }

@@ -1,9 +1,6 @@
 package org.drugis.addis.analyses.service.impl;
 
-import org.drugis.addis.analyses.AbstractAnalysis;
-import org.drugis.addis.analyses.AnalysisCommand;
-import org.drugis.addis.analyses.NetworkMetaAnalysis;
-import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
@@ -65,6 +62,14 @@ public class AnalysisServiceImpl implements AnalysisService {
     // do not allow selection of outcome that is not in the project
     if (analysis.getOutcome() != null && !analysis.getOutcome().getProject().equals(analysisProjectId)) {
       throw new ResourceDoesNotExistException();
+    }
+
+    for(ArmExclusion armExclusion: analysis.getExcludedArms()) {
+      armExclusion.setAnalysis(analysis);
+    }
+
+    for(InterventionInclusion interventionInclusion: analysis.getIncludedInterventions()) {
+      interventionInclusion.setAnalysis(analysis);
     }
 
     return networkMetaAnalysisRepository.update(analysis);

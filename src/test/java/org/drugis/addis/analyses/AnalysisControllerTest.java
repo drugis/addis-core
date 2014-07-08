@@ -33,6 +33,7 @@ import org.springframework.web.util.NestedServletException;
 
 import javax.inject.Inject;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -329,16 +330,35 @@ public class AnalysisControllerTest {
     Integer analysisId = 333;
     Integer projectId = 101;
     Integer outcomeId = 444;
-    List<ArmExclusion> armExclusions = Arrays.asList(new ArmExclusion(analysisId, -1L), new ArmExclusion(analysisId, -2L));
-    List<InterventionInclusion> interventionInclusions = Collections.EMPTY_LIST;
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
-    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", armExclusions, interventionInclusions, outcome);
+    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", new ArrayList<ArmExclusion>(), Collections.EMPTY_LIST, outcome);
+    newAnalysis.getExcludedArms().addAll(Arrays.asList(new ArmExclusion(null, -1L), new ArmExclusion(null, -2L)));
+
     String jsonCommand = TestUtils.createJson(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
             .content(jsonCommand)
             .principal(user)
             .contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
+  }
+
+  @Test
+  public void testUpdateWithIncludedInterventions() throws Exception {
+    Integer analysisId = 333;
+    Integer projectId = 101;
+    Integer outcomeId = 444;
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
+    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.EMPTY_LIST, new ArrayList<InterventionInclusion>(), outcome);
+    newAnalysis.getIncludedInterventions().addAll(Arrays.asList(new InterventionInclusion(null, -1), new InterventionInclusion(null, -2)));
+
+    String jsonCommand = TestUtils.createJson(newAnalysis);
+    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
+      .content(jsonCommand)
+      .principal(user)
+      .contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
   }
