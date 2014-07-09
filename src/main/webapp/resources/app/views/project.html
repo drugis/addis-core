@@ -119,7 +119,7 @@
     <div class="row">
       <div class="large-10 columns">
         <label>Name
-          <input type="text" ng-model="model.name">
+          <input type="text" ng-model="model.name" ng-change="checkForDuplicateOutcomeName(model.name)">
         </label>
       </div>
     </div>
@@ -135,7 +135,7 @@
         <label>Semantic outcome
           <select ng-model="model.semanticOutcome"
           ng-options="semanticOutcome as semanticOutcome.label for semanticOutcome in semanticOutcomes | orderBy:'label'"
-           ng-change="model.name = model.semanticOutcome.label"></select>
+           ng-change="model.name = model.semanticOutcome.label; checkForDuplicateOutcomeName(model.name)"></select>
         </label>
       </div>
     </div>
@@ -145,9 +145,9 @@
           <button class="button small secondary" ng-click="createOutcomeModal.close()">Cancel</button>
         </li>
         <li>
-          <button class="button small success" ng-disabled="!model.name || !model.semanticOutcome"
+          <button class="button small success" ng-disabled="!model.name || !model.semanticOutcome || duplicateOutcomeName.isDuplicate"
           ng-click="addOutcome(model)">Add outcome
-        </button>
+        </button><div class="alert" ng-show="duplicateOutcomeName.isDuplicate">Duplicate name.</div>
       </li>
     </ul>
   </div>
@@ -160,7 +160,7 @@
     <div class="row">
       <div class="large-10 columns">
         <label>Name
-          <input type="text" ng-model="model.name">
+          <input type="text" ng-model="model.name" ng-change="checkForDuplicateInterventionName(model.name)">
         </label>
       </div>
     </div>
@@ -175,7 +175,7 @@
       <div class="large-10 columns">
         <label>Semantic intervention
           <select ng-model="model.semanticIntervention"
-          ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'" ng-change="model.name = model.semanticIntervention.label"></select>
+          ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'" ng-change="model.name = model.semanticIntervention.label; checkForDuplicateInterventionName(model.name)"></select>
         </label>
       </div>
     </div>
@@ -185,9 +185,10 @@
           <button class="button small secondary" ng-click="createInterventionModal.close()">Cancel</button>
         </li>
         <li>
-          <button type="submit" class="button small success" ng-disabled="!model.name || !model.semanticIntervention"
+          <button type="submit" class="button small success" ng-disabled="duplicateInterventionName.isDuplicate ||
+          !model.name || !model.semanticIntervention"
           ng-click="addIntervention(model)">Add intervention
-        </button>
+        </button><div class="alert" ng-show="duplicateInterventionName.isDuplicate">Duplicate name.</div>
       </li>
     </ul>
   </div>

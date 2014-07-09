@@ -4,6 +4,7 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -41,5 +42,13 @@ public class AbstractAddisCoreController {
   public ErrorResponse handleResourceNotOwned(HttpServletRequest request) {
     logger.error("Access to resource not authorised.\n{}", request.getRequestURL());
     return new ErrorResponse(403, "Not authorized");
+  }
+
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+  @ResponseBody
+  public ErrorResponse handleIllegalArgumentException(HttpServletRequest request) {
+    logger.error("Bad request.\n{}", request.getQueryString());
+    return new ErrorResponse(400, "Bad request");
   }
 }

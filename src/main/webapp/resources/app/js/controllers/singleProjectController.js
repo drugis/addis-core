@@ -19,6 +19,12 @@ define([], function() {
     $scope.editMode = {
       allowEditing: false
     };
+    $scope.duplicateOutcomeName = {
+      isDuplicate: false
+    };
+    $scope.duplicateInterventionName = {
+      isDuplicate: false
+    };
     $scope.analysisTypes = ANALYSIS_TYPES;
 
     $scope.project = ProjectResource.get($stateParams);
@@ -93,6 +99,21 @@ define([], function() {
         analysisId: analysisId
       });
     };
+
+    function findDuplicateName(list, name) {
+      return _.find(list, function(item) {
+        return item.name === name;
+      });
+    }
+
+    $scope.checkForDuplicateOutcomeName = function(name) {
+      $scope.duplicateOutcomeName.isDuplicate = findDuplicateName($scope.outcomes, name);
+    };
+
+    $scope.checkForDuplicateInterventionName = function(name) {
+      $scope.duplicateInterventionName.isDuplicate = findDuplicateName($scope.interventions, name);
+    };
+
   };
   return dependencies.concat(ProjectsController);
 });

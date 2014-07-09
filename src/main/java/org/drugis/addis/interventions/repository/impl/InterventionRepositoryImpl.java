@@ -4,7 +4,6 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.interventions.InterventionCommand;
-import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.security.Account;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -55,6 +54,12 @@ public class InterventionRepositoryImpl implements org.drugis.addis.intervention
     }
     if (project.getOwner().getId() != user.getId()) {
       throw new MethodNotAllowedException();
+    }
+    TypedQuery<Intervention> query = em.createQuery("FROM Intervention i WHERE i.name = :interventionName", Intervention.class);
+    query.setParameter("interventionName", interventionCommand.getName());
+    List<Intervention> results = query.getResultList();
+    if (results.size() > 0) {
+      throw new IllegalArgumentException("Duplicate outcome name " + interventionCommand.getName());
     }
     em.persist(newIntervention);
     return newIntervention;

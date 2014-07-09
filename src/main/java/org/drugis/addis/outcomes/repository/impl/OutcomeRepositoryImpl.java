@@ -15,6 +15,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by daan on 3/7/14.
@@ -54,6 +55,12 @@ public class OutcomeRepositoryImpl implements OutcomeRepository {
     }
     if (project.getOwner().getId() != user.getId()) {
       throw new MethodNotAllowedException();
+    }
+    TypedQuery<Outcome> query = em.createQuery("FROM Outcome o WHERE o.name = :outcomeName", Outcome.class);
+    query.setParameter("outcomeName", outcomeCommand.getName());
+    List<Outcome> results = query.getResultList();
+    if (results.size() > 0) {
+      throw new IllegalArgumentException("Duplicate outcome name " + outcomeCommand.getName());
     }
     em.persist(newOutcome);
     return newOutcome;
