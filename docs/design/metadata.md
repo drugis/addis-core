@@ -1,5 +1,7 @@
-ADDIS 2: Initial ConceptMapper setup
-====================================
+---
+layout: default
+title: Meta-data model
+---
 
 The [ADDIS 2 architecture][architecture] calls for a concept mapper component
 that enables post-hoc harmonization of datasets by exploiting both existing
@@ -51,23 +53,23 @@ various services (SPARQL update, reasoning, etc.). The W3C comparison of
 sets of triples than Sesame, which had been tested only up to 70M triples,
 a limit easily exceeded by our use cases.
 
-We run the latest release (2.10.1) of Apache Jena and a pre-release snapshot
-of Fuseki (1.0.0-20130909.201554-20) for reasons that will be made clear
-below. Jena is installed under its own user on our workstations rather than
+Jena is installed under its own user on our workstations rather than
 in a virtual machine, to maximize the memory available (our machines have
 only 4GB memory - for now). The following lines in the `.profile` enable the
-Jena and Fuseki command line tools:
+Jena and Fuseki command line tools (**NB: update versions to the ones you download**):
 
-    export JENA_HOME=$HOME/apache-jena-2.10.1
-    export FUSEKI_HOME=$HOME/jena-fuseki-1.0.0-20130909.201554-20
+    export JENA_HOME=$HOME/apache-jena-2.11.0
+    export FUSEKI_HOME=$HOME/jena-fuseki-1.0.1-SNAPSHOT
     export PATH=$FUSEKI_HOME:$JENA_HOME/bin:$PATH
 
 The most important tool from the Jena distribution is `tdbloader`, which
-enables us to load large RDF files to named graphs in bulk:
+enables us to load large RDF files to named graphs in bulk.
 
-    tdbloader --loc DB --graph URI file.rdf
+    tdbloader --loc DB --graph=URI file.rdf
 
-This will create the `DB` directory and initialize a new triple store if one doesn't exist. Otherwise, the existing triple store at that location will be updated. A SPARQL-update and SPARQL-HTTP enabled endpoint can be run using Fuseki as follows:
+Replace 'URI' with the URI of the graph to load the data into, and 'file.rdf' with the file you want to load. Note that .ttl files can also be loaded. This will create the `DB` directory and initialize a new triple store if one doesn't exist. Otherwise, the existing triple store at that location will be updated. 
+
+A SPARQL-update and SPARQL-HTTP enabled endpoint can be run using Fuseki as follows:
 
     fuseki-server --loc DB --update /ds
 
@@ -78,62 +80,8 @@ Such a Fuseki instance easily serves the terminologies we're interested in.
 However, many of our use cases require some form of text matching. This is
 supported in SPARQL using the `regex()` function. However, on our full triple
 store, queries involving `regex()` can often take many minutes. Therefore, we
-need an index to improve performance of text matching queries. Our search
-initially led us to LARQ, which is being replaced by [jena-text][jena-text]
-as of Jena 2.10.2 (i.e. the *next* release of Jena). Luckily, a pre-release
-version of Fuseki is available that supports jena-text with Lucene indexing.
-To enable text indexing, a custom Jena assembler definition `desc.ttl` is
-needed:
-
-    @prefix fuseki:  <http://jena.apache.org/fuseki#> .
-    @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-    @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
-    @prefix tdb:     <http://jena.hpl.hp.com/2008/tdb#> .
-    @prefix ja:      <http://jena.hpl.hp.com/2005/11/Assembler#> .
-    @prefix text:    <http://jena.apache.org/text#> .
-
-    # TDB
-    [] ja:loadClass "com.hp.hpl.jena.tdb.TDB" .
-    tdb:DatasetTDB rdfs:subClassOf ja:RDFDataset .
-    tdb:GraphTDB   rdfs:subClassOf ja:Model .
-
-    # Lucene Text Index
-    [] ja:loadClass "org.apache.jena.query.text.TextQuery" .
-    text:TextDataset     rdfs:subClassOf ja:RDFDataset .
-    text:TextIndexLucene rdfs:subClassOf text:TextIndex .
-
-    [] rdf:type fuseki:Server ;
-      fuseki:services (
-        <#service_full>
-      ).
-
-    <#service_full> rdf:type fuseki:Service ;
-      rdfs:label                         "TDB Service (RW)" ;
-      fuseki:name                        "ds" ;
-      fuseki:serviceQuery                "query" ;
-      fuseki:serviceQuery                "sparql" ;
-      fuseki:serviceUpdate               "update" ;
-      fuseki:serviceUpload               "upload" ;
-      fuseki:serviceReadWriteGraphStore  "data" ;
-      fuseki:serviceReadGraphStore       "get" ;
-      fuseki:dataset                      <#text_dataset> .
-
-    <#text_dataset> rdf:type text:TextDataset ;
-      text:dataset [
-        rdf:type     tdb:DatasetTDB ;
-        tdb:location "DB" ; ] ;
-      text:index     <#index_lucene> .
-
-    <#index_lucene> a text:TextIndexLucene ;
-      text:directory <file:DBLucene> ;
-      text:entityMap <#entity_map> .
-
-    <#entity_map> a text:EntityMap ;
-        text:entityField      "uri" ;
-        text:defaultField     "text" ;
-        text:map (
-          [ text:field "text" ; text:predicate rdfs:label ]
-        ) .
+need an index to improve performance of text matching queries. To enable text indexing, a custom Jena assembler definition [desc.ttl](desc.ttl) is
+needed.
 
 This loads the TDB storage mechanism as well as the text indexing
 capabilities. Then, it defines a Fuseki service that exposes a text-indexed
@@ -150,7 +98,19 @@ And the Fuseki server is started as follows:
 This enables a special `text:query` predicate that allows us to perform text
 searches using the Lucene query language within SPARQL, e.g.:
 
-    ?o text:query (rdfs:label 'cardio*')
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+    PREFIX snomed: <http://www.ihtsdo.org/>
+    PREFIX text:    <http://jena.apache.org/text#> 
+
+    SELECT * WHERE {
+      GRAPH <http://www.ihtsdo.org/SNOMEDCT/> {
+        ?uri rdfs:subClassOf snomed:SCT_64572001 .
+        ?uri text:query (rdfs:label 'Fistula*') .
+        ?uri rdfs:label ?label .
+      }
+    }
 
 The text index currently has some shortcomings:
 
@@ -177,9 +137,12 @@ we performed the following steps:
 
  2. Convert the stated relationships to RDF using the supplied Perl script.
 
- 3. Use Protege and the Hermit reasoner to classify SNOMED CT and export the inferred relationships.
+ 3. Use [Protege][protege] and the [Hermit][hermit] reasoner to classify SNOMED CT and export the inferred relationships.
 
- 4. Load both sets into the graph `http://www.ihtsdo.org/SNOMEDCT/`.
+ 4. Load both sets into a graph named `http://www.ihtsdo.org/SNOMEDCT/`. Example commands:
+
+        tdbloader --loc DB --graph=http://www.ihtsdo.org/SNOMEDCT/ snomed.rdf
+        tdbloader --loc DB --graph=http://www.ihtsdo.org/SNOMEDCT/ snomed-inferred.ttl
 
 ### ATC classification
 
@@ -208,8 +171,32 @@ We used the UMLS distribution (mmsys) and NCBO's [umls2rdf][umls2rdf] scripts to
  
 FIXME: some questions raised about output ontology, availability of more canonical (i.e. non-UMLS-distorted) versions?
 
+### Units of measurement
+
+Two competing ontologies for units of measurement are available from Bioportal:
+
+ - UO (unit ontology), https://code.google.com/p/unit-ontology/
+ - QUDT (Quantities, Units, Dimensions and Data Types Ontologies), http://www.qudt.org/
+
+Both seem reasonable, but QUDT has human-readable URIs for its concepts, which is nice.
+The OpenPHACTS project appears to have selected QUDT ([source](http://www.bigcat.unimaas.nl/~egonw/units/)), and they have also constructed direct mappings for all but three UO concepts.
+
 Importing ADDIS datasets
 ------------------------
+
+The `org.drugis.importer` Clojure project allows the importing of ADDIS datasets into a PostgreSQL database, and exporting of metadata to a `.ttl` file. The importer checks for each item whether there is a known code system to which it is mapped, for example ATC for drugs. If there is, a mapping between the item and the encoded concept is added. 
+
+Example command line for importing a specific dataset (assumes [leiningen][leiningen] is installed and an [initialised trialverse PostgreSQL database](../dbms) is set up):
+
+    lein run --database "postgresql://localhost?user=<user>&password=<passwd>" \\
+             --rdf "depression.ttl" \\
+             --file "example.addis" \\
+             --name "example dataset" \\
+             --title "example title"
+
+By convention each ADDIS dataset should be loaded into its own graph labeled `http://trials.drugis.org/namespaces/<number>/`, where '<number>' is the id given by the importer.
+
+The importer will output the namespace metadata necessary to access the imported data. These data should be saved to a .ttl file and loaded into the `http://trials.drugis.org/namespaces/` graph via `tdbloader`.
 
 Querying
 --------
@@ -218,14 +205,27 @@ Querying
 
 ### Finding instances ###
 
+Web Frontend
+------------
+
+Once an instance of fuseki is running with loaded data, it can be accessed via our [SPARQL frontend](../sparql). To run this, navigate to the sparql directory and execute `python -m SimpleHTTPServer 3000`. Now the frontend is available at [http://localhost:3000/].
+
 Conclusion
 ----------
 
 [architecture]: http://drugis.org/files/20130319-addis2-architecture.pdf
-	"ADDIS 2.x Requirements and Architecture"
+    "ADDIS 2.x Requirements and Architecture"
 [semanticweb]: http://www.w3.org/2001/sw/
     "W3C Semantic Web Activity Homepage"
 [large]: http://www.w3.org/wiki/LargeTripleStores
     "Large Triple Stores"
 [jena-text]: http://jena.apache.org/documentation/query/text-query.html
     "Text searches with SPARQL"
+[protege]: http://protege.stanford.edu/
+    "Ontology editor and knowledge-base framework"
+[hermit]: http://hermit-reasoner.com/
+    "Reasoner for ontologies"
+[umls2rdf]: https://github.com/ncbo/umls2rdf
+    "Take the MYSQL Unified Medical Language System (UMLS) database to convert the ontologies to RDF using OWL and SKOS as main schemas."
+[leiningen]: https://github.com/technomancy/leiningen
+    "Tool for running Clojure programs"
