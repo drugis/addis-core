@@ -42,7 +42,18 @@ Several design decisions of the prototype were also carried over, such as implem
 Although the Core component developed during Release 1 and Release 2 of ADDIS 2 is not considered a prototype, the TrialVerse and ConceptMapper components are, and are expected to undergo a full rewrite.
 We are considering whether the design for TrialVerse/ConceptMapper has sufficiently matured for this to happen during Release 3.
 
-### Event sourcing ###
+### Event sourcing with RDF ###
+
+[Event sourcing](http://martinfowler.com/eaaDev/EventSourcing.html) is a design pattern for the design of applications in which every change to the state of the application needs to be captured.
+This allows for example reconstructing the state of the application at any past point in time.
+Prototyping work is currently ongoing as to how the event sourcing pattern can be implemented using triple stores, and an initial design is in progress; see the [interaction model](interaction.html) for details.
+A full implementation will likely require some extensions to Jena.
 
 ### Pure RDF data model ###
 
+The initial vertical prototype used a relational database for the more well-defined parts of the data model (i.e. those describing the study design and measurements) and a triple store for the more open-ended parts (i.e. higher level concepts).
+However, as was noted previously this generates some tension at the interface between these components.
+In addition, an event sourcing implementation would have to work across this barrier, so would need to be implemented consistently for these two very different technology stacks.
+Therefore, another prototype was constructed to evaluate the possibility of using a triple store for both TrialVerse and ConceptMapper.
+This consists of a converter from ADDIS datafiles to RDF, and a set of SPARQL queries implementing the key used cases from the ADDIS point of view (i.e. matching studies to concept definitions and constructing datasets).
+This was successful and should allow for a full implementation of the "read-only API" envisaged in the ADDIS 2 architecture.

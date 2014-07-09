@@ -29,6 +29,10 @@ The ConceptMapper should be applicable beyond just trials, and therefore should 
 On the other hand, the TrialVerse has a more limited domain, that of randomized controlled trials, and therefore a more well-defined data model.
 In this design document, both components are designed in tandem to arrive at an optimal interface between the two.
 In addition, they will probably share a number of aspects of design between them.
+The data management component is expected to have two separate interfaces (APIs):
+
+ - A read-only API that provides ADDIS with a "flat view" of snapshots of the database
+ - A read-write API in which revisions and provenance are central; this will form the basis for the TrialVerse user interface
 
 ### Context ###
 
