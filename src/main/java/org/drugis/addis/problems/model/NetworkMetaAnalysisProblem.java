@@ -1,5 +1,7 @@
 package org.drugis.addis.problems.model;
 
+import org.drugis.addis.interventions.Intervention;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,16 +11,22 @@ import java.util.List;
 public class NetworkMetaAnalysisProblem extends AbstractProblem {
 
   private List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
+  private List<TreatmentEntry> treatments = new ArrayList<>();
 
   public NetworkMetaAnalysisProblem() {
   }
 
-  public NetworkMetaAnalysisProblem(List<AbstractNetworkMetaAnalysisProblemEntry> entries) {
-    this.entries = entries != null ? entries : new ArrayList<AbstractNetworkMetaAnalysisProblemEntry>() ;
+  public NetworkMetaAnalysisProblem(List<AbstractNetworkMetaAnalysisProblemEntry> entries, List<TreatmentEntry> treatments) {
+    this.entries = entries;
+    this.treatments = treatments;
   }
 
   public List<AbstractNetworkMetaAnalysisProblemEntry> getEntries() {
     return entries;
+  }
+
+  public List<TreatmentEntry> getTreatments() {
+    return treatments;
   }
 
   @Override
@@ -29,12 +37,15 @@ public class NetworkMetaAnalysisProblem extends AbstractProblem {
     NetworkMetaAnalysisProblem that = (NetworkMetaAnalysisProblem) o;
 
     if (!entries.equals(that.entries)) return false;
+    if (!treatments.equals(that.treatments)) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    return entries.hashCode();
+    int result = entries.hashCode();
+    result = 31 * result + treatments.hashCode();
+    return result;
   }
 }

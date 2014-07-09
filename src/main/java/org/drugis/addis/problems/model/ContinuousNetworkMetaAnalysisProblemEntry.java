@@ -9,7 +9,7 @@ public class ContinuousNetworkMetaAnalysisProblemEntry extends AbstractNetworkMe
   private Double mean;
   private Double stdDev;
 
-  public ContinuousNetworkMetaAnalysisProblemEntry(String study, String treatment, Long samplesize, Double mean, Double stdDev) {
+  public ContinuousNetworkMetaAnalysisProblemEntry(String study, Integer treatment, Long samplesize, Double mean, Double stdDev) {
     super(study, treatment, samplesize);
     this.mean = mean;
     this.stdDev = stdDev;

@@ -6,7 +6,7 @@ package org.drugis.addis.problems.model;
 public class RateNetworkMetaAnalysisProblemEntry extends AbstractNetworkMetaAnalysisProblemEntry {
   private Long responders;
 
-  public RateNetworkMetaAnalysisProblemEntry(String study, String treatment, Long samplesize, Long responders) {
+  public RateNetworkMetaAnalysisProblemEntry(String study, Integer treatment, Long samplesize, Long responders) {
     super(study, treatment, samplesize);
     this.responders = responders;
   }

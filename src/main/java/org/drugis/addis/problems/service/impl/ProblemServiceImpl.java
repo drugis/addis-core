@@ -72,13 +72,15 @@ public class ProblemServiceImpl implements ProblemService {
   private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) {
     List<String> alternativeUris = new ArrayList<>();
     List<Intervention> interventions = interventionRepository.query(project.getId());
-    Map<String, String> interventionNamesByUrisMap = new HashMap<>();
+    Map<String, Integer> interventionIdsByUrisMap = new HashMap<>();
 
     interventions = filterExcludedInterventions(interventions, analysis.getIncludedInterventions());
 
+    List<TreatmentEntry> treatments = new ArrayList<>();
     for (Intervention intervention : interventions) {
       alternativeUris.add(intervention.getSemanticInterventionUri());
-      interventionNamesByUrisMap.put(intervention.getSemanticInterventionUri(), intervention.getName());
+      interventionIdsByUrisMap.put(intervention.getSemanticInterventionUri(), intervention.getId());
+      treatments.add(new TreatmentEntry(intervention.getId(), intervention.getName()));
     }
 
     ObjectNode trialData = trialverseService.getTrialData(Long.valueOf(project.getTrialverseId()),
@@ -99,14 +101,14 @@ public class ProblemServiceImpl implements ProblemService {
 
         for (TrialDataArm trialDataArm : filteredArms) {
           String interventionUri = interventionByDrugIdMap.get(trialDataArm.getDrugId()).getUri();
-          String treatmentName = interventionNamesByUrisMap.get(interventionUri);
-          entries.add(buildEntry(trialDataStudy.getName(), treatmentName, trialDataArm.getMeasurements()));
+          Integer treatmentId = interventionIdsByUrisMap.get(interventionUri);
+          entries.add(buildEntry(trialDataStudy.getName(), treatmentId, trialDataArm.getMeasurements()));
         }
 
       }
     }
 
-    return new NetworkMetaAnalysisProblem(entries);
+    return new NetworkMetaAnalysisProblem(entries, treatments);
   }
 
   private List<TrialDataArm> filterExcludedArms(List<TrialDataArm> trialDataArms, NetworkMetaAnalysis analysis) {
@@ -127,16 +129,16 @@ public class ProblemServiceImpl implements ProblemService {
     return filteredTrialDataArms;
   }
 
-  private AbstractNetworkMetaAnalysisProblemEntry buildEntry(String studyName, String treatmentName, List<Measurement> measurements) {
+  private AbstractNetworkMetaAnalysisProblemEntry buildEntry(String studyName, Integer treatmentId, List<Measurement> measurements) {
     Map<MeasurementAttribute, Measurement> measurementAttributeMeasurementMap = Measurement.mapMeasurementsByAttribute(measurements);
     Long sampleSize = measurementAttributeMeasurementMap.get(MeasurementAttribute.SAMPLE_SIZE).getIntegerValue();
     if (measurementAttributeMeasurementMap.get(MeasurementAttribute.MEAN) != null) {
       Double mu = measurementAttributeMeasurementMap.get(MeasurementAttribute.MEAN).getRealValue();
       Double sigma = measurementAttributeMeasurementMap.get(MeasurementAttribute.STANDARD_DEVIATION).getRealValue();
-      return new ContinuousNetworkMetaAnalysisProblemEntry(studyName, treatmentName, sampleSize, mu, sigma);
+      return new ContinuousNetworkMetaAnalysisProblemEntry(studyName, treatmentId, sampleSize, mu, sigma);
     } else if (measurementAttributeMeasurementMap.get(MeasurementAttribute.RATE) != null) {
       Long rate = measurementAttributeMeasurementMap.get(MeasurementAttribute.RATE).getIntegerValue();
-      return new RateNetworkMetaAnalysisProblemEntry(studyName, treatmentName, sampleSize, rate);
+      return new RateNetworkMetaAnalysisProblemEntry(studyName, treatmentId, sampleSize, rate);
     }
     throw new RuntimeException("unknown measurement type");
   }

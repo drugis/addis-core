@@ -164,7 +164,8 @@ public class ProblemServiceTest {
     SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
     SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
     SemanticIntervention semanticIntervention3 = new SemanticIntervention("uri3", "label3");
-    Intervention intervention1 = new Intervention(1, projectId, "int1", "moti", semanticIntervention1);
+    int interventionId1 = 1;
+    Intervention intervention1 = new Intervention(interventionId1, projectId, "int1", "moti", semanticIntervention1);
     Intervention intervention2 = new Intervention(2, projectId, "int2", "moti", semanticIntervention2);
     Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
     List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
@@ -193,7 +194,7 @@ public class ProblemServiceTest {
 
     assertNotNull(problem);
     assertEquals(3, problem.getEntries().size());
-    ContinuousNetworkMetaAnalysisProblemEntry entry = new ContinuousNetworkMetaAnalysisProblemEntry("study1", "int1", 768784L, Math.PI, Math.E);
+    ContinuousNetworkMetaAnalysisProblemEntry entry = new ContinuousNetworkMetaAnalysisProblemEntry("study1", interventionId1, 768784L, Math.PI, Math.E);
     assertTrue(problem.getEntries().contains(entry));
   }
 
