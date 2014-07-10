@@ -118,6 +118,15 @@
   <form name="outcomeForm">
     <div class="row">
       <div class="large-10 columns">
+        <label>Semantic outcome
+          <select ng-model="model.semanticOutcome"
+                  ng-options="semanticOutcome as semanticOutcome.label for semanticOutcome in semanticOutcomes | orderBy:'label'"
+                  ng-change="model.name = model.semanticOutcome.label; checkForDuplicateOutcomeName(model.name)"></select>
+        </label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="large-10 columns">
         <label>Name
           <input type="text" ng-model="model.name" ng-change="checkForDuplicateOutcomeName(model.name)">
         </label>
@@ -127,15 +136,6 @@
       <div class="large-10 columns">
         <label>Motivation
           <textarea rows="4" ng-model="model.motivation"></textarea>
-        </label>
-      </div>
-    </div>
-    <div class="row">
-      <div class="large-10 columns">
-        <label>Semantic outcome
-          <select ng-model="model.semanticOutcome"
-          ng-options="semanticOutcome as semanticOutcome.label for semanticOutcome in semanticOutcomes | orderBy:'label'"
-           ng-change="model.name = model.semanticOutcome.label; checkForDuplicateOutcomeName(model.name)"></select>
         </label>
       </div>
     </div>
@@ -159,6 +159,15 @@
   <form name="interventionForm">
     <div class="row">
       <div class="large-10 columns">
+        <label>Semantic intervention
+          <select ng-model="model.semanticIntervention"
+                  ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"
+                  ng-change="model.name = model.semanticIntervention.label; checkForDuplicateInterventionName(model.name)"></select>
+        </label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="large-10 columns">
         <label>Name
           <input type="text" ng-model="model.name" ng-change="checkForDuplicateInterventionName(model.name)">
         </label>
@@ -168,14 +177,6 @@
       <div class="large-10 columns">
         <label>Motivation
           <textarea rows="4" ng-model="model.motivation"></textarea>
-        </label>
-      </div>
-    </div>
-    <div class="row">
-      <div class="large-10 columns">
-        <label>Semantic intervention
-          <select ng-model="model.semanticIntervention"
-          ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'" ng-change="model.name = model.semanticIntervention.label; checkForDuplicateInterventionName(model.name)"></select>
         </label>
       </div>
     </div>
