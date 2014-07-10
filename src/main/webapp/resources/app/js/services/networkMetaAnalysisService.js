@@ -97,11 +97,13 @@ define(['angular'], function() {
       }
       var exclusionMap = buildExcludedArmsMap(excludedArms);
       angular.forEach(data.trialDataStudies, function(study) {
+        var studyRows = [];
         angular.forEach(study.trialDataArms, function(trialDataArm) {
           var trialDataIntervention = mapTrialDataArmToIntervention(trialDataArm, study.trialDataInterventions);
           var row = {};
           row.study = study.name;
           row.studyRowSpan = study.trialDataArms.length;
+          row.studyRows = studyRows;
           row.intervention = trialDataIntervention ? resolveInterventionName(trialDataIntervention, interventions) : 'unmatched';
           row.drugId = trialDataArm.drugId;
           row.arm = trialDataArm.name;
@@ -113,6 +115,7 @@ define(['angular'], function() {
           row.sampleSize = findMeasurementValue(trialDataArm.measurements, 'sample size', 'integerValue');
 
           rows.push(row);
+          studyRows.push(row);
         });
       });
       return rows;
@@ -276,7 +279,6 @@ define(['angular'], function() {
         _.each(connectedEdges, addUnvisitedNodesToToVisitList);
       }
       return !areNodeSetsEqual(network.interventions, visited);
-
     }
 
     function changeArmExclusion(dataRow, analysis) {
@@ -379,6 +381,10 @@ define(['angular'], function() {
       return _.filter(analysis.excludedArms, function(excludedArm) {
         return !armsMatchingIntervention[excludedArm.trialverseId];
       });
+
+    }
+
+    function updateDataRowStudy(dataRow) {
 
     }
 

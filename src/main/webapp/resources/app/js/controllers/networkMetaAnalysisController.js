@@ -201,6 +201,14 @@ define(['d3'], function(d3) {
       });
     };
 
+    $scope.lessThanTwoInterventionArms = function(dataRow) {
+      var matchedAndIncludedRows = _.filter(dataRow.studyRows, function(studyRow) {
+        return studyRow.intervention !== 'unmatched' && studyRow.included;
+      });
+      var matchedInterventions = _.uniq(_.pluck(matchedAndIncludedRows, 'intervention'));
+      return matchedInterventions.length < 2;
+    };
+
     $scope.changeInterventionInclusion = function(intervention) {
       $scope.analysis.includedInterventions =
         NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);

@@ -610,6 +610,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
           expect(resultRows[0]).toEqual({
             study: 'Fava et al, 2002',
             studyRowSpan: 3,
+            studyRows: resultRows,
             intervention: 'intervention 1',
             arm: 'Paroxetine',
             rate: 5,
@@ -633,6 +634,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
             sigma: null,
             study: 'Fava et al, 2002',
             studyRowSpan: 3,
+            studyRows: resultRows,
             included: true,
             trialverseId: 85,
             drugId: 58
@@ -649,6 +651,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
             sigma: null,
             study: 'Fava et al, 2002',
             studyRowSpan: 3,
+            studyRows: resultRows,
             included: true,
             trialverseId: 87,
             drugId: 60
