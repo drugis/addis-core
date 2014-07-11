@@ -83,7 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .logoutUrl("/signout")
         .deleteCookies("JSESSIONID")
       .and().authorizeRequests()
-        .antMatchers("/", "/favicon.ico", "/app/**", "/auth/**", "/signin").permitAll()
+        .antMatchers("/", "/favicon.ico", "/app/**", "/auth/**", "/signin", "/signup").permitAll()
         .antMatchers("/monitoring").hasRole("MONITORING")
         .antMatchers("/**").authenticated()
       .and().rememberMe()
