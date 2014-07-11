@@ -56,8 +56,9 @@ public class OutcomeRepositoryImpl implements OutcomeRepository {
     if (project.getOwner().getId() != user.getId()) {
       throw new MethodNotAllowedException();
     }
-    TypedQuery<Outcome> query = em.createQuery("FROM Outcome o WHERE o.name = :outcomeName", Outcome.class);
+    TypedQuery<Outcome> query = em.createQuery("FROM Outcome o WHERE o.name = :outcomeName AND o.project = :projectId", Outcome.class);
     query.setParameter("outcomeName", outcomeCommand.getName());
+    query.setParameter("projectId", outcomeCommand.getProjectId());
     List<Outcome> results = query.getResultList();
     if (results.size() > 0) {
       throw new IllegalArgumentException("Duplicate outcome name " + outcomeCommand.getName());
