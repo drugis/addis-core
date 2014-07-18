@@ -117,7 +117,7 @@ public class ProjectsControllerTest {
             .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())))
             .andExpect(jsonPath("$[0].name", is(project.getName())))
             .andExpect(jsonPath("$[0].description", is(project.getDescription())))
-            .andExpect(jsonPath("$[0].trialverseId", is(project.getTrialverseId())));
+            .andExpect(jsonPath("$[0].trialverseId", is(project.getNamespaceUid())));
 
     verify(projectRepository).query();
   }

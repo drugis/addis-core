@@ -1,7 +1,6 @@
 package org.drugis.addis.trialverse.repository.impl;
 
 
-import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,21 +21,6 @@ public class TrialverseRepositoryImpl implements TrialverseRepository {
   @PersistenceContext(unitName = "trialverse")
   @Qualifier("emTrialverse")
   EntityManager em;
-
-  @Override
-  public Collection<Namespace> query() {
-    return em.createQuery("from Namespace").getResultList();
-  }
-
-  @Override
-  public Namespace get(Long trialverseId) throws ResourceDoesNotExistException {
-    Namespace namespace = em.find(Namespace.class, trialverseId);
-    if (namespace == null) {
-      throw new ResourceDoesNotExistException();
-    }
-    return namespace;
-  }
-
 
   @Override
   public List<Arm> getArmsByDrugIds(Integer studyId, Collection<Long> drugIds) {
@@ -182,8 +166,8 @@ public class TrialverseRepositoryImpl implements TrialverseRepository {
   }
 
   @Override
-  public List<Study> getStudiesByIds(Long namespaceId, List<Long> studyIds) {
-    if (studyIds.isEmpty()) {
+  public List<Study> getStudiesByIds(String namespaceUid, List<String> studyUids) {
+    if (studyUids.isEmpty()) {
       return Collections.EMPTY_LIST;
     }
     Query query = em.createNativeQuery("select" +
@@ -198,8 +182,8 @@ public class TrialverseRepositoryImpl implements TrialverseRepository {
                     " AND s.id IN :studyIds",
             Study.class
     );
-    query.setParameter("namespaceId", namespaceId);
-    query.setParameter("studyIds", studyIds);
+    query.setParameter("namespaceId", namespaceUid);
+    query.setParameter("studyIds", studyUids);
     return query.getResultList();
   }
 

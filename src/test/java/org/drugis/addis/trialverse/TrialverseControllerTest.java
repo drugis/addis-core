@@ -58,6 +58,9 @@ public class TrialverseControllerTest {
   @Inject
   private TrialverseDataService trialverseDataService;
 
+  @Inject
+  private TriplestoreService triplestoreService;
+
   private Principal user;
 
   private Account gert = new Account(3, "gert", "Gert", "van Valkenhoef");
@@ -78,28 +81,31 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetNamespaces() throws Exception {
-    Namespace namespace1 = new Namespace(1L, "a", "descra");
-    Namespace namespace2 = new Namespace(2L, "b", "descrb");
+    String uid1 = "uid 1";
+    String uid2 = "uid 2";
+    Namespace namespace1 = new Namespace(uid1, "a", "descra");
+    Namespace namespace2 = new Namespace(uid2, "b", "descrb");
     Collection<Namespace> namespaceCollection = Arrays.asList(namespace1, namespace2);
-    when(trialverseRepository.query()).thenReturn(namespaceCollection);
+    when(triplestoreService.queryNameSpaces()).thenReturn(namespaceCollection);
     mockMvc.perform(get("/namespaces").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].name", is("a")));
-    verify(trialverseRepository).query();
+    verify(triplestoreService).queryNameSpaces();
     verify(accountRepository).findAccountByUsername(user.getName());
   }
 
   @Test
   public void testGetNamespaceById() throws Exception {
-    Namespace namespace1 = new Namespace(1L, "a", "descrea");
-    when(trialverseRepository.get(1L)).thenReturn(namespace1);
+    String uid = "UID 1";
+    Namespace namespace1 = new Namespace(uid, "a", "descrea");
+    when(triplestoreService.getNamespace(uid)).thenReturn(namespace1);
     mockMvc.perform(get("/namespaces/1").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.name", is("a")));
-    verify(trialverseRepository).get(1L);
+    verify(triplestoreService).getNamespace(uid);
     verify(accountRepository).findAccountByUsername(user.getName());
   }
 

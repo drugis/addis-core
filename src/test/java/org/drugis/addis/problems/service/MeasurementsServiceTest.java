@@ -54,7 +54,7 @@ public class MeasurementsServiceTest {
 
   @Test
   public void testCreatePerformanceTable() throws Exception {
-    int trialverseId = 1;
+    String trialverseId = 1;
     int studyId = 2;
     String outcomeUri = "uri";
     Long outcomeId = 11L;
@@ -63,7 +63,7 @@ public class MeasurementsServiceTest {
     Long integerValue = 101L;
 
     Project project = mock(Project.class);
-    when(project.getTrialverseId()).thenReturn(trialverseId);
+    when(project.getNamespaceUid()).thenReturn(trialverseId);
 
     SingleStudyBenefitRiskAnalysis analysis = mock(SingleStudyBenefitRiskAnalysis.class);
     when(analysis.getStudyId()).thenReturn(studyId);
@@ -83,7 +83,7 @@ public class MeasurementsServiceTest {
 
     Map<Long, String> trialverseVariables = new HashMap<>();
     trialverseVariables.put(outcomeId, "variable name");
-    when(triplestoreService.getTrialverseVariables(project.getTrialverseId().longValue(), analysis.getStudyId().longValue(), outcomeMap.keySet())).thenReturn(trialverseVariables);
+    when(triplestoreService.getTrialverseVariables(project.getNamespaceUid().longValue(), analysis.getStudyId().longValue(), outcomeMap.keySet())).thenReturn(trialverseVariables);
 
     Measurement measurement = new Measurement((long) studyId, outcomeId, measurementMomentId, alternativeId, MeasurementAttribute.RATE, integerValue, null);
     ObjectNode jsonNode = mapper.convertValue(measurement, ObjectNode.class);
@@ -96,7 +96,7 @@ public class MeasurementsServiceTest {
 
     assertEquals(expected, measurements);
 
-    verify(triplestoreService).getTrialverseVariables(project.getTrialverseId().longValue(), analysis.getStudyId().longValue(), outcomeMap.keySet());
-    verify(triplestoreService).getTrialverseVariables(project.getTrialverseId().longValue(), analysis.getStudyId().longValue(), outcomeMap.keySet());
+    verify(triplestoreService).getTrialverseVariables(project.getNamespaceUid().longValue(), analysis.getStudyId().longValue(), outcomeMap.keySet());
+    verify(triplestoreService).getTrialverseVariables(project.getNamespaceUid().longValue(), analysis.getStudyId().longValue(), outcomeMap.keySet());
   }
 }

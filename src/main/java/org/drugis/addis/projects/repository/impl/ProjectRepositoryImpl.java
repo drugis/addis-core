@@ -46,7 +46,7 @@ public class ProjectRepositoryImpl implements ProjectRepository {
 
   @Override
   public Project create(Account user, ProjectCommand command) {
-    Project project = new Project(user, command.getName(), command.getDescription(), command.getTrialverseId());
+    Project project = new Project(user, command.getName(), command.getDescription(), command.getNamespaceUid());
     em.persist(project);
     return project;
   }

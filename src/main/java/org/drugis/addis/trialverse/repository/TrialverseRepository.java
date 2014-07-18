@@ -10,9 +10,6 @@ import java.util.List;
  * Created by connor on 2/26/14.
  */
 public interface TrialverseRepository {
-  public Collection<Namespace> query();
-
-  public Namespace get(Long trialverseId) throws ResourceDoesNotExistException;
 
   public List<Study> queryStudies(Long namespaceId);
 
@@ -22,7 +19,7 @@ public interface TrialverseRepository {
 
   public List<Measurement> getOrderedMeasurements(Collection<Long> outcomeIds, Collection<Long> arms);
 
-  public List<Study> getStudiesByIds(Long namespaceId, List<Long> studyIds);
+  public List<Study> getStudiesByIds(String namespaceUid, List<String> studyUids);
 
   public List<TrialDataArm> getArmsForStudies(Long namespaceId, List<Long> studyIds, List<Variable> variables);
 

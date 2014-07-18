@@ -57,8 +57,8 @@ public class TrialverseServiceImpl implements TrialverseService {
   }
 
   @Override
-  public ObjectNode getTrialData(Long namespaceId, String semanticOutcomeUri, List<String> alternativeUris) {
-    return mapper.valueToTree(trialverseDataService.getTrialData(namespaceId, semanticOutcomeUri, alternativeUris));
+  public ObjectNode getTrialData(String namespaceUId, String semanticOutcomeUri, List<String> alternativeUris) {
+    return mapper.valueToTree(trialverseDataService.getTrialData(namespaceUId, semanticOutcomeUri, alternativeUris));
   }
 
   private <T> List<ObjectNode> objectsToNodes(List<T> objectList) {

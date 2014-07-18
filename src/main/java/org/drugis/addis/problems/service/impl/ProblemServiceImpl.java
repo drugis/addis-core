@@ -83,7 +83,7 @@ public class ProblemServiceImpl implements ProblemService {
       treatments.add(new TreatmentEntry(intervention.getId(), intervention.getName()));
     }
 
-    ObjectNode trialData = trialverseService.getTrialData(Long.valueOf(project.getTrialverseId()),
+    ObjectNode trialData = trialverseService.getTrialData(project.getNamespaceUid(),
             analysis.getOutcome().getSemanticOutcomeUri(), alternativeUris);
 
     ObjectMapper mapper = new ObjectMapper();

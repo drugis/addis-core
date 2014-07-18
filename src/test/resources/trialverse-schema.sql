@@ -88,3 +88,8 @@ CREATE TABLE measurements (
     integer_value bigint,
     real_value double precision
 );
+
+CREATE TABLE namespace_mappings (
+    id serial NOT NULL,
+    uid VARCHAR NOT NULL
+);

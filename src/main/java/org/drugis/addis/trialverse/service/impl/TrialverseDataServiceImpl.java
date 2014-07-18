@@ -30,14 +30,14 @@ public class TrialverseDataServiceImpl implements TrialverseDataService {
   private TrialverseRepository trialverseRepository;
 
   @Override
-  public TrialData getTrialData(Long namespaceId, String outcomeUri, List<String> interventionUris) {
-    List<Long> studyIdsByOutcome = triplestoreService.findStudiesReferringToConcept(namespaceId, outcomeUri);
+  public TrialData getTrialData(String namespaceUid, String outcomeUri, List<String> interventionUris) {
+    List<Long> studyIdsByOutcome = triplestoreService.findStudiesReferringToConcept(namespaceUid, outcomeUri);
 
-    Map<Long, List<TrialDataIntervention>> studyInterventions = triplestoreService.findStudyInterventions(namespaceId, studyIdsByOutcome, interventionUris);
-    List<Study> studies = trialverseRepository.getStudiesByIds(namespaceId, new ArrayList<>(studyInterventions.keySet()));
-    List<Pair<Long, Long>> studyOutcomeVariableIds = triplestoreService.getOutcomeVariableIdsByStudyForSingleOutcome(namespaceId, studyIdsByOutcome, outcomeUri);
+    Map<String, List<TrialDataIntervention>> studyInterventions = triplestoreService.findStudyInterventions(namespaceUid, studyIdsByOutcome, interventionUris);
+    List<Study> studies = trialverseRepository.getStudiesByIds(namespaceUid, new ArrayList<>(studyInterventions.keySet()));
+    List<Pair<Long, Long>> studyOutcomeVariableIds = triplestoreService.getOutcomeVariableIdsByStudyForSingleOutcome(namespaceUid, studyIdsByOutcome, outcomeUri);
     List<Variable> variables = trialverseRepository.getVariablesByOutcomeIds(getRightSideOfPairList(studyOutcomeVariableIds));
-    List<TrialDataArm> trialDataArms = trialverseRepository.getArmsForStudies(namespaceId, studyIdsByOutcome, variables);
+    List<TrialDataArm> trialDataArms = trialverseRepository.getArmsForStudies(namespaceUid, studyIdsByOutcome, variables);
     List<Measurement> measurements = trialverseRepository.getStudyMeasurementsForOutcomes(studyIdsByOutcome, getRightSideOfPairList(studyOutcomeVariableIds), buildIdIndexedMap(trialDataArms).keySet());
 
     Map<Long, List<Measurement>> measurementsByArm = sortMeasurementsByArm(measurements);
@@ -57,8 +57,7 @@ public class TrialverseDataServiceImpl implements TrialverseDataService {
       }
     }
 
-    TrialData trialData = new TrialData(trialDataStudies);
-    return trialData;
+    return new TrialData(trialDataStudies);
   }
 
   private Map<Long, List<TrialDataArm>> buildStudyIdToTrialDataArmMap(List<TrialDataArm> trialDataArms) {

@@ -34,18 +34,6 @@ public class TrialverseRepositoryTest {
   EntityManager em;
 
   @Test
-  public void testQuery() {
-    Collection<Namespace> namespaces = trialverseRepository.query();
-    assertEquals(3, namespaces.size());
-  }
-
-  @Test
-  public void testGet() throws ResourceDoesNotExistException {
-    Namespace namespace = trialverseRepository.get(1L);
-    assertEquals(new Long(1), namespace.getId());
-  }
-
-  @Test
   public void testQueryStudy() {
     Long namespaceId = 1L;
     Long studyId = 1L;

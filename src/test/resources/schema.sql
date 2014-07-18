@@ -176,3 +176,6 @@ CREATE TABLE InterventionInclusion (
   FOREIGN KEY(interventionId) REFERENCES Intervention(id)
 );
 
+--changeset reidd:10
+ALTER TABLE Project DROP COLUMN trialverseId;
+ALTER TABLE Project ADD COLUMN namespaceUid VARCHAR;

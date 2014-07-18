@@ -55,7 +55,7 @@ public class AlternativeServiceTest {
     alternativeService = new AlternativeService();
     MockitoAnnotations.initMocks(this);
 
-    int trialverseId = 1;
+    String trialverseId = 1;
     int studyId = 101;
     drugId = 2L;
     interventionName = "intervention name";
@@ -71,7 +71,7 @@ public class AlternativeServiceTest {
     project = mock(Project.class);
     analysis = mock(SingleStudyBenefitRiskAnalysis.class);
 
-    when(project.getTrialverseId()).thenReturn(trialverseId);
+    when(project.getNamespaceUid()).thenReturn(trialverseId);
     when(analysis.getStudyId()).thenReturn(studyId);
     when(intervention.getSemanticInterventionUri()).thenReturn(interventionUri);
     when(intervention.getName()).thenReturn(interventionName);
@@ -84,14 +84,14 @@ public class AlternativeServiceTest {
   @Test
   public void testCreateAlternatives() throws Exception {
     List<ObjectNode> jsonArms = Arrays.asList(mapper.convertValue(new Arm(1L, drugId, "armName"), ObjectNode.class));
-    when(triplestoreService.getTrialverseDrugs(project.getTrialverseId().longValue(), analysis.getStudyId().longValue(), interventionMap.keySet())).
+    when(triplestoreService.getTrialverseDrugs(project.getNamespaceUid().longValue(), analysis.getStudyId().longValue(), interventionMap.keySet())).
             thenReturn(drugs);
     when(trialverseService.getArmsByDrugIds(analysis.getStudyId(), drugs.keySet())).thenReturn(jsonArms);
 
 
     Map<Long, AlternativeEntry> alternatives = alternativeService.createAlternatives(project, analysis);
 
-    verify(triplestoreService).getTrialverseDrugs(project.getTrialverseId().longValue(), analysis.getStudyId().longValue(), interventionMap.keySet());
+    verify(triplestoreService).getTrialverseDrugs(project.getNamespaceUid().longValue(), analysis.getStudyId().longValue(), interventionMap.keySet());
     verify(trialverseService).getArmsByDrugIds(analysis.getStudyId(), drugs.keySet());
     verifyNoMoreInteractions(triplestoreService, trialverseService);
 

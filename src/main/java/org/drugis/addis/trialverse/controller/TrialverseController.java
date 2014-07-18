@@ -46,18 +46,18 @@ public class TrialverseController {
   public Collection<Namespace> query(Principal currentUser) throws MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return trialverseRepository.query();
+      return triplestoreService.queryNameSpaces();
     } else {
       throw new MethodNotAllowedException();
     }
   }
 
-  @RequestMapping(value = "/namespaces/{namespaceId}", method = RequestMethod.GET)
+  @RequestMapping(value = "/namespaces/{namespaceUid}", method = RequestMethod.GET)
   @ResponseBody
-  public Namespace get(Principal currentUser, @PathVariable Long namespaceId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Namespace get(Principal currentUser, @PathVariable String namespaceUid) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return trialverseRepository.get(namespaceId);
+      return triplestoreService.getNamespace(namespaceUid);
     } else {
       throw new MethodNotAllowedException();
     }
