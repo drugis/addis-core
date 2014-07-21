@@ -46,19 +46,20 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<SemanticOutcome> getOutcomes(Long namespaceId) {
+  public List<SemanticOutcome> getOutcomes(String namespaceUid) {
     List<SemanticOutcome> outcomes = new ArrayList<>();
 
-    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "\n" +
-            "SELECT  * WHERE {\n" +
-            "GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
-            "    ?uri rdfs:label ?label .\n" +
-            "    FILTER regex (str(?uri), \"namespaces/"
-            + namespaceId +
-            "/(endpoint|adverseEvent)\", \"i\")\n" +
-            "  }\n" +
-            "}";
+    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
+        "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
+        "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+        "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+        "\n" +
+        "SELECT ?outcome ?label WHERE {\n" +
+        "  GRAPH dataset:" + namespaceUid + " {\n" +
+        "    { ?outcome rdfs:subClassOf ontology:Endpoint } UNION { ?outcome rdfs:subClassOf ontology:AdverseEvent } .\n" +
+        "    ?outcome rdfs:label ?label .\n" +
+        "  }\n" +
+        "}\n";
     System.out.println(query);
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
@@ -251,7 +252,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return StringUtils.join(strippedUris, "|");
   }
 
-  private String buildOptionStringFromIds(Collection<Long> ids) {
+  private String buildOptionStringFromIds(List<String> ids) {
     return StringUtils.join(ids, "|");
   }
 

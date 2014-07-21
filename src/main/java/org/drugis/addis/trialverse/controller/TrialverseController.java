@@ -63,47 +63,47 @@ public class TrialverseController {
     }
   }
 
-  @RequestMapping(value = "/namespaces/{namespaceId}/outcomes", method = RequestMethod.GET)
+  @RequestMapping(value = "/namespaces/{namespaceUid}/outcomes", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<SemanticOutcome> queryOutcomes(Principal currentUser, @PathVariable Long namespaceId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Collection<SemanticOutcome> queryOutcomes(Principal currentUser, @PathVariable String namespaceUid) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return triplestoreService.getOutcomes(namespaceId);
+      return triplestoreService.getOutcomes(namespaceUid);
     } else {
       throw new MethodNotAllowedException();
     }
   }
 
-  @RequestMapping(value = "/namespaces/{namespaceId}/interventions", method = RequestMethod.GET)
+  @RequestMapping(value = "/namespaces/{namespaceUid}/interventions", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<SemanticIntervention> queryInterventions(Principal currentUser, @PathVariable Long namespaceId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public Collection<SemanticIntervention> queryInterventions(Principal currentUser, @PathVariable Long namespaceUid) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return triplestoreService.getInterventions(namespaceId);
+      return triplestoreService.getInterventions(namespaceUid);
     } else {
       throw new MethodNotAllowedException();
     }
   }
 
-  @RequestMapping(value = "/namespaces/{namespaceId}/studies", method = RequestMethod.GET)
+  @RequestMapping(value = "/namespaces/{namespaceUid}/studies", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Study> queryStudies(Principal currentUser, @PathVariable Long namespaceId) throws MethodNotAllowedException {
+  public Collection<Study> queryStudies(Principal currentUser, @PathVariable Long namespaceUid) throws MethodNotAllowedException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return trialverseRepository.queryStudies(namespaceId);
+      return trialverseRepository.queryStudies(namespaceUid);
     } else {
       throw new MethodNotAllowedException();
     }
   }
 
-  @RequestMapping(value = "/namespaces/{namespaceId}/trialData", method = RequestMethod.GET)
+  @RequestMapping(value = "/namespaces/{namespaceUid}/trialData", method = RequestMethod.GET)
   @ResponseBody
-  public TrialData getTrialData(@PathVariable Long namespaceId, @RequestParam(required = true) String outcomeUri,
+  public TrialData getTrialData(@PathVariable String namespaceUid, @RequestParam(required = true) String outcomeUri,
                                 @RequestParam(required = false) List<String> interventionUris) {
     if (interventionUris == null) {
       interventionUris = Collections.emptyList();
     }
-    return trialverseDataService.getTrialData(namespaceId, outcomeUri, interventionUris);
+    return trialverseDataService.getTrialData(namespaceUid, outcomeUri, interventionUris);
   }
 
   @ResponseStatus(HttpStatus.FORBIDDEN)

@@ -28,7 +28,6 @@ public class Project implements Serializable {
   @Column
   private String namespaceUid;
 
-
   public Project() {
   }
 

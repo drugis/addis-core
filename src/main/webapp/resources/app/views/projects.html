@@ -92,15 +92,15 @@
             <div class="row">
                 <div class="large-6 columns">
                     <label>TrialVerse namespace
-                        <select ng-model="model.trialverseId"
-                                ng-options="tv.id as tv.name for tv in trialverse"></select>
+                        <select ng-model="model.trialverseUid"
+                                ng-options="tv.uid as tv.name for tv in trialverse"></select>
                     </label>
                     <ul class="button-group">
                         <li>
                             <button class="button small secondary" ng-click="createProjectModal.close()">Cancel</button>
                         </li>
                         <li>
-                            <button class="button small success" ng-disabled="!model.name || !model.trialverseId"
+                            <button class="button small success" ng-disabled="!model.name || !model.trialverseUid"
                                     ng-click="createProject(model)">Create
                                 project
                             </button>

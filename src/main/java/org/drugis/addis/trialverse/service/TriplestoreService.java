@@ -18,7 +18,7 @@ public interface TriplestoreService {
 
   public Namespace getNamespace(String uid);
 
-  public List<SemanticOutcome> getOutcomes(Long namespaceId);
+  public List<SemanticOutcome> getOutcomes(String namespaceUid);
 
   public List<SemanticIntervention> getInterventions(Long namespaceId);
 
