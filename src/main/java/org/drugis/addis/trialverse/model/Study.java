@@ -7,26 +7,22 @@ import javax.persistence.Table;
 /**
  * Created by daan on 3/19/14.
  */
-@Entity
-@Table(name = "studies")
 public class Study {
-
-  @Id
-  private Long id;
+  private String uid;
   private String name;
   private String title;
 
   public Study() {
   }
 
-  public Study(Long id, String name, String title) {
-    this.id = id;
+  public Study(String uid, String name, String title) {
+    this.uid = uid;
     this.name = name;
     this.title = title;
   }
 
-  public Long getId() {
-    return id;
+  public String getUid() {
+    return uid;
   }
 
   public String getName() {
@@ -44,7 +40,7 @@ public class Study {
 
     Study study = (Study) o;
 
-    if (!id.equals(study.id)) return false;
+    if (!uid.equals(study.uid)) return false;
     if (!name.equals(study.name)) return false;
     if (!title.equals(study.title)) return false;
 
@@ -53,7 +49,7 @@ public class Study {
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
+    int result = uid.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + title.hashCode();
     return result;

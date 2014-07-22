@@ -111,14 +111,14 @@ public class TrialverseControllerTest {
 
   @Test
   public void testQuerySemanticOutcomes() throws Exception {
-    Long namespaceId = 1L;
+    String namespaceUid = "uid-1";
     SemanticOutcome testOutCome = new SemanticOutcome("http://test/com", "test label");
-    when(triplestoreService.getOutcomes(namespaceId)).thenReturn(Arrays.asList(testOutCome));
-    mockMvc.perform(get("/namespaces/" + namespaceId + "/outcomes").principal(user))
+    when(triplestoreService.getOutcomes(namespaceUid)).thenReturn(Arrays.asList(testOutCome));
+    mockMvc.perform(get("/namespaces/" + namespaceUid + "/outcomes").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0].uri", is(testOutCome.getUri())));
-    verify(triplestoreService).getOutcomes(namespaceId);
+    verify(triplestoreService).getOutcomes(namespaceUid);
     verify(accountRepository).findAccountByUsername(user.getName());
   }
 

@@ -135,7 +135,7 @@ public class TriplestoreServiceTest {
     Long namespaceId = 1L;
     List<Long> studyIds = Arrays.asList(20L, 13L, 5L);
     String outcomeConceptUri = "http://trials.drugis.org/namespace/2/adverseEvent/232145506bf409d7bb931fd35d6122c0";
-    List<Pair<Long, Long>> result = triplestoreService.getOutcomeVariableIdsByStudyForSingleOutcome(namespaceId, studyIds, outcomeConceptUri);
+    List<Pair<Long, Long>> result = triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceId, studyIds, outcomeConceptUri);
     assertEquals(3, result.size());
     assertTrue(result.containsAll(Arrays.asList(Pair.of(20L, 304L), Pair.of(13L, 209L), Pair.of(5L, 91L))));
   }
@@ -149,7 +149,7 @@ public class TriplestoreServiceTest {
     Long namespaceId = 1L;
     List<Long> studyIds = Arrays.asList(20L, 13L, 5L);
     String outcomeConceptUri = "http://trials.drugis.org/namespace/2/endPoint/232145506bf409d7bb931fd35d6122c0";
-    List<Pair<Long, Long>> result = triplestoreService.getOutcomeVariableIdsByStudyForSingleOutcome(namespaceId, studyIds, outcomeConceptUri);
+    List<Pair<Long, Long>> result = triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceId, studyIds, outcomeConceptUri);
     assertEquals(3, result.size());
     assertTrue(result.containsAll(Arrays.asList(Pair.of(20L, 304L), Pair.of(13L, 209L), Pair.of(5L, 91L))));
   }

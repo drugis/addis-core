@@ -35,7 +35,7 @@ public class TrialverseDataServiceImpl implements TrialverseDataService {
 
     Map<String, List<TrialDataIntervention>> studyInterventions = triplestoreService.findStudyInterventions(namespaceUid, studyIdsByOutcome, interventionUris);
     List<Study> studies = trialverseRepository.getStudiesByIds(namespaceUid, new ArrayList<>(studyInterventions.keySet()));
-    List<Pair<Long, Long>> studyOutcomeVariableIds = triplestoreService.getOutcomeVariableIdsByStudyForSingleOutcome(namespaceUid, studyIdsByOutcome, outcomeUri);
+    List<Pair<Long, Long>> studyOutcomeVariableIds = triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceUid, studyIdsByOutcome, outcomeUri);
     List<Variable> variables = trialverseRepository.getVariablesByOutcomeIds(getRightSideOfPairList(studyOutcomeVariableIds));
     List<TrialDataArm> trialDataArms = trialverseRepository.getArmsForStudies(namespaceUid, studyIdsByOutcome, variables);
     List<Measurement> measurements = trialverseRepository.getStudyMeasurementsForOutcomes(studyIdsByOutcome, getRightSideOfPairList(studyOutcomeVariableIds), buildIdIndexedMap(trialDataArms).keySet());
@@ -50,10 +50,10 @@ public class TrialverseDataServiceImpl implements TrialverseDataService {
 
     List<TrialDataStudy> trialDataStudies = new ArrayList<>(studies.size());
     for (Study study : studies) {
-      Long studyId = study.getId();
+      Long studyId = study.getUid();
       // only include studies having a least one arm
       if (studyIdToTrialDataArmMap.get(studyId) != null) {
-        trialDataStudies.add(new TrialDataStudy(study.getId(), study.getName(), studyInterventions.get(studyId), studyIdToTrialDataArmMap.get(studyId)));
+        trialDataStudies.add(new TrialDataStudy(study.getUid(), study.getName(), studyInterventions.get(studyId), studyIdToTrialDataArmMap.get(studyId)));
       }
     }
 

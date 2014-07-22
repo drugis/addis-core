@@ -9,10 +9,10 @@ public class TrialDataIntervention {
 
   private Long studyId;
 
-  public TrialDataIntervention(Long drugId, String uri, Long studyId) {
-    this.drugId = drugId;
+  public TrialDataIntervention(String drugUid, String uri, String studyUid) {
+    this.drugId = drugUid;
     this.uri = uri;
-    this.studyId = studyId;
+    this.studyId = studyUid;
   }
 
   public Long getDrugId() {

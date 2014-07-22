@@ -7,10 +7,7 @@ import net.minidev.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.factory.RestOperationsFactory;
-import org.drugis.addis.trialverse.model.Namespace;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
-import org.drugis.addis.trialverse.model.SemanticOutcome;
-import org.drugis.addis.trialverse.model.TrialDataIntervention;
+import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.springframework.stereotype.Service;
 
@@ -31,101 +28,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Inject
   RestOperationsFactory restOperationsFactory;
 
-  public enum AnalysisConcept {
-    DRUG("drug"),
-    OUTCOME("(adverseEvent|endpoint)");
-    private final String searchString;
-
-    AnalysisConcept(String searchString) {
-      this.searchString = searchString;
-    }
-
-    public String getSearchString() {
-      return this.searchString;
-    }
-  }
-
-  @Override
-  public List<SemanticOutcome> getOutcomes(String namespaceUid) {
-    List<SemanticOutcome> outcomes = new ArrayList<>();
-
-    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
-        "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
-        "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-        "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-        "\n" +
-        "SELECT ?outcome ?label WHERE {\n" +
-        "  GRAPH dataset:" + namespaceUid + " {\n" +
-        "    { ?outcome rdfs:subClassOf ontology:Endpoint } UNION { ?outcome rdfs:subClassOf ontology:AdverseEvent } .\n" +
-        "    ?outcome rdfs:label ?label .\n" +
-        "  }\n" +
-        "}\n";
-    System.out.println(query);
-    String response = queryTripleStore(query);
-    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    for (Object binding : bindings) {
-      outcomes.add(new SemanticOutcome((String) JsonPath.read(binding, "$.uri.value"),
-              (String) JsonPath.read(binding, "$.label.value")));
-    }
-    return outcomes;
-  }
-
-  @Override
-  public List<SemanticIntervention> getInterventions(Long namespaceId) {
-    List<SemanticIntervention> interventions = new ArrayList<>();
-
-    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "\n" +
-            "SELECT  * WHERE {\n" +
-            "GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
-            "    ?uri rdfs:label ?label .\n" +
-            "    FILTER regex (str(?uri), \"namespaces/"
-            + namespaceId +
-            "/(drug)\", \"i\")\n" +
-            "  }\n" +
-            "}";
-    System.out.println(query);
-    String response = queryTripleStore(query);
-    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    for (Object binding : bindings) {
-      interventions.add(new SemanticIntervention((String) JsonPath.read(binding, "$.uri.value"),
-              (String) JsonPath.read(binding, "$.label.value")));
-    }
-    return interventions;
-  }
-
-  @Override
-  public Map<Long, String> getTrialverseDrugs(String namespaceUid, Long studyId, Collection<String> drugURIs) {
-    return getTrialverseConceptIds(namespaceUid, studyId, AnalysisConcept.DRUG, drugURIs);
-  }
-
-  public List<Pair<Long, Long>> getOutcomeVariableIdsByStudyForSingleOutcome(String namespaceUid, List<String> studyUids, String outcomeURI) {
-    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-            "\n" +
-            "SELECT  * WHERE {\n" +
-            " GRAPH <http://trials.drugis.org/namespaces/" + namespaceUid + "/> {\n" +
-            "   ?uri rdf:type ?type .\n" +
-            "   FILTER regex(str(?type), \"namespaces/" +
-      namespaceUid + "/" + AnalysisConcept.OUTCOME.getSearchString() + "/" + subStringAfterLastSlash(outcomeURI) + "\") .\n" +
-            "   FILTER regex(str(?uri), \"/study/(" + buildOptionStringFromIds(studyUids) + ")/\") .\n" +
-            " }\n" +
-            "}";
-
-    System.out.println("getOutcomeVariableIdsByStudyForSingleOutcome query: " + query);
-    String response = queryTripleStore(query);
-    System.out.println("getOutcomeVariableIdsByStudyForSingleOutcome response: " + response);
-
-    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    List<Pair<Long, Long>> studyVariablesForOutcome = new ArrayList<>(bindings.size());
-    for (Object binding : bindings) {
-      String uri = JsonPath.read(binding, "$.uri.value");
-      Long studyId = findStudyIdInURI(uri);
-      Long variableId = Long.valueOf(subStringAfterLastSlash(uri));
-      studyVariablesForOutcome.add(Pair.of(studyId, variableId));
-    }
-    return studyVariablesForOutcome;
-  }
 
   @Override
   public Collection<Namespace> queryNameSpaces() {
@@ -134,10 +36,11 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
       "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
       "\n" +
-      "SELECT ?dataset ?label WHERE {\n" +
+      "SELECT ?dataset ?label ?comment WHERE {\n" +
       "  GRAPH ?dataset {\n" +
       "    ?dataset a ontology:Dataset .\n" +
       "    ?dataset rdfs:label ?label .\n" +
+      "    ?dataset rdfs:comment ?comment .\n" +
       "  }\n" +
       "}\n";
     String response = queryTripleStore(query);
@@ -145,6 +48,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     List<Namespace> namespaces = new ArrayList<>(bindings.size());
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.dataset.value");
+      uid = uid.split(":")[1]; // expected: "dataset:12345-2345-2346-12345etc"
       String name = JsonPath.read(binding, "$.label.value");
       String description = JsonPath.read(binding, "$.comment.value");
       namespaces.add(new Namespace(uid, name, description));
@@ -174,53 +78,101 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return new Namespace(uid, name, description);
   }
 
-  @Override
-  public Map<Long, String> getTrialverseVariables(String namespaceUid, Long studyId, Collection<String> outcomeURIs) {
-    return getTrialverseConceptIds(namespaceUid, studyId, AnalysisConcept.OUTCOME, outcomeURIs);
-  }
 
   @Override
-  public Map<String, List<TrialDataIntervention>> findStudyInterventions(String namespaceUid, List<String> studyUds, List<String> interventionURIs) {
-    String conceptOptionsString = buildOptionStringFromConceptURIs(interventionURIs);
-    String studyOptionsString = StringUtils.join(studyUds, "|");
-    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-            "\n" +
-            "SELECT  * WHERE {\n" +
-            " GRAPH <http://trials.drugis.org/namespaces/" + namespaceUid + "/> {\n" +
-            "   ?uri rdf:type ?type .\n" +
-            "   FILTER regex(str(?type), \"namespaces/" +
-      namespaceUid + "/" + AnalysisConcept.DRUG.getSearchString() + "/(" + conceptOptionsString + ")\") .\n" +
-            "   FILTER regex(str(?uri), \"/study/(" + studyOptionsString + ")/\") .\n" +
-            " }\n" +
-            "}";
+  public List<SemanticOutcome> getOutcomes(String namespaceUid) {
+    List<SemanticOutcome> outcomes = new ArrayList<>();
+
+    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
+      "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
+      "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+      "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+      "\n" +
+      "PREFIX entity: <http://trials.drugis.org/entities/> \n" +
+      "\n" +
+      "SELECT ?outcome ?label WHERE {\n" +
+      "  GRAPH dataset:" + namespaceUid + " {\n" +
+      "    { ?outcome rdfs:subClassOf ontology:Endpoint } UNION { ?outcome rdfs:subClassOf ontology:AdverseEvent } .\n" +
+      "    ?outcome rdfs:label ?label .\n" +
+      "  }\n" +
+      "}\n";
     System.out.println(query);
     String response = queryTripleStore(query);
-
-    Map<String, List<TrialDataIntervention>> studyInterventionsMap = new HashMap<>();
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-
     for (Object binding : bindings) {
-      String uri = JsonPath.read(binding, "$.uri.value");
-      String semanticInterventionUri = JsonPath.read(binding, "$.type.value");
-      String studyUid = findStudyIdInURI(uri);
-      String drugUid = Long.valueOf(subStringAfterLastSlash(uri));
-      TrialDataIntervention trialDataIntervention = new TrialDataIntervention(drugUid, semanticInterventionUri, studyUid);
-
-      List<TrialDataIntervention> interventions = studyInterventionsMap.get(studyUid);
-      if (interventions == null) {
-        interventions = new ArrayList<>();
-        studyInterventionsMap.put(studyId, interventions);
-      }
-      interventions.add(trialDataIntervention);
+      String uid = JsonPath.read(binding, "$.outcome.value");
+      uid = uid.split(":")[1]; // expected: "entity:12345-2345-2346-12345etc"
+      String label = JsonPath.read(binding, "$.label.value");
+      outcomes.add(new SemanticOutcome(uid, label));
     }
-
-    return studyInterventionsMap;
+    return outcomes;
   }
 
-  private Map<Long, String> getTrialverseConceptIds(String namespaceUid, Long studyId, AnalysisConcept analysisConcept, Collection<String> conceptURIs) {
-    String optionString = buildOptionStringFromConceptURIs(conceptURIs);
-    String query = createFindUsagesQuery(namespaceUid, studyId, analysisConcept, optionString);
+  @Override
+  public List<SemanticIntervention> getInterventions(String namespaceUid) {
+    List<SemanticIntervention> interventions = new ArrayList<>();
+
+    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
+      "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
+      "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+      "\n" +
+      "PREFIX entity: <http://trials.drugis.org/entities/> \n" +
+      "\n" +
+      "SELECT ?intervention ?label WHERE {\n" +
+      "  GRAPH dataset:" + namespaceUid + " {\n" +
+      "    ?intervention rdfs:subClassOf ontology:Drug .\n" +
+      "    ?intervention rdfs:label ?label .\n" +
+      "  }\n" +
+      "}\n";
+
+    String response = queryTripleStore(query);
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    for (Object binding : bindings) {
+      String uid = JsonPath.read(binding, "$.intervention.value");
+      uid = uid.split(":")[1]; // expected: "entity:12345-2345-2346-12345etc"
+      String label = JsonPath.read(binding, "$.label.value");
+      interventions.add(new SemanticIntervention(uid, label));
+    }
+    return interventions;
+  }
+
+  @Override
+  public List<Study> queryStudies(String namespaceUid) {
+    List<Study> studies = new ArrayList<>();
+    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
+      "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
+      "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+      "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+      "\n" +
+      "PREFIX study: <http://trials.drugis.org/studies/>\n" +
+      "\n" +
+      "SELECT ?study ?title ?label WHERE {\n" +
+      "  GRAPH dataset:" + namespaceUid + " {\n" +
+      "    ?dataset ontology:contains_study ?study .\n" +
+      "  }\n" +
+      "  GRAPH ?study {\n" +
+      "    ?study rdfs:label ?label .\n" +
+      "    ?study rdfs:comment ?title .\n" +
+      "  }\n" +
+      "}";
+    String response = queryTripleStore(query);
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    for (Object binding : bindings) {
+      String uid = JsonPath.read(binding, "$.study.value");
+      uid = uid.split(":")[1];// "expected return: study:af0d9-adf0-rtwe-etc"
+      String name = JsonPath.read(binding, "$.label.value");
+      String title = JsonPath.read(binding, "$.comment.value");
+      studies.add(new Study(uid, name, title));
+    }
+    return studies;
+  }
+
+  @Override
+  public Map<Long, String> getTrialverseDrugs(String namespaceUid, String studyUid, Collection<String> drugURIs) {
+    String optionString = buildOptionStringFromConceptURIs(drugURIs);
+    String query1 = "TODO";
+    System.out.println(query1);
+    String query = query1;
 
     String response = queryTripleStore(query);
 
@@ -233,6 +185,73 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       concepts.put(conceptId, typeUri);
     }
     return concepts;
+  }
+
+  public List<Pair<Long, Long>> getOutcomeVariableUidsByStudyForSingleOutcome(String namespaceUid, List<String> studyUids, String outcomeURI) {
+    String query = "TODO";
+
+    System.out.println("getOutcomeVariableUidsByStudyForSingleOutcome query: " + query);
+    String response = queryTripleStore(query);
+    System.out.println("getOutcomeVariableUidsByStudyForSingleOutcome response: " + response);
+
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    List<Pair<Long, Long>> studyVariablesForOutcome = new ArrayList<>(bindings.size());
+    for (Object binding : bindings) {
+      String uri = JsonPath.read(binding, "$.uri.value");
+      Long studyId = findStudyIdInURI(uri);
+      Long variableId = Long.valueOf(subStringAfterLastSlash(uri));
+      studyVariablesForOutcome.add(Pair.of(studyId, variableId));
+    }
+    return studyVariablesForOutcome;
+  }
+
+  @Override
+  public Map<Long, String> getTrialverseVariables(String namespaceUid, Long studyId, Collection<String> outcomeURIs) {
+    String optionString = buildOptionStringFromConceptURIs(outcomeURIs);
+    String query1 = "TODO";
+    System.out.println(query1);
+    String query = query1;
+
+    String response = queryTripleStore(query);
+
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    Map<Long, String> concepts = new HashMap<>(bindings.size());
+    for (Object binding : bindings) {
+      String uri = JsonPath.read(binding, "$.uri.value");
+      String typeUri = JsonPath.read(binding, "$.type.value");
+      Long conceptId = extractConceptIdFromUri(uri);
+      concepts.put(conceptId, typeUri);
+    }
+    return concepts;
+  }
+
+  @Override
+  public Map<String, List<TrialDataIntervention>> findStudyInterventions(String namespaceUid, List<String> studyUids, List<String> interventionURIs) {
+    String conceptOptionsString = buildOptionStringFromConceptURIs(interventionURIs);
+    String studyOptionsString = StringUtils.join(studyUids, "|");
+    String query = "TODO";
+    System.out.println(query);
+    String response = queryTripleStore(query);
+
+    Map<String, List<TrialDataIntervention>> studyInterventionsMap = new HashMap<>();
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+
+    for (Object binding : bindings) {
+      String uri = JsonPath.read(binding, "$.uri.value");
+      String semanticInterventionUri = JsonPath.read(binding, "$.type.value");
+      String studyUid = ""; // FIXME
+      String drugUid = ""; //FIXME;
+      TrialDataIntervention trialDataIntervention = new TrialDataIntervention(drugUid, semanticInterventionUri, studyUid);
+
+      List<TrialDataIntervention> interventions = studyInterventionsMap.get(studyUid);
+      if (interventions == null) {
+        interventions = new ArrayList<>();
+        studyInterventionsMap.put(studyUid, interventions);
+      }
+      interventions.add(trialDataIntervention);
+    }
+
+    return studyInterventionsMap;
   }
 
   private String queryTripleStore(String query) {
@@ -256,32 +275,16 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return StringUtils.join(ids, "|");
   }
 
-  private String createFindUsagesQuery(String namespaceUid, Long studyId, AnalysisConcept analysisConcept, String URIsToFind) {
-    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-            "\n" +
-            "SELECT  * WHERE {\n" +
-            " GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
-            "   ?uri rdf:type ?type .\n" +
-            "   FILTER regex(str(?type), \"namespaces/" +
-            namespaceUid + "/" + analysisConcept.getSearchString() + "/(" + URIsToFind + ")\") .\n" +
-            "   FILTER regex(str(?uri), \"/study/" + studyId + "/\") .\n" +
-            " }\n" +
-            "}";
-    System.out.println(query);
-    return query;
-  }
-
   public List<Long> findStudiesReferringToConcept(String namespaceUid, String conceptUri) {
     List<Long> studyIds = new ArrayList<>();
     String query =
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                    "\n" +
-                    "SELECT * WHERE {\n" +
-                    " GRAPH <http://trials.drugis.org/namespaces/" + namespaceUid + "/> {\n" +
-                    "   ?uri rdf:type <" + conceptUri + "> .\n" +
-                    " }\n" +
-                    "}";
+      "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+        "\n" +
+        "SELECT * WHERE {\n" +
+        " GRAPH <http://trials.drugis.org/namespaces/" + namespaceUid + "/> {\n" +
+        "   ?uri rdf:type <" + conceptUri + "> .\n" +
+        " }\n" +
+        "}";
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
 

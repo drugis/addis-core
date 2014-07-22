@@ -67,7 +67,7 @@ public class TrialverseDataServiceTest {
 
     when(triplestoreService.findStudiesReferringToConcept(namespaceId, outcomeUri)).thenReturn(studyIds);
     when(triplestoreService.findStudyInterventions(namespaceId, studyIds, interventionUris)).thenReturn(studyInterventions);
-    when(triplestoreService.getOutcomeVariableIdsByStudyForSingleOutcome(namespaceId, studyIds, outcomeUri)).thenReturn(outComeVariableIdsByStudyForSingleOutcome);
+    when(triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceId, studyIds, outcomeUri)).thenReturn(outComeVariableIdsByStudyForSingleOutcome);
 
     when(trialverseRepository.getStudiesByIds(namespaceId, new ArrayList<>(studyInterventions.keySet()))).thenReturn(studies.subList(0, 1));
     when(trialverseRepository.getArmsForStudies(namespaceId, studyIds, variables)).thenReturn(trialDataArms);
@@ -78,7 +78,7 @@ public class TrialverseDataServiceTest {
 
     verify(triplestoreService).findStudiesReferringToConcept(namespaceId, outcomeUri);
     verify(triplestoreService).findStudyInterventions(namespaceId, studyIds, interventionUris);
-    verify(triplestoreService).getOutcomeVariableIdsByStudyForSingleOutcome(namespaceId, studyIds, outcomeUri);
+    verify(triplestoreService).getOutcomeVariableUidsByStudyForSingleOutcome(namespaceId, studyIds, outcomeUri);
     verify(trialverseRepository).getStudiesByIds(namespaceId, new ArrayList<>(studyInterventions.keySet()));
     verify(trialverseRepository).getArmsForStudies(namespaceId, studyIds, variables);
     Map<Long, String> tempMap = new HashMap<>();
