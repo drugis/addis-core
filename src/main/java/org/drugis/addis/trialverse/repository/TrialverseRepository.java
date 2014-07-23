@@ -1,23 +1,23 @@
 package org.drugis.addis.trialverse.repository;
 
-import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by connor on 2/26/14.
  */
 public interface TrialverseRepository {
 
-  public List<Study> queryStudies(Long namespaceId);
+  public List<Study> queryStudies(String namespaceUid);
 
-  public List<Arm> getArmsByDrugIds(Integer studyId, Collection<Long> drugIds);
+  public List<Arm> getArmsByDrugIds(String studyId, Collection<String> drugIds);
 
-  public List<Variable> getVariablesByOutcomeIds(Collection<Long> outcomeIds);
+  public List<Variable> getVariablesByOutcomeIds(Set<String> outcomeIds);
 
-  public List<Measurement> getOrderedMeasurements(Collection<Long> outcomeIds, Collection<Long> arms);
+  public List<Measurement> getOrderedMeasurements(List<String> outcomeUds, List<String> armUids);
 
   public List<Study> getStudiesByIds(String namespaceUid, List<String> studyUids);
 

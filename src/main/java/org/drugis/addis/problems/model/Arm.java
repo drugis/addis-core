@@ -1,29 +1,29 @@
 package org.drugis.addis.problems.model;
 
 public class Arm {
-  Long id;
-  Long drugId;
+  String uid;
+  String drugUid;
   String name;
 
   public Arm() {
   }
 
-  public Arm(Long id, Long drugId,  String name) {
-    this.id = id;
-    this.drugId = drugId;
+  public Arm(String uid, String drugUid, String name) {
+    this.uid = uid;
+    this.drugUid = drugUid;
     this.name = name;
   }
 
-  public Long getId() {
-    return id;
+  public String getUid() {
+    return uid;
   }
 
   public String getName() {
     return name;
   }
 
-  public Long getDrugId() {
-    return drugId;
+  public String getDrugUid() {
+    return drugUid;
   }
 
   @Override
@@ -33,8 +33,8 @@ public class Arm {
 
     Arm arm = (Arm) o;
 
-    if (!drugId.equals(arm.drugId)) return false;
-    if (!id.equals(arm.id)) return false;
+    if (!drugUid.equals(arm.drugUid)) return false;
+    if (!uid.equals(arm.uid)) return false;
     if (!name.equals(arm.name)) return false;
 
     return true;
@@ -42,8 +42,8 @@ public class Arm {
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
-    result = 31 * result + drugId.hashCode();
+    int result = uid.hashCode();
+    result = 31 * result + drugUid.hashCode();
     result = 31 * result + name.hashCode();
     return result;
   }

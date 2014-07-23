@@ -1,62 +1,54 @@
 package org.drugis.addis.trialverse.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "measurements")
 public class Measurement {
-  @Column(name = "integer_value")
-  Long integerValue;
-  @Column(name = "real_value")
-  Double realValue;
-  @EmbeddedId
-  @JsonIgnore
-  private MeasurementKey measurementKey;
+
+  private String studyUid;
+  private String variableUid;
+  private String armUid;
+  private Long sampleSize;
+  private Long rate;
+  private Double stdDev;
+  private Double mean;
 
   public Measurement() {
   }
 
-  public Measurement(Long studyId, Long variableId, Long measurementMomentId, Long armId, MeasurementAttribute measurementAttribute, Long integerValue, Double realValue) {
-    this.measurementKey = new MeasurementKey(studyId, variableId, measurementMomentId, armId, measurementAttribute);
-    this.integerValue = integerValue;
-    this.realValue = realValue;
+  public Measurement(String studyUid, String variableUid, String armUid, Long sampleSize, Long rate, Double stdDev, Double mean) {
+    this.studyUid = studyUid;
+    this.variableUid = variableUid;
+    this.armUid = armUid;
+    this.sampleSize = sampleSize;
+    this.rate = rate;
+    this.stdDev = stdDev;
+    this.mean = mean;
   }
 
-  public MeasurementKey getMeasurementKey() {
-    return measurementKey;
+  public String getStudyUid() {
+    return studyUid;
   }
 
-  public Long getIntegerValue() {
-    return integerValue;
+  public String getVariableUid() {
+    return variableUid;
   }
 
-  public Double getRealValue() {
-    return realValue;
+  public String getArmUid() {
+    return armUid;
   }
 
-  public Long getStudyId() {
-    return measurementKey.getStudyId();
+  public Long getSampleSize() {
+    return sampleSize;
   }
 
-  public Long getVariableId() {
-    return measurementKey.getVariableId();
+  public Long getRate() {
+    return rate;
   }
 
-  public Long getArmId() {
-    return measurementKey.getArmId();
+  public Double getStdDev() {
+    return stdDev;
   }
 
-  public Long getMeasurementMomentId() {
-    return measurementKey.getMeasurementMomentId();
-  }
-
-  public MeasurementAttribute getMeasurementAttribute() {
-    return measurementKey.getMeasurementAttribute();
+  public Double getMean() {
+    return mean;
   }
 
   @Override
@@ -66,18 +58,26 @@ public class Measurement {
 
     Measurement that = (Measurement) o;
 
-    if (integerValue != null ? !integerValue.equals(that.integerValue) : that.integerValue != null) return false;
-    if (!measurementKey.equals(that.measurementKey)) return false;
-    if (realValue != null ? !realValue.equals(that.realValue) : that.realValue != null) return false;
+    if (!armUid.equals(that.armUid)) return false;
+    if (mean != null ? !mean.equals(that.mean) : that.mean != null) return false;
+    if (rate != null ? !rate.equals(that.rate) : that.rate != null) return false;
+    if (!sampleSize.equals(that.sampleSize)) return false;
+    if (stdDev != null ? !stdDev.equals(that.stdDev) : that.stdDev != null) return false;
+    if (!studyUid.equals(that.studyUid)) return false;
+    if (!variableUid.equals(that.variableUid)) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    int result = integerValue != null ? integerValue.hashCode() : 0;
-    result = 31 * result + (realValue != null ? realValue.hashCode() : 0);
-    result = 31 * result + measurementKey.hashCode();
+    int result = studyUid.hashCode();
+    result = 31 * result + variableUid.hashCode();
+    result = 31 * result + armUid.hashCode();
+    result = 31 * result + sampleSize.hashCode();
+    result = 31 * result + (rate != null ? rate.hashCode() : 0);
+    result = 31 * result + (stdDev != null ? stdDev.hashCode() : 0);
+    result = 31 * result + (mean != null ? mean.hashCode() : 0);
     return result;
   }
 }

@@ -6,7 +6,6 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
-import org.drugis.addis.trialverse.service.TrialverseDataService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +36,6 @@ public class TrialverseController {
 
   @Inject
   private TriplestoreService triplestoreService;
-
-  @Inject
-  private TrialverseDataService trialverseDataService;
 
   @RequestMapping(value = "/namespaces", method = RequestMethod.GET)
   @ResponseBody
@@ -103,7 +99,7 @@ public class TrialverseController {
     if (interventionUris == null) {
       interventionUris = Collections.emptyList();
     }
-    return trialverseDataService.getTrialData(namespaceUid, outcomeUri, interventionUris);
+    return new TrialData(triplestoreService.getTrialData(namespaceUid, outcomeUri, interventionUris));
   }
 
   @ResponseStatus(HttpStatus.FORBIDDEN)

@@ -1,33 +1,41 @@
 package org.drugis.addis.trialverse.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by connor on 15-5-14.
  */
 public class TrialDataStudy {
-  private Long studyId;
+  private String studyUid;
   private String name;
-  private List<TrialDataIntervention> trialDataInterventions = new ArrayList<>();
+  private Set<TrialDataIntervention> trialDataInterventions = new HashSet<>();
   private List<TrialDataArm> trialDataArms = new ArrayList<>();
 
-  public TrialDataStudy(Long studyId, String name, List<TrialDataIntervention> trialDataInterventions, List<TrialDataArm> trialDataArms) {
-    this.studyId = studyId;
+  public TrialDataStudy(String studyUid, String name, Set<TrialDataIntervention> trialDataInterventions, List<TrialDataArm> trialDataArms) {
+    this.studyUid = studyUid;
     this.name = name;
-    this.trialDataInterventions = trialDataInterventions;
-    this.trialDataArms = trialDataArms;
+
+    if (trialDataInterventions != null) {
+      this.trialDataInterventions = trialDataInterventions;
+    }
+
+    if (trialDataArms != null) {
+      this.trialDataArms = trialDataArms;
+    }
   }
 
-  public Long getStudyId() {
-    return studyId;
+  public String getStudyUid() {
+    return studyUid;
   }
 
   public String getName() {
     return name;
   }
 
-  public List<TrialDataIntervention> getTrialDataInterventions() {
+  public Set<TrialDataIntervention> getTrialDataInterventions() {
     return trialDataInterventions;
   }
 
@@ -43,7 +51,7 @@ public class TrialDataStudy {
     TrialDataStudy that = (TrialDataStudy) o;
 
     if (!name.equals(that.name)) return false;
-    if (!studyId.equals(that.studyId)) return false;
+    if (!studyUid.equals(that.studyUid)) return false;
     if (!trialDataArms.equals(that.trialDataArms)) return false;
     if (!trialDataInterventions.equals(that.trialDataInterventions)) return false;
 
@@ -52,7 +60,7 @@ public class TrialDataStudy {
 
   @Override
   public int hashCode() {
-    int result = studyId.hashCode();
+    int result = studyUid.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + trialDataInterventions.hashCode();
     result = 31 * result + trialDataArms.hashCode();

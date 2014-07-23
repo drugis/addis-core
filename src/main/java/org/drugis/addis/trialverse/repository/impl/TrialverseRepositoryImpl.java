@@ -23,7 +23,7 @@ public class TrialverseRepositoryImpl implements TrialverseRepository {
   EntityManager em;
 
   @Override
-  public List<Arm> getArmsByDrugIds(Integer studyId, Collection<Long> drugIds) {
+  public List<Arm> getArmsByDrugIds(String studyId, Collection<String> drugIds) {
     if (drugIds.isEmpty()) {
       return Collections.emptyList();
     }
@@ -97,7 +97,7 @@ public class TrialverseRepositoryImpl implements TrialverseRepository {
   }
 
   @Override
-  public List<Variable> getVariablesByOutcomeIds(Collection<Long> outcomeIds) {
+  public List<Variable> getVariablesByOutcomeIds(Set<String> outcomeIds) {
     if (outcomeIds.isEmpty()) {
       return Collections.emptyList();
     }
@@ -107,8 +107,8 @@ public class TrialverseRepositoryImpl implements TrialverseRepository {
   }
 
   @Override
-  public List<Measurement> getOrderedMeasurements(Collection<Long> outcomeIds, Collection<Long> armIds) {
-    if (outcomeIds.isEmpty() || armIds.isEmpty()) {
+  public List<Measurement> getOrderedMeasurements(List<String> outcomeUds, List<String> armIds) {
+    if (outcomeUds.isEmpty() || armIds.isEmpty()) {
       return Collections.emptyList();
     }
 
@@ -129,7 +129,7 @@ public class TrialverseRepositoryImpl implements TrialverseRepository {
             " AND" +
             "  m.arm IN :armIds" +
             " ORDER BY m.variable, m.arm, m.attribute", Measurement.class);
-    query.setParameter("outcomeIds", outcomeIds);
+    query.setParameter("outcomeIds", outcomeUds);
     query.setParameter("armIds", armIds);
     return query.getResultList();
   }
@@ -188,7 +188,7 @@ public class TrialverseRepositoryImpl implements TrialverseRepository {
   }
 
   @Override
-  public List<Study> queryStudies(Long namespaceId) {
+  public List<Study> queryStudies(String namespaceUid) {
     Query query = em.createNativeQuery("select" +
                     " s.id, s.name, s.title " +
                     " FROM" +
@@ -200,7 +200,7 @@ public class TrialverseRepositoryImpl implements TrialverseRepository {
                     " AND nss.namespace = :namespaceId",
             Study.class
     );
-    query.setParameter("namespaceId", namespaceId);
+    query.setParameter("namespaceId", namespaceUid);
     return query.getResultList();
   }
 

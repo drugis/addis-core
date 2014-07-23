@@ -2,13 +2,13 @@ package org.drugis.addis.trialverse;
 
 
 import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections.SetUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
-import org.drugis.addis.trialverse.service.TrialverseDataService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
 import org.junit.After;
@@ -55,19 +55,13 @@ public class TrialverseControllerTest {
   @Inject
   private TriplestoreService triplestoreService;
 
-  @Inject
-  private TrialverseDataService trialverseDataService;
-
-  @Inject
-  private TriplestoreService triplestoreService;
-
   private Principal user;
 
   private Account gert = new Account(3, "gert", "Gert", "van Valkenhoef");
 
   @Before
   public void setUp() {
-    reset(accountRepository, trialverseRepository, triplestoreService, trialverseDataService);
+    reset(accountRepository, trialverseRepository, triplestoreService);
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
@@ -76,7 +70,7 @@ public class TrialverseControllerTest {
 
   @After
   public void cleanUp() {
-    verifyNoMoreInteractions(accountRepository, trialverseRepository, triplestoreService, trialverseDataService);
+    verifyNoMoreInteractions(accountRepository, trialverseRepository, triplestoreService);
   }
 
   @Test
@@ -124,29 +118,29 @@ public class TrialverseControllerTest {
 
   @Test
   public void testQuerySemanticInterventions() throws Exception {
-    Long namespaceId = 1L;
+    String namespaceUid = "abc";
     SemanticIntervention testIntervention = new SemanticIntervention("http://test/com", "test label");
-    when(triplestoreService.getInterventions(namespaceId)).thenReturn(Arrays.asList(testIntervention));
-    mockMvc.perform(get("/namespaces/" + namespaceId + "/interventions").principal(user))
+    when(triplestoreService.getInterventions(namespaceUid)).thenReturn(Arrays.asList(testIntervention));
+    mockMvc.perform(get("/namespaces/" + namespaceUid + "/interventions").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0].uri", is(testIntervention.getUri())));
-    verify(triplestoreService).getInterventions(namespaceId);
+    verify(triplestoreService).getInterventions(namespaceUid);
     verify(accountRepository).findAccountByUsername(user.getName());
   }
 
   @Test
   public void testQuerySemanticStudies() throws Exception {
-    Long namespaceId = 1L;
-    Study study = new Study(1L, "name", "this is a title");
-    when(trialverseRepository.queryStudies(namespaceId)).thenReturn(Arrays.asList(study));
-    mockMvc.perform(get("/namespaces/" + namespaceId + "/studies").principal(user))
+    String namespaceUid = "abc";
+    Study study = new Study(namespaceUid, "name", "this is a title");
+    when(trialverseRepository.queryStudies(namespaceUid)).thenReturn(Arrays.asList(study));
+    mockMvc.perform(get("/namespaces/" + namespaceUid + "/studies").principal(user))
       .andExpect(status().isOk())
       .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(jsonPath("$[0].id", is(1)))
       .andExpect(jsonPath("$[0].name", is(study.getName())))
       .andExpect(jsonPath("$[0].title", is(study.getTitle())));
-    verify(trialverseRepository).queryStudies(namespaceId);
+    verify(trialverseRepository).queryStudies(namespaceUid);
     verify(accountRepository).findAccountByUsername(user.getName());
   }
 
@@ -163,42 +157,40 @@ public class TrialverseControllerTest {
   @Test
   public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Exception {
     Map<TrialDataStudy, List<Pair<Long, String>>> studyInterventions = new HashMap<>();
-    List<TrialDataStudy> trialDataStudies = Arrays.asList(new TrialDataStudy(1L, "study name", ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST));
-    Map<Long, List<Pair<Long, String>>> studyInterventionKeys = new HashMap<>();
-    studyInterventionKeys.put(trialDataStudies.get(0).getStudyId(), Arrays.asList(Pair.of(101L, "some-sort-of-uri")));
+    List<TrialDataStudy> trialDataStudies = Arrays.asList(new TrialDataStudy("abc", "study name", SetUtils.EMPTY_SET, ListUtils.EMPTY_LIST));
+    Map<String, List<Pair<Long, String>>> studyInterventionKeys = new HashMap<>();
+    studyInterventionKeys.put(trialDataStudies.get(0).getStudyUid(), Arrays.asList(Pair.of(101L, "some-sort-of-uri")));
     for (TrialDataStudy trialDataStudy : trialDataStudies) {
-      studyInterventions.put(trialDataStudy, studyInterventionKeys.get(trialDataStudy.getStudyId()));
+      studyInterventions.put(trialDataStudy, studyInterventionKeys.get(trialDataStudy.getStudyUid()));
     }
-    TrialData trialData = new TrialData(trialDataStudies);
-    Long namespaceId = 1L;
+    String namespaceUid = "abc";
     List<String> interventionUris = Arrays.asList("uri1", "uri2");
     String outcomeUri = "http://someoutcomethisis/12345/abc";
-    when(trialverseDataService.getTrialData(namespaceId, outcomeUri, interventionUris)).thenReturn(trialData);
+    when(triplestoreService.getTrialData(namespaceUid, outcomeUri, interventionUris)).thenReturn(trialDataStudies);
     mockMvc.perform(get("/namespaces/1/trialData?interventionUris=uri1&interventionUris=uri2&outcomeUri=" + outcomeUri).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", notNullValue()));
-    verify(trialverseDataService).getTrialData(namespaceId, outcomeUri, interventionUris);
+    verify(triplestoreService).getTrialData(namespaceUid, outcomeUri, interventionUris);
   }
 
   @Test
   public void testGetTrialDataWithOutcomeAndNoInterventionsInQuery() throws Exception {
     Map<TrialDataStudy, List<Pair<Long, String>>> studyInterventions = new HashMap<>();
-    List<TrialDataStudy> trialDataStudies = Arrays.asList(new TrialDataStudy(1L, "study name", ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST));
-    Map<Long, List<Pair<Long, String>>> studyInterventionKeys = new HashMap<>();
-    studyInterventionKeys.put(trialDataStudies.get(0).getStudyId(), Arrays.asList(Pair.of(101L, "some-sort-of-uri")));
+    List<TrialDataStudy> trialDataStudies = Arrays.asList(new TrialDataStudy("abc", "study name", SetUtils.EMPTY_SET, ListUtils.EMPTY_LIST));
+    Map<String, List<Pair<Long, String>>> studyInterventionKeys = new HashMap<>();
+    studyInterventionKeys.put(trialDataStudies.get(0).getStudyUid(), Arrays.asList(Pair.of(101L, "some-sort-of-uri")));
     for (TrialDataStudy trialDataStudy : trialDataStudies) {
-      studyInterventions.put(trialDataStudy, studyInterventionKeys.get(trialDataStudy.getStudyId()));
+      studyInterventions.put(trialDataStudy, studyInterventionKeys.get(trialDataStudy.getStudyUid()));
     }
-    TrialData trialData = new TrialData(trialDataStudies);
-    Long namespaceId = 1L;
+    String namespaceUid = "abc";
     String outcomeUri = "http://someoutcomethisis/12345/abc";
-    when(trialverseDataService.getTrialData(namespaceId, outcomeUri, Collections.EMPTY_LIST)).thenReturn(trialData);
+    when(triplestoreService.getTrialData(namespaceUid, outcomeUri, Collections.EMPTY_LIST)).thenReturn(trialDataStudies);
     mockMvc.perform(get("/namespaces/1/trialData?outcomeUri=" + outcomeUri).principal(user))
       .andExpect(status().isOk())
       .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(jsonPath("$", notNullValue()));
-    verify(trialverseDataService).getTrialData(namespaceId, outcomeUri, Collections.EMPTY_LIST);
+    verify(triplestoreService).getTrialData(namespaceUid, outcomeUri, Collections.EMPTY_LIST);
   }
 
 }

@@ -36,7 +36,7 @@ public class AlternativeService {
    *
    * @return A map keyed with arm IDS with the alternatives as values
    */
-  public Map<Long, AlternativeEntry> createAlternatives(Project project, SingleStudyBenefitRiskAnalysis analysis) {
+  public Map<String, AlternativeEntry> createAlternatives(Project project, SingleStudyBenefitRiskAnalysis analysis) {
 
     Map<String, Intervention> interventionsByUri = new HashMap<>();
     for (Intervention intervention : analysis.getSelectedInterventions()) {
@@ -45,19 +45,19 @@ public class AlternativeService {
 
     System.out.println("DEBUG interventionsByUri : " + interventionsByUri);
 
-    Map<Long, String> drugs = triplestoreService.getTrialverseDrugs(project.getNamespaceUid(), analysis.getStudyId().longValue(), interventionsByUri.keySet());
-    List<ObjectNode> jsonArms = trialverseService.getArmsByDrugIds(analysis.getStudyId(), drugs.keySet());
+    Map<String, String> drugs = triplestoreService.getTrialverseDrugs(project.getNamespaceUid(), analysis.getStudyUid(), interventionsByUri.keySet());
+    List<ObjectNode> jsonArms = trialverseService.getArmsByDrugIds(analysis.getStudyUid(), drugs.keySet());
 
     System.out.println("DEBUG drug ids : " + drugs);
 
-    Map<Long, AlternativeEntry> alternativesCache = new HashMap<>();
+    Map<String, AlternativeEntry> alternativesCache = new HashMap<>();
 
     for (ObjectNode jsonArm : jsonArms) {
       Arm arm = mapper.convertValue(jsonArm, Arm.class);
-      String drugUUID = drugs.get(arm.getDrugId());
+      String drugUUID = drugs.get(arm.getDrugUid());
       Intervention intervention = interventionsByUri.get(drugUUID);
       AlternativeEntry alternativeEntry = new AlternativeEntry(intervention.getSemanticInterventionUri(), intervention.getName());
-      alternativesCache.put(arm.getId(), alternativeEntry);
+      alternativesCache.put(arm.getUid(), alternativeEntry);
     }
 
     return alternativesCache;

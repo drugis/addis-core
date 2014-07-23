@@ -1,58 +1,50 @@
 package org.drugis.addis.trialverse.model;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by connor on 9-5-14.
  */
-@Entity
-@Table(name = "arms")
-@SecondaryTable(name = "treatments")
 public class TrialDataArm {
-  @Id
-  private Long id;
+  private String uid;
   private String name;
-  private Long study;
-
-  @Column(table = "treatments", name = "drug")
-  private Long drugId;
-
-  @Transient
-  private List<Measurement> measurements = new ArrayList<>();
+  private String studyUid;
+  private String drugInstanceUid;
+  private String drugUid;
+  private Measurement measurement;
 
   public TrialDataArm() {
   }
 
-  public TrialDataArm(Long id, Long study, String name) {
-    this.id = id;
-    this.study = study;
+  public TrialDataArm(String uid, String name, String studyUid, String drugInstanceUid, String drugUid, Measurement measurement) {
+    this.uid = uid;
     this.name = name;
+    this.studyUid = studyUid;
+    this.drugInstanceUid = drugInstanceUid;
+    this.drugUid = drugUid;
+    this.measurement = measurement;
   }
 
-  public Long getId() {
-    return id;
+  public String getUid() {
+    return uid;
   }
 
   public String getName() {
     return name;
   }
 
-  public Long getStudy() {
-    return study;
+  public String getStudyUid() {
+    return studyUid;
   }
 
-  public Long getDrugId() {
-    return drugId;
+  public String getDrugInstanceUid() {
+    return drugInstanceUid;
   }
 
-  public List<Measurement> getMeasurements() {
-    return measurements;
+  public String getDrugUid() {
+    return drugUid;
   }
 
-  public void setMeasurements(List<Measurement> measurements) {
-    this.measurements = measurements != null ? this.measurements = measurements : new ArrayList<Measurement>();
+  public Measurement getMeasurement() {
+    return measurement;
   }
 
   @Override
@@ -62,20 +54,24 @@ public class TrialDataArm {
 
     TrialDataArm that = (TrialDataArm) o;
 
-    if (!id.equals(that.id)) return false;
-    if (!measurements.equals(that.measurements)) return false;
+    if (!drugInstanceUid.equals(that.drugInstanceUid)) return false;
+    if (!drugUid.equals(that.drugUid)) return false;
+    if (!measurement.equals(that.measurement)) return false;
     if (!name.equals(that.name)) return false;
-    if (!study.equals(that.study)) return false;
+    if (!studyUid.equals(that.studyUid)) return false;
+    if (!uid.equals(that.uid)) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
+    int result = uid.hashCode();
     result = 31 * result + name.hashCode();
-    result = 31 * result + study.hashCode();
-    result = 31 * result + measurements.hashCode();
+    result = 31 * result + studyUid.hashCode();
+    result = 31 * result + drugInstanceUid.hashCode();
+    result = 31 * result + drugUid.hashCode();
+    result = 31 * result + measurement.hashCode();
     return result;
   }
 }

@@ -41,10 +41,10 @@ public class CriteriaServiceTest {
 
   ObjectMapper mapper = new ObjectMapper();
 
-  private int studyId;
-  private long variableId;
-  private String outcomeUri;
-  private Map<Long, String> trialverseVariables;
+  private String studyUid;
+  private String variableUid;
+  private String outcomeUid;
+  private Map<String, String> trialverseVariables;
   private Outcome outcome;
   private Project project;
   private SingleStudyBenefitRiskAnalysis analysis;
@@ -57,25 +57,25 @@ public class CriteriaServiceTest {
     initMocks(this);
 
     analysis = mock(SingleStudyBenefitRiskAnalysis.class);
-    when(analysis.getStudyId()).thenReturn(studyId);
+    when(analysis.getStudyUid()).thenReturn(studyUid);
 
     project = mock(Project.class);
-    String trialverseId = 1;
-    when(project.getNamespaceUid()).thenReturn(trialverseId);
+    String trialverseUid = "abc";
+    when(project.getNamespaceUid()).thenReturn(trialverseUid);
 
-    outcomeUri = "outcomeUri";
+    outcomeUid = "outcomeUri";
     outcomeMap = new HashMap<>();
     outcome = mock(Outcome.class);
     when(outcome.getName()).thenReturn("outcomeName");
-    when(outcome.getSemanticOutcomeUri()).thenReturn(outcomeUri);
+    when(outcome.getSemanticOutcomeUri()).thenReturn(outcomeUid);
     outcomeMap.put(outcome.getSemanticOutcomeUri(), outcome);
 
     when(analysis.getSelectedOutcomes()).thenReturn(Arrays.asList(outcome));
-    studyId = 11;
-    variableId = 22;
+    studyUid = "studyUid";
+    variableUid = "varUid";
     trialverseVariables = new HashMap<>();
     partialValueFunction = null;
-    when(triplestoreService.getTrialverseVariables(project.getNamespaceUid().longValue(), analysis.getStudyId().longValue(), outcomeMap.keySet())).thenReturn(trialverseVariables);
+    when(triplestoreService.getTrialverseVariables(project.getNamespaceUid(), analysis.getStudyUid(), outcomeMap.keySet())).thenReturn(trialverseVariables);
 
   }
 
@@ -83,16 +83,16 @@ public class CriteriaServiceTest {
   @After
   public void cleanUp() {
     verify(trialverseService).getVariablesByIds(trialverseVariables.keySet());
-    verify(triplestoreService).getTrialverseVariables(project.getNamespaceUid().longValue(), analysis.getStudyId().longValue(), outcomeMap.keySet());
+    verify(triplestoreService).getTrialverseVariables(project.getNamespaceUid(), analysis.getStudyUid(), outcomeMap.keySet());
     verifyNoMoreInteractions(triplestoreService, trialverseService);
   }
 
 
   @Test
   public void testCreateVariableCriteriaPairsForARateVariable() {
-    Variable variable = new Variable(variableId, new Long(studyId), "variableName", "desc", "unit", true, MeasurementType.RATE, "varType");
+    Variable variable = new Variable(variableUid, studyUid, "variableName", "desc", "unit", true, MeasurementType.RATE, "varType");
     ObjectNode variableJSONNode = mapper.convertValue(variable, ObjectNode.class);
-    trialverseVariables.put(variable.getId(), outcomeUri);
+    trialverseVariables.put(variable.getUid(), outcomeUid);
     when(trialverseService.getVariablesByIds(trialverseVariables.keySet())).thenReturn(Arrays.asList(variableJSONNode));
 
     List<Pair<Variable, CriterionEntry>> result = criteriaService.createVariableCriteriaPairs(project, analysis);
@@ -108,9 +108,9 @@ public class CriteriaServiceTest {
 
   @Test
   public void testCreateVariableCriteriaPairsForAContinousVariable() {
-    Variable variable = new Variable(variableId, new Long(studyId), "variableName", "desc", "unit", true, MeasurementType.CONTINUOUS, "varType");
+    Variable variable = new Variable(variableUid, studyUid, "variableName", "desc", "unit", true, MeasurementType.CONTINUOUS, "varType");
     ObjectNode variableJSONNode = mapper.convertValue(variable, ObjectNode.class);
-    trialverseVariables.put(variable.getId(), outcomeUri);
+    trialverseVariables.put(variable.getUid(), outcomeUid);
     when(trialverseService.getVariablesByIds(trialverseVariables.keySet())).thenReturn(Arrays.asList(variableJSONNode));
 
     List<Pair<Variable, CriterionEntry>> result = criteriaService.createVariableCriteriaPairs(project, analysis);
@@ -126,9 +126,9 @@ public class CriteriaServiceTest {
 
   @Test(expected = EnumConstantNotPresentException.class)
   public void testCreateVariableCriteriaPairsForACategoricalVariable() {
-    Variable variable = new Variable(variableId, new Long(studyId), "variableName", "desc", "unit", true, MeasurementType.CATEGORICAL, "varType");
+    Variable variable = new Variable(variableUid, studyUid, "variableName", "desc", "unit", true, MeasurementType.CATEGORICAL, "varType");
     ObjectNode variableJSONNode = mapper.convertValue(variable, ObjectNode.class);
-    trialverseVariables.put(variable.getId(), outcomeUri);
+    trialverseVariables.put(variable.getUid(), outcomeUid);
     when(trialverseService.getVariablesByIds(trialverseVariables.keySet())).thenReturn(Arrays.asList(variableJSONNode));
 
     criteriaService.createVariableCriteriaPairs(project, analysis);

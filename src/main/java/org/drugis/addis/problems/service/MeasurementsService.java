@@ -35,18 +35,17 @@ public class MeasurementsService {
 
   private ObjectMapper mapper = new ObjectMapper();
 
-
   /**
    * Retrieve a list of measurements from the project namespace, based on selected outcomes.
    */
-  public List<Measurement> createMeasurements(Project project, SingleStudyBenefitRiskAnalysis analysis, Map<Long, AlternativeEntry> alternativesCache) {
+  public List<Measurement> createMeasurements(Project project, SingleStudyBenefitRiskAnalysis analysis, Map<String, AlternativeEntry> alternativesCache) {
     Map<String, Outcome> outcomesByUri = new HashMap<>();
 
     for (Outcome outcome : analysis.getSelectedOutcomes()) {
       outcomesByUri.put(outcome.getSemanticOutcomeUri(), outcome);
     }
-    Map<Long, String> trialverseVariables = triplestoreService.getTrialverseVariables(project.getNamespaceUid(), analysis.getStudyId().longValue(), outcomesByUri.keySet());
-    List<ObjectNode> jsonMeasurements = trialverseService.getOrderedMeasurements(trialverseVariables.keySet(), alternativesCache.keySet());
+    Map<String, String> trialverseVariables = triplestoreService.getTrialverseVariables(project.getNamespaceUid(), analysis.getStudyUid(), outcomesByUri.keySet());
+    List<ObjectNode> jsonMeasurements = trialverseService.getOrderedMeasurements(new ArrayList<>(trialverseVariables.keySet()), new ArrayList<>(alternativesCache.keySet()));
     List<Measurement> measurements = new ArrayList<>(jsonMeasurements.size());
     for (ObjectNode measurementJSONNode : jsonMeasurements) {
       Measurement measurement = mapper.convertValue(measurementJSONNode, Measurement.class);

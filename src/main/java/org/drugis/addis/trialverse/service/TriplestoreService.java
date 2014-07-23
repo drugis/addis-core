@@ -21,9 +21,9 @@ public interface TriplestoreService {
 
   public List<Study> queryStudies(String namespaceUid);
 
-  public Map<Long, String> getTrialverseDrugs(String namespaceUid, String studyUid, Collection<String> interventionURIs);
+  public Map<String, String> getTrialverseDrugs(String namespaceUid, String studyUid, Collection<String> interventionURIs);
 
-  public Map<Long, String> getTrialverseVariables(String namespaceUid, Long studyId, Collection<String> outcomeURIs);
+  public Map<String, String> getTrialverseVariables(String namespaceUid, String studyId, Collection<String> outcomeURIs);
 
   public List<Long> findStudiesReferringToConcept(String namespaceUid, String conceptUri);
 
@@ -37,9 +37,10 @@ public interface TriplestoreService {
    *
    * @param namespaceUid
    * @param studyUids    The studies that should be included
-   * @param outcomeURI  The outcome concept for which the trialverse variable ids should be resolved
+   * @param outcomeURI   The outcome concept for which the trialverse variable ids should be resolved
    * @return
    */
   public List<Pair<Long, Long>> getOutcomeVariableUidsByStudyForSingleOutcome(String namespaceUid, List<String> studyUids, String outcomeURI);
 
+  public List<TrialDataStudy> getTrialData(String namespaceUid, String outcomeUri, List<String> interventionUris);
 }

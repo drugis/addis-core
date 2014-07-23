@@ -88,7 +88,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     ObjectMapper mapper = new ObjectMapper();
     TrialData convertedTrialData = mapper.convertValue(trialData, TrialData.class);
-    Map<Long, TrialDataIntervention> interventionByDrugIdMap = createInterventionByDrugIdMap(convertedTrialData);
+    Map<String, TrialDataIntervention> interventionByDrugIdMap = createInterventionByDrugIdMap(convertedTrialData);
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
 
@@ -100,9 +100,9 @@ public class ProblemServiceImpl implements ProblemService {
       if (filteredArms.size() >= 2) {
 
         for (TrialDataArm trialDataArm : filteredArms) {
-          String interventionUri = interventionByDrugIdMap.get(trialDataArm.getDrugId()).getUri();
+          String interventionUri = interventionByDrugIdMap.get(trialDataArm.getDrugUid()).getUri();
           Integer treatmentId = interventionIdsByUrisMap.get(interventionUri);
-          entries.add(buildEntry(trialDataStudy.getName(), treatmentId, trialDataArm.getMeasurements()));
+          entries.add(buildEntry(trialDataStudy.getName(), treatmentId, trialDataArm.getMeasurement()));
         }
 
       }
@@ -121,7 +121,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     for (TrialDataArm trialDataArm : trialDataArms) {
-      if (!armExclusionTrialverseIds.contains(trialDataArm.getId())) {
+      if (!armExclusionTrialverseIds.contains(trialDataArm.getUid())) {
         filteredTrialDataArms.add(trialDataArm);
       }
     }
@@ -129,26 +129,25 @@ public class ProblemServiceImpl implements ProblemService {
     return filteredTrialDataArms;
   }
 
-  private AbstractNetworkMetaAnalysisProblemEntry buildEntry(String studyName, Integer treatmentId, List<Measurement> measurements) {
-    Map<MeasurementAttribute, Measurement> measurementAttributeMeasurementMap = Measurement.mapMeasurementsByAttribute(measurements);
-    Long sampleSize = measurementAttributeMeasurementMap.get(MeasurementAttribute.SAMPLE_SIZE).getIntegerValue();
-    if (measurementAttributeMeasurementMap.get(MeasurementAttribute.MEAN) != null) {
-      Double mu = measurementAttributeMeasurementMap.get(MeasurementAttribute.MEAN).getRealValue();
-      Double sigma = measurementAttributeMeasurementMap.get(MeasurementAttribute.STANDARD_DEVIATION).getRealValue();
+  private AbstractNetworkMetaAnalysisProblemEntry buildEntry(String studyName, Integer treatmentId, Measurement measurement) {
+    Long sampleSize = measurement.getSampleSize();
+    if (measurement.getMean() != null) {
+      Double mu = measurement.getMean();
+      Double sigma = measurement.getStdDev();
       return new ContinuousNetworkMetaAnalysisProblemEntry(studyName, treatmentId, sampleSize, mu, sigma);
-    } else if (measurementAttributeMeasurementMap.get(MeasurementAttribute.RATE) != null) {
-      Long rate = measurementAttributeMeasurementMap.get(MeasurementAttribute.RATE).getIntegerValue();
+    } else if (measurement.getRate() != null) {
+      Long rate = measurement.getRate();
       return new RateNetworkMetaAnalysisProblemEntry(studyName, treatmentId, sampleSize, rate);
     }
     throw new RuntimeException("unknown measurement type");
   }
 
-  private Map<Long, TrialDataIntervention> createInterventionByDrugIdMap(TrialData trialData) {
-    Map<Long, TrialDataIntervention> interventionByDrugIdMap = new HashMap<>();
+  private Map<String, TrialDataIntervention> createInterventionByDrugIdMap(TrialData trialData) {
+    Map<String, TrialDataIntervention> interventionByDrugIdMap = new HashMap<>();
     for (TrialDataStudy study : trialData.getTrialDataStudies()) {
 
       for (TrialDataIntervention intervention : study.getTrialDataInterventions()) {
-        interventionByDrugIdMap.put(intervention.getDrugId(), intervention);
+        interventionByDrugIdMap.put(intervention.getDrugUid(), intervention);
       }
     }
     return interventionByDrugIdMap;
@@ -171,7 +170,7 @@ public class ProblemServiceImpl implements ProblemService {
     return filteredInterventions;
   }
 
-  private List<TrialDataArm> filterUnmatchedArms(TrialDataStudy study, Map<Long, TrialDataIntervention> interventionByIdMap) {
+  private List<TrialDataArm> filterUnmatchedArms(TrialDataStudy study, Map<String, TrialDataIntervention> interventionByIdMap) {
     List<TrialDataArm> filteredArms = new ArrayList<>();
 
     List<TrialDataArm> studyArmsSortedByName = sortTrialDataArmsByName(study.getTrialDataArms());
@@ -195,12 +194,12 @@ public class ProblemServiceImpl implements ProblemService {
     return trialDataArms;
   }
 
-  private boolean isMatched(TrialDataArm arm, Map<Long, TrialDataIntervention> interventionByIdMap) {
-    return interventionByIdMap.get(arm.getDrugId()) != null;
+  private boolean isMatched(TrialDataArm arm, Map<String, TrialDataIntervention> interventionByIdMap) {
+    return interventionByIdMap.get(arm.getDrugUid()) != null;
   }
 
   private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException {
-    Map<Long, AlternativeEntry> alternativesCache = alternativeService.createAlternatives(project, analysis);
+    Map<String, AlternativeEntry> alternativesCache = alternativeService.createAlternatives(project, analysis);
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
     for (AlternativeEntry alternativeEntry : alternativesCache.values()) {
       alternatives.put(alternativeEntry.getAlternativeUri(), alternativeEntry);
@@ -209,12 +208,12 @@ public class ProblemServiceImpl implements ProblemService {
     List<Pair<Variable, CriterionEntry>> variableCriteriaPairs = criteriaService.createVariableCriteriaPairs(project, analysis);
 
     Map<String, CriterionEntry> criteria = new HashMap<>();
-    Map<Long, CriterionEntry> criteriaCache = new HashMap<>();
+    Map<String, CriterionEntry> criteriaCache = new HashMap<>();
     for (Pair<Variable, CriterionEntry> variableCriterionPair : variableCriteriaPairs) {
       Variable variable = variableCriterionPair.getLeft();
       CriterionEntry criterionEntry = variableCriterionPair.getRight();
       criteria.put(criterionEntry.getCriterionUri(), criterionEntry);
-      criteriaCache.put(variable.getId(), criterionEntry);
+      criteriaCache.put(variable.getUid(), criterionEntry);
     }
 
     List<Measurement> measurements = measurementsService.createMeasurements(project, analysis, alternativesCache);

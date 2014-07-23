@@ -47,7 +47,7 @@ public class TriplestoreServiceTest {
   public void testGetOutcomes() {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     createMockTrialverseService(mockResult);
-    List<SemanticOutcome> result = triplestoreService.getOutcomes(1L);
+    List<SemanticOutcome> result = triplestoreService.getOutcomes("abc");
     SemanticOutcome result1 = new SemanticOutcome("http://trials.drugis.org/namespace/1/endpoint/test1", "DBP 24-hour mean");
     assertEquals(result.get(0), result1);
   }
@@ -57,15 +57,15 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleInterventionResult.json");
     createMockTrialverseService(mockResult);
 
-    List<SemanticIntervention> result = triplestoreService.getInterventions(1L);
+    List<SemanticIntervention> result = triplestoreService.getInterventions("abc");
     SemanticIntervention result1 = new SemanticIntervention("http://trials.drugis.org/namespace/1/drug/test1", "Azilsartan");
     assertEquals(result.get(0), result1);
   }
 
   @Test
   public void testGetDrugIds() {
-    Long namespaceId = 1L;
-    Long studyId = 1L;
+    String namespaceUid = "abc";
+    String studyUid = "asd";
     List<String> interventionConceptUris = new ArrayList<>();
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleDrugIdResult.json");
     createMockTrialverseService(mockResult);
@@ -76,15 +76,15 @@ public class TriplestoreServiceTest {
     expected.put(4L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug");
 
     // EXECUTOR
-    Map<Long, String> result = triplestoreService.getTrialverseDrugs(namespaceId, studyId, interventionConceptUris);
+    Map<String, String> result = triplestoreService.getTrialverseDrugs(namespaceUid, studyUid, interventionConceptUris);
 
     assertEquals(expected, result);
   }
 
   @Test
   public void testGetOutcomeIds() {
-    Long namespaceId = 1L;
-    Long studyId = 1L;
+    String namespaceUid = "abc";
+    String studyUid = "asd";
     List<String> outcomeConceptUris = new ArrayList<>();
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeIdResult.json");
     createMockTrialverseService(mockResult);
@@ -95,7 +95,7 @@ public class TriplestoreServiceTest {
     expected.put(4L, "http://trials.drugis.org/namespace/2/adverseEvent/e2611534a509251f2e1cadverseEvent");
 
     // EXECUTOR
-    Map<Long, String> result = triplestoreService.getTrialverseVariables(namespaceId, studyId, outcomeConceptUris);
+    Map<String, String> result = triplestoreService.getTrialverseVariables(namespaceUid, studyUid, outcomeConceptUris);
 
     assertEquals(expected, result);
   }
@@ -105,8 +105,8 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleStudyUris.json");
     createMockTrialverseService(mockResult);
 
-    Long namespaceId = 1L;
-    List<Long> studyIds = triplestoreService.findStudiesReferringToConcept(namespaceId, "magic");
+    String namespaceUid = "abc";
+    List<Long> studyIds = triplestoreService.findStudiesReferringToConcept(namespaceUid, "magic");
     assertEquals(5, studyIds.size());
   }
 
@@ -116,13 +116,14 @@ public class TriplestoreServiceTest {
     createMockTrialverseService(mockResult);
 
 
-    Long namespaceId = 1L;
-    List<Long> studyIds = Arrays.asList(1L, 2L, 3L);
+    String namespaceUid = "abc";
+    List<String> studyIds = Arrays.asList("study1", "study2", "study3");
     List<String> interventionsURIs = Arrays.asList("http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug");
-    Map<Long, List<TrialDataIntervention>> result = triplestoreService.findStudyInterventions(namespaceId, studyIds, interventionsURIs);
+    Map<String, List<TrialDataIntervention>> result = triplestoreService.findStudyInterventions(namespaceUid, studyIds, interventionsURIs);
     assertNotNull(result);
-    assertTrue(result.containsKey(1L));
-    assertTrue(result.get(1L).containsAll(Arrays.asList(new TrialDataIntervention(1L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug", 1L), new TrialDataIntervention(4L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug", 1L))));
+    assertTrue(result.containsKey("study1"));
+    assertTrue(result.get("study1").containsAll(Arrays.asList(new TrialDataIntervention("drugUid1", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug", "study1"),
+            new TrialDataIntervention("drugUid2", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug", "study1"))));
   }
 
   @Test
@@ -132,12 +133,12 @@ public class TriplestoreServiceTest {
     createMockTrialverseService(mockResult);
 
 
-    Long namespaceId = 1L;
-    List<Long> studyIds = Arrays.asList(20L, 13L, 5L);
+    String namespaceUid = "abc";
+    List<String> studyIds = Arrays.asList("study1", "study2", "study3");
     String outcomeConceptUri = "http://trials.drugis.org/namespace/2/adverseEvent/232145506bf409d7bb931fd35d6122c0";
-    List<Pair<Long, Long>> result = triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceId, studyIds, outcomeConceptUri);
+    List<Pair<Long, Long>> result = triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceUid, studyIds, outcomeConceptUri);
     assertEquals(3, result.size());
-    assertTrue(result.containsAll(Arrays.asList(Pair.of(20L, 304L), Pair.of(13L, 209L), Pair.of(5L, 91L))));
+    assertTrue(result.containsAll(Arrays.asList(Pair.of("study1", 304L), Pair.of("study2", 209L), Pair.of("study3", 91L))));
   }
 
   @Test
@@ -146,12 +147,12 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeToVariableAdverseEventResult.json");
     createMockTrialverseService(mockResult);
 
-    Long namespaceId = 1L;
-    List<Long> studyIds = Arrays.asList(20L, 13L, 5L);
+    String namespaceUid = "abc";
+    List<String> studyIds = Arrays.asList("study1", "study2", "study3");
     String outcomeConceptUri = "http://trials.drugis.org/namespace/2/endPoint/232145506bf409d7bb931fd35d6122c0";
-    List<Pair<Long, Long>> result = triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceId, studyIds, outcomeConceptUri);
+    List<Pair<Long, Long>> result = triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceUid, studyIds, outcomeConceptUri);
     assertEquals(3, result.size());
-    assertTrue(result.containsAll(Arrays.asList(Pair.of(20L, 304L), Pair.of(13L, 209L), Pair.of(5L, 91L))));
+    assertTrue(result.containsAll(Arrays.asList(Pair.of("study1", 304L), Pair.of("study2", 209L), Pair.of("study3", 91L))));
   }
 
   @Test

@@ -6,7 +6,6 @@ import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.AlternativeEntry;
 import org.drugis.addis.problems.model.Measurement;
-import org.drugis.addis.problems.model.MeasurementAttribute;
 import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.trialverse.service.TrialverseService;
@@ -16,15 +15,10 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
@@ -54,19 +48,17 @@ public class MeasurementsServiceTest {
 
   @Test
   public void testCreatePerformanceTable() throws Exception {
-    String trialverseId = 1;
-    int studyId = 2;
-    String outcomeUri = "uri";
-    Long outcomeId = 11L;
-    long alternativeId = 21L;
-    Long measurementMomentId = 31L;
-    Long integerValue = 101L;
+    String trialverseUid = "abc";
+    String studyUid = "studyUid";
+    String outcomeUri = "outcomeUri";
+    String outcomeUid = "outcomeUid";
+    String armUid = "armuid";
 
     Project project = mock(Project.class);
-    when(project.getNamespaceUid()).thenReturn(trialverseId);
+    when(project.getNamespaceUid()).thenReturn(trialverseUid);
 
     SingleStudyBenefitRiskAnalysis analysis = mock(SingleStudyBenefitRiskAnalysis.class);
-    when(analysis.getStudyId()).thenReturn(studyId);
+    when(analysis.getStudyUid()).thenReturn(studyUid);
 
     Outcome outcome = mock(Outcome.class);
     when(outcome.getSemanticOutcomeUri()).thenReturn(outcomeUri);
@@ -77,18 +69,19 @@ public class MeasurementsServiceTest {
     Map<String, Outcome> outcomeMap = new HashMap<>();
     outcomeMap.put(outcomeUri, outcome);
 
-    Map<Long, AlternativeEntry> alternativesCache = new HashMap<>();
+    Map<String, AlternativeEntry> alternativesCache = new HashMap<>();
 
-    alternativesCache.put(alternativeId, mock(AlternativeEntry.class));
+    String alternativeUid = "altuid";
+    alternativesCache.put(alternativeUid, mock(AlternativeEntry.class));
 
-    Map<Long, String> trialverseVariables = new HashMap<>();
-    trialverseVariables.put(outcomeId, "variable name");
-    when(triplestoreService.getTrialverseVariables(project.getNamespaceUid().longValue(), analysis.getStudyId().longValue(), outcomeMap.keySet())).thenReturn(trialverseVariables);
+    Map<String, String> trialverseVariables = new HashMap<>();
+    trialverseVariables.put(outcomeUid, "variable name");
+    when(triplestoreService.getTrialverseVariables(project.getNamespaceUid(), analysis.getStudyUid(), outcomeMap.keySet())).thenReturn(trialverseVariables);
 
-    Measurement measurement = new Measurement((long) studyId, outcomeId, measurementMomentId, alternativeId, MeasurementAttribute.RATE, integerValue, null);
+    Measurement measurement = new Measurement(studyUid, outcomeUid, armUid, 3L, 2L, null, null);
     ObjectNode jsonNode = mapper.convertValue(measurement, ObjectNode.class);
     List<ObjectNode> jsonMeasurements = Arrays.asList(jsonNode);
-    when(trialverseService.getOrderedMeasurements(trialverseVariables.keySet(), alternativesCache.keySet())).thenReturn(jsonMeasurements);
+    when(trialverseService.getOrderedMeasurements(new ArrayList<>(trialverseVariables.keySet()), new ArrayList<>(alternativesCache.keySet()))).thenReturn(jsonMeasurements);
 
     List<Measurement> measurements = measurementsService.createMeasurements(project, analysis, alternativesCache);
 
@@ -96,7 +89,7 @@ public class MeasurementsServiceTest {
 
     assertEquals(expected, measurements);
 
-    verify(triplestoreService).getTrialverseVariables(project.getNamespaceUid().longValue(), analysis.getStudyId().longValue(), outcomeMap.keySet());
-    verify(triplestoreService).getTrialverseVariables(project.getNamespaceUid().longValue(), analysis.getStudyId().longValue(), outcomeMap.keySet());
+    verify(triplestoreService).getTrialverseVariables(project.getNamespaceUid(), analysis.getStudyUid(), outcomeMap.keySet());
+    verify(triplestoreService).getTrialverseVariables(project.getNamespaceUid(), analysis.getStudyUid(), outcomeMap.keySet());
   }
 }
