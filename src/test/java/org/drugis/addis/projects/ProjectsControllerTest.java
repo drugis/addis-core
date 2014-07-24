@@ -176,7 +176,7 @@ public class ProjectsControllerTest {
   public void testHandleNullDescription() throws Exception {
     ProjectCommand projectCommand = new ProjectCommand("testname", null, "uid1");
     Project project = new Project(1, gert, "testname", StringUtils.EMPTY, "uid1");
-    String requestBody = "{\"name\":\"testname\",\"trialverseId\":1}";
+    String requestBody = "{\"name\":\"testname\",\"namespaceUid\":\"uid1\"}";
     when(projectRepository.create(gert, projectCommand)).thenReturn(project);
     mockMvc.perform(post("/projects").principal(user).content(requestBody).contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isCreated())
