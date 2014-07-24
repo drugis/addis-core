@@ -88,19 +88,19 @@ public class ProblemServiceImpl implements ProblemService {
 
     ObjectMapper mapper = new ObjectMapper();
     TrialData convertedTrialData = mapper.convertValue(trialData, TrialData.class);
-    Map<String, TrialDataIntervention> interventionByDrugIdMap = createInterventionByDrugIdMap(convertedTrialData);
+    Map<String, TrialDataIntervention> interventionByDrugUidInstanceMap = createInterventionByDrugIdMap(convertedTrialData);
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
 
     for (TrialDataStudy trialDataStudy : convertedTrialData.getTrialDataStudies()) {
-      List<TrialDataArm> filteredArms = filterUnmatchedArms(trialDataStudy, interventionByDrugIdMap);
+      List<TrialDataArm> filteredArms = filterUnmatchedArms(trialDataStudy, interventionByDrugUidInstanceMap);
       filteredArms = filterExcludedArms(filteredArms, analysis);
 
       // do not include studies with fewer than two included and matched arms
       if (filteredArms.size() >= 2) {
 
         for (TrialDataArm trialDataArm : filteredArms) {
-          String interventionUri = interventionByDrugIdMap.get(trialDataArm.getDrugUid()).getUri();
+          String interventionUri = interventionByDrugUidInstanceMap.get(trialDataArm.getDrugInstanceUid()).getDrugConceptUid();
           Integer treatmentId = interventionIdsByUrisMap.get(interventionUri);
           entries.add(buildEntry(trialDataStudy.getName(), treatmentId, trialDataArm.getMeasurement()));
         }
@@ -147,7 +147,7 @@ public class ProblemServiceImpl implements ProblemService {
     for (TrialDataStudy study : trialData.getTrialDataStudies()) {
 
       for (TrialDataIntervention intervention : study.getTrialDataInterventions()) {
-        interventionByDrugIdMap.put(intervention.getDrugUid(), intervention);
+        interventionByDrugIdMap.put(intervention.getDrugInstanceUid(), intervention);
       }
     }
     return interventionByDrugIdMap;
@@ -195,7 +195,7 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private boolean isMatched(TrialDataArm arm, Map<String, TrialDataIntervention> interventionByIdMap) {
-    return interventionByIdMap.get(arm.getDrugUid()) != null;
+    return interventionByIdMap.get(arm.getDrugInstanceUid()) != null;
   }
 
   private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException {

@@ -4,26 +4,26 @@ package org.drugis.addis.problems.model;
  * Created by connor on 15-5-14.
  */
 public class TrialDataIntervention {
-  private String drugUid;
-  private String uri;
+  private String drugInstanceUid;
+  private String drugConceptUid;
 
   private String studyUid;
 
   public TrialDataIntervention() {
   }
 
-  public TrialDataIntervention(String drugInstanceUid, String drugUid, String studyUid) {
-    this.drugUid = drugInstanceUid;
-    this.uri = drugUid;
+  public TrialDataIntervention(String drugInstanceUid, String drugConceptUid, String studyUid) {
+    this.drugInstanceUid = drugInstanceUid;
+    this.drugConceptUid = drugConceptUid;
     this.studyUid = studyUid;
   }
 
-  public String getDrugUid() {
-    return drugUid;
+  public String getDrugInstanceUid() {
+    return drugInstanceUid;
   }
 
-  public String getUri() {
-    return uri;
+  public String getDrugConceptUid() {
+    return drugConceptUid;
   }
 
   public String getStudyUid() {
@@ -37,17 +37,17 @@ public class TrialDataIntervention {
 
     TrialDataIntervention that = (TrialDataIntervention) o;
 
-    if (!drugUid.equals(that.drugUid)) return false;
+    if (!drugInstanceUid.equals(that.drugInstanceUid)) return false;
     if (!studyUid.equals(that.studyUid)) return false;
-    if (!uri.equals(that.uri)) return false;
+    if (!drugConceptUid.equals(that.drugConceptUid)) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    int result = drugUid.hashCode();
-    result = 31 * result + uri.hashCode();
+    int result = drugInstanceUid.hashCode();
+    result = 31 * result + drugConceptUid.hashCode();
     result = 31 * result + studyUid.hashCode();
     return result;
   }
