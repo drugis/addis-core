@@ -55,9 +55,9 @@ public class AlternativeServiceTest {
     alternativeService = new AlternativeService();
     MockitoAnnotations.initMocks(this);
 
-    String trialverseId = "abc";
-    String studyUid = "asd";
-    drugUid = "drug";
+    String trialverseId = "1L";
+    String studyUid = "110";
+    drugUid = "2L";
     interventionName = "intervention name";
     interventionUri = "intervention uri";
     interventionMap = new HashMap<>();
@@ -83,7 +83,7 @@ public class AlternativeServiceTest {
 
   @Test
   public void testCreateAlternatives() throws Exception {
-    List<ObjectNode> jsonArms = Arrays.asList(mapper.convertValue(new Arm("armUid", drugUid, "armName"), ObjectNode.class));
+    List<ObjectNode> jsonArms = Arrays.asList(mapper.convertValue(new Arm("1L", drugUid, "armName"), ObjectNode.class));
     when(triplestoreService.getTrialverseDrugs(project.getNamespaceUid(), analysis.getStudyUid(), interventionMap.keySet())).
             thenReturn(drugs);
     when(trialverseService.getArmsByDrugIds(analysis.getStudyUid(), drugs.keySet())).thenReturn(jsonArms);
@@ -96,7 +96,7 @@ public class AlternativeServiceTest {
     verifyNoMoreInteractions(triplestoreService, trialverseService);
 
     AlternativeEntry alternativeEntry = new AlternativeEntry(interventionUri, interventionName);
-    assertEquals(alternativeEntry, alternatives.get(1L));
+    assertEquals(alternativeEntry, alternatives.get("1L"));
     assertEquals(1, alternatives.size());
 
 
