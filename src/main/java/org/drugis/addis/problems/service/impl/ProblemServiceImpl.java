@@ -114,10 +114,10 @@ public class ProblemServiceImpl implements ProblemService {
   private List<TrialDataArm> filterExcludedArms(List<TrialDataArm> trialDataArms, NetworkMetaAnalysis analysis) {
     List<TrialDataArm> filteredTrialDataArms = new ArrayList<>();
     List<ArmExclusion> armExclusions = analysis.getExcludedArms();
-    List<Long> armExclusionTrialverseIds = new ArrayList<>(armExclusions.size());
+    List<String> armExclusionTrialverseIds = new ArrayList<>(armExclusions.size());
 
     for (ArmExclusion armExclusion : armExclusions) {
-      armExclusionTrialverseIds.add(armExclusion.getTrialverseId());
+      armExclusionTrialverseIds.add(armExclusion.getTrialverseUid());
     }
 
     for (TrialDataArm trialDataArm : trialDataArms) {

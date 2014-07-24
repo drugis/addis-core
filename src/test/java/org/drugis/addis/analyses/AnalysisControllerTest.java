@@ -332,7 +332,7 @@ public class AnalysisControllerTest {
     Integer outcomeId = 444;
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", new ArrayList<ArmExclusion>(), Collections.EMPTY_LIST, outcome);
-    newAnalysis.getExcludedArms().addAll(Arrays.asList(new ArmExclusion(null, -1L), new ArmExclusion(null, -2L)));
+    newAnalysis.getExcludedArms().addAll(Arrays.asList(new ArmExclusion(null, "-1L"), new ArmExclusion(null, "-2L")));
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)

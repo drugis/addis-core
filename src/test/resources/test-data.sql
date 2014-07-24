@@ -27,7 +27,7 @@ INSERT INTO public.scenario (id, workspace, title, state) VALUES (3, -2, 'Defaul
 
 INSERT INTO public.model(id, analysisId) VALUES (1, -5);
 
-INSERT INTO public.armExclusion (id, trialverseId, analysisId) VALUES (-1, -101, -6);
-INSERT INTO public.armExclusion (id, trialverseId, analysisId) VALUES (-2, -102, -6);
+INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-1, '-101', -6);
+INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-2, '-102', -6);
 
 INSERT INTO public.interventionInclusion (id, interventionId, analysisId) VALUES (-1, 2, -6);

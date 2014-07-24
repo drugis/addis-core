@@ -183,3 +183,7 @@ ALTER TABLE Project ADD COLUMN namespaceUid VARCHAR;
 --changeset stroombergc:11
 ALTER TABLE SingleStudyBenefitRiskAnalysis DROP COLUMN studyId;
 ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN studyUid VARCHAR;
+
+--changeset stroombergc:12
+ALTER TABLE ArmExclusion DROP COLUMN trialverseId;
+ALTER TABLE ArmExclusion ADD COLUMN trialverseUid VARCHAR;

@@ -158,7 +158,7 @@ public class ProblemServiceTest {
     Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", new ArrayList<ArmExclusion>(), new ArrayList<InterventionInclusion>(), outcome);
 
-    analysis.getExcludedArms().add(new ArmExclusion(analysis, 888L)); // trialDataArm with armId4
+    analysis.getExcludedArms().add(new ArmExclusion(analysis, "888L")); // trialDataArm with armId4
 
     Project project = mock(Project.class);
     SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");

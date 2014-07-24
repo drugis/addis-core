@@ -78,8 +78,8 @@ public class NetworkMetaAnalysisRepositoryTest {
     NetworkMetaAnalysis analysis = em.find(NetworkMetaAnalysis.class, analysisId);
 
     //new NetworkMetaAnalysis(analysisId, projectId, "new name", new ArrayList<ArmExclusion>(), new ArrayList<InterventionInclusion>(), outcome);
-    ArmExclusion newArmExclusion1 = new ArmExclusion(analysis, -601L);
-    ArmExclusion newArmExclusion2 = new ArmExclusion(analysis, -602L);
+    ArmExclusion newArmExclusion1 = new ArmExclusion(analysis, "-601L");
+    ArmExclusion newArmExclusion2 = new ArmExclusion(analysis, "-602L");
     analysis.getExcludedArms().clear();
     analysis.getExcludedArms().add(newArmExclusion1);
     analysis.getExcludedArms().add(newArmExclusion2);
