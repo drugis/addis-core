@@ -92,10 +92,10 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetNamespaceById() throws Exception {
-    String uid = "UID 1";
+    String uid = "UID-1";
     Namespace namespace1 = new Namespace(uid, "a", "descrea");
     when(triplestoreService.getNamespace(uid)).thenReturn(namespace1);
-    mockMvc.perform(get("/namespaces/1").principal(user))
+    mockMvc.perform(get("/namespaces/UID-1").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.name", is("a")));
@@ -132,15 +132,15 @@ public class TrialverseControllerTest {
   @Test
   public void testQuerySemanticStudies() throws Exception {
     String namespaceUid = "abc";
-    Study study = new Study(namespaceUid, "name", "this is a title");
-    when(trialverseRepository.queryStudies(namespaceUid)).thenReturn(Arrays.asList(study));
+    Study study = new Study("studyUid", "name", "this is a title");
+    when(triplestoreService.queryStudies(namespaceUid)).thenReturn(Arrays.asList(study));
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/studies").principal(user))
       .andExpect(status().isOk())
       .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(jsonPath("$[0].id", is(1)))
+            .andExpect(jsonPath("$[0].uid", is(study.getUid())))
       .andExpect(jsonPath("$[0].name", is(study.getName())))
       .andExpect(jsonPath("$[0].title", is(study.getTitle())));
-    verify(trialverseRepository).queryStudies(namespaceUid);
+    verify(triplestoreService).queryStudies(namespaceUid);
     verify(accountRepository).findAccountByUsername(user.getName());
   }
 
@@ -163,11 +163,11 @@ public class TrialverseControllerTest {
     for (TrialDataStudy trialDataStudy : trialDataStudies) {
       studyInterventions.put(trialDataStudy, studyInterventionKeys.get(trialDataStudy.getStudyUid()));
     }
-    String namespaceUid = "abc";
+    String namespaceUid = "namespaceUid";
     List<String> interventionUris = Arrays.asList("uri1", "uri2");
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     when(triplestoreService.getTrialData(namespaceUid, outcomeUri, interventionUris)).thenReturn(trialDataStudies);
-    mockMvc.perform(get("/namespaces/1/trialData?interventionUris=uri1&interventionUris=uri2&outcomeUri=" + outcomeUri).principal(user))
+    mockMvc.perform(get("/namespaces/namespaceUid/trialData?interventionUris=uri1&interventionUris=uri2&outcomeUri=" + outcomeUri).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", notNullValue()));
@@ -183,10 +183,10 @@ public class TrialverseControllerTest {
     for (TrialDataStudy trialDataStudy : trialDataStudies) {
       studyInterventions.put(trialDataStudy, studyInterventionKeys.get(trialDataStudy.getStudyUid()));
     }
-    String namespaceUid = "abc";
+    String namespaceUid = "namespaceUid";
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     when(triplestoreService.getTrialData(namespaceUid, outcomeUri, Collections.EMPTY_LIST)).thenReturn(trialDataStudies);
-    mockMvc.perform(get("/namespaces/1/trialData?outcomeUri=" + outcomeUri).principal(user))
+    mockMvc.perform(get("/namespaces/namespaceUid/trialData?outcomeUri=" + outcomeUri).principal(user))
       .andExpect(status().isOk())
       .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
       .andExpect(jsonPath("$", notNullValue()));
