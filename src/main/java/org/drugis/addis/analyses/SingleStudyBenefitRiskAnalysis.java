@@ -81,6 +81,10 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     return studyUid;
   }
 
+  public void setStudyUid(String studyUid) {
+    this.studyUid = studyUid;
+  }
+
   public List<Outcome> getSelectedOutcomes() {
     return selectedOutcomes == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(selectedOutcomes);
   }

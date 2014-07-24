@@ -355,10 +355,10 @@ public class AnalysisControllerTest {
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
-      .content(jsonCommand)
-      .principal(user)
-      .contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(status().isOk());
+            .content(jsonCommand)
+            .principal(user)
+            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
   }
@@ -370,10 +370,6 @@ public class AnalysisControllerTest {
 
   String exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem() {
     return TestUtils.loadResource(this.getClass(), "/analysisController/exampleSingleStudyBenefitRiskAnalysisWithoutProblem.json");
-  }
-
-  String exampleUpdateNetworkMetaAnalysisRequestWithProblem() {
-    return TestUtils.loadResource(this.getClass(), "/analysisController/exampleNetworkMetaAnalysisWithProblem.json");
   }
 
 }
