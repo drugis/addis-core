@@ -89,9 +89,9 @@ public class TrialverseServiceTest {
     ObjectMapper mapper = new ObjectMapper();
 
     ObjectNode node = serialisedResult.get(0);
-    assertEquals(measurement.getStudyUid(), mapper.convertValue(node.get("studyUId"), Long.class));
-    assertEquals(measurement.getArmUid(), mapper.convertValue(node.get("armUid"), Long.class));
-    assertEquals(measurement.getVariableUid(), mapper.convertValue(node.get("variableUid"), Long.class));
+    assertEquals(measurement.getStudyUid(), mapper.convertValue(node.get("studyUid"), String.class));
+    assertEquals(measurement.getArmUid(), mapper.convertValue(node.get("armUid"), String.class));
+    assertEquals(measurement.getVariableUid(), mapper.convertValue(node.get("variableUid"), String.class));
     assertEquals(measurement.getSampleSize(), mapper.convertValue(node.get("sampleSize"), Long.class));
     verify(trialverseRepository).getOrderedMeasurements(outcomeIds, armUids);
   }
