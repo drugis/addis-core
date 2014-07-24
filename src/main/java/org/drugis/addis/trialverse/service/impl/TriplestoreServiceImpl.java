@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 public class TriplestoreServiceImpl implements TriplestoreService {
 
   private final static String triplestoreUri = System.getenv("TRIPLESTORE_URI");
-  private final static Pattern STUDY_ID_FROM_URI_PATTERN = Pattern.compile("http://trials.drugis.org/study/(\\d+)/.*");
+  private final static Pattern STUDY_UID_FROM_URI_PATTERN = Pattern.compile("http://trials.drugis.org/study/(\\w+)/.*");
 
   @Inject
   RestOperationsFactory restOperationsFactory;
@@ -168,7 +168,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   private String removePreamble(String colonedString) {
-    colonedString = colonedString.split(":")[1];// "expected return: study:af0d9-adf0-rtwe-etc"
+    colonedString = colonedString.substring(colonedString.indexOf(":") + 1);// "expected return: study:af0d9-adf0-rtwe-etc"
     return colonedString;
   }
 
@@ -297,7 +297,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return concepts;
   }
 
-  public List<Pair<Long, Long>> getOutcomeVariableUidsByStudyForSingleOutcome(String namespaceUid, List<String> studyUids, String outcomeURI) {
+  public List<Pair<String, Long>> getOutcomeVariableUidsByStudyForSingleOutcome(String namespaceUid, List<String> studyUids, String outcomeURI) {
     String query = "TODO";
 
     System.out.println("getOutcomeVariableUidsByStudyForSingleOutcome query: " + query);
@@ -305,12 +305,12 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     System.out.println("getOutcomeVariableUidsByStudyForSingleOutcome response: " + response);
 
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    List<Pair<Long, Long>> studyVariablesForOutcome = new ArrayList<>(bindings.size());
+    List<Pair<String, Long>> studyVariablesForOutcome = new ArrayList<>(bindings.size());
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
-      Long studyId = findStudyIdInURI(uri);
+      String studyUid = findStudyIdInURI(uri);
       Long variableId = Long.valueOf(subStringAfterLastSlash(uri));
-      studyVariablesForOutcome.add(Pair.of(studyId, variableId));
+      studyVariablesForOutcome.add(Pair.of(studyUid, variableId));
     }
     return studyVariablesForOutcome;
   }
@@ -347,8 +347,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
       String semanticInterventionUri = JsonPath.read(binding, "$.type.value");
-      String studyUid = ""; // FIXME
-      String drugUid = ""; //FIXME;
+      String studyUid = JsonPath.read(binding, "$.studyUid.value");
+      String drugUid = JsonPath.read(binding, "$.drugUid.value");
       TrialDataIntervention trialDataIntervention = new TrialDataIntervention(drugUid, semanticInterventionUri, studyUid);
 
       List<TrialDataIntervention> interventions = studyInterventionsMap.get(studyUid);
@@ -383,8 +383,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return StringUtils.join(ids, "|");
   }
 
-  public List<Long> findStudiesReferringToConcept(String namespaceUid, String conceptUri) {
-    List<Long> studyIds = new ArrayList<>();
+  public List<String> findStudiesReferringToConcept(String namespaceUid, String conceptUri) {
+    List<String> studyUids = new ArrayList<>();
     String query =
             "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
                     "\n" +
@@ -398,18 +398,18 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
-      Long studyId = findStudyIdInURI(uri);
-      studyIds.add(studyId);
+      String studyUid = findStudyIdInURI(uri);
+      studyUids.add(studyUid);
     }
 
-    return studyIds;
+    return studyUids;
   }
 
-  private Long findStudyIdInURI(String uri) {
+  private String findStudyIdInURI(String uri) {
     // extract numerical study id
-    Matcher matcher = STUDY_ID_FROM_URI_PATTERN.matcher(uri);
+    Matcher matcher = STUDY_UID_FROM_URI_PATTERN.matcher(uri);
     matcher.find();
-    return (Long.valueOf(matcher.group(1)));
+    return (String.valueOf(matcher.group(1)));
   }
 
   private String subStringAfterLastSlash(String inStr) {

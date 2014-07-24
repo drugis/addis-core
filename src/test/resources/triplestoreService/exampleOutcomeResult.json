@@ -1,18 +1,18 @@
 {
   "results": {
     "bindings": [{
-      "uri": {
+      "outcome": {
         "type": "uri",
-        "value": "http://trials.drugis.org/namespace/1/endpoint/test1"
+        "value": "namespace:http://trials.drugis.org/namespace/1/endpoint/test1"
       },
       "label": {
         "type": "literal",
         "value": "DBP 24-hour mean"
       }
     }, {
-      "uri": {
+      "outcome": {
         "type": "uri",
-        "value": "http://trials.drugis.org/namespace/1/adverseEvent/test2"
+        "value": "namespace:http://trials.drugis.org/namespace/1/adverseEvent/test2"
       },
       "label": {
         "type": "literal",

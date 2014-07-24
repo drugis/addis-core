@@ -58,8 +58,9 @@ public class TriplestoreServiceTest {
     createMockTrialverseService(mockResult);
 
     List<SemanticIntervention> result = triplestoreService.getInterventions("abc");
-    SemanticIntervention result1 = new SemanticIntervention("http://trials.drugis.org/namespace/1/drug/test1", "Azilsartan");
-    assertEquals(result.get(0), result1);
+    SemanticIntervention intervention = result.get(0);
+    SemanticIntervention expectedSemanticIntervention = new SemanticIntervention("http://trials.drugis.org/namespace/1/drug/test1", "Azilsartan");
+    assertEquals(expectedSemanticIntervention, intervention);
   }
 
   @Test
@@ -71,9 +72,9 @@ public class TriplestoreServiceTest {
     createMockTrialverseService(mockResult);
 
 
-    Map<Long, String> expected = new HashMap<>();
-    expected.put(1L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug");
-    expected.put(4L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug");
+    Map<String, String> expected = new HashMap<>();
+    expected.put("1", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug");
+    expected.put("4", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug");
 
     // EXECUTOR
     Map<String, String> result = triplestoreService.getTrialverseDrugs(namespaceUid, studyUid, interventionConceptUris);
@@ -90,9 +91,9 @@ public class TriplestoreServiceTest {
     createMockTrialverseService(mockResult);
 
 
-    Map<Long, String> expected = new HashMap<>();
-    expected.put(1L, "http://trials.drugis.org/namespace/2/endpoint/e2611534a509251f2e1c8endpoint");
-    expected.put(4L, "http://trials.drugis.org/namespace/2/adverseEvent/e2611534a509251f2e1cadverseEvent");
+    Map<String, String> expected = new HashMap<>();
+    expected.put("1", "http://trials.drugis.org/namespace/2/endpoint/e2611534a509251f2e1c8endpoint");
+    expected.put("4", "http://trials.drugis.org/namespace/2/adverseEvent/e2611534a509251f2e1cadverseEvent");
 
     // EXECUTOR
     Map<String, String> result = triplestoreService.getTrialverseVariables(namespaceUid, studyUid, outcomeConceptUris);
@@ -106,7 +107,7 @@ public class TriplestoreServiceTest {
     createMockTrialverseService(mockResult);
 
     String namespaceUid = "abc";
-    List<Long> studyIds = triplestoreService.findStudiesReferringToConcept(namespaceUid, "magic");
+    List<String> studyIds = triplestoreService.findStudiesReferringToConcept(namespaceUid, "magic");
     assertEquals(5, studyIds.size());
   }
 
@@ -114,16 +115,18 @@ public class TriplestoreServiceTest {
   public void testFindDrugConceptsFilteredByNameSpaceAndStudys() {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleDrugIdResult.json");
     createMockTrialverseService(mockResult);
-
+    String studyUid = "http://trials.drugis.org/study/e2611534a509251f2e1cstudy1";
 
     String namespaceUid = "abc";
     List<String> studyIds = Arrays.asList("study1", "study2", "study3");
     List<String> interventionsURIs = Arrays.asList("http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug");
     Map<String, List<TrialDataIntervention>> result = triplestoreService.findStudyInterventions(namespaceUid, studyIds, interventionsURIs);
     assertNotNull(result);
-    assertTrue(result.containsKey("study1"));
-    assertTrue(result.get("study1").containsAll(Arrays.asList(new TrialDataIntervention("drugUid1", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug", "study1"),
-            new TrialDataIntervention("drugUid2", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug", "study1"))));
+
+    assertTrue(result.containsKey(studyUid));
+    List<TrialDataIntervention> resultInterventions = result.get(studyUid);
+    assertTrue(resultInterventions.containsAll(Arrays.asList(new TrialDataIntervention("http://trials.drugis.org/drug/e2611534a509251f2e1cddruguid1", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug", studyUid),
+            new TrialDataIntervention("http://trials.drugis.org/drug/e2611534a509251f2e1cddruguid2", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug", studyUid))));
   }
 
   @Test
@@ -134,9 +137,9 @@ public class TriplestoreServiceTest {
 
 
     String namespaceUid = "abc";
-    List<String> studyIds = Arrays.asList("study1", "study2", "study3");
+    List<String> studyUids = Arrays.asList("study1", "study2", "study3");
     String outcomeConceptUri = "http://trials.drugis.org/namespace/2/adverseEvent/232145506bf409d7bb931fd35d6122c0";
-    List<Pair<Long, Long>> result = triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceUid, studyIds, outcomeConceptUri);
+    List<Pair<String, Long>> result = triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceUid, studyUids, outcomeConceptUri);
     assertEquals(3, result.size());
     assertTrue(result.containsAll(Arrays.asList(Pair.of("study1", 304L), Pair.of("study2", 209L), Pair.of("study3", 91L))));
   }
@@ -150,7 +153,7 @@ public class TriplestoreServiceTest {
     String namespaceUid = "abc";
     List<String> studyIds = Arrays.asList("study1", "study2", "study3");
     String outcomeConceptUri = "http://trials.drugis.org/namespace/2/endPoint/232145506bf409d7bb931fd35d6122c0";
-    List<Pair<Long, Long>> result = triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceUid, studyIds, outcomeConceptUri);
+    List<Pair<String, Long>> result = triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceUid, studyIds, outcomeConceptUri);
     assertEquals(3, result.size());
     assertTrue(result.containsAll(Arrays.asList(Pair.of("study1", 304L), Pair.of("study2", 209L), Pair.of("study3", 91L))));
   }
