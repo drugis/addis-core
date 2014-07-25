@@ -175,6 +175,14 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return result.substring(0, result.lastIndexOf("UNION"));
   }
 
+  private String buildOutcomeUnionString(List<String> outcomeUids) {
+    String result = "";
+    for (String outcomeUid : outcomeUids) {
+      result = result + " { ?outcomeInstance a entity:" + outcomeUid + " } UNION \n";
+    }
+    return result.substring(0, result.lastIndexOf("UNION"));
+  }
+
   @Override
   public List<TrialDataStudy> getTrialData(String namespaceUid, String outcomeUid, List<String> interventionUids) {
     String interventionUnion = buildInterventionUnionString(interventionUids);
@@ -271,6 +279,179 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     }
     return new ArrayList<>(trialDataStudies.values());
+  }
+
+  @Override
+  public List<SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String studyUid, List<String> outcomeUids, List<String> interventionUids) {
+    String outcomeUnionString = buildOutcomeUnionString(outcomeUids);
+    String interventionUnionString = buildInterventionUnionString(interventionUids);
+
+    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
+            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
+            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+            "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n" +
+            "\n" +
+            "PREFIX entity: <http://trials.drugis.org/entities/>\n" +
+            "PREFIX instance: <http://trials.drugis.org/instances/>\n" +
+            "PREFIX study: <http://trials.drugis.org/studies/>\n" +
+            "\n" +
+            "SELECT ?interventionTypeUid ?interventionLabel ?outcomeTypeUid ?outcomeInstanceLabel ?mean ?stdDev ?count ?sampleSize WHERE {\n" +
+            "  GRAPH ?dataset {\n" +
+            "    ?dataset a ontology:Dataset .\n" +
+            "    ?dataset ontology:contains_study ?study .\n" +
+            "  }\n" +
+            "  GRAPH study:" + studyUid + " {\n" +
+            "    ?study rdfs:label ?studyName .\n" +
+            "    ?study ontology:has_outcome ?outcomeInstance .\n" +
+            outcomeUnionString +
+            ".\n" +
+            "    ?outcomeInstance a ?outcomeTypeUid .\n" +
+            "    ?outcomeInstance rdfs:label ?outcomeInstanceLabel .\n" +
+            interventionUnionString +
+            " .\n" +
+            "    ?interventionInstance a ?interventionTypeUid .\n" +
+            "  }\n" +
+            "  GRAPH ?study {\n" +
+            "    ?interventionInstance rdfs:label ?interventionLabel .\n" +
+            "    ?study ontology:has_arm ?arm .\n" +
+            "    ?study ontology:has_primary_epoch ?epoch .\n" +
+            "    ?activity a ontology:TreatmentActivity ;\n" +
+            "      ontology:activity_application [\n" +
+            "        ontology:applied_to_arm ?arm ;\n" +
+            "        ontology:applied_in_epoch ?epoch\n" +
+            "      ] ;\n" +
+            "      ontology:administered_drugs ([ ontology:treatment_has_drug ?interventionInstance ]) .\n" +
+            "\n" +
+            "    ?epoch rdfs:label ?epochLabel .\n" +
+            "    ?arm rdfs:label ?armLabel .\n" +
+            "\n" +
+            "    # also get the measurement while we're here\n" +
+            "    ?measurementMoment\n" +
+            "      ontology:relative_to_epoch ?epoch ;\n" +
+            "      ontology:relative_to_anchor ontology:anchorEpochEnd ;\n" +
+            "      ontology:time_offset \"-P0D\"^^xsd:duration .\n" +
+            "\n" +
+            "    ?measurement\n" +
+            "      ontology:of_moment ?measurementMoment ;\n" +
+            "      ontology:of_outcome ?outcomeInstance ;\n" +
+            "      ontology:of_arm ?arm .\n" +
+            "\n" +
+            "    OPTIONAL {\n" +
+            "      ?measurement\n" +
+            "        ontology:mean ?mean ;\n" +
+            "        ontology:standard_deviation ?stdDev ;\n" +
+            "        ontology:sample_size ?sampleSize .\n" +
+            "    }\n" +
+            "\n" +
+            "    OPTIONAL {\n" +
+            "      ?measurement\n" +
+            "        ontology:count ?count ;\n" +
+            "        ontology:sample_size ?sampleSize .\n" +
+            "    }\n" +
+            "  }\n" +
+            "}\n";
+    String response = queryTripleStore(query);
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    List<SingleStudyBenefitRiskMeasurementRow> measurementObjects = new ArrayList<>();
+    for (Object binding : bindings) {
+      String outcomeUid = JsonPath.read(binding, "$.outcomeTypeUid.value");
+      String outcomeLabel = JsonPath.read(binding, "$.outcomeInstanceLabel.value");
+      String alternativeUid = JsonPath.read(binding, "$.alternativeTypeUid.value");
+      String alternativeLabel = JsonPath.read(binding, "$.interventionLabel.value");
+      Double mean = JsonPath.read(binding, "$.mean.value");
+      Double stdDev = JsonPath.read(binding, "$.stdDev.value");
+      Long rate = JsonPath.read(binding, "$.count.value");
+      Long sampleSize = JsonPath.read(binding, "$.sampleSize.value");
+      measurementObjects.add(new SingleStudyBenefitRiskMeasurementRow(outcomeUid, outcomeLabel, alternativeUid, alternativeLabel, mean, stdDev, rate, sampleSize));
+    }
+    return measurementObjects;
+  }
+
+  public static class SingleStudyBenefitRiskMeasurementRow {
+    private String outcomeUid;
+    private String outcomeLabel;
+    private String alternativeUid;
+    private String alternativeLabel;
+    private Double mean;
+    private Double stdDev;
+    private Long rate;
+    private Long sampleSize;
+
+    public SingleStudyBenefitRiskMeasurementRow(String outcomeUid, String outcomeLabel, String alternativeUid, String alternativeLabel, Double mean, Double stdDev, Long rate, Long sampleSize) {
+      this.outcomeUid = outcomeUid;
+      this.outcomeLabel = outcomeLabel;
+      this.alternativeUid = alternativeUid;
+      this.alternativeLabel = alternativeLabel;
+      this.mean = mean;
+      this.stdDev = stdDev;
+      this.rate = rate;
+      this.sampleSize = sampleSize;
+    }
+
+    public String getOutcomeUid() {
+      return outcomeUid;
+    }
+
+    public String getOutcomeLabel() {
+      return outcomeLabel;
+    }
+
+    public String getAlternativeUid() {
+      return alternativeUid;
+    }
+
+    public String getAlternativeLabel() {
+      return alternativeLabel;
+    }
+
+    public Double getMean() {
+      return mean;
+    }
+
+    public Double getStdDev() {
+      return stdDev;
+    }
+
+    public Long getRate() {
+      return rate;
+    }
+
+    public Long getSampleSize() {
+      return sampleSize;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof SingleStudyBenefitRiskMeasurementRow)) return false;
+
+      SingleStudyBenefitRiskMeasurementRow that = (SingleStudyBenefitRiskMeasurementRow) o;
+
+      if (!alternativeLabel.equals(that.alternativeLabel)) return false;
+      if (!alternativeUid.equals(that.alternativeUid)) return false;
+      if (mean != null ? !mean.equals(that.mean) : that.mean != null) return false;
+      if (!outcomeLabel.equals(that.outcomeLabel)) return false;
+      if (!outcomeUid.equals(that.outcomeUid)) return false;
+      if (rate != null ? !rate.equals(that.rate) : that.rate != null) return false;
+      if (!sampleSize.equals(that.sampleSize)) return false;
+      if (stdDev != null ? !stdDev.equals(that.stdDev) : that.stdDev != null) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = outcomeUid.hashCode();
+      result = 31 * result + outcomeLabel.hashCode();
+      result = 31 * result + alternativeUid.hashCode();
+      result = 31 * result + alternativeLabel.hashCode();
+      result = 31 * result + (mean != null ? mean.hashCode() : 0);
+      result = 31 * result + (stdDev != null ? stdDev.hashCode() : 0);
+      result = 31 * result + (rate != null ? rate.hashCode() : 0);
+      result = 31 * result + sampleSize.hashCode();
+      return result;
+    }
   }
 
   @Override

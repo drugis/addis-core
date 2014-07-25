@@ -68,7 +68,7 @@ define(['underscore'], function() {
       outcomes.$promise.then(initialiseOutcomes);
       interventions.$promise.then(initialiseInterventions);
 
-      $scope.$watch('analysis.studyId', function(newValue, oldValue) {
+      $scope.$watch('analysis.studyUid', function(newValue, oldValue) {
         if (oldValue !== newValue) {
           $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
           $scope.errorMessage = {};

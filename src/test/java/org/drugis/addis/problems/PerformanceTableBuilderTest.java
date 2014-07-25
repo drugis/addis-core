@@ -1,10 +1,9 @@
 package org.drugis.addis.problems;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
 import org.drugis.addis.problems.service.model.*;
+import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -50,10 +49,6 @@ public class PerformanceTableBuilderTest {
   CriterionEntry criterionEntry2 = new CriterionEntry(criterionUri2, variable2.getName(), null, null);
   AlternativeEntry alternativeEntry1 = new AlternativeEntry(alternativeUri1, arm1.getName());
   AlternativeEntry alternativeEntry2 = new AlternativeEntry(alternativeUri2, arm2.getName());
-  Pair<AlternativeEntry, CriterionEntry> performance1Key = new ImmutablePair<>(alternativeEntry1, criterionEntry1);
-  Pair<AlternativeEntry, CriterionEntry> performance2Key = new ImmutablePair<>(alternativeEntry1, criterionEntry2);
-
-  List<Measurement> measurements = Arrays.asList(measurement1, measurement2);
 
   @Before
   public void setUp() throws Exception {
@@ -69,52 +64,53 @@ public class PerformanceTableBuilderTest {
   }
 
   @Test
-  public void testCreatePerformanceMap() throws Exception {
-    Map<Pair<AlternativeEntry, CriterionEntry>, Measurement> performanceMap = builder.createPerformanceMap(criterionEntryMap, alternativeEntryMap, measurements);
-    assertEquals(2, performanceMap.size());
-  }
-
-  @Test
   public void testBuild() throws Exception {
-    List<AbstractMeasurementEntry> performanceTable = builder.build(criterionEntryMap, alternativeEntryMap, measurements);
 
-    assertEquals(2, performanceTable.size());
-    RateMeasurementEntry rateMeasurementEntry = (RateMeasurementEntry) performanceTable.get(0);
-    assertEquals(alternativeUri1, rateMeasurementEntry.getAlternativeUri());
-    assertEquals(criterionUri1, rateMeasurementEntry.getCriterionUri());
-    assertEquals(RatePerformance.DBETA, rateMeasurementEntry.getPerformance().getType());
-    ContinuousMeasurementEntry continuousMeasurementEntry = (ContinuousMeasurementEntry) performanceTable.get(1);
+    Long rate = measurement1.getRate();
+    Long sampleSize1 = measurement2.getSampleSize();
+    Long alpha = rate + 1L;
+    Long beta = sampleSize1 + 1L;
+
+    Long sampleSize2 = measurement1.getSampleSize();
+    Double mu = measurement2.getMean();
+    Double stdDev = measurement2.getStdDev();
+
+    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row1 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri1, variableName1, alternativeUri1, armName1, mu, stdDev, null, sampleSize1);
+    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row2 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri2, variableName2, alternativeUri2, armName2, null, null, rate, sampleSize2);
+    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row3 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri1, variableName1, alternativeUri2, armName2, mu, stdDev, null, sampleSize1);
+    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row4 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri2, variableName2, alternativeUri1, armName1, null, null, rate, sampleSize2);
+
+    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementRows = Arrays.asList(row1, row2, row3, row4);
+
+    // EXECUTE
+    List<AbstractMeasurementEntry> performanceTable = builder.build(measurementRows);
+
+    assertEquals(4, performanceTable.size());
+
+    ContinuousMeasurementEntry continuousMeasurementEntry = (ContinuousMeasurementEntry) performanceTable.get(0);
     assertEquals(alternativeUri1, continuousMeasurementEntry.getAlternativeUri());
-    assertEquals(criterionUri2, continuousMeasurementEntry.getCriterionUri());
+    assertEquals(criterionUri1, continuousMeasurementEntry.getCriterionUri());
     assertEquals(ContinuousPerformance.DNORM, continuousMeasurementEntry.getPerformance().getType());
-  }
 
-  @Test
-  public void testCreateBetaDistributionEntry() throws Exception {
-
-    // EXECUTOR
-    RateMeasurementEntry entry = builder.createBetaDistributionEntry(alternativeEntry1, criterionEntry1, measurement1);
+    RateMeasurementEntry rateMeasurementEntry = (RateMeasurementEntry) performanceTable.get(1);
+    assertEquals(alternativeUri2, rateMeasurementEntry.getAlternativeUri());
+    assertEquals(criterionUri2, rateMeasurementEntry.getCriterionUri());
+    assertEquals(RatePerformance.DBETA, rateMeasurementEntry.getPerformance().getType());
 
     Long expectedAlpha = measurement1.getRate() + 1L;
     Long expectedBeta = measurement1.getSampleSize() - measurement1.getRate() + 1L;
-    assertEquals(expectedAlpha, entry.getPerformance().getParameters().getAlpha());
-    assertEquals(expectedBeta, entry.getPerformance().getParameters().getBeta());
-    assertEquals(RatePerformance.DBETA, entry.getPerformance().getType());
-  }
-
-  @Test
-  public void testCreateNormalDistributionEntry() {
-
-    // EXECUTOR
-    ContinuousMeasurementEntry entry = builder.createNormalDistributionEntry(alternativeEntry1, criterionEntry1, measurement2);
+    assertEquals(expectedAlpha, rateMeasurementEntry.getPerformance().getParameters().getAlpha());
+    assertEquals(expectedBeta, rateMeasurementEntry.getPerformance().getParameters().getBeta());
+    assertEquals(RatePerformance.DBETA, rateMeasurementEntry.getPerformance().getType());
 
     Double expectedMu = measurement2.getMean();
-    Long sampleSize = measurement2.getSampleSize();
-    Double expectedSigma = measurement2.getStdDev() / Math.sqrt(sampleSize);
+    Long expectedSampleSize = measurement2.getSampleSize();
+    Double expectedSigma = measurement2.getStdDev() / Math.sqrt(expectedSampleSize);
 
-    ContinuousPerformanceParameters parameters = entry.getPerformance().getParameters();
+    ContinuousPerformanceParameters parameters = continuousMeasurementEntry.getPerformance().getParameters();
     assertEquals(expectedMu, parameters.getMu());
     assertEquals(expectedSigma, parameters.getSigma());
-    assertEquals(ContinuousPerformance.DNORM, entry.getPerformance().getType());
+    assertEquals(ContinuousPerformance.DNORM, continuousMeasurementEntry.getPerformance().getType());
   }
+
 }

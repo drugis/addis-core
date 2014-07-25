@@ -3,22 +3,21 @@ package org.drugis.addis.problems.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.*;
-import org.drugis.addis.problems.service.AlternativeService;
-import org.drugis.addis.problems.service.CriteriaService;
-import org.drugis.addis.problems.service.MeasurementsService;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.service.TrialverseService;
+import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -37,16 +36,7 @@ public class ProblemServiceImpl implements ProblemService {
   private ProjectRepository projectRepository;
 
   @Inject
-  private AlternativeService alternativeService;
-
-  @Inject
-  private CriteriaService criteriaService;
-
-  @Inject
   private PerformanceTableBuilder performanceTableBuilder;
-
-  @Inject
-  private MeasurementsService measurementsService;
 
   @Inject
   private AnalysisRepository analysisRepository;
@@ -57,12 +47,15 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   private InterventionRepository interventionRepository;
 
+  @Inject
+  private TriplestoreService triplestoreService;
+
   @Override
   public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(projectId, analysisId);
     if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
-      return getSingleStudyBenefitRiskProblem(project, (SingleStudyBenefitRiskAnalysis) analysis);
+      return getSingleStudyBenefitRiskProblem((SingleStudyBenefitRiskAnalysis) analysis);
     } else if (analysis instanceof NetworkMetaAnalysis) {
       return getNetworkMetaAnalysisProblem(project, (NetworkMetaAnalysis) analysis);
     }
@@ -198,27 +191,41 @@ public class ProblemServiceImpl implements ProblemService {
     return interventionByIdMap.get(arm.getDrugInstanceUid()) != null;
   }
 
-  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException {
-    Map<String, AlternativeEntry> alternativesCache = alternativeService.createAlternatives(project, analysis);
+  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException {
+    List<String> outcomeUids = new ArrayList<>();
+    for (Outcome outcome : analysis.getSelectedOutcomes()) {
+      outcomeUids.add(outcome.getSemanticOutcomeUri());
+    }
+    List<String> alternativeUids = new ArrayList<>();
+    for (Intervention intervention : analysis.getSelectedInterventions()) {
+      alternativeUids.add(intervention.getSemanticInterventionUri());
+    }
+    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementNodes =
+            triplestoreService.getSingleStudyMeasurements(analysis.getStudyUid(), outcomeUids, alternativeUids);
+
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
-    for (AlternativeEntry alternativeEntry : alternativesCache.values()) {
-      alternatives.put(alternativeEntry.getAlternativeUri(), alternativeEntry);
-    }
-
-    List<Pair<Variable, CriterionEntry>> variableCriteriaPairs = criteriaService.createVariableCriteriaPairs(project, analysis);
-
     Map<String, CriterionEntry> criteria = new HashMap<>();
-    Map<String, CriterionEntry> criteriaCache = new HashMap<>();
-    for (Pair<Variable, CriterionEntry> variableCriterionPair : variableCriteriaPairs) {
-      Variable variable = variableCriterionPair.getLeft();
-      CriterionEntry criterionEntry = variableCriterionPair.getRight();
-      criteria.put(criterionEntry.getCriterionUri(), criterionEntry);
-      criteriaCache.put(variable.getUid(), criterionEntry);
+    for (TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow measurementRow : measurementNodes) {
+      alternatives.put(measurementRow.getAlternativeUid(), new AlternativeEntry(measurementRow.getAlternativeUid(), measurementRow.getAlternativeLabel()));
+      CriterionEntry criterionEntry = createCriterionEntry(measurementRow);
+      criteria.put(measurementRow.getOutcomeUid(), criterionEntry);
     }
 
-    List<Measurement> measurements = measurementsService.createMeasurements(project, analysis, alternativesCache);
-    List<AbstractMeasurementEntry> performanceTable = performanceTableBuilder.build(criteriaCache, alternativesCache, measurements);
+    List<AbstractMeasurementEntry> performanceTable = performanceTableBuilder.build(measurementNodes);
     return new SingleStudyBenefitRiskProblem(analysis.getName(), alternatives, criteria, performanceTable);
+  }
+
+  private CriterionEntry createCriterionEntry(TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow measurementRow) throws EnumConstantNotPresentException {
+    List<Double> scale;
+    if (measurementRow.getRate() != null) { // rate measurement
+      scale = Arrays.asList(0.0, 1.0);
+    } else if (measurementRow.getMean() != null) { // continuous measurement
+      scale = Arrays.asList(null, null);
+    } else {
+      throw new RuntimeException("Invalid measurement");
+    }
+    // NB: partialvaluefunctions to be filled in by MCDA component, left null here
+    return new CriterionEntry(measurementRow.getOutcomeUid(), measurementRow.getOutcomeLabel(), scale, null);
   }
 
 

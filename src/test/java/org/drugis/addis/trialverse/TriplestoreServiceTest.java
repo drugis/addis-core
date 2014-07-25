@@ -112,7 +112,7 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testFindDrugConceptsFilteredByNameSpaceAndStudys() {
+  public void testFindDrugConceptsFilteredByNameSpaceAndStudies() {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleDrugIdResult.json");
     createMockTrialverseService(mockResult);
     String studyUid = "http://trials.drugis.org/study/e2611534a509251f2e1cstudy1";

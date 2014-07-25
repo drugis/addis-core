@@ -2,9 +2,10 @@ package org.drugis.addis.problems;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.analyses.*;
+import org.drugis.addis.analyses.ArmExclusion;
+import org.drugis.addis.analyses.InterventionInclusion;
+import org.drugis.addis.analyses.NetworkMetaAnalysis;
+import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -12,9 +13,6 @@ import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.*;
-import org.drugis.addis.problems.service.AlternativeService;
-import org.drugis.addis.problems.service.CriteriaService;
-import org.drugis.addis.problems.service.MeasurementsService;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
 import org.drugis.addis.problems.service.impl.ProblemServiceImpl;
@@ -25,6 +23,8 @@ import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.service.TrialverseService;
+import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,15 +52,6 @@ public class ProblemServiceTest {
   ProjectRepository projectRepository;
 
   @Mock
-  AlternativeService alternativeService;
-
-  @Mock
-  CriteriaService criteriaService;
-
-  @Mock
-  MeasurementsService measurementsService;
-
-  @Mock
   PerformanceTableBuilder performanceTablebuilder;
 
   @Mock
@@ -68,6 +59,9 @@ public class ProblemServiceTest {
 
   @Mock
   TrialverseService trialverseService;
+
+  @Mock
+  private TriplestoreService triplestoreService;
 
   @InjectMocks
   ProblemService problemService;
@@ -82,7 +76,7 @@ public class ProblemServiceTest {
   @After
   public void cleanUp() {
     verifyNoMoreInteractions(analysisRepository, projectRepository, singleStudyBenefitRiskAnalysisRepository,
-            alternativeService, criteriaService, interventionRepository, trialverseService);
+            interventionRepository, trialverseService, triplestoreService);
   }
 
   @Test
@@ -93,48 +87,65 @@ public class ProblemServiceTest {
     when(projectRepository.get(projectId)).thenReturn(project);
 
     int analysisId = 2;
+    String studyUid = "3g0yg-g945gh";
+    String criterionUri1 = "c1";
+    String variableName1 = "vn1";
+    String alternativeUri1 = "a1";
+    String armName1 = "an1";
+
+    String criterionUri2 = "c2";
+    String variableName2 = "vn2";
+    String alternativeUri2 = "a2";
+    String armName2 = "an2";
+
     SingleStudyBenefitRiskAnalysis analysis = mock(SingleStudyBenefitRiskAnalysis.class);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
     when(analysis.getName()).thenReturn("analysisName");
 
-    Map<String, AlternativeEntry> alternativesCache = new HashMap<>();
-    String alternativeEntryKey = "3L";
-    AlternativeEntry alternativeEntry = mock(AlternativeEntry.class);
-    alternativesCache.put(alternativeEntryKey, alternativeEntry);
-    when(alternativeService.createAlternatives(project, analysis)).thenReturn(alternativesCache);
+    Outcome outcome1 = mock(Outcome.class);
+    Outcome outcome2 = mock(Outcome.class);
+    when(outcome1.getSemanticOutcomeUri()).thenReturn(criterionUri1);
+    when(outcome2.getSemanticOutcomeUri()).thenReturn(criterionUri2);
+    List<Outcome> outcomes = Arrays.asList(outcome1, outcome2);
+    when(analysis.getSelectedOutcomes()).thenReturn(outcomes);
 
-    List<Pair<Variable, CriterionEntry>> variableCriteriaPairs = new ArrayList<>();
-    Variable variable = mock(Variable.class);
-    CriterionEntry criterionEntry = mock(CriterionEntry.class);
-    String criterionEntryTitle = "Criterion entry";
-    when(criterionEntry.getTitle()).thenReturn(criterionEntryTitle);
-    Pair<Variable, CriterionEntry> variableCriterionPair = new ImmutablePair<>(variable, criterionEntry);
-    variableCriteriaPairs.add(variableCriterionPair);
-    when(criteriaService.createVariableCriteriaPairs(project, analysis)).thenReturn(variableCriteriaPairs);
+    Intervention intervention1 = mock(Intervention.class);
+    Intervention intervention2 = mock(Intervention.class);
+    when(intervention1.getSemanticInterventionUri()).thenReturn(alternativeUri1);
+    when(intervention2.getSemanticInterventionUri()).thenReturn(alternativeUri2);
+    List<Intervention> interventions = Arrays.asList(intervention1, intervention2);
+    when(analysis.getSelectedInterventions()).thenReturn(interventions);
 
-    String variableUid = "4L";
-    Map<String, CriterionEntry> criteriaCache = new HashMap<>();
-    criteriaCache.put(variableUid, criterionEntry);
-    List<Measurement> measurements = new ArrayList<>();
-    Measurement measurement = mock(Measurement.class);
-    measurements.add(measurement);
-    when(measurementsService.createMeasurements(project, analysis, alternativesCache)).thenReturn(measurements);
+    when(analysis.getStudyUid()).thenReturn(studyUid);
+    List<String> outcomeUids = Arrays.asList(criterionUri1, criterionUri2);
+    List<String> interventionUids = Arrays.asList(alternativeUri1, alternativeUri2);
 
-    when(variable.getUid()).thenReturn(variableUid);
+    Long rate = 42L;
+    Long sampleSize1 = 111L;
+
+    Long sampleSize2 = 222L;
+    Double mu = 7.56;
+    Double stdDev = 0.2;
+    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row1 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri1, variableName1, alternativeUri1, armName1, mu, stdDev, null, sampleSize1);
+    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row2 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri2, variableName2, alternativeUri2, armName2, null, null, rate, sampleSize2);
+    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row3 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri1, variableName1, alternativeUri2, armName2, mu, stdDev, null, sampleSize1);
+    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row4 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri2, variableName2, alternativeUri1, armName1, null, null, rate, sampleSize2);
+
+    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementRows = Arrays.asList(row1, row2, row3, row4);
+
+    when(triplestoreService.getSingleStudyMeasurements(anyString(), anyList(), anyList())).thenReturn(measurementRows);
 
     AbstractMeasurementEntry measurementEntry = mock(ContinuousMeasurementEntry.class);
     List<AbstractMeasurementEntry> performanceTable = Arrays.asList(measurementEntry);
-    when(performanceTablebuilder.build(criteriaCache, alternativesCache, measurements)).thenReturn(performanceTable);
+    when(performanceTablebuilder.build(measurementRows)).thenReturn(performanceTable);
 
     // execute
     SingleStudyBenefitRiskProblem actualProblem = (SingleStudyBenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(projectId, analysisId);
-    verify(alternativeService).createAlternatives(project, analysis);
-    verify(criteriaService).createVariableCriteriaPairs(project, analysis);
-    verify(measurementsService).createMeasurements(project, analysis, alternativesCache);
-    verify(performanceTablebuilder).build(criteriaCache, alternativesCache, measurements);
+    verify(triplestoreService).getSingleStudyMeasurements(studyUid, outcomeUids, interventionUids);
+    verify(performanceTablebuilder).build(measurementRows);
 
     assertNotNull(actualProblem);
     assertNotNull(actualProblem.getTitle());
@@ -143,7 +154,7 @@ public class ProblemServiceTest {
     assertNotNull(actualProblem.getCriteria());
 
     Map<String, CriterionEntry> actualCriteria = actualProblem.getCriteria();
-    assertTrue(actualCriteria.keySet().contains(criterionEntry.getCriterionUri()));
+    assertTrue(actualCriteria.keySet().contains(criterionUri1));
   }
 
   @Test

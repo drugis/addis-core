@@ -2,6 +2,7 @@ package org.drugis.addis.trialverse.service;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.model.*;
+import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 
 import java.util.Collection;
 import java.util.List;
@@ -43,4 +44,6 @@ public interface TriplestoreService {
   public List<Pair<String, Long>> getOutcomeVariableUidsByStudyForSingleOutcome(String namespaceUid, List<String> studyUids, String outcomeURI);
 
   public List<TrialDataStudy> getTrialData(String namespaceUid, String outcomeUri, List<String> interventionUris);
+
+  public List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String studyUid, List<String> outcomeUids, List<String> interventionUids);
 }
