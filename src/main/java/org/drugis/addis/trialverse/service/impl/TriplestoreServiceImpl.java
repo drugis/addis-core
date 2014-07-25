@@ -267,10 +267,18 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       TrialDataIntervention trialDataIntervention = new TrialDataIntervention(drugInstanceUid, drugUid, studyUid);
       trialDataStudy.getTrialDataInterventions().add(trialDataIntervention);
 
-      Long sampleSize = JsonPath.read(binding, "$.samplesize.value");
-      Long rate = JsonPath.read(binding, "$.rate.value");
-      Double stdDev = JsonPath.read(binding, "$.stdDev.value");
-      Double mean = JsonPath.read(binding, "$.mean.value");
+      Double mean = null;
+      Double stdDev = null;
+      Long rate = null;
+      JSONObject bindingObject = (JSONObject) binding;
+      Boolean isContinuous = bindingObject.containsKey("mean");
+      if (isContinuous) {
+        mean = Double.parseDouble(JsonPath.<String>read(binding, "$.mean.value"));
+        stdDev = Double.parseDouble(JsonPath.<String>read(binding, "$.stdDev.value"));
+      } else {
+        rate = Long.parseLong(JsonPath.<String>read(binding, "$.count.value"));
+      }
+      Long sampleSize = Long.parseLong(JsonPath.<String>read(binding, "$.sampleSize.value"));
       String armUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.arm.value"));
       String armLabel = JsonPath.read(binding, "$.armLabel.value");
       String variableUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.outcomeInstance.value"));
@@ -356,15 +364,15 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     List<SingleStudyBenefitRiskMeasurementRow> measurementObjects = new ArrayList<>();
     for (Object binding : bindings) {
-      Double mean = null;
-      Double stdDev = null;
-      Long rate = null;
       JSONObject bindingObject = (JSONObject) binding;
-      Boolean isContinuous = bindingObject.containsKey("mean");
       String outcomeUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.outcomeTypeUid.value"));
       String outcomeLabel = JsonPath.read(binding, "$.outcomeInstanceLabel.value");
       String alternativeUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.interventionTypeUid.value"));
       String alternativeLabel = JsonPath.read(binding, "$.interventionLabel.value");
+      Double mean = null;
+      Double stdDev = null;
+      Long rate = null;
+      Boolean isContinuous = bindingObject.containsKey("mean");
       if (isContinuous) {
         mean = Double.parseDouble(JsonPath.<String>read(binding, "$.mean.value"));
         stdDev = Double.parseDouble(JsonPath.<String>read(binding, "$.stdDev.value"));
