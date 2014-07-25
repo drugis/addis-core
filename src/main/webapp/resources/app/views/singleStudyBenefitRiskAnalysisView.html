@@ -51,7 +51,7 @@
                 <div class="nested-view-header">
                     Selected Study
                 </div>
-                <select ng-model="analysis.studyId" ng-disabled="editMode.disableEditing"
+                <select ng-model="analysis.studyUid" ng-disabled="editMode.disableEditing"
                         ng-options="study.uid as study.name for study in studies | orderBy:'name'">
                 </select>
 

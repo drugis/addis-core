@@ -4,6 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.factory.RestOperationsFactory;
@@ -355,14 +356,22 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     List<SingleStudyBenefitRiskMeasurementRow> measurementObjects = new ArrayList<>();
     for (Object binding : bindings) {
-      String outcomeUid = JsonPath.read(binding, "$.outcomeTypeUid.value");
+      Double mean = null;
+      Double stdDev = null;
+      Long rate = null;
+      JSONObject bindingObject = (JSONObject) binding;
+      Boolean isContinuous = bindingObject.containsKey("mean");
+      String outcomeUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.outcomeTypeUid.value"));
       String outcomeLabel = JsonPath.read(binding, "$.outcomeInstanceLabel.value");
-      String alternativeUid = JsonPath.read(binding, "$.alternativeTypeUid.value");
+      String alternativeUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.interventionTypeUid.value"));
       String alternativeLabel = JsonPath.read(binding, "$.interventionLabel.value");
-      Double mean = JsonPath.read(binding, "$.mean.value");
-      Double stdDev = JsonPath.read(binding, "$.stdDev.value");
-      Long rate = JsonPath.read(binding, "$.count.value");
-      Long sampleSize = JsonPath.read(binding, "$.sampleSize.value");
+      if (isContinuous) {
+        mean = Double.parseDouble(JsonPath.<String>read(binding, "$.mean.value"));
+        stdDev = Double.parseDouble(JsonPath.<String>read(binding, "$.stdDev.value"));
+      } else {
+        rate = Long.parseLong(JsonPath.<String>read(binding, "$.count.value"));
+      }
+      Long sampleSize = Long.parseLong(JsonPath.<String>read(binding, "$.sampleSize.value"));
       measurementObjects.add(new SingleStudyBenefitRiskMeasurementRow(outcomeUid, outcomeLabel, alternativeUid, alternativeLabel, mean, stdDev, rate, sampleSize));
     }
     return measurementObjects;
