@@ -15,7 +15,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       projectDeferred,
       mockProject = {
         id: 11,
-        trialverseId: 123456
+        namespaceUid: '123-a-dda456'
       },
       mockStateParams = {
         analysisId: 1,
@@ -182,7 +182,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
         it('should get the tabledata and transform it to table rows and network', function() {
           expect(trialverseTrialDataResource.get).toHaveBeenCalledWith({
-            id: mockProject.trialverseId,
+            id: mockProject.namespaceUid,
             outcomeUri: mockOutcomes[0].semanticOutcomeUri,
             interventionUris: []
           });

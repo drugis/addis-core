@@ -48,7 +48,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     List<Namespace> namespaces = new ArrayList<>(bindings.size());
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.dataset.value");
-      uid = removePreamble(uid);
+      uid = subStringAfterLastSlash(uid);
       String name = JsonPath.read(binding, "$.label.value");
       String description = JsonPath.read(binding, "$.comment.value");
       namespaces.add(new Namespace(uid, name, description));
@@ -101,7 +101,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.outcome.value");
-      uid = removePreamble(uid);
+      uid = subStringAfterLastSlash(uid);
       String label = JsonPath.read(binding, "$.label.value");
       outcomes.add(new SemanticOutcome(uid, label));
     }
@@ -129,7 +129,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.intervention.value");
-      uid = removePreamble(uid);
+      uid = subStringAfterLastSlash(uid);
       String label = JsonPath.read(binding, "$.label.value");
       interventions.add(new SemanticIntervention(uid, label));
     }
@@ -159,17 +159,12 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.study.value");
-      uid = removePreamble(uid);
+      uid = subStringAfterLastSlash(uid);
       String name = JsonPath.read(binding, "$.label.value");
-      String title = JsonPath.read(binding, "$.comment.value");
+      String title = JsonPath.read(binding, "$.title.value");
       studies.add(new Study(uid, name, title));
     }
     return studies;
-  }
-
-  private String removePreamble(String colonedString) {
-    colonedString = colonedString.substring(colonedString.indexOf(":") + 1);// "expected return: study:af0d9-adf0-rtwe-etc"
-    return colonedString;
   }
 
   private String buildInterventionUnionString(List<String> interventionUids) {
@@ -251,15 +246,15 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     Map<String, TrialDataStudy> trialDataStudies = new HashMap<>();
     // ?studyName ?drug ?interventionLabel ?interventionInstance ?outcomeInstance ?outcomeTypeUid ?outcomeInstanceLabel ?arm ?armLabel ?mean ?stdDev ?count ?sampleSize WHERE {
     for (Object binding : bindings) {
-      String studyUid = removePreamble(JsonPath.<String>read(binding, "$.study.value"));
+      String studyUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.study.value"));
       TrialDataStudy trialDataStudy = trialDataStudies.get(studyUid);
       if (trialDataStudy == null) {
         String studyName = JsonPath.read(binding, "$.studyName.value");
         trialDataStudy = new TrialDataStudy(studyUid, studyName, new HashSet<TrialDataIntervention>(), new ArrayList<TrialDataArm>());
         trialDataStudies.put(studyUid, trialDataStudy);
       }
-      String drugInstanceUid = removePreamble(JsonPath.<String>read(binding, "$.drugInstance.value"));
-      String drugUid = removePreamble(JsonPath.<String>read(binding, "$.drug.value"));
+      String drugInstanceUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.drugInstance.value"));
+      String drugUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.drug.value"));
       TrialDataIntervention trialDataIntervention = new TrialDataIntervention(drugInstanceUid, drugUid, studyUid);
       trialDataStudy.getTrialDataInterventions().add(trialDataIntervention);
 
@@ -267,9 +262,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       Long rate = JsonPath.read(binding, "$.rate.value");
       Double stdDev = JsonPath.read(binding, "$.stdDev.value");
       Double mean = JsonPath.read(binding, "$.mean.value");
-      String armUid = removePreamble(JsonPath.<String>read(binding, "$.arm.value"));
+      String armUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.arm.value"));
       String armLabel = JsonPath.read(binding, "$.armLabel.value");
-      String variableUid = removePreamble(JsonPath.<String>read(binding, "$.outcomeInstance.value"));
+      String variableUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.outcomeInstance.value"));
       Measurement measurement = new Measurement(studyUid, variableUid, armUid, sampleSize, rate, stdDev, mean);
       TrialDataArm trialDataArm = new TrialDataArm(armUid, studyUid, armLabel, drugInstanceUid, drugUid, measurement);
       trialDataStudy.getTrialDataArms().add(trialDataArm);

@@ -176,7 +176,7 @@ define(['d3'], function(d3) {
       var includedInterventionUris = _.reduce($scope.interventions, addIncludedInterventionUri, []);
       TrialverseTrialDataResource
         .get({
-          id: $scope.project.trialverseId,
+          id: $scope.project.namespaceUid,
           outcomeUri: $scope.analysis.outcome.semanticOutcomeUri,
           interventionUris: includedInterventionUris
         })

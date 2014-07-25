@@ -48,7 +48,7 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     createMockTrialverseService(mockResult);
     List<SemanticOutcome> result = triplestoreService.getOutcomes("abc");
-    SemanticOutcome result1 = new SemanticOutcome("http://trials.drugis.org/namespace/1/endpoint/test1", "DBP 24-hour mean");
+    SemanticOutcome result1 = new SemanticOutcome("fdszgs-adsfd-1", "DBP 24-hour mean");
     assertEquals(result.get(0), result1);
   }
 
@@ -59,7 +59,7 @@ public class TriplestoreServiceTest {
 
     List<SemanticIntervention> result = triplestoreService.getInterventions("abc");
     SemanticIntervention intervention = result.get(0);
-    SemanticIntervention expectedSemanticIntervention = new SemanticIntervention("http://trials.drugis.org/namespace/1/drug/test1", "Azilsartan");
+    SemanticIntervention expectedSemanticIntervention = new SemanticIntervention("fdhdfgh-saddsgfsdf-123-a", "Azilsartan");
     assertEquals(expectedSemanticIntervention, intervention);
   }
 
