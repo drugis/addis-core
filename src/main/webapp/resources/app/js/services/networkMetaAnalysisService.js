@@ -107,7 +107,7 @@ define(['angular'], function() {
           row.studyRowSpan = study.trialDataArms.length;
           row.studyRows = studyRows;
 
-          row.intervention = matchedIntervention ? matchedIntervention : 'unmatched';
+          row.intervention = matchedIntervention ? matchedIntervention.semanticInterventionLabel : 'unmatched';
           row.drugUid = trialDataArm.drugUid;
           row.arm = trialDataArm.name;
           row.trialverseId = trialDataArm.uid;
