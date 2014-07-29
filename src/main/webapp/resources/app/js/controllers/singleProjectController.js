@@ -19,18 +19,24 @@ define([], function() {
     $scope.editMode = {
       allowEditing: false
     };
+    $scope.duplicateOutcomeName = {
+      isDuplicate: false
+    };
+    $scope.duplicateInterventionName = {
+      isDuplicate: false
+    };
     $scope.analysisTypes = ANALYSIS_TYPES;
 
     $scope.project = ProjectResource.get($stateParams);
     $scope.project.$promise.then(function() {
       $scope.trialverse = TrialverseResource.get({
-        id: $scope.project.trialverseId
+        id: $scope.project.namespaceUid
       });
       $scope.semanticOutcomes = SemanticOutcomeResource.query({
-        id: $scope.project.trialverseId
+        id: $scope.project.namespaceUid
       });
       $scope.semanticInterventions = SemanticInterventionResource.query({
-        id: $scope.project.trialverseId
+        id: $scope.project.namespaceUid
       });
       $scope.outcomes = OutcomeResource.query({
         projectId: $scope.project.id
@@ -44,7 +50,7 @@ define([], function() {
       $scope.editMode.allowEditing = $window.config.user.id === $scope.project.owner.id;
 
       $scope.studies = TrialverseStudyResource.query({
-        id: $scope.project.trialverseId
+        id: $scope.project.namespaceUid
       });
 
       $scope.studies.$promise.then(function() {
@@ -93,6 +99,21 @@ define([], function() {
         analysisId: analysisId
       });
     };
+
+    function findDuplicateName(list, name) {
+      return _.find(list, function(item) {
+        return item.name === name;
+      });
+    }
+
+    $scope.checkForDuplicateOutcomeName = function(name) {
+      $scope.duplicateOutcomeName.isDuplicate = findDuplicateName($scope.outcomes, name);
+    };
+
+    $scope.checkForDuplicateInterventionName = function(name) {
+      $scope.duplicateInterventionName.isDuplicate = findDuplicateName($scope.interventions, name);
+    };
+
   };
   return dependencies.concat(ProjectsController);
 });

@@ -1,12 +1,9 @@
 package org.drugis.addis.projects;
 
-import org.drugis.addis.interventions.Intervention;
-import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.security.Account;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.*;
 
 /**
  * Created by daan on 2/6/14.
@@ -29,25 +26,24 @@ public class Project implements Serializable {
   private String description;
 
   @Column
-  private Integer trialverseId;
-
+  private String namespaceUid;
 
   public Project() {
   }
 
-  public Project(Integer id, Account owner, String name, String description, Integer trialverseId) {
+  public Project(Integer id, Account owner, String name, String description, String namespaceUid) {
     this.id = id;
     this.owner = owner;
     this.name = name;
     this.description = description;
-    this.trialverseId = trialverseId;
+    this.namespaceUid = namespaceUid;
   }
 
-  public Project(Account owner, String name, String description, Integer trialverseId) {
+  public Project(Account owner, String name, String description, String namespaceUid) {
     this.owner = owner;
     this.name = name;
     this.description = description;
-    this.trialverseId = trialverseId;
+    this.namespaceUid = namespaceUid;
   }
 
   public Integer getId() {
@@ -82,12 +78,12 @@ public class Project implements Serializable {
     this.description = description;
   }
 
-  public Integer getTrialverseId() {
-    return trialverseId;
+  public String getNamespaceUid() {
+    return namespaceUid;
   }
 
-  public void setTrialverseId(Integer trialverseId) {
-    this.trialverseId = trialverseId;
+  public void setNamespaceUid(String namespaceUid) {
+    this.namespaceUid = namespaceUid;
   }
 
   @Override
@@ -101,7 +97,7 @@ public class Project implements Serializable {
     if (id != null ? !id.equals(project.id) : project.id != null) return false;
     if (!name.equals(project.name)) return false;
     if (!owner.equals(project.owner)) return false;
-    if (!trialverseId.equals(project.trialverseId)) return false;
+    if (!namespaceUid.equals(project.namespaceUid)) return false;
 
     return true;
   }
@@ -112,7 +108,7 @@ public class Project implements Serializable {
     result = 31 * result + owner.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + description.hashCode();
-    result = 31 * result + trialverseId.hashCode();
+    result = 31 * result + namespaceUid.hashCode();
     return result;
   }
 }

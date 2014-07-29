@@ -22,6 +22,7 @@
   </head>
 
   <body>
+    <session-expired-directive></session-expired-directive>
     <form method="POST" action="<c:url value="/signout" />" id="signout_form">
       <input type="hidden" name="_csrf" value="<c:out value="${_csrf.token}" />" />
     </form>
@@ -30,7 +31,7 @@
       <ul class="title-area">
         <li class="name">
           <h1>
-            <a href="#">addis.drugis.org</a>
+            <a id="addis-logo" href="#">addis.drugis.org</a>
           </h1>
         </li>
       </ul>

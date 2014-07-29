@@ -2,9 +2,10 @@ package org.drugis.addis.problems;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.analyses.*;
+import org.drugis.addis.analyses.ArmExclusion;
+import org.drugis.addis.analyses.InterventionInclusion;
+import org.drugis.addis.analyses.NetworkMetaAnalysis;
+import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -12,9 +13,6 @@ import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.*;
-import org.drugis.addis.problems.service.AlternativeService;
-import org.drugis.addis.problems.service.CriteriaService;
-import org.drugis.addis.problems.service.MeasurementsService;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
 import org.drugis.addis.problems.service.impl.ProblemServiceImpl;
@@ -25,7 +23,8 @@ import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.service.TrialverseService;
-import org.drugis.addis.util.JSONUtils;
+import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,15 +52,6 @@ public class ProblemServiceTest {
   ProjectRepository projectRepository;
 
   @Mock
-  AlternativeService alternativeService;
-
-  @Mock
-  CriteriaService criteriaService;
-
-  @Mock
-  MeasurementsService measurementsService;
-
-  @Mock
   PerformanceTableBuilder performanceTablebuilder;
 
   @Mock
@@ -71,7 +61,7 @@ public class ProblemServiceTest {
   TrialverseService trialverseService;
 
   @Mock
-  JSONUtils jsonUtils;
+  private TriplestoreService triplestoreService;
 
   @InjectMocks
   ProblemService problemService;
@@ -79,18 +69,14 @@ public class ProblemServiceTest {
   @Before
   public void setUp() {
     problemService = new ProblemServiceImpl();
-    alternativeService = new AlternativeService();
-    criteriaService = new CriteriaService();
-    jsonUtils = new JSONUtils();
     MockitoAnnotations.initMocks(this);
 
-    when(jsonUtils.createKey(anyString())).thenReturn("key1", "key2", "key3");
   }
 
   @After
   public void cleanUp() {
     verifyNoMoreInteractions(analysisRepository, projectRepository, singleStudyBenefitRiskAnalysisRepository,
-            alternativeService, criteriaService, interventionRepository, trialverseService);
+            interventionRepository, trialverseService, triplestoreService);
   }
 
   @Test
@@ -101,51 +87,65 @@ public class ProblemServiceTest {
     when(projectRepository.get(projectId)).thenReturn(project);
 
     int analysisId = 2;
+    String studyUid = "3g0yg-g945gh";
+    String criterionUri1 = "c1";
+    String variableName1 = "vn1";
+    String alternativeUri1 = "a1";
+    String armName1 = "an1";
+
+    String criterionUri2 = "c2";
+    String variableName2 = "vn2";
+    String alternativeUri2 = "a2";
+    String armName2 = "an2";
+
     SingleStudyBenefitRiskAnalysis analysis = mock(SingleStudyBenefitRiskAnalysis.class);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
     when(analysis.getName()).thenReturn("analysisName");
 
-    Map<Long, AlternativeEntry> alternativesCache = new HashMap<>();
-    long alternativeEntryKey = 3L;
-    AlternativeEntry alternativeEntry = mock(AlternativeEntry.class);
-    alternativesCache.put(alternativeEntryKey, alternativeEntry);
-    when(alternativeService.createAlternatives(project, analysis)).thenReturn(alternativesCache);
+    Outcome outcome1 = mock(Outcome.class);
+    Outcome outcome2 = mock(Outcome.class);
+    when(outcome1.getSemanticOutcomeUri()).thenReturn(criterionUri1);
+    when(outcome2.getSemanticOutcomeUri()).thenReturn(criterionUri2);
+    List<Outcome> outcomes = Arrays.asList(outcome1, outcome2);
+    when(analysis.getSelectedOutcomes()).thenReturn(outcomes);
 
-    List<Pair<Variable, CriterionEntry>> variableCriteriaPairs = new ArrayList<>();
-    Variable variable = mock(Variable.class);
-    CriterionEntry criterionEntry = mock(CriterionEntry.class);
-    String criterionEntryTitle = "Criterion entry";
-    when(criterionEntry.getTitle()).thenReturn(criterionEntryTitle);
-    String mockKey = "mockKey";
-    when(jsonUtils.createKey(criterionEntryTitle)).thenReturn(mockKey);
-    Pair<Variable, CriterionEntry> variableCriterionPair = new ImmutablePair<>(variable, criterionEntry);
-    variableCriteriaPairs.add(variableCriterionPair);
-    when(criteriaService.createVariableCriteriaPairs(project, analysis)).thenReturn(variableCriteriaPairs);
+    Intervention intervention1 = mock(Intervention.class);
+    Intervention intervention2 = mock(Intervention.class);
+    when(intervention1.getSemanticInterventionUri()).thenReturn(alternativeUri1);
+    when(intervention2.getSemanticInterventionUri()).thenReturn(alternativeUri2);
+    List<Intervention> interventions = Arrays.asList(intervention1, intervention2);
+    when(analysis.getSelectedInterventions()).thenReturn(interventions);
 
-    long variableId = 4L;
-    Map<Long, CriterionEntry> criteriaCache = new HashMap<>();
-    criteriaCache.put(variableId, criterionEntry);
-    List<Measurement> measurements = new ArrayList<>();
-    Measurement measurement = mock(Measurement.class);
-    measurements.add(measurement);
-    when(measurementsService.createMeasurements(project, analysis, alternativesCache)).thenReturn(measurements);
+    when(analysis.getStudyUid()).thenReturn(studyUid);
+    List<String> outcomeUids = Arrays.asList(criterionUri1, criterionUri2);
+    List<String> interventionUids = Arrays.asList(alternativeUri1, alternativeUri2);
 
-    when(variable.getId()).thenReturn(variableId);
+    Long rate = 42L;
+    Long sampleSize1 = 111L;
+
+    Long sampleSize2 = 222L;
+    Double mu = 7.56;
+    Double stdDev = 0.2;
+    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row1 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri1, variableName1, alternativeUri1, armName1, mu, stdDev, null, sampleSize1);
+    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row2 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri2, variableName2, alternativeUri2, armName2, null, null, rate, sampleSize2);
+    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row3 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri1, variableName1, alternativeUri2, armName2, mu, stdDev, null, sampleSize1);
+    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row4 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri2, variableName2, alternativeUri1, armName1, null, null, rate, sampleSize2);
+
+    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementRows = Arrays.asList(row1, row2, row3, row4);
+
+    when(triplestoreService.getSingleStudyMeasurements(anyString(), anyList(), anyList())).thenReturn(measurementRows);
 
     AbstractMeasurementEntry measurementEntry = mock(ContinuousMeasurementEntry.class);
     List<AbstractMeasurementEntry> performanceTable = Arrays.asList(measurementEntry);
-    when(performanceTablebuilder.build(criteriaCache, alternativesCache, measurements)).thenReturn(performanceTable);
+    when(performanceTablebuilder.build(measurementRows)).thenReturn(performanceTable);
 
     // execute
     SingleStudyBenefitRiskProblem actualProblem = (SingleStudyBenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(projectId, analysisId);
-    verify(alternativeService).createAlternatives(project, analysis);
-    verify(criteriaService).createVariableCriteriaPairs(project, analysis);
-    verify(measurementsService).createMeasurements(project, analysis, alternativesCache);
-    verify(performanceTablebuilder).build(criteriaCache, alternativesCache, measurements);
-    verify(jsonUtils, times(2)).createKey(anyString());
+    verify(triplestoreService).getSingleStudyMeasurements(studyUid, outcomeUids, interventionUids);
+    verify(performanceTablebuilder).build(measurementRows);
 
     assertNotNull(actualProblem);
     assertNotNull(actualProblem.getTitle());
@@ -154,13 +154,12 @@ public class ProblemServiceTest {
     assertNotNull(actualProblem.getCriteria());
 
     Map<String, CriterionEntry> actualCriteria = actualProblem.getCriteria();
-    assertTrue(actualCriteria.keySet().contains(mockKey));
-    verify(jsonUtils).createKey(criterionEntryTitle);
+    assertTrue(actualCriteria.keySet().contains(criterionUri1));
   }
 
   @Test
   public void testGetNetworkMetaAnalysisProblem() throws ResourceDoesNotExistException {
-    Long namespaceId = 1L;
+    String namespaceUid = "UID 1";
     Integer projectId = 2;
     Integer analysisId = 3;
 
@@ -168,49 +167,57 @@ public class ProblemServiceTest {
 
     String outcomeUri = "outcomeUri";
     Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
-    ArmExclusion armExclusion1 = new ArmExclusion(analysisId, 888L); // trialDataArm with armId4
-    List<ArmExclusion> armExclusions = Arrays.asList(armExclusion1);
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", new ArrayList<ArmExclusion>(), new ArrayList<InterventionInclusion>(), outcome);
 
-    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, Collections.EMPTY_LIST, outcome);
+    analysis.getExcludedArms().add(new ArmExclusion(analysis, "888L")); // trialDataArm with armId4
+
     Project project = mock(Project.class);
     SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
     SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
     SemanticIntervention semanticIntervention3 = new SemanticIntervention("uri3", "label3");
-    Intervention intervention1 = new Intervention(1, projectId, "int1", "moti", semanticIntervention1);
+    int interventionId1 = 1;
+    Intervention intervention1 = new Intervention(interventionId1, projectId, "int1", "moti", semanticIntervention1);
     Intervention intervention2 = new Intervention(2, projectId, "int2", "moti", semanticIntervention2);
     Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
     List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
+
+    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis, intervention1.getId());
+    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention2.getId());
+    InterventionInclusion interventionInclusion3 = new InterventionInclusion(analysis, intervention3.getId());
+    analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2, interventionInclusion3));
+
     ObjectMapper mapper = new ObjectMapper();
 
     ObjectNode trialDataNode = mapper.convertValue(trialData, ObjectNode.class);
     when(project.getId()).thenReturn(projectId);
-    when(project.getTrialverseId()).thenReturn(namespaceId.intValue());
+    when(project.getNamespaceUid()).thenReturn(namespaceUid);
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
-    when(trialverseService.getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"))).thenReturn(trialDataNode);
+    when(trialverseService.getTrialData(namespaceUid, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"))).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(projectId, analysisId);
     verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"));
+    verify(trialverseService).getTrialData(namespaceUid, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"));
 
     assertNotNull(problem);
     assertEquals(3, problem.getEntries().size());
-    ContinuousNetworkMetaAnalysisProblemEntry entry = new ContinuousNetworkMetaAnalysisProblemEntry("study1", "int1", 768784L, Math.PI, Math.E);
+    ContinuousNetworkMetaAnalysisProblemEntry entry = new ContinuousNetworkMetaAnalysisProblemEntry("study1", interventionId1, 768784L, Math.PI, Math.E);
     assertTrue(problem.getEntries().contains(entry));
   }
 
   @Test
-  public void testGetNetworkAnalysisProblemWithInterventionExclusions() throws ResourceDoesNotExistException {
-    Long namespaceId = 1L;
+  public void testGetNetworkAnalysisProblemWithInterventionInclusions() throws ResourceDoesNotExistException {
+    String namespaceUid = "UID 1";
     Integer projectId = 2;
     Integer analysisId = 3;
 
     String outcomeUri = "outcomeUri";
     Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", Collections.EMPTY_LIST, new ArrayList<InterventionInclusion>(), outcome);
 
     SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
     SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
@@ -222,18 +229,17 @@ public class ProblemServiceTest {
 
     Project project = mock(Project.class);
     when(project.getId()).thenReturn(projectId);
-    when(project.getTrialverseId()).thenReturn(namespaceId.intValue());
+    when(project.getNamespaceUid()).thenReturn(namespaceUid);
 
-    InterventionExclusion interventionExclusion = new InterventionExclusion(analysisId, intervention2.getId());
-    List<InterventionExclusion> interventionExclusions = Arrays.asList(interventionExclusion);
-    AbstractAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", Collections.EMPTY_LIST, interventionExclusions, outcome);
-
+    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis, intervention1.getId());
+    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention3.getId());
+    analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2));
 
     TrialData trialData = createMockTrialData();
     TrialDataStudy trialDataStudy = trialData.getTrialDataStudies().get(0);
     List<TrialDataIntervention> trialDataInterventions = trialDataStudy.getTrialDataInterventions();
     // remove excluded intervention from trialdata as well (HACKY)
-    trialDataInterventions.set(1, new TrialDataIntervention(-666L, "iamnothere", -666L));
+    trialDataInterventions.set(1, new TrialDataIntervention("-666L", "iamnothere", "-666L"));
     trialDataStudy.getTrialDataInterventions();
     ObjectMapper mapper = new ObjectMapper();
     ObjectNode trialDataNode = mapper.convertValue(trialData, ObjectNode.class);
@@ -241,66 +247,55 @@ public class ProblemServiceTest {
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
-    when(trialverseService.getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri3"))).thenReturn(trialDataNode);
+    when(trialverseService.getTrialData(namespaceUid, outcomeUri, Arrays.asList("uri1", "uri3"))).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(projectId, analysisId);
     verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(namespaceId, outcomeUri, Arrays.asList("uri1", "uri3"));
+    verify(trialverseService).getTrialData(namespaceUid, outcomeUri, Arrays.asList("uri1", "uri3"));
 
     assertEquals(2, problem.getEntries().size());
   }
 
   private TrialData createMockTrialData() {
-    Long studyId1 = 101L;
-    Long studyId2 = 202L;
-    Long drugId1 = 420L;
-    Long drugId2 = 430L;
-    Long drugId3 = 440L;
-    Long drugId4 = 550L;
-    Long armId1 = 555L;
-    Long armId2 = 666L;
-    Long armId3 = 777L;
-    Long armId4 = 888L;
-    Long armId5 = 999L;
+    String studyId1 = "101L";
+    String studyId2 = "202L";
+    String drugId1 = "420L";
+    String drugId2 = "430L";
+    String drugId3 = "440L";
+    String drugId4 = "550L";
+    String armId1 = "555L";
+    String armId2 = "666L";
+    String armId3 = "777L";
+    String armId4 = "888L";
+    String armId5 = "999L";
 
-    TrialDataIntervention trialDataIntervention1 = new TrialDataIntervention(drugId1, "uri1", studyId1);
-    TrialDataIntervention trialDataIntervention2 = new TrialDataIntervention(drugId2, "uri2", studyId1);
-    TrialDataIntervention trialDataIntervention3 = new TrialDataIntervention(drugId3, "uri3", studyId1);
+    String drugUid1 = "uri1";
+    String drugUid2 = "uri2";
+    String drugUid3 = "uri3";
+    TrialDataIntervention trialDataIntervention1 = new TrialDataIntervention(drugId1, drugUid1, studyId1);
+    TrialDataIntervention trialDataIntervention2 = new TrialDataIntervention(drugId2, drugUid2, studyId1);
+    TrialDataIntervention trialDataIntervention3 = new TrialDataIntervention(drugId3, drugUid3, studyId1);
 
     TrialDataIntervention trialDataIntervention4 = new TrialDataIntervention(drugId4, "uri3", studyId2);
 
     List<TrialDataIntervention> trialdataInterventions1 = Arrays.asList(trialDataIntervention1, trialDataIntervention2, trialDataIntervention3);
     List<TrialDataIntervention> trialdataInterventions2 = Arrays.asList(trialDataIntervention4);
 
-    Measurement measurement1 = new Measurement(studyId1, 333L, 444L, armId1, MeasurementAttribute.SAMPLE_SIZE, 768784L, null);
-    Measurement measurement2 = new Measurement(studyId1, 333L, 444L, armId2, MeasurementAttribute.STANDARD_DEVIATION, null, Math.E);
-    Measurement measurement3 = new Measurement(studyId1, 333L, 444L, armId2, MeasurementAttribute.MEAN, null, Math.PI);
+    Measurement measurement1 = new Measurement(studyId1, "333L", armId1, 768784L, null, Math.E, Math.PI);
 
-    Measurement measurement4 = new Measurement(studyId1, 333L, 444L, armId3, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
-    Measurement measurement5 = new Measurement(studyId1, 333L, 444L, armId3, MeasurementAttribute.RATE, -1L, null);
+    Measurement measurement2 = new Measurement(studyId1, "333L", armId3, -1L, -1L, null, null);
+    Measurement measurement3 = new Measurement(studyId1, "333L", armId4, -1L, -1L, null, null);
+    Measurement measurement4 = new Measurement(studyId1, "333L", armId5, -1L, -1L, null, null);
+    Measurement measurement5 = new Measurement(studyId1, "333L", armId2, -1L, -1L, null, null);
 
-    Measurement measurement6 = new Measurement(studyId1, 333L, 444L, armId4, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
-    Measurement measurement7 = new Measurement(studyId1, 333L, 444L, armId4, MeasurementAttribute.RATE, -1L, null);
-
-    Measurement measurement8 = new Measurement(studyId2, 333L, 444L, armId5, MeasurementAttribute.SAMPLE_SIZE, -1L, null);
-    Measurement measurement9 = new Measurement(studyId2, 333L, 444L, armId5, MeasurementAttribute.RATE, -1L, null);
-
-    List<Measurement> measurements1 = Arrays.asList(measurement1, measurement2, measurement3);
-    List<Measurement> measurements2 = Arrays.asList(measurement1, measurement2, measurement3);
-    List<Measurement> measurements3 = Arrays.asList(measurement4, measurement5);
-    List<Measurement> measurements4 = Arrays.asList(measurement6, measurement7);
-
-    List<Measurement> measurements5 = Arrays.asList(measurement8, measurement9);
-
-    TrialDataArm trialDataArm1 = new TrialDataArm(armId1, studyId1, "arm bb", drugId1, measurements1);
-    TrialDataArm trialDataArm2 = new TrialDataArm(armId2, studyId1, "arm aa", drugId2, measurements2);
-    TrialDataArm trialDataArm3 = new TrialDataArm(armId3, studyId1, "aaa", drugId2, measurements3);
-    TrialDataArm trialDataArm4 = new TrialDataArm(armId4, studyId1, "qqqq", drugId3, measurements4);
-
-    TrialDataArm trialDataArm5 = new TrialDataArm(armId5, studyId2, "yyyy", drugId4, measurements5);
+    TrialDataArm trialDataArm1 = new TrialDataArm(armId1, "name1", studyId1, drugId1, drugUid1, measurement1);
+    TrialDataArm trialDataArm2 = new TrialDataArm(armId2, "arm aa", studyId1, drugId2, drugUid2, measurement2);
+    TrialDataArm trialDataArm3 = new TrialDataArm(armId3, "aaa", studyId1, drugId2, drugUid2, measurement3);
+    TrialDataArm trialDataArm4 = new TrialDataArm(armId4, "qqqq", studyId1, drugId3, drugUid3, measurement4);
+    TrialDataArm trialDataArm5 = new TrialDataArm(armId5, "yyyy", studyId2, drugId4, drugUid2, measurement5);
 
     List<TrialDataArm> trialDataArms1 = Arrays.asList(trialDataArm1, trialDataArm2, trialDataArm3, trialDataArm4);
     List<TrialDataArm> trialDataArms2 = Arrays.asList(trialDataArm5);

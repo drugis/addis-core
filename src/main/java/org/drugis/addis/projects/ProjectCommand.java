@@ -8,15 +8,15 @@ import org.apache.commons.lang.StringUtils;
 public class ProjectCommand {
   private String name;
   private String description;
-  private Integer trialverseId;
+  private String namespaceUid;
 
   public ProjectCommand() {
   }
 
-  public ProjectCommand(String name, String description, Integer trialverseId) {
+  public ProjectCommand(String name, String description, String namespaceUid) {
     this.name = name;
     this.description = description;
-    this.trialverseId = trialverseId;
+    this.namespaceUid = namespaceUid;
   }
 
   public String getName() {
@@ -27,8 +27,8 @@ public class ProjectCommand {
     return description == null ? StringUtils.EMPTY : description;
   }
 
-  public Integer getTrialverseId() {
-    return trialverseId;
+  public String getNamespaceUid() {
+    return namespaceUid;
   }
 
   @Override
@@ -40,7 +40,7 @@ public class ProjectCommand {
 
     if (description != null ? !description.equals(that.description) : that.description != null) return false;
     if (!name.equals(that.name)) return false;
-    if (!trialverseId.equals(that.trialverseId)) return false;
+    if (!namespaceUid.equals(that.namespaceUid)) return false;
 
     return true;
   }
@@ -49,7 +49,7 @@ public class ProjectCommand {
   public int hashCode() {
     int result = name.hashCode();
     result = 31 * result + (description != null ? description.hashCode() : 0);
-    result = 31 * result + trialverseId.hashCode();
+    result = 31 * result + namespaceUid.hashCode();
     return result;
   }
 }

@@ -4,18 +4,19 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by connor on 25-3-14.
  */
 public interface TrialverseService {
-  public List<ObjectNode> getVariablesByIds(Collection<Long> outcomeIds);
+  public List<ObjectNode> getVariablesByIds(Set<String> outcomeIds);
 
-  public List<ObjectNode> getArmsByDrugIds(Integer studyId, Collection<Long> drugIds);
+  public List<ObjectNode> getArmsByDrugIds(String studyUd, Collection<String> drugUids);
 
-  public List<ObjectNode> getOrderedMeasurements(Collection<Long> outcomeIds, Collection<Long> armIds);
+  public List<ObjectNode> getOrderedMeasurements(List<String> outcomeIds, List<String> armIds);
 
-  public List<ObjectNode> getStudiesByIds(Long namespaceId, List<Long> studyIds);
+  public List<ObjectNode> getStudiesByIds(String namespaceId, List<String> studyIds);
 
-  public ObjectNode getTrialData(Long namespaceId, String semanticOutcomeUri, List<String> alternativeUris);
+  public ObjectNode getTrialData(String namespaceUId, String semanticOutcomeUri, List<String> alternativeUris);
 }

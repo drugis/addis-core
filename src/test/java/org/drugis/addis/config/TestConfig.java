@@ -6,14 +6,15 @@ import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.interventions.repository.InterventionRepository;
-import org.drugis.addis.models.repositories.ModelRepository;
+import org.drugis.addis.models.repository.ModelRepository;
+import org.drugis.addis.models.repository.PataviTaskRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
-import org.drugis.addis.trialverse.service.TrialverseDataService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -106,13 +107,18 @@ public class TestConfig {
   }
 
   @Bean
-  public TrialverseDataService mockTrialverseDataService() {
-    return mock(TrialverseDataService.class);
+  public ModelRepository mockModelRepository() {
+    return mock(ModelRepository.class);
   }
 
   @Bean
-  public ModelRepository mockModelRepository() {
-    return mock(ModelRepository.class);
+  public RestOperationsFactory mockRestOperationsFactory() {
+    return mock(RestOperationsFactory.class);
+  }
+
+  @Bean
+  public PataviTaskRepository mockPataviTaskRepository() {
+    return mock(PataviTaskRepository.class);
   }
 }
 

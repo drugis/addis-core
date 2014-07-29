@@ -12,8 +12,8 @@ define(['angular'], function() {
     }
 
     function mapTrialDataArmToIntervention(trialDataArm, trialDataInterventions) {
-      return interventionMap[trialDataArm.drugId] ? interventionMap[trialDataArm.drugId] : _.find(trialDataInterventions, function(trialDataIntervention) {
-        return trialDataIntervention.drugId === trialDataArm.drugId;
+      return interventionMap[trialDataArm.drugUid] ? interventionMap[trialDataArm.drugUid] : _.find(trialDataInterventions, function(trialDataIntervention) {
+        return trialDataIntervention.drugUid === trialDataArm.drugUid;
       });
     }
 
@@ -97,13 +97,15 @@ define(['angular'], function() {
       }
       var exclusionMap = buildExcludedArmsMap(excludedArms);
       angular.forEach(data.trialDataStudies, function(study) {
+        var studyRows = [];
         angular.forEach(study.trialDataArms, function(trialDataArm) {
           var trialDataIntervention = mapTrialDataArmToIntervention(trialDataArm, study.trialDataInterventions);
           var row = {};
           row.study = study.name;
           row.studyRowSpan = study.trialDataArms.length;
+          row.studyRows = studyRows;
           row.intervention = trialDataIntervention ? resolveInterventionName(trialDataIntervention, interventions) : 'unmatched';
-          row.drugId = trialDataArm.drugId;
+          row.drugUid = trialDataArm.drugUid;
           row.arm = trialDataArm.name;
           row.trialverseId = trialDataArm.id;
           row.included = !exclusionMap[trialDataArm.id] && row.intervention !== 'unmatched';
@@ -113,6 +115,7 @@ define(['angular'], function() {
           row.sampleSize = findMeasurementValue(trialDataArm.measurements, 'sample size', 'integerValue');
 
           rows.push(row);
+          studyRows.push(row);
         });
       });
       return rows;
@@ -120,7 +123,7 @@ define(['angular'], function() {
 
     function isMatchedTrialDataIntervention(trialDataIntervention, study) {
       return _.find(study.trialDataArms, function(trialDataArm) {
-        return trialDataIntervention.drugId === trialDataArm.drugId;
+        return trialDataIntervention.drugUid === trialDataArm.drugUid;
       });
     }
 
@@ -181,7 +184,7 @@ define(['angular'], function() {
 
     function findArmForIntervention(trialdataArms, trialDataIntervention) {
       return _.find(trialdataArms, function(trialdataArm) {
-        return trialdataArm.drugId === trialDataIntervention.drugId;
+        return trialdataArm.drugUid === trialDataIntervention.drugUid;
       });
     }
 
@@ -276,7 +279,6 @@ define(['angular'], function() {
         _.each(connectedEdges, addUnvisitedNodesToToVisitList);
       }
       return !areNodeSetsEqual(network.interventions, visited);
-
     }
 
     function changeArmExclusion(dataRow, analysis) {
@@ -289,18 +291,16 @@ define(['angular'], function() {
         }
       } else {
         analysis.excludedArms.push({
-          trialverseId: dataRow.trialverseId,
-          analysisId: analysis.id
+          trialverseId: dataRow.trialverseId
         });
       }
       return analysis;
     }
 
-    function buildInterventionExclusions(interventions, analysis) {
+    function buildInterventionInclusions(interventions, analysis) {
       return _.reduce(interventions, function(accumulator, intervention) {
-        if (!intervention.isIncluded) {
+        if (intervention.isIncluded) {
           accumulator.push({
-            analysisId: analysis.id,
             interventionId: intervention.id
           });
         }
@@ -310,30 +310,30 @@ define(['angular'], function() {
 
     function doesModelHaveAmbiguousArms(trialverseData, analysis) {
       var hasAmbiguousArms = false;
-      var drugIdSet = {};
+      var drugUidSet = {};
       angular.forEach(trialverseData.trialDataStudies, function(trialDataStudy) {
         angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
-          drugIdSet[trialDataArm.drugId] = true;
+          drugUidSet[trialDataArm.drugUid] = true;
         });
       });
 
-      angular.forEach(_.map(_.keys(drugIdSet), Number), function(drugId) {
-        hasAmbiguousArms = hasAmbiguousArms || doesInterventionHaveAmbiguousArms(drugId, trialverseData, analysis);
+      angular.forEach(_.map(_.keys(drugUidSet), Number), function(drugUid) {
+        hasAmbiguousArms = hasAmbiguousArms || doesInterventionHaveAmbiguousArms(drugUid, trialverseData, analysis);
       });
 
       return hasAmbiguousArms;
     }
 
-    function doesInterventionHaveAmbiguousArms(drugId, trialverseData, analysis) {
-      var includedArmsForDrugId = _.reduce(trialverseData.trialDataStudies, function(arms, trialDataStudy) {
+    function doesInterventionHaveAmbiguousArms(drugUid, trialverseData, analysis) {
+      var includedArmsForDrugUid = _.reduce(trialverseData.trialDataStudies, function(arms, trialDataStudy) {
         return arms.concat(_.filter(trialDataStudy.trialDataArms, function(trialDataArm) {
-          return trialDataArm.drugId === drugId && isArmIncluded(trialDataArm) && isMatched(trialDataStudy, trialDataArm);
+          return trialDataArm.drugUid === drugUid && isArmIncluded(trialDataArm) && isMatched(trialDataStudy, trialDataArm);
         }));
       }, []);
 
       function isMatched(trialDataStudy, trialDataArm) {
         return _.find(trialDataStudy.trialDataInterventions, function(intervention) {
-          return intervention.drugId === trialDataArm.drugId;
+          return intervention.drugUid === trialDataArm.drugUid;
         });
       }
 
@@ -342,16 +342,16 @@ define(['angular'], function() {
           return exclusion.trialverseId === trialDataArm.id;
         });
       }
-      return includedArmsForDrugId.length > 1;
+      return includedArmsForDrugUid.length > 1;
     }
 
-    function addInclusionsToInterventions(interventions, exclusions) {
-      var exclusionMap = _.object(_.map(exclusions, function(exclusion) {
-        return [exclusion.interventionId, exclusion];
+    function addInclusionsToInterventions(interventions, inclusions) {
+      var inclusionMap = _.object(_.map(inclusions, function(inclusion) {
+        return [inclusion.interventionId, true];
       }));
 
       angular.forEach(interventions, function(intervention) {
-        intervention.isIncluded = !exclusionMap[intervention.id];
+        intervention.isIncluded = inclusionMap[intervention.id];
       });
       return interventions;
     }
@@ -361,17 +361,17 @@ define(['angular'], function() {
       var armsMatchingIntervention = {};
 
       angular.forEach(trialverseData.trialDataStudies, function(trialDataStudy) {
-        var drugIdForInterventionInStudy;
+        var drugUidForInterventionInStudy;
 
         angular.forEach(trialDataStudy.trialDataInterventions, function(trialDataIntervention) {
           if (trialDataIntervention.uri === intervention.semanticInterventionUri) {
-            drugIdForInterventionInStudy = trialDataIntervention.drugId;
+            drugUidForInterventionInStudy = trialDataIntervention.drugUid;
           }
         });
 
-        if (drugIdForInterventionInStudy) {
+        if (drugUidForInterventionInStudy) {
           angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
-            if (trialDataArm.drugId === drugIdForInterventionInStudy) {
+            if (trialDataArm.drugUid === drugUidForInterventionInStudy) {
               armsMatchingIntervention[trialDataArm.id] = true;
             }
           });
@@ -384,13 +384,17 @@ define(['angular'], function() {
 
     }
 
+    function updateDataRowStudy(dataRow) {
+
+    }
+
     return {
       transformTrialDataToNetwork: transformTrialDataToNetwork,
       transformTrialDataToTableRows: transformTrialDataToTableRows,
       isNetworkDisconnected: isNetworkDisconnected,
       addInclusionsToInterventions: addInclusionsToInterventions,
       changeArmExclusion: changeArmExclusion,
-      buildInterventionExclusions: buildInterventionExclusions,
+      buildInterventionInclusions: buildInterventionInclusions,
       doesInterventionHaveAmbiguousArms: doesInterventionHaveAmbiguousArms,
       doesModelHaveAmbiguousArms: doesModelHaveAmbiguousArms,
       cleanUpExcludedArms: cleanUpExcludedArms

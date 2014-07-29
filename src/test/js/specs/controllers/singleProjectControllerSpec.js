@@ -117,7 +117,7 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
           name: 'projectName',
           description: 'testDescription',
           namespace: 'testNamespace',
-          trialverseId: 1,
+          namespaceUid: "aa2a-20a9g-205968",
           $save: function() {}
         },
         mockTrialverse = {
@@ -242,7 +242,7 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         projectDeferred.resolve();
         scope.$apply();
         expect(trialverseResource.get).toHaveBeenCalledWith({
-          id: mockProject.trialverseId
+          id: mockProject.namespaceUid
         });
         expect(scope.trialverse).toEqual(mockTrialverse);
       });
@@ -251,7 +251,7 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         projectDeferred.resolve();
         scope.$apply();
         expect(semanticOutcomeResource.query).toHaveBeenCalledWith({
-          id: mockProject.trialverseId
+          id: mockProject.namespaceUid
         });
         expect(scope.semanticOutcomes).toEqual(mockSemanticOutcomes);
       });
@@ -273,7 +273,7 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         projectDeferred.resolve();
         scope.$apply();
         expect(semanticInterventionResource.query).toHaveBeenCalledWith({
-          id: mockProject.trialverseId
+          id: mockProject.namespaceUid
         });
         expect(scope.semanticInterventions).toEqual(mockSemanticInterventions);
       });

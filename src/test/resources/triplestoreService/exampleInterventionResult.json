@@ -1,18 +1,18 @@
 {
   "results": {
     "bindings": [{
-      "uri": {
+      "intervention": {
         "type": "uri",
-        "value": "http://trials.drugis.org/namespace/1/drug/test1"
+        "value": "http://trials.drugis.org/namespace/1/drug/fdhdfgh-saddsgfsdf-123-a"
       },
       "label": {
         "type": "literal",
         "value": "Azilsartan"
       }
     }, {
-      "uri": {
+      "intervention": {
         "type": "uri",
-        "value": "http://trials.drugis.org/namespace/1/drug/test2"
+        "value": "http://trials.drugis.org/namespace/1/drug/fdhdfgh-saddsgfsdf-123-b"
       },
       "label": {
         "type": "literal",

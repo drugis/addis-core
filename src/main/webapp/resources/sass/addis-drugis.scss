@@ -9,6 +9,12 @@
  .alert {
   color: $alert-color;
 }
+.warning {
+  color: $warning-color;
+}
+.info {
+  color: darken($info-color, 10%);
+}
 .color-stripe {
   background: $drugis-color;
   height: 0.45rem;

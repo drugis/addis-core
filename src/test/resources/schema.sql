@@ -149,3 +149,41 @@ CREATE TABLE InterventionExclusion (
   FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id),
   FOREIGN KEY(interventionId) REFERENCES Intervention(id)
 );
+
+-- changeset gertvv:8
+ALTER TABLE NetworkMetaAnalysis DROP COLUMN studyId;
+ALTER TABLE NetworkMetaAnalysis DROP COLUMN problem;
+
+CREATE TABLE PataviTask (
+  id SERIAL NOT NULL,
+  modelId INT NOT NULL,
+  method varchar,
+  problem TEXT,
+  result TEXT,
+  PRIMARY KEY(id),
+  FOREIGN KEY(modelId) REFERENCES Model(id)
+);
+
+-- changeset reidd:9
+DROP TABLE InterventionExclusion CASCADE;
+
+CREATE TABLE InterventionInclusion (
+  id SERIAL NOT NULL,
+  interventionId INT NOT NULL,
+  analysisId INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id),
+  FOREIGN KEY(interventionId) REFERENCES Intervention(id)
+);
+
+--changeset reidd:10
+ALTER TABLE Project DROP COLUMN trialverseId;
+ALTER TABLE Project ADD COLUMN namespaceUid VARCHAR;
+
+--changeset stroombergc:11
+ALTER TABLE SingleStudyBenefitRiskAnalysis DROP COLUMN studyId;
+ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN studyUid VARCHAR;
+
+--changeset stroombergc:12
+ALTER TABLE ArmExclusion DROP COLUMN trialverseId;
+ALTER TABLE ArmExclusion ADD COLUMN trialverseUid VARCHAR;

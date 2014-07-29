@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
+import java.util.List;
 
 /**
  * Created by daan on 22-5-14.
@@ -47,7 +48,12 @@ public class ModelController extends AbstractAddisCoreController {
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}", method = RequestMethod.GET)
   @ResponseBody
   public Model get(@PathVariable Integer analysisId, @PathVariable Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Model model = modelService.getModel(analysisId, modelId);
-    return model;
+    return modelService.getModel(analysisId, modelId);
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.GET)
+  @ResponseBody
+  public List<Model> query(@PathVariable Integer analysisId) {
+    return modelService.query(analysisId);
   }
 }

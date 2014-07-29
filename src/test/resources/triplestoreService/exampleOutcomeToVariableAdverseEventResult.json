@@ -2,15 +2,15 @@
   "results": {
     "bindings": [
       {
-        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/20/adverseEvent/304" } ,
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/study1/adverseEvent/304" } ,
         "type": { "type": "uri" , "value": "http://trials.drugis.org/namespaces/1/adverseEvent/232145506bf409d7bb931fd35d6122c0" }
       },
       {
-        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/13/adverseEvent/209" } ,
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/study2/adverseEvent/209" } ,
         "type": { "type": "uri" , "value": "http://trials.drugis.org/namespaces/1/adverseEvent/232145506bf409d7bb931fd35d6122c0" }
       },
       {
-        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/5/adverseEvent/91" } ,
+        "uri": { "type": "uri" , "value": "http://trials.drugis.org/study/study3/adverseEvent/91" } ,
         "type": { "type": "uri" , "value": "http://trials.drugis.org/namespaces/1/adverseEvent/232145506bf409d7bb931fd35d6122c0" }
       }
     ]

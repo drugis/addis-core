@@ -610,6 +610,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
           expect(resultRows[0]).toEqual({
             study: 'Fava et al, 2002',
             studyRowSpan: 3,
+            studyRows: resultRows,
             intervention: 'intervention 1',
             arm: 'Paroxetine',
             rate: 5,
@@ -633,6 +634,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
             sigma: null,
             study: 'Fava et al, 2002',
             studyRowSpan: 3,
+            studyRows: resultRows,
             included: true,
             trialverseId: 85,
             drugId: 58
@@ -649,6 +651,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
             sigma: null,
             study: 'Fava et al, 2002',
             studyRowSpan: 3,
+            studyRows: resultRows,
             included: true,
             trialverseId: 87,
             drugId: 60
@@ -862,20 +865,20 @@ define(['angular', 'angular-mocks', 'services'], function() {
       beforeEach(module('addis.services'));
 
       it('should add inclusions to interventions', inject(function(NetworkMetaAnalysisService) {
-        var exclusions = [{
+        var inclusions = [{
           interventionId: 43
         }];
-        var includedInterventions = NetworkMetaAnalysisService.addInclusionsToInterventions(networkInterventions, exclusions);
-        expect(includedInterventions[0].isIncluded).toBeFalsy();
-        expect(includedInterventions[1].isIncluded).toBeTruthy();
-        expect(includedInterventions[2].isIncluded).toBeTruthy();
+        var includedInterventions = NetworkMetaAnalysisService.addInclusionsToInterventions(networkInterventions, inclusions);
+        expect(includedInterventions[0].isIncluded).toBeTruthy();
+        expect(includedInterventions[1].isIncluded).toBeFalsy();
+        expect(includedInterventions[2].isIncluded).toBeFalsy();
       }));
     });
 
-    describe('buildInterventionExclusions', function() {
+    describe('buildInterventionInclusions', function() {
       beforeEach(module('addis.services'));
 
-      it('should create a new list of intervention exclusions', inject(function(NetworkMetaAnalysisService) {
+      it('should create a new list of intervention inclusions', inject(function(NetworkMetaAnalysisService) {
         var interventions = [{
           id: 1,
           isIncluded: true
@@ -889,10 +892,11 @@ define(['angular', 'angular-mocks', 'services'], function() {
         var analysis = {
           id: 4
         };
-        var interventionExclusions = NetworkMetaAnalysisService.buildInterventionExclusions(interventions, analysis);
+        var interventionExclusions = NetworkMetaAnalysisService.buildInterventionInclusions(interventions, analysis);
         expect(interventionExclusions).toEqual([{
-          analysisId: analysis.id,
-          interventionId: 2
+          interventionId: 1
+        },{
+          interventionId: 3
         }]);
       }));
     });

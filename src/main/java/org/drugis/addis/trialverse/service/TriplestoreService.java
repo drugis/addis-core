@@ -1,9 +1,8 @@
 package org.drugis.addis.trialverse.service;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
-import org.drugis.addis.trialverse.model.SemanticOutcome;
-import org.drugis.addis.trialverse.model.TrialDataIntervention;
+import org.drugis.addis.trialverse.model.*;
+import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,28 +12,38 @@ import java.util.Map;
  * Created by connor on 2/28/14.
  */
 public interface TriplestoreService {
-  public List<SemanticOutcome> getOutcomes(Long namespaceId);
+  public Collection<Namespace> queryNameSpaces();
 
-  public List<SemanticIntervention> getInterventions(Long namespaceId);
+  public Namespace getNamespace(String uid);
 
-  public Map<Long, String> getTrialverseDrugs(Long namespaceId, Long studyId, Collection<String> interventionURIs);
+  public List<SemanticOutcome> getOutcomes(String namespaceUid);
 
-  public Map<Long, String> getTrialverseVariables(Long namespaceId, Long studyId, Collection<String> outcomeURIs);
+  public List<SemanticIntervention> getInterventions(String namespaceUid);
 
-  public List<Long> findStudiesReferringToConcept(Long namespaceId, String conceptUri);
+  public List<Study> queryStudies(String namespaceUid);
+
+  public Map<String, String> getTrialverseDrugs(String namespaceUid, String studyUid, Collection<String> interventionURIs);
+
+  public Map<String, String> getTrialverseVariables(String namespaceUid, String studyId, Collection<String> outcomeURIs);
+
+  public List<String> findStudiesReferringToConcept(String namespaceUid, String conceptUri);
 
   /**
    * build a map of trialDataInterventions lists that is indexed by studyId
    */
-  public Map<Long, List<TrialDataIntervention>> findStudyInterventions(Long namespaceId, List<Long> studyIds, List<String> interventionURIs);
+  public Map<String, List<TrialDataIntervention>> findStudyInterventions(String namespaceUid, List<String> studyUds, List<String> interventionURIs);
 
   /**
    * Get a list for studyId-OutcomeVariable pairs that corresponds to the outcomeconcept is
    *
-   * @param namespaceId
-   * @param studyIds    The studies that should be included
-   * @param outcomeURI  The outcome concept for which the trialverse variable ids should be resolved
+   * @param namespaceUid
+   * @param studyUids    The studies that should be included
+   * @param outcomeURI   The outcome concept for which the trialverse variable ids should be resolved
    * @return
    */
-  public List<Pair<Long, Long>> getOutcomeVariableIdsByStudyForSingleOutcome(Long namespaceId, List<Long> studyIds, String outcomeURI);
+  public List<Pair<String, Long>> getOutcomeVariableUidsByStudyForSingleOutcome(String namespaceUid, List<String> studyUids, String outcomeURI);
+
+  public List<TrialDataStudy> getTrialData(String namespaceUid, String outcomeUri, List<String> interventionUris);
+
+  public List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String studyUid, List<String> outcomeUids, List<String> interventionUids);
 }

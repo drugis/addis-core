@@ -5,10 +5,10 @@ package org.drugis.addis.problems.model;
  */
 public abstract class AbstractNetworkMetaAnalysisProblemEntry {
     private String study;
-    private String treatment;
+    private Integer treatment;
   private Long sampleSize;
 
-  public AbstractNetworkMetaAnalysisProblemEntry(String study, String treatment, Long sampleSize) {
+  public AbstractNetworkMetaAnalysisProblemEntry(String study, Integer treatment, Long sampleSize) {
     this.study = study;
     this.treatment = treatment;
     this.sampleSize = sampleSize;
@@ -18,7 +18,7 @@ public abstract class AbstractNetworkMetaAnalysisProblemEntry {
     return study;
   }
 
-  public String getTreatment() {
+  public Integer getTreatment() {
     return treatment;
   }
 

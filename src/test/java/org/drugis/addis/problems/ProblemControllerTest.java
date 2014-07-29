@@ -53,9 +53,13 @@ public class ProblemControllerTest {
   @Test
   public void testGetSingleStudybenefitRiskProblem() throws Exception {
     RatePerformance ratePerformance = new RatePerformance(new RatePerformanceParameters(10L, 50L));
-    AbstractMeasurementEntry rateMeasurementEntry = new RateMeasurementEntry("alternative 1", "criterion 1", ratePerformance);
+    String alternativeUri1 = "Alt uri 1";
+    String alternativeUri2 = "Alt uri 2";
+    String criterionUri1 = "Crit uri 1";
+    String criterionUri2 = "Crit uri 2";
+    AbstractMeasurementEntry rateMeasurementEntry = new RateMeasurementEntry(alternativeUri1, criterionUri1, ratePerformance);
     ContinuousPerformance continuousPerformance = new ContinuousPerformance(new ContinuousPerformanceParameters(7.5, 2.1));
-    AbstractMeasurementEntry continuousMeasurementEntry = new ContinuousMeasurementEntry("alternative 2", "criterion 2", continuousPerformance);
+    AbstractMeasurementEntry continuousMeasurementEntry = new ContinuousMeasurementEntry(alternativeUri2, criterionUri2, continuousPerformance);
     List<AbstractMeasurementEntry> performanceTable = Arrays.asList(rateMeasurementEntry, continuousMeasurementEntry);
     SingleStudyBenefitRiskProblem problem = new SingleStudyBenefitRiskProblem("testProblem", new HashMap<String, AlternativeEntry>(), new HashMap<String, CriterionEntry>(), performanceTable);
     Integer projectId = 1;
@@ -73,12 +77,15 @@ public class ProblemControllerTest {
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisProblem() throws  Exception {
-    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", "treatment1", 10L, 5L);
-    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry("study", "treatment2", 20L, 7L);
+  public void testGetNetworkMetaAnalysisProblem() throws Exception {
+    int treatmentId1 = 1;
+    int treatmentId2 = 2;
+    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10L, 5L);
+    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId2, 20L, 7L);
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(entry1, entry2);
-    NetworkMetaAnalysisProblem networkMetaAnalysisProblem = new NetworkMetaAnalysisProblem(entries);
-     Integer projectId = 1;
+    List<TreatmentEntry> treatments = Arrays.asList(new TreatmentEntry(treatmentId1, "treatment 1 name"), new TreatmentEntry(treatmentId2, "treatment 2 name"));
+    NetworkMetaAnalysisProblem networkMetaAnalysisProblem = new NetworkMetaAnalysisProblem(entries, treatments);
+    Integer projectId = 1;
     Integer analysisId = 2;
     when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
     mockMvc.perform(get("/projects/1/analyses/2/problem"))
@@ -87,7 +94,8 @@ public class ProblemControllerTest {
       .andExpect(jsonPath("$", notNullValue()))
       .andExpect(jsonPath("$.entries", hasSize(2)))
       .andExpect((jsonPath("$.entries[0].treatment", equalTo(entry1.getTreatment()))))
-      .andExpect((jsonPath("$.entries[0].responders", is(((RateNetworkMetaAnalysisProblemEntry)entry1).getResponders().intValue()))));
+      .andExpect((jsonPath("$.entries[0].responders", is(((RateNetworkMetaAnalysisProblemEntry) entry1).getResponders().intValue()))))
+      .andExpect((jsonPath("$.treatments[0].id", equalTo(treatmentId1))));
     verify(problemService).getProblem(projectId, analysisId);
   }
 

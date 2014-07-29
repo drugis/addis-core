@@ -62,13 +62,13 @@ define(['underscore'], function() {
         .select2('readonly', $scope.$parent.editMode.disableEditing);
 
       $scope.studies = TrialverseStudyResource.query({
-        id: $scope.project.trialverseId
+        id: $scope.project.namespaceUid
       });
 
       outcomes.$promise.then(initialiseOutcomes);
       interventions.$promise.then(initialiseInterventions);
 
-      $scope.$watch('analysis.studyId', function(newValue, oldValue) {
+      $scope.$watch('analysis.studyUid', function(newValue, oldValue) {
         if (oldValue !== newValue) {
           $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
           $scope.errorMessage = {};

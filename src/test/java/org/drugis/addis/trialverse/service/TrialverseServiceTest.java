@@ -3,43 +3,42 @@ package org.drugis.addis.trialverse.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.drugis.addis.trialverse.model.*;
+import org.drugis.addis.config.TrialverseServiceTestConfig;
+import org.drugis.addis.trialverse.model.Measurement;
+import org.drugis.addis.trialverse.model.MeasurementType;
+import org.drugis.addis.trialverse.model.Variable;
+import org.drugis.addis.trialverse.model.VariableType;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
-import org.drugis.addis.trialverse.service.impl.TrialverseServiceImpl;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyList;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by connor on 25-3-14.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TrialverseServiceTestConfig.class})
 public class TrialverseServiceTest {
 
-  @Mock
+  @Inject
   TrialverseRepository trialverseRepository;
 
-  @InjectMocks
+  @Inject
   TrialverseService trialverseService;
 
-  @Before
-  public void setUp() {
-    trialverseService = new TrialverseServiceImpl();
-    MockitoAnnotations.initMocks(this);
-  }
 
   @After
   public void tearDown() {
@@ -53,7 +52,7 @@ public class TrialverseServiceTest {
     Variable variable2 = new Variable(2L, 12L, "HAM-D Responders", "description 2", "my unit is...", true,
             MeasurementType.RATE, VariableType.ENDPOINT);
     List<Variable> variables = Arrays.asList(variable1, variable2);
-    List<Long> outcomeIds = Arrays.asList(1L, 2L);
+    Set<String> outcomeIds = new HashSet(Arrays.asList("1L", "2L"));
     when(trialverseRepository.getVariablesByOutcomeIds(outcomeIds)).thenReturn(variables);
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -68,38 +67,33 @@ public class TrialverseServiceTest {
 
   @Test
   public void testGetArmNamesByDrugIds() {
-    trialverseService.getArmsByDrugIds(anyInt(), anyList());
-    verify(trialverseRepository).getArmsByDrugIds(anyInt(), anyList());
+    trialverseService.getArmsByDrugIds(anyString(), anyList());
+    verify(trialverseRepository).getArmsByDrugIds(anyString(), anyList());
   }
 
   @Test
   public void testGetOrderedMeasurements() throws IOException {
-    Integer studyId = 1;
-    List<Long> outcomeIds = Arrays.asList(10L, 11L);
-    List<Long> armIds = Arrays.asList(20L, 21L);
+    String studyUId = "1";
+    List<String> outcomeIds = Arrays.asList("10L", "11L");
+    List<String> armUids = Arrays.asList("20L", "21L");
 
-    Long variableId = 10L;
-    Long measurementMomentId = 30L;
-    Long armId = 20L;
-    MeasurementAttribute attribute = MeasurementAttribute.RATE;
-    Measurement measurement = new Measurement(studyId.longValue(), variableId, measurementMomentId, armId, attribute, 60L, null);
+    String variableUid = "10L";
+    String armUid = "20L";
+    Measurement measurement = new Measurement(studyUId, variableUid, armUid, 60L, 20L, null, null);
     List<Measurement> measurements = Arrays.asList(measurement);
-    when(trialverseRepository.getOrderedMeasurements(outcomeIds, armIds)).thenReturn(measurements);
+    when(trialverseRepository.getOrderedMeasurements(outcomeIds, armUids)).thenReturn(measurements);
 
     // execute
-    List<ObjectNode> serialisedResult = trialverseService.getOrderedMeasurements(outcomeIds, armIds);
+    List<ObjectNode> serialisedResult = trialverseService.getOrderedMeasurements(outcomeIds, armUids);
 
     ObjectMapper mapper = new ObjectMapper();
 
     ObjectNode node = serialisedResult.get(0);
-    assertEquals(measurement.getStudyId(), mapper.convertValue(node.get("studyId"), Long.class));
-    assertEquals(measurement.getArmId(), mapper.convertValue(node.get("armId"), Long.class));
-    assertEquals(measurement.getVariableId(), mapper.convertValue(node.get("variableId"), Long.class));
-    assertEquals(measurement.getMeasurementMomentId(), mapper.convertValue(node.get("measurementMomentId"), Long.class));
-    assertEquals(measurement.getMeasurementAttribute(), mapper.convertValue(node.get("measurementAttribute"), MeasurementAttribute.class));
-    assertEquals(measurement.getRealValue(), mapper.convertValue(node.get("realValue"), Double.class));
-    assertEquals(measurement.getIntegerValue(), mapper.convertValue(node.get("integerValue"), Long.class));
-    verify(trialverseRepository).getOrderedMeasurements(outcomeIds, armIds);
+    assertEquals(measurement.getStudyUid(), mapper.convertValue(node.get("studyUid"), String.class));
+    assertEquals(measurement.getArmUid(), mapper.convertValue(node.get("armUid"), String.class));
+    assertEquals(measurement.getVariableUid(), mapper.convertValue(node.get("variableUid"), String.class));
+    assertEquals(measurement.getSampleSize(), mapper.convertValue(node.get("sampleSize"), Long.class));
+    verify(trialverseRepository).getOrderedMeasurements(outcomeIds, armUids);
   }
 
 }

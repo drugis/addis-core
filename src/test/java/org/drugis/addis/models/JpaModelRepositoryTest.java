@@ -2,7 +2,7 @@ package org.drugis.addis.models;
 
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
-import org.drugis.addis.models.repositories.ModelRepository;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -13,9 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
@@ -40,7 +38,7 @@ public class JpaModelRepositoryTest {
   public void testGet() {
     Integer modelId = 1;
     Integer analysisId = -5;
-    Model result = modelRepository.get(modelId);
+    Model result = modelRepository.find(modelId);
     assertNotNull(result);
     assertEquals(analysisId, result.getAnalysisId());
   }
@@ -48,12 +46,12 @@ public class JpaModelRepositoryTest {
   @Test
   public void testFindByAnalysis() {
     NetworkMetaAnalysis networkMetaAnalysisWithModel = em.find(NetworkMetaAnalysis.class, -5);
-    Model model = modelRepository.findByAnalysis(networkMetaAnalysisWithModel);
+    Model model = modelRepository.findByAnalysis(networkMetaAnalysisWithModel.getId());
     assertNotNull(model);
     assertEquals(networkMetaAnalysisWithModel.getId(), model.getAnalysisId());
 
     NetworkMetaAnalysis networkMetaAnalysisWithWithOutModel = em.find(NetworkMetaAnalysis.class, -6);
-    model = modelRepository.findByAnalysis(networkMetaAnalysisWithWithOutModel);
+    model = modelRepository.findByAnalysis(networkMetaAnalysisWithWithOutModel.getId());
     assertNull(model);
   }
 }

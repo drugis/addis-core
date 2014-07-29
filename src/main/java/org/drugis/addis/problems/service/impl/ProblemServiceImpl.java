@@ -3,23 +3,21 @@ package org.drugis.addis.problems.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.problems.model.*;
-import org.drugis.addis.problems.service.AlternativeService;
-import org.drugis.addis.problems.service.CriteriaService;
-import org.drugis.addis.problems.service.MeasurementsService;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.service.TrialverseService;
-import org.drugis.addis.util.JSONUtils;
+import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -32,25 +30,13 @@ import java.util.*;
 public class ProblemServiceImpl implements ProblemService {
 
   @Inject
-  SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
+  private SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
 
   @Inject
-  ProjectRepository projectRepository;
+  private ProjectRepository projectRepository;
 
   @Inject
-  AlternativeService alternativeService;
-
-  @Inject
-  CriteriaService criteriaService;
-
-  @Inject
-  PerformanceTableBuilder performanceTableBuilder;
-
-  @Inject
-  JSONUtils jsonUtils;
-
-  @Inject
-  private MeasurementsService measurementsService;
+  private PerformanceTableBuilder performanceTableBuilder;
 
   @Inject
   private AnalysisRepository analysisRepository;
@@ -61,12 +47,15 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   private InterventionRepository interventionRepository;
 
+  @Inject
+  private TriplestoreService triplestoreService;
+
   @Override
   public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(projectId, analysisId);
     if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
-      return getSingleStudyBenefitRiskProblem(project, (SingleStudyBenefitRiskAnalysis) analysis);
+      return getSingleStudyBenefitRiskProblem((SingleStudyBenefitRiskAnalysis) analysis);
     } else if (analysis instanceof NetworkMetaAnalysis) {
       return getNetworkMetaAnalysisProblem(project, (NetworkMetaAnalysis) analysis);
     }
@@ -76,54 +65,56 @@ public class ProblemServiceImpl implements ProblemService {
   private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) {
     List<String> alternativeUris = new ArrayList<>();
     List<Intervention> interventions = interventionRepository.query(project.getId());
-    Map<String, String> interventionNamesByUrisMap = new HashMap<>();
+    Map<String, Integer> interventionIdsByUrisMap = new HashMap<>();
 
-    interventions = filterExcludedInterventions(interventions, analysis.getExcludedInterventions());
+    interventions = filterExcludedInterventions(interventions, analysis.getIncludedInterventions());
 
+    List<TreatmentEntry> treatments = new ArrayList<>();
     for (Intervention intervention : interventions) {
       alternativeUris.add(intervention.getSemanticInterventionUri());
-      interventionNamesByUrisMap.put(intervention.getSemanticInterventionUri(), intervention.getName());
+      interventionIdsByUrisMap.put(intervention.getSemanticInterventionUri(), intervention.getId());
+      treatments.add(new TreatmentEntry(intervention.getId(), intervention.getName()));
     }
 
-    ObjectNode trialData = trialverseService.getTrialData(Long.valueOf(project.getTrialverseId()),
+    ObjectNode trialData = trialverseService.getTrialData(project.getNamespaceUid(),
             analysis.getOutcome().getSemanticOutcomeUri(), alternativeUris);
 
     ObjectMapper mapper = new ObjectMapper();
     TrialData convertedTrialData = mapper.convertValue(trialData, TrialData.class);
-    Map<Long, TrialDataIntervention> interventionByDrugIdMap = createInterventionByDrugIdMap(convertedTrialData);
+    Map<String, TrialDataIntervention> interventionByDrugUidInstanceMap = createInterventionByDrugIdMap(convertedTrialData);
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
 
     for (TrialDataStudy trialDataStudy : convertedTrialData.getTrialDataStudies()) {
-      List<TrialDataArm> filteredArms = filterUnmatchedArms(trialDataStudy, interventionByDrugIdMap);
+      List<TrialDataArm> filteredArms = filterUnmatchedArms(trialDataStudy, interventionByDrugUidInstanceMap);
       filteredArms = filterExcludedArms(filteredArms, analysis);
 
       // do not include studies with fewer than two included and matched arms
       if (filteredArms.size() >= 2) {
 
         for (TrialDataArm trialDataArm : filteredArms) {
-          String interventionUri = interventionByDrugIdMap.get(trialDataArm.getDrugId()).getUri();
-          String treatmentName = interventionNamesByUrisMap.get(interventionUri);
-          entries.add(buildEntry(trialDataStudy.getName(), treatmentName, trialDataArm.getMeasurements()));
+          String interventionUri = interventionByDrugUidInstanceMap.get(trialDataArm.getDrugInstanceUid()).getDrugConceptUid();
+          Integer treatmentId = interventionIdsByUrisMap.get(interventionUri);
+          entries.add(buildEntry(trialDataStudy.getName(), treatmentId, trialDataArm.getMeasurement()));
         }
 
       }
     }
 
-    return new NetworkMetaAnalysisProblem(entries);
+    return new NetworkMetaAnalysisProblem(entries, treatments);
   }
 
   private List<TrialDataArm> filterExcludedArms(List<TrialDataArm> trialDataArms, NetworkMetaAnalysis analysis) {
     List<TrialDataArm> filteredTrialDataArms = new ArrayList<>();
     List<ArmExclusion> armExclusions = analysis.getExcludedArms();
-    List<Long> armExclusionTrialverseIds = new ArrayList<>(armExclusions.size());
+    List<String> armExclusionTrialverseIds = new ArrayList<>(armExclusions.size());
 
     for (ArmExclusion armExclusion : armExclusions) {
-      armExclusionTrialverseIds.add(armExclusion.getTrialverseId());
+      armExclusionTrialverseIds.add(armExclusion.getTrialverseUid());
     }
 
     for (TrialDataArm trialDataArm : trialDataArms) {
-      if (!armExclusionTrialverseIds.contains(trialDataArm.getId())) {
+      if (!armExclusionTrialverseIds.contains(trialDataArm.getUid())) {
         filteredTrialDataArms.add(trialDataArm);
       }
     }
@@ -131,41 +122,40 @@ public class ProblemServiceImpl implements ProblemService {
     return filteredTrialDataArms;
   }
 
-  private AbstractNetworkMetaAnalysisProblemEntry buildEntry(String studyName, String treatmentName, List<Measurement> measurements) {
-    Map<MeasurementAttribute, Measurement> measurementAttributeMeasurementMap = Measurement.mapMeasurementsByAttribute(measurements);
-    Long sampleSize = measurementAttributeMeasurementMap.get(MeasurementAttribute.SAMPLE_SIZE).getIntegerValue();
-    if (measurementAttributeMeasurementMap.get(MeasurementAttribute.MEAN) != null) {
-      Double mu = measurementAttributeMeasurementMap.get(MeasurementAttribute.MEAN).getRealValue();
-      Double sigma = measurementAttributeMeasurementMap.get(MeasurementAttribute.STANDARD_DEVIATION).getRealValue();
-      return new ContinuousNetworkMetaAnalysisProblemEntry(studyName, treatmentName, sampleSize, mu, sigma);
-    } else if (measurementAttributeMeasurementMap.get(MeasurementAttribute.RATE) != null) {
-      Long rate = measurementAttributeMeasurementMap.get(MeasurementAttribute.RATE).getIntegerValue();
-      return new RateNetworkMetaAnalysisProblemEntry(studyName, treatmentName, sampleSize, rate);
+  private AbstractNetworkMetaAnalysisProblemEntry buildEntry(String studyName, Integer treatmentId, Measurement measurement) {
+    Long sampleSize = measurement.getSampleSize();
+    if (measurement.getMean() != null) {
+      Double mu = measurement.getMean();
+      Double sigma = measurement.getStdDev();
+      return new ContinuousNetworkMetaAnalysisProblemEntry(studyName, treatmentId, sampleSize, mu, sigma);
+    } else if (measurement.getRate() != null) {
+      Long rate = measurement.getRate();
+      return new RateNetworkMetaAnalysisProblemEntry(studyName, treatmentId, sampleSize, rate);
     }
     throw new RuntimeException("unknown measurement type");
   }
 
-  private Map<Long, TrialDataIntervention> createInterventionByDrugIdMap(TrialData trialData) {
-    Map<Long, TrialDataIntervention> interventionByDrugIdMap = new HashMap<>();
+  private Map<String, TrialDataIntervention> createInterventionByDrugIdMap(TrialData trialData) {
+    Map<String, TrialDataIntervention> interventionByDrugIdMap = new HashMap<>();
     for (TrialDataStudy study : trialData.getTrialDataStudies()) {
 
       for (TrialDataIntervention intervention : study.getTrialDataInterventions()) {
-        interventionByDrugIdMap.put(intervention.getDrugId(), intervention);
+        interventionByDrugIdMap.put(intervention.getDrugInstanceUid(), intervention);
       }
     }
     return interventionByDrugIdMap;
   }
 
-  private List<Intervention> filterExcludedInterventions(List<Intervention> interventions, List<InterventionExclusion> exclusions) {
+  private List<Intervention> filterExcludedInterventions(List<Intervention> interventions, List<InterventionInclusion> inclusions) {
     List<Intervention> filteredInterventions = new ArrayList<>();
 
-    Map<Integer, InterventionExclusion> exclusionMap = new HashMap<>(exclusions.size());
-    for (InterventionExclusion interventionExclusion : exclusions) {
-      exclusionMap.put(interventionExclusion.getInterventionId(), interventionExclusion);
+    Map<Integer, InterventionInclusion> inclusionMap = new HashMap<>(inclusions.size());
+    for (InterventionInclusion interventionInclusion : inclusions) {
+      inclusionMap.put(interventionInclusion.getInterventionId(), interventionInclusion);
     }
 
     for (Intervention intervention : interventions) {
-      if (exclusionMap.get(intervention.getId()) == null) {
+      if (inclusionMap.get(intervention.getId()) != null) {
         filteredInterventions.add(intervention);
       }
     }
@@ -173,7 +163,7 @@ public class ProblemServiceImpl implements ProblemService {
     return filteredInterventions;
   }
 
-  private List<TrialDataArm> filterUnmatchedArms(TrialDataStudy study, Map<Long, TrialDataIntervention> interventionByIdMap) {
+  private List<TrialDataArm> filterUnmatchedArms(TrialDataStudy study, Map<String, TrialDataIntervention> interventionByIdMap) {
     List<TrialDataArm> filteredArms = new ArrayList<>();
 
     List<TrialDataArm> studyArmsSortedByName = sortTrialDataArmsByName(study.getTrialDataArms());
@@ -197,31 +187,45 @@ public class ProblemServiceImpl implements ProblemService {
     return trialDataArms;
   }
 
-  private boolean isMatched(TrialDataArm arm, Map<Long, TrialDataIntervention> interventionByIdMap) {
-    return interventionByIdMap.get(arm.getDrugId()) != null;
+  private boolean isMatched(TrialDataArm arm, Map<String, TrialDataIntervention> interventionByIdMap) {
+    return interventionByIdMap.get(arm.getDrugInstanceUid()) != null;
   }
 
-  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException {
-    Map<Long, AlternativeEntry> alternativesCache = alternativeService.createAlternatives(project, analysis);
+  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException {
+    List<String> outcomeUids = new ArrayList<>();
+    for (Outcome outcome : analysis.getSelectedOutcomes()) {
+      outcomeUids.add(outcome.getSemanticOutcomeUri());
+    }
+    List<String> alternativeUids = new ArrayList<>();
+    for (Intervention intervention : analysis.getSelectedInterventions()) {
+      alternativeUids.add(intervention.getSemanticInterventionUri());
+    }
+    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementNodes =
+            triplestoreService.getSingleStudyMeasurements(analysis.getStudyUid(), outcomeUids, alternativeUids);
+
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
-    for (AlternativeEntry alternativeEntry : alternativesCache.values()) {
-      alternatives.put(jsonUtils.createKey(alternativeEntry.getTitle()), alternativeEntry);
-    }
-
-    List<Pair<Variable, CriterionEntry>> variableCriteriaPairs = criteriaService.createVariableCriteriaPairs(project, analysis);
-
     Map<String, CriterionEntry> criteria = new HashMap<>();
-    Map<Long, CriterionEntry> criteriaCache = new HashMap<>();
-    for (Pair<Variable, CriterionEntry> variableCriterionPair : variableCriteriaPairs) {
-      Variable variable = variableCriterionPair.getLeft();
-      CriterionEntry criterionEntry = variableCriterionPair.getRight();
-      criteria.put(jsonUtils.createKey(criterionEntry.getTitle()), criterionEntry);
-      criteriaCache.put(variable.getId(), criterionEntry);
+    for (TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow measurementRow : measurementNodes) {
+      alternatives.put(measurementRow.getAlternativeUid(), new AlternativeEntry(measurementRow.getAlternativeUid(), measurementRow.getAlternativeLabel()));
+      CriterionEntry criterionEntry = createCriterionEntry(measurementRow);
+      criteria.put(measurementRow.getOutcomeUid(), criterionEntry);
     }
 
-    List<Measurement> measurements = measurementsService.createMeasurements(project, analysis, alternativesCache);
-    List<AbstractMeasurementEntry> performanceTable = performanceTableBuilder.build(criteriaCache, alternativesCache, measurements);
+    List<AbstractMeasurementEntry> performanceTable = performanceTableBuilder.build(measurementNodes);
     return new SingleStudyBenefitRiskProblem(analysis.getName(), alternatives, criteria, performanceTable);
+  }
+
+  private CriterionEntry createCriterionEntry(TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow measurementRow) throws EnumConstantNotPresentException {
+    List<Double> scale;
+    if (measurementRow.getRate() != null) { // rate measurement
+      scale = Arrays.asList(0.0, 1.0);
+    } else if (measurementRow.getMean() != null) { // continuous measurement
+      scale = Arrays.asList(null, null);
+    } else {
+      throw new RuntimeException("Invalid measurement");
+    }
+    // NB: partialvaluefunctions to be filled in by MCDA component, left null here
+    return new CriterionEntry(measurementRow.getOutcomeUid(), measurementRow.getOutcomeLabel(), scale, null);
   }
 
 

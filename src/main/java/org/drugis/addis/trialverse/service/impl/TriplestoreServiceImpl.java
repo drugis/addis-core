@@ -4,14 +4,13 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
-import org.drugis.addis.trialverse.model.SemanticOutcome;
-import org.drugis.addis.trialverse.model.TrialDataIntervention;
+import org.drugis.addis.trialverse.factory.RestOperationsFactory;
+import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -25,143 +24,530 @@ import java.util.regex.Pattern;
 public class TriplestoreServiceImpl implements TriplestoreService {
 
   private final static String triplestoreUri = System.getenv("TRIPLESTORE_URI");
-  private final static Pattern STUDY_ID_FROM_URI_PATTERN = Pattern.compile("http://trials.drugis.org/study/(\\d+)/.*");
+  private final static Pattern STUDY_UID_FROM_URI_PATTERN = Pattern.compile("http://trials.drugis.org/study/(\\w+)/.*");
 
   @Inject
-  RestTemplate triplestoreTemplate;
+  RestOperationsFactory restOperationsFactory;
 
-  public enum AnalysisConcept {
-    DRUG("drug"),
-    OUTCOME("(adverseEvent|endpoint)");
-    private final String searchString;
 
-    AnalysisConcept(String searchString) {
-      this.searchString = searchString;
+  @Override
+  public Collection<Namespace> queryNameSpaces() {
+    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
+            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
+            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+            "\n" +
+            "SELECT ?dataset ?label ?comment WHERE {\n" +
+            "  GRAPH ?dataset {\n" +
+            "    ?dataset a ontology:Dataset .\n" +
+            "    ?dataset rdfs:label ?label .\n" +
+            "    ?dataset rdfs:comment ?comment .\n" +
+            "  }\n" +
+            "}\n";
+    String response = queryTripleStore(query);
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    List<Namespace> namespaces = new ArrayList<>(bindings.size());
+    for (Object binding : bindings) {
+      String uid = JsonPath.read(binding, "$.dataset.value");
+      uid = subStringAfterLastSlash(uid);
+      String name = JsonPath.read(binding, "$.label.value");
+      String description = JsonPath.read(binding, "$.comment.value");
+      namespaces.add(new Namespace(uid, name, description));
     }
-
-    public String getSearchString() {
-      return this.searchString;
-    }
+    return namespaces;
   }
 
   @Override
-  public List<SemanticOutcome> getOutcomes(Long namespaceId) {
+  public Namespace getNamespace(String uid) {
+    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
+            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
+            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+            "\n" +
+            "SELECT ?dataset ?label ?comment WHERE {\n" +
+            "  GRAPH dataset:" + uid + " {\n" +
+            "    ?dataset a ontology:Dataset .\n" +
+            "    ?dataset rdfs:label ?label .\n" +
+            "    ?dataset rdfs:comment ?comment .\n" +
+            "  }\n" +
+            "}\n";
+    String response = queryTripleStore(query);
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    Object binding = bindings.get(0);
+    String name = JsonPath.read(binding, "$.label.value");
+    String description = JsonPath.read(binding, "$.comment.value");
+    return new Namespace(uid, name, description);
+  }
+
+
+  @Override
+  public List<SemanticOutcome> getOutcomes(String namespaceUid) {
     List<SemanticOutcome> outcomes = new ArrayList<>();
 
-    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
+            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
+            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
             "\n" +
-            "SELECT  * WHERE {\n" +
-            "GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
-            "    ?uri rdfs:label ?label .\n" +
-            "    FILTER regex (str(?uri), \"namespaces/"
-            + namespaceId +
-            "/(endpoint|adverseEvent)\", \"i\")\n" +
+            "PREFIX entity: <http://trials.drugis.org/entities/> \n" +
+            "\n" +
+            "SELECT ?outcome ?label WHERE {\n" +
+            "  GRAPH dataset:" + namespaceUid + " {\n" +
+            "    { ?outcome rdfs:subClassOf ontology:Endpoint } UNION { ?outcome rdfs:subClassOf ontology:AdverseEvent } .\n" +
+            "    ?outcome rdfs:label ?label .\n" +
             "  }\n" +
-            "}";
+            "}\n";
     System.out.println(query);
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
-      outcomes.add(new SemanticOutcome((String) JsonPath.read(binding, "$.uri.value"),
-              (String) JsonPath.read(binding, "$.label.value")));
+      String uid = JsonPath.read(binding, "$.outcome.value");
+      uid = subStringAfterLastSlash(uid);
+      String label = JsonPath.read(binding, "$.label.value");
+      outcomes.add(new SemanticOutcome(uid, label));
     }
     return outcomes;
   }
 
   @Override
-  public List<SemanticIntervention> getInterventions(Long namespaceId) {
+  public List<SemanticIntervention> getInterventions(String namespaceUid) {
     List<SemanticIntervention> interventions = new ArrayList<>();
 
-    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
+            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
             "\n" +
-            "SELECT  * WHERE {\n" +
-            "GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
-            "    ?uri rdfs:label ?label .\n" +
-            "    FILTER regex (str(?uri), \"namespaces/"
-            + namespaceId +
-            "/(drug)\", \"i\")\n" +
+            "PREFIX entity: <http://trials.drugis.org/entities/> \n" +
+            "\n" +
+            "SELECT ?intervention ?label WHERE {\n" +
+            "  GRAPH dataset:" + namespaceUid + " {\n" +
+            "    ?intervention rdfs:subClassOf ontology:Drug .\n" +
+            "    ?intervention rdfs:label ?label .\n" +
             "  }\n" +
-            "}";
-    System.out.println(query);
+            "}\n";
+
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
-      interventions.add(new SemanticIntervention((String) JsonPath.read(binding, "$.uri.value"),
-              (String) JsonPath.read(binding, "$.label.value")));
+      String uid = JsonPath.read(binding, "$.intervention.value");
+      uid = subStringAfterLastSlash(uid);
+      String label = JsonPath.read(binding, "$.label.value");
+      interventions.add(new SemanticIntervention(uid, label));
     }
     return interventions;
   }
 
   @Override
-  public Map<Long, String> getTrialverseDrugs(Long namespaceId, Long studyId, Collection<String> drugURIs) {
-    return getTrialverseConceptIds(namespaceId, studyId, AnalysisConcept.DRUG, drugURIs);
+  public List<Study> queryStudies(String namespaceUid) {
+    List<Study> studies = new ArrayList<>();
+    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
+            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
+            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+            "\n" +
+            "PREFIX study: <http://trials.drugis.org/studies/>\n" +
+            "\n" +
+            "SELECT ?study ?title ?label WHERE {\n" +
+            "  GRAPH dataset:" + namespaceUid + " {\n" +
+            "    ?dataset ontology:contains_study ?study .\n" +
+            "  }\n" +
+            "  GRAPH ?study {\n" +
+            "    ?study rdfs:label ?label .\n" +
+            "    ?study rdfs:comment ?title .\n" +
+            "  }\n" +
+            "}";
+    String response = queryTripleStore(query);
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    for (Object binding : bindings) {
+      String uid = JsonPath.read(binding, "$.study.value");
+      uid = subStringAfterLastSlash(uid);
+      String name = JsonPath.read(binding, "$.label.value");
+      String title = JsonPath.read(binding, "$.title.value");
+      studies.add(new Study(uid, name, title));
+    }
+    return studies;
   }
 
-  public List<Pair<Long, Long>> getOutcomeVariableIdsByStudyForSingleOutcome(Long namespaceId, List<Long> studyIds, String outcomeURI) {
-    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-            "\n" +
-            "SELECT  * WHERE {\n" +
-            " GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
-            "   ?uri rdf:type ?type .\n" +
-            "   FILTER regex(str(?type), \"namespaces/" +
-            namespaceId + "/" + AnalysisConcept.OUTCOME.getSearchString() + "/" + subStringAfterLastSlash(outcomeURI) + "\") .\n" +
-            "   FILTER regex(str(?uri), \"/study/(" + buildOptionStringFromIds(studyIds) + ")/\") .\n" +
-            " }\n" +
-            "}";
+  private String buildInterventionUnionString(List<String> interventionUids) {
+    String result = "";
+    for (String interventionUid : interventionUids) {
+      result = result + " { ?interventionInstance a entity:" + interventionUid + " } UNION \n";
+    }
+    return result.substring(0, result.lastIndexOf("UNION"));
+  }
 
-    System.out.println("getOutcomeVariableIdsByStudyForSingleOutcome query: " + query);
+  private String buildOutcomeUnionString(List<String> outcomeUids) {
+    String result = "";
+    for (String outcomeUid : outcomeUids) {
+      result = result + " { ?outcomeInstance a entity:" + outcomeUid + " } UNION \n";
+    }
+    return result.substring(0, result.lastIndexOf("UNION"));
+  }
+
+  @Override
+  public List<TrialDataStudy> getTrialData(String namespaceUid, String outcomeUid, List<String> interventionUids) {
+    String interventionUnion = buildInterventionUnionString(interventionUids);
+    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
+            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
+            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+            "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n" +
+            "\n" +
+            "PREFIX entity: <http://trials.drugis.org/entities/>\n" +
+            "PREFIX instance: <http://trials.drugis.org/instances/>\n" +
+            "PREFIX study: <http://trials.drugis.org/studies/>\n" +
+            "\n" +
+            "SELECT ?study ?studyName ?drug ?interventionLabel ?drugInstance ?outcomeInstance ?outcomeTypeUid ?outcomeInstanceLabel ?arm ?armLabel ?mean ?stdDev ?count ?sampleSize WHERE {\n" +
+            "  GRAPH ?dataset {\n" +
+            "    ?dataset a ontology:Dataset .\n" +
+            "    ?dataset ontology:contains_study ?study .\n" +
+            "  }\n" +
+            "  GRAPH ?study {\n" +
+            "    ?study rdfs:label ?studyName .\n" +
+            "    ?study ontology:has_outcome ?outcomeInstance .\n" +
+            "    ?outcomeInstance a entity:" + outcomeUid + " .\n" +
+            "    ?outcomeInstance a ?outcomeTypeUid .\n" +
+            "    ?outcomeInstance rdfs:label ?outcomeInstanceLabel .\n" +
+            interventionUnion +
+            "  }\n" +
+            "  GRAPH ?study {\n" +
+            "    ?drugInstance a ?drug .\n" +
+            "    ?drugInstance rdfs:label ?interventionLabel .\n" +
+            "    ?study ontology:has_arm ?arm .\n" +
+            "    ?study ontology:has_primary_epoch ?epoch .\n" +
+            "    ?activity a ontology:TreatmentActivity ;\n" +
+            "      ontology:activity_application [\n" +
+            "        ontology:applied_to_arm ?arm ;\n" +
+            "        ontology:applied_in_epoch ?epoch\n" +
+            "      ] ;\n" +
+            "      ontology:administered_drugs ([ ontology:treatment_has_drug ?drugInstance ]) .\n" +
+            "\n" +
+            "    ?epoch rdfs:label ?epochLabel .\n" +
+            "    ?arm rdfs:label ?armLabel .\n" +
+            "\n" +
+            "    # also get the measurement while we're here\n" +
+            "    ?measurementMoment\n" +
+            "      ontology:relative_to_epoch ?epoch ;\n" +
+            "      ontology:relative_to_anchor ontology:anchorEpochEnd ;\n" +
+            "      ontology:time_offset \"-P0D\"^^xsd:duration .\n" +
+            "\n" +
+            "    ?measurement\n" +
+            "      ontology:of_moment ?measurementMoment ;\n" +
+            "      ontology:of_outcome ?outcomeInstance ;\n" +
+            "      ontology:of_arm ?arm .\n" +
+            "\n" +
+            "    OPTIONAL {\n" +
+            "      ?measurement\n" +
+            "        ontology:mean ?mean ;\n" +
+            "        ontology:standard_deviation ?stdDev ;\n" +
+            "        ontology:sample_size ?sampleSize .\n" +
+            "    }\n" +
+            "    \n" +
+            "    OPTIONAL {\n" +
+            "      ?measurement\n" +
+            "        ontology:count ?count ;\n" +
+            "        ontology:sample_size ?sampleSize .\n" +
+            "    }\n" +
+            "  }\n" +
+            "}\n";
     String response = queryTripleStore(query);
-    System.out.println("getOutcomeVariableIdsByStudyForSingleOutcome response: " + response);
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    Map<String, TrialDataStudy> trialDataStudies = new HashMap<>();
+    // ?studyName ?drug ?interventionLabel ?interventionInstance ?outcomeInstance ?outcomeTypeUid ?outcomeInstanceLabel ?arm ?armLabel ?mean ?stdDev ?count ?sampleSize WHERE {
+    for (Object binding : bindings) {
+      String studyUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.study.value"));
+      TrialDataStudy trialDataStudy = trialDataStudies.get(studyUid);
+      if (trialDataStudy == null) {
+        String studyName = JsonPath.read(binding, "$.studyName.value");
+        trialDataStudy = new TrialDataStudy(studyUid, studyName, new HashSet<TrialDataIntervention>(), new ArrayList<TrialDataArm>());
+        trialDataStudies.put(studyUid, trialDataStudy);
+      }
+      String drugInstanceUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.drugInstance.value"));
+      String drugUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.drug.value"));
+      TrialDataIntervention trialDataIntervention = new TrialDataIntervention(drugInstanceUid, drugUid, studyUid);
+      trialDataStudy.getTrialDataInterventions().add(trialDataIntervention);
+
+      Double mean = null;
+      Double stdDev = null;
+      Long rate = null;
+      JSONObject bindingObject = (JSONObject) binding;
+      Boolean isContinuous = bindingObject.containsKey("mean");
+      if (isContinuous) {
+        mean = Double.parseDouble(JsonPath.<String>read(binding, "$.mean.value"));
+        stdDev = Double.parseDouble(JsonPath.<String>read(binding, "$.stdDev.value"));
+      } else {
+        rate = Long.parseLong(JsonPath.<String>read(binding, "$.count.value"));
+      }
+      Long sampleSize = Long.parseLong(JsonPath.<String>read(binding, "$.sampleSize.value"));
+      String armUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.arm.value"));
+      String armLabel = JsonPath.read(binding, "$.armLabel.value");
+      String variableUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.outcomeInstance.value"));
+      Measurement measurement = new Measurement(studyUid, variableUid, armUid, sampleSize, rate, stdDev, mean);
+      TrialDataArm trialDataArm = new TrialDataArm(armUid, studyUid, armLabel, drugInstanceUid, drugUid, measurement);
+      trialDataStudy.getTrialDataArms().add(trialDataArm);
+
+    }
+    return new ArrayList<>(trialDataStudies.values());
+  }
+
+  @Override
+  public List<SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String studyUid, List<String> outcomeUids, List<String> interventionUids) {
+    String outcomeUnionString = buildOutcomeUnionString(outcomeUids);
+    String interventionUnionString = buildInterventionUnionString(interventionUids);
+
+    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
+            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
+            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+            "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n" +
+            "\n" +
+            "PREFIX entity: <http://trials.drugis.org/entities/>\n" +
+            "PREFIX instance: <http://trials.drugis.org/instances/>\n" +
+            "PREFIX study: <http://trials.drugis.org/studies/>\n" +
+            "\n" +
+            "SELECT ?interventionTypeUid ?interventionLabel ?outcomeTypeUid ?outcomeInstanceLabel ?mean ?stdDev ?count ?sampleSize WHERE {\n" +
+            "  GRAPH ?dataset {\n" +
+            "    ?dataset a ontology:Dataset .\n" +
+            "    ?dataset ontology:contains_study ?study .\n" +
+            "  }\n" +
+            "  GRAPH study:" + studyUid + " {\n" +
+            "    ?study rdfs:label ?studyName .\n" +
+            "    ?study ontology:has_outcome ?outcomeInstance .\n" +
+            outcomeUnionString +
+            ".\n" +
+            "    ?outcomeInstance a ?outcomeTypeUid .\n" +
+            "    ?outcomeInstance rdfs:label ?outcomeInstanceLabel .\n" +
+            interventionUnionString +
+            " .\n" +
+            "    ?interventionInstance a ?interventionTypeUid .\n" +
+            "  }\n" +
+            "  GRAPH ?study {\n" +
+            "    ?interventionInstance rdfs:label ?interventionLabel .\n" +
+            "    ?study ontology:has_arm ?arm .\n" +
+            "    ?study ontology:has_primary_epoch ?epoch .\n" +
+            "    ?activity a ontology:TreatmentActivity ;\n" +
+            "      ontology:activity_application [\n" +
+            "        ontology:applied_to_arm ?arm ;\n" +
+            "        ontology:applied_in_epoch ?epoch\n" +
+            "      ] ;\n" +
+            "      ontology:administered_drugs ([ ontology:treatment_has_drug ?interventionInstance ]) .\n" +
+            "\n" +
+            "    ?epoch rdfs:label ?epochLabel .\n" +
+            "    ?arm rdfs:label ?armLabel .\n" +
+            "\n" +
+            "    # also get the measurement while we're here\n" +
+            "    ?measurementMoment\n" +
+            "      ontology:relative_to_epoch ?epoch ;\n" +
+            "      ontology:relative_to_anchor ontology:anchorEpochEnd ;\n" +
+            "      ontology:time_offset \"-P0D\"^^xsd:duration .\n" +
+            "\n" +
+            "    ?measurement\n" +
+            "      ontology:of_moment ?measurementMoment ;\n" +
+            "      ontology:of_outcome ?outcomeInstance ;\n" +
+            "      ontology:of_arm ?arm .\n" +
+            "\n" +
+            "    OPTIONAL {\n" +
+            "      ?measurement\n" +
+            "        ontology:mean ?mean ;\n" +
+            "        ontology:standard_deviation ?stdDev ;\n" +
+            "        ontology:sample_size ?sampleSize .\n" +
+            "    }\n" +
+            "\n" +
+            "    OPTIONAL {\n" +
+            "      ?measurement\n" +
+            "        ontology:count ?count ;\n" +
+            "        ontology:sample_size ?sampleSize .\n" +
+            "    }\n" +
+            "  }\n" +
+            "}\n";
+    String response = queryTripleStore(query);
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    List<SingleStudyBenefitRiskMeasurementRow> measurementObjects = new ArrayList<>();
+    for (Object binding : bindings) {
+      JSONObject bindingObject = (JSONObject) binding;
+      String outcomeUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.outcomeTypeUid.value"));
+      String outcomeLabel = JsonPath.read(binding, "$.outcomeInstanceLabel.value");
+      String alternativeUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.interventionTypeUid.value"));
+      String alternativeLabel = JsonPath.read(binding, "$.interventionLabel.value");
+      Double mean = null;
+      Double stdDev = null;
+      Long rate = null;
+      Boolean isContinuous = bindingObject.containsKey("mean");
+      if (isContinuous) {
+        mean = Double.parseDouble(JsonPath.<String>read(binding, "$.mean.value"));
+        stdDev = Double.parseDouble(JsonPath.<String>read(binding, "$.stdDev.value"));
+      } else {
+        rate = Long.parseLong(JsonPath.<String>read(binding, "$.count.value"));
+      }
+      Long sampleSize = Long.parseLong(JsonPath.<String>read(binding, "$.sampleSize.value"));
+      measurementObjects.add(new SingleStudyBenefitRiskMeasurementRow(outcomeUid, outcomeLabel, alternativeUid, alternativeLabel, mean, stdDev, rate, sampleSize));
+    }
+    return measurementObjects;
+  }
+
+  public static class SingleStudyBenefitRiskMeasurementRow {
+    private String outcomeUid;
+    private String outcomeLabel;
+    private String alternativeUid;
+    private String alternativeLabel;
+    private Double mean;
+    private Double stdDev;
+    private Long rate;
+    private Long sampleSize;
+
+    public SingleStudyBenefitRiskMeasurementRow(String outcomeUid, String outcomeLabel, String alternativeUid, String alternativeLabel, Double mean, Double stdDev, Long rate, Long sampleSize) {
+      this.outcomeUid = outcomeUid;
+      this.outcomeLabel = outcomeLabel;
+      this.alternativeUid = alternativeUid;
+      this.alternativeLabel = alternativeLabel;
+      this.mean = mean;
+      this.stdDev = stdDev;
+      this.rate = rate;
+      this.sampleSize = sampleSize;
+    }
+
+    public String getOutcomeUid() {
+      return outcomeUid;
+    }
+
+    public String getOutcomeLabel() {
+      return outcomeLabel;
+    }
+
+    public String getAlternativeUid() {
+      return alternativeUid;
+    }
+
+    public String getAlternativeLabel() {
+      return alternativeLabel;
+    }
+
+    public Double getMean() {
+      return mean;
+    }
+
+    public Double getStdDev() {
+      return stdDev;
+    }
+
+    public Long getRate() {
+      return rate;
+    }
+
+    public Long getSampleSize() {
+      return sampleSize;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof SingleStudyBenefitRiskMeasurementRow)) return false;
+
+      SingleStudyBenefitRiskMeasurementRow that = (SingleStudyBenefitRiskMeasurementRow) o;
+
+      if (!alternativeLabel.equals(that.alternativeLabel)) return false;
+      if (!alternativeUid.equals(that.alternativeUid)) return false;
+      if (mean != null ? !mean.equals(that.mean) : that.mean != null) return false;
+      if (!outcomeLabel.equals(that.outcomeLabel)) return false;
+      if (!outcomeUid.equals(that.outcomeUid)) return false;
+      if (rate != null ? !rate.equals(that.rate) : that.rate != null) return false;
+      if (!sampleSize.equals(that.sampleSize)) return false;
+      if (stdDev != null ? !stdDev.equals(that.stdDev) : that.stdDev != null) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = outcomeUid.hashCode();
+      result = 31 * result + outcomeLabel.hashCode();
+      result = 31 * result + alternativeUid.hashCode();
+      result = 31 * result + alternativeLabel.hashCode();
+      result = 31 * result + (mean != null ? mean.hashCode() : 0);
+      result = 31 * result + (stdDev != null ? stdDev.hashCode() : 0);
+      result = 31 * result + (rate != null ? rate.hashCode() : 0);
+      result = 31 * result + sampleSize.hashCode();
+      return result;
+    }
+  }
+
+  @Override
+  public Map<String, String> getTrialverseDrugs(String namespaceUid, String studyUid, Collection<String> drugURIs) {
+    String optionString = buildOptionStringFromConceptURIs(drugURIs);
+    String query = "TODO";
+    System.out.println(query);
+
+    String response = queryTripleStore(query);
 
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    List<Pair<Long, Long>> studyVariablesForOutcome = new ArrayList<>(bindings.size());
+    Map<String, String> concepts = new HashMap<>(bindings.size());
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
-      Long studyId = findStudyIdInURI(uri);
+      String typeUri = JsonPath.read(binding, "$.type.value");
+      String conceptId = subStringAfterLastSlash(uri);
+      concepts.put(conceptId, typeUri);
+    }
+    return concepts;
+  }
+
+  public List<Pair<String, Long>> getOutcomeVariableUidsByStudyForSingleOutcome(String namespaceUid, List<String> studyUids, String outcomeURI) {
+    String query = "TODO";
+
+    System.out.println("getOutcomeVariableUidsByStudyForSingleOutcome query: " + query);
+    String response = queryTripleStore(query);
+    System.out.println("getOutcomeVariableUidsByStudyForSingleOutcome response: " + response);
+
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    List<Pair<String, Long>> studyVariablesForOutcome = new ArrayList<>(bindings.size());
+    for (Object binding : bindings) {
+      String uri = JsonPath.read(binding, "$.uri.value");
+      String studyUid = findStudyIdInURI(uri);
       Long variableId = Long.valueOf(subStringAfterLastSlash(uri));
-      studyVariablesForOutcome.add(Pair.of(studyId, variableId));
+      studyVariablesForOutcome.add(Pair.of(studyUid, variableId));
     }
     return studyVariablesForOutcome;
   }
 
   @Override
-  public Map<Long, String> getTrialverseVariables(Long namespaceId, Long studyId, Collection<String> outcomeURIs) {
-    return getTrialverseConceptIds(namespaceId, studyId, AnalysisConcept.OUTCOME, outcomeURIs);
+  public Map<String, String> getTrialverseVariables(String namespaceUid, String studyId, Collection<String> outcomeURIs) {
+    String optionString = buildOptionStringFromConceptURIs(outcomeURIs);
+    String query1 = "TODO";
+
+    String response = queryTripleStore(query1);
+
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    Map<String, String> concepts = new HashMap<>(bindings.size());
+    for (Object binding : bindings) {
+      String uri = JsonPath.read(binding, "$.uri.value");
+      String typeUri = JsonPath.read(binding, "$.type.value");
+      String conceptId = subStringAfterLastSlash(uri);
+      concepts.put(conceptId, typeUri);
+    }
+    return concepts;
   }
 
   @Override
-  public Map<Long, List<TrialDataIntervention>> findStudyInterventions(Long namespaceId, List<Long> studyIds, List<String> interventionURIs) {
+  public Map<String, List<TrialDataIntervention>> findStudyInterventions(String namespaceUid, List<String> studyUids, List<String> interventionURIs) {
     String conceptOptionsString = buildOptionStringFromConceptURIs(interventionURIs);
-    String studyOptionsString = StringUtils.join(studyIds, "|");
-    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-            "\n" +
-            "SELECT  * WHERE {\n" +
-            " GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
-            "   ?uri rdf:type ?type .\n" +
-            "   FILTER regex(str(?type), \"namespaces/" +
-            namespaceId + "/" + AnalysisConcept.DRUG.getSearchString() + "/(" + conceptOptionsString + ")\") .\n" +
-            "   FILTER regex(str(?uri), \"/study/(" + studyOptionsString + ")/\") .\n" +
-            " }\n" +
-            "}";
+    String studyOptionsString = StringUtils.join(studyUids, "|");
+    String query = "TODO";
     System.out.println(query);
     String response = queryTripleStore(query);
 
-    Map<Long, List<TrialDataIntervention>> studyInterventionsMap = new HashMap<>();
+    Map<String, List<TrialDataIntervention>> studyInterventionsMap = new HashMap<>();
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
 
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
       String semanticInterventionUri = JsonPath.read(binding, "$.type.value");
-      Long studyId = findStudyIdInURI(uri);
-      Long drugId = Long.valueOf(subStringAfterLastSlash(uri));
-      TrialDataIntervention trialDataIntervention = new TrialDataIntervention(drugId, semanticInterventionUri, studyId);
+      String studyUid = JsonPath.read(binding, "$.studyUid.value");
+      String drugUid = JsonPath.read(binding, "$.drugUid.value");
+      TrialDataIntervention trialDataIntervention = new TrialDataIntervention(drugUid, semanticInterventionUri, studyUid);
 
-      List<TrialDataIntervention> interventions = studyInterventionsMap.get(studyId);
+      List<TrialDataIntervention> interventions = studyInterventionsMap.get(studyUid);
       if (interventions == null) {
         interventions = new ArrayList<>();
-        studyInterventionsMap.put(studyId, interventions);
+        studyInterventionsMap.put(studyUid, interventions);
       }
       interventions.add(trialDataIntervention);
     }
@@ -169,28 +555,11 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return studyInterventionsMap;
   }
 
-  private Map<Long, String> getTrialverseConceptIds(Long namespaceId, Long studyId, AnalysisConcept analysisConcept, Collection<String> conceptURIs) {
-    String optionString = buildOptionStringFromConceptURIs(conceptURIs);
-    String query = createFindUsagesQuery(namespaceId, studyId, analysisConcept, optionString);
-
-    String response = queryTripleStore(query);
-
-    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    Map<Long, String> concepts = new HashMap<>(bindings.size());
-    for (Object binding : bindings) {
-      String uri = JsonPath.read(binding, "$.uri.value");
-      String typeUri = JsonPath.read(binding, "$.type.value");
-      Long conceptId = extractConceptIdFromUri(uri);
-      concepts.put(conceptId, typeUri);
-    }
-    return concepts;
-  }
-
   private String queryTripleStore(String query) {
     Map<String, String> vars = new HashMap<>();
     vars.put("query", query);
     vars.put("output", "json");
-    return triplestoreTemplate.getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
+    return restOperationsFactory.build().getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
   }
 
   private String buildOptionStringFromConceptURIs(Collection<String> conceptURIs) {
@@ -203,33 +572,17 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return StringUtils.join(strippedUris, "|");
   }
 
-  private String buildOptionStringFromIds(Collection<Long> ids) {
+  private String buildOptionStringFromIds(List<String> ids) {
     return StringUtils.join(ids, "|");
   }
 
-  private String createFindUsagesQuery(Long namespaceId, Long studyId, AnalysisConcept analysisConcept, String URIsToFind) {
-    String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-            "\n" +
-            "SELECT  * WHERE {\n" +
-            " GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
-            "   ?uri rdf:type ?type .\n" +
-            "   FILTER regex(str(?type), \"namespaces/" +
-            namespaceId + "/" + analysisConcept.getSearchString() + "/(" + URIsToFind + ")\") .\n" +
-            "   FILTER regex(str(?uri), \"/study/" + studyId + "/\") .\n" +
-            " }\n" +
-            "}";
-    System.out.println(query);
-    return query;
-  }
-
-  public List<Long> findStudiesReferringToConcept(Long namespaceId, String conceptUri) {
-    List<Long> studyIds = new ArrayList<>();
+  public List<String> findStudiesReferringToConcept(String namespaceUid, String conceptUri) {
+    List<String> studyUids = new ArrayList<>();
     String query =
             "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
                     "\n" +
                     "SELECT * WHERE {\n" +
-                    " GRAPH <http://trials.drugis.org/namespaces/" + namespaceId + "/> {\n" +
+                    " GRAPH <http://trials.drugis.org/namespaces/" + namespaceUid + "/> {\n" +
                     "   ?uri rdf:type <" + conceptUri + "> .\n" +
                     " }\n" +
                     "}";
@@ -238,22 +591,18 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
-      Long studyId = findStudyIdInURI(uri);
-      studyIds.add(studyId);
+      String studyUid = findStudyIdInURI(uri);
+      studyUids.add(studyUid);
     }
 
-    return studyIds;
+    return studyUids;
   }
 
-  private Long findStudyIdInURI(String uri) {
+  private String findStudyIdInURI(String uri) {
     // extract numerical study id
-    Matcher matcher = STUDY_ID_FROM_URI_PATTERN.matcher(uri);
+    Matcher matcher = STUDY_UID_FROM_URI_PATTERN.matcher(uri);
     matcher.find();
-    return (Long.valueOf(matcher.group(1)));
-  }
-
-  private Long extractConceptIdFromUri(String uri) {
-    return Long.parseLong(subStringAfterLastSlash(uri));
+    return (String.valueOf(matcher.group(1)));
   }
 
   private String subStringAfterLastSlash(String inStr) {

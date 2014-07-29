@@ -6,8 +6,8 @@ package org.drugis.addis.problems.service.model;
 public class ContinuousMeasurementEntry extends AbstractMeasurementEntry {
   private ContinuousPerformance performance;
 
-  public ContinuousMeasurementEntry(String alternative, String criterion, ContinuousPerformance performance) {
-    super(alternative, criterion);
+  public ContinuousMeasurementEntry(String alternativeUri, String criterionUri, ContinuousPerformance performance) {
+    super(alternativeUri, criterionUri);
     this.performance = performance;
   }
 

@@ -102,8 +102,8 @@ public class ProjectsControllerTest {
 
   @Test
   public void testQueryProjects() throws Exception {
-    Project project = new Project(1, john, "name", "desc", 1);
-    Project project2 = new Project(2, paul, "otherName", "other description", 2);
+    Project project = new Project(1, john, "name", "desc", "uid1");
+    Project project2 = new Project(2, paul, "otherName", "other description", "uid2");
     ArrayList projects = new ArrayList();
     projects.add(project);
     projects.add(project2);
@@ -117,14 +117,14 @@ public class ProjectsControllerTest {
             .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())))
             .andExpect(jsonPath("$[0].name", is(project.getName())))
             .andExpect(jsonPath("$[0].description", is(project.getDescription())))
-            .andExpect(jsonPath("$[0].trialverseId", is(project.getTrialverseId())));
+            .andExpect(jsonPath("$[0].namespaceUid", is(project.getNamespaceUid())));
 
     verify(projectRepository).query();
   }
 
   @Test
   public void testQueryProjectsWithQueryString() throws Exception {
-    Project project = new Project(2, paul, "test2", "desc", 1);
+    Project project = new Project(2, paul, "test2", "desc", "uid1");
     ArrayList projects = new ArrayList();
     projects.add(project);
     when(projectRepository.queryByOwnerId(paul.getId())).thenReturn(projects);
@@ -140,8 +140,8 @@ public class ProjectsControllerTest {
 
   @Test
   public void testCreateProject() throws Exception {
-    ProjectCommand projectCommand = new ProjectCommand("testname", "testdescription", 1);
-    Project project = new Project(1, gert, "testname", "testdescription", 1);
+    ProjectCommand projectCommand = new ProjectCommand("testname", "testdescription", "uid1");
+    Project project = new Project(1, gert, "testname", "testdescription", "uid1");
     String jsonContent = TestUtils.createJson(projectCommand);
     when(projectRepository.create(gert, projectCommand)).thenReturn(project);
     mockMvc.perform(post("/projects").principal(user).content(jsonContent).contentType(WebConstants.APPLICATION_JSON_UTF8))
@@ -154,7 +154,7 @@ public class ProjectsControllerTest {
 
   @Test
   public void testGetSingleProject() throws Exception {
-    Project project = new Project(1, john, "name", "desc", 1);
+    Project project = new Project(1, john, "name", "desc", "uid1");
     when(projectRepository.get(project.getId())).thenReturn(project);
     mockMvc.perform(get("/projects/" + project.getId()).principal(user))
             .andExpect(status().isOk())
@@ -174,9 +174,9 @@ public class ProjectsControllerTest {
 
   @Test
   public void testHandleNullDescription() throws Exception {
-    ProjectCommand projectCommand = new ProjectCommand("testname", null, 1);
-    Project project = new Project(1, gert, "testname", StringUtils.EMPTY, 1);
-    String requestBody = "{\"name\":\"testname\",\"trialverseId\":1}";
+    ProjectCommand projectCommand = new ProjectCommand("testname", null, "uid1");
+    Project project = new Project(1, gert, "testname", StringUtils.EMPTY, "uid1");
+    String requestBody = "{\"name\":\"testname\",\"namespaceUid\":\"uid1\"}";
     when(projectRepository.create(gert, projectCommand)).thenReturn(project);
     mockMvc.perform(post("/projects").principal(user).content(requestBody).contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isCreated())

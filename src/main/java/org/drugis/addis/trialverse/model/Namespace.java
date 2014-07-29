@@ -1,53 +1,33 @@
 package org.drugis.addis.trialverse.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 /**
  * Created by connor on 2/12/14.
  */
-@Entity
-@Table(name = "namespaces")
+
 public class Namespace {
-  @Id
-  private Long id;
-
+  private String uid;
   private String name;
-
   private String description;
 
   public Namespace() {
   }
 
-  public Namespace(Long id, String name, String description) {
-    this.id = id;
+  public Namespace(String uid, String name, String description) {
+    this.uid = uid;
     this.name = name;
     this.description = description;
   }
 
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
+  public String getUid() {
+    return uid;
   }
 
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
   public String getDescription() {
     return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
   }
 
   @Override
@@ -55,18 +35,18 @@ public class Namespace {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    Namespace that = (Namespace) o;
+    Namespace namespace = (Namespace) o;
 
-    if (!description.equals(that.description)) return false;
-    if (!id.equals(that.id)) return false;
-    if (!name.equals(that.name)) return false;
+    if (!uid.equals(namespace.uid)) return false;
+    if (!description.equals(namespace.description)) return false;
+    if (!name.equals(namespace.name)) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
+    int result = uid.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + description.hashCode();
     return result;

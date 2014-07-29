@@ -6,7 +6,8 @@
                     <div class="columns large-10">
                         <label>Selected Outcome</label>
                         <select ng-model="analysis.outcome" ng-options="outcome.name for outcome in outcomes"
-                                ng-disabled="editMode.disableEditing" ng-change="changeSelectedOutcome()"></select>
+                                ng-disabled="editMode.disableEditing || hasModel"
+                                ng-change="changeSelectedOutcome()"></select>
                     </div>
                 </div>
                 <div class="row">
@@ -16,7 +17,8 @@
                         <div class="checkbox-group">
                             <div ng-repeat="intervention in interventions">
                                 <label><input type="checkbox" ng-model="intervention.isIncluded"
-                                              ng-change="changeInterventionExclusion(intervention)">
+                                              ng-disabled="editMode.disableEditing || hasModel"
+                                              ng-change="changeInterventionInclusion(intervention)">
                                     {{intervention.name}}</label>
                             </div>
                         </div>
@@ -24,8 +26,12 @@
                 </div>
                 <div class="row">
                     <div class="columns large-6 medium-6 small-12">
-                        <button class="button expand"
-                                ng-disabled="tableHasAmbiguousArm || interventions.length < 2 || isNetworkDisconnected || hasLessThanTwoInterventions "
+                        <button ng-show="!hasModel" class="button expand"
+                                ng-disabled="editMode.disableEditing || tableHasAmbiguousArm || interventions.length < 2 || isNetworkDisconnected || hasLessThanTwoInterventions "
+                                ng-click="createModelAndGoToModel()">
+                            Create GeMTC model
+                        </button>
+                        <button ng-show="hasModel" class="button expand"
                                 ng-click="goToModel()">
                             Go to GeMTC model
                         </button>
@@ -63,15 +69,9 @@
                         <div class="columns large-12">
                             <div class="graph-legend text-smaller">
                                 <p>The network graph shows the evidence network for all selected interventions. The size
-                                    of
-                                    an
-                                    intervention's
-                                    circle reflects the total number of participants for that intervention. Lines
-                                    signify
-                                    that
-                                    interventions are
-                                    connected through at least one study, with thicker lines indicating more connecting
-                                    studies.</p>
+                                    of an intervention's circle reflects the total number of participants for that
+                                    intervention. Lines signify that interventions are connected through at least one
+                                    study, with thicker lines indicating more connecting studies.</p>
                             </div>
                         </div>
                     </div>
@@ -104,7 +104,8 @@
                 <td colspan="7">No studies measuring selected outcome.</td>
             </tr>
             <tr ng-repeat="dataRow in trialData" ng-class="{topborder: dataRow.firstStudyRow}">
-                <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">{{dataRow.study}}</td>
+                <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">{{dataRow.study}}
+                    <div class="info" ng-show="lessThanTwoInterventionArms(dataRow)">Fewer than two included interventions. This study will be excluded.</div></td>
                 <td ng-show="dataRow.firstInterventionRow" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
                     rowspan="{{dataRow.interventionRowSpan}}">
                     {{dataRow.intervention}}
@@ -113,7 +114,8 @@
                     </div>
                 </td>
                 <td>
-                    <label><input type="checkbox" ng-disabled="dataRow.intervention === 'unmatched'"
+                    <label><input type="checkbox"
+                                  ng-disabled="editMode.disableEditing || dataRow.intervention === 'unmatched' || hasModel"
                                   ng-model="dataRow.included" ng-change="changeArmExclusion(dataRow)">
                         {{dataRow.arm}}</label>
                 </td>

@@ -8,6 +8,7 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -17,8 +18,8 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.Collection;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by daan on 3/7/14.
@@ -74,6 +75,13 @@ public class InterventionRepositoryTest {
     Account account = em.find(Account.class, 2);
     InterventionCommand interventionCommand = new InterventionCommand(13221, "newName", "newMotivation", new SemanticIntervention("http://semantic.com", "labelnew"));
     interventionRepository.create(account, interventionCommand);
+  }
+
+  @Test(expected = InvalidDataAccessApiUsageException.class)
+  public void testCreateWithDuplicateNameFails() throws Exception {
+    Account user = em.find(Account.class, 1);
+    InterventionCommand interventionCommand = new InterventionCommand(1, "intervention 1", "newMotivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+    Intervention result = interventionRepository.create(user, interventionCommand);
   }
 
 

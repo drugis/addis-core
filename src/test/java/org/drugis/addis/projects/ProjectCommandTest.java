@@ -11,7 +11,7 @@ import static junit.framework.TestCase.assertEquals;
 public class ProjectCommandTest {
   @Test
   public void testGetDescription() throws Exception {
-    ProjectCommand projectCommand = new ProjectCommand("name", null, 1);
+    ProjectCommand projectCommand = new ProjectCommand("name", null, "UID 1");
     assertEquals(StringUtils.EMPTY, projectCommand.getDescription());
   }
 }

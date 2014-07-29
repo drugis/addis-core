@@ -1,16 +1,13 @@
 package org.drugis.addis.analyses.service.impl;
 
-import org.drugis.addis.analyses.AbstractAnalysis;
-import org.drugis.addis.analyses.AnalysisCommand;
-import org.drugis.addis.analyses.NetworkMetaAnalysis;
-import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.models.repositories.ModelRepository;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.springframework.stereotype.Service;
@@ -41,7 +38,7 @@ public class AnalysisServiceImpl implements AnalysisService {
   @Override
   public void checkCoordinates(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
     AbstractAnalysis analysis = analysisRepository.get(projectId, analysisId);
-    if(!analysis.getProjectId().equals(projectId)) {
+    if (!analysis.getProjectId().equals(projectId)) {
       throw new ResourceDoesNotExistException();
     }
   }
@@ -51,7 +48,7 @@ public class AnalysisServiceImpl implements AnalysisService {
     Integer analysisProjectId = analysis.getProjectId();
     projectService.checkProjectExistsAndModifiable(user, analysisProjectId);
 
-    if (modelRepository.findByAnalysis(analysis) != null) {
+    if (modelRepository.findByAnalysis(analysis.getId()) != null) {
       // can not update locked exception
       throw new MethodNotAllowedException();
     }
@@ -65,6 +62,14 @@ public class AnalysisServiceImpl implements AnalysisService {
     // do not allow selection of outcome that is not in the project
     if (analysis.getOutcome() != null && !analysis.getOutcome().getProject().equals(analysisProjectId)) {
       throw new ResourceDoesNotExistException();
+    }
+
+    for(ArmExclusion armExclusion: analysis.getExcludedArms()) {
+      armExclusion.setAnalysis(analysis);
+    }
+
+    for(InterventionInclusion interventionInclusion: analysis.getIncludedInterventions()) {
+      interventionInclusion.setAnalysis(analysis);
     }
 
     return networkMetaAnalysisRepository.update(analysis);

@@ -23,7 +23,8 @@ define(['angular'], function() {
     };
 
     var verifyCell = function(performanceEntry, outcome, intervention) {
-      var result = performanceEntry.criterion === keyify(outcome.name) && performanceEntry.alternative === keyify(intervention.name);
+      var result = performanceEntry.criterionUri === outcome.semanticOutcomeUri 
+        && performanceEntry.alternativeUri === intervention.semanticInterventionUri;
       return result;
     };
 

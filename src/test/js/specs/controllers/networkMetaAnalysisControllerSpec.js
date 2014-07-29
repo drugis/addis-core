@@ -15,7 +15,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       projectDeferred,
       mockProject = {
         id: 11,
-        trialverseId: 123456
+        namespaceUid: '123-a-dda456'
       },
       mockStateParams = {
         analysisId: 1,
@@ -93,9 +93,10 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         'isNetworkDisconnected',
         'addInclusionsToInterventions',
         'changeArmExclusion',
-        'buildInterventionExclusions',
+        'buildInterventionInclusions',
         'doesInterventionHaveAmbiguousArms',
-        'doesModelHaveAmbiguousArms'
+        'doesModelHaveAmbiguousArms',
+        'cleanUpExcludedArms'
       ]);
 
       var mockNetwork = {
@@ -110,10 +111,11 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       networkMetaAnalysisService.doesInterventionHaveAmbiguousArms.and.returnValue(true);
       networkMetaAnalysisService.addInclusionsToInterventions.and.returnValue(mockInterventions);
 
-      modelResource = jasmine.createSpyObj('modelResource', ['save']);
+      modelResource = jasmine.createSpyObj('modelResource', ['save', 'query']);
       modelDeferred = $q.defer();
       mockModel.$promise = modelDeferred.promise;
       modelResource.save.and.returnValue(mockModel);
+      modelResource.query.and.returnValue([mockModel]);
 
       state = jasmine.createSpyObj('$state', ['go']);
 
@@ -142,9 +144,9 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         expect(scope.outcomes).toEqual(mockOutcomes);
       });
 
-      it('should place a goToModel function on the scope that navigates to the analysis.model state', function() {
-        expect(scope.goToModel).toBeDefined();
-        scope.goToModel();
+      it('should place a createModelAndGoToModel function on the scope that navigates to the analysis.model state', function() {
+        expect(scope.createModelAndGoToModel).toBeDefined();
+        scope.createModelAndGoToModel();
         expect(modelResource.save).toHaveBeenCalledWith(mockStateParams, {});
       });
 
@@ -152,15 +154,21 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         expect(scope.isNetworkDisconnected).toBeTruthy();
       });
 
+      it('should query the model to see if the analyis is used in a model', function() {
+        expect(scope.hasModel).toBeDefined();
+        expect(modelResource.query).toHaveBeenCalledWith(mockStateParams);
+      });
+
     });
 
-    describe('when the analysis, outcomes, interventions and project are loaded', function() {
+    describe('when the analysis, outcomes, interventions, project, models are loaded', function() {
 
       beforeEach(inject(function($controller) {
         analysisDeferred.resolve(mockAnalysis);
         projectDeferred.resolve(mockProject);
         interventionDeferred.resolve(mockInterventions);
         outcomesDeferred.resolve(mockOutcomes);
+        modelDeferred.resolve(mockModel);
         scope.$apply();
       }));
 
@@ -174,9 +182,9 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
         it('should get the tabledata and transform it to table rows and network', function() {
           expect(trialverseTrialDataResource.get).toHaveBeenCalledWith({
-            id: mockProject.trialverseId,
+            id: mockProject.namespaceUid,
             outcomeUri: mockOutcomes[0].semanticOutcomeUri,
-            interventionUris: [  ]
+            interventionUris: []
           });
           trialverseTrailDataDeferred.resolve();
           scope.$apply();
@@ -184,13 +192,12 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
           expect(networkMetaAnalysisService.isNetworkDisconnected).toHaveBeenCalled();
           expect(networkMetaAnalysisService.transformTrialDataToNetwork).toHaveBeenCalled();
         });
-
       });
 
-      describe('and the go to model button is clicked', function() {
+      describe('and the create model button is clicked', function() {
 
         it('should create a model and go to the model view', function() {
-          scope.goToModel();
+          scope.createModelAndGoToModel();
           expect(modelResource.save).toHaveBeenCalledWith(mockStateParams, {});
           modelDeferred.resolve(mockModel);
           scope.$apply();
@@ -200,19 +207,39 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         });
       });
 
-      describe('and the arm is exclusion is changed ', function() {
+      describe('and the go to model button is clicked', function() {
 
+        it('should go to the model view', function() {
+          scope.goToModel();
+          expect(state.go).toHaveBeenCalledWith('analysis.model', {
+            modelId: mockModel.id
+          });
+        });
+      });
 
+      describe('and the arm exclusion is changed ', function() {
         beforeEach(function() {
           var dataRow = {};
           scope.tableHasAmbiguousArm = true;
           scope.changeArmExclusion(dataRow);
         });
 
-
         it('should set tableHasAmbiguousArm to false', function() {
           expect(scope.tableHasAmbiguousArm).toBeFalsy();
           expect(networkMetaAnalysisService.changeArmExclusion).toHaveBeenCalled();
+        });
+      });
+
+      describe('and the intervention inclusion is changed', function() {
+        it('should update the analysis\' included interventions, clean up its arm exclusions when applicable and save the analysis', function() {
+          var intervention = {
+            isIncluded: false
+          };
+          scope.trialverseData = {};
+          scope.changeInterventionInclusion(intervention);
+          expect(networkMetaAnalysisService.buildInterventionInclusions).toHaveBeenCalled();
+          expect(networkMetaAnalysisService.cleanUpExcludedArms).toHaveBeenCalled();
+          expect(scope.analysis.$save).toHaveBeenCalled();
         });
       });
 

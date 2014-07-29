@@ -6,15 +6,14 @@ define([], function() {
     $scope.projects = ProjectResource.query();
     $scope.trialverse = TrialverseResource.query();
 
-    $scope.createProject = function (newProject) {
+    $scope.createProject = function(newProject) {
       // clear modal form by resetting model in current scope
       this.model = {};
-      ProjectResource.save(newProject, function(savedProject) {
-        $scope.projects = ProjectResource.query(function(){
+      ProjectResource.save(newProject, function() {
+        $scope.projects = ProjectResource.query(function() {
           $scope.createProjectModal.close();
         });
       });
-
     };
 
   };

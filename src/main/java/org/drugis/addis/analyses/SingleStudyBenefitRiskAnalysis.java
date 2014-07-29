@@ -26,7 +26,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
   @JsonRawValue
   private String problem;
 
-  private Integer studyId;
+  private String studyUid;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinTable(name = "singleStudyBenefitRiskAnalysis_Outcome",
@@ -77,8 +77,12 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     return name;
   }
 
-  public Integer getStudyId() {
-    return studyId;
+  public String getStudyUid() {
+    return studyUid;
+  }
+
+  public void setStudyUid(String studyUid) {
+    this.studyUid = studyUid;
   }
 
   public List<Outcome> getSelectedOutcomes() {
@@ -87,10 +91,6 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
 
   public List<Intervention> getSelectedInterventions() {
     return selectedInterventions == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(selectedInterventions);
-  }
-
-  public void setStudyId(Integer studyId) {
-    this.studyId = studyId;
   }
 
   @JsonRawValue
@@ -116,7 +116,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     if (!projectId.equals(analysis.projectId)) return false;
     if (!selectedInterventions.equals(analysis.selectedInterventions)) return false;
     if (!selectedOutcomes.equals(analysis.selectedOutcomes)) return false;
-    if (studyId != null ? !studyId.equals(analysis.studyId) : analysis.studyId != null) return false;
+    if (studyUid != null ? !studyUid.equals(analysis.studyUid) : analysis.studyUid != null) return false;
 
     return true;
   }
@@ -127,7 +127,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     result = 31 * result + projectId.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + (problem != null ? problem.hashCode() : 0);
-    result = 31 * result + (studyId != null ? studyId.hashCode() : 0);
+    result = 31 * result + (studyUid != null ? studyUid.hashCode() : 0);
     result = 31 * result + selectedOutcomes.hashCode();
     result = 31 * result + selectedInterventions.hashCode();
     return result;

@@ -1,0 +1,11 @@
+<modal model="sessionExpiredModal">
+    <h3>Your session has expired, please log in to continue.</h3>
+
+    <form id="SignInForm" action="auth/google" method="GET">
+        <input type="hidden" name="scope" value="openid email profile"/>
+
+        <div>
+            <button class=" button" type="submit" tabindex="1" href=>Sign In with Google</button>
+        </div>
+    </form>
+</modal>

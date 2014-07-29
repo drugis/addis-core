@@ -2,6 +2,7 @@ package org.drugis.addis.trialverse;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.TestUtils;
+import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.model.TrialDataIntervention;
@@ -13,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -20,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -29,7 +32,7 @@ import static org.mockito.Mockito.when;
 public class TriplestoreServiceTest {
 
   @Mock
-  RestTemplate triplestoreMock;
+  RestOperationsFactory restOperationsFactory;
 
   @InjectMocks
   TriplestoreService triplestoreService;
@@ -43,53 +46,57 @@ public class TriplestoreServiceTest {
   @Test
   public void testGetOutcomes() {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
-    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
-    List<SemanticOutcome> result = triplestoreService.getOutcomes(1L);
-    SemanticOutcome result1 = new SemanticOutcome("http://trials.drugis.org/namespace/1/endpoint/test1", "DBP 24-hour mean");
+    createMockTrialverseService(mockResult);
+    List<SemanticOutcome> result = triplestoreService.getOutcomes("abc");
+    SemanticOutcome result1 = new SemanticOutcome("fdszgs-adsfd-1", "DBP 24-hour mean");
     assertEquals(result.get(0), result1);
   }
 
   @Test
   public void testGetInterventions() {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleInterventionResult.json");
-    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
-    List<SemanticIntervention> result = triplestoreService.getInterventions(1L);
-    SemanticIntervention result1 = new SemanticIntervention("http://trials.drugis.org/namespace/1/drug/test1", "Azilsartan");
-    assertEquals(result.get(0), result1);
+    createMockTrialverseService(mockResult);
+
+    List<SemanticIntervention> result = triplestoreService.getInterventions("abc");
+    SemanticIntervention intervention = result.get(0);
+    SemanticIntervention expectedSemanticIntervention = new SemanticIntervention("fdhdfgh-saddsgfsdf-123-a", "Azilsartan");
+    assertEquals(expectedSemanticIntervention, intervention);
   }
 
   @Test
   public void testGetDrugIds() {
-    Long namespaceId = 1L;
-    Long studyId = 1L;
+    String namespaceUid = "abc";
+    String studyUid = "asd";
     List<String> interventionConceptUris = new ArrayList<>();
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleDrugIdResult.json");
-    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
+    createMockTrialverseService(mockResult);
 
-    Map<Long, String> expected = new HashMap<>();
-    expected.put(1L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug");
-    expected.put(4L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug");
+
+    Map<String, String> expected = new HashMap<>();
+    expected.put("1", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug");
+    expected.put("4", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug");
 
     // EXECUTOR
-    Map<Long, String> result = triplestoreService.getTrialverseDrugs(namespaceId, studyId, interventionConceptUris);
+    Map<String, String> result = triplestoreService.getTrialverseDrugs(namespaceUid, studyUid, interventionConceptUris);
 
     assertEquals(expected, result);
   }
 
   @Test
   public void testGetOutcomeIds() {
-    Long namespaceId = 1L;
-    Long studyId = 1L;
+    String namespaceUid = "abc";
+    String studyUid = "asd";
     List<String> outcomeConceptUris = new ArrayList<>();
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeIdResult.json");
-    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
+    createMockTrialverseService(mockResult);
 
-    Map<Long, String> expected = new HashMap<>();
-    expected.put(1L, "http://trials.drugis.org/namespace/2/endpoint/e2611534a509251f2e1c8endpoint");
-    expected.put(4L, "http://trials.drugis.org/namespace/2/adverseEvent/e2611534a509251f2e1cadverseEvent");
+
+    Map<String, String> expected = new HashMap<>();
+    expected.put("1", "http://trials.drugis.org/namespace/2/endpoint/e2611534a509251f2e1c8endpoint");
+    expected.put("4", "http://trials.drugis.org/namespace/2/adverseEvent/e2611534a509251f2e1cadverseEvent");
 
     // EXECUTOR
-    Map<Long, String> result = triplestoreService.getTrialverseVariables(namespaceId, studyId, outcomeConceptUris);
+    Map<String, String> result = triplestoreService.getTrialverseVariables(namespaceUid, studyUid, outcomeConceptUris);
 
     assertEquals(expected, result);
   }
@@ -97,56 +104,62 @@ public class TriplestoreServiceTest {
   @Test
   public void testFindStudiesReferringToConcept() {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleStudyUris.json");
-    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
-    Long namespaceId = 1L;
-    List<Long> studyIds = triplestoreService.findStudiesReferringToConcept(namespaceId, "magic");
+    createMockTrialverseService(mockResult);
+
+    String namespaceUid = "abc";
+    List<String> studyIds = triplestoreService.findStudiesReferringToConcept(namespaceUid, "magic");
     assertEquals(5, studyIds.size());
   }
 
   @Test
-  public void testFindDrugConceptsFilteredByNameSpaceAndStudys() {
+  public void testFindDrugConceptsFilteredByNameSpaceAndStudies() {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleDrugIdResult.json");
-    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
+    createMockTrialverseService(mockResult);
+    String studyUid = "http://trials.drugis.org/study/e2611534a509251f2e1cstudy1";
 
-    Long namespaceId = 1L;
-    List<Long> studyIds = Arrays.asList(1L, 2L, 3L);
+    String namespaceUid = "abc";
+    List<String> studyIds = Arrays.asList("study1", "study2", "study3");
     List<String> interventionsURIs = Arrays.asList("http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug");
-    Map<Long, List<TrialDataIntervention>> result = triplestoreService.findStudyInterventions(namespaceId, studyIds, interventionsURIs);
+    Map<String, List<TrialDataIntervention>> result = triplestoreService.findStudyInterventions(namespaceUid, studyIds, interventionsURIs);
     assertNotNull(result);
-    assertTrue(result.containsKey(1L));
-    assertTrue(result.get(1L).containsAll(Arrays.asList(new TrialDataIntervention(1L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug", 1L), new TrialDataIntervention(4L, "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug", 1L))));
+
+    assertTrue(result.containsKey(studyUid));
+    List<TrialDataIntervention> resultInterventions = result.get(studyUid);
+    assertTrue(resultInterventions.containsAll(Arrays.asList(new TrialDataIntervention("http://trials.drugis.org/drug/e2611534a509251f2e1cddruguid1", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cdrug", studyUid),
+            new TrialDataIntervention("http://trials.drugis.org/drug/e2611534a509251f2e1cddruguid2", "http://trials.drugis.org/namespace/2/drug/e2611534a509251f2e1cnogeendrug", studyUid))));
   }
 
   @Test
   public void testGetOutComeVariableIdsByStudyForSingleOutcomeAdverseEventType() {
 
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeToVariableAdverseEventResult.json");
-    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
+    createMockTrialverseService(mockResult);
 
-    Long namespaceId = 1L;
-    List<Long> studyIds = Arrays.asList(20L, 13L, 5L);
+
+    String namespaceUid = "abc";
+    List<String> studyUids = Arrays.asList("study1", "study2", "study3");
     String outcomeConceptUri = "http://trials.drugis.org/namespace/2/adverseEvent/232145506bf409d7bb931fd35d6122c0";
-    List<Pair<Long, Long>> result = triplestoreService.getOutcomeVariableIdsByStudyForSingleOutcome(namespaceId, studyIds, outcomeConceptUri);
+    List<Pair<String, Long>> result = triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceUid, studyUids, outcomeConceptUri);
     assertEquals(3, result.size());
-    assertTrue(result.containsAll(Arrays.asList(Pair.of(20L, 304L), Pair.of(13L, 209L), Pair.of(5L, 91L))));
+    assertTrue(result.containsAll(Arrays.asList(Pair.of("study1", 304L), Pair.of("study2", 209L), Pair.of("study3", 91L))));
   }
 
   @Test
   public void testGetOutComeVariableIdsByStudyForSingleOutcomeEndPointType() {
 
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeToVariableAdverseEventResult.json");
-    when(triplestoreMock.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(mockResult);
+    createMockTrialverseService(mockResult);
 
-    Long namespaceId = 1L;
-    List<Long> studyIds = Arrays.asList(20L, 13L, 5L);
+    String namespaceUid = "abc";
+    List<String> studyIds = Arrays.asList("study1", "study2", "study3");
     String outcomeConceptUri = "http://trials.drugis.org/namespace/2/endPoint/232145506bf409d7bb931fd35d6122c0";
-    List<Pair<Long, Long>> result = triplestoreService.getOutcomeVariableIdsByStudyForSingleOutcome(namespaceId, studyIds, outcomeConceptUri);
+    List<Pair<String, Long>> result = triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceUid, studyIds, outcomeConceptUri);
     assertEquals(3, result.size());
-    assertTrue(result.containsAll(Arrays.asList(Pair.of(20L, 304L), Pair.of(13L, 209L), Pair.of(5L, 91L))));
+    assertTrue(result.containsAll(Arrays.asList(Pair.of("study1", 304L), Pair.of("study2", 209L), Pair.of("study3", 91L))));
   }
 
   @Test
-  public void testRegEx () {
+  public void testRegEx() {
     String studyOptionsString = "1|2";
     String uri1 = "foo/study/1/whatevr";
     String uri10 = "foo/study/10/whatevr";
@@ -159,6 +172,13 @@ public class TriplestoreServiceTest {
     assertTrue(matcher1.find());
     assertFalse(matcher10.find());
     assertFalse(matcher12.find());
+  }
+
+  private void createMockTrialverseService(String result) {
+    RestOperations restTemplate = mock(RestTemplate.class);
+    when(restTemplate.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(result);
+    when(restOperationsFactory.build()).thenReturn(restTemplate);
+
   }
 
 

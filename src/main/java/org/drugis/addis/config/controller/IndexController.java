@@ -40,7 +40,11 @@ public class IndexController {
   public String index(Principal currentUser, Model model, HttpServletRequest request) {
     model.addAttribute("connectionsToProviders", getConnectionRepository().findAllConnections());
     try {
-      model.addAttribute(accountRepository.findAccountByUsername(currentUser.getName()));
+      if (currentUser == null) {
+        return "redirect:/signin";
+      } else {
+        model.addAttribute(accountRepository.findAccountByUsername(currentUser.getName()));
+      }
     } catch (org.springframework.dao.EmptyResultDataAccessException e) {
       request.getSession().invalidate();
       return "redirect:/signin";

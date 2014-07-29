@@ -1,5 +1,6 @@
 package org.drugis.addis.analyses;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.drugis.addis.outcomes.Outcome;
 
 import javax.persistence.*;
@@ -18,13 +19,11 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   private Integer projectId;
   private String name;
 
-  @OneToMany(fetch = FetchType.EAGER)
-  @JoinColumn(name = "analysisId")
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis", orphanRemoval = true)
   private List<ArmExclusion> excludedArms = new ArrayList<>();
 
-  @OneToMany(fetch = FetchType.EAGER)
-  @JoinColumn(name = "analysisId")
-  private List<InterventionExclusion> excludedInterventions = new ArrayList<>();
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis", orphanRemoval = true)
+  private List<InterventionInclusion> includedInterventions = new ArrayList<>();
 
   @ManyToOne(targetEntity = Outcome.class)
   @JoinColumn(name = "outcomeId")
@@ -49,12 +48,12 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     this(id, projectId, name, null);
   }
 
-  public NetworkMetaAnalysis(Integer id, Integer projectId, String name, List<ArmExclusion> excludedArms, List<InterventionExclusion> excludedInterventions, Outcome outcome) {
+  public NetworkMetaAnalysis(Integer id, Integer projectId, String name, List<ArmExclusion> excludedArms, List<InterventionInclusion> includedInterventions, Outcome outcome) {
     this.id = id;
     this.projectId = projectId;
     this.name = name;
     this.excludedArms = excludedArms == null ? new ArrayList<ArmExclusion>() : excludedArms;
-    this.excludedInterventions = excludedInterventions == null ? new ArrayList<InterventionExclusion>() : excludedInterventions;
+    this.includedInterventions = includedInterventions == null ? new ArrayList<InterventionInclusion>() : includedInterventions;
     this.outcome = outcome;
   }
 
@@ -74,16 +73,8 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     return excludedArms;
   }
 
-  public void setExcludedArms(List<ArmExclusion> excludedArms) {
-    this.excludedArms = excludedArms == null ? new ArrayList<ArmExclusion>() : excludedArms;
-  }
-
-  public List<InterventionExclusion> getExcludedInterventions() {
-    return excludedInterventions;
-  }
-
-  public void setExcludedInterventions(List<InterventionExclusion> excludedInterventions) {
-    this.excludedInterventions = excludedInterventions == null ? new ArrayList<InterventionExclusion>() : excludedInterventions;
+  public List<InterventionInclusion> getIncludedInterventions() {
+    return includedInterventions;
   }
 
   public Outcome getOutcome() {

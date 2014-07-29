@@ -1,5 +1,6 @@
 package org.drugis.addis.config;
 
+import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
 
+import static org.mockito.Mockito.mock;
+
 @Configuration
 @ComponentScan(excludeFilters = {@ComponentScan.Filter(Configuration.class)},
         basePackages = {
@@ -28,7 +31,11 @@ import java.util.Properties;
                 "org.drugis.addis.analyses",
                 "org.drugis.addis.scenarios",
                 "org.drugis.addis.security",
-                "org.drugis.addis.models"
+                "org.drugis.addis.models",
+                "org.drugis.addis.problems",
+                "org.drugis.addis.trialverse.service",
+                "org.drugis.addis.trialverse.factory",
+                "org.drugis.addis.util"
         })
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {
@@ -65,6 +72,11 @@ public class JpaRepositoryTestConfig {
   @Bean
   public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
     return new PersistenceExceptionTranslationPostProcessor();
+  }
+
+  @Bean
+  public TrialverseRepository mockTrialverseRepository() {
+    return mock(TrialverseRepository.class);
   }
 
   @Bean

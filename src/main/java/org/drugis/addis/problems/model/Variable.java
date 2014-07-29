@@ -5,8 +5,8 @@ package org.drugis.addis.problems.model;
  */
 public class Variable {
 
-  private Long id;
-  private Long study;
+  private String uid;
+  private String study;
   private String name;
   private String description;
   private String unitDescription;
@@ -17,9 +17,9 @@ public class Variable {
   public Variable() {
   }
 
-  public Variable(Long id, Long study, String name, String description, String unitDescription, Boolean isPrimary, MeasurementType measurementType, String variableType) {
-    this.id = id;
-    this.study = study;
+  public Variable(String Uid, String studyUid, String name, String description, String unitDescription, Boolean isPrimary, MeasurementType measurementType, String variableType) {
+    this.uid = Uid;
+    this.study = studyUid;
     this.name = name;
     this.description = description;
     this.unitDescription = unitDescription;
@@ -28,11 +28,11 @@ public class Variable {
     this.variableType = variableType;
   }
 
-  public Long getId() {
-    return id;
+  public String getUid() {
+    return uid;
   }
 
-  public Long getStudy() {
+  public String getStudy() {
     return study;
   }
 
@@ -68,7 +68,7 @@ public class Variable {
     Variable variable = (Variable) o;
 
     if (description != null ? !description.equals(variable.description) : variable.description != null) return false;
-    if (!id.equals(variable.id)) return false;
+    if (!uid.equals(variable.uid)) return false;
     if (!isPrimary.equals(variable.isPrimary)) return false;
     if (measurementType != variable.measurementType) return false;
     if (!name.equals(variable.name)) return false;
@@ -82,7 +82,7 @@ public class Variable {
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
+    int result = uid.hashCode();
     result = 31 * result + study.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + (description != null ? description.hashCode() : 0);
