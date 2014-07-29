@@ -5,10 +5,10 @@ define(['angular'], function() {
 
   var NetworkMetaAnalysisService = function() {
 
-    function resolveInterventionName(trialDataIntervention, interventionOptions) {
+    function findInterventionOptionForDrug(drugInstanceUid, interventionOptions) {
       return _.find(interventionOptions, function(intervention) {
-        return intervention.semanticInterventionUri === trialDataIntervention.uri;
-      }).name;
+        return intervention.semanticInterventionUri === drugInstanceUid;
+      });
     }
 
     function mapTrialDataArmToIntervention(trialDataArm, trialDataInterventions) {
@@ -99,20 +99,24 @@ define(['angular'], function() {
       angular.forEach(data.trialDataStudies, function(study) {
         var studyRows = [];
         angular.forEach(study.trialDataArms, function(trialDataArm) {
-          var trialDataIntervention = mapTrialDataArmToIntervention(trialDataArm, study.trialDataInterventions);
+          var drugInstanceUid = trialDataArm.drugInstanceUid;
+          var matchedIntervention = findInterventionOptionForDrug(trialDataArm.drugUid, interventions);
           var row = {};
+
           row.study = study.name;
           row.studyRowSpan = study.trialDataArms.length;
           row.studyRows = studyRows;
-          row.intervention = trialDataIntervention ? resolveInterventionName(trialDataIntervention, interventions) : 'unmatched';
+
+          row.intervention = matchedIntervention ? matchedIntervention : 'unmatched';
           row.drugUid = trialDataArm.drugUid;
           row.arm = trialDataArm.name;
-          row.trialverseId = trialDataArm.id;
-          row.included = !exclusionMap[trialDataArm.id] && row.intervention !== 'unmatched';
-          row.rate = findMeasurementValue(trialDataArm.measurements, 'rate', 'integerValue');
-          row.mu = findMeasurementValue(trialDataArm.measurements, 'mean', 'realValue');
-          row.sigma = findMeasurementValue(trialDataArm.measurements, 'standard deviation', 'realValue');
-          row.sampleSize = findMeasurementValue(trialDataArm.measurements, 'sample size', 'integerValue');
+          row.trialverseId = trialDataArm.uid;
+          row.included = !exclusionMap[trialDataArm.uid] && row.intervention !== 'unmatched';
+
+          row.rate = trialDataArm.measurement.rate;
+          row.mu = trialDataArm.measurement.mean;
+          row.sigma = trialDataArm.measurement.stdDev;
+          row.sampleSize = trialDataArm.measurement.sampleSize;
 
           rows.push(row);
           studyRows.push(row);
@@ -148,7 +152,7 @@ define(['angular'], function() {
       return _.map(trialDataStudies, function(study) {
         var copiedStudy = angular.copy(study);
         copiedStudy.trialDataArms = _.filter(study.trialDataArms, function(arm) {
-          return !exclusionMap[arm.id];
+          return !exclusionMap[arm.uid];
         });
         return copiedStudy;
       });

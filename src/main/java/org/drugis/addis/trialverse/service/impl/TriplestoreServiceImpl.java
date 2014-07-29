@@ -283,7 +283,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String armLabel = JsonPath.read(binding, "$.armLabel.value");
       String variableUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.outcomeInstance.value"));
       Measurement measurement = new Measurement(studyUid, variableUid, armUid, sampleSize, rate, stdDev, mean);
-      TrialDataArm trialDataArm = new TrialDataArm(armUid, studyUid, armLabel, drugInstanceUid, drugUid, measurement);
+      TrialDataArm trialDataArm = new TrialDataArm(armUid, armLabel, studyUid, drugInstanceUid, drugUid, measurement);
       trialDataStudy.getTrialDataArms().add(trialDataArm);
 
     }
