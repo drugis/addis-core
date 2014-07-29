@@ -12,11 +12,9 @@ import java.util.Set;
 public interface TrialverseService {
   public List<ObjectNode> getVariablesByIds(Set<String> outcomeIds);
 
-  public List<ObjectNode> getArmsByDrugIds(String studyUd, Collection<String> drugUids);
+  public List<ObjectNode> getArmsByDrugIds(String studyUid, Collection<String> drugUids);
 
   public List<ObjectNode> getOrderedMeasurements(List<String> outcomeIds, List<String> armIds);
-
-  public List<ObjectNode> getStudiesByIds(String namespaceId, List<String> studyIds);
 
   public ObjectNode getTrialData(String namespaceUId, String semanticOutcomeUri, List<String> alternativeUris);
 }

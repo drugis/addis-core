@@ -52,12 +52,6 @@ public class TrialverseServiceImpl implements TrialverseService {
   }
 
   @Override
-  public List<ObjectNode> getStudiesByIds(String namespaceId, List<String> studyIds) {
-    List<Study> studies = trialverseRepository.getStudiesByIds(namespaceId, studyIds);
-    return objectsToNodes(studies);
-  }
-
-  @Override
   public ObjectNode getTrialData(String namespaceUId, String semanticOutcomeUri, List<String> alternativeUris) {
     return mapper.valueToTree(triplestoreService.getTrialData(namespaceUId, semanticOutcomeUri, alternativeUris));
   }
