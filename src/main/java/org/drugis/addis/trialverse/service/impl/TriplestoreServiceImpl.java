@@ -44,7 +44,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "    ?dataset rdfs:comment ?comment .\n" +
             "    ?dataset ontology:contains_study ?study" +
             "  }\n" +
-            "} GROUP BY ?dataset\n";
+            "} GROUP BY ?dataset ?label ?comment\n";
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     List<Namespace> namespaces = new ArrayList<>(bindings.size());
@@ -73,7 +73,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "    ?dataset rdfs:label ?label .\n" +
             "    ?dataset rdfs:comment ?comment .\n" +
             "  }\n" +
-            "}\n";
+            "} GROUP BY ?dataset ?label ?comment\n";
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     Object binding = bindings.get(0);
