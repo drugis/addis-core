@@ -58,6 +58,7 @@ public class TrialverseServiceImpl implements TrialverseService {
   public List<ObjectNode> getTrialData(String namespaceUId, String semanticOutcomeUri, List<String> alternativeUris) {
     List<TrialDataStudy> trialData = triplestoreService.getTrialData(namespaceUId, semanticOutcomeUri, alternativeUris);
     return objectsToNodes(trialData);
+  
   }
 
   private <T> List<ObjectNode> objectsToNodes(List<T> objectList) {

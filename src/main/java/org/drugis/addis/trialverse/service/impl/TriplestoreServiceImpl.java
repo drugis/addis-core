@@ -37,13 +37,14 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
             "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
             "\n" +
-            "SELECT ?dataset ?label ?comment WHERE {\n" +
+            "SELECT ?dataset ?label ?comment (COUNT(DISTINCT(?study)) AS ?numberOfStudies) WHERE {\n" +
             "  GRAPH ?dataset {\n" +
             "    ?dataset a ontology:Dataset .\n" +
             "    ?dataset rdfs:label ?label .\n" +
             "    ?dataset rdfs:comment ?comment .\n" +
+            "    ?dataset ontology:contains_study ?study" +
             "  }\n" +
-            "}\n";
+            "} GROUP BY ?dataset\n";
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     List<Namespace> namespaces = new ArrayList<>(bindings.size());
@@ -52,7 +53,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       uid = subStringAfterLastSlash(uid);
       String name = JsonPath.read(binding, "$.label.value");
       String description = JsonPath.read(binding, "$.comment.value");
-      namespaces.add(new Namespace(uid, name, description));
+      Integer numberOfStudies = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfStudies.value"));
+      String sourceUrl = "TODO"; //FIXME
+      namespaces.add(new Namespace(uid, name, description, numberOfStudies, sourceUrl));
     }
     return namespaces;
   }
@@ -64,7 +67,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
             "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
             "\n" +
-            "SELECT ?dataset ?label ?comment WHERE {\n" +
+            "SELECT ?dataset ?label ?comment (COUNT(DISTINCT(?study)) AS ?numberOfStudies) WHERE {\n" +
             "  GRAPH dataset:" + uid + " {\n" +
             "    ?dataset a ontology:Dataset .\n" +
             "    ?dataset rdfs:label ?label .\n" +
@@ -76,7 +79,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     Object binding = bindings.get(0);
     String name = JsonPath.read(binding, "$.label.value");
     String description = JsonPath.read(binding, "$.comment.value");
-    return new Namespace(uid, name, description);
+    Integer numberOfStudies = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfStudies.value"));
+    String sourceUrl = "TODO"; //FIXME
+    return new Namespace(uid, name, description, numberOfStudies, sourceUrl);
   }
 
 

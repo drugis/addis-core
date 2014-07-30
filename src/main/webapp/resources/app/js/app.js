@@ -112,6 +112,11 @@ define(
             templateUrl: baseTemplatePath + 'projects.html',
             controller: 'ProjectsController'
           })
+          .state('create-project', {
+            url: 'create-project',
+            templateUrl: baseTemplatePath + 'createProject.html',
+            controller: 'CreateProjectController'
+          })
           .state('project', {
             url: '/projects/:projectId',
             templateUrl: baseTemplatePath + 'project.html',
