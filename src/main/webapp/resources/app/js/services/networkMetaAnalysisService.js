@@ -127,7 +127,7 @@ define(['angular'], function() {
 
     function isMatchedTrialDataIntervention(trialDataIntervention, study) {
       return _.find(study.trialDataArms, function(trialDataArm) {
-        return trialDataIntervention.drugUid === trialDataArm.drugUid;
+        return trialDataIntervention.drugUid === trialDataArm.drugInstanceUid;
       });
     }
 
@@ -161,9 +161,9 @@ define(['angular'], function() {
     function sumInterventionSampleSizes(trialData, intervention) {
       var interventionSum = _.reduce(trialData, function(sum, trialDataStudy) {
         angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
-          var trialDataIntervention = mapTrialDataArmToIntervention(trialDataArm, trialDataStudy.trialDataInterventions);
-          if (trialDataIntervention && trialDataIntervention.uri === intervention.semanticInterventionUri) {
-            sum += findMeasurementValue(trialDataArm.measurements, 'sample size', 'integerValue');
+          
+          if (trialDataArm.drugUid === intervention.semanticInterventionUri) {
+            sum += trialDataArm.measurement.sampleSize;
           }
         });
         return sum;
@@ -188,7 +188,7 @@ define(['angular'], function() {
 
     function findArmForIntervention(trialdataArms, trialDataIntervention) {
       return _.find(trialdataArms, function(trialdataArm) {
-        return trialdataArm.drugUid === trialDataIntervention.drugUid;
+        return trialdataArm.drugInstanceUid === trialDataIntervention.drugUid;
       });
     }
 
