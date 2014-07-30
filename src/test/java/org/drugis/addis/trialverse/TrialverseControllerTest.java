@@ -2,7 +2,6 @@ package org.drugis.addis.trialverse;
 
 
 import org.apache.commons.collections.ListUtils;
-import org.apache.commons.collections.SetUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.security.Account;
@@ -135,11 +134,11 @@ public class TrialverseControllerTest {
     Study study = new Study("studyUid", "name", "this is a title");
     when(triplestoreService.queryStudies(namespaceUid)).thenReturn(Arrays.asList(study));
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/studies").principal(user))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0].uid", is(study.getUid())))
-      .andExpect(jsonPath("$[0].name", is(study.getName())))
-      .andExpect(jsonPath("$[0].title", is(study.getTitle())));
+            .andExpect(jsonPath("$[0].name", is(study.getName())))
+            .andExpect(jsonPath("$[0].title", is(study.getTitle())));
     verify(triplestoreService).queryStudies(namespaceUid);
     verify(accountRepository).findAccountByUsername(user.getName());
   }
@@ -157,7 +156,7 @@ public class TrialverseControllerTest {
   @Test
   public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Exception {
     Map<TrialDataStudy, List<Pair<Long, String>>> studyInterventions = new HashMap<>();
-    List<TrialDataStudy> trialDataStudies = Arrays.asList(new TrialDataStudy("abc", "study name", SetUtils.EMPTY_SET, ListUtils.EMPTY_LIST));
+    List<TrialDataStudy> trialDataStudies = Arrays.asList(new TrialDataStudy("abc", "study name", ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST));
     Map<String, List<Pair<Long, String>>> studyInterventionKeys = new HashMap<>();
     studyInterventionKeys.put(trialDataStudies.get(0).getStudyUid(), Arrays.asList(Pair.of(101L, "some-sort-of-uri")));
     for (TrialDataStudy trialDataStudy : trialDataStudies) {
@@ -177,7 +176,7 @@ public class TrialverseControllerTest {
   @Test
   public void testGetTrialDataWithOutcomeAndNoInterventionsInQuery() throws Exception {
     Map<TrialDataStudy, List<Pair<Long, String>>> studyInterventions = new HashMap<>();
-    List<TrialDataStudy> trialDataStudies = Arrays.asList(new TrialDataStudy("abc", "study name", SetUtils.EMPTY_SET, ListUtils.EMPTY_LIST));
+    List<TrialDataStudy> trialDataStudies = Arrays.asList(new TrialDataStudy("abc", "study name", ListUtils.EMPTY_LIST, ListUtils.EMPTY_LIST));
     Map<String, List<Pair<Long, String>>> studyInterventionKeys = new HashMap<>();
     studyInterventionKeys.put(trialDataStudies.get(0).getStudyUid(), Arrays.asList(Pair.of(101L, "some-sort-of-uri")));
     for (TrialDataStudy trialDataStudy : trialDataStudies) {
@@ -187,9 +186,9 @@ public class TrialverseControllerTest {
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     when(triplestoreService.getTrialData(namespaceUid, outcomeUri, Collections.EMPTY_LIST)).thenReturn(trialDataStudies);
     mockMvc.perform(get("/namespaces/namespaceUid/trialData?outcomeUri=" + outcomeUri).principal(user))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-      .andExpect(jsonPath("$", notNullValue()));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", notNullValue()));
     verify(triplestoreService).getTrialData(namespaceUid, outcomeUri, Collections.EMPTY_LIST);
   }
 

@@ -8,18 +8,18 @@ public class TrialDataArm {
   private String name;
   private String studyUid;
   private String drugInstanceUid;
-  private String drugUid;
+  private String drugConceptUid;
   private Measurement measurement;
 
   public TrialDataArm() {
   }
 
-  public TrialDataArm(String uid, String name, String studyUid, String drugInstanceUid, String drugUid, Measurement measurement) {
+  public TrialDataArm(String uid, String name, String studyUid, String drugInstanceUid, String drugConceptUid, Measurement measurement) {
     this.uid = uid;
     this.name = name;
     this.studyUid = studyUid;
     this.drugInstanceUid = drugInstanceUid;
-    this.drugUid = drugUid;
+    this.drugConceptUid = drugConceptUid;
     this.measurement = measurement;
   }
 
@@ -39,8 +39,8 @@ public class TrialDataArm {
     return drugInstanceUid;
   }
 
-  public String getDrugUid() {
-    return drugUid;
+  public String getDrugConceptUid() {
+    return drugConceptUid;
   }
 
   public Measurement getMeasurement() {
@@ -55,7 +55,7 @@ public class TrialDataArm {
     TrialDataArm that = (TrialDataArm) o;
 
     if (!drugInstanceUid.equals(that.drugInstanceUid)) return false;
-    if (!drugUid.equals(that.drugUid)) return false;
+    if (!drugConceptUid.equals(that.drugConceptUid)) return false;
     if (!measurement.equals(that.measurement)) return false;
     if (!name.equals(that.name)) return false;
     if (!studyUid.equals(that.studyUid)) return false;
@@ -70,7 +70,7 @@ public class TrialDataArm {
     result = 31 * result + name.hashCode();
     result = 31 * result + studyUid.hashCode();
     result = 31 * result + drugInstanceUid.hashCode();
-    result = 31 * result + drugUid.hashCode();
+    result = 31 * result + drugConceptUid.hashCode();
     result = 31 * result + measurement.hashCode();
     return result;
   }

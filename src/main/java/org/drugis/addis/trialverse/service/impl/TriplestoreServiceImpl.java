@@ -260,7 +260,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       TrialDataStudy trialDataStudy = trialDataStudies.get(studyUid);
       if (trialDataStudy == null) {
         String studyName = JsonPath.read(binding, "$.studyName.value");
-        trialDataStudy = new TrialDataStudy(studyUid, studyName, new HashSet<TrialDataIntervention>(), new ArrayList<TrialDataArm>());
+        trialDataStudy = new TrialDataStudy(studyUid, studyName, new ArrayList<TrialDataIntervention>(), new ArrayList<TrialDataArm>());
         trialDataStudies.put(studyUid, trialDataStudy);
       }
       String drugInstanceUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.drugInstance.value"));

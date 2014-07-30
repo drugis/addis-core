@@ -76,25 +76,26 @@ public class ProblemServiceImpl implements ProblemService {
       treatments.add(new TreatmentEntry(intervention.getId(), intervention.getName()));
     }
 
-    ObjectNode trialData = trialverseService.getTrialData(project.getNamespaceUid(),
+    List<ObjectNode> trialDataStudies = trialverseService.getTrialData(project.getNamespaceUid(),
             analysis.getOutcome().getSemanticOutcomeUri(), alternativeUris);
-
     ObjectMapper mapper = new ObjectMapper();
-    TrialData convertedTrialData = mapper.convertValue(trialData, TrialData.class);
-    Map<String, TrialDataIntervention> interventionByDrugUidInstanceMap = createInterventionByDrugIdMap(convertedTrialData);
+    List<TrialDataStudy> convertedTrialDataStudies = new ArrayList<>();
+    for (ObjectNode objectNode : trialDataStudies) {
+      convertedTrialDataStudies.add(mapper.convertValue(objectNode, TrialDataStudy.class));
+    }
+    Map<String, TrialDataIntervention> interventionByDrugUidInstanceMap = createInterventionByDrugIdMap(convertedTrialDataStudies);
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
 
-    for (TrialDataStudy trialDataStudy : convertedTrialData.getTrialDataStudies()) {
-      List<TrialDataArm> filteredArms = filterUnmatchedArms(trialDataStudy, interventionByDrugUidInstanceMap);
+    for (TrialDataStudy trialDataStudy : convertedTrialDataStudies) {
+      List<TrialDataArm> filteredArms = filterUnmatchedArms(trialDataStudy, interventionIdsByUrisMap);
       filteredArms = filterExcludedArms(filteredArms, analysis);
 
       // do not include studies with fewer than two included and matched arms
       if (filteredArms.size() >= 2) {
 
         for (TrialDataArm trialDataArm : filteredArms) {
-          String interventionUri = interventionByDrugUidInstanceMap.get(trialDataArm.getDrugInstanceUid()).getDrugConceptUid();
-          Integer treatmentId = interventionIdsByUrisMap.get(interventionUri);
+          Integer treatmentId = interventionIdsByUrisMap.get(trialDataArm.getDrugConceptUid());
           entries.add(buildEntry(trialDataStudy.getName(), treatmentId, trialDataArm.getMeasurement()));
         }
 
@@ -135,9 +136,9 @@ public class ProblemServiceImpl implements ProblemService {
     throw new RuntimeException("unknown measurement type");
   }
 
-  private Map<String, TrialDataIntervention> createInterventionByDrugIdMap(TrialData trialData) {
+  private Map<String, TrialDataIntervention> createInterventionByDrugIdMap(List<TrialDataStudy> trialDataStudies) {
     Map<String, TrialDataIntervention> interventionByDrugIdMap = new HashMap<>();
-    for (TrialDataStudy study : trialData.getTrialDataStudies()) {
+    for (TrialDataStudy study : trialDataStudies) {
 
       for (TrialDataIntervention intervention : study.getTrialDataInterventions()) {
         interventionByDrugIdMap.put(intervention.getDrugInstanceUid(), intervention);
@@ -163,12 +164,10 @@ public class ProblemServiceImpl implements ProblemService {
     return filteredInterventions;
   }
 
-  private List<TrialDataArm> filterUnmatchedArms(TrialDataStudy study, Map<String, TrialDataIntervention> interventionByIdMap) {
+  private List<TrialDataArm> filterUnmatchedArms(TrialDataStudy study, Map<String, Integer> interventionByIdMap) {
     List<TrialDataArm> filteredArms = new ArrayList<>();
 
-    List<TrialDataArm> studyArmsSortedByName = sortTrialDataArmsByName(study.getTrialDataArms());
-
-    for (TrialDataArm arm : studyArmsSortedByName) {
+    for (TrialDataArm arm : study.getTrialDataArms()) {
       if (isMatched(arm, interventionByIdMap)) {
         filteredArms.add(arm);
       }
@@ -177,18 +176,8 @@ public class ProblemServiceImpl implements ProblemService {
     return filteredArms;
   }
 
-  private List<TrialDataArm> sortTrialDataArmsByName(List<TrialDataArm> trialDataArms) {
-    Collections.sort(trialDataArms, new Comparator<TrialDataArm>() {
-      @Override
-      public int compare(TrialDataArm leftTrialDataArm, TrialDataArm rightTrialDataArm) {
-        return leftTrialDataArm.getName().compareTo(rightTrialDataArm.getName());
-      }
-    });
-    return trialDataArms;
-  }
-
-  private boolean isMatched(TrialDataArm arm, Map<String, TrialDataIntervention> interventionByIdMap) {
-    return interventionByIdMap.get(arm.getDrugInstanceUid()) != null;
+  private boolean isMatched(TrialDataArm arm, Map<String, Integer> interventionByIdMap) {
+    return interventionByIdMap.get(arm.getDrugConceptUid()) != null;
   }
 
   private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException {

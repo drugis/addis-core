@@ -7,7 +7,7 @@ import java.util.List;
  * Created by connor on 15-5-14.
  */
 public class TrialDataStudy {
-  private Long studyId;
+  private String studyUid;
   private String name;
   private List<TrialDataIntervention> trialDataInterventions = new ArrayList<>();
   private List<TrialDataArm> trialDataArms = new ArrayList<>();
@@ -15,15 +15,21 @@ public class TrialDataStudy {
   public TrialDataStudy() {
   }
 
-  public TrialDataStudy(Long studyId, String name, List<TrialDataIntervention> trialDataInterventions, List<TrialDataArm> trialDataArms) {
-    this.studyId = studyId;
+  public TrialDataStudy(String studyUid, String name, List<TrialDataIntervention> trialDataInterventions, List<TrialDataArm> trialDataArms) {
+    this.studyUid = studyUid;
     this.name = name;
-    this.trialDataInterventions = trialDataInterventions != null ? trialDataInterventions : new ArrayList<TrialDataIntervention>();
-    this.trialDataArms = trialDataArms != null ? trialDataArms : new ArrayList<TrialDataArm>();
+
+    if (trialDataInterventions != null) {
+      this.trialDataInterventions = trialDataInterventions;
+    }
+
+    if (trialDataArms != null) {
+      this.trialDataArms = trialDataArms;
+    }
   }
 
-  public Long getStudyId() {
-    return studyId;
+  public String getStudyUid() {
+    return studyUid;
   }
 
   public String getName() {
@@ -46,7 +52,7 @@ public class TrialDataStudy {
     TrialDataStudy that = (TrialDataStudy) o;
 
     if (!name.equals(that.name)) return false;
-    if (!studyId.equals(that.studyId)) return false;
+    if (!studyUid.equals(that.studyUid)) return false;
     if (!trialDataArms.equals(that.trialDataArms)) return false;
     if (!trialDataInterventions.equals(that.trialDataInterventions)) return false;
 
@@ -55,7 +61,7 @@ public class TrialDataStudy {
 
   @Override
   public int hashCode() {
-    int result = studyId.hashCode();
+    int result = studyUid.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + trialDataInterventions.hashCode();
     result = 31 * result + trialDataArms.hashCode();

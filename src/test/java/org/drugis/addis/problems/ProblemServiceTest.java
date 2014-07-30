@@ -163,7 +163,7 @@ public class ProblemServiceTest {
     Integer projectId = 2;
     Integer analysisId = 3;
 
-    TrialData trialData = createMockTrialData();
+    List<TrialDataStudy> trialDataStudies = createMockTrialData();
 
     String outcomeUri = "outcomeUri";
     Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
@@ -188,7 +188,10 @@ public class ProblemServiceTest {
 
     ObjectMapper mapper = new ObjectMapper();
 
-    ObjectNode trialDataNode = mapper.convertValue(trialData, ObjectNode.class);
+    List<ObjectNode> trialDataNode = new ArrayList<>();
+    for (TrialDataStudy trialDataStudy : trialDataStudies) {
+      trialDataNode.add(mapper.convertValue(trialDataStudy, ObjectNode.class));
+    }
     when(project.getId()).thenReturn(projectId);
     when(project.getNamespaceUid()).thenReturn(namespaceUid);
     when(projectRepository.get(projectId)).thenReturn(project);
@@ -235,15 +238,17 @@ public class ProblemServiceTest {
     InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention3.getId());
     analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2));
 
-    TrialData trialData = createMockTrialData();
-    TrialDataStudy trialDataStudy = trialData.getTrialDataStudies().get(0);
-    List<TrialDataIntervention> trialDataInterventions = trialDataStudy.getTrialDataInterventions();
+    List<TrialDataStudy> trialDataStudies = createMockTrialData();
+    TrialDataStudy firstTrialDataStudy = trialDataStudies.get(0);
+    List<TrialDataIntervention> trialDataInterventions = firstTrialDataStudy.getTrialDataInterventions();
     // remove excluded intervention from trialdata as well (HACKY)
     trialDataInterventions.set(1, new TrialDataIntervention("-666L", "iamnothere", "-666L"));
-    trialDataStudy.getTrialDataInterventions();
-    ObjectMapper mapper = new ObjectMapper();
-    ObjectNode trialDataNode = mapper.convertValue(trialData, ObjectNode.class);
 
+    ObjectMapper mapper = new ObjectMapper();
+    List<ObjectNode> trialDataNode = new ArrayList<>();
+    for (TrialDataStudy trialDataStudy : trialDataStudies) {
+      trialDataNode.add(mapper.convertValue(trialDataStudy, ObjectNode.class));
+    }
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
@@ -259,7 +264,7 @@ public class ProblemServiceTest {
     assertEquals(2, problem.getEntries().size());
   }
 
-  private TrialData createMockTrialData() {
+  private List<TrialDataStudy> createMockTrialData() {
     String studyId1 = "101L";
     String studyId2 = "202L";
     String drugId1 = "420L";
@@ -299,11 +304,10 @@ public class ProblemServiceTest {
 
     List<TrialDataArm> trialDataArms1 = Arrays.asList(trialDataArm1, trialDataArm2, trialDataArm3, trialDataArm4);
     List<TrialDataArm> trialDataArms2 = Arrays.asList(trialDataArm5);
-    TrialDataStudy trialDataStudy1 = new TrialDataStudy(1L, "study1", trialdataInterventions1, trialDataArms1);
-    TrialDataStudy trialDataStudy2 = new TrialDataStudy(2L, "study2", trialdataInterventions2, trialDataArms2);
+    TrialDataStudy trialDataStudy1 = new TrialDataStudy("1L", "study1", trialdataInterventions1, trialDataArms1);
+    TrialDataStudy trialDataStudy2 = new TrialDataStudy("2L", "study2", trialdataInterventions2, trialDataArms2);
 
-    List<TrialDataStudy> trialDataStudies = Arrays.asList(trialDataStudy1, trialDataStudy2);
-    return new TrialData(trialDataStudies);
+    return Arrays.asList(trialDataStudy1, trialDataStudy2);
   }
 
 }
