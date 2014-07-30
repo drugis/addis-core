@@ -197,7 +197,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "PREFIX instance: <http://trials.drugis.org/instances/>\n" +
             "PREFIX study: <http://trials.drugis.org/studies/>\n" +
             "\n" +
-            "SELECT ?study ?studyName ?drug ?interventionLabel ?drugInstance ?outcomeInstance ?outcomeTypeUid ?outcomeInstanceLabel ?arm ?armLabel ?mean ?stdDev ?count ?sampleSize WHERE {\n" +
+            "SELECT DISTINCT ?study ?studyName ?drug ?interventionLabel ?drugInstance ?outcomeInstance ?outcomeTypeUid ?outcomeInstanceLabel ?arm ?armLabel ?mean ?stdDev ?count ?sampleSize WHERE {\n" +
             "  GRAPH ?dataset {\n" +
             "    ?dataset a ontology:Dataset .\n" +
             "    ?dataset ontology:contains_study ?study .\n" +
@@ -251,6 +251,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "  }\n" +
             "}\n";
     String response = queryTripleStore(query);
+    System.out.println(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     Map<String, TrialDataStudy> trialDataStudies = new HashMap<>();
     // ?studyName ?drug ?interventionLabel ?interventionInstance ?outcomeInstance ?outcomeTypeUid ?outcomeInstanceLabel ?arm ?armLabel ?mean ?stdDev ?count ?sampleSize WHERE {
@@ -305,7 +306,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "PREFIX instance: <http://trials.drugis.org/instances/>\n" +
             "PREFIX study: <http://trials.drugis.org/studies/>\n" +
             "\n" +
-            "SELECT ?interventionTypeUid ?interventionLabel ?outcomeTypeUid ?outcomeInstanceLabel ?mean ?stdDev ?count ?sampleSize WHERE {\n" +
+            "SELECT DISTINCT ?interventionTypeUid ?interventionLabel ?outcomeTypeUid ?outcomeInstanceLabel ?mean ?stdDev ?count ?sampleSize WHERE {\n" +
             "  GRAPH ?dataset {\n" +
             "    ?dataset a ontology:Dataset .\n" +
             "    ?dataset ontology:contains_study ?study .\n" +
