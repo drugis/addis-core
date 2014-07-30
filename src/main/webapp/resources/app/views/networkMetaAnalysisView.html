@@ -86,52 +86,56 @@
         <div class="table-title">Evidence table</div>
         <table class="network-meta-analysis-table">
             <thead>
-                <tr>
-                    <th class="large-3">Studies</th>
-                    <th class="large-3">Interventions</th>
-                    <th class="large-3">Arms</th>
-                    <th ng-show="trialData[0].rate !== null" class="large-2">Rate</th>
-                    <th ng-show="trialData[0].mu !== null" class="large-1">&mu;</th>
-                    <th ng-show="trialData[0].sigma !== null" class="large-1">&sigma;</th>
-                    <th ng-show="trialData[0].sampleSize !== null" class="large-1">N</th>
-                </tr>
+            <tr>
+                <th class="large-3">Studies</th>
+                <th class="large-3">Interventions</th>
+                <th class="large-3">Arms</th>
+                <th ng-show="trialData[0].rate !== null" class="large-2">Rate</th>
+                <th ng-show="trialData[0].mu !== null" class="large-1">&mu;</th>
+                <th ng-show="trialData[0].sigma !== null" class="large-1">&sigma;</th>
+                <th ng-show="trialData[0].sampleSize !== null" class="large-1">N</th>
+            </tr>
             </thead>
             <tbody>
-                <tr ng-show="!analysis.outcome">
-                    <td colspan="7">No outcome selected.</td>
-                </tr>
-                <tr ng-show="analysis.outcome && !trialData.length">
-                    <td colspan="7">No studies measuring selected outcome.</td>
-                </tr>
-                <tr ng-repeat="dataRow in trialData" ng-class="{topborder: dataRow.firstStudyRow}">
-                    <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">{{dataRow.study}}
-                        <div class="info" ng-show="lessThanTwoInterventionArms(dataRow)">Fewer than two included interventions. This study will be excluded.</div></td>
-                    <td ng-show="dataRow.firstInterventionRow" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
-                        rowspan="{{dataRow.interventionRowSpan}}">
-                        {{dataRow.intervention}}
-                        <div ng-show="doesInterventionHaveAmbiguousArms(dataRow.drugId)" class="alert-message">Ambiguous
-                            arms, please choose a single arm for inclusion
-                        </div>
-                    </td>
-                    <td>
-                        <label><input type="checkbox"
-                                      ng-disabled="editMode.disableEditing || dataRow.intervention === 'unmatched' || hasModel"
-                                      ng-model="dataRow.included" ng-change="changeArmExclusion(dataRow)">
-                            {{dataRow.arm}}</label>
-                    </td>
-                    <td ng-show="dataRow.rate !== null" ng-class="{undefined:dataRow.intervention === 'unmatched'}">
-                        {{dataRow.rate}}
-                    </td>
-                    <td ng-show="trialData[0].mu !== null" class="large-2"
-                        ng-class="{undefined:dataRow.intervention === 'unmatched'}">{{dataRow.mu}}
-                    </td>
-                    <td ng-show="trialData[0].sigma !== null" class="large-2"
-                        ng-class="{undefined:dataRow.intervention === 'unmatched'}">{{dataRow.sigma | number: 3}}
-                    </td>
-                    <td ng-show="trialData[0].sampleSize !== null"
-                        ng-class="{undefined:dataRow.intervention === 'unmatched'}">{{dataRow.sampleSize}}
-                    </td>
-                </tr>
+            <tr ng-show="!analysis.outcome">
+                <td colspan="7">No outcome selected.</td>
+            </tr>
+            <tr ng-show="analysis.outcome && !trialData.length">
+                <td colspan="7">No studies measuring selected outcome.</td>
+            </tr>
+            <tr ng-repeat="dataRow in trialData" ng-class="{topborder: dataRow.firstStudyRow}">
+                <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">{{dataRow.study}}
+                    <div class="info" ng-show="lessThanTwoInterventionArms(dataRow)">Fewer than two included
+                        interventions. This study will be excluded.
+                    </div>
+                </td>
+                <td ng-show="dataRow.firstInterventionRow" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
+                    rowspan="{{dataRow.interventionRowSpan}}">
+                    {{dataRow.intervention}}
+                    <div ng-show="doesInterventionHaveAmbiguousArms(dataRow.drugConceptUid, dataRow.studyUid)"
+                         class="alert-message">
+                        Ambiguous arms, please choose a single arm for inclusion
+                    </div>
+                </td>
+                <td>
+                    <label><input type="checkbox"
+                                  ng-disabled="editMode.disableEditing || dataRow.intervention === 'unmatched' || hasModel"
+                                  ng-model="dataRow.included" ng-change="changeArmExclusion(dataRow)">
+                        {{dataRow.arm}}</label>
+                </td>
+                <td ng-show="dataRow.rate !== null" ng-class="{undefined:dataRow.intervention === 'unmatched'}">
+                    {{dataRow.rate}}
+                </td>
+                <td ng-show="trialData[0].mu !== null" class="large-2"
+                    ng-class="{undefined:dataRow.intervention === 'unmatched'}">{{dataRow.mu}}
+                </td>
+                <td ng-show="trialData[0].sigma !== null" class="large-2"
+                    ng-class="{undefined:dataRow.intervention === 'unmatched'}">{{dataRow.sigma | number: 3}}
+                </td>
+                <td ng-show="trialData[0].sampleSize !== null"
+                    ng-class="{undefined:dataRow.intervention === 'unmatched'}">{{dataRow.sampleSize}}
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>
