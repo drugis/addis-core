@@ -85,7 +85,7 @@ define(['angular'], function() {
 
     function buildExcludedArmsMap(excludedArms) {
       return _.reduce(excludedArms, function(exclusions, excludedArm) {
-        exclusions[excludedArm.trialverseId] = true;
+        exclusions[excludedArm.trialverseUid] = true;
         return exclusions;
       }, {});
     }
@@ -108,9 +108,9 @@ define(['angular'], function() {
           row.studyRows = studyRows;
 
           row.intervention = matchedIntervention ? matchedIntervention.semanticInterventionLabel : 'unmatched';
-          row.drugUid = trialDataArm.drugUid;
+          row.drugInstanceUid = trialDataArm.drugInstanceUid;
           row.arm = trialDataArm.name;
-          row.trialverseId = trialDataArm.uid;
+          row.trialverseUid = trialDataArm.uid;
           row.included = !exclusionMap[trialDataArm.uid] && row.intervention !== 'unmatched';
 
           row.rate = trialDataArm.measurement.rate;
@@ -288,14 +288,14 @@ define(['angular'], function() {
     function changeArmExclusion(dataRow, analysis) {
       if (dataRow.included) {
         for (var i = 0; i < analysis.excludedArms.length; ++i) {
-          if (analysis.excludedArms[i].trialverseId === dataRow.trialverseId) {
+          if (analysis.excludedArms[i].trialverseUid === dataRow.trialverseUid) {
             analysis.excludedArms.splice(i, 1);
             break;
           }
         }
       } else {
         analysis.excludedArms.push({
-          trialverseId: dataRow.trialverseId
+          trialverseUid: dataRow.trialverseUid
         });
       }
       return analysis;
@@ -314,36 +314,36 @@ define(['angular'], function() {
 
     function doesModelHaveAmbiguousArms(trialverseData, analysis) {
       var hasAmbiguousArms = false;
-      var drugUidSet = {};
+      var drugInstanceUidSet = {};
       angular.forEach(trialverseData.trialDataStudies, function(trialDataStudy) {
         angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
-          drugUidSet[trialDataArm.drugUid] = true;
+          drugInstanceUidSet[trialDataArm.drugInstanceUid] = true;
         });
       });
 
-      angular.forEach(_.map(_.keys(drugUidSet), Number), function(drugUid) {
-        hasAmbiguousArms = hasAmbiguousArms || doesInterventionHaveAmbiguousArms(drugUid, trialverseData, analysis);
+      angular.forEach(_.keys(drugInstanceUidSet), function(drugInstanceUid) {
+        hasAmbiguousArms = hasAmbiguousArms || doesInterventionHaveAmbiguousArms(drugInstanceUid, trialverseData, analysis);
       });
 
       return hasAmbiguousArms;
     }
 
-    function doesInterventionHaveAmbiguousArms(drugUid, trialverseData, analysis) {
+    function doesInterventionHaveAmbiguousArms(drugInstanceUid, trialverseData, analysis) {
       var includedArmsForDrugUid = _.reduce(trialverseData.trialDataStudies, function(arms, trialDataStudy) {
         return arms.concat(_.filter(trialDataStudy.trialDataArms, function(trialDataArm) {
-          return trialDataArm.drugUid === drugUid && isArmIncluded(trialDataArm) && isMatched(trialDataStudy, trialDataArm);
+          return trialDataArm.drugInstanceUid === drugInstanceUid && isArmIncluded(trialDataArm) && isMatched(trialDataStudy, trialDataArm);
         }));
       }, []);
 
       function isMatched(trialDataStudy, trialDataArm) {
         return _.find(trialDataStudy.trialDataInterventions, function(intervention) {
-          return intervention.drugUid === trialDataArm.drugUid;
+          return intervention.drugUid === trialDataArm.drugInstanceUid;
         });
       }
 
       function isArmIncluded(trialDataArm) {
         return !_.find(analysis.excludedArms, function(exclusion) {
-          return exclusion.trialverseId === trialDataArm.id;
+          return exclusion.trialverseUid === trialDataArm.uid;
         });
       }
       return includedArmsForDrugUid.length > 1;
@@ -383,7 +383,7 @@ define(['angular'], function() {
       });
 
       return _.filter(analysis.excludedArms, function(excludedArm) {
-        return !armsMatchingIntervention[excludedArm.trialverseId];
+        return !armsMatchingIntervention[excludedArm.trialverseUid];
       });
 
     }
