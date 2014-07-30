@@ -76,8 +76,10 @@ public class TrialverseControllerTest {
   public void testGetNamespaces() throws Exception {
     String uid1 = "uid 1";
     String uid2 = "uid 2";
-    Namespace namespace1 = new Namespace(uid1, "a", "descra");
-    Namespace namespace2 = new Namespace(uid2, "b", "descrb");
+    String sourceUrl = "sourceUrl";
+    int numberOfStudies = 666;
+    Namespace namespace1 = new Namespace(uid1, "a", "descra", numberOfStudies, sourceUrl);
+    Namespace namespace2 = new Namespace(uid2, "b", "descrb", numberOfStudies, sourceUrl);
     Collection<Namespace> namespaceCollection = Arrays.asList(namespace1, namespace2);
     when(triplestoreService.queryNameSpaces()).thenReturn(namespaceCollection);
     mockMvc.perform(get("/namespaces").principal(user))
@@ -92,7 +94,9 @@ public class TrialverseControllerTest {
   @Test
   public void testGetNamespaceById() throws Exception {
     String uid = "UID-1";
-    Namespace namespace1 = new Namespace(uid, "a", "descrea");
+    String sourceUrl = "sourceUrl";
+    int numberOfStudies = 666;
+    Namespace namespace1 = new Namespace(uid, "a", "descrea", numberOfStudies, sourceUrl);
     when(triplestoreService.getNamespace(uid)).thenReturn(namespace1);
     mockMvc.perform(get("/namespaces/UID-1").principal(user))
             .andExpect(status().isOk())
