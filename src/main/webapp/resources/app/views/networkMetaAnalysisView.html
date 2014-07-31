@@ -112,7 +112,7 @@
                 <td ng-show="dataRow.firstInterventionRow" ng-class="{undefined:dataRow.intervention === 'unmatched'}"
                     rowspan="{{dataRow.interventionRowSpan}}">
                     {{dataRow.intervention}}
-                    <div ng-show="doesInterventionHaveAmbiguousArms(dataRow.drugConceptUid, dataRow.studyUid)"
+                    <div ng-show="dataRow.intervention !== 'unmatched' && doesInterventionHaveAmbiguousArms(dataRow.drugConceptUid, dataRow.studyUid)"
                          class="alert-message">
                         Ambiguous arms, please choose a single arm for inclusion
                     </div>
