@@ -1,7 +1,7 @@
 'use strict';
-define([], function () {
+define([], function() {
   var dependencies = ['$resource'];
-  var TrialverseResource = function ($resource) {
+  var TrialverseResource = function($resource) {
     return $resource('/namespaces/:id', {
       id: '@id'
     });

@@ -186,7 +186,8 @@ define(['d3'], function(d3) {
           updateNetwork();
           var includedInterventions = getIncludedInterventions($scope.interventions);
           $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis.excludedArms);
-          $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
+          $scope.tableHasAmbiguousArm =
+            NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
           $scope.hasLessThanTwoInterventions = getIncludedInterventions($scope.interventions).length < 2;
         });
     }
@@ -197,7 +198,8 @@ define(['d3'], function(d3) {
       updateNetwork();
       $scope.analysis.$save(function() {
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
-        $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
+        $scope.tableHasAmbiguousArm =
+          NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
       });
     };
 
@@ -217,7 +219,8 @@ define(['d3'], function(d3) {
       }
       $scope.analysis.$save(function() {
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
-        $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.analysis);
+        $scope.tableHasAmbiguousArm =
+          NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
         reloadModel();
       });
     };
@@ -244,10 +247,10 @@ define(['d3'], function(d3) {
       $state.go('analysis.model', {
         modelId: $scope.models[0].id
       });
-    }
+    };
 
-    $scope.doesInterventionHaveAmbiguousArms = function(drugId) {
-      return NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, $scope.trialverseData, $scope.analysis);
+    $scope.doesInterventionHaveAmbiguousArms = function(drugId, studyUid) {
+      return NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, studyUid, $scope.trialverseData, $scope.analysis);
     };
 
   };

@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import org.drugis.addis.trialverse.model.Arm;
-import org.drugis.addis.trialverse.model.Measurement;
-import org.drugis.addis.trialverse.model.Study;
-import org.drugis.addis.trialverse.model.Variable;
+import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -52,8 +49,10 @@ public class TrialverseServiceImpl implements TrialverseService {
   }
 
   @Override
-  public ObjectNode getTrialData(String namespaceUId, String semanticOutcomeUri, List<String> alternativeUris) {
-    return mapper.valueToTree(triplestoreService.getTrialData(namespaceUId, semanticOutcomeUri, alternativeUris));
+  public List<ObjectNode> getTrialData(String namespaceUId, String semanticOutcomeUri, List<String> alternativeUris) {
+    List<TrialDataStudy> trialData = triplestoreService.getTrialData(namespaceUId, semanticOutcomeUri, alternativeUris);
+    return objectsToNodes(trialData);
+  
   }
 
   private <T> List<ObjectNode> objectsToNodes(List<T> objectList) {

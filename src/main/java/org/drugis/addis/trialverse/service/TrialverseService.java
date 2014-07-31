@@ -16,5 +16,5 @@ public interface TrialverseService {
 
   public List<ObjectNode> getOrderedMeasurements(List<String> outcomeIds, List<String> armIds);
 
-  public ObjectNode getTrialData(String namespaceUId, String semanticOutcomeUri, List<String> alternativeUris);
+  public List<ObjectNode> getTrialData(String namespaceUId, String semanticOutcomeUri, List<String> alternativeUris);
 }

@@ -113,7 +113,7 @@
                 ng-click="goToAnalysis(analysis.id, analysis.analysisType)" ng-switch="analysis.analysisType">
                 <td>{{analysis.name}}</td>
                 <td>{{analysis.analysisType}}</td>
-                <td ng-switch-when="Single-study Benefit-Risk">{{(studies | filter:{id:
+                <td ng-switch-when="Single-study Benefit-Risk">{{(studies | filter:{uid:
                     analysis.studyUid}:true)[0].name}}
                 </td>
                 <td ng-switch-when="Network meta-analysis"></td>

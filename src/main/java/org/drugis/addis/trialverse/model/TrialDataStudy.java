@@ -1,9 +1,7 @@
 package org.drugis.addis.trialverse.model;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by connor on 15-5-14.
@@ -11,10 +9,13 @@ import java.util.Set;
 public class TrialDataStudy {
   private String studyUid;
   private String name;
-  private Set<TrialDataIntervention> trialDataInterventions = new HashSet<>();
+  private List<TrialDataIntervention> trialDataInterventions = new ArrayList<>();
   private List<TrialDataArm> trialDataArms = new ArrayList<>();
 
-  public TrialDataStudy(String studyUid, String name, Set<TrialDataIntervention> trialDataInterventions, List<TrialDataArm> trialDataArms) {
+  public TrialDataStudy() {
+  }
+
+  public TrialDataStudy(String studyUid, String name, List<TrialDataIntervention> trialDataInterventions, List<TrialDataArm> trialDataArms) {
     this.studyUid = studyUid;
     this.name = name;
 
@@ -35,7 +36,7 @@ public class TrialDataStudy {
     return name;
   }
 
-  public Set<TrialDataIntervention> getTrialDataInterventions() {
+  public List<TrialDataIntervention> getTrialDataInterventions() {
     return trialDataInterventions;
   }
 
