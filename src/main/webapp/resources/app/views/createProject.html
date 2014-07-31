@@ -1,2 +1,23 @@
 <div class="row">
+<h2>Namespaces</h2>
+<table>
+	<thead>
+		<tr>
+			<th>Namespace</th>
+			<th>Description</th>
+			<th>Number of studies</th>
+			<th></th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="namespace in namespaces">
+			<td>{{namespace.name}}></td>
+			<td>{{namespace.description}}</td>
+			<td><a ui-sref="namespace({namespaceUid: namespace.uid})">{{namespace.numberOfStudies}}</td>
+			<td><a href="{{namespace.sourceUrl}}">Source document</a></td>
+			<td><button ng-click="createProject(namespace)">Project</button>
+		</tr>
+	</tbody>
+</table>
 </div>
