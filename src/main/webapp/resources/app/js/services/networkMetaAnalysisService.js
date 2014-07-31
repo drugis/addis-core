@@ -300,23 +300,23 @@ define(['angular'], function() {
     }
 
     function doesModelHaveAmbiguousArms(trialverseData, interventions, analysis) {
-      var includedInterventions = _.reduce(interventions, function(mem, intervention) {
+      var includedInterventionUris = _.reduce(interventions, function(mem, intervention) {
         if (intervention.isIncluded) {
           mem = mem.concat(intervention.semanticInterventionUri);
         }
         return mem;
       }, []);
 
-      function doesStudyHaveAmbiguousArms(trialDataStudy, includedInterventions) {
-        return _.find(includedInterventions, function(includedIntervention) {
-          var matchedInterventionsForInclusion = findMatchedArmsForIntervention(trialDataStudy.trialDataArms, includedIntervention);
+      function doesStudyHaveAmbiguousArms(trialDataStudy, includedInterventionUris) {
+        return _.find(includedInterventionUris, function(includedInterventionUri) {
+          var matchedInterventionsForInclusion = findMatchedArmsForIntervention(trialDataStudy.trialDataArms, includedInterventionUri);
           return matchedInterventionsForInclusion.length > 1;
         });
       }
 
-      function findMatchedArmsForIntervention(trialDataArms, includedIntervention) {
+      function findMatchedArmsForIntervention(trialDataArms, includedInterventionUri) {
         return _.filter(trialDataArms, function(trialDataArm) {
-          return trialDataArm.drugConceptUid === includedIntervention && isArmIncluded(trialDataArm);
+          return trialDataArm.drugConceptUid === includedInterventionUri && isArmIncluded(trialDataArm);
         });
       }
 
@@ -327,7 +327,7 @@ define(['angular'], function() {
       }
 
       return _.find(trialverseData.trialDataStudies, function(trialDataStudy) {
-        return doesStudyHaveAmbiguousArms(trialDataStudy, includedInterventions);
+        return doesStudyHaveAmbiguousArms(trialDataStudy, includedInterventionUris);
       });
     }
 

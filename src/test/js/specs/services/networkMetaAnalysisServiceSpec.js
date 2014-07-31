@@ -615,31 +615,35 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
     });
 
-   xdescribe('doesModelHaveAmbiguousArms', function() {
+   describe('doesModelHaveAmbiguousArms', function() {
       beforeEach(module('addis.services'));
 
       it('should return true if there are ambiguous arms for the model', inject(function(NetworkMetaAnalysisService) {
+        var interventions = [{semanticInterventionUri: "uri1", isIncluded: true}];
         var trialverseData = {
           trialDataStudies: [{
             trialDataArms: [{
-              drugInstanceUid: 1
+              drugInstanceUid: 1,
+              drugConceptUid: "uri1"
             }, {
-              drugInstanceUid: 1
+              drugInstanceUid: 1,
+              drugConceptUid: "uri1"
             }],
             trialDataInterventions: [{
-              drugInstanceUid: 1
+              drugInstanceUid: 1,
+              drugConceptUid: "uri1"
             }],
           }]
         };
         var analysis = {
           excludedArms: []
         };
-        expect(NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, analysis)).toBeTruthy();
+        expect(NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, interventions, analysis)).toBeTruthy();
       }));
 
     });
 
-    xdescribe('addInclusionsToInterventions', function() {
+    describe('addInclusionsToInterventions', function() {
       beforeEach(module('addis.services'));
 
       it('should add inclusions to interventions', inject(function(NetworkMetaAnalysisService) {
@@ -653,7 +657,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       }));
     });
 
-    xdescribe('buildInterventionInclusions', function() {
+    describe('buildInterventionInclusions', function() {
       beforeEach(module('addis.services'));
 
       it('should create a new list of intervention inclusions', inject(function(NetworkMetaAnalysisService) {
@@ -679,42 +683,47 @@ define(['angular', 'angular-mocks', 'services'], function() {
       }));
     });
 
-    xdescribe('cleanUpExcludedArms', function() {
+    describe('cleanUpExcludedArms', function() {
       beforeEach(module('addis.services'));
 
       it('should remove armExclusions that match the intervention', inject(function(NetworkMetaAnalysisService) {
         var study1 = {
           trialDataInterventions: [{
             drugInstanceUid: 1,
-            uri: "uri1"
+            drugConceptUid: "uri1"
           }, {
             drugInstanceUid: 2,
-            uri: "uri2"
+            drugConceptUid: "uri2"
           }, ],
           trialDataArms: [{
             drugInstanceUid: 1,
+            drugConceptUid: "uri1",
             id: 10
           }, {
             drugInstanceUid: 2,
+            drugConceptUid: "uri2",
             id: 11
           }, {
             drugInstanceUid: 2,
+            drugConceptUid: "uri2",
             id: 12
           }]
         };
         var study2 = {
           trialDataInterventions: [{
             drugInstanceUid: 3,
-            uri: "uri1"
+            drugConceptUid: "uri1"
           }, {
             drugInstanceUid: 4,
-            uri: "uri3"
+            drugConceptUid: "uri3"
           }],
           trialDataArms: [{
             drugInstanceUid: 7,
+            drugConceptUid: "uri1",
             id: 20
           }, {
             drugInstanceUid: 3,
+            drugConceptUid: "uri3",
             id: 21
           }]
         };
@@ -723,11 +732,11 @@ define(['angular', 'angular-mocks', 'services'], function() {
         };
         var analysis = {
           excludedArms: [{
-            trialverseId: 10
+            trialverseUid: 10
           }, {
-            trialverseId: 21
+            trialverseUid: 21
           }, {
-            trialverseId: 20
+            trialverseUid: 20
           }]
         };
         var intervention = {
@@ -735,7 +744,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
         };
 
         var expectedArmExclusions = [{
-          trialverseId: 20
+          trialverseUid: 21
         }];
 
         expect(NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, analysis, trialverseData)).toEqual(expectedArmExclusions);
