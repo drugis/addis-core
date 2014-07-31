@@ -433,7 +433,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
     });
 
-    xdescribe('isNetworkDisconnected', function() {
+    describe('isNetworkDisconnected', function() {
 
       beforeEach(module('addis.services'));
 
@@ -501,7 +501,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       }));
     });
 
-    xdescribe('changeArmExclusion', function() {
+    describe('changeArmExclusion', function() {
 
       beforeEach(module('addis.services'));
 
@@ -546,56 +546,62 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
     });
 
-    xdescribe('doesInterventionHaveAmbiguousArms', function() {
+    describe('doesInterventionHaveAmbiguousArms', function() {
       beforeEach(module('addis.services'));
 
       it('should return true if there are ambiguous arms for the intervention', inject(function(NetworkMetaAnalysisService) {
-        var drugInstanceUid = 1;
+        var drugConceptUid = "1";
+        var studyUid = "27";
         var trialverseData = {
           trialDataStudies: [{
+            studyUid : studyUid,
             trialDataArms: [{
-              drugInstanceUid: 1
+              drugConceptUid: "1"
             }, {
-              drugInstanceUid: 1
+              drugConceptUid: "1"
             }],
             trialDataInterventions: [{
-              drugInstanceUid: 1
+              drugConceptUid: "1"
             }],
           }]
         };
         var analysis = {
           excludedArms: []
         };
-        expect(NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugInstanceUid, trialverseData, analysis)).toBeTruthy();
+        expect(NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugConceptUid, studyUid, trialverseData, analysis)).toBeTruthy();
       }));
 
       it('should return false if there are no ambiguous arms for the intervention', inject(function(NetworkMetaAnalysisService) {
-        var drugInstanceUid = 1;
+        var drugConceptUid = 1;
+        var studyUid = "27";
         var trialverseData = {
           trialDataStudies: [{
+            studyUid : studyUid,
             trialDataArms: [{
-              drugInstanceUid: 1
+              drugConceptUid: 1
             }, {
-              drugInstanceUid: 2
+              drugConceptUid: 2
             }]
           }]
         };
         var analysis = {
           excludedArms: []
         };
-        expect(NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugInstanceUid, trialverseData, analysis)).toBeFalsy();
+        expect(NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugConceptUid, studyUid, trialverseData, analysis)).toBeFalsy();
       }));
 
       it('should return false if the ambiguity has been resolved through exclusion', inject(function(NetworkMetaAnalysisService) {
-        var drugInstanceUid = 1;
+        var drugConceptUid = 1;
+        var studyUid = "27";
         var trialverseData = {
           trialDataStudies: [{
+            studyUid : studyUid,
             trialDataArms: [{
               id: 3,
-              drugInstanceUid: 1
+              drugConceptUid: 1
             }, {
               id: 4,
-              drugInstanceUid: 1
+              drugConceptUid: 1
             }]
           }]
         };
@@ -604,7 +610,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
             trialverseId: 3
           }]
         };
-        expect(NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugInstanceUid, trialverseData, analysis)).toBeFalsy();
+        expect(NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugConceptUid, studyUid, trialverseData, analysis)).toBeFalsy();
       }));
 
     });
