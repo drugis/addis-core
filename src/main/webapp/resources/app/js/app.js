@@ -117,6 +117,11 @@ define(
             templateUrl: baseTemplatePath + 'createProject.html',
             controller: 'CreateProjectController'
           })
+          .state('namespace', {
+            url: 'namespaces/:namespaceUid',
+            templateUrl: baseTemplatePath + 'namespaceView.html',
+            controller: 'NamespaceController'
+          })
           .state('project', {
             url: '/projects/:projectId',
             templateUrl: baseTemplatePath + 'project.html',
