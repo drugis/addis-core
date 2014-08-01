@@ -31,16 +31,5 @@ define(['angular', 'angular-mocks', 'controllers'],
         expect(scope.user.id).toBe(window.config.user.id);
       });
 
-      it("should make a list of trialverse namespaces available from the trialVerseResource", function() {
-        expect(scope.trialverse.length).toBe(1);
-      });
-
-      it("should make a save call when createProject is called, and clear the scope model so that the form is cleared", function () {
-        var newProject = {name: 'testName', description: 'testDescription', namespace: 'testnamespace'};
-        scope.model = newProject;
-        scope.createProject(newProject);
-        expect(projectResource.save).toHaveBeenCalled();
-        expect(scope.model).toEqual({});
-      });
     });
   });

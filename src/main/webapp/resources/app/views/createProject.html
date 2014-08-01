@@ -4,11 +4,11 @@
 </ul>
 <div class="row">
     <div class="column large-12">
-        <h2>Namespaces</h2>
+        <h2>Datasets</h2>
         <table>
             <thead>
             <tr>
-                <th>Namespace</th>
+                <th>Name</th>
                 <th>Description</th>
                 <th width="75">Studies</th>
                 <th></th>
@@ -23,7 +23,7 @@
                 </td>
                 <td class="text-center"><a href="{{namespace.sourceUrl}}">Source document</a></td>
                 <td class="button-cell">
-                    <button class="button" ng-click="createProject(namespace)"><i
+                    <button class="button" ng-click="showCreateProjectModal(namespace)"><i
                             class="fa fa-plus"></i> Create project
                     </button>
                 </td>
@@ -32,3 +32,37 @@
         </table>
     </div>
 </div>
+<modal model="createProjectModal">
+    <h3>Create a new project based on {{createProjectModal.selectedNamespace.name}}</h3>
+
+    <form name="projectForm">
+        <div class="row">
+            <div class="large-8 columns">
+                <label>Name
+                    <input type="text" ng-model="model.name">
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-8 columns">
+                <label>Description
+                    <textarea rows="8" ng-model="model.description"></textarea>
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-6 columns">
+                <ul class="button-group">
+                    <li>
+                        <button class="button small secondary" ng-click="createProjectModal.close()">Cancel</button>
+                    </li>
+                    <li>
+                        <button class="button small success" ng-disabled="!model.name" ng-click="createProject(model)">
+                            Create project
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </form>
+</modal>
