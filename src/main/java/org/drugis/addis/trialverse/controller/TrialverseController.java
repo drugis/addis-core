@@ -2,7 +2,6 @@ package org.drugis.addis.trialverse.controller;
 
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
@@ -39,69 +38,39 @@ public class TrialverseController {
 
   @RequestMapping(value = "/namespaces", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Namespace> query(Principal currentUser) throws MethodNotAllowedException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
+  public Collection<Namespace> query() throws MethodNotAllowedException {
       return triplestoreService.queryNameSpaces();
-    } else {
-      throw new MethodNotAllowedException();
-    }
   }
 
   @RequestMapping(value = "/namespaces/{namespaceUid}", method = RequestMethod.GET)
   @ResponseBody
-  public Namespace get(Principal currentUser, @PathVariable String namespaceUid) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
+  public Namespace get(@PathVariable String namespaceUid) throws ResourceDoesNotExistException {
       return triplestoreService.getNamespace(namespaceUid);
-    } else {
-      throw new MethodNotAllowedException();
-    }
   }
 
   @RequestMapping(value = "/namespaces/{namespaceUid}/outcomes", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<SemanticOutcome> queryOutcomes(Principal currentUser, @PathVariable String namespaceUid) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
-      return triplestoreService.getOutcomes(namespaceUid);
-    } else {
-      throw new MethodNotAllowedException();
-    }
+  public Collection<SemanticOutcome> queryOutcomes(@PathVariable String namespaceUid) throws ResourceDoesNotExistException {
+    return triplestoreService.getOutcomes(namespaceUid);
   }
 
 
   @RequestMapping(value = "/namespaces/{namespaceUid}/interventions", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<SemanticIntervention> queryInterventions(Principal currentUser, @PathVariable String namespaceUid) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
-      return triplestoreService.getInterventions(namespaceUid);
-    } else {
-      throw new MethodNotAllowedException();
-    }
+  public Collection<SemanticIntervention> queryInterventions(Principal currentUser, @PathVariable String namespaceUid) throws ResourceDoesNotExistException {
+    return triplestoreService.getInterventions(namespaceUid);
   }
 
   @RequestMapping(value = "/namespaces/{namespaceUid}/studies", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Study> queryStudies(Principal currentUser, @PathVariable String namespaceUid) throws MethodNotAllowedException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
-      return triplestoreService.queryStudies(namespaceUid);
-    } else {
-      throw new MethodNotAllowedException();
-    }
+  public Collection<Study> queryStudies(Principal currentUser, @PathVariable String namespaceUid) {
+    return triplestoreService.queryStudies(namespaceUid);
   }
 
   @RequestMapping(value = "/namespaces/{namespaceUid}/studiesWithDetail", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<StudyWithDetails> queryStudiesWithDetails(Principal currentUser, @PathVariable String namespaceUid) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    Account user = accountRepository.findAccountByUsername(currentUser.getName());
-    if (user != null) {
+  public Collection<StudyWithDetails> queryStudiesWithDetails(@PathVariable String namespaceUid) throws ResourceDoesNotExistException {
       return triplestoreService.queryStudydetails(namespaceUid);
-    } else {
-      throw new MethodNotAllowedException();
-    }
   }
 
   @RequestMapping(value = "/namespaces/{namespaceUid}/trialData", method = RequestMethod.GET)
@@ -112,13 +81,6 @@ public class TrialverseController {
       interventionUris = Collections.emptyList();
     }
     return new TrialData(triplestoreService.getTrialData(namespaceUid, outcomeUri, interventionUris));
-  }
-
-  @ResponseStatus(HttpStatus.FORBIDDEN)
-  @ExceptionHandler(MethodNotAllowedException.class)
-  public String handleMethodNotAllowed(HttpServletRequest request) {
-    logger.error("Access to resource not authorised.\n{}", request.getRequestURL());
-    return "redirect:/error/403";
   }
 
   @ResponseStatus(HttpStatus.NOT_FOUND)

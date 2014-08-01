@@ -82,13 +82,12 @@ public class TrialverseControllerTest {
     Namespace namespace2 = new Namespace(uid2, "b", "descrb", numberOfStudies, sourceUrl);
     Collection<Namespace> namespaceCollection = Arrays.asList(namespace1, namespace2);
     when(triplestoreService.queryNameSpaces()).thenReturn(namespaceCollection);
-    mockMvc.perform(get("/namespaces").principal(user))
+    mockMvc.perform(get("/namespaces"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].name", is("a")));
     verify(triplestoreService).queryNameSpaces();
-    verify(accountRepository).findAccountByUsername(user.getName());
   }
 
   @Test
@@ -98,12 +97,11 @@ public class TrialverseControllerTest {
     int numberOfStudies = 666;
     Namespace namespace1 = new Namespace(uid, "a", "descrea", numberOfStudies, sourceUrl);
     when(triplestoreService.getNamespace(uid)).thenReturn(namespace1);
-    mockMvc.perform(get("/namespaces/UID-1").principal(user))
+    mockMvc.perform(get("/namespaces/UID-1"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.name", is("a")));
     verify(triplestoreService).getNamespace(uid);
-    verify(accountRepository).findAccountByUsername(user.getName());
   }
 
   @Test
@@ -111,12 +109,11 @@ public class TrialverseControllerTest {
     String namespaceUid = "uid-1";
     SemanticOutcome testOutCome = new SemanticOutcome("http://test/com", "test label");
     when(triplestoreService.getOutcomes(namespaceUid)).thenReturn(Arrays.asList(testOutCome));
-    mockMvc.perform(get("/namespaces/" + namespaceUid + "/outcomes").principal(user))
+    mockMvc.perform(get("/namespaces/" + namespaceUid + "/outcomes"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0].uri", is(testOutCome.getUri())));
     verify(triplestoreService).getOutcomes(namespaceUid);
-    verify(accountRepository).findAccountByUsername(user.getName());
   }
 
   @Test
@@ -124,12 +121,11 @@ public class TrialverseControllerTest {
     String namespaceUid = "abc";
     SemanticIntervention testIntervention = new SemanticIntervention("http://test/com", "test label");
     when(triplestoreService.getInterventions(namespaceUid)).thenReturn(Arrays.asList(testIntervention));
-    mockMvc.perform(get("/namespaces/" + namespaceUid + "/interventions").principal(user))
+    mockMvc.perform(get("/namespaces/" + namespaceUid + "/interventions"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0].uri", is(testIntervention.getUri())));
     verify(triplestoreService).getInterventions(namespaceUid);
-    verify(accountRepository).findAccountByUsername(user.getName());
   }
 
   @Test
@@ -137,24 +133,13 @@ public class TrialverseControllerTest {
     String namespaceUid = "abc";
     Study study = new Study("studyUid", "name", "this is a title");
     when(triplestoreService.queryStudies(namespaceUid)).thenReturn(Arrays.asList(study));
-    mockMvc.perform(get("/namespaces/" + namespaceUid + "/studies").principal(user))
+    mockMvc.perform(get("/namespaces/" + namespaceUid + "/studies"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0].uid", is(study.getUid())))
             .andExpect(jsonPath("$[0].name", is(study.getName())))
             .andExpect(jsonPath("$[0].title", is(study.getTitle())));
     verify(triplestoreService).queryStudies(namespaceUid);
-    verify(accountRepository).findAccountByUsername(user.getName());
-  }
-
-  @Test
-  public void testUnauthorisedGetSemanticOutcomesFails() throws Exception {
-    Principal haxor = mock(Principal.class);
-    String userName = "who?";
-    when(haxor.getName()).thenReturn(userName);
-    mockMvc.perform(get("/namespaces/1/outcomes").principal(haxor))
-            .andExpect(redirectedUrl("/error/403"));
-    verify(accountRepository).findAccountByUsername(userName);
   }
 
   @Test
