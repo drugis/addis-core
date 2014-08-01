@@ -113,12 +113,12 @@ define(
             controller: 'ProjectsController'
           })
           .state('create-project', {
-            url: 'create-project',
+            url: '/create-project',
             templateUrl: baseTemplatePath + 'createProject.html',
             controller: 'CreateProjectController'
           })
           .state('namespace', {
-            url: 'namespaces/:namespaceUid',
+            url: '/namespaces/:namespaceUid',
             templateUrl: baseTemplatePath + 'namespaceView.html',
             controller: 'NamespaceController'
           })

@@ -1,23 +1,34 @@
+<ul class="breadcrumbs">
+    <li><a ui-sref="projects">Projects</a></li>
+    <li class="current active">Namespaces</li>
+</ul>
 <div class="row">
-<h2>Namespaces</h2>
-<table>
-	<thead>
-		<tr>
-			<th>Namespace</th>
-			<th>Description</th>
-			<th>Number of studies</th>
-			<th></th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr ng-repeat="namespace in namespaces">
-			<td>{{namespace.name}}></td>
-			<td>{{namespace.description}}</td>
-			<td><a ui-sref="namespace({namespaceUid: namespace.uid})">{{namespace.numberOfStudies}}</td>
-			<td><a href="{{namespace.sourceUrl}}">Source document</a></td>
-			<td><button ng-click="createProject(namespace)">Project</button>
-		</tr>
-	</tbody>
-</table>
+    <div class="column large-12">
+        <h2>Namespaces</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Namespace</th>
+                <th>Description</th>
+                <th width="75">Studies</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="namespace in namespaces">
+                <td>{{namespace.name}}</td>
+                <td>{{namespace.description}}</td>
+                <td class="text-center"><a ui-sref="namespace({namespaceUid: namespace.uid})">{{namespace.numberOfStudies}}
+                </td>
+                <td class="text-center"><a href="{{namespace.sourceUrl}}">Source document</a></td>
+                <td class="button-cell">
+                    <button class="button" ng-click="createProject(namespace)"><i
+                            class="fa fa-plus"></i> Create project
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

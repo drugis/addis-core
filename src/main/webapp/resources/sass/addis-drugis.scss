@@ -1,11 +1,11 @@
 @import"settings";
- @import"addis-settings";
- @import"foundation";
- @import"drugis";
- @import"main";
- @import"foundation-select2";
- $addis-grey : $crumb-bg;
- $addis-grey-border : $crumb-border-color;
+@import"addis-settings";
+@import"foundation";
+@import"drugis";
+@import"main";
+@import"foundation-select2";
+$addis-grey : $crumb-bg;
+$addis-grey-border : $crumb-border-color;
  .alert {
   color: $alert-color;
 }
@@ -71,7 +71,13 @@ table {
   tr {
     th, td {
       border: solid 1px $addis-grey-border;
-      min-width: 200px;
+    }
+    td.button-cell {
+      text-align: center;
+      button {
+        margin-bottom: 0;
+        font-size: $table-row-font-size;
+      }
     }
   }
 }
@@ -130,9 +136,9 @@ table.network-meta-analysis-table {
 }
 /////////////////////// graphs and tables //////////////////////// 
 $table-title-font-size: 14px;
- $table-title-margin-top: 10px;
- $table-title-margin-bottom: 4px;
- .table-title {
+$table-title-margin-top: 10px;
+$table-title-margin-bottom: 4px;
+.table-title {
   margin-left: 2px;
   font-size: $table-title-font-size;
   font-family: inherit;
