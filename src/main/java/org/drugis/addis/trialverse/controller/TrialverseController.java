@@ -70,6 +70,7 @@ public class TrialverseController {
     }
   }
 
+
   @RequestMapping(value = "/namespaces/{namespaceUid}/interventions", method = RequestMethod.GET)
   @ResponseBody
   public Collection<SemanticIntervention> queryInterventions(Principal currentUser, @PathVariable String namespaceUid) throws MethodNotAllowedException, ResourceDoesNotExistException {
@@ -87,6 +88,17 @@ public class TrialverseController {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       return triplestoreService.queryStudies(namespaceUid);
+    } else {
+      throw new MethodNotAllowedException();
+    }
+  }
+
+  @RequestMapping(value = "/namespaces/{namespaceUid}/studiesWithDetail", method = RequestMethod.GET)
+  @ResponseBody
+  public Collection<StudyWithDetails> queryStudiesWithDetails(Principal currentUser, @PathVariable String namespaceUid) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    if (user != null) {
+      return triplestoreService.queryStudydetails(namespaceUid);
     } else {
       throw new MethodNotAllowedException();
     }

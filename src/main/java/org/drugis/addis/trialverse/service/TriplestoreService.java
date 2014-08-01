@@ -22,6 +22,8 @@ public interface TriplestoreService {
 
   public List<Study> queryStudies(String namespaceUid);
 
+  public List<StudyWithDetails> queryStudydetails(String namespaceUid);
+
   public Map<String, String> getTrialverseDrugs(String namespaceUid, String studyUid, Collection<String> interventionURIs);
 
   public Map<String, String> getTrialverseVariables(String namespaceUid, String studyId, Collection<String> outcomeURIs);

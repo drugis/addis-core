@@ -173,6 +173,75 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return studies;
   }
 
+  @Override
+  public List<StudyWithDetails> queryStudydetails(String namespaceUid) {
+    List<StudyWithDetails> studiesWithDetail = new ArrayList<>();
+    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
+            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
+            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+            "\n" +
+            "PREFIX study: <http://trials.drugis.org/studies/>\n" +
+            "\n" +
+            "SELECT ?study ?title ?label ?allocation ?blinding ?objective ?names WHERE {\n" +
+            "  GRAPH ?dataset {\n" +
+            "    ?dataset ontology:contains_study ?study .\n" +
+            "  }\n" +
+            "  GRAPH ?study {\n" +
+            "    ?study \n" +
+            "      rdfs:label ?label ;\n" +
+            "      rdfs:comment ?title ;\n" +
+            "      ontology:has_allocation ?allocation ;\n" +
+            "      ontology:has_blinding ?blinding ;\n" +
+            "      ontology:has_objective [\n" +
+            "        rdfs:comment ?objective\n" +
+            "      ] ;\n" +
+            "      ontology:has_eligibility_criteria [\n" +
+            "        rdfs:comment ?inclusionCriteria\n" +
+            "      ] ;\n" +
+            "      ontology:has_publication [\n" +
+            "        ontology:has_id ?publication\n" +
+            "      ] ;\n" +
+            "      ontology:status ?status ;\n" +
+            "      ontology:has_number_of_centers ?numberOfCenters ;\n" +
+            "      ontology:has_indication ?indication_instance .\n" +
+            "      ?indication_instance rdfs:label ?indication .\n" +
+            "\n" +
+            "    OPTIONAL {\n" +
+            "      ?study ontology:has_start_date ?startDate .\n" +
+            "    }\n" +
+            "    OPTIONAL {\n" +
+            "      ?study ontology:has_end_date ?endDate ;\n" +
+            "    }\n" +
+            "\n" +
+            "    {\n" +
+            "      SELECT ?study (group_concat(?drugName; separator = \",\") as ?names)\n" +
+            "      WHERE {\n" +
+            "        GRAPH ?dataset {\n" +
+            "          ?drug rdfs:subClassOf ontology:Drug .\n" +
+            "          ?dataset ontology:contains_study ?study \n" +
+            "        }\n" +
+            "        GRAPH ?study {\n" +
+            "          ?instance a ?drug .\n" +
+            "          ?instance rdfs:label ?drugName.\n" +
+            "        }\n" +
+            "      } GROUP BY ?study\n" +
+            "    }\n" +
+            "  }\n" +
+            "}";
+    String response = queryTripleStore(query);
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    for (Object binding : bindings) {
+
+      String uid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.study.value"));
+      String name = JsonPath.read(binding, "$.label.value");
+      String title = JsonPath.read(binding, "$.title.value");
+      String label = JsonPath.read(binding, "$.title.label");
+      studiesWithDetail.add(new StudyWithDetails());
+    }
+    return studiesWithDetail;
+  }
+
   private String buildInterventionUnionString(List<String> interventionUids) {
     String result = "";
     for (String interventionUid : interventionUids) {
