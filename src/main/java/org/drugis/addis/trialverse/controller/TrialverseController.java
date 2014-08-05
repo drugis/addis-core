@@ -54,7 +54,6 @@ public class TrialverseController {
     return triplestoreService.getOutcomes(namespaceUid);
   }
 
-
   @RequestMapping(value = "/namespaces/{namespaceUid}/interventions", method = RequestMethod.GET)
   @ResponseBody
   public Collection<SemanticIntervention> queryInterventions(Principal currentUser, @PathVariable String namespaceUid) throws ResourceDoesNotExistException {

@@ -18,6 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -49,9 +50,6 @@ public class TrialverseControllerTest {
   private WebApplicationContext webApplicationContext;
 
   @Inject
-  private TrialverseRepository trialverseRepository;
-
-  @Inject
   private TriplestoreService triplestoreService;
 
   private Principal user;
@@ -60,7 +58,7 @@ public class TrialverseControllerTest {
 
   @Before
   public void setUp() {
-    reset(accountRepository, trialverseRepository, triplestoreService);
+    reset(accountRepository, triplestoreService);
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
@@ -69,7 +67,7 @@ public class TrialverseControllerTest {
 
   @After
   public void cleanUp() {
-    verifyNoMoreInteractions(accountRepository, trialverseRepository, triplestoreService);
+    verifyNoMoreInteractions(accountRepository, triplestoreService);
   }
 
   @Test
@@ -174,11 +172,31 @@ public class TrialverseControllerTest {
     String namespaceUid = "namespaceUid";
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     when(triplestoreService.getTrialData(namespaceUid, outcomeUri, Collections.EMPTY_LIST)).thenReturn(trialDataStudies);
-    mockMvc.perform(get("/namespaces/namespaceUid/trialData?outcomeUri=" + outcomeUri).principal(user))
+    mockMvc.perform(get("/namespaces/namespaceUid/trialData?outcomeUri=" + outcomeUri))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", notNullValue()));
     verify(triplestoreService).getTrialData(namespaceUid, outcomeUri, Collections.EMPTY_LIST);
+  }
+
+  @Test
+  public void testQueryStudiesWithDetails() throws Exception {
+    String namespaceUuid = "namespaceUid";
+    List<StudyWithDetails> studyWithDetailsList = Arrays.asList(createStudyWithDetials());
+    when(triplestoreService.queryStudydetails(namespaceUuid)).thenReturn(studyWithDetailsList);
+    ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail"));
+    resultActions
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", notNullValue()));
+    verify(triplestoreService).queryStudydetails(namespaceUuid);
+
+  }
+
+  private StudyWithDetails createStudyWithDetials() {
+    return new StudyWithDetails.StudyWithDetailsBuilder()
+            .study(new Study("studyUid", "studyname", "studyTitle"))
+            .build();
   }
 
 }
