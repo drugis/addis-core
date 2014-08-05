@@ -10,6 +10,7 @@ import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -188,14 +189,27 @@ public class TrialverseControllerTest {
     resultActions
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$", notNullValue()));
+            .andExpect(jsonPath("$[0]", notNullValue()))
+            .andExpect(jsonPath("$[0].study.title", is("studyTitle")))
+            .andExpect(jsonPath("$[0].pubmedUrl", is("publicationURL")));
     verify(triplestoreService).queryStudydetails(namespaceUuid);
 
   }
 
   private StudyWithDetails createStudyWithDetials() {
     return new StudyWithDetails.StudyWithDetailsBuilder()
-            .study(new Study("studyUid", "studyname", "studyTitle"))
+            .study(new Study("studyUid", "studyName", "studyTitle"))
+            .allocation("allocation")
+            .blinding("blinding")
+            .inclusionCriteria("inclusionCriteria")
+            .numberOfStudyCenters(4)
+            .pubmedUrl("publicationURL")
+            .status("status")
+            .indication("indication")
+            .objectives("objective")
+            .investigationalDrugNames("investigationalDrugNames")
+            .startDate(new DateTime())
+            .endDate(new DateTime())
             .build();
   }
 

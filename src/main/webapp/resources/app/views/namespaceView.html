@@ -1,3 +1,24 @@
+<ul class="breadcrumbs">
+    <li><a ui-sref="projects">Projects</a></li>
+    <li><a ui-sref="create-project">Create Project</a></li>
+    <li class="current active">name of this dataset</li>
+</ul>
 <div class="row">
-	<h2>Single Namespace view</h2>
+  <div class="column large-12">
+    <h2>Dataset overview</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="studyWithDetails in studies">
+          <td>{{studyWithDetails.study.name}}</td>
+          <td>{{studyWithDetails.status}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
