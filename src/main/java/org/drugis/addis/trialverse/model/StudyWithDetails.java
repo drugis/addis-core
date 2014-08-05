@@ -10,7 +10,7 @@ public class StudyWithDetails {
   private Study study;
   private String allocation;
   private String blinding;
-  private Integer numberOfStudyCentres;
+  private Integer numberOfStudyCenters;
   private String objectives;  //TODO: list of strings?
   private String inclusionCriteria;//TODO: list of strings?
   private String exclusionCriteria; // TODO: not in triplestore
@@ -32,7 +32,7 @@ public class StudyWithDetails {
     this.study = builder.study;
     this.allocation = builder.allocation;
     this.blinding = builder.blinding;
-    this.numberOfStudyCentres = builder.numberOfStudyCentres;
+    this.numberOfStudyCenters = builder.numberOfStudyCenters;
     this.objectives = builder.objectives;
     this.inclusionCriteria = builder.inclusionCriteria;
     this.exclusionCriteria = builder.exclusionCriteria;
@@ -52,7 +52,7 @@ public class StudyWithDetails {
     private Study study;
     private String allocation;
     private String blinding;
-    private Integer numberOfStudyCentres;
+    private Integer numberOfStudyCenters;
     private String objectives;
     private String inclusionCriteria;
     private String exclusionCriteria;
@@ -87,8 +87,8 @@ public class StudyWithDetails {
       return this;
     }
 
-    public StudyWithDetailsBuilder numberOfStudyCentres(Integer numberOfStudyCentres) {
-      this.numberOfStudyCentres = numberOfStudyCentres;
+    public StudyWithDetailsBuilder numberOfStudyCenters(Integer numberOfStudyCenters) {
+      this.numberOfStudyCenters = numberOfStudyCenters;
       return this;
     }
 
@@ -171,8 +171,8 @@ public class StudyWithDetails {
     return blinding;
   }
 
-  public Integer getNumberOfStudyCentres() {
-    return numberOfStudyCentres;
+  public Integer getNumberOfStudyCenters() {
+    return numberOfStudyCenters;
   }
 
   public String getObjectives() {

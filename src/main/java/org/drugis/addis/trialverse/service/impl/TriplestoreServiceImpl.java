@@ -183,7 +183,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "\n" +
             "PREFIX study: <http://trials.drugis.org/studies/>\n" +
             "\n" +
-            "SELECT ?study ?title ?label ?allocation ?blinding ?objective ?drugNames WHERE {\n" +
+            "SELECT ?study ?title ?label ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria ?publication, ?status ?numberOfCenters ?indication ?startDate ?endDate WHERE {\n" +
             "  GRAPH ?dataset {\n" +
             "    ?dataset ontology:contains_study ?study .\n" +
             "  }\n" +
@@ -239,6 +239,11 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
       String allocation = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.allocation.value"), '#');
       String blinding = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.blinding.value"), '#');
+      String inclusionCriteria = JsonPath.read(binding, "$.inclusionCriteria.value");
+      Integer numberOfStudyCenters = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfCenters.value"));
+      String publicationURL = JsonPath.read(binding, "$.publication.value");
+      String status = JsonPath.read(binding, "$.status.value");
+      String indication = JsonPath.read(binding, "$.indication.value");
       String objective = JsonPath.read(binding, "$.objective.value");
 
       String investigationalDrugNames = JsonPath.read(binding, "$.drugNames.value");
@@ -248,6 +253,11 @@ public class TriplestoreServiceImpl implements TriplestoreService {
               .study(new Study(uid, name, title))
               .allocation(allocation)
               .blinding(blinding)
+              .inclusionCriteria(inclusionCriteria)
+              .numberOfStudyCenters(numberOfStudyCenters)
+              .pubmedUrl(publicationURL)
+              .status(status)
+              .indication(indication)
               .objectives(objective)
               .investigationalDrugNames(investigationalDrugNames)
               .build();

@@ -177,6 +177,11 @@ public class TriplestoreServiceTest {
 
     assertNotNull(firstStudyWithDetails.getAllocation());
     assertNotNull(firstStudyWithDetails.getBlinding());
+    assertNotNull(firstStudyWithDetails.getInclusionCriteria());
+    assertNotNull(firstStudyWithDetails.getNumberOfStudyCenters());
+    assertNotNull(firstStudyWithDetails.getPubmedUrl());
+    assertNotNull(firstStudyWithDetails.getStatus());
+    assertNotNull(firstStudyWithDetails.getIndication());
     assertNotNull(firstStudyWithDetails.getObjectives());
 
     assertNotNull(firstStudyWithDetails.getInvestigationalDrugNames());
