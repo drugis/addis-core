@@ -50,7 +50,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     List<Namespace> namespaces = new ArrayList<>(bindings.size());
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.dataset.value");
-      uid = subStringAfterLastSlash(uid);
+      uid = subStringAfterLastSymbol(uid, '/');
       String name = JsonPath.read(binding, "$.label.value");
       String description = JsonPath.read(binding, "$.comment.value");
       Integer numberOfStudies = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfStudies.value"));
@@ -107,7 +107,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.outcome.value");
-      uid = subStringAfterLastSlash(uid);
+      uid = subStringAfterLastSymbol(uid, '/');
       String label = JsonPath.read(binding, "$.label.value");
       outcomes.add(new SemanticOutcome(uid, label));
     }
@@ -135,7 +135,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.intervention.value");
-      uid = subStringAfterLastSlash(uid);
+      uid = subStringAfterLastSymbol(uid, '/');
       String label = JsonPath.read(binding, "$.label.value");
       interventions.add(new SemanticIntervention(uid, label));
     }
@@ -165,7 +165,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.study.value");
-      uid = subStringAfterLastSlash(uid);
+      uid = subStringAfterLastSymbol(uid, '/');
       String name = JsonPath.read(binding, "$.label.value");
       String title = JsonPath.read(binding, "$.title.value");
       studies.add(new Study(uid, name, title));
@@ -183,7 +183,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "\n" +
             "PREFIX study: <http://trials.drugis.org/studies/>\n" +
             "\n" +
-            "SELECT ?study ?title ?label ?allocation ?blinding ?objective ?names WHERE {\n" +
+            "SELECT ?study ?title ?label ?allocation ?blinding ?objective ?drugNames WHERE {\n" +
             "  GRAPH ?dataset {\n" +
             "    ?dataset ontology:contains_study ?study .\n" +
             "  }\n" +
@@ -215,7 +215,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "    }\n" +
             "\n" +
             "    {\n" +
-            "      SELECT ?study (group_concat(?drugName; separator = \",\") as ?names)\n" +
+            "      SELECT ?study (group_concat(?drugName; separator = \",\") as ?drugNames)\n" +
             "      WHERE {\n" +
             "        GRAPH ?dataset {\n" +
             "          ?drug rdfs:subClassOf ontology:Drug .\n" +
@@ -233,11 +233,25 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
 
-      String uid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.study.value"));
+      String uid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.study.value"), '/');
       String name = JsonPath.read(binding, "$.label.value");
       String title = JsonPath.read(binding, "$.title.value");
-      String label = JsonPath.read(binding, "$.title.label");
-      studiesWithDetail.add(new StudyWithDetails());
+
+      String allocation = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.allocation.value"), '#');
+      String blinding = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.blinding.value"), '#');
+      String objective = JsonPath.read(binding, "$.objective.value");
+
+      String investigationalDrugNames = JsonPath.read(binding, "$.drugNames.value");
+
+      StudyWithDetails studyWithDetails = new StudyWithDetails
+              .StudyWithDetailsBuilder()
+              .study(new Study(uid, name, title))
+              .allocation(allocation)
+              .blinding(blinding)
+              .objectives(objective)
+              .investigationalDrugNames(investigationalDrugNames)
+              .build();
+      studiesWithDetail.add(studyWithDetails);
     }
     return studiesWithDetail;
   }
@@ -330,15 +344,15 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     Map<String, TrialDataStudy> trialDataStudies = new HashMap<>();
     // ?studyName ?drug ?interventionLabel ?interventionInstance ?outcomeInstance ?outcomeTypeUid ?outcomeInstanceLabel ?arm ?armLabel ?mean ?stdDev ?count ?sampleSize WHERE {
     for (Object binding : bindings) {
-      String studyUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.study.value"));
+      String studyUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.study.value"), '/');
       TrialDataStudy trialDataStudy = trialDataStudies.get(studyUid);
       if (trialDataStudy == null) {
         String studyName = JsonPath.read(binding, "$.studyName.value");
         trialDataStudy = new TrialDataStudy(studyUid, studyName, new ArrayList<TrialDataIntervention>(), new ArrayList<TrialDataArm>());
         trialDataStudies.put(studyUid, trialDataStudy);
       }
-      String drugInstanceUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.drugInstance.value"));
-      String drugUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.drug.value"));
+      String drugInstanceUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.drugInstance.value"), '/');
+      String drugUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.drug.value"), '/');
       TrialDataIntervention trialDataIntervention = new TrialDataIntervention(drugInstanceUid, drugUid, studyUid);
       trialDataStudy.getTrialDataInterventions().add(trialDataIntervention);
 
@@ -354,9 +368,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
         rate = Long.parseLong(JsonPath.<String>read(binding, "$.count.value"));
       }
       Long sampleSize = Long.parseLong(JsonPath.<String>read(binding, "$.sampleSize.value"));
-      String armUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.arm.value"));
+      String armUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.arm.value"), '/');
       String armLabel = JsonPath.read(binding, "$.armLabel.value");
-      String variableUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.outcomeInstance.value"));
+      String variableUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.outcomeInstance.value"), '/');
       Measurement measurement = new Measurement(studyUid, variableUid, armUid, sampleSize, rate, stdDev, mean);
       TrialDataArm trialDataArm = new TrialDataArm(armUid, armLabel, studyUid, drugInstanceUid, drugUid, measurement);
       trialDataStudy.getTrialDataArms().add(trialDataArm);
@@ -440,9 +454,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     List<SingleStudyBenefitRiskMeasurementRow> measurementObjects = new ArrayList<>();
     for (Object binding : bindings) {
       JSONObject bindingObject = (JSONObject) binding;
-      String outcomeUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.outcomeTypeUid.value"));
+      String outcomeUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.outcomeTypeUid.value"), '/');
       String outcomeLabel = JsonPath.read(binding, "$.outcomeInstanceLabel.value");
-      String alternativeUid = subStringAfterLastSlash(JsonPath.<String>read(binding, "$.interventionTypeUid.value"));
+      String alternativeUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.interventionTypeUid.value"), '/');
       String alternativeLabel = JsonPath.read(binding, "$.interventionLabel.value");
       Double mean = null;
       Double stdDev = null;
@@ -559,7 +573,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
       String typeUri = JsonPath.read(binding, "$.type.value");
-      String conceptId = subStringAfterLastSlash(uri);
+      String conceptId = subStringAfterLastSymbol(uri, '/');
       concepts.put(conceptId, typeUri);
     }
     return concepts;
@@ -577,7 +591,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
       String studyUid = findStudyIdInURI(uri);
-      Long variableId = Long.valueOf(subStringAfterLastSlash(uri));
+      Long variableId = Long.valueOf(subStringAfterLastSymbol(uri, '/'));
       studyVariablesForOutcome.add(Pair.of(studyUid, variableId));
     }
     return studyVariablesForOutcome;
@@ -595,7 +609,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     for (Object binding : bindings) {
       String uri = JsonPath.read(binding, "$.uri.value");
       String typeUri = JsonPath.read(binding, "$.type.value");
-      String conceptId = subStringAfterLastSlash(uri);
+      String conceptId = subStringAfterLastSymbol(uri, '/');
       concepts.put(conceptId, typeUri);
     }
     return concepts;
@@ -641,7 +655,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     Collection<String> strippedUris = Collections2.transform(conceptURIs, new Function<String, String>() {
       @Override
       public String apply(String s) {
-        return subStringAfterLastSlash(s);
+        return subStringAfterLastSymbol(s, '/');
       }
     });
     return StringUtils.join(strippedUris, "|");
@@ -680,8 +694,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return (String.valueOf(matcher.group(1)));
   }
 
-  private String subStringAfterLastSlash(String inStr) {
-    return inStr.substring(inStr.lastIndexOf("/") + 1);
+  private String subStringAfterLastSymbol(String inStr, char symbol) {
+    return inStr.substring(inStr.lastIndexOf(symbol) + 1);
   }
 
 }

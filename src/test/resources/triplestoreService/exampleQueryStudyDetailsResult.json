@@ -1,0 +1,234 @@
+{
+  "head": {
+    "vars": [ "study" , "title" , "label" , "allocation" , "blinding" , "objective" , "drugNames" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/9da22e13-9e5f-4846-9a66-b9c0ed24ac69" } ,
+        "title": { "type": "literal" , "value": "Double-blind comparison of bupropion and fluoxetine in depressed outpatients" } ,
+        "label": { "type": "literal" , "value": "Feighner et al, 1991" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "This study was undertaken to compare the efficacy and safety of bupropion and fluoxetine." } ,
+        "drugNames": { "type": "literal" , "value": "Bupropion,Fluoxetine" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/be8dab18-739c-4098-aaf7-500f69ddcb51" } ,
+        "title": { "type": "literal" , "value": "A randomised study comparing escitalopram with venlafaxine XR in primary care patients with major depressive disorder." } ,
+        "label": { "type": "literal" , "value": "Montgomery et al, 2004" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "This 8-week, randomised, double-blind study compared the efficacy and tolerability of escitalopram to that of venlafaxine XR in primary care patients with major depressive disorder." } ,
+        "drugNames": { "type": "literal" , "value": "Escitalopram,Venlafaxine" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/7e024ede-ba4c-41ab-a745-ccc622d06896" } ,
+        "title": { "type": "literal" , "value": "A double-blind comparison of sertraline and fluoxetine in the treatment of major depressive episode in outpatients." } ,
+        "label": { "type": "literal" , "value": "Sechter et al, 1999" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "A double-blind comparison of sertraline and fluoxetine in the treatment of major depressive episode in outpatients." } ,
+        "drugNames": { "type": "literal" , "value": "Fluoxetine,Sertraline" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/becc363d-1c83-42e6-8c8f-1cba6c97d0b0" } ,
+        "title": { "type": "literal" , "value": "A placebo-controlled comparison of the antidepressant efficacy and effects on sexual functioning of sustained-release bupropion and sertraline." } ,
+        "label": { "type": "literal" , "value": "Croft et al, 1999" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "Sexual dysfunction, a frequently reported side effect of many antidepressants, may result in patient dissatisfaction and noncompliance with treatment regimens. This paper describes the results of the first placebo-controlled comparisonof the efficacy, safety, and effects on sexual functioning of sustained-release bupropion (bupropion SR) and the selective serotonin reuptake inhibitor sertraline." } ,
+        "drugNames": { "type": "literal" , "value": "Bupropion,Placebo,Sertraline" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/7ac60ead-5869-43cc-9548-430f0a33ce8c" } ,
+        "title": { "type": "literal" , "value": "A double-blind multicenter trial comparing sertraline and citalopram in patients with major depression treated in general practice." } ,
+        "label": { "type": "literal" , "value": "Ekselius et al, 1997" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "The purpose of this double-blind, multicenter trial was to compare the efficacy and safety of sertraline (50-150 mg/day) with those of citalopram (20-60 mg/day) in patients with major depression in general practice during 24 weeks of treatment." } ,
+        "drugNames": { "type": "literal" , "value": "Citalopram,Sertraline" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/3cca0f49-9980-4a20-863c-18037a67bfa6" } ,
+        "title": { "type": "literal" , "value": "A fixed-dose trial of the single isomer SSRI escitalopram in depressed outpatients" } ,
+        "label": { "type": "literal" , "value": "Burke et al, 2002" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "Escitalopram is the single isomer responsible for the serotonin reuptake inhibition produced by the racemic antidepressant citalopram. The present randomized, double-blind, placebo-controlled, fixed-dose multicenter trial was designed to evaluate the efficacy and tolerability of escitalopram in the treatment of major depressive disorder." } ,
+        "drugNames": { "type": "literal" , "value": "Citalopram,Escitalopram,Placebo" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/9e28f9d0-8250-47bf-92e1-ab015176e82a" } ,
+        "title": { "type": "literal" , "value": "A double-blind study of paroxetine compared with fluoxetine in geriatric patients with major depression" } ,
+        "label": { "type": "literal" , "value": "Schone and Ludwig, 1993" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "The study compared the efficacy and tolerability of paroxetine and fluoxetine in 106 depressed geriatric outpatients (age, > or = 65 years)." } ,
+        "drugNames": { "type": "literal" , "value": "Fluoxetine,Paroxetine" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/6d8a90e4-9dea-4d70-b010-68e4f84b2282" } ,
+        "title": { "type": "literal" , "value": "Fluvoxamine versus fluoxetine in major depressive episodes: a double-blind randomised comparison" } ,
+        "label": { "type": "literal" , "value": "Dalery and Honig, 2003" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "To compare the efficacy and safety of fluvoxamine and fluoxetine in outpatients with major depressive episode." } ,
+        "drugNames": { "type": "literal" , "value": "Fluoxetine,Fluvoxamine" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/e60020df-0e67-42ad-b48b-317bb4769c84" } ,
+        "title": { "type": "literal" , "value": "Citalopram versus fluoxetine: a double-blind, controlled, multicentre, phase III trial in patients with unipolar major depression treated in general practice." } ,
+        "label": { "type": "literal" , "value": "Patris et al, 1996" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "Two selective serotonin reuptake inhibitors (SSRIs), citalopram and fluoxetine, both at a daily dose of 20 mg, were compared in patients with unipolar major depression treated in general practice." } ,
+        "drugNames": { "type": "literal" , "value": "Citalopram,Fluoxetine" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/6c7975d8-fbf3-4203-9441-1fda5a6bdb4d" } ,
+        "title": { "type": "literal" , "value": "Clinical and economic comparison of sertraline and fluoxetine in the treatment of depression. A 6-month double-blind study in a primary-care setting in France." } ,
+        "label": { "type": "literal" , "value": "Boyer et al, 1998" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "The efficacy, tolerability, quality-of-life outcomes and costs of sertraline and fluoxetine in the treatment of depression were compared in a 6-month double-blind trial in a primary-care setting in France." } ,
+        "drugNames": { "type": "literal" , "value": "Fluoxetine,Sertraline" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/3f8fb072-b592-4eb3-ab42-861bf82fcba4" } ,
+        "title": { "type": "literal" , "value": "A double-blind, randomized, group-comparative study of the tolerability and efficacy of 6 weeks' treatment with mirtazapine or fluoxetine in depressed chinese patients" } ,
+        "label": { "type": "literal" , "value": "Hong et al, 2003" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "To compare the efficacy and tolerability of mirtazapine and fluoxetine treatment in a sample population consisting of Chinese patients suffering moderate-to-severe depression." } ,
+        "drugNames": { "type": "literal" , "value": "Fluoxetine,Mirtazapine" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/761c3edf-a2eb-474e-b683-cced08ad9fab" } ,
+        "title": { "type": "literal" , "value": "Mirtazapine orally disintegrating tablet versus sertraline: a prospective onset of action study" } ,
+        "label": { "type": "literal" , "value": "Behnke et al, 2003" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "To prospectively compare the onset of antidepressant efficacy of mirtazapine orally disintegrating tablets and sertraline at dosages commonly used in clinical practice." } ,
+        "drugNames": { "type": "literal" , "value": "Mirtazapine,Sertraline" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/ffde0e9b-1368-4b8d-84c3-5909624c4e87" } ,
+        "title": { "type": "literal" , "value": "Mirtazapine compared with paroxetine in major depression" } ,
+        "label": { "type": "literal" , "value": "Benkert et al, 2000" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "The aim was to compare the efficacy and tolerability of mirtazapine with those of paroxetine." } ,
+        "drugNames": { "type": "literal" , "value": "Mirtazapine,Paroxetine" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/b2c10ca8-5069-4f8c-a4cc-5def1b0f63eb" } ,
+        "title": { "type": "literal" , "value": "A double-blind comparison of escitalopram and venlafaxine extended release in the treatment of major depressive disorder" } ,
+        "label": { "type": "literal" , "value": "Bielski et al, 2004" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "Escitalopram is the most selective serotonin reuptake inhibitor (SRI) antidepressant available. Venlafaxine is a non-selective SRI that also inhibits noradrenergic re-uptake. This study compared escitalopram and venlafaxine extended release (XR) in depressed outpatients at the highest doses recommended in the United States." } ,
+        "drugNames": { "type": "literal" , "value": "Escitalopram,Venlafaxine" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/cf714a8d-bef3-4806-9fc0-ef6556e619ec" } ,
+        "title": { "type": "literal" , "value": "Accute efficacy of fluoxetine versus sertraline and paroxetine in major depressive disorder including effects of baseline insomnia" } ,
+        "label": { "type": "literal" , "value": "Fava et al, 2002" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "This study assessed whether fluoxetine, sertraline, and paroxetine differ in efficacy and tolerability in depressed patients and the impact of baseline insomnia on outcomes." } ,
+        "drugNames": { "type": "literal" , "value": "Fluoxetine,Paroxetine,Sertraline" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/e050dcbd-9d22-4d0c-abe6-765e619e797c" } ,
+        "title": { "type": "literal" , "value": "Double-blind randomized comparison of mirtazapine and paroxetine in elderly depressed patients" } ,
+        "label": { "type": "literal" , "value": "Schatzberg et al, 2002" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "Authors studied the efficacy and tolerability of mirtazapine and paroxetine in elderly patients with major depression during an acute phase (8 weeks) and an extension phase (16 weeks)." } ,
+        "drugNames": { "type": "literal" , "value": "Mirtazapine,Paroxetine" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/273a692d-b8fd-446d-912c-cb0c821d1caa" } ,
+        "title": { "type": "literal" , "value": "Duloxetine in the treatment of major depressive disorder: a double-blind clinical trial" } ,
+        "label": { "type": "literal" , "value": "Goldstein et al, 2002" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "Duloxetine hydrochloride, a dual reuptake inhibitor of serotonin and norepinephrine, was evaluated for therapeutic efficacy and safety/tolerability in the treatment of major depression." } ,
+        "drugNames": { "type": "literal" , "value": "Duloxetine,Fluoxetine,Placebo" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/cd35bb24-e50b-46fa-bbef-27f711e28b09" } ,
+        "title": { "type": "literal" , "value": "A Canadian multicenter, double-blind study of paroxetine and fluoxetine in major depressive disorder" } ,
+        "label": { "type": "literal" , "value": "Chouinard et al, 1999" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "Recent studies have suggested clinical differences among selective serotonin reuptake inhibitors. In a 12-week randomized, multicenter, double-blind trial, the antidepressant and anxiolytic efficacy of the selective serotonin reuptake inhibitors paroxetine and fluoxetine was compared in patients with moderate to severe depression." } ,
+        "drugNames": { "type": "literal" , "value": "Fluoxetine,Paroxetine" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/d8476988-5734-4f76-b9bb-a1fbc8c2582f" } ,
+        "title": { "type": "literal" , "value": "A double-blind study of long-term treatment with sertraline or fluvoxamine for prevention of highly recurrent unipolar depression." } ,
+        "label": { "type": "literal" , "value": "Franchini et al, 1997" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "We evaluated and compared the efficacy and safety of sertraline and fluvoxamine in a randomized, double-blind, parallel-group study during a follow-up of 24 months." } ,
+        "drugNames": { "type": "literal" , "value": "Fluvoxamine,Sertraline" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/03f55fd8-2197-4c7d-8225-a8deee0aa4e5" } ,
+        "title": { "type": "literal" , "value": "A double-blind study of paroxetine, fluoxetine, and placebo in outpatients with major depression" } ,
+        "label": { "type": "literal" , "value": "Fava et al, 1998" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "Comparison of the efficacy and tolerability of paroxetine and fluoxetine in outpatients with major depression." } ,
+        "drugNames": { "type": "literal" , "value": "Fluoxetine,Paroxetine,Placebo" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/92169e5f-456d-4ed3-a832-8ebabf0c2b93" } ,
+        "title": { "type": "literal" , "value": "Escitalopram (10-20 mg/day) is effective and well tolerated in a placebo-controlled study in depression in primary care." } ,
+        "label": { "type": "literal" , "value": "Lepola et al, 2003" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "Escitalopram was compared to placebo in moderately to severely depressed patients in primary care with citalopram as the active reference." } ,
+        "drugNames": { "type": "literal" , "value": "Citalopram,Escitalopram,Placebo" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/594f1997-b541-4b4f-8ab6-86bbf47c13a7" } ,
+        "title": { "type": "literal" , "value": "A double-blind comparison of fluvoxamine and paroxetine in the treatment of depressed outpatients" } ,
+        "label": { "type": "literal" , "value": "Kiev and Feiger, 1997" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "Comparison of fluvoxamine and paroxetine in the treatment of depressed outpatients" } ,
+        "drugNames": { "type": "literal" , "value": "Fluvoxamine,Paroxetine" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/23845e60-04cb-4f4a-8ceb-95ef3c66346f" } ,
+        "title": { "type": "literal" , "value": "An Efficacy and Safety Study of Azilsartan Medoxomil Compared to Valsartan and Olmesartan in Participants With Essential Hypertension." } ,
+        "label": { "type": "literal" , "value": "TAK491-019 / NCT00696436" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "The purpose of this study is to evaluate the efficacy and safety of azilsartan medoxomil,once daily (QD), compared to placebo, valsartan and olmesartan in participants withessential hypertension." } ,
+        "drugNames": { "type": "literal" , "value": "Azilsartan,Olmesartan,Placebo,Valsartan" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/c15bef4b-0d72-4248-9f29-66c3d9f3e790" } ,
+        "title": { "type": "literal" , "value": "Efficacy and Safety of Azilsartan Medoxomil in Participants With Essential Hypertension" } ,
+        "label": { "type": "literal" , "value": "TAK491-008 / NCT00696241" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "The purpose of this study is to determine the safety and efficacy of azilsartan medoxomil,once daily (QD), compared to placebo and olmesartan in participants with essentialhypertension." } ,
+        "drugNames": { "type": "literal" , "value": "Azilsartan,Olmesartan,Placebo" }
+      } ,
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/c15bef4b-0d72-4248-9f29-66c3d9f3e790" } ,
+        "title": { "type": "literal" , "value": "Efficacy and Safety of Azilsartan Medoxomil in Participants With Essential Hypertension" } ,
+        "label": { "type": "literal" , "value": "TAK491-008 / NCT00696241" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "The purpose of this study is to determine the safety and efficacy of azilsartan medoxomil,once daily (QD), compared to placebo and olmesartan in participants with essentialhypertension." } ,
+        "drugNames": { "type": "literal" , "value": "Azilsartan,Olmesartan,Placebo" }
+      }
+    ]
+  }
+}

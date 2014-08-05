@@ -5,6 +5,7 @@ import org.drugis.addis.TestUtils;
 import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.StudyWithDetails;
 import org.drugis.addis.trialverse.model.TrialDataIntervention;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
@@ -156,6 +157,31 @@ public class TriplestoreServiceTest {
     List<Pair<String, Long>> result = triplestoreService.getOutcomeVariableUidsByStudyForSingleOutcome(namespaceUid, studyIds, outcomeConceptUri);
     assertEquals(3, result.size());
     assertTrue(result.containsAll(Arrays.asList(Pair.of("study1", 304L), Pair.of("study2", 209L), Pair.of("study3", 91L))));
+  }
+
+  @Test
+  public void testQueryStudydetails() {
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleQueryStudyDetailsResult.json");
+    createMockTrialverseService(mockResult);
+
+    String namespaceUid = "namespaceUid";
+    List<StudyWithDetails> studyWithDetailsList = triplestoreService.queryStudydetails(namespaceUid);
+
+    assertNotNull(studyWithDetailsList);
+    assertEquals(25, studyWithDetailsList.size());
+    StudyWithDetails firstStudyWithDetails = studyWithDetailsList.get(0);
+
+    assertNotNull(firstStudyWithDetails.getStudy().getUid());
+    assertNotNull(firstStudyWithDetails.getStudy().getName());
+    assertNotNull(firstStudyWithDetails.getStudy().getTitle());
+
+    assertNotNull(firstStudyWithDetails.getAllocation());
+    assertNotNull(firstStudyWithDetails.getBlinding());
+    assertNotNull(firstStudyWithDetails.getObjectives());
+
+    assertNotNull(firstStudyWithDetails.getInvestigationalDrugNames());
+
+
   }
 
   @Test
