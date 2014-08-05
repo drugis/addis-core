@@ -169,24 +169,29 @@ public class TriplestoreServiceTest {
 
     assertNotNull(studyWithDetailsList);
     assertEquals(25, studyWithDetailsList.size());
-    StudyWithDetails firstStudyWithDetails = studyWithDetailsList.get(0);
+    StudyWithDetails studyWithDetailsNoStartOrEndDate = studyWithDetailsList.get(0);
 
-    assertNotNull(firstStudyWithDetails.getStudy().getUid());
-    assertNotNull(firstStudyWithDetails.getStudy().getName());
-    assertNotNull(firstStudyWithDetails.getStudy().getTitle());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getStudy().getUid());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getStudy().getName());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getStudy().getTitle());
 
-    assertNotNull(firstStudyWithDetails.getAllocation());
-    assertNotNull(firstStudyWithDetails.getBlinding());
-    assertNotNull(firstStudyWithDetails.getInclusionCriteria());
-    assertNotNull(firstStudyWithDetails.getNumberOfStudyCenters());
-    assertNotNull(firstStudyWithDetails.getPubmedUrl());
-    assertNotNull(firstStudyWithDetails.getStatus());
-    assertNotNull(firstStudyWithDetails.getIndication());
-    assertNotNull(firstStudyWithDetails.getObjectives());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getAllocation());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getBlinding());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getInclusionCriteria());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getNumberOfStudyCenters());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getPubmedUrl());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getStatus());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getIndication());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getObjectives());
 
-    assertNotNull(firstStudyWithDetails.getInvestigationalDrugNames());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getInvestigationalDrugNames());
 
+    assertNull(studyWithDetailsNoStartOrEndDate.getStartDate());
+    assertNull(studyWithDetailsNoStartOrEndDate.getEndDate());
 
+    StudyWithDetails studyWithDetailsWithStartAndEndDate = studyWithDetailsList.get(studyWithDetailsList.size()-1);
+    assertNotNull(studyWithDetailsWithStartAndEndDate.getStartDate());
+    assertNotNull(studyWithDetailsWithStartAndEndDate.getEndDate());
   }
 
   @Test

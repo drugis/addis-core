@@ -10,6 +10,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -22,6 +25,8 @@ import java.util.regex.Pattern;
  */
 @Service
 public class TriplestoreServiceImpl implements TriplestoreService {
+
+  public final static String STUDY_DATE_FORMAT = "yyyy-MM-dd";
 
   private final static String triplestoreUri = System.getenv("TRIPLESTORE_URI");
   private final static Pattern STUDY_UID_FROM_URI_PATTERN = Pattern.compile("http://trials.drugis.org/study/(\\w+)/.*");
@@ -245,8 +250,17 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String status = JsonPath.read(binding, "$.status.value");
       String indication = JsonPath.read(binding, "$.indication.value");
       String objective = JsonPath.read(binding, "$.objective.value");
-
       String investigationalDrugNames = JsonPath.read(binding, "$.drugNames.value");
+
+      DateTimeFormatter formatter = DateTimeFormat.forPattern(STUDY_DATE_FORMAT);
+      DateTime startDate = null;
+      if(((net.minidev.json.JSONObject)binding).containsKey("startDate")) {
+        startDate = formatter.parseDateTime(JsonPath.<String>read(binding, "$.startDate.value")).toDateMidnight().toDateTime();
+      }
+      DateTime endDate = null;
+      if(((net.minidev.json.JSONObject)binding).containsKey("startDate")){
+        endDate = formatter.parseDateTime(JsonPath.<String>read(binding, "$.endDate.value")).toDateMidnight().toDateTime();
+      }
 
       StudyWithDetails studyWithDetails = new StudyWithDetails
               .StudyWithDetailsBuilder()
@@ -260,6 +274,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
               .indication(indication)
               .objectives(objective)
               .investigationalDrugNames(investigationalDrugNames)
+              .startDate(startDate)
+              .endDate(endDate)
               .build();
       studiesWithDetail.add(studyWithDetails);
     }
