@@ -15,7 +15,7 @@ public class StudyWithDetails {
   private String inclusionCriteria;//TODO: list of strings?
   private String exclusionCriteria; // TODO: not in triplestore
   private String dataSource;
-  private String pubmedUrl;
+  private String pubmedUrls;
   private Integer studySize;
   private String indication;
   private String investigationalDrugNames;
@@ -37,7 +37,7 @@ public class StudyWithDetails {
     this.inclusionCriteria = builder.inclusionCriteria;
     this.exclusionCriteria = builder.exclusionCriteria;
     this.dataSource = builder.dataSource;
-    this.pubmedUrl = builder.pubmedUrl;
+    this.pubmedUrls = builder.pubmedUrls;
     this.studySize = builder.studySize;
     this.indication = builder.indication;
     this.investigationalDrugNames = builder.investigationalDrugNames;
@@ -57,7 +57,7 @@ public class StudyWithDetails {
     private String inclusionCriteria;
     private String exclusionCriteria;
     private String dataSource;
-    private String pubmedUrl;
+    private String pubmedUrls;
     private Integer studySize;
     private String indication;
     private String investigationalDrugNames;
@@ -112,8 +112,8 @@ public class StudyWithDetails {
       return this;
     }
 
-    public StudyWithDetailsBuilder pubmedUrl(String pubmedUrl) {
-      this.pubmedUrl = pubmedUrl;
+    public StudyWithDetailsBuilder pubmedUrls(String pubmedUrls) {
+      this.pubmedUrls = pubmedUrls;
       return this;
     }
 
@@ -191,8 +191,8 @@ public class StudyWithDetails {
     return dataSource;
   }
 
-  public String getPubmedUrl() {
-    return pubmedUrl;
+  public String getpubmedUrls() {
+    return pubmedUrls;
   }
 
   public Integer getStudySize() {

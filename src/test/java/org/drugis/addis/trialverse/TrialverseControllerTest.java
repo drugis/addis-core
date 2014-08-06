@@ -7,7 +7,6 @@ import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
-import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
 import org.joda.time.DateTime;
@@ -191,7 +190,7 @@ public class TrialverseControllerTest {
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0]", notNullValue()))
             .andExpect(jsonPath("$[0].study.title", is("studyTitle")))
-            .andExpect(jsonPath("$[0].pubmedUrl", is("publicationURL")));
+            .andExpect(jsonPath("$[0].pubmedUrls", is("publicationURL, moreurls")));
     verify(triplestoreService).queryStudydetails(namespaceUuid);
 
   }
@@ -203,7 +202,7 @@ public class TrialverseControllerTest {
             .blinding("blinding")
             .inclusionCriteria("inclusionCriteria")
             .numberOfStudyCenters(4)
-            .pubmedUrl("publicationURL")
+            .pubmedUrls("publicationURL, moreurls")
             .status("status")
             .indication("indication")
             .objectives("objective")

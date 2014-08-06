@@ -189,37 +189,47 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "PREFIX study: <http://trials.drugis.org/studies/>\n" +
             "\n" +
             "SELECT ?study ?title ?label ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria" +
-            " ?publication ?status ?numberOfCenters ?indication ?startDate ?endDate WHERE {\n" +
-            "  GRAPH ?dataset {\n" +
+            " ?publications ?status ?numberOfCenters ?indication ?startDate ?endDate WHERE {\n" +
+            "  GRAPH dataset:" + namespaceUid + " {\n" +
             "    ?dataset ontology:contains_study ?study .\n" +
             "  }\n" +
-            "  GRAPH ?study {\n" +
+            "GRAPH ?study {\n" +
             "    ?study \n" +
             "      rdfs:label ?label ;\n" +
-            "      rdfs:comment ?title ;\n" +
-            "      ontology:has_allocation ?allocation ;\n" +
-            "      ontology:has_blinding ?blinding ;\n" +
-            "      ontology:has_objective [\n" +
+            "      rdfs:comment ?title .\n" +
+            "    OPTIONAL {\n" +
+            "      ?study ontology:has_allocation ?allocation .\n" +
+            "    }\n" +
+            "    OPTIONAL {\n" +
+            "      ?study ontology:has_blinding ?blinding .\n" +
+            "    }\n" +
+            "    OPTIONAL {\n" +
+            "      ?study ontology:has_objective [\n" +
             "        rdfs:comment ?objective\n" +
-            "      ] ;\n" +
-            "      ontology:has_eligibility_criteria [\n" +
+            "      ] .\n" +
+            "    }\n" +
+            "    OPTIONAL {\n" +
+            "      ?study ontology:has_eligibility_criteria [\n" +
             "        rdfs:comment ?inclusionCriteria\n" +
-            "      ] ;\n" +
-            "      ontology:has_publication [\n" +
-            "        ontology:has_id ?publication\n" +
-            "      ] ;\n" +
-            "      ontology:status ?status ;\n" +
-            "      ontology:has_number_of_centers ?numberOfCenters ;\n" +
-            "      ontology:has_indication ?indication_instance .\n" +
+            "      ] .\n" +
+            "    }\n" +
+            "    OPTIONAL {\n" +
+            "      ?study ontology:status ?status .\n" +
+            "    }\n" +
+            "    OPTIONAL {\n" +
+            "      ?study ontology:has_number_of_centers ?numberOfCenters .\n" +
+            "    }\n" +
+            "    OPTIONAL {\n" +
+            "      ?study ontology:has_indication ?indication_instance .\n" +
             "      ?indication_instance rdfs:label ?indication .\n" +
-            "\n" +
+            "    }\n" +
             "    OPTIONAL {\n" +
             "      ?study ontology:has_start_date ?startDate .\n" +
             "    }\n" +
             "    OPTIONAL {\n" +
-            "      ?study ontology:has_end_date ?endDate ;\n" +
+            "      ?study ontology:has_end_date ?endDate .\n" +
             "    }\n" +
-            "\n" +
+            "    OPTIONAL\n" +
             "    {\n" +
             "      SELECT ?study (group_concat(?drugName; separator = \",\") as ?drugNames)\n" +
             "      WHERE {\n" +
@@ -234,34 +244,42 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "      } GROUP BY ?study\n" +
             "    }\n" +
             "  }\n" +
-            "}";
+            "  OPTIONAL\n" +
+            "    {\n" +
+            "      SELECT ?study (group_concat(?publication; separator = \", \") as ?publications)\n" +
+            "      WHERE {\n" +
+            "        GRAPH ?study {\n" +
+            "          OPTIONAL {\n" +
+            "            ?study ontology:has_publication [\n" +
+            "              ontology:has_id ?publication\n" +
+            "            ] .\n" +
+            "          }\n" +
+            "        }\n" +
+            "      } GROUP BY ?study\n" +
+            "    }\n" +
+            "  }";
+    System.out.println(query);
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
-
+      JSONObject row = (net.minidev.json.JSONObject) binding;
       String uid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.study.value"), '/');
-      String name = JsonPath.read(binding, "$.label.value");
-      String title = JsonPath.read(binding, "$.title.value");
-
-      String allocation = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.allocation.value"), '#');
-      String blinding = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.blinding.value"), '#');
-      String inclusionCriteria = JsonPath.read(binding, "$.inclusionCriteria.value");
-      Integer numberOfStudyCenters = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfCenters.value"));
-      String publicationURL = JsonPath.read(binding, "$.publication.value");
-      String status = JsonPath.read(binding, "$.status.value");
-      String indication = JsonPath.read(binding, "$.indication.value");
-      String objective = JsonPath.read(binding, "$.objective.value");
-      String investigationalDrugNames = JsonPath.read(binding, "$.drugNames.value");
+      String name = row.containsKey("label") ? JsonPath.<String>read(binding, "$.label.value") : null;
+      String title = row.containsKey("title") ? JsonPath.<String>read(binding, "$.title.value") : null;
+      String allocation = row.containsKey("allocation") ? JsonPath.<String>read(binding, "$.allocation.value") : null;
+      String blinding = row.containsKey("blinding") ? JsonPath.<String>read(binding, "$.blinding.value") : null;
+      String inclusionCriteria = row.containsKey("inclusionCriteria") ? JsonPath.<String>read(binding, "$.inclusionCriteria.value") : null;
+      Integer numberOfStudyCenters = row.containsKey("numberOfCenters") ? Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfCenters.value")) : null;
+      String publicationURLs = row.containsKey("publications") ? JsonPath.<String>read(binding, "$.publications.value") : null;
+      String status = row.containsKey("status") ? JsonPath.<String>read(binding, "$.status.value") : null;
+      String indication = row.containsKey("indication") ? JsonPath.<String>read(binding, "$.indication.value") : null;
+      String objective = row.containsKey("objective") ? JsonPath.<String>read(binding, "$.objective.value") : null;
+      String investigationalDrugNames = row.containsKey("drugNames") ? JsonPath.<String>read(binding, "$.drugNames.value") : null;
 
       DateTimeFormatter formatter = DateTimeFormat.forPattern(STUDY_DATE_FORMAT);
-      DateTime startDate = null;
-      if(((net.minidev.json.JSONObject)binding).containsKey("startDate")) {
-        startDate = formatter.parseDateTime(JsonPath.<String>read(binding, "$.startDate.value")).toDateMidnight().toDateTime();
-      }
-      DateTime endDate = null;
-      if(((net.minidev.json.JSONObject)binding).containsKey("startDate")){
-        endDate = formatter.parseDateTime(JsonPath.<String>read(binding, "$.endDate.value")).toDateMidnight().toDateTime();
-      }
+      DateTime startDate = row.containsKey("startDate") ? formatter.parseDateTime(JsonPath.<String>read(binding, "$.startDate.value")).toDateMidnight().toDateTime() : null;
+      DateTime endDate = row.containsKey("endDate") ? formatter.parseDateTime(JsonPath.<String>read(binding, "$.endDate.value")).toDateMidnight().toDateTime() : null;
+
 
       StudyWithDetails studyWithDetails = new StudyWithDetails
               .StudyWithDetailsBuilder()
@@ -270,7 +288,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
               .blinding(blinding)
               .inclusionCriteria(inclusionCriteria)
               .numberOfStudyCenters(numberOfStudyCenters)
-              .pubmedUrl(publicationURL)
+              .pubmedUrls(publicationURLs)
               .status(status)
               .indication(indication)
               .objectives(objective)

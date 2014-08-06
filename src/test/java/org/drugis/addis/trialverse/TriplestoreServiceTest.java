@@ -179,7 +179,7 @@ public class TriplestoreServiceTest {
     assertNotNull(studyWithDetailsNoStartOrEndDate.getBlinding());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getInclusionCriteria());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getNumberOfStudyCenters());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getPubmedUrl());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getpubmedUrls());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getStatus());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getIndication());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getObjectives());
