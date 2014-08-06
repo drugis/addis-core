@@ -9,17 +9,19 @@
         <table>
             <thead>
             <tr>
-                <th>Name</th>
-                <th>Indication</th>
-                <th>Status</th>
-                <th>Allocation</th>
-                <th>Blinding</th>
-                <th>InvestigationalDrugNames</th>
-                <th>Publications links</th>
+                <th ng-click="predicate = 'study.name'; reverse=!reverse">Name
+                    <i ng-show="reverse &&  predicate === 'study.name'" class="fa fa-caret-up"></i>
+                    <i ng-show="!reverse &&  predicate === 'study.name'" class="fa fa-caret-down"></i></th>
+                <th ng-click="predicate = 'indication'; reverse=!reverse">Indication</th>
+                <th ng-click="predicate = 'status'; reverse=!reverse">Status</th>
+                <th ng-click="predicate = 'allocation'; reverse=!reverse">Allocation</th>
+                <th ng-click="predicate = 'blinding'; reverse=!reverse">Blinding</th>
+                <th ng-click="predicate = 'investigationalDrugNames'; reverse=!reverse">InvestigationalDrugNames</th>
+                <th ng-click="predicate = 'pubmedUrls'; reverse=!reverse">Publications links</th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="studyWithDetails in studiesWithDetails">
+            <tr ng-repeat="studyWithDetails in studiesWithDetails | orderBy:orderBypredicate:reverse ">
                 <td>{{studyWithDetails.study.name}}</td>
                 <td>{{studyWithDetails.indication}}
                 </th>

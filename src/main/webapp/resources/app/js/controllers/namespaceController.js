@@ -4,6 +4,8 @@ define([], function() {
   var NamespaceController = function($scope, $stateParams, TrialverseResource, TrialverseStudiesWithDetailsResource) {
     $scope.namespace = TrialverseResource.get($stateParams);
     $scope.studiesWithDetails = TrialverseStudiesWithDetailsResource.get($stateParams);
+    $scope.reverse = false;
+    $scope.orderBypredicate = 'study.name';
   };
   return dependencies.concat(NamespaceController);
 });
