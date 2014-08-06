@@ -1,22 +1,37 @@
 <ul class="breadcrumbs">
     <li><a ui-sref="projects">Projects</a></li>
-    <li><a ui-sref="create-project">Create Project</a></li>
-    <li class="current active">name of this dataset</li>
+    <li><a ui-sref="create-project">Datasets</a></li>
+    <li class="current active">{{namespace.name}}</li>
 </ul>
 <div class="row">
     <div class="column large-12">
-        <h2>Dataset overview</h2>
+        <h2>Overview for the {{namespace.name}} </h2>
         <table>
             <thead>
             <tr>
                 <th>Name</th>
+                <th>Indication</th>
                 <th>Status</th>
+                <th>Allocation</th>
+                <th>Blinding</th>
+                <th>InvestigationalDrugNames</th>
+                <th>Publications links</th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="studyWithDetails in studiesWithDetails">
                 <td>{{studyWithDetails.study.name}}</td>
+                <td>{{studyWithDetails.indication}}
+                </th>
                 <td>{{studyWithDetails.status}}</td>
+                <td>{{studyWithDetails.allocation}}</td>
+                <td>{{studyWithDetails.blinding}}</td>
+                <td>{{studyWithDetails.investigationalDrugNames}}</td>
+                <td>
+                  <span ng-repeat="uri in studyWithDetails.pubmedUrls | splitOnTokenFilter">
+                    <a target="_blank" ng-href={{uri}}>{{uri}}<a><span ng-show=!$last>, </span>
+                    </span>
+                </td>
             </tr>
             </tbody>
         </table>
