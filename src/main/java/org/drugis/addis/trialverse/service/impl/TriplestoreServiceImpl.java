@@ -188,7 +188,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "\n" +
             "PREFIX study: <http://trials.drugis.org/studies/>\n" +
             "\n" +
-            "SELECT ?study ?title ?label ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria ?publication, ?status ?numberOfCenters ?indication ?startDate ?endDate WHERE {\n" +
+            "SELECT ?study ?title ?label ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria" +
+            " ?publication ?status ?numberOfCenters ?indication ?startDate ?endDate WHERE {\n" +
             "  GRAPH ?dataset {\n" +
             "    ?dataset ontology:contains_study ?study .\n" +
             "  }\n" +
