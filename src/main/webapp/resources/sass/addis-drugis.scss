@@ -66,11 +66,14 @@ table {
   border-collapse: collapse;
   //remove default foundation striping 
   tr:nth-of-type(even) {
-    background-color: transparent !important;
+    background-color: transparent;
   }
   tr {
     th, td {
       border: solid 1px $addis-grey-border;
+      a:hover {
+        text-decoration: underline;
+      }
     }
     td.button-cell {
       text-align: center;
@@ -86,9 +89,9 @@ td.empty-cell {
 }
 // lighten the darken on hover 
 tr.on-hover:hover {
-  background: darken($secondary-color, 5%);
+  background: darken($secondary-color, 0.5%);
   cursor: pointer;
-  text-decoration: underline;
+  text-decoration: none;
 }
 tr.clickable td {
   color: $primary-color;
