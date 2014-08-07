@@ -171,15 +171,15 @@ public class TriplestoreServiceTest {
     assertEquals(25, studyWithDetailsList.size());
     StudyWithDetails studyWithDetailsNoStartOrEndDate = studyWithDetailsList.get(0);
 
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getStudy().getUid());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getStudy().getName());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getStudy().getTitle());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getStudyUid());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getName());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getTitle());
 
     assertNotNull(studyWithDetailsNoStartOrEndDate.getAllocation());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getBlinding());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getInclusionCriteria());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getNumberOfStudyCenters());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getpubmedUrls());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getPubmedUrls());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getStatus());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getIndication());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getObjectives());

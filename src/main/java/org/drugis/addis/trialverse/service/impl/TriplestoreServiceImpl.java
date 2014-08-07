@@ -286,7 +286,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
       StudyWithDetails studyWithDetails = new StudyWithDetails
               .StudyWithDetailsBuilder()
-              .study(new Study(uid, name, title))
+              .studyUid(uid)
+              .name(name)
+              .title(title)
               .allocation(allocation)
               .blinding(blinding)
               .inclusionCriteria(inclusionCriteria)

@@ -3,39 +3,79 @@
     <li><a ui-sref="create-project">Datasets</a></li>
     <li class="current active">{{namespace.name}}</li>
 </ul>
+
+<div class="row">
+    <div class="column large-6">
+        <h2>Overview for the {{namespace.name}}</h2>
+        <h5>{{namespace.description}}, {{studiesWithDetails.length}} studies</h5>
+    </div>
+    <div class="column large-6">
+        <button class="button small secondary right" ng-click="editStudyTableModal.open();">
+            <i class="fa fa-plus"></i> Show/Hide Columns
+        </button>
+    </div>
+</div>
 <div class="row">
     <div class="column large-12">
-        <h2>Overview for the {{namespace.name}} </h2>
         <table>
             <thead>
             <tr>
-                <th ng-click="predicate = 'study.name'; reverse=!reverse">Name
-                    <i ng-show="reverse &&  predicate === 'study.name'" class="fa fa-caret-up"></i>
-                    <i ng-show="!reverse &&  predicate === 'study.name'" class="fa fa-caret-down"></i></th>
-                <th ng-click="predicate = 'indication'; reverse=!reverse">Indication</th>
-                <th ng-click="predicate = 'status'; reverse=!reverse">Status</th>
-                <th ng-click="predicate = 'allocation'; reverse=!reverse">Allocation</th>
-                <th ng-click="predicate = 'blinding'; reverse=!reverse">Blinding</th>
-                <th ng-click="predicate = 'investigationalDrugNames'; reverse=!reverse">InvestigationalDrugNames</th>
-                <th ng-click="predicate = 'pubmedUrls'; reverse=!reverse">Publications links</th>
+                <th ng-click="tableOptions.orderByField = 'name'; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
+                    Name
+                    <i ng-show="tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'name'"
+                       class="fa fa-caret-up"></i>
+                    <i ng-show="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'name'"
+                       class="fa fa-caret-down"></i>
+                </th>
+                <th ng-show="column.visible" ng-repeat="column in tableOptions.columns"
+                    ng-click="tableOptions.orderByField = column.id; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
+                    {{column.label}}
+                    <i ng-show="tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id"
+                       class="fa fa-caret-up"></i>
+                    <i ng-show="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id"
+                       class="fa fa-caret-down"></i>
+                </th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="studyWithDetails in studiesWithDetails | orderBy:orderBypredicate:reverse ">
-                <td>{{studyWithDetails.study.name}}</td>
-                <td>{{studyWithDetails.indication}}
-                </th>
-                <td>{{studyWithDetails.status}}</td>
-                <td>{{studyWithDetails.allocation}}</td>
-                <td>{{studyWithDetails.blinding}}</td>
-                <td>{{studyWithDetails.investigationalDrugNames}}</td>
-                <td>
-                  <span ng-repeat="uri in studyWithDetails.pubmedUrls | splitOnTokenFilter">
-                    <a target="_blank" ng-href={{uri}}>{{uri}}<a><span ng-show=!$last>, </span>
-                    </span>
+            <tr ng-repeat="studyWithDetails in studiesWithDetails | orderBy:tableOptions.orderByField:tableOptions.reverseSortOrder ">
+                <td>{{studyWithDetails.name}}</td>
+                <td ng-show="column.visible" ng-repeat="column in tableOptions.columns">
+                    <span ng-show="column.type !== 'urlList'">{{studyWithDetails[column.id]}}</span>
+                <span ng-show="column.type === 'urlList'"
+                      ng-repeat="uri in studyWithDetails.pubmedUrls | splitOnTokenFilter">
+                  <a target="_blank" ng-href={{uri}}>{{uri}}</a>
+                  <span ng-show=!$last>, </span>
+                </span>
                 </td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
+
+<modal model="editStudyTableModal">
+    <h3>Columns to be shown</h3>
+
+    <form name="projectForm">
+        <div class="row">
+            <div class="large-4 columns end">
+                <ul class="no-bullet">
+                    <li ng-repeat="column in tableOptions.columns">
+                        <input id="{column.id}" ng-model="column.visible" type="checkbox">
+                        <label ng-click="column.visible = !column.visible">{{column.label}}</label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-4 columns end">
+                <ul class="button-group">
+                    <li>
+                        <button class="button" ng-click="editStudyTableModal.close()">Close</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </form>
+</modal>

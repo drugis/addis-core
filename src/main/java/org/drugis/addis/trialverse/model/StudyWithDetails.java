@@ -7,7 +7,9 @@ import org.joda.time.DateTime;
  */
 public class StudyWithDetails {
 
-  private Study study;
+  private String studyUid;
+  private String name;
+  private String title;
   private String allocation;
   private String blinding;
   private Integer numberOfStudyCenters;
@@ -29,7 +31,9 @@ public class StudyWithDetails {
   }
 
   private StudyWithDetails(StudyWithDetailsBuilder builder) {
-    this.study = builder.study;
+    this.studyUid = builder.studyUid;
+    this.name = builder.name;
+    this.title = builder.title;
     this.allocation = builder.allocation;
     this.blinding = builder.blinding;
     this.numberOfStudyCenters = builder.numberOfStudyCenters;
@@ -49,7 +53,9 @@ public class StudyWithDetails {
   }
 
   public static class StudyWithDetailsBuilder {
-    private Study study;
+    private String studyUid;
+    private String name;
+    private String title;
     private String allocation;
     private String blinding;
     private Integer numberOfStudyCenters;
@@ -72,8 +78,18 @@ public class StudyWithDetails {
     }
 
 
-    public StudyWithDetailsBuilder study(Study study) {
-      this.study = study;
+    public StudyWithDetailsBuilder studyUid(String studyUid) {
+      this.studyUid = studyUid;
+      return this;
+    }
+
+    public StudyWithDetailsBuilder name(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public StudyWithDetailsBuilder title(String title) {
+      this.title = title;
       return this;
     }
 
@@ -159,8 +175,20 @@ public class StudyWithDetails {
 
   }
 
-  public Study getStudy() {
-    return study;
+  public String getStudyUid() {
+    return studyUid;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public String getPubmedUrls() {
+    return pubmedUrls;
   }
 
   public String getAllocation() {
@@ -189,10 +217,6 @@ public class StudyWithDetails {
 
   public String getDataSource() {
     return dataSource;
-  }
-
-  public String getpubmedUrls() {
-    return pubmedUrls;
   }
 
   public Integer getStudySize() {

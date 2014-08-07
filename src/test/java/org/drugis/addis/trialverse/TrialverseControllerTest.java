@@ -189,7 +189,7 @@ public class TrialverseControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0]", notNullValue()))
-            .andExpect(jsonPath("$[0].study.title", is("studyTitle")))
+            .andExpect(jsonPath("$[0].title", is("studyTitle")))
             .andExpect(jsonPath("$[0].pubmedUrls", is("publicationURL, moreurls")));
     verify(triplestoreService).queryStudydetails(namespaceUuid);
 
@@ -197,7 +197,9 @@ public class TrialverseControllerTest {
 
   private StudyWithDetails createStudyWithDetials() {
     return new StudyWithDetails.StudyWithDetailsBuilder()
-            .study(new Study("studyUid", "studyName", "studyTitle"))
+            .studyUid("studyUid")
+            .name("studyName")
+            .title("studyTitle")
             .allocation("allocation")
             .blinding("blinding")
             .inclusionCriteria("inclusionCriteria")
