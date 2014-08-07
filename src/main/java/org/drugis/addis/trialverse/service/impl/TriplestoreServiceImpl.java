@@ -192,7 +192,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "PREFIX study: <http://trials.drugis.org/studies/>\n" +
             "\n" +
             "SELECT ?study ?title ?label ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria" +
-            " ?publications ?status ?numberOfCenters ?indication ?startDate ?endDate WHERE {\n" +
+            " ?publications ?status ?numberOfCenters ?indication ?startDate ?endDate ?numberOfArms WHERE {\n" +
             "  GRAPH dataset:" + namespaceUid + " {\n" +
             "    ?dataset ontology:contains_study ?study .\n" +
             "  }\n" +
@@ -234,7 +234,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "    }\n" +
             "    OPTIONAL\n" +
             "    {\n" +
-            "      SELECT ?study (group_concat(?drugName; separator = \",\") as ?drugNames)\n" +
+            "      SELECT ?study (group_concat(?drugName; separator = \", \") as ?drugNames)\n" +
             "      WHERE {\n" +
             "        GRAPH ?dataset {\n" +
             "          ?drug rdfs:subClassOf ontology:Drug .\n" +
@@ -260,7 +260,15 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "        }\n" +
             "      } GROUP BY ?study\n" +
             "    }\n" +
-            "  }";
+            " {\n" +
+            " SELECT ?study (COUNT(?arm) as ?numberOfArms)\n" +
+            "   WHERE {\n" +
+            "     GRAPH ?study {\n" +
+            "       ?arm rdf:type ontology:Arm .\n" +
+            "     }\n" +
+            "   } GROUP BY ?study\n" +
+            " }\n" +
+            "}";
     System.out.println(query);
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
@@ -278,6 +286,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String indication = row.containsKey("indication") ? JsonPath.<String>read(binding, "$.indication.value") : null;
       String objective = row.containsKey("objective") ? JsonPath.<String>read(binding, "$.objective.value") : null;
       String investigationalDrugNames = row.containsKey("drugNames") ? JsonPath.<String>read(binding, "$.drugNames.value") : null;
+      Integer numberOfArms = row.containsKey("numberOfArms") ? Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfArms.value")) : null;
 
       DateTimeFormatter formatter = DateTimeFormat.forPattern(STUDY_DATE_FORMAT);
       DateTime startDate = row.containsKey("startDate") ? formatter.parseDateTime(JsonPath.<String>read(binding, "$.startDate.value")).toDateMidnight().toDateTime() : null;
@@ -300,6 +309,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
               .investigationalDrugNames(investigationalDrugNames)
               .startDate(startDate)
               .endDate(endDate)
+              .numberOfArms(numberOfArms)
               .build();
       studiesWithDetail.add(studyWithDetails);
     }

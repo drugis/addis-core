@@ -168,13 +168,12 @@ public class TriplestoreServiceTest {
     List<StudyWithDetails> studyWithDetailsList = triplestoreService.queryStudydetails(namespaceUid);
 
     assertNotNull(studyWithDetailsList);
-    assertEquals(25, studyWithDetailsList.size());
+    assertEquals(2, studyWithDetailsList.size());
     StudyWithDetails studyWithDetailsNoStartOrEndDate = studyWithDetailsList.get(0);
 
     assertNotNull(studyWithDetailsNoStartOrEndDate.getStudyUid());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getName());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getTitle());
-
     assertNotNull(studyWithDetailsNoStartOrEndDate.getAllocation());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getBlinding());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getInclusionCriteria());
@@ -183,13 +182,13 @@ public class TriplestoreServiceTest {
     assertNotNull(studyWithDetailsNoStartOrEndDate.getStatus());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getIndication());
     assertNotNull(studyWithDetailsNoStartOrEndDate.getObjectives());
-
     assertNotNull(studyWithDetailsNoStartOrEndDate.getInvestigationalDrugNames());
+    assertNotNull(studyWithDetailsNoStartOrEndDate.getNumberOfArms());
 
     assertNull(studyWithDetailsNoStartOrEndDate.getStartDate());
     assertNull(studyWithDetailsNoStartOrEndDate.getEndDate());
 
-    StudyWithDetails studyWithDetailsWithStartAndEndDate = studyWithDetailsList.get(studyWithDetailsList.size()-1);
+    StudyWithDetails studyWithDetailsWithStartAndEndDate = studyWithDetailsList.get(1);
     assertNotNull(studyWithDetailsWithStartAndEndDate.getStartDate());
     assertNotNull(studyWithDetailsWithStartAndEndDate.getEndDate());
   }

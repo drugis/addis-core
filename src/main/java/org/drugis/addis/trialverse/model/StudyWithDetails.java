@@ -26,6 +26,7 @@ public class StudyWithDetails {
   private DateTime endDate;
   private DateTime creationDate; //todo: or extractiondate? not in triplestore either way
   private String status;
+  private Integer numberOfArms;
 
   public StudyWithDetails() {
   }
@@ -50,6 +51,7 @@ public class StudyWithDetails {
     this.endDate = builder.endDate;
     this.creationDate = builder.creationDate;
     this.status = builder.status;
+    this.numberOfArms = builder.numberOfArms;
   }
 
   public static class StudyWithDetailsBuilder {
@@ -72,6 +74,7 @@ public class StudyWithDetails {
     private DateTime endDate;
     private DateTime creationDate;
     private String status;
+    private Integer numberOfArms;
 
     public StudyWithDetails build() {
       return new StudyWithDetails(this);
@@ -173,6 +176,11 @@ public class StudyWithDetails {
       return this;
     }
 
+    public StudyWithDetailsBuilder numberOfArms(Integer numberOfArms) {
+      this.numberOfArms = numberOfArms;
+      return this;
+    }
+
   }
 
   public String getStudyUid() {
@@ -249,5 +257,9 @@ public class StudyWithDetails {
 
   public DateTime getCreationDate() {
     return creationDate;
+  }
+
+  public Integer getNumberOfArms() {
+    return numberOfArms;
   }
 }

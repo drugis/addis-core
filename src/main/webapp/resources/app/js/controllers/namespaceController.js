@@ -30,9 +30,13 @@ define([], function() {
         label: 'Investigational drugNames',
         visible: true
       }, {
+        id: 'numberOfArms',
+        label: 'Number of Arms',
+        visible: false
+      }, {
         id: 'pubmedUrls',
         label: 'Publications links',
-        visible: false,  
+        visible: false,
         type: 'urlList'
       }],
       reverseSortOrder: false,
