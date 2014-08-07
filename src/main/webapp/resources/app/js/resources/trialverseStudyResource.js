@@ -1,10 +1,10 @@
 'use strict';
-define([], function () {
-	var dependencies = ['$resource'];
-	var TrialverseStudyResource = function ($resource) {
-		return $resource('/namespaces/:id/studies', {
-			id: '@id'
-		});
-	};
-	return dependencies.concat(TrialverseStudyResource);
+define([], function() {
+  var dependencies = ['$resource'];
+  var TrialverseStudyResource = function($resource) {
+    return $resource('/namespaces/:namespaceUid/studies', {
+      namespaceUid: '@id'
+    });
+  };
+  return dependencies.concat(TrialverseStudyResource);
 });

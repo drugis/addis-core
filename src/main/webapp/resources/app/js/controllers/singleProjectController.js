@@ -30,13 +30,13 @@ define([], function() {
     $scope.project = ProjectResource.get($stateParams);
     $scope.project.$promise.then(function() {
       $scope.trialverse = TrialverseResource.get({
-        id: $scope.project.namespaceUid
+        namespaceUid: $scope.project.namespaceUid
       });
       $scope.semanticOutcomes = SemanticOutcomeResource.query({
-        id: $scope.project.namespaceUid
+        namespaceUid: $scope.project.namespaceUid
       });
       $scope.semanticInterventions = SemanticInterventionResource.query({
-        id: $scope.project.namespaceUid
+        namespaceUid: $scope.project.namespaceUid
       });
       $scope.outcomes = OutcomeResource.query({
         projectId: $scope.project.id
@@ -50,7 +50,7 @@ define([], function() {
       $scope.editMode.allowEditing = $window.config.user.id === $scope.project.owner.id;
 
       $scope.studies = TrialverseStudyResource.query({
-        id: $scope.project.namespaceUid
+        namespaceUid: $scope.project.namespaceUid
       });
 
       $scope.studies.$promise.then(function() {

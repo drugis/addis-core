@@ -1,8 +1,10 @@
 'use strict';
-define(['angular', 'angular-resource'], function (angular, angularResource) {
+define([], function() {
   var dependencies = ['$resource'];
-  var SemanticInterventionResource = function ($resource) {
-    return $resource('/namespaces/:id/interventions', {id: '@id'});
+  var SemanticInterventionResource = function($resource) {
+    return $resource('/namespaces/:namespaceUid/interventions', {
+      namespaceUid: '@id'
+    });
   };
   return dependencies.concat(SemanticInterventionResource);
 });
