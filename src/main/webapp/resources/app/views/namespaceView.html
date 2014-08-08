@@ -20,14 +20,15 @@
         <table>
             <thead>
             <tr>
-                <th ng-click="tableOptions.orderByField = 'name'; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
+                <th class="sortable"
+                    ng-click="tableOptions.orderByField = 'name'; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
                     Name
                     <i ng-show="tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'name'"
                        class="fa fa-caret-up"></i>
                     <i ng-show="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'name'"
                        class="fa fa-caret-down"></i>
                 </th>
-                <th ng-show="column.visible" ng-repeat="column in tableOptions.columns"
+                <th class="sortable" ng-show="column.visible" ng-repeat="column in tableOptions.columns"
                     ng-click="tableOptions.orderByField = column.id; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
                     {{column.label}}
                     <i ng-show="tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id"
