@@ -182,7 +182,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
         it('should get the tabledata and transform it to table rows and network', function() {
           expect(trialverseTrialDataResource.get).toHaveBeenCalledWith({
-            id: mockProject.namespaceUid,
+            namespaceUid: mockProject.namespaceUid,
             outcomeUri: mockOutcomes[0].semanticOutcomeUri,
             interventionUris: []
           });

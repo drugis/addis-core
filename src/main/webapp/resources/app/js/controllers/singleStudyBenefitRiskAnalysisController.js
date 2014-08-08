@@ -62,7 +62,7 @@ define(['underscore'], function() {
         .select2('readonly', $scope.$parent.editMode.disableEditing);
 
       $scope.studies = TrialverseStudyResource.query({
-        id: $scope.project.namespaceUid
+        namespaceUid: $scope.project.namespaceUid
       });
 
       outcomes.$promise.then(initialiseOutcomes);
