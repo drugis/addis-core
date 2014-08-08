@@ -192,7 +192,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "PREFIX study: <http://trials.drugis.org/studies/>\n" +
             "\n" +
             "SELECT ?study ?title ?label ?studySize ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria" +
-            " ?publications ?status ?numberOfCenters ?indication ?startDate ?endDate ?numberOfArms WHERE {\n" +
+            " ?publications ?status ?numberOfCenters ?indication ?startDate ?endDate ?numberOfArms ?doseType WHERE {\n" +
             "  GRAPH dataset:" + namespaceUid + " {\n" +
             "    ?dataset ontology:contains_study ?study .\n" +
             "  }\n" +
@@ -232,6 +232,19 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "    OPTIONAL {\n" +
             "      ?study ontology:has_end_date ?endDate .\n" +
             "    }\n" +
+            "      OPTIONAL {\n" +
+            "         SELECT ?study ?doseType\n" +
+            "           WHERE {\n" +
+            "            BIND ('Flexible' as ?doseType)\n" +
+            "             ?activity a ontology:TreatmentActivity ;\n" +
+            "               ontology:activity_application [\n" +
+            "                 ontology:applied_to_arm ?arm \n" +
+            "               ] ;\n" +
+            "               ontology:administered_drugs/rdf:rest*/rdf:first [ a ontology:TitratedDoseDrugTreatment ] .\n" +
+            "               ?study ontology:has_arm ?arm .\n" +
+            "            } GROUP BY ?study ?doseType\n" +
+            "              HAVING (COUNT(*) > 0)\n" +
+            "      }\n" +
             "    OPTIONAL\n" +
             "    {\n" +
             "      SELECT ?study (group_concat(?drugName; separator = \", \") as ?drugNames)\n" +
@@ -246,8 +259,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "        }\n" +
             "      } GROUP BY ?study\n" +
             "    }\n" +
-            "  }\n" +
-            "  OPTIONAL\n" +
+            "    OPTIONAL\n" +
             "    {\n" +
             "      SELECT ?study (group_concat(?publication; separator = \", \") as ?publications)\n" +
             "      WHERE {\n" +
@@ -260,16 +272,17 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "        }\n" +
             "      } GROUP BY ?study\n" +
             "    }\n" +
-            " {\n" +
-            " SELECT ?study (COUNT(?arm) as ?numberOfArms) (SUM(?numberOfParticipantsStarting) as ?studySize)\n" +
-            "   WHERE {\n" +
-            "     GRAPH ?study {\n" +
-            "       ?arm rdf:type ontology:Arm .\n" +
-            "       ?participantsStarting ontology:of_arm ?arm .\n" +
-            "       ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .\n" +
-            "     }\n" +
-            "   } GROUP BY ?study\n" +
-            " }\n" +
+            "    {\n" +
+            "      SELECT ?study (COUNT(?arm) as ?numberOfArms) (SUM(?numberOfParticipantsStarting) as ?studySize)\n" +
+            "        WHERE {\n" +
+            "          GRAPH ?study {\n" +
+            "            ?arm a ontology:Arm .\n" +
+            "            ?participantsStarting ontology:of_arm ?arm .\n" +
+            "            ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .\n" +
+            "          }\n" +
+            "        } GROUP BY ?study\n" +
+            "    }\n" +
+            "  }\n" +
             "}";
     System.out.println(query);
     String response = queryTripleStore(query);
@@ -295,6 +308,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       DateTime startDate = row.containsKey("startDate") ? formatter.parseDateTime(JsonPath.<String>read(binding, "$.startDate.value")).toDateMidnight().toDateTime() : null;
       DateTime endDate = row.containsKey("endDate") ? formatter.parseDateTime(JsonPath.<String>read(binding, "$.endDate.value")).toDateMidnight().toDateTime() : null;
 
+      String dosing = row.containsKey("doseType") ? JsonPath.<String>read(binding, "$.doseType.value") : "Fixed"; //todo needs better way of querying
 
       StudyWithDetails studyWithDetails = new StudyWithDetails
               .StudyWithDetailsBuilder()
@@ -314,6 +328,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
               .startDate(startDate)
               .endDate(endDate)
               .numberOfArms(numberOfArms)
+              .dosing(dosing)
               .build();
       studiesWithDetail.add(studyWithDetails);
     }

@@ -42,6 +42,10 @@ define([], function() {
         label: 'Publications links',
         visible: false,
         type: 'urlList'
+      }, {
+        id: 'dosing',
+        label: 'Dosing',
+        visible: false
       }],
       reverseSortOrder: false,
       orderByField: 'name'
