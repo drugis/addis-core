@@ -10,6 +10,8 @@ public class StudyWithDetails {
   private String studyUid;
   private String name;
   private String title;
+  private Integer studySize;
+  ;
   private String allocation;
   private String blinding;
   private Integer numberOfStudyCenters;
@@ -18,7 +20,6 @@ public class StudyWithDetails {
   private String exclusionCriteria; // TODO: not in triplestore
   private String dataSource;
   private String pubmedUrls;
-  private Integer studySize;
   private String indication;
   private String investigationalDrugNames;
   private String dosing;
@@ -35,6 +36,7 @@ public class StudyWithDetails {
     this.studyUid = builder.studyUid;
     this.name = builder.name;
     this.title = builder.title;
+    this.studySize = builder.studySize;
     this.allocation = builder.allocation;
     this.blinding = builder.blinding;
     this.numberOfStudyCenters = builder.numberOfStudyCenters;
@@ -43,7 +45,6 @@ public class StudyWithDetails {
     this.exclusionCriteria = builder.exclusionCriteria;
     this.dataSource = builder.dataSource;
     this.pubmedUrls = builder.pubmedUrls;
-    this.studySize = builder.studySize;
     this.indication = builder.indication;
     this.investigationalDrugNames = builder.investigationalDrugNames;
     this.dosing = builder.dosing;
@@ -58,6 +59,7 @@ public class StudyWithDetails {
     private String studyUid;
     private String name;
     private String title;
+    private Integer studySize;
     private String allocation;
     private String blinding;
     private Integer numberOfStudyCenters;
@@ -66,7 +68,6 @@ public class StudyWithDetails {
     private String exclusionCriteria;
     private String dataSource;
     private String pubmedUrls;
-    private Integer studySize;
     private String indication;
     private String investigationalDrugNames;
     private String dosing;
@@ -93,6 +94,11 @@ public class StudyWithDetails {
 
     public StudyWithDetailsBuilder title(String title) {
       this.title = title;
+      return this;
+    }
+
+    public StudyWithDetailsBuilder studySize(Integer studySize) {
+      this.studySize = studySize;
       return this;
     }
 
@@ -133,11 +139,6 @@ public class StudyWithDetails {
 
     public StudyWithDetailsBuilder pubmedUrls(String pubmedUrls) {
       this.pubmedUrls = pubmedUrls;
-      return this;
-    }
-
-    public StudyWithDetailsBuilder studySize(Integer studySize) {
-      this.studySize = studySize;
       return this;
     }
 
@@ -195,6 +196,10 @@ public class StudyWithDetails {
     return title;
   }
 
+  public Integer getStudySize() {
+    return studySize;
+  }
+
   public String getPubmedUrls() {
     return pubmedUrls;
   }
@@ -225,10 +230,6 @@ public class StudyWithDetails {
 
   public String getDataSource() {
     return dataSource;
-  }
-
-  public Integer getStudySize() {
-    return studySize;
   }
 
   public String getIndication() {

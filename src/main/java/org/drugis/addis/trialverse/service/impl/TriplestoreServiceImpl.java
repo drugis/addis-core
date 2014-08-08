@@ -191,7 +191,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "\n" +
             "PREFIX study: <http://trials.drugis.org/studies/>\n" +
             "\n" +
-            "SELECT ?study ?title ?label ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria" +
+            "SELECT ?study ?title ?label ?studySize ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria" +
             " ?publications ?status ?numberOfCenters ?indication ?startDate ?endDate ?numberOfArms WHERE {\n" +
             "  GRAPH dataset:" + namespaceUid + " {\n" +
             "    ?dataset ontology:contains_study ?study .\n" +
@@ -261,10 +261,12 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "      } GROUP BY ?study\n" +
             "    }\n" +
             " {\n" +
-            " SELECT ?study (COUNT(?arm) as ?numberOfArms)\n" +
+            " SELECT ?study (COUNT(?arm) as ?numberOfArms) (SUM(?numberOfParticipantsStarting) as ?studySize)\n" +
             "   WHERE {\n" +
             "     GRAPH ?study {\n" +
             "       ?arm rdf:type ontology:Arm .\n" +
+            "       ?participantsStarting ontology:of_arm ?arm .\n" +
+            "       ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .\n" +
             "     }\n" +
             "   } GROUP BY ?study\n" +
             " }\n" +
@@ -277,6 +279,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String uid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.study.value"), '/');
       String name = row.containsKey("label") ? JsonPath.<String>read(binding, "$.label.value") : null;
       String title = row.containsKey("title") ? JsonPath.<String>read(binding, "$.title.value") : null;
+      Integer studySize = row.containsKey("studySize") ? Integer.parseInt(JsonPath.<String>read(binding, "$.studySize.value")) : null;
       String allocation = row.containsKey("allocation") ? StudyAllocationEnum.fromString(subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.allocation.value"), '#')).toString() : null;
       String blinding = row.containsKey("blinding") ? StudyBlindingEmun.fromString(subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.blinding.value"), '#')).toString() : null;
       String inclusionCriteria = row.containsKey("inclusionCriteria") ? JsonPath.<String>read(binding, "$.inclusionCriteria.value") : null;
@@ -298,6 +301,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
               .studyUid(uid)
               .name(name)
               .title(title)
+              .studySize(studySize)
               .allocation(allocation)
               .blinding(blinding)
               .inclusionCriteria(inclusionCriteria)

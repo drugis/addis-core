@@ -10,6 +10,10 @@ define([], function() {
         label: 'Title',
         visible: true
       }, {
+        id: 'studySize',
+        label: 'Study size',
+        visible: true
+      }, {
         id: 'indication',
         label: 'Indication',
         visible: true
