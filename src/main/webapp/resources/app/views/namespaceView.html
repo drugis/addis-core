@@ -5,11 +5,11 @@
 </ul>
 
 <div class="row">
-    <div class="column large-6">
+    <div class="column large-10">
         <h2>Overview for the {{namespace.name}}</h2>
         <h5>{{namespace.description}}, {{studiesWithDetails.length}} studies</h5>
     </div>
-    <div class="column large-6">
+    <div class="column large-2">
         <button class="button small secondary right" ng-click="editStudyTableModal.open();">
             <i class="fa fa-cog"></i>&nbsp; Show/Hide Columns
         </button>
@@ -42,11 +42,14 @@
             <tr ng-repeat="studyWithDetails in studiesWithDetails | orderBy:tableOptions.orderByField:tableOptions.reverseSortOrder ">
                 <td>{{studyWithDetails.name}}</td>
                 <td ng-show="column.visible" ng-repeat="column in tableOptions.columns">
-                    <span ng-show="column.type !== 'urlList'">{{studyWithDetails[column.id]}}</span>
+                    <span ng-show="!column.type">{{studyWithDetails[column.id]}}</span>
                 <span ng-show="column.type === 'urlList'"
                       ng-repeat="uri in studyWithDetails.pubmedUrls | splitOnTokenFilter">
                   <a target="_blank" ng-href={{uri}}>{{uri}}</a>
                   <span ng-show=!$last>, </span>
+                </span>
+                <span ng-show="column.type === 'date'">
+                    {{studyWithDetails[column.id].millis | date}}
                 </span>
                 </td>
             </tr>

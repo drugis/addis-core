@@ -16,7 +16,7 @@ define([], function() {
       }, {
         id: 'indication',
         label: 'Indication',
-        visible: true
+        visible: false
       }, {
         id: 'status',
         label: 'Status',
@@ -46,6 +46,16 @@ define([], function() {
         id: 'dosing',
         label: 'Dosing',
         visible: false
+      },{
+        id:'startDate',
+        label: 'Start date',
+        visible: false,
+        type: 'date'
+      }, {
+        id:'endDate',
+        label: 'End date',
+        visible: false,
+        type: 'date'
       }],
       reverseSortOrder: false,
       orderByField: 'name'
