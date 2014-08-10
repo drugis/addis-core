@@ -11,7 +11,6 @@ public class StudyWithDetails {
   private String name;
   private String title;
   private Integer studySize;
-  ;
   private String allocation;
   private String blinding;
   private Integer numberOfStudyCenters;
