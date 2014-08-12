@@ -1,10 +1,23 @@
 <ul class="breadcrumbs">
     <li><a ui-sref="projects">Projects</a></li>
-    <li class="current active">Namespaces</li>
+    <li class="current active">Datasets</li>
 </ul>
 <div class="row">
     <div class="column large-12">
         <h2>Datasets</h2>
+
+        <div class="panel callout">
+            <div class="row">
+                <div class="column large-6">
+                    <p>Currently, each project is based on a "dataset", which is a collection of clinical trials
+                        data with the associated meta-data. The two example "datasets" currently available contain data
+                        imported from the example datasets that were available in ADDIS 1.16.
+
+                        Eventually, we will allow users to define their own sets of clinical trials and meta-data.
+                    </p>
+                </div>
+            </div>
+        </div>
         <table>
             <thead>
             <tr>
@@ -30,6 +43,7 @@
             </tr>
             </tbody>
         </table>
+
     </div>
 </div>
 <modal model="createProjectModal">
