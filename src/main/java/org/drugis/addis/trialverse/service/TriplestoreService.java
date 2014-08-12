@@ -1,6 +1,7 @@
 package org.drugis.addis.trialverse.service;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 
@@ -23,6 +24,8 @@ public interface TriplestoreService {
   public List<Study> queryStudies(String namespaceUid);
 
   public List<StudyWithDetails> queryStudydetails(String namespaceUid);
+
+  public StudyWithDetails getStudydetails(String namespaceUid, String studyUid) throws ResourceDoesNotExistException;
 
   public Map<String, String> getTrialverseDrugs(String namespaceUid, String studyUid, Collection<String> interventionURIs);
 

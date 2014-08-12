@@ -12,5 +12,6 @@ define(function (require) {
     .factory('TrialverseStudyResource', require('resources/trialverseStudyResource'))
     .factory('TrialverseTrialDataResource', require('resources/trialverseTrialDataResource'))
     .factory('TrialverseStudiesWithDetailsResource', require('resources/trialverseStudiesWithDetailsResource'))
-    .factory('ScenarioResource', require('resources/scenarioResource'));
+    .factory('ScenarioResource', require('resources/scenarioResource'))
+    .factory('StudyDetailsResource', require('resources/studyDetailsResource'));
 });

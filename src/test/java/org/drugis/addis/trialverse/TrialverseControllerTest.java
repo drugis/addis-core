@@ -195,6 +195,20 @@ public class TrialverseControllerTest {
 
   }
 
+  @Test
+  public void testGetStudyWithDetails() throws Exception {
+    String namespaceUid = "namespaceUid";
+    String studyUid = "studyUid";
+    when(triplestoreService.getStudydetails(namespaceUid, studyUid)).thenReturn(createStudyWithDetials());
+    ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid"));
+    resultActions
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", notNullValue()));
+    verify(triplestoreService).getStudydetails(namespaceUid, studyUid);
+
+  }
+
   private StudyWithDetails createStudyWithDetials() {
     return new StudyWithDetails.StudyWithDetailsBuilder()
             .studyUid("studyUid")

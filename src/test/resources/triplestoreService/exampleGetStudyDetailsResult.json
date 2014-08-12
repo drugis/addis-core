@@ -1,0 +1,24 @@
+{
+  "head": {
+    "vars": [ "study" , "title" , "label" , "allocation" , "blinding" , "objective" , "drugNames" , "inclusionCriteria" , "publications" , "status" , "numberOfCenters" , "indication" , "startDate" , "endDate" , "numberOfArms" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/9da22e13-9e5f-4846-9a66-b9c0ed24ac69" } ,
+        "title": { "type": "literal" , "value": "Double-blind comparison of bupropion and fluoxetine in depressed outpatients" } ,
+        "label": { "type": "literal" , "value": "Feighner et al, 1991" } ,
+        "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
+        "blinding": { "type": "uri" , "value": "http://trials.drugis.org/ontology#blindingDouble" } ,
+        "objective": { "type": "literal" , "value": "This study was undertaken to compare the efficacy and safety of bupropion and fluoxetine." } ,
+        "drugNames": { "type": "literal" , "value": "Bupropion,Fluoxetine" } ,
+        "inclusionCriteria": { "type": "literal" , "value": "Inclusion criteria:\n\nPatients had to (1) give written informed consent; (2) be at least 18 years old; (3) fulfill the DMS-III-R criteria for nonpsychotic major depressive episode (single or recurrent) which was not secondary to another preexisting psychiatric or medical condition; (4) have had the current depressive episode for at least 4 weeks but less than 2 years; (5) have a score of 20 or more on the 21-item HAM-D scale; and (6) be considered clinically appropriate for therapy with either bupropion or fluoxetine.\n\nExclusion criteria:\n\nPatients were excluded from the study if they (1) had a predisposition to seizures; (2) had a current diagnosis or history of hepatic or renal dysfunction, thyroid disorder, anorexia nervosa or bulimia, or other unstable medical disorder; (3) were pregnant, lactating, or refused to employ an acceptable contraceptive method; (4) had a clinical history within the past year of alcohol or substance abuse; (5) had received psychoactive drugs within 1 week of the treatment phase (2 weeks for monoamine oxidase inhibitors or protriptyline and 4 weeks for investigational drugs); (6) had received previous treatment with bupropion or fluoxetine; (7) were currently receiving treatment with tryptophan, warfarin, digoxin, or thyroid preparations; (8) were unable to conduct a meaningful conversation or activity; or (9) were actively suicidal." } ,
+        "publications": { "type": "literal" , "value": "http://pubmed.com/1907963" } ,
+        "status": { "type": "uri" , "value": "http://trials.drugis.org/ontology#statusCompleted" } ,
+        "numberOfCenters": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "2" } ,
+        "indication": { "type": "literal" , "value": "Severe depression" } ,
+        "numberOfArms": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "2" }
+      }
+    ]
+  }
+}

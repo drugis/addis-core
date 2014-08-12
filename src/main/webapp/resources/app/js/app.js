@@ -122,6 +122,11 @@ define(
             templateUrl: baseTemplatePath + 'namespaceView.html',
             controller: 'NamespaceController'
           })
+          .state('study', {
+            url: '/namespaces/:namespaceUid/study/:studyUid',
+            templateUrl: baseTemplatePath + 'study.html',
+            controller: 'StudyController'
+          })
           .state('project', {
             url: '/projects/:projectId',
             templateUrl: baseTemplatePath + 'project.html',

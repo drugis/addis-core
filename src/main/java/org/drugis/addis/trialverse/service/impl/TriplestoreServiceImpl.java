@@ -5,8 +5,10 @@ import com.google.common.collect.Collections2;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyAllocationEnum;
@@ -16,9 +18,13 @@ import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,8 +40,22 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private final static String triplestoreUri = System.getenv("TRIPLESTORE_URI");
   private final static Pattern STUDY_UID_FROM_URI_PATTERN = Pattern.compile("http://trials.drugis.org/study/(\\w+)/.*");
 
+  private final static String STUDY_DETAILS_QUERY = loadResource("studyDetails.sparql");
+
   @Inject
   RestOperationsFactory restOperationsFactory;
+
+  private static String loadResource(String filename) {
+    try {
+      Resource myData = new ClassPathResource(filename);
+      InputStream stream = myData.getInputStream();
+      String query = IOUtils.toString(stream, "UTF-8");
+      return query;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return "";
+  }
 
 
   @Override
@@ -110,7 +130,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "    ?outcome rdfs:label ?label .\n" +
             "  }\n" +
             "}\n";
-    System.out.println(query);
+    //System.out.println(query);
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
@@ -179,6 +199,21 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       studies.add(new Study(uid, name, title));
     }
     return studies;
+  }
+
+  @Override
+  public StudyWithDetails getStudydetails(String namespaceUid, String studyUid) throws ResourceDoesNotExistException {
+    String query = StringUtils.replace(STUDY_DETAILS_QUERY, "$namespaceUid", namespaceUid);
+    query = StringUtils.replace(query, "$studyUid", studyUid);
+    // System.out.println(query);
+    String response = queryTripleStore(query);
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    if (bindings.size() != 1) {
+      throw new ResourceDoesNotExistException();
+    }
+
+    StudyWithDetails studyWithDetails = buildStudyWithDetailsFromJsonObject(bindings.get(0));
+    return studyWithDetails;
   }
 
   @Override
@@ -284,55 +319,58 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "    }\n" +
             "  }\n" +
             "}";
-    System.out.println(query);
+    //System.out.println(query);
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
-      JSONObject row = (net.minidev.json.JSONObject) binding;
-      String uid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.study.value"), '/');
-      String name = row.containsKey("label") ? JsonPath.<String>read(binding, "$.label.value") : null;
-      String title = row.containsKey("title") ? JsonPath.<String>read(binding, "$.title.value") : null;
-      Integer studySize = row.containsKey("studySize") ? Integer.parseInt(JsonPath.<String>read(binding, "$.studySize.value")) : null;
-      String allocation = row.containsKey("allocation") ? StudyAllocationEnum.fromString(subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.allocation.value"), '#')).toString() : null;
-      String blinding = row.containsKey("blinding") ? StudyBlindingEmun.fromString(subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.blinding.value"), '#')).toString() : null;
-      String inclusionCriteria = row.containsKey("inclusionCriteria") ? JsonPath.<String>read(binding, "$.inclusionCriteria.value") : null;
-      Integer numberOfStudyCenters = row.containsKey("numberOfCenters") ? Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfCenters.value")) : null;
-      String publicationURLs = row.containsKey("publications") ? JsonPath.<String>read(binding, "$.publications.value") : null;
-      String status = row.containsKey("status") ? StudyStatusEnum.fromString(subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.status.value"), '#')).toString() : null;
-      String indication = row.containsKey("indication") ? JsonPath.<String>read(binding, "$.indication.value") : null;
-      String objective = row.containsKey("objective") ? JsonPath.<String>read(binding, "$.objective.value") : null;
-      String investigationalDrugNames = row.containsKey("drugNames") ? JsonPath.<String>read(binding, "$.drugNames.value") : null;
-      Integer numberOfArms = row.containsKey("numberOfArms") ? Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfArms.value")) : null;
-
-      DateTimeFormatter formatter = DateTimeFormat.forPattern(STUDY_DATE_FORMAT);
-      DateTime startDate = row.containsKey("startDate") ? formatter.parseDateTime(JsonPath.<String>read(binding, "$.startDate.value")).toDateMidnight().toDateTime() : null;
-      DateTime endDate = row.containsKey("endDate") ? formatter.parseDateTime(JsonPath.<String>read(binding, "$.endDate.value")).toDateMidnight().toDateTime() : null;
-
-      String dosing = row.containsKey("doseType") ? JsonPath.<String>read(binding, "$.doseType.value") : "Fixed"; //todo needs better way of querying
-
-      StudyWithDetails studyWithDetails = new StudyWithDetails
-              .StudyWithDetailsBuilder()
-              .studyUid(uid)
-              .name(name)
-              .title(title)
-              .studySize(studySize)
-              .allocation(allocation)
-              .blinding(blinding)
-              .inclusionCriteria(inclusionCriteria)
-              .numberOfStudyCenters(numberOfStudyCenters)
-              .pubmedUrls(publicationURLs)
-              .status(status)
-              .indication(indication)
-              .objectives(objective)
-              .investigationalDrugNames(investigationalDrugNames)
-              .startDate(startDate)
-              .endDate(endDate)
-              .numberOfArms(numberOfArms)
-              .dosing(dosing)
-              .build();
-      studiesWithDetail.add(studyWithDetails);
+      studiesWithDetail.add(buildStudyWithDetailsFromJsonObject(binding));
     }
     return studiesWithDetail;
+  }
+
+  private StudyWithDetails buildStudyWithDetailsFromJsonObject(Object binding) {
+    JSONObject row = (net.minidev.json.JSONObject) binding;
+    String uid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.study.value"), '/');
+    String name = row.containsKey("label") ? JsonPath.<String>read(binding, "$.label.value") : null;
+    String title = row.containsKey("title") ? JsonPath.<String>read(binding, "$.title.value") : null;
+    Integer studySize = row.containsKey("studySize") ? Integer.parseInt(JsonPath.<String>read(binding, "$.studySize.value")) : null;
+    String allocation = row.containsKey("allocation") ? StudyAllocationEnum.fromString(subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.allocation.value"), '#')).toString() : null;
+    String blinding = row.containsKey("blinding") ? StudyBlindingEmun.fromString(subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.blinding.value"), '#')).toString() : null;
+    String inclusionCriteria = row.containsKey("inclusionCriteria") ? JsonPath.<String>read(binding, "$.inclusionCriteria.value") : null;
+    Integer numberOfStudyCenters = row.containsKey("numberOfCenters") ? Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfCenters.value")) : null;
+    String publicationURLs = row.containsKey("publications") ? JsonPath.<String>read(binding, "$.publications.value") : null;
+    String status = row.containsKey("status") ? StudyStatusEnum.fromString(subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.status.value"), '#')).toString() : null;
+    String indication = row.containsKey("indication") ? JsonPath.<String>read(binding, "$.indication.value") : null;
+    String objective = row.containsKey("objective") ? JsonPath.<String>read(binding, "$.objective.value") : null;
+    String investigationalDrugNames = row.containsKey("drugNames") ? JsonPath.<String>read(binding, "$.drugNames.value") : null;
+    Integer numberOfArms = row.containsKey("numberOfArms") ? Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfArms.value")) : null;
+
+    DateTimeFormatter formatter = DateTimeFormat.forPattern(STUDY_DATE_FORMAT);
+    DateTime startDate = row.containsKey("startDate") ? formatter.parseDateTime(JsonPath.<String>read(binding, "$.startDate.value")).toDateMidnight().toDateTime() : null;
+    DateTime endDate = row.containsKey("endDate") ? formatter.parseDateTime(JsonPath.<String>read(binding, "$.endDate.value")).toDateMidnight().toDateTime() : null;
+
+    String dosing = row.containsKey("doseType") ? JsonPath.<String>read(binding, "$.doseType.value") : "Fixed"; //todo needs better way of querying
+
+    return new StudyWithDetails
+            .StudyWithDetailsBuilder()
+            .studyUid(uid)
+            .name(name)
+            .title(title)
+            .studySize(studySize)
+            .allocation(allocation)
+            .blinding(blinding)
+            .inclusionCriteria(inclusionCriteria)
+            .numberOfStudyCenters(numberOfStudyCenters)
+            .pubmedUrls(publicationURLs)
+            .status(status)
+            .indication(indication)
+            .objectives(objective)
+            .investigationalDrugNames(investigationalDrugNames)
+            .startDate(startDate)
+            .endDate(endDate)
+            .numberOfArms(numberOfArms)
+            .dosing(dosing)
+            .build();
   }
 
   private String buildInterventionUnionString(List<String> interventionUids) {
@@ -418,10 +456,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "  }\n" +
             "}\n";
     String response = queryTripleStore(query);
-    System.out.println(query);
+    // System.out.println(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     Map<String, TrialDataStudy> trialDataStudies = new HashMap<>();
-    // ?studyName ?drug ?interventionLabel ?interventionInstance ?outcomeInstance ?outcomeTypeUid ?outcomeInstanceLabel ?arm ?armLabel ?mean ?stdDev ?count ?sampleSize WHERE {
     for (Object binding : bindings) {
       String studyUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.study.value"), '/');
       TrialDataStudy trialDataStudy = trialDataStudies.get(studyUid);
@@ -643,7 +680,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public Map<String, String> getTrialverseDrugs(String namespaceUid, String studyUid, Collection<String> drugURIs) {
     String optionString = buildOptionStringFromConceptURIs(drugURIs);
     String query = "TODO";
-    System.out.println(query);
+    //System.out.println(query);
 
     String response = queryTripleStore(query);
 
@@ -661,9 +698,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public List<Pair<String, Long>> getOutcomeVariableUidsByStudyForSingleOutcome(String namespaceUid, List<String> studyUids, String outcomeURI) {
     String query = "TODO";
 
-    System.out.println("getOutcomeVariableUidsByStudyForSingleOutcome query: " + query);
+    //System.out.println("getOutcomeVariableUidsByStudyForSingleOutcome query: " + query);
     String response = queryTripleStore(query);
-    System.out.println("getOutcomeVariableUidsByStudyForSingleOutcome response: " + response);
+    //System.out.println("getOutcomeVariableUidsByStudyForSingleOutcome response: " + response);
 
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     List<Pair<String, Long>> studyVariablesForOutcome = new ArrayList<>(bindings.size());
@@ -699,7 +736,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     String conceptOptionsString = buildOptionStringFromConceptURIs(interventionURIs);
     String studyOptionsString = StringUtils.join(studyUids, "|");
     String query = "TODO";
-    System.out.println(query);
+    //System.out.println(query);
     String response = queryTripleStore(query);
 
     Map<String, List<TrialDataIntervention>> studyInterventionsMap = new HashMap<>();

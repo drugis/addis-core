@@ -40,7 +40,8 @@
             </thead>
             <tbody>
             <tr ng-repeat="studyWithDetails in studiesWithDetails | orderBy:tableOptions.orderByField:tableOptions.reverseSortOrder ">
-                <td>{{studyWithDetails.name}}</td>
+                <td><a ui-sref="study({namespaceUid: namespace.uid, studyUid: studyWithDetails.studyUid})">{{studyWithDetails.name}}</a>
+                </td>
                 <td ng-show="column.visible" ng-repeat="column in tableOptions.columns">
                     <span ng-show="!column.type">{{studyWithDetails[column.id]}}</span>
                 <span ng-show="column.type === 'urlList'"

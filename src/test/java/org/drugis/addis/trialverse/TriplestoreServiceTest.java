@@ -2,6 +2,7 @@ package org.drugis.addis.trialverse;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.TestUtils;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
@@ -191,6 +192,21 @@ public class TriplestoreServiceTest {
     StudyWithDetails studyWithDetailsWithStartAndEndDate = studyWithDetailsList.get(1);
     assertNotNull(studyWithDetailsWithStartAndEndDate.getStartDate());
     assertNotNull(studyWithDetailsWithStartAndEndDate.getEndDate());
+  }
+
+  @Test
+  public void testGetStudyDetails() throws ResourceDoesNotExistException {
+    String namespaceUid = "namespaceUid";
+    String studyUid = "studyUid";
+
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleGetStudyDetailsResult.json");
+    createMockTrialverseService(mockResult);
+
+    StudyWithDetails studyWithDetails = triplestoreService.getStudydetails(namespaceUid, studyUid);
+
+    assertNotNull(studyWithDetails.getStudyUid());
+    assertNotNull(studyWithDetails.getName());
+    assertNotNull(studyWithDetails.getTitle());
   }
 
   @Test

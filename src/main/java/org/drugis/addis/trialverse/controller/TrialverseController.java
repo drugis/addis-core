@@ -39,13 +39,13 @@ public class TrialverseController {
   @RequestMapping(value = "/namespaces", method = RequestMethod.GET)
   @ResponseBody
   public Collection<Namespace> query() throws MethodNotAllowedException {
-      return triplestoreService.queryNameSpaces();
+    return triplestoreService.queryNameSpaces();
   }
 
   @RequestMapping(value = "/namespaces/{namespaceUid}", method = RequestMethod.GET)
   @ResponseBody
   public Namespace get(@PathVariable String namespaceUid) throws ResourceDoesNotExistException {
-      return triplestoreService.getNamespace(namespaceUid);
+    return triplestoreService.getNamespace(namespaceUid);
   }
 
   @RequestMapping(value = "/namespaces/{namespaceUid}/outcomes", method = RequestMethod.GET)
@@ -68,8 +68,14 @@ public class TrialverseController {
 
   @RequestMapping(value = "/namespaces/{namespaceUid}/studiesWithDetail", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<StudyWithDetails> queryStudiesWithDetails(@PathVariable String namespaceUid) throws ResourceDoesNotExistException {
-      return triplestoreService.queryStudydetails(namespaceUid);
+  public Collection<StudyWithDetails> queryStudiesWithDetails(@PathVariable String namespaceUid) {
+    return triplestoreService.queryStudydetails(namespaceUid);
+  }
+
+  @RequestMapping(value = "/namespaces/{namespaceUid}/studiesWithDetail/{studyUid}", method = RequestMethod.GET)
+  @ResponseBody
+  public StudyWithDetails getStudysWithDetails(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException {
+    return triplestoreService.getStudydetails(namespaceUid, studyUid);
   }
 
   @RequestMapping(value = "/namespaces/{namespaceUid}/trialData", method = RequestMethod.GET)
