@@ -9052,74 +9052,79 @@ div.row.property-row {
 
 /* line 69, ../../sass/addis-drugis.scss */
 div.row.property-section {
-  margin: 2rem 0;
+  margin-bottom: 2rem;
+}
+/* line 71, ../../sass/addis-drugis.scss */
+div.row.property-section h5 {
+  padding-left: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-/* line 76, ../../sass/addis-drugis.scss */
+/* line 80, ../../sass/addis-drugis.scss */
 table {
   border-collapse: collapse;
 }
-/* line 79, ../../sass/addis-drugis.scss */
+/* line 83, ../../sass/addis-drugis.scss */
 table tr:nth-of-type(even) {
   background-color: transparent;
 }
-/* line 83, ../../sass/addis-drugis.scss */
+/* line 87, ../../sass/addis-drugis.scss */
 table tr th.sortable {
   cursor: pointer;
 }
-/* line 86, ../../sass/addis-drugis.scss */
+/* line 90, ../../sass/addis-drugis.scss */
 table tr th, table tr td {
   border: solid 1px #dadada;
 }
-/* line 88, ../../sass/addis-drugis.scss */
+/* line 92, ../../sass/addis-drugis.scss */
 table tr th a:hover, table tr td a:hover {
   text-decoration: underline;
 }
-/* line 92, ../../sass/addis-drugis.scss */
+/* line 96, ../../sass/addis-drugis.scss */
 table tr td.button-cell {
   text-align: center;
 }
-/* line 94, ../../sass/addis-drugis.scss */
+/* line 98, ../../sass/addis-drugis.scss */
 table tr td.button-cell button {
   margin-bottom: 0;
   font-size: 0.875rem;
 }
 
-/* line 101, ../../sass/addis-drugis.scss */
+/* line 105, ../../sass/addis-drugis.scss */
 td.empty-cell {
   background-color: #dadada;
 }
 
-/* line 105, ../../sass/addis-drugis.scss */
+/* line 109, ../../sass/addis-drugis.scss */
 tr.on-hover:hover {
   background: #e6e6e6;
   cursor: pointer;
   text-decoration: none;
 }
 
-/* line 110, ../../sass/addis-drugis.scss */
+/* line 114, ../../sass/addis-drugis.scss */
 tr.clickable td {
   color: #452f8c;
 }
 
-/* line 113, ../../sass/addis-drugis.scss */
+/* line 117, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table {
   border: none;
   border-spacing: 0px;
 }
-/* line 116, ../../sass/addis-drugis.scss */
+/* line 120, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td {
   border-bottom: solid 1px #dadada;
   vertical-align: top;
 }
-/* line 119, ../../sass/addis-drugis.scss */
+/* line 123, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td label {
   display: block;
   padding-left: 15px;
   text-indent: -15px;
   margin: 0;
 }
-/* line 125, ../../sass/addis-drugis.scss */
+/* line 129, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td input[type="checkbox"] {
   width: 13px;
   height: 13px;
@@ -9130,32 +9135,32 @@ table.network-meta-analysis-table tbody tr td input[type="checkbox"] {
   top: -3px;
   *overflow: hidden;
 }
-/* line 135, ../../sass/addis-drugis.scss */
+/* line 139, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td .alert-message {
   color: #e66464;
   padding-top: 1px;
 }
-/* line 140, ../../sass/addis-drugis.scss */
+/* line 144, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table thead tr th {
   border-bottom: solid 1px #dadada;
 }
-/* line 143, ../../sass/addis-drugis.scss */
+/* line 147, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tr.topborder td {
   border-top: solid 1px #dadada;
 }
 
-/* line 147, ../../sass/addis-drugis.scss */
+/* line 151, ../../sass/addis-drugis.scss */
 .undefined {
   color: #747474;
 }
 
-/* line 150, ../../sass/addis-drugis.scss */
+/* line 154, ../../sass/addis-drugis.scss */
 .table-cell-label {
   font-weight: bold;
   text-align: center;
 }
 
-/* line 158, ../../sass/addis-drugis.scss */
+/* line 162, ../../sass/addis-drugis.scss */
 .table-title {
   margin-left: 2px;
   font-size: 14px;
@@ -9164,14 +9169,14 @@ table.network-meta-analysis-table tr.topborder td {
   margin-bottom: 4px;
 }
 
-/* line 165, ../../sass/addis-drugis.scss */
+/* line 169, ../../sass/addis-drugis.scss */
 .addis-graph {
   background-color: white;
   border: solid 1px #dadada;
   margin-bottom: 10px;
 }
 
-/* line 170, ../../sass/addis-drugis.scss */
+/* line 174, ../../sass/addis-drugis.scss */
 .graph-legend {
   padding: 0.5rem 1rem;
 }

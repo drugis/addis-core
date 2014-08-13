@@ -6,21 +6,17 @@
 
 <div class="row">
     <div class="column large-12">
-        <h2>Study details</h2>
+        <h2>{{studyDetails.name}}</h2>
+
+        <p>
+            <em>{{studyDetails.title}}</em>
+        </p>
 
         <div class="panel">
 
-            <div class="row">
-                <div class="column large-6">
-                    <h3>{{studyDetails.name}}</h3>
-
-                    <p>
-                        <em>{{studyDetails.title}}</em>
-                    </p>
-                </div>
-            </div>
-
             <div class="row property-section">
+                <h5 class="subheader">Study details</h5>
+
                 <div class="column large-4">
                     <div class="row property-row">
                         <div class="column large-3">
@@ -67,6 +63,7 @@
                         </div>
                         <div class="column large-7">
                             <span>{{studyDetails.numberOfStudyCenters}}</span>
+                            <span ng-show="!studyDetails.numberOfStudyCenters"><em>not availiable</em></span>
                         </div>
                     </div>
 
@@ -109,7 +106,6 @@
                             <span>{{studyDetails.status}}</span>
                         </div>
                     </div>
-
                     <div class="row property-row">
                         <div class="column large-3">
                             <strong><span class="right">Start date</span></strong>
@@ -119,7 +115,6 @@
                             <span ng-show="!studyDetails.startDate"><em>not availiable</em></span>
                         </div>
                     </div>
-
                     <div class="row property-row">
                         <div class="column large-3">
                             <strong><span class="right">End date</span></strong>
@@ -129,9 +124,7 @@
                             <span ng-show="!studyDetails.startDate"><em>not availiable</em></span>
                         </div>
                     </div>
-
                 </div>
-
                 <div class="column large-6 end">
                     <div class="row property-row">
                         <div class="column large-5">
@@ -147,7 +140,14 @@
 
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
+
+        <div class="panel">
+            <div class="row property-section">
+                <h5 class="subheader">Study design</h5>
+            </div>
+        </div>
+
+    </div>
