@@ -61,6 +61,17 @@ label {
   display: block;
   color: $drugis-color;
 }
+/////////// property lists /////////////////
+div.row.property-row {
+  margin-bottom: 1rem;
+}
+
+div.row.property-section {
+  margin: 2rem 0;
+}
+
+/////////// end property lists ////////////
+
 //////// Tables ///////////////// 
 table {
   border-collapse: collapse;

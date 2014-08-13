@@ -5,7 +5,149 @@
 </ul>
 
 <div class="row">
-    <div class="column large-10">
-        <h2>Study</h2>
-    </div>
-</div>
+    <div class="column large-12">
+        <h2>Study details</h2>
+
+        <div class="panel">
+
+            <div class="row">
+                <div class="column large-6">
+                    <h3>{{studyDetails.name}}</h3>
+
+                    <p>
+                        <em>{{studyDetails.title}}</em>
+                    </p>
+                </div>
+            </div>
+
+            <div class="row property-section">
+                <div class="column large-4">
+                    <div class="row property-row">
+                        <div class="column large-3">
+                            <strong><span class="right">Indication</span></strong>
+                        </div>
+                        <div class="column large-9 end">
+                            <span>{{studyDetails.indication}}</span>
+                        </div>
+                    </div>
+
+                    <div class="row property-row">
+                        <div class="column large-3">
+                            <strong><span class="right">Allocation</span></strong>
+                        </div>
+                        <div class="column large-9 end">
+                            <span>{{studyDetails.allocation}}</span>
+                        </div>
+                    </div>
+
+                    <div class="row property-row">
+                        <div class="column large-3">
+                            <strong><span class="right">Blinding</span></strong>
+                        </div>
+                        <div class="column large-9 end">
+                            <span>{{studyDetails.blinding}}</span>
+                        </div>
+                    </div>
+
+                    <div class="row property-row">
+                        <div class="column large-3">
+                            <strong><span class="right">Size</span></strong>
+                        </div>
+                        <div class="column large-9 end">
+                            <span>{{studyDetails.studySize}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column large-6 end">
+
+                    <div class="row property-row">
+                        <div class="column large-5">
+                            <strong><span class="right">Number of study centers</span></strong>
+                        </div>
+                        <div class="column large-7">
+                            <span>{{studyDetails.numberOfStudyCenters}}</span>
+                        </div>
+                    </div>
+
+                    <div class="row property-row">
+                        <div class="column large-5">
+                            <strong><span class="right">Dosing</span></strong>
+                        </div>
+                        <div class="column large-7">
+                            <span>{{studyDetails.dosing}}</span>
+                        </div>
+                    </div>
+
+                    <div class="row property-row">
+                        <div class="column large-5">
+                            <strong><span class="right">Number of arms</span></strong>
+                        </div>
+                        <div class="column large-7">
+                            <span>{{studyDetails.numberOfArms}}</span>
+                        </div>
+                    </div>
+
+                    <div class="row property-row">
+                        <div class="column large-5">
+                            <strong><span class="right">Investigational drugs</span></strong>
+                        </div>
+                        <div class="column large-7">
+                            <span>{{studyDetails.investigationalDrugNames}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row property-section">
+                <div class="column large-4">
+                    <div class="row property-row">
+                        <div class="column large-3">
+                            <strong><span class="right">Status</span></strong>
+                        </div>
+                        <div class="column large-9 end">
+                            <span>{{studyDetails.status}}</span>
+                        </div>
+                    </div>
+
+                    <div class="row property-row">
+                        <div class="column large-3">
+                            <strong><span class="right">Start date</span></strong>
+                        </div>
+                        <div class="column large-9 end">
+                            <span ng-show="studyDetails.startDate">{{studyDetails.startDate.millis | date:'yyyy-MM-dd'}}</span>
+                            <span ng-show="!studyDetails.startDate"><em>not availiable</em></span>
+                        </div>
+                    </div>
+
+                    <div class="row property-row">
+                        <div class="column large-3">
+                            <strong><span class="right">End date</span></strong>
+                        </div>
+                        <div class="column large-9">
+                            <span ng-show="studyDetails.startDate">{{studyDetails.endDate.millis | date:'yyyy-MM-dd'}}</span>
+                            <span ng-show="!studyDetails.startDate"><em>not availiable</em></span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="column large-6 end">
+                    <div class="row property-row">
+                        <div class="column large-5">
+                            <strong><span class="right">Pubmed links</span></strong>
+                        </div>
+                        <div class="column large-7 end">
+                            <div ng-repeat="uri in studyDetails.pubmedUrls | splitOnTokenFilter">
+                                <a target="_blank" ng-href={{uri}}>{{uri}}</a>
+
+                                <div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
