@@ -58,6 +58,16 @@
         </table>
     </div>
 </div>
+<div ng-show="!studiesWithDetails.$resolved" class="row">
+    <div class="column center large-12">
+        <i class="fa fa-spinner fa-spin fa-3x"></i>
+
+        <p>Loading table data...
+
+        <p>
+    </div>
+</div>
+
 
 <modal model="editStudyTableModal">
     <h3>Columns to be shown</h3>
