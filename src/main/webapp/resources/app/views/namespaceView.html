@@ -50,7 +50,7 @@
                   <span ng-show=!$last>, </span>
                 </span>
                 <span ng-show="column.type === 'date'">
-                    {{studyWithDetails[column.id].millis | date}}
+                    {{studyWithDetails[column.id].millis | date:'yyyy-MM-dd'}}
                 </span>
                 </td>
             </tr>
