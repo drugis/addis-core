@@ -230,6 +230,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     for (Object binding : bindings) {
       JSONObject jsonObject = (net.minidev.json.JSONObject) binding;
       String treatmentActivityUri = jsonObject.containsKey("treatmentActivity") ? JsonPath.<String>read(binding, "$.treatmentActivity.value") : null;
+      String epochUri = jsonObject.containsKey("epoch") ? JsonPath.<String>read(binding, "$.epoch.value") : null;
       String epochLabel = jsonObject.containsKey("epochLabel") ? JsonPath.<String>read(binding, "$.epochLabel.value") : null;
       String treatmentActivityTypeLabel = jsonObject.containsKey("treatmentActivityType") ? subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.treatmentActivityType.value"), '#') : null;
       String armLabel = jsonObject.containsKey("armLabel") ? JsonPath.<String>read(binding, "$.armLabel.value") : null;
@@ -246,6 +247,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
       TreatmentActivity treatmentActivity = new TreatmentActivity.StudyDesignBuilder()
               .treatmentActivityUri(treatmentActivityUri)
+              .epochUri(epochUri)
               .epochLabel(epochLabel)
               .treatmentActivityTypeLabel(treatmentActivityTypeLabel)
               .armLabel(armLabel)

@@ -5,6 +5,7 @@ package org.drugis.addis.trialverse.model;
  */
 public class TreatmentActivity {
   private String treatmentActivityUri;
+  private String epochUri;
   private String epochLabel;
   private String treatmentActivityTypeLabel;
   private String armLabel;
@@ -24,6 +25,7 @@ public class TreatmentActivity {
 
   private TreatmentActivity(StudyDesignBuilder builder) {
     this.treatmentActivityUri = builder.treatmentActivityUri;
+    this.epochUri = builder.epochUri;
     this.epochLabel = builder.epochLabel;
     this.treatmentActivityTypeLabel = builder.treatmentActivityTypeLabel;
     this.armLabel = builder.armLabel;
@@ -44,6 +46,7 @@ public class TreatmentActivity {
 
   public static class StudyDesignBuilder {
     private String treatmentActivityUri;
+    private String epochUri;
     private String epochLabel;
     private String treatmentActivityTypeLabel;
     private String armLabel;
@@ -67,6 +70,11 @@ public class TreatmentActivity {
 
     public StudyDesignBuilder treatmentActivityUri(String treatmentActivityUri) {
       this.treatmentActivityUri = treatmentActivityUri;
+      return this;
+    }
+
+    public StudyDesignBuilder epochUri(String epochUri) {
+      this.epochUri = epochUri;
       return this;
     }
 
@@ -139,6 +147,10 @@ public class TreatmentActivity {
 
   public String getTreatmentActivityUri() {
     return treatmentActivityUri;
+  }
+
+  public String getEpochUri() {
+    return epochUri;
   }
 
   public String getEpochLabel() {

@@ -6,8 +6,9 @@ PREFIX study: <http://trials.drugis.org/studies/>
 PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 PREFIX instance: <http://trials.drugis.org/instances/>
 
-SELECT 
+SELECT DISTINCT
   ?treatmentActivity
+  ?epoch
   ?epochLabel
   ?armLabel
   ?treatmentActivityType

@@ -144,10 +144,26 @@
             </div>
         </div>
 
-        <div class="panel">
-            <div class="row property-section">
-                <h5 class="subheader">Study design</h5>
+
+        <div class="row property-section">
+            <h5 class="subheader">Study design</h5>
+
+            <div class="column large-12">
+                <table>
+                    <thead>
+                    <tr>
+                        <th ng-repeat="columnHeader in studyDesignTable.head">{{columnHeader}}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="studyDesignRow in studyDesignTable.body">
+                        <td ng-repeat="item in studyDesignRow">{{item.label}}</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
+
     </div>
+</div>
