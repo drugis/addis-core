@@ -40,7 +40,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private final static String triplestoreUri = System.getenv("TRIPLESTORE_URI");
   private final static Pattern STUDY_UID_FROM_URI_PATTERN = Pattern.compile("http://trials.drugis.org/study/(\\w+)/.*");
 
-  private final static String STUDY_DETAILS_QUERY = loadResource("studyDetails.sparql");
+  private final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
 
   @Inject
   RestOperationsFactory restOperationsFactory;
