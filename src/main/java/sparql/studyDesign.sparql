@@ -1,94 +1,5 @@
 PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX dataset: <http://trials.drugis.org/datasets/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX study: <http://trials.drugis.org/studies/>
-PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
-PREFIX instance: <http://trials.drugis.org/instances/>
-
-SELECT ?label ?epochLabel ?armLabel ?treatmentActivity ?treatmentActivityType ?administeredDrugs ?treatment WHERE {
-  GRAPH dataset:$namespaceUid {
-    ?dataset ontology:contains_study ?study .
-  }
-  GRAPH study:$studyUid {
-      ?study rdfs:label ?label .
-      ?study ontology:has_epochs ?epochs .
-      ?epochs  list:member ?epoch .
-      ?epoch rdfs:label ?epochLabel .
-      OPTIONAL {
-        ?participantFlow ontology:in_epoch ?epoch .
-        ?participantFlow ontology:of_arm ?arm .
-        ?arm rdfs:label ?armLabel .
-      }
-      ?treatmentActivity ontology:activity_application [
-        ontology:applied_to_arm ?arm ;
-        ontology:applied_in_epoch ?epoch
-      ] .
-      OPTIONAL {
-        ?treatmentActivity ontology:administered_drugs ?drugList .
-        ?drugList list:member ?administeredDrug .
-        ?administeredDrug rdf:type ?drugType .
-      }
-      ?treatmentActivity a ?treatmentActivityType .
-      OPTIONAL {
-        ?treatmentActivity ontology:administered_drugs ?administeredDrugs .
-        ?administeredDrugs list:member ?treatment
-        ?treatment ontology:treatment_min_dose [
-          rdf:value ?value 
-        ] .
-      }
-   }
-}
-
-PREFIX ontology: <http://trials.drugis.org/ontology#>
-PREFIX dataset: <http://trials.drugis.org/datasets/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX study: <http://trials.drugis.org/studies/>
-PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
-PREFIX instance: <http://trials.drugis.org/instances/>
-
-SELECT ?epochLabel ?armLabel ?treatmentActivityType ?prop ?val ?a ?b WHERE {
-  GRAPH dataset:f6725862-d1e3-4376-a27c-b77b5424a6bb {
-    ?dataset ontology:contains_study ?study .
-  }
-  GRAPH study:4027f4a9-62e8-4602-b4a2-824fb15ca9f6 {
-    ?study rdfs:label ?label .
-      ?study ontology:has_epochs ?epochs .
-      ?epochs  list:member ?epoch .
-      ?epoch rdfs:label ?epochLabel .
-      OPTIONAL {
-        ?participantFlow ontology:in_epoch ?epoch .
-        ?participantFlow ontology:of_arm ?arm .
-        ?arm rdfs:label ?armLabel .
-      }
-      ?treatmentActivity ontology:activity_application [
-        ontology:applied_to_arm ?arm ;
-        ontology:applied_in_epoch ?epoch
-      ] .
-      ?treatmentActivity a ?treatmentActivityType .
-      OPTIONAL {
-        ?treatmentActivity ontology:administered_drugs ?administeredDrugs .
-        ?administeredDrugs list:member ?treatment .
-        ?treatment ontology:treatment_has_drug ?val .
-#        ?treatment ?prop ?val .
-        { ?treatment ontology:treatment_min_dose [ rdf:value ?a ] .
-          ?treatment ontology:treatment_max_dose [ rdf:value ?b ] . }
-        UNION {
-          ?treatment ontology:treatment_dose [ rdf:value ?a ] .
-          ?treatment ontology:treatment_dose [ rdf:value ?b ] .
-        }
-        
-      }
-   }
-}
-
-
-
-4027f4a9-62e8-4602-b4a2-824fb15ca9f6
-
-PREFIX ontology: <http://trials.drugis.org/ontology#>
-PREFIX dataset: <http://trials.drugis.org/datasets/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX study: <http://trials.drugis.org/studies/>
@@ -101,19 +12,19 @@ SELECT
   ?treatmentActivityType
   ?drug
   ?minValue
-  ?min_unit
+  ?minUnitLabel
   ?minDosingPeriodicity
   ?maxValue
-  ?maxUnit
+  ?maxUnitLabel
   ?maxDosingPeriodicity
   ?fixedValue 
-  ?fixedUnit
+  ?fixedUnitLabel
   ?fixedDosingPeriodicity
 WHERE {
-  GRAPH dataset:f6725862-d1e3-4376-a27c-b77b5424a6bb {
+  GRAPH dataset:$namespaceUid {
     ?dataset ontology:contains_study ?study .
   }
-  GRAPH ?study {
+  GRAPH $studyUid {
     ?study rdfs:label ?label .
       ?study ontology:has_epochs ?epochs .
       ?epochs  list:member ?epoch .
@@ -133,17 +44,26 @@ WHERE {
         ?administeredDrugs list:member ?treatment .
         ?treatment ontology:treatment_has_drug ?drug .
         OPTIONAL {
-          ?treatment ontology:treatment_min_dose [ rdf:value ?minValue ].
-          ?treatment ontology:treatment_min_dose [ ontology:dosingPeriodicity ?minDosingPeriodicity] .
-          ?treatment ontology:treatment_min_dose [ ontology:units ?minUnit] .
-          ?treatment ontology:treatment_max_dose [ ontology:units ?maxUnit] .
-          ?treatment ontology:treatment_max_dose [ rdf:value ?maxValue ].
-          ?treatment ontology:treatment_max_dose [ ontology:dosingPeriodicity ?maxDosingPeriodicity] .
+          ?treatment ontology:treatment_min_dose [ 
+            rdf:value ?minValue ;
+            ontology:dosingPeriodicity ?minDosingPeriodicity;
+            ontology:units ?minUnit
+          ] .
+          ?minUnit rdfs:label ?minUnitLabel .
+          ?treatment ontology:treatment_max_dose [ 
+            ontology:units ?maxUnit ;
+            rdf:value ?maxValue ;
+            ontology:dosingPeriodicity ?maxDosingPeriodicity
+          ] .
+          ?maxUnit rdfs:label ?maxUnitLabel .
         }
         OPTIONAL {
-          ?treatment ontology:treatment_dose [ rdf:value ?fixedValue ] .
-          ?treatment ontology:treatment_dose [ ontology:units ?fixedUnit] .
-          ?treatment ontology:treatment_dose [ ontology:dosingPeriodicity ?fixedDosingPeriodicity] 
+          ?treatment ontology:treatment_dose [
+            rdf:value ?fixedValue ;
+            ontology:units ?fixedUnit ;
+            ontology:dosingPeriodicity ?fixedDosingPeriodicity
+          ] .
+          ?fixedUnit rdfs:label ?fixedUnitLabel .
         }
       }
    }
