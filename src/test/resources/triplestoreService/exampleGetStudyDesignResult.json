@@ -1,0 +1,52 @@
+{
+  "head": {
+    "vars": [ "treatmentActivity" , "epochLabel" , "armLabel" , "treatmentActivityType" , "treatmentDrugLabel" , "minValue" , "minUnitLabel" , "minDosingPeriodicity" , "maxValue" , "maxUnitLabel" , "maxDosingPeriodicity" , "fixedValue" , "fixedUnitLabel" , "fixedDosingPeriodicity" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "treatmentActivity": { "type": "uri" , "value": "http://trials.drugis.org/instances/46571b1e-a776-442e-8070-d774c5afd4f9" } ,
+        "epochLabel": { "type": "literal" , "value": "Placebo run-in" } ,
+        "treatmentActivityType": { "type": "uri" , "value": "http://trials.drugis.org/ontology#WashOutActivity" }
+      } ,
+      {
+        "treatmentActivity": { "type": "uri" , "value": "http://trials.drugis.org/instances/3f7411a9-f693-4f85-9145-6c9d24fe7e15" } ,
+        "epochLabel": { "type": "literal" , "value": "Randomization" } ,
+        "treatmentActivityType": { "type": "uri" , "value": "http://trials.drugis.org/ontology#RandomizationActivity" }
+      } ,
+      {
+        "treatmentActivity": { "type": "uri" , "value": "http://trials.drugis.org/instances/4f9d6744-0cd8-4e34-9673-d640a4a00318" } ,
+        "epochLabel": { "type": "literal" , "value": "Main phase" } ,
+        "armLabel": { "type": "literal" , "value": "Placebo" } ,
+        "treatmentActivityType": { "type": "uri" , "value": "http://trials.drugis.org/ontology#TreatmentActivity" } ,
+        "treatmentDrugLabel": { "type": "literal" , "value": "Placebo" } ,
+        "fixedValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "0.000000e+00" } ,
+        "fixedUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "fixedDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" }
+      } ,
+      {
+        "treatmentActivity": { "type": "uri" , "value": "http://trials.drugis.org/instances/3591caeb-75fc-4aff-b287-24f58f85c56d" } ,
+        "epochLabel": { "type": "literal" , "value": "Main phase" } ,
+        "armLabel": { "type": "literal" , "value": "Duloxetine" } ,
+        "treatmentActivityType": { "type": "uri" , "value": "http://trials.drugis.org/ontology#TreatmentActivity" } ,
+        "treatmentDrugLabel": { "type": "literal" , "value": "Duloxetine" } ,
+        "minValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "4.000000e+01" } ,
+        "minUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "minDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" } ,
+        "maxValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "1.200000e+02" } ,
+        "maxUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "maxDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" }
+      } ,
+      {
+        "treatmentActivity": { "type": "uri" , "value": "http://trials.drugis.org/instances/905d5d7b-1e46-4da2-a12b-faef5afee6b5" } ,
+        "epochLabel": { "type": "literal" , "value": "Main phase" } ,
+        "armLabel": { "type": "literal" , "value": "Fluoxetine" } ,
+        "treatmentActivityType": { "type": "uri" , "value": "http://trials.drugis.org/ontology#TreatmentActivity" } ,
+        "treatmentDrugLabel": { "type": "literal" , "value": "Fluoxetine" } ,
+        "fixedValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "2.000000e+01" } ,
+        "fixedUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "fixedDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" }
+      }
+    ]
+  }
+}

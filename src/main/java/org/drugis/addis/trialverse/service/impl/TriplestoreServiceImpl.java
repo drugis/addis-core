@@ -15,6 +15,8 @@ import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,6 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * Created by connor on 2/28/14.
@@ -31,12 +32,13 @@ import java.util.regex.Pattern;
 @Service
 public class TriplestoreServiceImpl implements TriplestoreService {
 
+  final static Logger logger = LoggerFactory.getLogger(TriplestoreServiceImpl.class);
+
   public final static String STUDY_DATE_FORMAT = "yyyy-MM-dd";
 
-  private final static String triplestoreUri = System.getenv("TRIPLESTORE_URI");
-  private final static Pattern STUDY_UID_FROM_URI_PATTERN = Pattern.compile("http://trials.drugis.org/study/(\\w+)/.*");
-
+  private final static String TRIPLESTORE_URI = System.getenv("TRIPLESTORE_URI");
   private final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
+  private final static String STUDY_DESIGN_QUERY = loadResource("sparql/studyDesign.sparql");
 
   @Inject
   RestOperationsFactory restOperationsFactory;
@@ -201,7 +203,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public StudyWithDetails getStudydetails(String namespaceUid, String studyUid) throws ResourceDoesNotExistException {
     String query = StringUtils.replace(STUDY_DETAILS_QUERY, "$namespaceUid", namespaceUid);
     query = StringUtils.replace(query, "$studyUid", studyUid);
-    // System.out.println(query);
+    logger.debug(query);
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     if (bindings.size() != 1) {
@@ -210,6 +212,59 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     StudyWithDetails studyWithDetails = buildStudyWithDetailsFromJsonObject(bindings.get(0));
     return studyWithDetails;
+  }
+
+  @Override
+  public List<TreatmentActivity> getStudyDesign(String namespaceUid, String studyUid) throws ResourceDoesNotExistException {
+    String query = StringUtils.replace(STUDY_DESIGN_QUERY, "$namespaceUid", namespaceUid);
+    query = StringUtils.replace(query, "$studyUid", studyUid);
+    logger.debug(query);
+    String response = queryTripleStore(query);
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    if (bindings.isEmpty()) {
+      throw new ResourceDoesNotExistException();
+    }
+
+    List<TreatmentActivity> treatmentActivities = new ArrayList<>(bindings.size());
+
+    for (Object binding : bindings) {
+      JSONObject jsonObject = (net.minidev.json.JSONObject) binding;
+      String treatmentActivityUri = jsonObject.containsKey("treatmentActivity") ? JsonPath.<String>read(binding, "$.treatmentActivity.value") : null;
+      String epochLabel = jsonObject.containsKey("epochLabel") ? JsonPath.<String>read(binding, "$.epochLabel.value") : null;
+      String treatmentActivityTypeLabel = jsonObject.containsKey("treatmentActivityType") ? subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.treatmentActivityType.value"), '#') : null;
+      String armLabel = jsonObject.containsKey("armLabel") ? JsonPath.<String>read(binding, "$.armLabel.value") : null;
+      String treatmentDrugLabel = jsonObject.containsKey("treatmentDrugLabel") ? JsonPath.<String>read(binding, "$.treatmentDrugLabel.value") : null;
+      Double minValue = jsonObject.containsKey("minValue") ? Double.parseDouble(JsonPath.<String>read(binding, "$.minValue.value")) : null;
+      String minUnitLabel = jsonObject.containsKey("minUnitLabel") ? JsonPath.<String>read(binding, "$.minUnitLabel.value") : null;
+      String minDosingPeriodicity = jsonObject.containsKey("minDosingPeriodicity") ? JsonPath.<String>read(binding, "$.minDosingPeriodicity.value") : null;
+      Double maxValue = jsonObject.containsKey("maxValue") ? Double.parseDouble(JsonPath.<String>read(binding, "$.maxValue.value")) : null;
+      String maxUnitLabel = jsonObject.containsKey("maxUnitLabel") ? JsonPath.<String>read(binding, "$.maxUnitLabel.value") : null;
+      String maxDosingPeriodicity = jsonObject.containsKey("maxDosingPeriodicity") ? JsonPath.<String>read(binding, "$.maxDosingPeriodicity.value") : null;
+      Double fixedValue = jsonObject.containsKey("fixedValue") ? Double.parseDouble(JsonPath.<String>read(binding, "$.fixedValue.value")) : null;
+      String fixedUnitLabel = jsonObject.containsKey("fixedUnitLabel") ? JsonPath.<String>read(binding, "$.fixedUnitLabel.value") : null;
+      String fixedDosingPeriodicity = jsonObject.containsKey("fixedDosingPeriodicity") ? JsonPath.<String>read(binding, "$.fixedDosingPeriodicity.value") : null;
+
+      TreatmentActivity treatmentActivity = new TreatmentActivity.StudyDesignBuilder()
+              .treatmentActivityUri(treatmentActivityUri)
+              .epochLabel(epochLabel)
+              .treatmentActivityTypeLabel(treatmentActivityTypeLabel)
+              .armLabel(armLabel)
+              .treatmentDrugLabel(treatmentDrugLabel)
+              .minValue(minValue)
+              .minUnitLabel(minUnitLabel)
+              .minDosingPeriodicity(minDosingPeriodicity)
+              .maxValue(maxValue)
+              .maxUnitLabel(maxUnitLabel)
+              .maxDosingPeriodicity(maxDosingPeriodicity)
+              .fixedValue(fixedValue)
+              .fixedUnitLabel(fixedUnitLabel)
+              .fixedDosingPeriodicity(fixedDosingPeriodicity)
+              .build();
+
+      treatmentActivities.add(treatmentActivity);
+    }
+
+    return treatmentActivities;
   }
 
   @Override
@@ -676,7 +731,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     Map<String, String> vars = new HashMap<>();
     vars.put("query", query);
     vars.put("output", "json");
-    return restOperationsFactory.build().getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
+    return restOperationsFactory.build().getForObject(TRIPLESTORE_URI + "?query={query}&output={output}", String.class, vars);
   }
 
   private String subStringAfterLastSymbol(String inStr, char symbol) {

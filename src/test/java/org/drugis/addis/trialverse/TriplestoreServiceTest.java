@@ -6,6 +6,7 @@ import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.model.StudyWithDetails;
+import org.drugis.addis.trialverse.model.TreatmentActivity;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.junit.Before;
@@ -111,6 +112,19 @@ public class TriplestoreServiceTest {
     assertNotNull(studyWithDetails.getStudyUid());
     assertNotNull(studyWithDetails.getName());
     assertNotNull(studyWithDetails.getTitle());
+  }
+
+  @Test
+  public void testGetStudydetails() throws ResourceDoesNotExistException {
+    String namespaceUid = "namespaceUid";
+    String studyUid = "studyUid";
+
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleGetStudyDesignResult.json");
+    createMockTrialverseService(mockResult);
+
+    List<TreatmentActivity> treatmentActivities = triplestoreService.getStudyDesign(namespaceUid, studyUid);
+
+    assertEquals(5, treatmentActivities.size());
   }
 
   @Test

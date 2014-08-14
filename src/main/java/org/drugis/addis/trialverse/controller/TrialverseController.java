@@ -78,6 +78,12 @@ public class TrialverseController {
     return triplestoreService.getStudydetails(namespaceUid, studyUid);
   }
 
+  @RequestMapping(value = "/namespaces/{namespaceUid}/studiesWithDetail/{studyUid}/studyDesign", method = RequestMethod.GET)
+  @ResponseBody
+  public List<TreatmentActivity> getStudyDesign(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException {
+    return triplestoreService.getStudyDesign(namespaceUid, studyUid);
+  }
+
   @RequestMapping(value = "/namespaces/{namespaceUid}/trialData", method = RequestMethod.GET)
   @ResponseBody
   public TrialData getTrialData(@PathVariable String namespaceUid, @RequestParam(required = true) String outcomeUri,
