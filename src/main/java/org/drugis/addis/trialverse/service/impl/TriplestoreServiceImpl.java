@@ -1,13 +1,10 @@
 package org.drugis.addis.trialverse.service.impl;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.model.*;
@@ -26,7 +23,6 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -676,138 +672,11 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     }
   }
 
-  @Override
-  public Map<String, String> getTrialverseDrugs(String namespaceUid, String studyUid, Collection<String> drugURIs) {
-    String optionString = buildOptionStringFromConceptURIs(drugURIs);
-    String query = "TODO";
-    //System.out.println(query);
-
-    String response = queryTripleStore(query);
-
-    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    Map<String, String> concepts = new HashMap<>(bindings.size());
-    for (Object binding : bindings) {
-      String uri = JsonPath.read(binding, "$.uri.value");
-      String typeUri = JsonPath.read(binding, "$.type.value");
-      String conceptId = subStringAfterLastSymbol(uri, '/');
-      concepts.put(conceptId, typeUri);
-    }
-    return concepts;
-  }
-
-  public List<Pair<String, Long>> getOutcomeVariableUidsByStudyForSingleOutcome(String namespaceUid, List<String> studyUids, String outcomeURI) {
-    String query = "TODO";
-
-    //System.out.println("getOutcomeVariableUidsByStudyForSingleOutcome query: " + query);
-    String response = queryTripleStore(query);
-    //System.out.println("getOutcomeVariableUidsByStudyForSingleOutcome response: " + response);
-
-    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    List<Pair<String, Long>> studyVariablesForOutcome = new ArrayList<>(bindings.size());
-    for (Object binding : bindings) {
-      String uri = JsonPath.read(binding, "$.uri.value");
-      String studyUid = findStudyIdInURI(uri);
-      Long variableId = Long.valueOf(subStringAfterLastSymbol(uri, '/'));
-      studyVariablesForOutcome.add(Pair.of(studyUid, variableId));
-    }
-    return studyVariablesForOutcome;
-  }
-
-  @Override
-  public Map<String, String> getTrialverseVariables(String namespaceUid, String studyId, Collection<String> outcomeURIs) {
-    String optionString = buildOptionStringFromConceptURIs(outcomeURIs);
-    String query1 = "TODO";
-
-    String response = queryTripleStore(query1);
-
-    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    Map<String, String> concepts = new HashMap<>(bindings.size());
-    for (Object binding : bindings) {
-      String uri = JsonPath.read(binding, "$.uri.value");
-      String typeUri = JsonPath.read(binding, "$.type.value");
-      String conceptId = subStringAfterLastSymbol(uri, '/');
-      concepts.put(conceptId, typeUri);
-    }
-    return concepts;
-  }
-
-  @Override
-  public Map<String, List<TrialDataIntervention>> findStudyInterventions(String namespaceUid, List<String> studyUids, List<String> interventionURIs) {
-    String conceptOptionsString = buildOptionStringFromConceptURIs(interventionURIs);
-    String studyOptionsString = StringUtils.join(studyUids, "|");
-    String query = "TODO";
-    //System.out.println(query);
-    String response = queryTripleStore(query);
-
-    Map<String, List<TrialDataIntervention>> studyInterventionsMap = new HashMap<>();
-    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-
-    for (Object binding : bindings) {
-      String uri = JsonPath.read(binding, "$.uri.value");
-      String semanticInterventionUri = JsonPath.read(binding, "$.type.value");
-      String studyUid = JsonPath.read(binding, "$.studyUid.value");
-      String drugUid = JsonPath.read(binding, "$.drugUid.value");
-      TrialDataIntervention trialDataIntervention = new TrialDataIntervention(drugUid, semanticInterventionUri, studyUid);
-
-      List<TrialDataIntervention> interventions = studyInterventionsMap.get(studyUid);
-      if (interventions == null) {
-        interventions = new ArrayList<>();
-        studyInterventionsMap.put(studyUid, interventions);
-      }
-      interventions.add(trialDataIntervention);
-    }
-
-    return studyInterventionsMap;
-  }
-
   private String queryTripleStore(String query) {
     Map<String, String> vars = new HashMap<>();
     vars.put("query", query);
     vars.put("output", "json");
     return restOperationsFactory.build().getForObject(triplestoreUri + "?query={query}&output={output}", String.class, vars);
-  }
-
-  private String buildOptionStringFromConceptURIs(Collection<String> conceptURIs) {
-    Collection<String> strippedUris = Collections2.transform(conceptURIs, new Function<String, String>() {
-      @Override
-      public String apply(String s) {
-        return subStringAfterLastSymbol(s, '/');
-      }
-    });
-    return StringUtils.join(strippedUris, "|");
-  }
-
-  private String buildOptionStringFromIds(List<String> ids) {
-    return StringUtils.join(ids, "|");
-  }
-
-  public List<String> findStudiesReferringToConcept(String namespaceUid, String conceptUri) {
-    List<String> studyUids = new ArrayList<>();
-    String query =
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                    "\n" +
-                    "SELECT * WHERE {\n" +
-                    " GRAPH <http://trials.drugis.org/namespaces/" + namespaceUid + "/> {\n" +
-                    "   ?uri rdf:type <" + conceptUri + "> .\n" +
-                    " }\n" +
-                    "}";
-    String response = queryTripleStore(query);
-    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-
-    for (Object binding : bindings) {
-      String uri = JsonPath.read(binding, "$.uri.value");
-      String studyUid = findStudyIdInURI(uri);
-      studyUids.add(studyUid);
-    }
-
-    return studyUids;
-  }
-
-  private String findStudyIdInURI(String uri) {
-    // extract numerical study id
-    Matcher matcher = STUDY_UID_FROM_URI_PATTERN.matcher(uri);
-    matcher.find();
-    return (String.valueOf(matcher.group(1)));
   }
 
   private String subStringAfterLastSymbol(String inStr, char symbol) {
