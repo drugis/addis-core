@@ -1,5 +1,7 @@
 package org.drugis.addis.trialverse;
 
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.factory.RestOperationsFactory;
@@ -125,6 +127,27 @@ public class TriplestoreServiceTest {
     List<TreatmentActivity> treatmentActivities = triplestoreService.getStudyDesign(namespaceUid, studyUid);
 
     assertEquals(5, treatmentActivities.size());
+  }
+
+  @Test
+  public void testGetStudyArms() throws ResourceDoesNotExistException {
+    String namespaceUid = "namespaceUid";
+    String studyUid = "studyUid";
+
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleStudyArmsResult.json");
+    createMockTrialverseService(mockResult);
+
+    JSONArray arms = triplestoreService.getStudyArms(namespaceUid, studyUid);
+
+    assertEquals(3, arms.size());
+    JSONObject jsonObject = (JSONObject) arms.get(0);
+    assertTrue(jsonObject.containsKey("arm"));
+    assertTrue(jsonObject.containsKey("armLabel"));
+    assertTrue(jsonObject.containsKey("numberOfParticipantsStarting"));
+
+    assertTrue(jsonObject.containsValue("http://trials.drugis.org/instances/5959fd08-9c5b-4016-8118-d195cdb80c70"));
+    assertTrue(jsonObject.containsValue("Olmesartan medoxomil 20-40mg/hydrochlorothiazide 12.5-25mg QD"));
+    assertTrue(jsonObject.containsValue("356"));
   }
 
   @Test
