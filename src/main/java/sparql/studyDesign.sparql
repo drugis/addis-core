@@ -10,7 +10,9 @@ SELECT DISTINCT
   ?treatmentActivity
   ?epoch
   ?epochLabel
+  ?epochDuration
   ?armLabel
+  ?numberOfParticipantsStarting
   ?treatmentActivityType
   ?treatmentDrugLabel
   ?minValue
@@ -30,10 +32,15 @@ WHERE {
     ?study rdfs:label ?label .
     ?study ontology:has_epochs ?epochs .
     ?epochs  list:member ?epoch .
-    ?epoch rdfs:label ?epochLabel .
+    ?epoch rdfs:label ?epochLabel ;
     OPTIONAL {
-      ?participantFlow ontology:in_epoch ?epoch .
-      ?participantFlow ontology:of_arm ?arm .
+      ?epoch ontology:duration ?epochDuration .
+    }
+    OPTIONAL {
+      ?participantFlow a ontology:ParticipantFlow ;
+          ontology:participants_starting ?numberOfParticipantsStarting ;
+          ontology:of_arm ?arm ;
+          ontology:in_epoch ?epoch .
       ?arm rdfs:label ?armLabel .
     }
     ?treatmentActivity ontology:activity_application [

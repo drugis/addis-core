@@ -152,12 +152,29 @@
                 <table>
                     <thead>
                     <tr>
+                        <th>Arms</th>
+                        <th>Number of participants starting</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="arm in studyArms">
+                        <td>{{arm.armLabel}}</td>
+                        <td class="text-center">{{arm.numberOfParticipantsStarting}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="column large-12">
+                <table>
+                    <thead>
+                    <tr>
                         <th ng-repeat="columnHeader in studyDesignTable.head">{{columnHeader}}</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr ng-repeat="studyDesignRow in studyDesignTable.body">
-                        <td ng-repeat="item in studyDesignRow">{{item.label}}
+                        <td ng-repeat="item in studyDesignRow">{{item.label}} {{item.numberOfParticipantsStarting}}
                             <span ng-show="item.minValue">( {{item.minValue}} - {{item.maxValue}} {{item.minUnitLabel}} {{item.minDosingPeriodicity | durationFilter}} )</span>
                             <span ng-show="item.fixedValue">( {{item.fixedValue}} {{item.fixedUnitLabel}} {{item.fixedDosingPeriodicity | durationFilter}} )</span>
                         </td>

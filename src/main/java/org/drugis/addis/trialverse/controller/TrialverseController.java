@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse.controller;
 
+import net.minidev.json.JSONArray;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -82,6 +83,13 @@ public class TrialverseController {
   @ResponseBody
   public List<TreatmentActivity> getStudyDesign(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException {
     return triplestoreService.getStudyDesign(namespaceUid, studyUid);
+  }
+
+  @RequestMapping(value = "/namespaces/{namespaceUid}/studiesWithDetail/{studyUid}/arms", method = RequestMethod.GET)
+  @ResponseBody
+  public JSONArray getStudyArms(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException {
+    logger.debug("getStudyArms");
+    return triplestoreService.getStudyArms(namespaceUid, studyUid);
   }
 
   @RequestMapping(value = "/namespaces/{namespaceUid}/trialData", method = RequestMethod.GET)

@@ -1,10 +1,14 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$scope', '$stateParams', 'TrialverseResource','StudyDetailsResource', 'StudyDesignResource', 'StudyDesignService'];
-  var StudyController = function($scope, $stateParams, TrialverseResource, StudyDetailsResource, StudyDesignResource, StudyDesignService) {
+  var dependencies = ['$scope', '$stateParams', 'TrialverseResource', 'StudyDetailsResource',
+    'StudyDesignResource', 'StudyArmResource', 'StudyDesignService'
+  ];
+  var StudyController = function($scope, $stateParams, TrialverseResource, StudyDetailsResource,
+    StudyDesignResource, StudyArmResource, StudyDesignService) {
     $scope.namespace = TrialverseResource.get($stateParams);
     $scope.studyDetails = StudyDetailsResource.get($stateParams);
-    StudyDesignResource.get($stateParams, function (treatmentActivities) {
+    $scope.studyArms = StudyArmResource.query($stateParams);
+    StudyDesignResource.get($stateParams, function(treatmentActivities) {
       $scope.studyDesignTable = StudyDesignService.buildStudyDesignTable(treatmentActivities);
     });
   };

@@ -90,11 +90,13 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
     it('build a studyDesign table based in a list of treatmentActivities', function() {
       var table = this.StudyDesignService.buildStudyDesignTable(treatmentActivities);
-      expect(table.head).toEqual(['Arms', 'Screening', 'Placebo run-in', 'Randomization', 'Main phase']);
+      expect(table.head).toEqual(['Arms', 'N', 'Screening', 'Placebo run-in', 'Randomization', 'Main phase']);
       expect(table.body.length).toEqual(2);
       expect(table.body[0]).toEqual([{
         label: 'Fluoxetine'
       }, {
+        numberOfParticipantsStarting: undefined
+      }, , {
         label: 'ScreeningActivity'
       }, {
         label: 'WashOutActivity'

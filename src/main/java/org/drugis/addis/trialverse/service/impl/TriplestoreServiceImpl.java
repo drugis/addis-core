@@ -39,6 +39,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private final static String TRIPLESTORE_URI = System.getenv("TRIPLESTORE_URI");
   private final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
   private final static String STUDY_DESIGN_QUERY = loadResource("sparql/studyDesign.sparql");
+  private final static String STUDY_ARMS_QUERY = loadResource("sparql/studyArms.sparql");
 
   @Inject
   RestOperationsFactory restOperationsFactory;
@@ -215,6 +216,39 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
+  public JSONArray getStudyArms(String namespaceUid, String studyUid) {
+    String query = StringUtils.replace(STUDY_ARMS_QUERY, "$namespaceUid", namespaceUid);
+    query = StringUtils.replace(query, "$studyUid", studyUid);
+    return getQueryResultList(query);
+  }
+
+  private JSONArray getQueryResultList(String query) {
+    logger.debug(query);
+    String response = queryTripleStore(query);
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    return parseBindings(bindings);
+  }
+
+  private JSONArray parseBindings(JSONArray bindings) {
+    JSONArray result = new JSONArray();
+    for (Object binding : bindings) {
+      JSONObject jsonObject = parseBinding(binding);
+      result.add(jsonObject);
+    }
+    return result;
+  }
+
+  private JSONObject parseBinding(Object binding) {
+    JSONObject jsonObject = (JSONObject) binding;
+    JSONObject newObject = new JSONObject();
+    for (String key : jsonObject.keySet()) {
+      String value = JsonPath.read(binding, "$. " + key + ".value");
+      newObject.put(key, value);
+    }
+    return newObject;
+  }
+
+  @Override
   public List<TreatmentActivity> getStudyDesign(String namespaceUid, String studyUid) throws ResourceDoesNotExistException {
     String query = StringUtils.replace(STUDY_DESIGN_QUERY, "$namespaceUid", namespaceUid);
     query = StringUtils.replace(query, "$studyUid", studyUid);
@@ -232,8 +266,10 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String treatmentActivityUri = jsonObject.containsKey("treatmentActivity") ? JsonPath.<String>read(binding, "$.treatmentActivity.value") : null;
       String epochUri = jsonObject.containsKey("epoch") ? JsonPath.<String>read(binding, "$.epoch.value") : null;
       String epochLabel = jsonObject.containsKey("epochLabel") ? JsonPath.<String>read(binding, "$.epochLabel.value") : null;
+      String epochDuration = jsonObject.containsKey("epochDuration") ? JsonPath.<String>read(binding, "$.epochDuration.value") : null;
       String treatmentActivityTypeLabel = jsonObject.containsKey("treatmentActivityType") ? subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.treatmentActivityType.value"), '#') : null;
       String armLabel = jsonObject.containsKey("armLabel") ? JsonPath.<String>read(binding, "$.armLabel.value") : null;
+      Integer numberOfParticipantsStarting = jsonObject.containsKey("numberOfParticipantsStarting") ? Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfParticipantsStarting.value")) : null;
       String treatmentDrugLabel = jsonObject.containsKey("treatmentDrugLabel") ? JsonPath.<String>read(binding, "$.treatmentDrugLabel.value") : null;
       Double minValue = jsonObject.containsKey("minValue") ? Double.parseDouble(JsonPath.<String>read(binding, "$.minValue.value")) : null;
       String minUnitLabel = jsonObject.containsKey("minUnitLabel") ? JsonPath.<String>read(binding, "$.minUnitLabel.value") : null;
@@ -249,8 +285,10 @@ public class TriplestoreServiceImpl implements TriplestoreService {
               .treatmentActivityUri(treatmentActivityUri)
               .epochUri(epochUri)
               .epochLabel(epochLabel)
+              .epochDuration(epochDuration)
               .treatmentActivityTypeLabel(treatmentActivityTypeLabel)
               .armLabel(armLabel)
+              .numberOfParticipantsStarting(numberOfParticipantsStarting)
               .treatmentDrugLabel(treatmentDrugLabel)
               .minValue(minValue)
               .minUnitLabel(minUnitLabel)

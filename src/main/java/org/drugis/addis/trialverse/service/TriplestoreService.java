@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse.service;
 
+import net.minidev.json.JSONArray;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
@@ -24,6 +25,8 @@ public interface TriplestoreService {
   public List<StudyWithDetails> queryStudydetails(String namespaceUid);
 
   public StudyWithDetails getStudydetails(String namespaceUid, String studyUid) throws ResourceDoesNotExistException;
+
+  public JSONArray getStudyArms(String namespaceUid, String studyUid);
 
   public List<TreatmentActivity> getStudyDesign(String namespaceUid, String studyUid) throws ResourceDoesNotExistException;
 

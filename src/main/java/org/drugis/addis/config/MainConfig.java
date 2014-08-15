@@ -84,7 +84,7 @@ public class MainConfig {
   public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
     HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
     vendorAdapter.setGenerateDdl(false);
-    vendorAdapter.setShowSql(true);
+    vendorAdapter.setShowSql(false);
     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
     em.setJpaProperties(additionalProperties());
     em.setJpaVendorAdapter(vendorAdapter);

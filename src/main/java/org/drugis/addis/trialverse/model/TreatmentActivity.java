@@ -7,15 +7,21 @@ public class TreatmentActivity {
   private String treatmentActivityUri;
   private String epochUri;
   private String epochLabel;
+  private String epochDuration;
+
   private String treatmentActivityTypeLabel;
   private String armLabel;
+  private Integer numberOfParticipantsStarting;
   private String treatmentDrugLabel;
+
   private Double minValue;
   private String minUnitLabel;
   private String minDosingPeriodicity;
+
   private Double maxValue;
   private String maxUnitLabel;
   private String maxDosingPeriodicity;
+
   private Double fixedValue;
   private String fixedUnitLabel;
   private String fixedDosingPeriodicity;
@@ -27,8 +33,11 @@ public class TreatmentActivity {
     this.treatmentActivityUri = builder.treatmentActivityUri;
     this.epochUri = builder.epochUri;
     this.epochLabel = builder.epochLabel;
+    this.epochDuration = builder.epochDuration;
+
     this.treatmentActivityTypeLabel = builder.treatmentActivityTypeLabel;
     this.armLabel = builder.armLabel;
+    this.numberOfParticipantsStarting = builder.numberOfParticipantsStarting;
     this.treatmentDrugLabel = builder.treatmentDrugLabel;
 
     this.minValue = builder.minValue;
@@ -48,8 +57,11 @@ public class TreatmentActivity {
     private String treatmentActivityUri;
     private String epochUri;
     private String epochLabel;
+    private String epochDuration;
+
     private String treatmentActivityTypeLabel;
     private String armLabel;
+    private Integer numberOfParticipantsStarting;
     private String treatmentDrugLabel;
 
     private Double minValue;
@@ -83,6 +95,11 @@ public class TreatmentActivity {
       return this;
     }
 
+    public StudyDesignBuilder epochDuration(String epochDuration) {
+      this.epochDuration = epochDuration;
+      return this;
+    }
+
     public StudyDesignBuilder treatmentActivityTypeLabel(String treatmentActivityTypeLabel) {
       this.treatmentActivityTypeLabel = treatmentActivityTypeLabel;
       return this;
@@ -90,6 +107,11 @@ public class TreatmentActivity {
 
     public StudyDesignBuilder armLabel(String armLabel) {
       this.armLabel = armLabel;
+      return this;
+    }
+
+    public StudyDesignBuilder numberOfParticipantsStarting(Integer numberOfParticipantsStarting) {
+      this.numberOfParticipantsStarting = numberOfParticipantsStarting;
       return this;
     }
 
@@ -157,12 +179,20 @@ public class TreatmentActivity {
     return epochLabel;
   }
 
+  public String getEpochDuration() {
+    return epochDuration;
+  }
+
   public String getTreatmentActivityTypeLabel() {
     return treatmentActivityTypeLabel;
   }
 
   public String getArmLabel() {
     return armLabel;
+  }
+
+  public Integer getNumberOfParticipantsStarting() {
+    return numberOfParticipantsStarting;
   }
 
   public String getTreatmentDrugLabel() {

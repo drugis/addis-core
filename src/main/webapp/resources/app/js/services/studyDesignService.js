@@ -5,7 +5,7 @@ define(['angular'], function() {
 
     var buildStudyDesignTable = function(treatmentActivities) {
       var table = {
-        head: ['Arms'],
+        head: ['Arms', 'N'],
         body: []
       };
 
@@ -25,7 +25,7 @@ define(['angular'], function() {
 
       // fill table cells
       _.each(table.body, function(row) {
-        var colCount = 1;
+        var colCount = 2;
         _.each(treatmentActivities, function(activity) {
           if (row[0].label === activity.armLabel) {
             // treatment case
@@ -41,6 +41,7 @@ define(['angular'], function() {
               minUnitLabel: activity.minUnitLabel,
               minValue: activity.minValue
             };
+            row[1] = {numberOfParticipantsStarting :activity.numberOfParticipantsStarting}    ;
             colCount++;
           } else if (!activity.treatmentDrugLabel) {
             // treatment case
