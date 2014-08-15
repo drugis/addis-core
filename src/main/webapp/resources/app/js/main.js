@@ -17,7 +17,8 @@ require.config({
     'NProgress': 'bower_components/nprogress/nprogress',
     'd3': 'bower_components/d3/d3.min',
     'nvd3': 'bower_components/nvd3/nv.d3.min',
-    'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML'
+    'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
+    'moment': 'bower_components/moment/min/moment.min'
   },
   baseUrl: 'app/js',
   shim: {

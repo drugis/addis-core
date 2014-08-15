@@ -101,7 +101,16 @@ define(['angular', 'angular-mocks', 'services'], function() {
       }, {
         label: 'RandomizationActivity'
       }, {
-        label: 'Fluoxetine'
+        label: 'Fluoxetine',
+        fixedDosingPeriodicity: null,
+        fixedUnitLabel: null,
+        fixedValue: null,
+        maxDosingPeriodicity: 'P1D',
+        maxUnitLabel: 'milligram',
+        maxValue: 80,
+        minDosingPeriodicity: 'P1D',
+        minUnitLabel: 'milligram',
+        minValue: 20
       }]);
     });
 

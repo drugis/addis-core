@@ -17,7 +17,9 @@ define(['angular'], function() {
 
         // add arm labels
         if (activity.armLabel) {
-          table.body.push([{label :activity.armLabel}]);
+          table.body.push([{
+            label: activity.armLabel
+          }]);
         }
       });
 
@@ -25,13 +27,26 @@ define(['angular'], function() {
       _.each(table.body, function(row) {
         var colCount = 1;
         _.each(treatmentActivities, function(activity) {
-          if (row[0].label === activity.treatmentDrugLabel) {
-            // non treatment case
-            row[colCount] = {label : activity.treatmentDrugLabel};
+          if (row[0].label === activity.armLabel) {
+            // treatment case
+            row[colCount] = {
+              label: activity.treatmentDrugLabel,
+              fixedDosingPeriodicity: activity.fixedDosingPeriodicity,
+              fixedUnitLabel: activity.fixedUnitLabel,
+              fixedValue: activity.fixedValue,
+              maxDosingPeriodicity: activity.maxDosingPeriodicity,
+              maxUnitLabel: activity.maxUnitLabel,
+              maxValue: activity.maxValue,
+              minDosingPeriodicity: activity.minDosingPeriodicity,
+              minUnitLabel: activity.minUnitLabel,
+              minValue: activity.minValue
+            };
             colCount++;
           } else if (!activity.treatmentDrugLabel) {
             // treatment case
-            row[colCount] = {label : activity.treatmentActivityTypeLabel};
+            row[colCount] = {
+              label: activity.treatmentActivityTypeLabel,
+            };
             colCount++;
           }
         });

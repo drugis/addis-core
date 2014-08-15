@@ -157,7 +157,10 @@
                     </thead>
                     <tbody>
                     <tr ng-repeat="studyDesignRow in studyDesignTable.body">
-                        <td ng-repeat="item in studyDesignRow">{{item.label}}</td>
+                        <td ng-repeat="item in studyDesignRow">{{item.label}}
+                            <span ng-show="item.minValue">( {{item.minValue}} - {{item.maxValue}} {{item.minUnitLabel}} {{item.minDosingPeriodicity | durationFilter}} )</span>
+                            <span ng-show="item.fixedValue">( {{item.fixedValue}} {{item.fixedUnitLabel}} {{item.fixedDosingPeriodicity | durationFilter}} )</span>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
