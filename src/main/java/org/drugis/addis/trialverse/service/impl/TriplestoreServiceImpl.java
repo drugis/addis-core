@@ -239,15 +239,16 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     for (Object object : queryResult) {
       JSONObject jsonObject = (JSONObject) object;
       String treatmentActivityUid = (String) jsonObject.get("treatmentActivityUid");
-
       TreatmentActivity treatmentActivity = treatmentActivityMap.get(treatmentActivityUid);
       if (treatmentActivity == null) {
-        String epochUid = (String) jsonObject.get("epochUid");
-        String armUid = (String) jsonObject.get("armUid");
         String treatmentActivityType = (String) jsonObject.get("treatmentActivityType");
-        treatmentActivity = new TreatmentActivity(treatmentActivityUid, treatmentActivityType, epochUid, armUid, new ArrayList<AdministeredDrug>());
+        treatmentActivity = new TreatmentActivity(treatmentActivityUid, treatmentActivityType);
         treatmentActivityMap.put(treatmentActivityUid, treatmentActivity);
       }
+
+      String epochUid = (String) jsonObject.get("epochUid");
+      String armUid = (String) jsonObject.get("armUid");
+      treatmentActivity.getActivityApplications().add(new ActivityApplication(epochUid, armUid));
 
       if (jsonObject.containsKey("drugUid")) {
         AdministeredDrug administeredDrug = buildAdministeredDrug(jsonObject);

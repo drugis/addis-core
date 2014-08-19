@@ -20,4 +20,24 @@ public abstract class AdministeredDrug {
   public String getDrugLabel() {
     return drugLabel;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof AdministeredDrug)) return false;
+
+    AdministeredDrug that = (AdministeredDrug) o;
+
+    if (!drugLabel.equals(that.drugLabel)) return false;
+    if (!drugUid.equals(that.drugUid)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = drugUid.hashCode();
+    result = 31 * result + drugLabel.hashCode();
+    return result;
+  }
 }

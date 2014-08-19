@@ -37,6 +37,32 @@ public class FixedAdministeredDrug extends AdministeredDrug {
     return fixedDosingPeriodicity;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof FixedAdministeredDrug)) return false;
+    if (!super.equals(o)) return false;
+
+    FixedAdministeredDrug that = (FixedAdministeredDrug) o;
+
+    if (fixedDosingPeriodicity != null ? !fixedDosingPeriodicity.equals(that.fixedDosingPeriodicity) : that.fixedDosingPeriodicity != null)
+      return false;
+    if (fixedUnitLabel != null ? !fixedUnitLabel.equals(that.fixedUnitLabel) : that.fixedUnitLabel != null)
+      return false;
+    if (fixedValue != null ? !fixedValue.equals(that.fixedValue) : that.fixedValue != null) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + (fixedValue != null ? fixedValue.hashCode() : 0);
+    result = 31 * result + (fixedUnitLabel != null ? fixedUnitLabel.hashCode() : 0);
+    result = 31 * result + (fixedDosingPeriodicity != null ? fixedDosingPeriodicity.hashCode() : 0);
+    return result;
+  }
+
   public static class FixedAdministeredDrugBuilder {
     private String drugUid;
     private String drugLabel;

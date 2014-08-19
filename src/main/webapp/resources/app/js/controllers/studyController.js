@@ -11,25 +11,23 @@ define([], function() {
     $scope.studyEpochs = StudyEpochResource.query($stateParams);
     $scope.treatmentActivities = StudyTreatmentActivityResource.query($stateParams);
 
-    $scope.epochTreatments = function(epochUid, armUid) {
-      return _.filter($scope.treatmentActivities, function(activity) {
-        if(epochUid === activity.epochUid && armUid === activity.armUid) {
-          return activity;
-        }
-      });
-    };
-
-    // $q.all([
-    //   $scope.studyEpochs.$promise,
-    //   $scope.studyArms.$promise,
-    //   $scope.treatmentActivities.$promise,
-
-    // ])
-    //   .then(function() {
-    //     $scope.studyDesignTable = StudyDesignService.buildStudyDesignTable(
-    //       $scope.studyEpochs, $scope.studyArms, $scope.treatmentActivities);
-    //   });
-
+    $q.all([
+       $scope.studyEpochs.$promise,
+       $scope.studyArms.$promise,
+       $scope.treatmentActivities.$promise
+     ]).then(function () {
+       $scope.cellTreatments = function(epochUid, armUid) {
+         return _.filter($scope.treatmentActivities, function(activity) {
+           var cellHasApplication = _.find(activity.activityApplications, function(application){
+             return (application.epochUid === epochUid && application.armUid === armUid)
+           });
+           if(cellHasApplication) {
+             return activity;
+           }
+         });
+       };
+    });
+    
   };
   return dependencies.concat(StudyController);
 });

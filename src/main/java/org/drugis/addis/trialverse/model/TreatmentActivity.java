@@ -1,7 +1,9 @@
 package org.drugis.addis.trialverse.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by connor on 14-8-14.
@@ -9,19 +11,12 @@ import java.util.List;
 public class TreatmentActivity {
   private String treatmentActivityUri;
   private String treatmentActivityType;
-  private String epochUid;
-  private String armUid;
+  private Set<ActivityApplication> activityApplications = new HashSet<>();
+  private Set<AdministeredDrug> administeredDrugs = new HashSet<>();
 
-  private List<AdministeredDrug> administeredDrugs = new ArrayList<>();
-
-  public TreatmentActivity(String treatmentActivityUri, String treatmentActivityType, String epochUid, String armUid, List<AdministeredDrug> administeredDrugs) {
+  public TreatmentActivity(String treatmentActivityUri, String treatmentActivityType) {
     this.treatmentActivityUri = treatmentActivityUri;
     this.treatmentActivityType = treatmentActivityType;
-    this.epochUid = epochUid;
-    this.armUid = armUid;
-    if (administeredDrugs != null) {
-      this.administeredDrugs = administeredDrugs;
-    }
   }
 
   public String getTreatmentActivityUri() {
@@ -32,15 +27,11 @@ public class TreatmentActivity {
     return treatmentActivityType;
   }
 
-  public String getEpochUid() {
-    return epochUid;
+  public Set<ActivityApplication> getActivityApplications() {
+    return activityApplications;
   }
 
-  public String getArmUid() {
-    return armUid;
-  }
-
-  public List<AdministeredDrug> getAdministeredDrugs() {
+  public Set<AdministeredDrug> getAdministeredDrugs() {
     return administeredDrugs;
   }
 
@@ -51,9 +42,8 @@ public class TreatmentActivity {
 
     TreatmentActivity that = (TreatmentActivity) o;
 
+    if (!activityApplications.equals(that.activityApplications)) return false;
     if (!administeredDrugs.equals(that.administeredDrugs)) return false;
-    if (!armUid.equals(that.armUid)) return false;
-    if (!epochUid.equals(that.epochUid)) return false;
     if (!treatmentActivityType.equals(that.treatmentActivityType)) return false;
     if (!treatmentActivityUri.equals(that.treatmentActivityUri)) return false;
 
@@ -64,8 +54,7 @@ public class TreatmentActivity {
   public int hashCode() {
     int result = treatmentActivityUri.hashCode();
     result = 31 * result + treatmentActivityType.hashCode();
-    result = 31 * result + epochUid.hashCode();
-    result = 31 * result + armUid.hashCode();
+    result = 31 * result + activityApplications.hashCode();
     result = 31 * result + administeredDrugs.hashCode();
     return result;
   }

@@ -196,18 +196,21 @@
                 <td>{{arm.armLabel}}</td>
                 <td>{{arm.numberOfParticipantsStarting}}</td>
                 <td ng-repeat="epoch in studyEpochs">
-                            <span>
-                                :{{epoch.epochUid}}:{{arm.armUid}}
-                            </span>
-                            <span ng-show="epochTreatments(epoch.epochUid, arm.armUid)[0].administeredDrugs.length !== 0">
-                                {{epochTreatments(epoch.epochUid, arm.armUid) | json}}
-                            </span>
+                    <span ng-show="cellTreatments(epoch.epochUid, arm.armUid)[0].administeredDrugs.length === 0">
+                        <div>{{cellTreatments(epoch.epochUid, arm.armUid)[0].treatmentActivityType}}</div>
+                    </span>
+                    <span ng-show="cellTreatments(epoch.epochUid, arm.armUid)[0].administeredDrugs.length !== 0">
+                        <div ng-repeat="administeredDrug in cellTreatments(epoch.epochUid, arm.armUid)[0].administeredDrugs">
+                            {{administeredDrug.drugLabel}}
+                        </div>
+                    </span>
                 </td>
-                <!--
-                                            <td ng-repeat="item in studyDesignRow">{{item.label}} {{item.numberOfParticipantsStarting}}
-                                            <span ng-show="item.minValue">( {{item.minValue}} - {{item.maxValue}} {{item.minUnitLabel}} {{item.minDosingPeriodicity | durationFilter}} )</span>
-                                            <span ng-show="item.fixedValue">( {{item.fixedValue}} {{item.fixedUnitLabel}} {{item.fixedDosingPeriodicity | durationFilter}} )</span>
-                                        </td> -->
+            <!--
+                <td ng-repeat="item in studyDesignRow">{{item.label}} {{item.numberOfParticipantsStarting}}
+                <span ng-show="item.minValue">( {{item.minValue}} - {{item.maxValue}} {{item.minUnitLabel}} {{item.minDosingPeriodicity | durationFilter}} )</span>
+                <span ng-show="item.fixedValue">( {{item.fixedValue}} {{item.fixedUnitLabel}} {{item.fixedDosingPeriodicity | durationFilter}} )</span>
+                </td> 
+            -->
             </tr>
             </tbody>
         </table>
