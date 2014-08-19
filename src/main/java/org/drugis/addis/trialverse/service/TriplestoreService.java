@@ -30,9 +30,9 @@ public interface TriplestoreService {
 
   public JSONArray getStudyEpochs(String namespaceUid, String studyUid);
 
-  public List<TreatmentActivity> getStudyDesign(String namespaceUid, String studyUid) throws ResourceDoesNotExistException;
-
   public List<TrialDataStudy> getTrialData(String namespaceUid, String outcomeUri, List<String> interventionUris);
 
   public List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String studyUid, List<String> outcomeUids, List<String> interventionUids);
+
+  public List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid);
 }

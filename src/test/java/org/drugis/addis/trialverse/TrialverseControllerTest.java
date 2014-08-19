@@ -212,21 +212,6 @@ public class TrialverseControllerTest {
   }
 
   @Test
-  public void testGetStudyDesign() throws Exception {
-    String namespaceUid = "namespaceUid";
-    String studyUid = "studyUid";
-    List<TreatmentActivity> studyDesign = Arrays.asList(createTreatmentActivity());
-    when(triplestoreService.getStudyDesign(namespaceUid, studyUid)).thenReturn(studyDesign);
-    ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/studyDesign"));
-    resultActions
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$", hasSize(1)));
-    verify(triplestoreService).getStudyDesign(namespaceUid, studyUid);
-
-  }
-
-  @Test
   public void testGetStudyArms() throws Exception {
     String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
@@ -262,25 +247,6 @@ public class TrialverseControllerTest {
     object.put("numberObject", new Integer(1));
     object.put("dateObject", new DateTime(1980, 9, 10, 12, 0).toDate());
     return object;
-  }
-
-  private TreatmentActivity createTreatmentActivity() {
-    return new TreatmentActivity.StudyDesignBuilder()
-            .treatmentActivityUri("treatmentActivityUri")
-            .epochLabel("epochLabel")
-            .treatmentActivityTypeLabel("treatmentActivityTypeLabel")
-            .armLabel("armLabel")
-            .treatmentDrugLabel("treatmentDrugLabel")
-            .minValue(new Double("12.00e+3"))
-            .minUnitLabel("minUnitLabel")
-            .minDosingPeriodicity("minDosingPeriodicity")
-            .maxValue(new Double("12.00e-3"))
-            .maxUnitLabel("maxUnitLabel")
-            .maxDosingPeriodicity("maxDosingPeriodicity")
-            .fixedValue(12d)
-            .fixedUnitLabel("fixedUnitLabel")
-            .fixedDosingPeriodicity("fixedDosingPeriodicity")
-            .build();
   }
 
   private StudyWithDetails createStudyWithDetials() {

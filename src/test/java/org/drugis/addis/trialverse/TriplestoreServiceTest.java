@@ -25,6 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -117,19 +118,6 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testGetStudydetails() throws ResourceDoesNotExistException {
-    String namespaceUid = "namespaceUid";
-    String studyUid = "studyUid";
-
-    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleGetStudyDesignResult.json");
-    createMockTrialverseService(mockResult);
-
-    List<TreatmentActivity> treatmentActivities = triplestoreService.getStudyDesign(namespaceUid, studyUid);
-
-    assertEquals(5, treatmentActivities.size());
-  }
-
-  @Test
   public void testGetStudyArms() throws ResourceDoesNotExistException {
     String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
@@ -148,6 +136,18 @@ public class TriplestoreServiceTest {
     assertTrue(jsonObject.containsValue("http://trials.drugis.org/instances/5959fd08-9c5b-4016-8118-d195cdb80c70"));
     assertTrue(jsonObject.containsValue("Olmesartan medoxomil 20-40mg/hydrochlorothiazide 12.5-25mg QD"));
     assertTrue(jsonObject.containsValue("356"));
+  }
+
+  @Test
+  public void testGetTreatmentActivities() {
+    String namespaceUid = "namespaceUid";
+    String studyUid = "studyUid";
+
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleStudyTreatmentActivitiesResult.json");
+    createMockTrialverseService(mockResult);
+
+    List<TreatmentActivity> treatmentActivities = triplestoreService.getStudyTreatmentActivities(namespaceUid, studyUid);
+    assertEquals(4, treatmentActivities.size());
   }
 
   @Test

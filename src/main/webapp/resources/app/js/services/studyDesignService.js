@@ -3,52 +3,35 @@ define(['angular'], function() {
   var dependencies = [];
   var StudyDesignService = function() {
 
-    var buildStudyDesignTable = function(treatmentActivities) {
+    var buildStudyDesignTable = function(epochs, arms, treatmentActivities) {
       var table = {
-        head: ['Arms', 'N'],
+        head: [{label: 'Arms'}, {label: 'Participants starting'}],
         body: []
       };
 
-      _.each(treatmentActivities, function(activity) {
-        // add headers
-        if (!_.contains(table.head, activity.epochLabel)) {
-          table.head.push(activity.epochLabel);
-        }
+      // setup cols
+      table.head.concat(epochs);
 
-        // add arm labels
-        if (activity.armLabel) {
-          table.body.push([{
-            label: activity.armLabel
-          }]);
-        }
-      });
+      /// setup rows
+      table.body.concat(_.map(arms, function(arm) {
+        return [arm.label, arms.numberOfParticipantsStarting];
+      }));
 
-      // fill table cells
+
+      // fillout cells
       _.each(table.body, function(row) {
-        var colCount = 2;
-        _.each(treatmentActivities, function(activity) {
-          if (row[0].label === activity.armLabel) {
-            // treatment case
-            row[colCount] = {
-              label: activity.treatmentDrugLabel,
-              fixedDosingPeriodicity: activity.fixedDosingPeriodicity,
-              fixedUnitLabel: activity.fixedUnitLabel,
-              fixedValue: activity.fixedValue,
-              maxDosingPeriodicity: activity.maxDosingPeriodicity,
-              maxUnitLabel: activity.maxUnitLabel,
-              maxValue: activity.maxValue,
-              minDosingPeriodicity: activity.minDosingPeriodicity,
-              minUnitLabel: activity.minUnitLabel,
-              minValue: activity.minValue
-            };
-            row[1] = {numberOfParticipantsStarting :activity.numberOfParticipantsStarting}    ;
-            colCount++;
-          } else if (!activity.treatmentDrugLabel) {
-            // treatment case
-            row[colCount] = {
-              label: activity.treatmentActivityTypeLabel,
-            };
-            colCount++;
+        _.each(row, function(column) {
+          if(column.epochUid) {
+            var epochTreatments = _.filter(treatmentActivities, function(activity) {
+              return column.epochUid === activity.epochUid;
+            });
+
+            if(epochTreatments.administeredDrugs.length > 0) {
+              column.push(epochTreatments.administeredDrugs);
+
+            } else {
+              column.push(epochTreatments[0].activityType);
+            }
           }
         });
       });
@@ -62,3 +45,4 @@ define(['angular'], function() {
   };
   return dependencies.concat(StudyDesignService);
 });
+

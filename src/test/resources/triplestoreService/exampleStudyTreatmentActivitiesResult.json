@@ -1,0 +1,111 @@
+{
+  "head": {
+    "vars": [ "treatmentActivityUid" , "epochUid" , "armUid" , "treatmentActivityType" , "drugUid" , "treatmentDrugLabel" , "minValue" , "minUnitLabel" , "minDosingPeriodicity" , "maxValue" , "maxUnitLabel" , "maxDosingPeriodicity" , "fixedValue" , "fixedUnitLabel" , "fixedDosingPeriodicity" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "treatmentActivityUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/a36ad3d2-0b5f-4014-8a1f-a52381ae0393" } ,
+        "epochUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/b0a4b9ca-2ec1-47c5-b8e8-4a275df4d720" } ,
+        "armUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/5959fd08-9c5b-4016-8118-d195cdb80c70" } ,
+        "treatmentActivityType": { "type": "uri" , "value": "http://trials.drugis.org/ontology#RandomizationActivity" }
+      } ,
+      {
+        "treatmentActivityUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/d4f9e74f-7af1-441f-b5c1-ee5647bb7c11" } ,
+        "epochUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/6279fffd-5855-4920-be4c-1e613e5bbf72" } ,
+        "armUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/5959fd08-9c5b-4016-8118-d195cdb80c70" } ,
+        "treatmentActivityType": { "type": "uri" , "value": "http://trials.drugis.org/ontology#TreatmentActivity" } ,
+        "drugUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/46898d42-af62-4a97-a80c-a82f80596d47" } ,
+        "treatmentDrugLabel": { "type": "literal" , "value": "Olmesartan" } ,
+        "minValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "2.000000e+01" } ,
+        "minUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "minDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" } ,
+        "maxValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "4.000000e+01" } ,
+        "maxUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "maxDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" }
+      } ,
+      {
+        "treatmentActivityUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/d4f9e74f-7af1-441f-b5c1-ee5647bb7c11" } ,
+        "epochUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/6279fffd-5855-4920-be4c-1e613e5bbf72" } ,
+        "armUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/5959fd08-9c5b-4016-8118-d195cdb80c70" } ,
+        "treatmentActivityType": { "type": "uri" , "value": "http://trials.drugis.org/ontology#TreatmentActivity" } ,
+        "drugUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/22fb7649-44e1-41d1-a8bf-cd2c17aeb4c5" } ,
+        "treatmentDrugLabel": { "type": "literal" , "value": "Hydrochlorothiazide" } ,
+        "minValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "1.250000e+01" } ,
+        "minUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "minDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" } ,
+        "maxValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "2.500000e+01" } ,
+        "maxUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "maxDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" }
+      } ,
+      {
+        "treatmentActivityUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/a36ad3d2-0b5f-4014-8a1f-a52381ae0393" } ,
+        "epochUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/b0a4b9ca-2ec1-47c5-b8e8-4a275df4d720" } ,
+        "armUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/bf34362a-c4e9-430c-b648-15eee9c3b0ef" } ,
+        "treatmentActivityType": { "type": "uri" , "value": "http://trials.drugis.org/ontology#RandomizationActivity" }
+      } ,
+      {
+        "treatmentActivityUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/d601742d-2725-4b56-b422-a89e5ab7acca" } ,
+        "epochUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/6279fffd-5855-4920-be4c-1e613e5bbf72" } ,
+        "armUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/bf34362a-c4e9-430c-b648-15eee9c3b0ef" } ,
+        "treatmentActivityType": { "type": "uri" , "value": "http://trials.drugis.org/ontology#TreatmentActivity" } ,
+        "drugUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/fe244701-f120-47e1-b101-3a38e8d56370" } ,
+        "treatmentDrugLabel": { "type": "literal" , "value": "Azilsartan" } ,
+        "minValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "4.000000e+01" } ,
+        "minUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "minDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" } ,
+        "maxValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "8.000000e+01" } ,
+        "maxUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "maxDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" }
+      } ,
+      {
+        "treatmentActivityUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/d601742d-2725-4b56-b422-a89e5ab7acca" } ,
+        "epochUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/6279fffd-5855-4920-be4c-1e613e5bbf72" } ,
+        "armUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/bf34362a-c4e9-430c-b648-15eee9c3b0ef" } ,
+        "treatmentActivityType": { "type": "uri" , "value": "http://trials.drugis.org/ontology#TreatmentActivity" } ,
+        "drugUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/a6b21cbe-1dec-4bbe-bb64-146d81538c01" } ,
+        "treatmentDrugLabel": { "type": "literal" , "value": "Chlortalidone" } ,
+        "minValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "1.250000e+01" } ,
+        "minUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "minDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" } ,
+        "maxValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "2.500000e+01" } ,
+        "maxUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "maxDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" }
+      } ,
+      {
+        "treatmentActivityUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/a36ad3d2-0b5f-4014-8a1f-a52381ae0393" } ,
+        "epochUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/b0a4b9ca-2ec1-47c5-b8e8-4a275df4d720" } ,
+        "armUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/a8f1626d-f34d-4895-b5d7-ab000a19453d" } ,
+        "treatmentActivityType": { "type": "uri" , "value": "http://trials.drugis.org/ontology#RandomizationActivity" }
+      } ,
+      {
+        "treatmentActivityUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/214b2f2f-fb10-475f-8b56-053fcbe5c5ff" } ,
+        "epochUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/6279fffd-5855-4920-be4c-1e613e5bbf72" } ,
+        "armUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/a8f1626d-f34d-4895-b5d7-ab000a19453d" } ,
+        "treatmentActivityType": { "type": "uri" , "value": "http://trials.drugis.org/ontology#TreatmentActivity" } ,
+        "drugUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/fe244701-f120-47e1-b101-3a38e8d56370" } ,
+        "treatmentDrugLabel": { "type": "literal" , "value": "Azilsartan" } ,
+        "minValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "2.000000e+01" } ,
+        "minUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "minDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" } ,
+        "maxValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "4.000000e+01" } ,
+        "maxUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "maxDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" }
+      } ,
+      {
+        "treatmentActivityUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/214b2f2f-fb10-475f-8b56-053fcbe5c5ff" } ,
+        "epochUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/6279fffd-5855-4920-be4c-1e613e5bbf72" } ,
+        "armUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/a8f1626d-f34d-4895-b5d7-ab000a19453d" } ,
+        "treatmentActivityType": { "type": "uri" , "value": "http://trials.drugis.org/ontology#TreatmentActivity" } ,
+        "drugUid": { "type": "uri" , "value": "http://trials.drugis.org/instances/a6b21cbe-1dec-4bbe-bb64-146d81538c01" } ,
+        "treatmentDrugLabel": { "type": "literal" , "value": "Chlortalidone" } ,
+        "minValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "1.250000e+01" } ,
+        "minUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "minDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" } ,
+        "maxValue": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "2.500000e+01" } ,
+        "maxUnitLabel": { "type": "literal" , "value": "milligram" } ,
+        "maxDosingPeriodicity": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P1D" }
+      }
+    ]
+  }
+}

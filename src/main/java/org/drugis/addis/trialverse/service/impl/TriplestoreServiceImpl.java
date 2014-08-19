@@ -32,15 +32,14 @@ import java.util.*;
 @Service
 public class TriplestoreServiceImpl implements TriplestoreService {
 
-  final static Logger logger = LoggerFactory.getLogger(TriplestoreServiceImpl.class);
-
   public final static String STUDY_DATE_FORMAT = "yyyy-MM-dd";
-
+  final static Logger logger = LoggerFactory.getLogger(TriplestoreServiceImpl.class);
   private final static String TRIPLESTORE_URI = System.getenv("TRIPLESTORE_URI");
   private final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
   private final static String STUDY_DESIGN_QUERY = loadResource("sparql/studyDesign.sparql");
   private final static String STUDY_ARMS_QUERY = loadResource("sparql/studyArms.sparql");
   private final static String STUDY_ARMS_EPOCHS = loadResource("sparql/studyEpochs.sparql");
+  private final static String STUDY_TREATMENT_ACTIVITIES = loadResource("sparql/studyTreatmentActivities.sparql");
 
   @Inject
   RestOperationsFactory restOperationsFactory;
@@ -230,6 +229,63 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return getQueryResultList(query);
   }
 
+  @Override
+  public List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid) {
+    String query = StringUtils.replace(STUDY_TREATMENT_ACTIVITIES, "$namespaceUid", namespaceUid);
+    query = StringUtils.replace(query, "$studyUid", studyUid);
+    JSONArray queryResult = getQueryResultList(query);
+
+    Map<String, TreatmentActivity> treatmentActivityMap = new HashMap<>();
+    for (Object object : queryResult) {
+      JSONObject jsonObject = (JSONObject) object;
+      String treatmentActivityUid = (String) jsonObject.get("treatmentActivityUid");
+
+      TreatmentActivity treatmentActivity = treatmentActivityMap.get(treatmentActivityUid);
+      if (treatmentActivity == null) {
+        String epochUid = (String) jsonObject.get("epochUid");
+        String armUid = (String) jsonObject.get("armUid");
+        String treatmentActivityType = (String) jsonObject.get("treatmentActivityType");
+        treatmentActivity = new TreatmentActivity(treatmentActivityUid, treatmentActivityType, epochUid, armUid, new ArrayList<AdministeredDrug>());
+        treatmentActivityMap.put(treatmentActivityUid, treatmentActivity);
+      }
+
+      if (jsonObject.containsKey("drugUid")) {
+        AdministeredDrug administeredDrug = buildAdministeredDrug(jsonObject);
+        treatmentActivity.getAdministeredDrugs().add(administeredDrug);
+      }
+    }
+
+    return new ArrayList<>(treatmentActivityMap.values());
+  }
+
+  private AdministeredDrug buildAdministeredDrug(JSONObject jsonObject) {
+    String drugUid = (String) jsonObject.get("drugUid");
+    String treatmentDrugLabel = (String) jsonObject.get("treatmentDrugLabel");
+    AdministeredDrug administeredDrug;
+    if (jsonObject.containsKey("fixedValue")) {
+      administeredDrug = new FixedAdministeredDrug.FixedAdministeredDrugBuilder()
+              .drugUid(drugUid)
+              .drugLabel(treatmentDrugLabel)
+              .fixedDosingPeriodicity((String) jsonObject.get("fixedDosingPeriodicity"))
+              .fixedUnitLabel((String) jsonObject.get("fixedUnitLabel"))
+              .fixedValue(Double.parseDouble((String) jsonObject.get("fixedValue")))
+              .build();
+    } else {
+      administeredDrug = new FlexibleAdministeredDrug.FlexibleAdministeredDrugBuilder()
+              .drugUid(drugUid)
+              .drugLabel(treatmentDrugLabel)
+              .minDosingPeriodicity((String) jsonObject.get("minDosingPeriodicity"))
+              .minUnitLabel((String) jsonObject.get("minUnitLabel"))
+              .minValue(Double.parseDouble((String) jsonObject.get("minValue")))
+              .maxDosingPeriodicity((String) jsonObject.get("maxDosingPeriodicity"))
+              .maxUnitLabel((String) jsonObject.get("maxUnitLabel"))
+              .maxValue(Double.parseDouble((String) jsonObject.get("maxValue")))
+              .build();
+    }
+    return administeredDrug;
+  }
+
+
   private JSONArray getQueryResultList(String query) {
     logger.debug(query);
     String response = queryTripleStore(query);
@@ -254,65 +310,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       newObject.put(key, value);
     }
     return newObject;
-  }
-
-  @Override
-  public List<TreatmentActivity> getStudyDesign(String namespaceUid, String studyUid) throws ResourceDoesNotExistException {
-    String query = StringUtils.replace(STUDY_DESIGN_QUERY, "$namespaceUid", namespaceUid);
-    query = StringUtils.replace(query, "$studyUid", studyUid);
-    logger.debug(query);
-    String response = queryTripleStore(query);
-    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    if (bindings.isEmpty()) {
-      throw new ResourceDoesNotExistException();
-    }
-
-    List<TreatmentActivity> treatmentActivities = new ArrayList<>(bindings.size());
-
-    for (Object binding : bindings) {
-      JSONObject jsonObject = (net.minidev.json.JSONObject) binding;
-      String treatmentActivityUri = jsonObject.containsKey("treatmentActivity") ? JsonPath.<String>read(binding, "$.treatmentActivity.value") : null;
-      String epochUri = jsonObject.containsKey("epoch") ? JsonPath.<String>read(binding, "$.epoch.value") : null;
-      String epochLabel = jsonObject.containsKey("epochLabel") ? JsonPath.<String>read(binding, "$.epochLabel.value") : null;
-      String epochDuration = jsonObject.containsKey("epochDuration") ? JsonPath.<String>read(binding, "$.epochDuration.value") : null;
-      String treatmentActivityTypeLabel = jsonObject.containsKey("treatmentActivityType") ? subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.treatmentActivityType.value"), '#') : null;
-      String armLabel = jsonObject.containsKey("armLabel") ? JsonPath.<String>read(binding, "$.armLabel.value") : null;
-      Integer numberOfParticipantsStarting = jsonObject.containsKey("numberOfParticipantsStarting") ? Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfParticipantsStarting.value")) : null;
-      String treatmentDrugLabel = jsonObject.containsKey("treatmentDrugLabel") ? JsonPath.<String>read(binding, "$.treatmentDrugLabel.value") : null;
-      Double minValue = jsonObject.containsKey("minValue") ? Double.parseDouble(JsonPath.<String>read(binding, "$.minValue.value")) : null;
-      String minUnitLabel = jsonObject.containsKey("minUnitLabel") ? JsonPath.<String>read(binding, "$.minUnitLabel.value") : null;
-      String minDosingPeriodicity = jsonObject.containsKey("minDosingPeriodicity") ? JsonPath.<String>read(binding, "$.minDosingPeriodicity.value") : null;
-      Double maxValue = jsonObject.containsKey("maxValue") ? Double.parseDouble(JsonPath.<String>read(binding, "$.maxValue.value")) : null;
-      String maxUnitLabel = jsonObject.containsKey("maxUnitLabel") ? JsonPath.<String>read(binding, "$.maxUnitLabel.value") : null;
-      String maxDosingPeriodicity = jsonObject.containsKey("maxDosingPeriodicity") ? JsonPath.<String>read(binding, "$.maxDosingPeriodicity.value") : null;
-      Double fixedValue = jsonObject.containsKey("fixedValue") ? Double.parseDouble(JsonPath.<String>read(binding, "$.fixedValue.value")) : null;
-      String fixedUnitLabel = jsonObject.containsKey("fixedUnitLabel") ? JsonPath.<String>read(binding, "$.fixedUnitLabel.value") : null;
-      String fixedDosingPeriodicity = jsonObject.containsKey("fixedDosingPeriodicity") ? JsonPath.<String>read(binding, "$.fixedDosingPeriodicity.value") : null;
-
-      TreatmentActivity treatmentActivity = new TreatmentActivity.StudyDesignBuilder()
-              .treatmentActivityUri(treatmentActivityUri)
-              .epochUri(epochUri)
-              .epochLabel(epochLabel)
-              .epochDuration(epochDuration)
-              .treatmentActivityTypeLabel(treatmentActivityTypeLabel)
-              .armLabel(armLabel)
-              .numberOfParticipantsStarting(numberOfParticipantsStarting)
-              .treatmentDrugLabel(treatmentDrugLabel)
-              .minValue(minValue)
-              .minUnitLabel(minUnitLabel)
-              .minDosingPeriodicity(minDosingPeriodicity)
-              .maxValue(maxValue)
-              .maxUnitLabel(maxUnitLabel)
-              .maxDosingPeriodicity(maxDosingPeriodicity)
-              .fixedValue(fixedValue)
-              .fixedUnitLabel(fixedUnitLabel)
-              .fixedDosingPeriodicity(fixedDosingPeriodicity)
-              .build();
-
-      treatmentActivities.add(treatmentActivity);
-    }
-
-    return treatmentActivities;
   }
 
   @Override
@@ -689,6 +686,17 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return measurementObjects;
   }
 
+  private String queryTripleStore(String query) {
+    Map<String, String> vars = new HashMap<>();
+    vars.put("query", query);
+    vars.put("output", "json");
+    return restOperationsFactory.build().getForObject(TRIPLESTORE_URI + "?query={query}&output={output}", String.class, vars);
+  }
+
+  private String subStringAfterLastSymbol(String inStr, char symbol) {
+    return inStr.substring(inStr.lastIndexOf(symbol) + 1);
+  }
+
   public static class SingleStudyBenefitRiskMeasurementRow {
     private String outcomeUid;
     private String outcomeLabel;
@@ -773,17 +781,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       result = 31 * result + sampleSize.hashCode();
       return result;
     }
-  }
-
-  private String queryTripleStore(String query) {
-    Map<String, String> vars = new HashMap<>();
-    vars.put("query", query);
-    vars.put("output", "json");
-    return restOperationsFactory.build().getForObject(TRIPLESTORE_URI + "?query={query}&output={output}", String.class, vars);
-  }
-
-  private String subStringAfterLastSymbol(String inStr, char symbol) {
-    return inStr.substring(inStr.lastIndexOf(symbol) + 1);
   }
 
 }

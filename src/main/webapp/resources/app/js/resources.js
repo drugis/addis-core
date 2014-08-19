@@ -16,5 +16,6 @@ define(function (require) {
     .factory('StudyDetailsResource', require('resources/studyDetailsResource'))
     .factory('StudyDesignResource', require('resources/studyDesignResource'))
     .factory('StudyArmResource', require('resources/studyArmResource'))
-    .factory('StudyEpochResource', require('resources/studyEpochResource'));
+    .factory('StudyEpochResource', require('resources/studyEpochResource'))
+    .factory('StudyTreatmentActivityResource', require('resources/studyTreatmentActivityResource'));
 });
