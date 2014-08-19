@@ -28,6 +28,8 @@ public interface TriplestoreService {
 
   public JSONArray getStudyArms(String namespaceUid, String studyUid);
 
+  public JSONArray getStudyEpochs(String namespaceUid, String studyUid);
+
   public List<TreatmentActivity> getStudyDesign(String namespaceUid, String studyUid) throws ResourceDoesNotExistException;
 
   public List<TrialDataStudy> getTrialData(String namespaceUid, String outcomeUri, List<String> interventionUris);

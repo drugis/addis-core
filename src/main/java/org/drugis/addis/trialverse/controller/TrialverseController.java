@@ -88,8 +88,15 @@ public class TrialverseController {
   @RequestMapping(value = "/namespaces/{namespaceUid}/studiesWithDetail/{studyUid}/arms", method = RequestMethod.GET)
   @ResponseBody
   public JSONArray getStudyArms(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException {
-    logger.debug("getStudyArms");
-    return triplestoreService.getStudyArms(namespaceUid, studyUid);
+    JSONArray result = triplestoreService.getStudyArms(namespaceUid, studyUid);
+    return result;
+  }
+
+  @RequestMapping(value = "/namespaces/{namespaceUid}/studiesWithDetail/{studyUid}/epochs", method = RequestMethod.GET)
+  @ResponseBody
+  public JSONArray getStudyEpochs(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException {
+    JSONArray result = triplestoreService.getStudyEpochs(namespaceUid, studyUid);
+    return result;
   }
 
   @RequestMapping(value = "/namespaces/{namespaceUid}/trialData", method = RequestMethod.GET)

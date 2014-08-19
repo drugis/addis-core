@@ -40,6 +40,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
   private final static String STUDY_DESIGN_QUERY = loadResource("sparql/studyDesign.sparql");
   private final static String STUDY_ARMS_QUERY = loadResource("sparql/studyArms.sparql");
+  private final static String STUDY_ARMS_EPOCHS = loadResource("sparql/studyEpochs.sparql");
 
   @Inject
   RestOperationsFactory restOperationsFactory;
@@ -218,6 +219,13 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Override
   public JSONArray getStudyArms(String namespaceUid, String studyUid) {
     String query = StringUtils.replace(STUDY_ARMS_QUERY, "$namespaceUid", namespaceUid);
+    query = StringUtils.replace(query, "$studyUid", studyUid);
+    return getQueryResultList(query);
+  }
+
+  @Override
+  public JSONArray getStudyEpochs(String namespaceUid, String studyUid) {
+    String query = StringUtils.replace(STUDY_ARMS_EPOCHS, "$namespaceUid", namespaceUid);
     query = StringUtils.replace(query, "$studyUid", studyUid);
     return getQueryResultList(query);
   }

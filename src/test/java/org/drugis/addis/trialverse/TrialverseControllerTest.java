@@ -1,6 +1,8 @@
 package org.drugis.addis.trialverse;
 
 
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.config.TestConfig;
@@ -222,6 +224,44 @@ public class TrialverseControllerTest {
             .andExpect(jsonPath("$", hasSize(1)));
     verify(triplestoreService).getStudyDesign(namespaceUid, studyUid);
 
+  }
+
+  @Test
+  public void testGetStudyArms() throws Exception {
+    String namespaceUid = "namespaceUid";
+    String studyUid = "studyUid";
+    JSONArray result = new JSONArray();
+    result.add(createTestResultObject());
+    when(triplestoreService.getStudyArms(namespaceUid, studyUid)).thenReturn(result);
+    ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/arms"));
+    resultActions
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$[0].stringObject", is("string value")))
+            .andExpect(jsonPath("$[0].numberObject", is(1)))
+            .andExpect(jsonPath("$[0].dateObject", is(new DateTime(1980, 9, 10, 12, 0).getMillis())));
+    verify(triplestoreService).getStudyArms(namespaceUid, studyUid);
+  }
+
+  @Test
+  public void testGetStudyEpochs() throws Exception {
+    String namespaceUid = "namespaceUid";
+    String studyUid = "studyUid";
+    JSONArray result = new JSONArray();
+    result.add(createTestResultObject());
+    when(triplestoreService.getStudyEpochs(namespaceUid, studyUid)).thenReturn(result);
+    ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/epochs"));
+    resultActions.andExpect(status().isOk()); // returns generic result
+
+    verify(triplestoreService).getStudyEpochs(namespaceUid, studyUid);
+  }
+
+  private JSONObject createTestResultObject() {
+    JSONObject object = new JSONObject();
+    object.put("stringObject", "string value");
+    object.put("numberObject", new Integer(1));
+    object.put("dateObject", new DateTime(1980, 9, 10, 12, 0).toDate());
+    return object;
   }
 
   private TreatmentActivity createTreatmentActivity() {
