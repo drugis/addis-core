@@ -70,8 +70,11 @@ div.row.property-section {
   margin-bottom: 2rem;
   h5 {
     padding-left: 1rem;
-    margin-bottom: 1.5rem;
   }
+}
+
+div.row.property-section:last-child {
+  margin-bottom: 0;
 }
 
 /////////// end property lists ////////////
