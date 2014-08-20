@@ -11,23 +11,18 @@ define([], function() {
     $scope.studyEpochs = StudyEpochResource.query($stateParams);
     $scope.treatmentActivities = StudyTreatmentActivityResource.query($stateParams);
 
-    $q.all([
-       $scope.studyEpochs.$promise,
-       $scope.studyArms.$promise,
-       $scope.treatmentActivities.$promise
-     ]).then(function () {
-       $scope.cellTreatments = function(epochUid, armUid) {
-         return _.filter($scope.treatmentActivities, function(activity) {
-           var cellHasApplication = _.find(activity.activityApplications, function(application){
-             return (application.epochUid === epochUid && application.armUid === armUid)
-           });
-           if(cellHasApplication) {
-             return activity;
-           }
-         });
-       };
-    });
-    
+    $scope.cellTreatments = function(epochUid, armUid) {
+      return _.filter($scope.treatmentActivities, function(activity) {
+        var cellHasApplication = _.find(activity.activityApplications, function(application) {
+          return (application.epochUid === epochUid && application.armUid === armUid)
+        });
+        if (cellHasApplication) {
+          return activity;
+        }
+      });
+    };
+
+
   };
   return dependencies.concat(StudyController);
 });
