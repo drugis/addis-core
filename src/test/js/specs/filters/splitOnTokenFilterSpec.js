@@ -6,7 +6,7 @@ define(['angular', 'angular-mocks', 'filters'], function () {
 
     beforeEach(inject(function($filter) {
       splitOnTokenFilter = $filter('splitOnTokenFilter');
-    }))
+    }));
 
     it("should split a list of token seperated items", function() {
       expect(splitOnTokenFilter('a,b,c', ',')).toEqual(['a', 'b', 'c']);
