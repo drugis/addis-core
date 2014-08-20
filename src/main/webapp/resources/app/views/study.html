@@ -12,10 +12,12 @@
     <em>{{studyDetails.title}}</em>
 </p>
 
+<h5 class="subheader">Study details</h5>
+
 <div class="panel">
 
     <div class="row property-section">
-        <h5 class="subheader">Study details</h5>
+
 
         <div class="column large-4">
             <div class="row property-row">
@@ -148,39 +150,39 @@
 <div class="row property-section">
     <h5 class="subheader">Study design</h5>
 
-    <div class="column large-12">
-        <table>
-            <thead>
-            <tr>
-                <th>Arms</th>
-                <th>Number of participants starting</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="arm in studyArms">
-                <td>{{arm.armLabel}}</td>
-                <td class="text-center">{{arm.numberOfParticipantsStarting}}</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+    <!--    <div class="column large-12">
+           <table>
+               <thead>
+               <tr>
+                   <th>Arms</th>
+                   <th>Number of participants starting</th>
+               </tr>
+               </thead>
+               <tbody>
+               <tr ng-repeat="arm in studyArms">
+                   <td>{{arm.armLabel}}</td>
+                   <td class="text-center">{{arm.numberOfParticipantsStarting}}</td>
+               </tr>
+               </tbody>
+           </table>
+       </div>
 
-    <div class="column large-12">
-        <table>
-            <thead>
-            <tr>
-                <th>Epochs</th>
-                <th>Duration</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="epoch in studyEpochs">
-                <td>{{epoch.label}}</td>
-                <td class="text-center">{{epoch.duration | durationFilter}}</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+       <div class="column large-12">
+           <table>
+               <thead>
+               <tr>
+                   <th>Epochs</th>
+                   <th>Duration</th>
+               </tr>
+               </thead>
+               <tbody>
+               <tr ng-repeat="epoch in studyEpochs">
+                   <td>{{epoch.label}}</td>
+                   <td class="text-center">{{epoch.duration | durationFilter}}</td>
+               </tr>
+               </tbody>
+           </table>
+       </div> -->
 
     <div class="column large-12">
         <table>
@@ -188,29 +190,33 @@
             <tr>
                 <th>Arms</th>
                 <th>Participants starting</th>
-                <th ng-repeat="epoch in studyEpochs">{{epoch.label}}</th>
+                <th ng-repeat="epoch in studyEpochs">
+                    {{epoch.label}}
+                    <span ng-show="epoch.duration">({{epoch.duration | durationFilter}})</span>
+                </th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="arm in studyArms">
                 <td>{{arm.armLabel}}</td>
-                <td>{{arm.numberOfParticipantsStarting}}</td>
+                <td class="text-center">{{arm.numberOfParticipantsStarting}}</td>
                 <td ng-repeat="epoch in studyEpochs">
                     <span ng-show="cellTreatments(epoch.epochUid, arm.armUid)[0].administeredDrugs.length === 0">
-                        <div>{{cellTreatments(epoch.epochUid, arm.armUid)[0].treatmentActivityType}}</div>
+                        <div>{{cellTreatments(epoch.epochUid, arm.armUid)[0].treatmentActivityType |
+                            activityTypeFilter}}
+                        </div>
                     </span>
                     <span ng-show="cellTreatments(epoch.epochUid, arm.armUid)[0].administeredDrugs.length !== 0">
                         <div ng-repeat="administeredDrug in cellTreatments(epoch.epochUid, arm.armUid)[0].administeredDrugs">
                             {{administeredDrug.drugLabel}}
+                            <span ng-show="administeredDrug.minValue">
+                                ( {{administeredDrug.minValue}} - {{administeredDrug.maxValue}} {{administeredDrug.minUnitLabel}} {{administeredDrug.minDosingPeriodicity | durationFilter}} )
+                            </span>
+                            <span ng-show="administeredDrug.fixedValue">( {{administeredDrug.fixedValue}} {{administeredDrug.fixedUnitLabel}} {{administeredDrug.fixedDosingPeriodicity | durationFilter}} )
+                            </span>
                         </div>
                     </span>
                 </td>
-            <!--
-                <td ng-repeat="item in studyDesignRow">{{item.label}} {{item.numberOfParticipantsStarting}}
-                <span ng-show="item.minValue">( {{item.minValue}} - {{item.maxValue}} {{item.minUnitLabel}} {{item.minDosingPeriodicity | durationFilter}} )</span>
-                <span ng-show="item.fixedValue">( {{item.fixedValue}} {{item.fixedUnitLabel}} {{item.fixedDosingPeriodicity | durationFilter}} )</span>
-                </td> 
-            -->
             </tr>
             </tbody>
         </table>
