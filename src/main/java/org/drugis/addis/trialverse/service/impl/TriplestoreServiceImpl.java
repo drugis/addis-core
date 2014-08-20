@@ -36,7 +36,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   final static Logger logger = LoggerFactory.getLogger(TriplestoreServiceImpl.class);
   private final static String TRIPLESTORE_URI = System.getenv("TRIPLESTORE_URI");
   private final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
-  private final static String STUDY_DESIGN_QUERY = loadResource("sparql/studyDesign.sparql");
   private final static String STUDY_ARMS_QUERY = loadResource("sparql/studyArms.sparql");
   private final static String STUDY_ARMS_EPOCHS = loadResource("sparql/studyEpochs.sparql");
   private final static String STUDY_TREATMENT_ACTIVITIES = loadResource("sparql/studyTreatmentActivities.sparql");
