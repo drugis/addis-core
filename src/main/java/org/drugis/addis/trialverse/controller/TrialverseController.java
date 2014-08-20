@@ -5,7 +5,6 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
-import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +29,6 @@ public class TrialverseController {
 
   @Inject
   private AccountRepository accountRepository;
-
-  @Inject
-  private TrialverseRepository trialverseRepository;
 
   @Inject
   private TriplestoreService triplestoreService;

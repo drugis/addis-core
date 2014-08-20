@@ -326,10 +326,6 @@
                         <ADDIS_CORE_DB_URL>${env.ADDIS_CORE_DB_URL}</ADDIS_CORE_DB_URL>
                         <ADDIS_CORE_DB_USERNAME>${env.ADDIS_CORE_DB_USERNAME}</ADDIS_CORE_DB_USERNAME>
                         <ADDIS_CORE_DB_PASSWORD>${env.ADDIS_CORE_DB_PASSWORD}</ADDIS_CORE_DB_PASSWORD>
-                        <TRIALVERSE_DB_DRIVER>${env.TRIALVERSE_DB_DRIVER}</TRIALVERSE_DB_DRIVER>
-                        <TRIALVERSE_DB_URL>${env.TRIALVERSE_DB_URL}</TRIALVERSE_DB_URL>
-                        <TRIALVERSE_DB_USERNAME>${env.TRIALVERSE_DB_USERNAME}</TRIALVERSE_DB_USERNAME>
-                        <TRIALVERSE_DB_PASSWORD>${env.TRIALVERSE_DB_PASSWORD}</TRIALVERSE_DB_PASSWORD>
                         <TRIPLESTORE_URI>${env.TRIPLESTORE_URI}</TRIPLESTORE_URI>
                     </systemProperties>
                 </configuration>

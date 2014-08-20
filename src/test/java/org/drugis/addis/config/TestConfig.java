@@ -14,7 +14,6 @@ import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.factory.RestOperationsFactory;
-import org.drugis.addis.trialverse.repository.TrialverseRepository;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -84,11 +83,6 @@ public class TestConfig {
   @Bean
   public CriteriaRepository criteriaRepository() {
     return mock(CriteriaRepository.class);
-  }
-
-  @Bean
-  public TrialverseRepository mockTrialverseRepository() {
-    return mock(TrialverseRepository.class);
   }
 
   @Bean
