@@ -9,6 +9,7 @@ import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.model.StudyWithDetails;
 import org.drugis.addis.trialverse.model.TreatmentActivity;
+import org.drugis.addis.trialverse.model.emun.StudyDataType;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.junit.Before;
@@ -148,6 +149,19 @@ public class TriplestoreServiceTest {
 
     List<TreatmentActivity> treatmentActivities = triplestoreService.getStudyTreatmentActivities(namespaceUid, studyUid);
     assertEquals(4, treatmentActivities.size());
+  }
+
+  @Test
+  public void testGetStudyDataForBaseLineCharacteristics() {
+    String namespaceUid = "namespaceUid";
+    String studyUid = "studyUid";
+    StudyDataType studyDataType = StudyDataType.BASE_LINE_CHARACTERISTICS;
+
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleBaseLineCharacteristicsResult.json");
+    createMockTrialverseService(mockResult);
+
+    JSONArray result = triplestoreService.getStudyData(namespaceUid, studyUid, studyDataType);
+    assertEquals(20, result.size());
   }
 
   @Test

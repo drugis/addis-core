@@ -3,6 +3,7 @@ define(['angular', 'angular-mocks', 'controllers'],
     describe("The studyController", function() {
       var $scope, $q, $stateParams, TrialverseResource, StudyDetailsResource,
         StudyTreatmentActivityResource, StudyArmResource, StudyEpochResource,
+        StudyPopulationCharacteristicsResource, StudyEndpointsResource, StudyAdverseEventsResource,
         treatmentActivity;
 
       beforeEach(module('addis.controllers'));
@@ -21,6 +22,11 @@ define(['angular', 'angular-mocks', 'controllers'],
         StudyArmResource = jasmine.createSpyObj('StudyArmResource', ['query']);
         StudyEpochResource = jasmine.createSpyObj('StudyEpochResource', ['query']);
 
+        StudyPopulationCharacteristicsResource = jasmine.createSpyObj('StudyEpochResource', ['get']);
+        StudyEndpointsResource = jasmine.createSpyObj('StudyEpochResource', ['get']);
+        StudyAdverseEventsResource = jasmine.createSpyObj('StudyEpochResource', ['get']);
+
+
         StudyTreatmentActivityResource = jasmine.createSpyObj('StudyTreatmentActivityResource', ['query']);
         StudyTreatmentActivityResource.query.and.returnValue(treatmentActivities);
 
@@ -33,7 +39,10 @@ define(['angular', 'angular-mocks', 'controllers'],
           StudyDetailsResource: StudyDetailsResource,
           StudyTreatmentActivityResource: StudyTreatmentActivityResource,
           StudyArmResource: StudyArmResource,
-          StudyEpochResource: StudyEpochResource
+          StudyEpochResource: StudyEpochResource,
+          StudyPopulationCharacteristicsResource: StudyPopulationCharacteristicsResource,
+          StudyEndpointsResource: StudyEndpointsResource,
+          StudyAdverseEventsResource: StudyAdverseEventsResource
         });
 
       }));

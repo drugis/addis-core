@@ -1,0 +1,249 @@
+{
+  "head": {
+    "vars": [ "studyDataType" , "studyDataTypeLabel" , "armLabel" , "sampleSize" , "count" , "mean" , "std" , "relativeToAnchor" , "timeOffset" , "duration" , "relativeToEpochLabel" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/b51782c5-608e-40e3-89fa-5beeff53a194" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "Age" } ,
+        "armLabel": { "type": "literal" , "value": "Duloxetine 120mg/day" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "93" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "4.470000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "1.070000e+01" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/b51782c5-608e-40e3-89fa-5beeff53a194" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "Age" } ,
+        "armLabel": { "type": "literal" , "value": "Duloxetine 80mg/day" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "95" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "4.310000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "1.110000e+01" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/b51782c5-608e-40e3-89fa-5beeff53a194" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "Age" } ,
+        "armLabel": { "type": "literal" , "value": "Paroxetine" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "86" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "4.200000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "1.060000e+01" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/b51782c5-608e-40e3-89fa-5beeff53a194" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "Age" } ,
+        "armLabel": { "type": "literal" , "value": "Placebo" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "93" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "4.370000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "1.220000e+01" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/c6e57d7d-4f1d-4771-b927-8952826093ba" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "CGI-S bas" } ,
+        "armLabel": { "type": "literal" , "value": "Duloxetine 120mg/day" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "93" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "4.330000e+00" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "6.600000e-01" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/c6e57d7d-4f1d-4771-b927-8952826093ba" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "CGI-S bas" } ,
+        "armLabel": { "type": "literal" , "value": "Duloxetine 80mg/day" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "95" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "4.320000e+00" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "6.100000e-01" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/c6e57d7d-4f1d-4771-b927-8952826093ba" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "CGI-S bas" } ,
+        "armLabel": { "type": "literal" , "value": "Paroxetine" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "86" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "4.280000e+00" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "6.800000e-01" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/c6e57d7d-4f1d-4771-b927-8952826093ba" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "CGI-S bas" } ,
+        "armLabel": { "type": "literal" , "value": "Placebo" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "93" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "4.350000e+00" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "6.200000e-01" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/8bf1a5c4-2eaf-4fbb-b632-d09b8a379c68" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "HAMD bas" } ,
+        "armLabel": { "type": "literal" , "value": "Duloxetine 120mg/day" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "93" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "2.020000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "3.400000e+00" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/8bf1a5c4-2eaf-4fbb-b632-d09b8a379c68" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "HAMD bas" } ,
+        "armLabel": { "type": "literal" , "value": "Duloxetine 80mg/day" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "95" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "1.990000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "3.600000e+00" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/8bf1a5c4-2eaf-4fbb-b632-d09b8a379c68" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "HAMD bas" } ,
+        "armLabel": { "type": "literal" , "value": "Paroxetine" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "86" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "2.030000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "4.100000e+00" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/8bf1a5c4-2eaf-4fbb-b632-d09b8a379c68" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "HAMD bas" } ,
+        "armLabel": { "type": "literal" , "value": "Placebo" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "93" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "1.990000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "3.600000e+00" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/7bbe8079-f518-4cd7-8caa-ab00af07a9d4" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "MADRS bas" } ,
+        "armLabel": { "type": "literal" , "value": "Duloxetine 120mg/day" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "93" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "2.210000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "6.100000e+00" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/7bbe8079-f518-4cd7-8caa-ab00af07a9d4" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "MADRS bas" } ,
+        "armLabel": { "type": "literal" , "value": "Duloxetine 80mg/day" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "95" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "2.180000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "5.800000e+00" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/7bbe8079-f518-4cd7-8caa-ab00af07a9d4" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "MADRS bas" } ,
+        "armLabel": { "type": "literal" , "value": "Paroxetine" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "86" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "2.230000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "6.200000e+00" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/7bbe8079-f518-4cd7-8caa-ab00af07a9d4" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "MADRS bas" } ,
+        "armLabel": { "type": "literal" , "value": "Placebo" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "93" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "2.150000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "5.600000e+00" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/f8ee3c87-befa-4e63-98e1-a5a9eed60606" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "Weight" } ,
+        "armLabel": { "type": "literal" , "value": "Duloxetine 120mg/day" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "93" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "7.300000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "1.800000e+01" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/f8ee3c87-befa-4e63-98e1-a5a9eed60606" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "Weight" } ,
+        "armLabel": { "type": "literal" , "value": "Duloxetine 80mg/day" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "95" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "7.100000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "1.480000e+01" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/f8ee3c87-befa-4e63-98e1-a5a9eed60606" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "Weight" } ,
+        "armLabel": { "type": "literal" , "value": "Paroxetine" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "86" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "7.040000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "1.500000e+01" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      } ,
+      {
+        "studyDataType": { "type": "uri" , "value": "http://trials.drugis.org/entities/f8ee3c87-befa-4e63-98e1-a5a9eed60606" } ,
+        "studyDataTypeLabel": { "type": "literal" , "value": "Weight" } ,
+        "armLabel": { "type": "literal" , "value": "Placebo" } ,
+        "sampleSize": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "93" } ,
+        "mean": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "6.800000e+01" } ,
+        "std": { "datatype": "http://www.w3.org/2001/XMLSchema#double" , "type": "typed-literal" , "value": "1.490000e+01" } ,
+        "relativeToAnchor": { "type": "uri" , "value": "http://trials.drugis.org/ontology#anchorEpochStart" } ,
+        "timeOffset": { "datatype": "http://www.w3.org/2001/XMLSchema#duration" , "type": "typed-literal" , "value": "P0D" } ,
+        "duration": { "type": "literal" , "value": "P56D" } ,
+        "relativeToEpochLabel": { "type": "literal" , "value": "Acute treatment phase" }
+      }
+    ]
+  }
+}

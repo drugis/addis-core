@@ -10,6 +10,7 @@ import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyAllocationEnum;
 import org.drugis.addis.trialverse.model.emun.StudyBlindingEmun;
+import org.drugis.addis.trialverse.model.emun.StudyDataType;
 import org.drugis.addis.trialverse.model.emun.StudyStatusEnum;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.joda.time.DateTime;
@@ -33,12 +34,15 @@ import java.util.*;
 public class TriplestoreServiceImpl implements TriplestoreService {
 
   public final static String STUDY_DATE_FORMAT = "yyyy-MM-dd";
-  final static Logger logger = LoggerFactory.getLogger(TriplestoreServiceImpl.class);
+
+  private final static Logger logger = LoggerFactory.getLogger(TriplestoreServiceImpl.class);
+
   private final static String TRIPLESTORE_URI = System.getenv("TRIPLESTORE_URI");
   private final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
   private final static String STUDY_ARMS_QUERY = loadResource("sparql/studyArms.sparql");
   private final static String STUDY_ARMS_EPOCHS = loadResource("sparql/studyEpochs.sparql");
   private final static String STUDY_TREATMENT_ACTIVITIES = loadResource("sparql/studyTreatmentActivities.sparql");
+  private final static String STUDY_DATA = loadResource("sparql/studyData.sparql");
 
   @Inject
   RestOperationsFactory restOperationsFactory;
@@ -283,6 +287,16 @@ public class TriplestoreServiceImpl implements TriplestoreService {
               .build();
     }
     return administeredDrug;
+  }
+
+  @Override
+  public JSONArray getStudyData(String namespaceUid, String studyUid, StudyDataType studyDataType) {
+    String query = StringUtils.replace(STUDY_DATA, "$namespaceUid", namespaceUid);
+    query = StringUtils.replace(query, "$studyUid", studyUid);
+    query = StringUtils.replace(query, "$studyDataType", studyDataType.toString());
+    logger.info(query);
+    JSONArray queryResult = getQueryResultList(query);
+    return queryResult;
   }
 
 

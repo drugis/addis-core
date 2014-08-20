@@ -17,5 +17,8 @@ define(function (require) {
     .factory('StudyDesignResource', require('resources/studyDesignResource'))
     .factory('StudyArmResource', require('resources/studyArmResource'))
     .factory('StudyEpochResource', require('resources/studyEpochResource'))
-    .factory('StudyTreatmentActivityResource', require('resources/studyTreatmentActivityResource'));
+    .factory('StudyTreatmentActivityResource', require('resources/studyTreatmentActivityResource'))
+    .factory('StudyPopulationCharacteristicsResource', require('resources/studyPopulationCharacteristicsResource'))
+    .factory('StudyEndpointsResource', require('resources/studyEndpointsResource'))
+    .factory('StudyAdverseEventsResource', require('resources/studyAdverseEventsResource'));
 });
