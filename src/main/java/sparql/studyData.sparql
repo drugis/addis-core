@@ -7,9 +7,9 @@ PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 PREFIX instance: <http://trials.drugis.org/instances/>
 
 SELECT
-  ?studyDataType
+  ?studyDataTypeUri
   ?studyDataTypeLabel
-  ?armInstance
+  ?armInstanceUid
   ?armLabel
   ?sampleSize
   ?count
@@ -22,19 +22,19 @@ SELECT
   {
   GRAPH dataset:$namespaceUid {
     ?dataset ontology:contains_study ?study .
-    ?studyDataType rdfs:subClassOf ontology:$studyDataType ;
+    ?studyDataTypeUri rdfs:subClassOf ontology:$studyDataType ;
       rdfs:label ?studyDataTypeLabel .
    }
    GRAPH study:$studyUid {
-     ?studyDataTypeInstance a ?studyDataType .
+     ?studyDataTypeInstance a ?studyDataTypeUri .
      ?study ontology:has_outcome ?studyDataTypeInstance .
      ?measurementJoinInstance ontology:of_outcome ?studyDataTypeInstance ;
-         ontology:of_arm ?armInstance ;
+         ontology:of_arm ?armInstanceUid ;
          ontology:of_moment ?momentInstance .
      ?measurementJoinInstance ontology:of_outcome ?studyDataTypeInstance ;
-         ontology:of_arm ?armInstance ;
+         ontology:of_arm ?armInstanceUid ;
          ontology:of_moment ?momentInstance .
-     ?armInstance rdfs:label ?armLabel ;
+     ?armInstanceUid rdfs:label ?armLabel ;
              a ontology:Arm .
      OPTIONAL {
           ?measurementJoinInstance ontology:sample_size ?sampleSize .

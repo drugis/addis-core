@@ -8,12 +8,17 @@ define(['angular', 'angular-mocks', 'filters'], function () {
       activityTypeFilter = $filter('activityTypeFilter');
     }));
 
-    it("should the remove part before the hashtag token en strip the word 'Activity' from the end of the uri", function() {
-      var uri = 'http://somethings/otherthing/hereiscomes#resultActivity';
-      expect(activityTypeFilter(uri)).toEqual('result');
+    it("should strip the word 'Activity' from the end of the input", function() {
+      var input = 'dfsdfd df ff121432ABCsafaf resultActivity';
+      expect(activityTypeFilter(input)).toEqual('dfsdfd df ff121432ABCsafaf result');
     });
 
     it("should pass though a empty input", function() {
+      expect(activityTypeFilter(undefined)).toEqual(undefined);
+    });
+
+    it("should pass though a input not ending with Activity", function() {
+      var input = 'this string ends with something else';
       expect(activityTypeFilter(undefined)).toEqual(undefined);
     });
 

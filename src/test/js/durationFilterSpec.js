@@ -14,7 +14,11 @@ define(['angular', 'angular-mocks', 'filters'], function () {
 
     it("should humanize a valid duration", function() {
       expect(durationFilter("P1D")).toEqual("a day");
-      expect(durationFilter("-P0D")).toEqual("a few seconds"); // is this what we want ? :s
+    });
+
+    it("should replace empty periods with null", function() { // is this what we want ? :s
+      expect(durationFilter("P0D")).toEqual(null);
+      expect(durationFilter("-P0D")).toEqual(null); 
     });
 
   });

@@ -5,7 +5,7 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
-import org.drugis.addis.trialverse.model.emun.StudyDataType;
+import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,20 +97,20 @@ public class TrialverseController {
 
   @RequestMapping(value = "/namespaces/{namespaceUid}/studiesWithDetail/{studyUid}/studyData/populationCharacteristics", method = RequestMethod.GET)
   @ResponseBody
-  public JSONArray getStudyPopulationCharacteristicsData(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException {
-    return triplestoreService.getStudyData(namespaceUid, studyUid, StudyDataType.BASE_LINE_CHARACTERISTICS);
+  public List<StudyData> getStudyPopulationCharacteristicsData(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException {
+    return triplestoreService.getStudyData(namespaceUid, studyUid, StudyDataSection.BASE_LINE_CHARACTERISTICS);
   }
 
   @RequestMapping(value = "/namespaces/{namespaceUid}/studiesWithDetail/{studyUid}/studyData/adverseEvents", method = RequestMethod.GET)
   @ResponseBody
-  public JSONArray getStudyAdverseEventsData(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException {
-    return triplestoreService.getStudyData(namespaceUid, studyUid, StudyDataType.ADVERSE_EVENTS);
+  public List<StudyData> getStudyAdverseEventsData(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException {
+    return triplestoreService.getStudyData(namespaceUid, studyUid, StudyDataSection.ADVERSE_EVENTS);
   }
 
   @RequestMapping(value = "/namespaces/{namespaceUid}/studiesWithDetail/{studyUid}/studyData/endpoints", method = RequestMethod.GET)
   @ResponseBody
-  public JSONArray getStudyEndpointsData(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException {
-    return triplestoreService.getStudyData(namespaceUid, studyUid, StudyDataType.ENDPOINTS);
+  public List<StudyData> getStudyEndpointsData(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException {
+    return triplestoreService.getStudyData(namespaceUid, studyUid, StudyDataSection.ENDPOINTS);
   }
 
   @RequestMapping(value = "/namespaces/{namespaceUid}/trialData", method = RequestMethod.GET)

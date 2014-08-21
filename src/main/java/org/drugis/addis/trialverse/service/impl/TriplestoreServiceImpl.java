@@ -10,7 +10,7 @@ import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyAllocationEnum;
 import org.drugis.addis.trialverse.model.emun.StudyBlindingEmun;
-import org.drugis.addis.trialverse.model.emun.StudyDataType;
+import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.model.emun.StudyStatusEnum;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.joda.time.DateTime;
@@ -290,13 +290,53 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public JSONArray getStudyData(String namespaceUid, String studyUid, StudyDataType studyDataType) {
+  public List<StudyData> getStudyData(String namespaceUid, String studyUid, StudyDataSection studyDataSection) {
     String query = StringUtils.replace(STUDY_DATA, "$namespaceUid", namespaceUid);
     query = StringUtils.replace(query, "$studyUid", studyUid);
-    query = StringUtils.replace(query, "$studyDataType", studyDataType.toString());
+    query = StringUtils.replace(query, "$studyDataType", studyDataSection.toString());
     logger.info(query);
     JSONArray queryResult = getQueryResultList(query);
-    return queryResult;
+
+    Map<String, StudyData> stringStudyDataMap = new HashMap<>();
+    for (Object object : queryResult) {
+      JSONObject jsonObject = (JSONObject) object;
+      String studyDataTypeUri = (String) jsonObject.get("studyDataTypeUri");
+      StudyData studyData = stringStudyDataMap.get(studyDataTypeUri);
+      if (studyData == null) {
+        String studyDataTypeLabel = (String) jsonObject.get("studyDataTypeLabel");
+        studyData = new StudyData
+                .StudyDataBuilder(studyDataSection, studyDataTypeUri, studyDataTypeLabel)
+                .relativeToAnchorOntology((String) jsonObject.get("relativeToAnchor"))
+                .timeOffsetDuration((String) jsonObject.get("timeOffset"))
+                .relativeToEpochLabel((String) jsonObject.get("relativeToEpochLabel"))
+                .build();
+        stringStudyDataMap.put(studyDataTypeUri, studyData);
+      }
+      AbstractStudyDataArmValue studyDataArmValue;
+      String armInstanceUid = (String) jsonObject.get("armInstanceUid");
+      String armLabel = (String) jsonObject.get("armLabel");
+      Integer sampleSize = jsonObject.containsKey("sampleSize") ? Integer.parseInt((String) jsonObject.get("sampleSize")) : null;
+      String sampleDuration = jsonObject.containsKey("sampleDuration") ? (String) jsonObject.get("sampleDuration") : null;
+
+      if (jsonObject.containsKey("count")) {
+        studyDataArmValue = new RateStudyDataArmValue
+                .RateStudyDataArmValueBuilder(armInstanceUid, armLabel)
+                .count(Long.parseLong((String) jsonObject.get("count")))
+                .sampleSize(sampleSize)
+                .sampleDuration(sampleDuration)
+                .build();
+      } else {
+        studyDataArmValue = new ContinuousStudyDataArmValue
+                .ContinuousStudyDataArmValueBuilder(armInstanceUid, armLabel)
+                .mean(jsonObject.containsKey("mean") ? Double.parseDouble((String) jsonObject.get("mean")) : null)
+                .std(jsonObject.containsKey("std") ? Double.parseDouble((String) jsonObject.get("std")) : null)
+                .sampleSize(sampleSize)
+                .sampleDuration(sampleDuration)
+                .build();
+      }
+      studyData.getStudyDataArmValues().add(studyDataArmValue);
+    }
+    return new ArrayList<>(stringStudyDataMap.values());
   }
 
 

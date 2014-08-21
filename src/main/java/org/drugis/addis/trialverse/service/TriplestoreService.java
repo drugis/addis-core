@@ -3,7 +3,7 @@ package org.drugis.addis.trialverse.service;
 import net.minidev.json.JSONArray;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
-import org.drugis.addis.trialverse.model.emun.StudyDataType;
+import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 
 import java.util.Collection;
@@ -37,5 +37,5 @@ public interface TriplestoreService {
 
   public List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid);
 
-  public JSONArray getStudyData(String namespaceUid, String studyUid, StudyDataType studyDataType);
+  public List<StudyData> getStudyData(String namespaceUid, String studyUid, StudyDataSection studyDataSection);
 }

@@ -5,11 +5,8 @@ import net.minidev.json.JSONObject;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.factory.RestOperationsFactory;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
-import org.drugis.addis.trialverse.model.SemanticOutcome;
-import org.drugis.addis.trialverse.model.StudyWithDetails;
-import org.drugis.addis.trialverse.model.TreatmentActivity;
-import org.drugis.addis.trialverse.model.emun.StudyDataType;
+import org.drugis.addis.trialverse.model.*;
+import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.junit.Before;
@@ -155,13 +152,13 @@ public class TriplestoreServiceTest {
   public void testGetStudyDataForBaseLineCharacteristics() {
     String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
-    StudyDataType studyDataType = StudyDataType.BASE_LINE_CHARACTERISTICS;
+    StudyDataSection studyDataSection = StudyDataSection.BASE_LINE_CHARACTERISTICS;
 
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleBaseLineCharacteristicsResult.json");
     createMockTrialverseService(mockResult);
 
-    JSONArray result = triplestoreService.getStudyData(namespaceUid, studyUid, studyDataType);
-    assertEquals(20, result.size());
+    List<StudyData> result = triplestoreService.getStudyData(namespaceUid, studyUid, studyDataSection);
+    assertEquals(2, result.size());
   }
 
   @Test

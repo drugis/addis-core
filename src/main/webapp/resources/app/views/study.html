@@ -136,11 +136,8 @@
                 <div class="column large-7 end">
                     <div ng-repeat="uri in studyDetails.pubmedUrls | splitOnTokenFilter">
                         <a target="_blank" ng-href={{uri}}>{{uri}}</a>
-
-                        <div>
-                        </div>
                     </div>
-
+                    <span ng-show="!studyDetails.pubmedUrls.length"><em>not links availiable</em></span>
                 </div>
             </div>
         </div>
@@ -150,40 +147,6 @@
 
 <div class="row property-section">
     <h5 class="subheader">Study design</h5>
-
-    <!--    <div class="column large-12">
-           <table>
-               <thead>
-               <tr>
-                   <th>Arms</th>
-                   <th>Number of participants starting</th>
-               </tr>
-               </thead>
-               <tbody>
-               <tr ng-repeat="arm in studyArms">
-                   <td>{{arm.armLabel}}</td>
-                   <td class="text-center">{{arm.numberOfParticipantsStarting}}</td>
-               </tr>
-               </tbody>
-           </table>
-       </div>
-
-       <div class="column large-12">
-           <table>
-               <thead>
-               <tr>
-                   <th>Epochs</th>
-                   <th>Duration</th>
-               </tr>
-               </thead>
-               <tbody>
-               <tr ng-repeat="epoch in studyEpochs">
-                   <td>{{epoch.label}}</td>
-                   <td class="text-center">{{epoch.duration | durationFilter}}</td>
-               </tr>
-               </tbody>
-           </table>
-       </div> -->
 
     <div id="study-design-table" class="column large-12">
         <table>
@@ -204,7 +167,7 @@
                 <td ng-repeat="epoch in studyEpochs">
                     <span ng-show="cellTreatments(epoch.epochUid, arm.armUid)[0].administeredDrugs.length === 0">
                         <div>{{cellTreatments(epoch.epochUid, arm.armUid)[0].treatmentActivityType |
-                            activityTypeFilter}}
+                            ontologyFilter |activityTypeFilter}}
                         </div>
                     </span>
                     <span ng-show="cellTreatments(epoch.epochUid, arm.armUid)[0].administeredDrugs.length !== 0">
@@ -227,7 +190,36 @@
 <div class="row property-section">
     <h5 class="subheader">Study data</h5>
 
-
+    <div id="population-characteristics-table" class="column large-12">
+        <table>
+            <thead>
+            <tr>
+                <th>Population characaristic</th>
+                <th>Measurement moment</th>
+                <th ng-repeat="dataArmValue in studyPopulationCharacteristics[0].studyDataArmValues">
+                    {{dataArmValue.armLabel}}
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="populationCharacteristic in studyPopulationCharacteristics">
+                <td>{{populationCharacteristic.studyDataTypeLabel}}</td>
+                <td>
+                    {{populationCharacteristic.timeOffsetDuration | durationFilter}}
+                    {{populationCharacteristic.relativeToEpochLabel}}
+                    {{populationCharacteristic.relativeToAnchorOntology | ontologyFilter | anchorEpochFilter}}
+                </td>
+                <td ng-repeat="dataArmValue in populationCharacteristic.studyDataArmValues">
+                    <span ng-show="dataArmValue.mean">{{dataArmValue.mean}}</span>
+                    <span ng-show="dataArmValue.mean">&plusmn; {{dataArmValue.std}}</span>
+                    <span ng-show="dataArmValue.count">{{dataArmValue.count}}</span>
+                    <span ng-show="dataArmValue.sampleSize && dataArmValue.count"> / {{dataArmValue.sampleSize}}</span>
+                    <span ng-show="dataArmValue.sampleSize && dataArmValue.mean">({{dataArmValue.sampleSize}})</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 

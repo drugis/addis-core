@@ -9,7 +9,7 @@ import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
-import org.drugis.addis.trialverse.model.emun.StudyDataType;
+import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
 import org.joda.time.DateTime;
@@ -259,45 +259,42 @@ public class TrialverseControllerTest {
   public void testGetStudyPopulationCharacteristicsData() throws Exception {
     String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
-    StudyDataType studyDataType = StudyDataType.BASE_LINE_CHARACTERISTICS;
-    JSONArray result = new JSONArray();
-    result.add(createTestResultObject());
-    when(triplestoreService.getStudyData(namespaceUid, studyUid, studyDataType)).thenReturn(result);
+    StudyDataSection studyDataSection = StudyDataSection.BASE_LINE_CHARACTERISTICS;
+    List<StudyData> result = Arrays.asList(new StudyData.StudyDataBuilder(studyDataSection, "studyDataTypeUri", "studyDataTypeLabel").build());
+    when(triplestoreService.getStudyData(namespaceUid, studyUid, studyDataSection)).thenReturn(result);
     ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/studyData/populationCharacteristics"));
     resultActions.andExpect(status().isOk());
     resultActions.andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
 
-    verify(triplestoreService).getStudyData(namespaceUid, studyUid, studyDataType);
+    verify(triplestoreService).getStudyData(namespaceUid, studyUid, studyDataSection);
   }
 
   @Test
   public void testGetStudyEndpointsData() throws Exception {
     String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
-    StudyDataType studyDataType = StudyDataType.ENDPOINTS;
-    JSONArray result = new JSONArray();
-    result.add(createTestResultObject());
-    when(triplestoreService.getStudyData(namespaceUid, studyUid, studyDataType)).thenReturn(result);
+    StudyDataSection studyDataSection = StudyDataSection.ENDPOINTS;
+    List<StudyData> result = Arrays.asList(new StudyData.StudyDataBuilder(studyDataSection, "studyDataTypeUri", "studyDataTypeLabel").build());
+    when(triplestoreService.getStudyData(namespaceUid, studyUid, studyDataSection)).thenReturn(result);
     ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/studyData/endpoints"));
     resultActions.andExpect(status().isOk());
     resultActions.andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
 
-    verify(triplestoreService).getStudyData(namespaceUid, studyUid, studyDataType);
+    verify(triplestoreService).getStudyData(namespaceUid, studyUid, studyDataSection);
   }
 
   @Test
   public void testGetStudyAdverseEventsData() throws Exception {
     String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
-    StudyDataType studyDataType = StudyDataType.ADVERSE_EVENTS;
-    JSONArray result = new JSONArray();
-    result.add(createTestResultObject());
-    when(triplestoreService.getStudyData(namespaceUid, studyUid, studyDataType)).thenReturn(result);
+    StudyDataSection studyDataSection = StudyDataSection.ADVERSE_EVENTS;
+    List<StudyData> result = Arrays.asList(new StudyData.StudyDataBuilder(studyDataSection, "studyDataTypeUri", "studyDataTypeLabel").build());
+    when(triplestoreService.getStudyData(namespaceUid, studyUid, studyDataSection)).thenReturn(result);
     ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/studyData/adverseEvents"));
     resultActions.andExpect(status().isOk());
     resultActions.andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
 
-    verify(triplestoreService).getStudyData(namespaceUid, studyUid, studyDataType);
+    verify(triplestoreService).getStudyData(namespaceUid, studyUid, studyDataSection);
   }
 
   private JSONObject createTestResultObject() {
