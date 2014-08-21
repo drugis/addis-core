@@ -27,6 +27,8 @@ define([], function() {
     };
 
     $scope.studyPopulationCharacteristics = StudyPopulationCharacteristicsResource.get($stateParams);
+    $scope.studyEndpoints = StudyEndpointsResource.get($stateParams);
+    $scope.studyAdverseEvents = StudyAdverseEventsResource.get($stateParams);
 
 
   };

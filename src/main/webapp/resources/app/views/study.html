@@ -190,8 +190,8 @@
 <div class="row property-section">
     <h5 class="subheader">Study data</h5>
 
-    <div id="population-characteristics-table" class="column large-12">
-        <table>
+    <div class="column large-12">
+        <table id="population-characteristics-table">
             <thead>
             <tr>
                 <th>Population characaristic</th>
@@ -214,6 +214,64 @@
                     <span ng-show="dataArmValue.mean">&plusmn; {{dataArmValue.std}}</span>
                     <span ng-show="dataArmValue.count">{{dataArmValue.count}}</span>
                     <span ng-show="dataArmValue.sampleSize && dataArmValue.count"> / {{dataArmValue.sampleSize}}</span>
+                    <span ng-show="dataArmValue.sampleSize && dataArmValue.mean">({{dataArmValue.sampleSize}})</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table>
+            <thead id="adverseEvents-table">
+            <tr>
+                <th>Endpoints</th>
+                <th>Measurement moment</th>
+                <th ng-repeat="dataArmValue in studyEndpoints[0].studyDataArmValues">
+                    {{dataArmValue.armLabel}}
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="endpoint in studyEndpoints">
+                <td>{{endpoint.studyDataTypeLabel}}</td>
+                <td>
+                    {{endpoint.timeOffsetDuration | durationFilter}}
+                    {{endpoint.relativeToEpochLabel}}
+                    {{endpoint.relativeToAnchorOntology | ontologyFilter | anchorEpochFilter}}
+                </td>
+                <td ng-repeat="dataArmValue in endpoint.studyDataArmValues">
+                    <span ng-show="dataArmValue.mean">{{dataArmValue.mean}}</span>
+                    <span ng-show="dataArmValue.mean">&plusmn; {{dataArmValue.std}}</span>
+                    <span ng-show="dataArmValue.count || (dataArmValue.count === 0)">{{dataArmValue.count}}</span>
+                    <span ng-show="dataArmValue.sampleSize && dataArmValue.count || (dataArmValue.count === 0)"> / {{dataArmValue.sampleSize}}</span>
+                    <span ng-show="dataArmValue.sampleSize && dataArmValue.mean">({{dataArmValue.sampleSize}})</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table>
+            <thead id="endpoints-table">
+            <tr>
+                <th>AdverseEvents</th>
+                <th>Measurement moment</th>
+                <th ng-repeat="dataArmValue in studyAdverseEvents[0].studyDataArmValues">
+                    {{dataArmValue.armLabel}}
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="adverseEvent in studyAdverseEvents">
+                <td>{{adverseEvent.studyDataTypeLabel}}</td>
+                <td>
+                    {{adverseEvent.timeOffsetDuration | durationFilter}}
+                    {{adverseEvent.relativeToEpochLabel}}
+                    {{adverseEvent.relativeToAnchorOntology | ontologyFilter | anchorEpochFilter}}
+                </td>
+                <td ng-repeat="dataArmValue in adverseEvent.studyDataArmValues">
+                    <span ng-show="dataArmValue.mean">{{dataArmValue.mean}}</span>
+                    <span ng-show="dataArmValue.mean">&plusmn; {{dataArmValue.std}}</span>
+                    <span ng-show="dataArmValue.count || (dataArmValue.count === 0)">{{dataArmValue.count}}</span>
+                    <span ng-show="dataArmValue.sampleSize && dataArmValue.count || (dataArmValue.count === 0)"> / {{dataArmValue.sampleSize}}</span>
                     <span ng-show="dataArmValue.sampleSize && dataArmValue.mean">({{dataArmValue.sampleSize}})</span>
                 </td>
             </tr>
