@@ -162,6 +162,19 @@ public class TriplestoreServiceTest {
   }
 
   @Test
+  public void testGetStudyDataForEndPoints() {
+    String namespaceUid = "namespaceUid";
+    String studyUid = "studyUid";
+    StudyDataSection studyDataSection = StudyDataSection.ENDPOINTS;
+
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleEndPointResult.json");
+    createMockTrialverseService(mockResult);
+
+    List<StudyData> result = triplestoreService.getStudyData(namespaceUid, studyUid, studyDataSection);
+    assertEquals(15, result.size());
+  }
+
+  @Test
   public void testRegEx() {
     String studyOptionsString = "1|2";
     String uri1 = "foo/study/1/whatevr";

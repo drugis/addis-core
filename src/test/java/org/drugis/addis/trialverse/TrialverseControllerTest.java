@@ -260,7 +260,7 @@ public class TrialverseControllerTest {
     String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
     StudyDataSection studyDataSection = StudyDataSection.BASE_LINE_CHARACTERISTICS;
-    List<StudyData> result = Arrays.asList(new StudyData.StudyDataBuilder(studyDataSection, "studyDataTypeUri", "studyDataTypeLabel").build());
+    List<StudyData> result = Arrays.asList(new StudyData(studyDataSection, "studyDataTypeUri", "studyDataTypeLabel"));
     when(triplestoreService.getStudyData(namespaceUid, studyUid, studyDataSection)).thenReturn(result);
     ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/studyData/populationCharacteristics"));
     resultActions.andExpect(status().isOk());
@@ -274,7 +274,7 @@ public class TrialverseControllerTest {
     String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
     StudyDataSection studyDataSection = StudyDataSection.ENDPOINTS;
-    List<StudyData> result = Arrays.asList(new StudyData.StudyDataBuilder(studyDataSection, "studyDataTypeUri", "studyDataTypeLabel").build());
+    List<StudyData> result = Arrays.asList(new StudyData(studyDataSection, "studyDataTypeUri", "studyDataTypeLabel"));
     when(triplestoreService.getStudyData(namespaceUid, studyUid, studyDataSection)).thenReturn(result);
     ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/studyData/endpoints"));
     resultActions.andExpect(status().isOk());
@@ -288,7 +288,7 @@ public class TrialverseControllerTest {
     String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
     StudyDataSection studyDataSection = StudyDataSection.ADVERSE_EVENTS;
-    List<StudyData> result = Arrays.asList(new StudyData.StudyDataBuilder(studyDataSection, "studyDataTypeUri", "studyDataTypeLabel").build());
+    List<StudyData> result = Arrays.asList(new StudyData(studyDataSection, "studyDataTypeUri", "studyDataTypeLabel"));
     when(triplestoreService.getStudyData(namespaceUid, studyUid, studyDataSection)).thenReturn(result);
     ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/studyData/adverseEvents"));
     resultActions.andExpect(status().isOk());

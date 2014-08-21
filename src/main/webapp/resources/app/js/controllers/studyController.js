@@ -2,7 +2,7 @@
 define([], function() {
   var dependencies = ['$scope', '$stateParams', 'TrialverseResource', 'StudyDetailsResource',
     'StudyTreatmentActivityResource', 'StudyArmResource', 'StudyEpochResource',
-    'StudyPopulationCharacteristicsResource', 'StudyEndpointsResource','StudyAdverseEventsResource'
+    'StudyPopulationCharacteristicsResource', 'StudyEndpointsResource', 'StudyAdverseEventsResource'
   ];
   var StudyController = function($scope, $stateParams, TrialverseResource, StudyDetailsResource,
     StudyTreatmentActivityResource, StudyArmResource, StudyEpochResource,
@@ -15,6 +15,10 @@ define([], function() {
     $scope.studyEpochs = StudyEpochResource.query($stateParams);
     $scope.treatmentActivities = StudyTreatmentActivityResource.query($stateParams);
 
+    $scope.studyPopulationCharacteristics = StudyPopulationCharacteristicsResource.get($stateParams);
+    $scope.studyEndpoints = StudyEndpointsResource.get($stateParams);
+    $scope.studyAdverseEvents = StudyAdverseEventsResource.get($stateParams);
+
     $scope.cellTreatments = function(epochUid, armUid) {
       return _.filter($scope.treatmentActivities, function(activity) {
         var cellHasApplication = _.find(activity.activityApplications, function(application) {
@@ -26,9 +30,18 @@ define([], function() {
       });
     };
 
-    $scope.studyPopulationCharacteristics = StudyPopulationCharacteristicsResource.get($stateParams);
-    $scope.studyEndpoints = StudyEndpointsResource.get($stateParams);
-    $scope.studyAdverseEvents = StudyAdverseEventsResource.get($stateParams);
+    $scope.flattenMoments = function(outcomes) {
+      _.each(outcomes, function(outcome) {
+        outcome.momentAndValues = [];
+        _.each(outcome.studyDataMoments, function(moment) {
+          outcome.relativeToAnchorOntology = moment.relativeToAnchorOntology;
+          outcome.relativeToEpochLabel = moment.relativeToEpochLabel;
+          outcome.timeOffsetDuration = moment.timeOffsetDuration;
+          outcome.momentAndValues = outcome.momentAndValues.concat(moment.studyDataArmValues);
+        });
+      });
+      return outcomes;
+    };
 
 
   };

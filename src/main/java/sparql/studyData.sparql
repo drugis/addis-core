@@ -7,6 +7,7 @@ PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 PREFIX instance: <http://trials.drugis.org/instances/>
 
 SELECT
+  ?outcomeUid
   ?studyDataTypeUri
   ?studyDataTypeLabel
   ?armInstanceUid
@@ -15,6 +16,7 @@ SELECT
   ?count
   ?mean
   ?std
+  ?momentUid
   ?relativeToAnchor
   ?timeOffset
   ?duration
@@ -26,14 +28,14 @@ SELECT
       rdfs:label ?studyDataTypeLabel .
    }
    GRAPH study:$studyUid {
-     ?studyDataTypeInstance a ?studyDataTypeUri .
-     ?study ontology:has_outcome ?studyDataTypeInstance .
-     ?measurementJoinInstance ontology:of_outcome ?studyDataTypeInstance ;
+     ?outcomeUid a ?studyDataTypeUri .
+     ?study ontology:has_outcome ?outcomeUid .
+     ?measurementJoinInstance ontology:of_outcome ?outcomeUid ;
          ontology:of_arm ?armInstanceUid ;
-         ontology:of_moment ?momentInstance .
-     ?measurementJoinInstance ontology:of_outcome ?studyDataTypeInstance ;
+         ontology:of_moment ?momentUid .
+     ?measurementJoinInstance ontology:of_outcome ?outcomeUid ;
          ontology:of_arm ?armInstanceUid ;
-         ontology:of_moment ?momentInstance .
+         ontology:of_moment ?momentUid .
      ?armInstanceUid rdfs:label ?armLabel ;
              a ontology:Arm .
      OPTIONAL {
@@ -46,7 +48,7 @@ SELECT
          ?measurementJoinInstance ontology:mean ?mean ;
          ontology:standard_deviation ?std .
      }
-     ?momentInstance
+     ?momentUid
          ontology:relative_to_epoch ?relativeToEpoch ;
          ontology:relative_to_anchor ?relativeToAnchor ;
          ontology:time_offset ?timeOffset .

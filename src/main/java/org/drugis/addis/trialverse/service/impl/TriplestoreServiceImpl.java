@@ -5,6 +5,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.model.*;
@@ -298,20 +299,31 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray queryResult = getQueryResultList(query);
 
     Map<String, StudyData> stringStudyDataMap = new HashMap<>();
+    Map<Pair<String, String>, StudyDataMoment> outcomeMomentCache = new HashMap<>();
+
     for (Object object : queryResult) {
       JSONObject jsonObject = (JSONObject) object;
+
       String studyDataTypeUri = (String) jsonObject.get("studyDataTypeUri");
       StudyData studyData = stringStudyDataMap.get(studyDataTypeUri);
       if (studyData == null) {
         String studyDataTypeLabel = (String) jsonObject.get("studyDataTypeLabel");
-        studyData = new StudyData
-                .StudyDataBuilder(studyDataSection, studyDataTypeUri, studyDataTypeLabel)
-                .relativeToAnchorOntology((String) jsonObject.get("relativeToAnchor"))
-                .timeOffsetDuration((String) jsonObject.get("timeOffset"))
-                .relativeToEpochLabel((String) jsonObject.get("relativeToEpochLabel"))
-                .build();
+        studyData = new StudyData(studyDataSection, studyDataTypeUri, studyDataTypeLabel);
         stringStudyDataMap.put(studyDataTypeUri, studyData);
       }
+      String outcomeUid = (String) jsonObject.get("outcomeUid");
+      String momentUid = (String) jsonObject.get("momentUid");
+
+      StudyDataMoment moment = outcomeMomentCache.get(Pair.of(outcomeUid, momentUid));
+      if (moment == null) {
+        String relativeToAnchorOntology = ((String) jsonObject.get("relativeToAnchor"));
+        String timeOffsetDuration = ((String) jsonObject.get("timeOffset"));
+        String relativeToEpochLabel = ((String) jsonObject.get("relativeToEpochLabel"));
+        moment = new StudyDataMoment(relativeToAnchorOntology, timeOffsetDuration, relativeToEpochLabel);
+        outcomeMomentCache.put(Pair.of(outcomeUid, momentUid), moment);
+        studyData.getStudyDataMoments().add(moment);
+      }
+
       AbstractStudyDataArmValue studyDataArmValue;
       String armInstanceUid = (String) jsonObject.get("armInstanceUid");
       String armLabel = (String) jsonObject.get("armLabel");
@@ -334,7 +346,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
                 .sampleDuration(sampleDuration)
                 .build();
       }
-      studyData.getStudyDataArmValues().add(studyDataArmValue);
+      moment.getStudyDataArmValues().add(studyDataArmValue);
     }
     return new ArrayList<>(stringStudyDataMap.values());
   }

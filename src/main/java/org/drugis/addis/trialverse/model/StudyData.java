@@ -9,31 +9,21 @@ import java.util.List;
  * Created by connor on 21-8-14.
  */
 public class StudyData {
-  private StudyDataSection studyDataSection;
-  private List<AbstractStudyDataArmValue> studyDataArmValues = new ArrayList<>();
-  private String studyDataTypeUri;
-  private String studyDataTypeLabel;
 
-  private String relativeToAnchorOntology;
-  private String timeOffsetDuration;
-  private String relativeToEpochLabel;
+  private final StudyDataSection studyDataSection;
+  private final String studyDataTypeUri;
+  private final String studyDataTypeLabel;
 
+  private final List<StudyDataMoment> studyDataMoments = new ArrayList<>();
 
-  private StudyData(StudyDataBuilder builder) {
-    this.studyDataSection = builder.studyDataSection;
-    this.studyDataTypeUri = builder.studyDataTypeUri;
-    this.studyDataTypeLabel = builder.studyDataTypeLabel;
-    this.relativeToAnchorOntology = builder.relativeToAnchorOntology;
-    this.timeOffsetDuration = builder.timeOffsetDuration;
-    this.relativeToEpochLabel = builder.relativeToEpochLabel;
+  public StudyData(StudyDataSection studyDataSection, String studyDataTypeUri, String studyDataTypeLabel) {
+    this.studyDataSection = studyDataSection;
+    this.studyDataTypeUri = studyDataTypeUri;
+    this.studyDataTypeLabel = studyDataTypeLabel;
   }
 
   public StudyDataSection getStudyDataSection() {
     return studyDataSection;
-  }
-
-  public List<AbstractStudyDataArmValue> getStudyDataArmValues() {
-    return studyDataArmValues;
   }
 
   public String getStudyDataTypeUri() {
@@ -44,51 +34,8 @@ public class StudyData {
     return studyDataTypeLabel;
   }
 
-  public String getRelativeToAnchorOntology() {
-    return relativeToAnchorOntology;
-  }
-
-  public String getTimeOffsetDuration() {
-    return timeOffsetDuration;
-  }
-
-  public String getRelativeToEpochLabel() {
-    return relativeToEpochLabel;
-  }
-
-  public static class StudyDataBuilder {
-
-    private final StudyDataSection studyDataSection;
-    private final String studyDataTypeUri;
-    private final String studyDataTypeLabel;
-
-    private String relativeToAnchorOntology;
-    private String timeOffsetDuration;
-    private String relativeToEpochLabel;
-
-    public StudyDataBuilder(StudyDataSection studyDataSection, String studyDataTypeUri, String studyDataTypeLabel) {
-      this.studyDataSection = studyDataSection;
-      this.studyDataTypeUri = studyDataTypeUri;
-      this.studyDataTypeLabel = studyDataTypeLabel;
-    }
-
-    public StudyData build() {
-      return new StudyData(this);
-    }
-
-    public StudyDataBuilder relativeToAnchorOntology(String relativeToAnchorOntology) {
-      this.relativeToAnchorOntology = relativeToAnchorOntology;
-      return this;
-    }
-
-    public StudyDataBuilder timeOffsetDuration(String timeOffsetDuration) {
-      this.timeOffsetDuration = timeOffsetDuration;
-      return this;
-    }
-
-    public StudyDataBuilder relativeToEpochLabel(String relativeToEpochLabel) {
-      this.relativeToEpochLabel = relativeToEpochLabel;
-      return this;
-    }
+  public List<StudyDataMoment> getStudyDataMoments() {
+    return studyDataMoments;
   }
 }
+

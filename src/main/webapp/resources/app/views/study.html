@@ -202,14 +202,14 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="populationCharacteristic in studyPopulationCharacteristics">
+            <tr ng-repeat="populationCharacteristic in flattenMoments(studyPopulationCharacteristics)">
                 <td>{{populationCharacteristic.studyDataTypeLabel}}</td>
                 <td>
                     {{populationCharacteristic.timeOffsetDuration | durationFilter}}
                     {{populationCharacteristic.relativeToEpochLabel}}
                     {{populationCharacteristic.relativeToAnchorOntology | ontologyFilter | anchorEpochFilter}}
                 </td>
-                <td ng-repeat="dataArmValue in populationCharacteristic.studyDataArmValues">
+                <td ng-repeat="dataArmValue in populationCharacteristic.momentAndValues">
                     <span ng-show="dataArmValue.mean">{{dataArmValue.mean}}</span>
                     <span ng-show="dataArmValue.mean">&plusmn; {{dataArmValue.std}}</span>
                     <span ng-show="dataArmValue.count">{{dataArmValue.count}}</span>
