@@ -9045,27 +9045,22 @@ label {
   color: #cc3333;
 }
 
-/* line 65, ../../sass/addis-drugis.scss */
-div.row.property-row {
-  margin-bottom: 1rem;
-}
-
-/* line 69, ../../sass/addis-drugis.scss */
+/* line 66, ../../sass/addis-drugis.scss */
 div.row.property-section {
   margin-bottom: 2rem;
 }
-/* line 71, ../../sass/addis-drugis.scss */
+/* line 68, ../../sass/addis-drugis.scss */
 div.row.property-section h5 {
   padding-left: 1rem;
 }
 
-/* line 76, ../../sass/addis-drugis.scss */
+/* line 73, ../../sass/addis-drugis.scss */
 div.row.property-section:last-child {
   margin-bottom: 0;
 }
 
 /* Horizontal Definition Lists */
-/* line 82, ../../sass/addis-drugis.scss */
+/* line 79, ../../sass/addis-drugis.scss */
 dl.horizontal dt {
   float: left;
   width: 160px;
@@ -9074,85 +9069,85 @@ dl.horizontal dt {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* line 90, ../../sass/addis-drugis.scss */
+/* line 87, ../../sass/addis-drugis.scss */
 dl.horizontal dd {
   margin-left: 180px;
 }
 
-/* line 96, ../../sass/addis-drugis.scss */
+/* line 93, ../../sass/addis-drugis.scss */
 dl.horizontal-large dt {
   width: 200px;
 }
-/* line 99, ../../sass/addis-drugis.scss */
+/* line 96, ../../sass/addis-drugis.scss */
 dl.horizontal-large dd {
   margin-left: 220px;
 }
 
-/* line 107, ../../sass/addis-drugis.scss */
+/* line 104, ../../sass/addis-drugis.scss */
 table {
   border-collapse: collapse;
 }
-/* line 110, ../../sass/addis-drugis.scss */
+/* line 107, ../../sass/addis-drugis.scss */
 table tr:nth-of-type(even) {
   background-color: transparent;
 }
-/* line 114, ../../sass/addis-drugis.scss */
+/* line 111, ../../sass/addis-drugis.scss */
 table tr th.sortable {
   cursor: pointer;
 }
-/* line 117, ../../sass/addis-drugis.scss */
+/* line 114, ../../sass/addis-drugis.scss */
 table tr th, table tr td {
   border: solid 1px #dadada;
 }
-/* line 119, ../../sass/addis-drugis.scss */
+/* line 116, ../../sass/addis-drugis.scss */
 table tr th a:hover, table tr td a:hover {
   text-decoration: underline;
 }
-/* line 123, ../../sass/addis-drugis.scss */
+/* line 120, ../../sass/addis-drugis.scss */
 table tr td.button-cell {
   text-align: center;
 }
-/* line 125, ../../sass/addis-drugis.scss */
+/* line 122, ../../sass/addis-drugis.scss */
 table tr td.button-cell button {
   margin-bottom: 0;
   font-size: 0.875rem;
 }
 
-/* line 132, ../../sass/addis-drugis.scss */
+/* line 129, ../../sass/addis-drugis.scss */
 td.empty-cell {
   background-color: #dadada;
 }
 
-/* line 136, ../../sass/addis-drugis.scss */
+/* line 133, ../../sass/addis-drugis.scss */
 tr.on-hover:hover {
   background: #e6e6e6;
   cursor: pointer;
   text-decoration: none;
 }
 
-/* line 141, ../../sass/addis-drugis.scss */
+/* line 138, ../../sass/addis-drugis.scss */
 tr.clickable td {
   color: #452f8c;
 }
 
-/* line 144, ../../sass/addis-drugis.scss */
+/* line 141, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table {
   border: none;
   border-spacing: 0px;
 }
-/* line 147, ../../sass/addis-drugis.scss */
+/* line 144, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td {
   border-bottom: solid 1px #dadada;
   vertical-align: top;
 }
-/* line 150, ../../sass/addis-drugis.scss */
+/* line 147, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td label {
   display: block;
   padding-left: 15px;
   text-indent: -15px;
   margin: 0;
 }
-/* line 156, ../../sass/addis-drugis.scss */
+/* line 153, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td input[type="checkbox"] {
   width: 13px;
   height: 13px;
@@ -9163,32 +9158,32 @@ table.network-meta-analysis-table tbody tr td input[type="checkbox"] {
   top: -3px;
   *overflow: hidden;
 }
-/* line 166, ../../sass/addis-drugis.scss */
+/* line 163, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td .alert-message {
   color: #e66464;
   padding-top: 1px;
 }
-/* line 171, ../../sass/addis-drugis.scss */
+/* line 168, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table thead tr th {
   border-bottom: solid 1px #dadada;
 }
-/* line 174, ../../sass/addis-drugis.scss */
+/* line 171, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tr.topborder td {
   border-top: solid 1px #dadada;
 }
 
-/* line 178, ../../sass/addis-drugis.scss */
+/* line 175, ../../sass/addis-drugis.scss */
 .undefined {
   color: #747474;
 }
 
-/* line 181, ../../sass/addis-drugis.scss */
+/* line 178, ../../sass/addis-drugis.scss */
 .table-cell-label {
   font-weight: bold;
   text-align: center;
 }
 
-/* line 189, ../../sass/addis-drugis.scss */
+/* line 186, ../../sass/addis-drugis.scss */
 .table-title {
   margin-left: 2px;
   font-size: 14px;
@@ -9197,14 +9192,14 @@ table.network-meta-analysis-table tr.topborder td {
   margin-bottom: 4px;
 }
 
-/* line 196, ../../sass/addis-drugis.scss */
+/* line 193, ../../sass/addis-drugis.scss */
 .addis-graph {
   background-color: white;
   border: solid 1px #dadada;
   margin-bottom: 10px;
 }
 
-/* line 201, ../../sass/addis-drugis.scss */
+/* line 198, ../../sass/addis-drugis.scss */
 .graph-legend {
   padding: 0.5rem 1rem;
 }
