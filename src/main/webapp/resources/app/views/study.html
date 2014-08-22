@@ -66,7 +66,7 @@
                 </div>
                 <div class="column large-7">
                     <span>{{studyDetails.numberOfStudyCenters}}</span>
-                    <span ng-show="!studyDetails.numberOfStudyCenters"><em>not availiable</em></span>
+                    <span ng-show="!studyDetails.numberOfStudyCenters"><em>not available</em></span>
                 </div>
             </div>
 
@@ -115,7 +115,7 @@
                 </div>
                 <div class="column large-9 end">
                     <span ng-show="studyDetails.startDate">{{studyDetails.startDate.millis | date:'yyyy-MM-dd'}}</span>
-                    <span ng-show="!studyDetails.startDate"><em>not availiable</em></span>
+                    <span ng-show="!studyDetails.startDate"><em>not available</em></span>
                 </div>
             </div>
             <div class="row property-row">
@@ -124,7 +124,7 @@
                 </div>
                 <div class="column large-9">
                     <span ng-show="studyDetails.startDate">{{studyDetails.endDate.millis | date:'yyyy-MM-dd'}}</span>
-                    <span ng-show="!studyDetails.startDate"><em>not availiable</em></span>
+                    <span ng-show="!studyDetails.startDate"><em>not available</em></span>
                 </div>
             </div>
         </div>
@@ -137,7 +137,7 @@
                     <div ng-repeat="uri in studyDetails.pubmedUrls | splitOnTokenFilter">
                         <a target="_blank" ng-href={{uri}}>{{uri}}</a>
                     </div>
-                    <span ng-show="!studyDetails.pubmedUrls.length"><em>not links availiable</em></span>
+                    <span ng-show="!studyDetails.pubmedUrls.length"><em>no links available</em></span>
                 </div>
             </div>
         </div>
