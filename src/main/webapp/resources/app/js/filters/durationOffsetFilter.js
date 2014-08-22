@@ -1,16 +1,11 @@
 'use strict';
-define(['moment'], function(moment) {
-  var dependencies = [];
-  var DurationOffsetFilter = function() {
+define([], function() {
+  var dependencies = ['$filter'];
+  var DurationOffsetFilter = function($filter) {
     return function(duration) {
-      if (!duration) {
-        return duration;
-      } else if (duration === "P0D" || duration === "-P0D") {
-        return null;
-      } else {
-        var durationLabel = moment.duration(duration).humanize();
-        return durationLabel + (duration.indexOf('-') === 0 ? ' before ' : ' after ');
-      }
+      var durationLabel = ($filter('durationFilter')(duration));
+      var offsetLabel = (duration.indexOf('-') === 0 ? ' before ' : ' after ');
+      return durationLabel ? durationLabel + offsetLabel : '';
     };
   };
   return dependencies.concat(DurationOffsetFilter);
