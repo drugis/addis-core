@@ -161,22 +161,22 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="arm in studyArms">
-                <td>{{arm.armLabel}}</td>
-                <td class="text-center">{{arm.numberOfParticipantsStarting}}</td>
-                <td ng-repeat="epoch in studyEpochs">
-                    <span ng-show="cellTreatments(epoch.epochUid, arm.armUid)[0].administeredDrugs.length === 0">
-                        <div>{{cellTreatments(epoch.epochUid, arm.armUid)[0].treatmentActivityType |
+            <tr ng-repeat="row in designRows">
+                <td>{{row.armLabel}}</td>
+                <td class="text-center">{{row.numberOfParticipantsStarting}}</td>
+                <td ng-repeat="cell in row.epochCells">
+                    <span ng-show="cell.administeredDrugs.length === 0">
+                        <div>{{cell.treatmentActivityType |
                             ontologyFilter |activityTypeFilter}}
                         </div>
                     </span>
-                    <span ng-show="cellTreatments(epoch.epochUid, arm.armUid)[0].administeredDrugs.length !== 0">
-                        <div ng-repeat="administeredDrug in cellTreatments(epoch.epochUid, arm.armUid)[0].administeredDrugs">
-                            {{administeredDrug.drugLabel}}
-                            <span ng-show="administeredDrug.minValue">
-                                ( {{administeredDrug.minValue}} - {{administeredDrug.maxValue}} {{administeredDrug.minUnitLabel}} {{administeredDrug.minDosingPeriodicity | durationFilter}} )
+                    <span ng-show="cell.administeredDrugs.length !== 0">
+                        <div ng-repeat="drug in cell.administeredDrugs">
+                            {{drug.drugLabel}}
+                            <span ng-show="drug.minValue">
+                                ( {{drug.minValue}} - {{drug.maxValue}} {{drug.minUnitLabel}} {{drug.minDosingPeriodicity | durationFilter}} )
                             </span>
-                            <span ng-show="administeredDrug.fixedValue">( {{administeredDrug.fixedValue}} {{administeredDrug.fixedUnitLabel}} {{administeredDrug.fixedDosingPeriodicity | durationFilter}} )
+                            <span ng-show="drug.fixedValue">( {{drug.fixedValue}} {{drug.fixedUnitLabel}} {{drug.fixedDosingPeriodicity | durationFilter}} )
                             </span>
                         </div>
                     </span>

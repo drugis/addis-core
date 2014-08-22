@@ -8,7 +8,7 @@ define(['angular', 'angular-mocks', 'controllers'],
 
       beforeEach(module('addis.controllers'));
 
-      beforeEach(inject(function($controller) {
+      beforeEach(inject(function($controller, $q) {
         treatmentActivity = {
           activityApplications: [{
             epochUid: 'epcohUid',
@@ -34,6 +34,7 @@ define(['angular', 'angular-mocks', 'controllers'],
 
         ctrl = $controller('StudyController', {
           $scope: scope,
+          $q: $q,
           $stateParams: {},
           TrialverseResource: TrialverseResource,
           StudyDetailsResource: StudyDetailsResource,
@@ -47,15 +48,7 @@ define(['angular', 'angular-mocks', 'controllers'],
 
       }));
 
-      describe("cellTreatments function", function() {
-
-        it("should select the treatments that match the given epoch and arm", function() {
-          var epochUid = 'epcohUid';
-          var armUid = 'armUid';
-
-          expect(scope.cellTreatments(epochUid, armUid)[0]).toBe(treatmentActivity);
-        });
-      });
+      
 
     });
   });
