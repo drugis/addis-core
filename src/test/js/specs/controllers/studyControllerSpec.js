@@ -1,7 +1,7 @@
 define(['angular', 'angular-mocks', 'controllers'],
   function() {
     describe("The studyController", function() {
-      var $scope, $q, $stateParams, TrialverseResource, StudyDetailsResource,
+      var ctrl, $scope, $q, $stateParams, TrialverseResource, StudyDetailsResource,
         StudyTreatmentActivityResource, StudyArmResource, StudyEpochResource,
         StudyPopulationCharacteristicsResource, StudyEndpointsResource, StudyAdverseEventsResource,
         treatmentActivity;
