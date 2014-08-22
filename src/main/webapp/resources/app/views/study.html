@@ -205,7 +205,7 @@
             <tr ng-repeat="row in populationCharacteristicsRows">
                 <td>{{row.studyDataTypeLabel}}</td>
                 <td>
-                    {{row.timeOffsetDuration | durationFilter}}
+                    {{row.timeOffsetDuration | durationOffsetFilter}}
                     {{row.relativeToEpochLabel}}
                     {{row.relativeToAnchorOntology | ontologyFilter | anchorEpochFilter}}
                 </td>
@@ -234,7 +234,7 @@
             <tr ng-repeat="row in endpointRows">
                 <td>{{row.studyDataTypeLabel}}</td>
                 <td>
-                    {{row.timeOffsetDuration | durationFilter}}
+                    {{row.timeOffsetDuration | durationOffsetFilter}}
                     {{row.relativeToEpochLabel}}
                     {{row.relativeToAnchorOntology | ontologyFilter | anchorEpochFilter}}
                 </td>
@@ -263,7 +263,7 @@
             <tr ng-repeat="row in adverseEventsRows">
                 <td>{{row.studyDataTypeLabel}}</td>
                 <td>
-                    {{row.timeOffsetDuration | durationFilter}}
+                    {{row.timeOffsetDuration | durationOffsetFilter}}
                     {{row.relativeToEpochLabel}}
                     {{row.relativeToAnchorOntology | ontologyFilter | anchorEpochFilter}}
                 </td>

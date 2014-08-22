@@ -4,6 +4,7 @@ define(function (require) {
   return angular.module('addis.filters', [])
     .filter('ownProjectsFilter', require('filters/ownProjectsFilter'))
     .filter('durationFilter', require('filters/durationFilter'))
+    .filter('durationOffsetFilter', require('filters/durationOffsetFilter'))
     .filter('splitOnTokenFilter', require('filters/splitOnTokenFilter'))
     .filter('ontologyFilter', require('filters/ontologyFilter'))
     .filter('anchorEpochFilter', require('filters/anchorEpochFilter'))
