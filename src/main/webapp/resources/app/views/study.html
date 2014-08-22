@@ -196,20 +196,20 @@
             <tr>
                 <th>Population characaristic</th>
                 <th>Measurement moment</th>
-                <th ng-repeat="dataArmValue in studyPopulationCharacteristics[0].studyDataArmValues">
+                <th ng-repeat="dataArmValue in studyPopulationCharacteristics[0].studyDataMoments[0].studyDataArmValues">
                     {{dataArmValue.armLabel}}
                 </th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="populationCharacteristic in flattenMoments(studyPopulationCharacteristics)">
-                <td>{{populationCharacteristic.studyDataTypeLabel}}</td>
+            <tr ng-repeat="row in populationCharacteristicsRows">
+                <td>{{row.studyDataTypeLabel}}</td>
                 <td>
-                    {{populationCharacteristic.timeOffsetDuration | durationFilter}}
-                    {{populationCharacteristic.relativeToEpochLabel}}
-                    {{populationCharacteristic.relativeToAnchorOntology | ontologyFilter | anchorEpochFilter}}
+                    {{row.timeOffsetDuration | durationFilter}}
+                    {{row.relativeToEpochLabel}}
+                    {{row.relativeToAnchorOntology | ontologyFilter | anchorEpochFilter}}
                 </td>
-                <td ng-repeat="dataArmValue in populationCharacteristic.momentAndValues">
+                <td ng-repeat="dataArmValue in row.studyDataArmValues">
                     <span ng-show="dataArmValue.mean">{{dataArmValue.mean}}</span>
                     <span ng-show="dataArmValue.mean">&plusmn; {{dataArmValue.std}}</span>
                     <span ng-show="dataArmValue.count">{{dataArmValue.count}}</span>
@@ -225,20 +225,20 @@
             <tr>
                 <th>Endpoints</th>
                 <th>Measurement moment</th>
-                <th ng-repeat="dataArmValue in studyEndpoints[0].studyDataArmValues">
+                <th ng-repeat="dataArmValue in studyEndpoints[0].studyDataMoments[0].studyDataArmValues">
                     {{dataArmValue.armLabel}}
                 </th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="endpoint in studyEndpoints">
-                <td>{{endpoint.studyDataTypeLabel}}</td>
+            <tr ng-repeat="row in endpointRows">
+                <td>{{row.studyDataTypeLabel}}</td>
                 <td>
-                    {{endpoint.timeOffsetDuration | durationFilter}}
-                    {{endpoint.relativeToEpochLabel}}
-                    {{endpoint.relativeToAnchorOntology | ontologyFilter | anchorEpochFilter}}
+                    {{row.timeOffsetDuration | durationFilter}}
+                    {{row.relativeToEpochLabel}}
+                    {{row.relativeToAnchorOntology | ontologyFilter | anchorEpochFilter}}
                 </td>
-                <td ng-repeat="dataArmValue in endpoint.studyDataArmValues">
+                <td ng-repeat="dataArmValue in row.studyDataArmValues">
                     <span ng-show="dataArmValue.mean">{{dataArmValue.mean}}</span>
                     <span ng-show="dataArmValue.mean">&plusmn; {{dataArmValue.std}}</span>
                     <span ng-show="dataArmValue.count || (dataArmValue.count === 0)">{{dataArmValue.count}}</span>
@@ -254,20 +254,20 @@
             <tr>
                 <th>AdverseEvents</th>
                 <th>Measurement moment</th>
-                <th ng-repeat="dataArmValue in studyAdverseEvents[0].studyDataArmValues">
+                <th ng-repeat="dataArmValue in studyAdverseEvents[0].studyDataMoments[0].studyDataArmValues">
                     {{dataArmValue.armLabel}}
                 </th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="adverseEvent in studyAdverseEvents">
-                <td>{{adverseEvent.studyDataTypeLabel}}</td>
+            <tr ng-repeat="row in adverseEventsRows">
+                <td>{{row.studyDataTypeLabel}}</td>
                 <td>
-                    {{adverseEvent.timeOffsetDuration | durationFilter}}
-                    {{adverseEvent.relativeToEpochLabel}}
-                    {{adverseEvent.relativeToAnchorOntology | ontologyFilter | anchorEpochFilter}}
+                    {{row.timeOffsetDuration | durationFilter}}
+                    {{row.relativeToEpochLabel}}
+                    {{row.relativeToAnchorOntology | ontologyFilter | anchorEpochFilter}}
                 </td>
-                <td ng-repeat="dataArmValue in adverseEvent.studyDataArmValues">
+                <td ng-repeat="dataArmValue in row.studyDataArmValues">
                     <span ng-show="dataArmValue.mean">{{dataArmValue.mean}}</span>
                     <span ng-show="dataArmValue.mean">&plusmn; {{dataArmValue.std}}</span>
                     <span ng-show="dataArmValue.count || (dataArmValue.count === 0)">{{dataArmValue.count}}</span>
