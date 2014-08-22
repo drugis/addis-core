@@ -16,130 +16,57 @@
 <h5 class="subheader">Study details</h5>
 
 <div class="panel">
-
     <div class="row property-section">
-
-
         <div class="column large-4">
-            <div class="row property-row">
-                <div class="column large-3">
-                    <strong><span class="right">Indication</span></strong>
-                </div>
-                <div class="column large-9 end">
-                    <span>{{studyDetails.indication}}</span>
-                </div>
-            </div>
-
-            <div class="row property-row">
-                <div class="column large-3">
-                    <strong><span class="right">Allocation</span></strong>
-                </div>
-                <div class="column large-9 end">
-                    <span>{{studyDetails.allocation}}</span>
-                </div>
-            </div>
-
-            <div class="row property-row">
-                <div class="column large-3">
-                    <strong><span class="right">Blinding</span></strong>
-                </div>
-                <div class="column large-9 end">
-                    <span>{{studyDetails.blinding}}</span>
-                </div>
-            </div>
-
-            <div class="row property-row">
-                <div class="column large-3">
-                    <strong><span class="right">Size</span></strong>
-                </div>
-                <div class="column large-9 end">
-                    <span>{{studyDetails.studySize}}</span>
-                </div>
-            </div>
+            <dl class="horizontal horizontal-large">
+                <dt>Indication</dt>
+                <dd>{{studyDetails.indication}}</dd>
+                <dt>Allocation</dt>
+                <dd>{{studyDetails.allocation}}</dd>
+                <dt>Blinding</dt>
+                <dd>{{studyDetails.blinding}}</dd>
+                <dt>Size</dt>
+                <dd>{{studyDetails.studySize}}</dd>
+            </dl>
         </div>
 
-        <div class="column large-6 end">
-
-            <div class="row property-row">
-                <div class="column large-5">
-                    <strong><span class="right">Number of study centers</span></strong>
-                </div>
-                <div class="column large-7">
-                    <span>{{studyDetails.numberOfStudyCenters}}</span>
-                    <span ng-show="!studyDetails.numberOfStudyCenters"><em>not available</em></span>
-                </div>
-            </div>
-
-            <div class="row property-row">
-                <div class="column large-5">
-                    <strong><span class="right">Dosing</span></strong>
-                </div>
-                <div class="column large-7">
-                    <span>{{studyDetails.dosing}}</span>
-                </div>
-            </div>
-
-            <div class="row property-row">
-                <div class="column large-5">
-                    <strong><span class="right">Number of arms</span></strong>
-                </div>
-                <div class="column large-7">
-                    <span>{{studyDetails.numberOfArms}}</span>
-                </div>
-            </div>
-
-            <div class="row property-row">
-                <div class="column large-5">
-                    <strong><span class="right">Investigational drugs</span></strong>
-                </div>
-                <div class="column large-7">
-                    <span>{{studyDetails.investigationalDrugNames}}</span>
-                </div>
-            </div>
+        <div class="column large-4 end">
+            <dl class="horizontal horizontal-large">
+                <dt>Number of study centers</dt>
+                <dd>{{studyDetails.numberOfStudyCenters}}</dd>
+                <dd ng-show="!studyDetails.numberOfStudyCenters"><em>not available</em></dd>
+                <dt>Dosing</dt>
+                <dd>{{studyDetails.dosing}}</dd>
+                <dt>Number of arms</dt>
+                <dd>{{studyDetails.numberOfArms}}</dd>
+                <dt>Investigational drugs</dt>
+                <dd>{{studyDetails.investigationalDrugNames}}</dd>
+            </dl>
         </div>
     </div>
 
     <div class="row property-section">
         <div class="column large-4">
-            <div class="row property-row">
-                <div class="column large-3">
-                    <strong><span class="right">Status</span></strong>
-                </div>
-                <div class="column large-9 end">
-                    <span>{{studyDetails.status}}</span>
-                </div>
-            </div>
-            <div class="row property-row">
-                <div class="column large-3">
-                    <strong><span class="right">Start date</span></strong>
-                </div>
-                <div class="column large-9 end">
-                    <span ng-show="studyDetails.startDate">{{studyDetails.startDate.millis | date:'yyyy-MM-dd'}}</span>
-                    <span ng-show="!studyDetails.startDate"><em>not available</em></span>
-                </div>
-            </div>
-            <div class="row property-row">
-                <div class="column large-3">
-                    <strong><span class="right">End date</span></strong>
-                </div>
-                <div class="column large-9">
-                    <span ng-show="studyDetails.startDate">{{studyDetails.endDate.millis | date:'yyyy-MM-dd'}}</span>
-                    <span ng-show="!studyDetails.startDate"><em>not available</em></span>
-                </div>
-            </div>
+            <dl class="horizontal horizontal-large">
+                <dt>Status</dt>
+                <dd>{{studyDetails.status}}</dd>
+                <dt>Start date</dt>
+                <dd ng-show="studyDetails.startDate">{{studyDetails.startDate.millis | date:'yyyy-MM-dd'}}</dd>
+                <dd ng-show="!studyDetails.startDate"><em>not available</em></dd>
+                <dt>End date</dt>
+                <dd ng-show="studyDetails.startDate">{{studyDetails.endDate.millis | date:'yyyy-MM-dd'}}</dd>
+                <dd ng-show="!studyDetails.startDate"><em>not available</em></dd>
+            </dl>
         </div>
-        <div class="column large-6 end">
-            <div class="row property-row">
-                <div class="column large-5">
-                    <strong><span class="right">Pubmed links</span></strong>
-                </div>
-                <div class="column large-7 end">
-                    <div ng-repeat="uri in studyDetails.pubmedUrls | splitOnTokenFilter">
-                        <a target="_blank" ng-href={{uri}}>{{uri}}</a>
-                    </div>
-                    <span ng-show="!studyDetails.pubmedUrls.length"><em>no links available</em></span>
-                </div>
-            </div>
+
+        <div class="column large-4 end">
+            <dl class="horizontal horizontal-large">
+                <dt>Pubmed links</dt>
+                <dd ng-repeat="uri in studyDetails.pubmedUrls | splitOnTokenFilter">
+                    <a target="_blank" ng-href={{uri}}>{{uri}}</a>
+                </dd>
+                <dd ng-show="!studyDetails.pubmedUrls.length"><em>no links available</em></dd>
+            </dl>
         </div>
     </div>
 </div>
@@ -165,21 +92,21 @@
                 <td>{{row.armLabel}}</td>
                 <td class="text-center">{{row.numberOfParticipantsStarting}}</td>
                 <td ng-repeat="cell in row.epochCells">
-                    <span ng-show="cell.administeredDrugs.length === 0">
-                        <div>{{cell.treatmentActivityType |
-                            ontologyFilter |activityTypeFilter}}
-                        </div>
-                    </span>
-                    <span ng-show="cell.administeredDrugs.length !== 0">
-                        <div ng-repeat="drug in cell.administeredDrugs">
-                            {{drug.drugLabel}}
-                            <span ng-show="drug.minValue">
-                                ( {{drug.minValue}} - {{drug.maxValue}} {{drug.minUnitLabel}} {{drug.minDosingPeriodicity | durationFilter}} )
-                            </span>
-                            <span ng-show="drug.fixedValue">( {{drug.fixedValue}} {{drug.fixedUnitLabel}} {{drug.fixedDosingPeriodicity | durationFilter}} )
-                            </span>
-                        </div>
-                    </span>
+              <span ng-show="cell.administeredDrugs.length === 0">
+                <div>{{cell.treatmentActivityType |
+                    ontologyFilter |activityTypeFilter}}
+                </div>
+              </span>
+              <span ng-show="cell.administeredDrugs.length !== 0">
+                <div ng-repeat="drug in cell.administeredDrugs">
+                    {{drug.drugLabel}}
+                  <span ng-show="drug.minValue">
+                    ( {{drug.minValue}} - {{drug.maxValue}} {{drug.minUnitLabel}} {{drug.minDosingPeriodicity | durationFilter}} )
+                  </span>
+                  <span ng-show="drug.fixedValue">( {{drug.fixedValue}} {{drug.fixedUnitLabel}} {{drug.fixedDosingPeriodicity | durationFilter}} )
+                  </span>
+                </div>
+              </span>
                 </td>
             </tr>
             </tbody>
