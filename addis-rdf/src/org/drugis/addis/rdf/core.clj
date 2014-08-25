@@ -39,13 +39,19 @@
          [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
          [(trig/iri :rdfs "subClassOf") (trig/iri :ontology "Indication")])))
 
-; TODO: rate/continuous/etc, unitOfMeasurement, direction?
+; TODO: direction?
 (defn variable-rdf [xml uri superClass]
-  (trig/spo uri 
-       [(trig/iri :rdf "type") (trig/iri :owl "Class")]
-       [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
-       [(trig/iri :rdfs "comment") (trig/lit (vtd/attr xml :description))]
-       [(trig/iri :rdfs "subClassOf") (trig/iri :ontology superClass)]))
+  (let [m-type (vtd/first-child xml)
+        subj (trig/spo uri 
+                       [(trig/iri :rdf "type") (trig/iri :owl "Class")]
+                       [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
+                       [(trig/iri :rdfs "comment") (trig/lit (vtd/attr xml :description))]
+                       [(trig/iri :rdfs "subClassOf") (trig/iri :ontology superClass)]
+                       [(trig/iri :ontology "measurementType") (trig/iri :ontology (vtd/tag m-type))])]
+    (case (vtd/tag m-type)
+      "rate" subj
+      "continuous" (trig/spo subj [(trig/iri :rdfs "comment") (trig/lit (vtd/attr m-type :unitOfMeasurement))])
+      "categorical" (trig/spo subj [(trig/iri :ontology "categoryList") (trig/coll (map #(trig/lit (vtd/text %)) (vtd/search m-type "./category")))]))))
 
 (defn endpoint-rdf [xml uri]
   (variable-rdf xml uri "Endpoint"))
@@ -324,14 +330,18 @@
         rate (vtd/at xml "./rateMeasurement")
         catg (vtd/at xml "./categoricalMeasurement")]
     (cond
-     cont (trig/spo measurement 
-                    [(trig/iri :ontology "mean") (trig/lit (Double. (vtd/attr cont :mean)))]
-                    [(trig/iri :ontology "standard_deviation") (trig/lit (Double. (vtd/attr cont :stdDev)))]
-                    [(trig/iri :ontology "sample_size") (trig/lit (Integer. (vtd/attr cont :sampleSize)))])
-     rate (trig/spo measurement 
-                    [(trig/iri :ontology "count") (trig/lit (Integer. (vtd/attr rate :rate)))]
-                    [(trig/iri :ontology "sample_size") (trig/lit (Integer. (vtd/attr rate :sampleSize)))])
-     :else measurement) ; TODO: categorical measurements
+      cont (trig/spo measurement 
+                     [(trig/iri :ontology "mean") (trig/lit (Double. (vtd/attr cont :mean)))]
+                     [(trig/iri :ontology "standard_deviation") (trig/lit (Double. (vtd/attr cont :stdDev)))]
+                     [(trig/iri :ontology "sample_size") (trig/lit (Integer. (vtd/attr cont :sampleSize)))])
+      rate (trig/spo measurement 
+                     [(trig/iri :ontology "count") (trig/lit (Integer. (vtd/attr rate :rate)))]
+                     [(trig/iri :ontology "sample_size") (trig/lit (Integer. (vtd/attr rate :sampleSize)))])
+      catg (reduce (fn [subj cat] (trig/spo subj [(trig/iri :ontology "category_count")
+                                                  (trig/_po [(trig/iri :ontology "category") (trig/lit (vtd/attr cat :name))]
+                                                            [(trig/iri :ontology "count") (trig/lit (vtd/attr cat :rate))])]))
+                   measurement (vtd/search catg "./category"))
+     :else measurement)
 ))
 
 (defn participant-flow-rdf
