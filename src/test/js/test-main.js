@@ -30,7 +30,9 @@ require.config({
     'd3': 'bower_components/d3/d3.min',
     'nvd3': 'bower_components/nvd3/nv.d3.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
-    'moment': 'bower_components/moment/min/moment.min'
+    'moment': 'bower_components/moment/min/moment.min',
+    'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
+    'angularanimate': 'bower_components/angular-animate/angular-animate.min'
   },
   baseUrl: '/base/app/js',
   shim: {
@@ -49,7 +51,7 @@ require.config({
     'jasmine-html': { deps: ['jasmine'], exports: 'jasmine' }
   },
   priority: ['angular'],
-  
+
   // ask Require.js to load these files (all our tests)
   deps: tests,
 

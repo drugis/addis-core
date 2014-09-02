@@ -26,17 +26,20 @@ define(
     'mcda/services/errorHandling',
     'mcda/services/hashCodeService',
     'mcda/services/partialValueFunction',
+    'mcda/services/remoteRemarks',
     'mcda/services/util'
   ],
   function(angular, require, $, Config) {
     var mcdaDependencies = [
       'elicit.errorHandling',
       'elicit.remoteWorkspaces',
+      'elicit.remoteRemarks',
       'elicit.taskDependencies',
       'elicit.directives',
       'elicit.controllers',
       'elicit.pvfService',
-      'elicit.util'
+      'elicit.util',
+      'mm.foundation'
     ];
     var dependencies = [
       'ui.router',
