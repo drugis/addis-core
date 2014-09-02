@@ -4,6 +4,8 @@
 @import"drugis";
 @import"main";
 @import"foundation-select2";
+@import"../js/bower_components/mcda-web/app/css/mcda-drugis.css";
+
 $addis-grey : $crumb-bg;
 $addis-grey-border : $crumb-border-color;
  .alert {
@@ -84,7 +86,7 @@ dl.horizontal {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  dd { 
+  dd {
     margin-left: 180px;
   }
 }
@@ -93,17 +95,17 @@ dl.horizontal-large {
   dt {
     width: 200px;
   }
-  dd { 
+  dd {
     margin-left: 220px;
   }
 }
 
 /////////// end property lists ////////////
 
-//////// Tables ///////////////// 
+//////// Tables /////////////////
 table {
   border-collapse: collapse;
-  //remove default foundation striping 
+  //remove default foundation striping
   tr:nth-of-type(even) {
     background-color: transparent;
   }
@@ -129,7 +131,7 @@ table {
 td.empty-cell {
   background-color: $addis-grey-border;
 }
-// lighten the darken on hover 
+// lighten the darken on hover
 tr.on-hover:hover {
   background: darken($secondary-color, 0.5%);
   cursor: pointer;
@@ -179,7 +181,7 @@ table.network-meta-analysis-table {
   font-weight: bold;
   text-align: center;
 }
-/////////////////////// graphs and tables //////////////////////// 
+/////////////////////// graphs and tables ////////////////////////
 $table-title-font-size: 14px;
 $table-title-margin-top: 10px;
 $table-title-margin-bottom: 4px;

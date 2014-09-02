@@ -1,5 +1,6 @@
 @import url("//fonts.googleapis.com/css?family=Droid+Sans:400,700");
 @import url("//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700");
+@import url(../js/bower_components/mcda-web/app/css/mcda-drugis.css);
 /* line 287, ../../drugis-css/foundation/components/_global.scss */
 meta.foundation-mq-small {
   font-family: "/only screen and (max-width: 40em)/";
@@ -8473,12 +8474,12 @@ Version: 3.4.5 Timestamp: Mon Nov  4 08:22:42 PST 2013
       position: absolute;
       right: 0;
       top: 0;
-  
+
       border-left: 1px solid #aaa;
       border-radius: 0 4px 4px 0;
-  
+
       background-clip: padding-box;
-  
+
       background: #ccc;
       background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #ccc), color-stop(0.6, #eee));
       background-image: -webkit-linear-gradient(center bottom, #ccc 0%, #eee 60%);
@@ -8962,105 +8963,105 @@ disabled look for disabled choices in the results dropdown
     background-position: 100% -21px !important;
   }
 }
-/* line 9, ../../sass/addis-drugis.scss */
+/* line 11, ../../sass/addis-drugis.scss */
 .alert {
   color: #e66464;
 }
 
-/* line 12, ../../sass/addis-drugis.scss */
+/* line 14, ../../sass/addis-drugis.scss */
 .warning {
   color: #f2973c;
 }
 
-/* line 15, ../../sass/addis-drugis.scss */
+/* line 17, ../../sass/addis-drugis.scss */
 .info {
   color: #77c0de;
 }
 
-/* line 18, ../../sass/addis-drugis.scss */
+/* line 20, ../../sass/addis-drugis.scss */
 .color-stripe {
   background: #cc3333;
   height: 0.45rem;
 }
 
-/* line 22, ../../sass/addis-drugis.scss */
+/* line 24, ../../sass/addis-drugis.scss */
 .alert-box-message {
   padding-right: 1.25rem;
 }
 
-/* line 25, ../../sass/addis-drugis.scss */
+/* line 27, ../../sass/addis-drugis.scss */
 label {
   margin-top: 0.5rem;
 }
 
-/* line 28, ../../sass/addis-drugis.scss */
+/* line 30, ../../sass/addis-drugis.scss */
 .inline-header {
   display: inline;
 }
 
-/* line 31, ../../sass/addis-drugis.scss */
+/* line 33, ../../sass/addis-drugis.scss */
 .project-header {
   border-bottom: 1px solid #dadada;
   margin-bottom: 1.25rem;
 }
 
-/* line 35, ../../sass/addis-drugis.scss */
+/* line 37, ../../sass/addis-drugis.scss */
 .project-description {
   padding: 10px 0px;
 }
 
-/* line 38, ../../sass/addis-drugis.scss */
+/* line 40, ../../sass/addis-drugis.scss */
 .nested-view {
   min-height: 4rem;
 }
 
-/* line 41, ../../sass/addis-drugis.scss */
+/* line 43, ../../sass/addis-drugis.scss */
 .nested-view .has-tip {
   font-weight: inherit;
   border-bottom: none;
 }
 
-/* line 45, ../../sass/addis-drugis.scss */
+/* line 47, ../../sass/addis-drugis.scss */
 .nested-view ul {
   border: solid 1px #dadada;
   padding: 0.5rem;
 }
 
-/* line 49, ../../sass/addis-drugis.scss */
+/* line 51, ../../sass/addis-drugis.scss */
 .nested-view li.colored-row {
   background: #f4f4f4;
   margin-bottom: 10px;
   padding: 0.5rem 0.25rem 0.5rem 0.5rem;
 }
 
-/* line 55, ../../sass/addis-drugis.scss */
+/* line 57, ../../sass/addis-drugis.scss */
 .checkbox-group {
   padding-left: 0.5rem;
   padding-bottom: 1rem;
 }
 
-/* line 60, ../../sass/addis-drugis.scss */
+/* line 62, ../../sass/addis-drugis.scss */
 .error-message {
   display: block;
   color: #cc3333;
 }
 
-/* line 66, ../../sass/addis-drugis.scss */
+/* line 68, ../../sass/addis-drugis.scss */
 div.row.property-section {
   margin-bottom: 2rem;
 }
-/* line 68, ../../sass/addis-drugis.scss */
+/* line 70, ../../sass/addis-drugis.scss */
 div.row.property-section h5 {
   padding-left: 1rem;
 }
 
-/* line 73, ../../sass/addis-drugis.scss */
+/* line 75, ../../sass/addis-drugis.scss */
 div.row.property-section:last-child {
   margin-bottom: 0;
 }
 
 /* Horizontal Definition Lists */
-/* line 79, ../../sass/addis-drugis.scss */
+/* line 81, ../../sass/addis-drugis.scss */
 dl.horizontal dt {
   float: left;
   width: 160px;
@@ -9069,85 +9070,85 @@ dl.horizontal dt {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* line 87, ../../sass/addis-drugis.scss */
+/* line 89, ../../sass/addis-drugis.scss */
 dl.horizontal dd {
   margin-left: 180px;
 }
 
-/* line 93, ../../sass/addis-drugis.scss */
+/* line 95, ../../sass/addis-drugis.scss */
 dl.horizontal-large dt {
   width: 200px;
 }
-/* line 96, ../../sass/addis-drugis.scss */
+/* line 98, ../../sass/addis-drugis.scss */
 dl.horizontal-large dd {
   margin-left: 220px;
 }
 
-/* line 104, ../../sass/addis-drugis.scss */
+/* line 106, ../../sass/addis-drugis.scss */
 table {
   border-collapse: collapse;
 }
-/* line 107, ../../sass/addis-drugis.scss */
+/* line 109, ../../sass/addis-drugis.scss */
 table tr:nth-of-type(even) {
   background-color: transparent;
 }
-/* line 111, ../../sass/addis-drugis.scss */
+/* line 113, ../../sass/addis-drugis.scss */
 table tr th.sortable {
   cursor: pointer;
 }
-/* line 114, ../../sass/addis-drugis.scss */
+/* line 116, ../../sass/addis-drugis.scss */
 table tr th, table tr td {
   border: solid 1px #dadada;
 }
-/* line 116, ../../sass/addis-drugis.scss */
+/* line 118, ../../sass/addis-drugis.scss */
 table tr th a:hover, table tr td a:hover {
   text-decoration: underline;
 }
-/* line 120, ../../sass/addis-drugis.scss */
+/* line 122, ../../sass/addis-drugis.scss */
 table tr td.button-cell {
   text-align: center;
 }
-/* line 122, ../../sass/addis-drugis.scss */
+/* line 124, ../../sass/addis-drugis.scss */
 table tr td.button-cell button {
   margin-bottom: 0;
   font-size: 0.875rem;
 }
 
-/* line 129, ../../sass/addis-drugis.scss */
+/* line 131, ../../sass/addis-drugis.scss */
 td.empty-cell {
   background-color: #dadada;
 }
 
-/* line 133, ../../sass/addis-drugis.scss */
+/* line 135, ../../sass/addis-drugis.scss */
 tr.on-hover:hover {
   background: #e6e6e6;
   cursor: pointer;
   text-decoration: none;
 }
 
-/* line 138, ../../sass/addis-drugis.scss */
+/* line 140, ../../sass/addis-drugis.scss */
 tr.clickable td {
   color: #452f8c;
 }
 
-/* line 141, ../../sass/addis-drugis.scss */
+/* line 143, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table {
   border: none;
   border-spacing: 0px;
 }
-/* line 144, ../../sass/addis-drugis.scss */
+/* line 146, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td {
   border-bottom: solid 1px #dadada;
   vertical-align: top;
 }
-/* line 147, ../../sass/addis-drugis.scss */
+/* line 149, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td label {
   display: block;
   padding-left: 15px;
   text-indent: -15px;
   margin: 0;
 }
-/* line 153, ../../sass/addis-drugis.scss */
+/* line 155, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td input[type="checkbox"] {
   width: 13px;
   height: 13px;
@@ -9158,32 +9159,32 @@ table.network-meta-analysis-table tbody tr td input[type="checkbox"] {
   top: -3px;
   *overflow: hidden;
 }
-/* line 163, ../../sass/addis-drugis.scss */
+/* line 165, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td .alert-message {
   color: #e66464;
   padding-top: 1px;
 }
-/* line 168, ../../sass/addis-drugis.scss */
+/* line 170, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table thead tr th {
   border-bottom: solid 1px #dadada;
 }
-/* line 171, ../../sass/addis-drugis.scss */
+/* line 173, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tr.topborder td {
   border-top: solid 1px #dadada;
 }
 
-/* line 175, ../../sass/addis-drugis.scss */
+/* line 177, ../../sass/addis-drugis.scss */
 .undefined {
   color: #747474;
 }
 
-/* line 178, ../../sass/addis-drugis.scss */
+/* line 180, ../../sass/addis-drugis.scss */
 .table-cell-label {
   font-weight: bold;
   text-align: center;
 }
 
-/* line 186, ../../sass/addis-drugis.scss */
+/* line 188, ../../sass/addis-drugis.scss */
 .table-title {
   margin-left: 2px;
   font-size: 14px;
@@ -9192,14 +9193,14 @@ table.network-meta-analysis-table tr.topborder td {
   margin-bottom: 4px;
 }
 
-/* line 193, ../../sass/addis-drugis.scss */
+/* line 195, ../../sass/addis-drugis.scss */
 .addis-graph {
   background-color: white;
   border: solid 1px #dadada;
   margin-bottom: 10px;
 }
 
-/* line 198, ../../sass/addis-drugis.scss */
+/* line 200, ../../sass/addis-drugis.scss */
 .graph-legend {
   padding: 0.5rem 1rem;
 }
