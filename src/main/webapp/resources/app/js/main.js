@@ -18,7 +18,9 @@ require.config({
     'd3': 'bower_components/d3/d3.min',
     'nvd3': 'bower_components/nvd3/nv.d3.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
-    'moment': 'bower_components/moment/min/moment.min'
+    'moment': 'bower_components/moment/min/moment.min',
+    'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
+    'angularanimate': 'bower_components/angular-animate/angular-animate.min'
   },
   baseUrl: 'app/js',
   shim: {
@@ -31,6 +33,12 @@ require.config({
     'angular': {
       deps: ['jQuery'],
       exports: 'angular'
+    },
+    'angularanimate': {
+      deps: ['angular']
+    },
+    'mmfoundation': {
+      deps: ['angular']
     },
     'select2': {
       deps: ['jQuery'],

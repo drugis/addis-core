@@ -21,15 +21,22 @@ define(
     'mcda/controllers',
     'mcda/controllers',
     'mcda/directives',
-    'mcda/filters',
-    'mcda/services'
+    'mcda/services/remoteWorkspaces',
+    'mcda/services/taskDependencies',
+    'mcda/services/errorHandling',
+    'mcda/services/hashCodeService',
+    'mcda/services/partialValueFunction',
+    'mcda/services/util'
   ],
   function(angular, require, $, Config) {
     var mcdaDependencies = [
+      'elicit.errorHandling',
+      'elicit.remoteWorkspaces',
+      'elicit.taskDependencies',
       'elicit.directives',
-      'elicit.filters',
       'elicit.controllers',
-      'elicit.services'
+      'elicit.pvfService',
+      'elicit.util'
     ];
     var dependencies = [
       'ui.router',
@@ -60,7 +67,7 @@ define(
       label: 'Single-study Benefit-Risk',
       stateName: 'analysis.singleStudyBenefitRisk'
     }]);
-
+    app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.run(['$rootScope', '$window', '$http',
       function($rootScope, $window, $http) {
         var csrfToken = $window.config._csrf_token;
@@ -69,6 +76,28 @@ define(
         $http.defaults.headers.common[csrfHeader] = csrfToken;
         $rootScope.$on('$viewContentLoaded', function() {
           $(document).foundation();
+        });
+
+        $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+          console.log('$stateChangeStart to ' + toState.to + '- fired when the transition begins. toState,toParams : \n', toState, toParams);
+        });
+        $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams) {
+          console.log('$stateChangeError - fired when an error occurs during transition.');
+          console.log(arguments);
+        });
+        $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+          console.log('$stateChangeSuccess to ' + toState.name + '- fired once the state transition is complete.');
+        });
+        // $rootScope.$on('$viewContentLoading',function(event, viewConfig){
+        //   // runs on individual scopes, so putting it in "run" doesn't work.
+        //   console.log('$viewContentLoading - view begins loading - dom not rendered',viewConfig);
+        // });
+        $rootScope.$on('$viewContentLoaded', function(event) {
+          console.log('$viewContentLoaded - fired after dom rendered', event);
+        });
+        $rootScope.$on('$stateNotFound', function(event, unfoundState, fromState, fromParams) {
+          console.log('$stateNotFound ' + unfoundState.to + '  - fired when a state cannot be found by its name.');
+          console.log(unfoundState, fromState, fromParams);
         });
 
         $rootScope.$safeApply = function($scope, fn) {
