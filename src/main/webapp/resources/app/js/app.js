@@ -21,13 +21,11 @@ define(
     'mcda/controllers',
     'mcda/controllers',
     'mcda/directives',
-    'mcda/filters',
     'mcda/services'
   ],
   function(angular, require, $, Config) {
     var mcdaDependencies = [
       'elicit.directives',
-      'elicit.filters',
       'elicit.controllers',
       'elicit.services'
     ];
@@ -60,7 +58,7 @@ define(
       label: 'Single-study Benefit-Risk',
       stateName: 'analysis.singleStudyBenefitRisk'
     }]);
-
+    app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.run(['$rootScope', '$window', '$http',
       function($rootScope, $window, $http) {
         var csrfToken = $window.config._csrf_token;
