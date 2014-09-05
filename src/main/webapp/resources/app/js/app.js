@@ -39,7 +39,8 @@ define(
       'elicit.controllers',
       'elicit.pvfService',
       'elicit.util',
-      'mm.foundation'
+      'mm.foundation',
+      'ngAnimate'
     ];
     var dependencies = [
       'ui.router',
