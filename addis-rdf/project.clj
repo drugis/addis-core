@@ -3,7 +3,7 @@
   :url "http://example.com/FIXME"
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [riveted "0.0.9"]
-                 [org.clojure/tools.cli "0.2.4"]]
+                 [org.clojure/tools.cli "0.3.1"]]
   :plugins [[codox "0.8.9"]]
   :codox {:defaults {:doc/format :markdown}}
   :main ^:skip-aot org.drugis.addis.rdf.core

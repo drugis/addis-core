@@ -411,7 +411,12 @@
   (let [studies (map #(import-study % entity-uris) (vtd/search xml xpath))]
     [(entities-uri-map studies) (entities-rdf studies)]))
 
-(defn rdfimport [label description xml]
+(defn dataset-source-doc [subj uri]
+  (if uri
+    (trig/spo subj [(trig/iri :dc "source") (trig/iri uri)])
+    subj))
+
+(defn rdfimport [label description source-doc-uri xml]
   (let [dataset-id (uuid)
         prefixes {:rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                   :rdfs "http://www.w3.org/2000/01/rdf-schema#"
@@ -424,7 +429,8 @@
                   :instance "http://trials.drugis.org/instances/"
                   :entity "http://trials.drugis.org/entities/"
                   :atc "http://www.whocc.no/ATC2011/"
-                  :snomed "http://www.ihtsdo.org/SCT_"}
+                  :snomed "http://www.ihtsdo.org/SCT_"
+                  :dc "http://purl.org/dc/elements/1.1/" }
         [unit-uri-map units-rdf] (import-entities xml "/addis-data/units/unit" unit-rdf)
         [indication-uri-map indications-rdf] (import-entities xml "/addis-data/indications/indication" indication-rdf)
         [drug-uri-map drugs-rdf] (import-entities xml "/addis-data/drugs/drug" drug-rdf)
@@ -442,7 +448,8 @@
                          (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Dataset")]
                                    [(trig/iri :rdfs "label") label]
                                    [(trig/iri :rdfs "comment") description])
-                         (spo-each (trig/iri :ontology "contains_study") (vals studies-uri-map)))]
+                         (spo-each (trig/iri :ontology "contains_study") (vals studies-uri-map))
+                         (dataset-source-doc source-doc-uri))]
         meta-graph (concat 
                      units-rdf
                      indications-rdf
@@ -451,8 +458,7 @@
                      adverseEvents-rdf
                      populationCharacteristics-rdf
                      dataset-rdf)]
-    (str
-      (trig/write-trig prefixes (cons (trig/graph (trig/iri :dataset dataset-id) meta-graph) studies-graphs)))))
+    (trig/write-trig prefixes (cons (trig/graph (trig/iri :dataset dataset-id) meta-graph) studies-graphs))))
 
 (defn -main
   [& args]
@@ -463,12 +469,12 @@
              ["-n" "--name" "Dataset short name"]
              ["-t" "--title" "Dataset description" :default "ADDIS data import"]
              ["-r" "--rdf" "RDF (TriG) file" :default "out.trig"]
-             )]
+             ["-s" "--source" "URI describing the data source"])]
     (when (or (:help options) (some nil? ((juxt :file :name :title) options)))
       (println banner)
       (System/exit 0))
     (let
         [data (vtd/navigator (slurp (as-file (options :file))))
          rdf (as-file (:rdf options))]
-        (spit rdf (rdfimport (:name options) (:title options) data))
+        (spit rdf (rdfimport (:name options) (:title options) (:source options) data))
       )))

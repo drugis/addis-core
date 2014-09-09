@@ -1,0 +1,72 @@
+PubMed
+======
+
+PubMed can search by DOI and by ORCID id:
+
+http://www.ncbi.nlm.nih.gov/pubmed/?term=10.1155%2F2014%2F978525[doi]
+http://www.ncbi.nlm.nih.gov/pubmed/?term=0000-0001-7374-7234[auid]
+
+but both are very incomplete. The DOI may be in
+
+PubmedArticle/MedlineCitation/Article/ELocationID[@EIdType="doi"]
+PubmedArticle/PubmedData/ArticleIdList/ArticleId[@IdType="doi"]
+
+it is unclear whether presence of one implies presence of the other.
+
+An author's ORCID will be listed at
+
+PubmedArticle/MedlineCitation/Article/AuthorList/Author/Identifier[@Source="ORCID"]
+
+Journal ISSNs are listed in two places:
+
+PubmedArticle/MedlineCitation/Article/Journal/ISSN
+PubmedArticle/MedlineCitation/MedlineJournalInfo/ISSNLinking
+
+Registry identifiers are available at
+
+PubmedArticle/MedlineCitation/Article/DataBankList/DataBank
+
+ORCiD
+=====
+
+ORCiD profiles can be fetched in XML, RDF or JSON:
+
+curl -LH "Accept: application/xml" http://orcid.org/0000-0001-5179-8321/
+curl -LH "Accept: application/rdf+xml" http://orcid.org/0000-0001-5179-8321/
+curl -LH "Accept: application/json" http://orcid.org/0000-0001-5179-8321/
+
+Whereas the list of works is only available as JSON:
+
+curl -LH "Accept: application/xml" http://orcid.org/0000-0001-5179-8321/orcid-works >cipriani-works.xml
+curl -LH "Accept: application/json" http://orcid.org/0000-0001-5179-8321/orcid-works >cipriani-works.json
+
+The works may list DOIs or PubMed IDs. The XML appears to be more canonical than the JSON.
+
+CrossRef
+========
+
+Crossref also supports JSON or RDF:
+
+curl -LH "Accept: application/json" http://dx.doi.org/10.1155/2014/978525
+curl -LH "Accept: application/rdf+xml" http://dx.doi.org/10.1155/2014/978525
+curl -LH "Accept: text/turtle" http://dx.doi.org/10.1155/2014/978525
+
+The RDF may contain owl:sameAs references to ORCiD identifiers. The RDF+XML is namespaced (poorly), the Turtle is not namespaced at all.
+
+ClinicalTrials.gov
+==================
+
+The ClinicalTrials.gov record may also list publications, which usually have a PMID (no other identifiers supported):
+
+http://clinicaltrials.gov/ct2/show/NCT00000542?displayXml=true
+
+Also see the reverse query:
+
+WorldCat
+========
+
+WorldCat enables lookup and cross referencing of ISSNs, as documented here:
+
+http://xissn.worldcat.org/xissnadmin/doc/api.htm
+
+http://www.ncbi.nlm.nih.gov/pubmed/?term=NCT00000542[Secondary+Source+ID]
