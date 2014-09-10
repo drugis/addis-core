@@ -103,7 +103,8 @@ Rather, we would like sharing to be the default option.
 
 We identify the main goals and non-functional requirements of the ADDIS 2 re-development effort according to five key concerns: valorization, development, research, ecosystem, and learning.
 
-#### Valorization
+#### Valorization ####
+
 The system should generate sufficient revenue to support its continued development and operation.
 Since the business model has not determined, we focus on concerns that are likely to be common to potential approaches.
 
@@ -112,7 +113,7 @@ Since the business model has not determined, we focus on concerns that are likel
   - V3 Access to internal organization data, possibly in conjunction with public data
   - V4 Ease of use: the system should visually attractive to 'sell' it, and be easy to use to limit frustrations and the need for training
 
-#### Development
+#### Development ####
 
 System development should be efficient, agile, and sustainable.
 
@@ -122,7 +123,7 @@ System development should be efficient, agile, and sustainable.
   - D4 To ensure our public APIs are functioning in an optimal manner, our own software should use those APIs 
   - D5 The integrity of data should be closely guarded and all data should have clear provenance and versioning information
 
-#### Research
+#### Research ####
 
 The system should be an enabler for our own research and contribute to the success of grant proposals.
 
@@ -131,7 +132,7 @@ The system should be an enabler for our own research and contribute to the succe
   - R4 Transparency of implementation (open source)
   - R5 Publishable (high quality) graphics and tables 
 
-#### Ecosystem
+#### Ecosystem ####
 
 For the ADDIS concept to work, it is critical that structured clinical trials data are available. It is unlikely that any one organization will be able to achieve this. Therefore, we should aim to 'bootstrap' an open ecosystem in which structured clinical trials data can be shared.
 
@@ -143,7 +144,7 @@ For the ADDIS concept to work, it is critical that structured clinical trials da
   - E6 All data and analyses can be traced back to their ultimate source
   - E7 Third parties should be able to develop new analysis tools and decision support systems based on the available data
 
-#### Learning
+#### Learning ####
 
 The system should promote the use of structured, transparent, and quantitative methods in health care policy decisions.
 
@@ -195,13 +196,75 @@ To better support this scenario there should be clearly separated read-only (to 
 
 **TODO**
 
+In the ADDIS 2 architecture, the responsibility for data management is shared by the TrialVerse and ConceptMapper components:
+
+  - TrialVerse ...
+  - ConceptMapper ...
+
+We now proceed to design these two components in tandem ...
+However, in doing so we keep in mind that the ConceptMapper component is expected to collaborate with other components besides TrialVerse, e.g. components dealing with real world data.
+
 ### Requirements ###
 
 **TODO**
 
 ### Prototypes ###
 
-**TODO**
+To explore the design space for the TrialVerse and ConceptMapper components, several prototypes were constructed.
+
+#### Vertical prototype ####
+
+A vertical prototype was constructed as a proof-of-concept of how the ConceptMapper, TrialVerse, and Core components would interact.
+It was constructed in short bursts of activity during the design phase of the ADDIS 2 architecture (Jan 2013), during the specification of the IMI GetReal DoW (Apr 2013), and during the run up to the GetReal project (Aug & Sep 2013). It consisted of:
+
+ - A relational database schema for RCTs ("TrialVerse")
+ - An RDF triplestore with semantic meta-data for between-studies information ("ConceptMapper")
+ - An importer for .ADDIS files to TrialVerse/ConceptMapper format
+ - A throw-away prototype that constructed network meta-analysis by querying TrialVerse/ConceptMapper ("Core")
+ - A throw-away prototype network meta-analysis component based on the [gemtc](https://github.com/gertvv/gemtc) package for R and [Patavi](https://github.com/joelkuiper/patavi)
+
+In particular, the prototype defined [RESTful](http://en.wikipedia.org/wiki/Representational_state_transfer) web services to expose the RCT data and meta-data.
+The "Core" component used these interfaces to construct datasets compatible with the user's requests.
+The client (running in a web browser, based on the [AngularJS](https://angularjs.org/) framework) in turn interacted with the "Core" component using RESTful interfaces.
+
+The development of the prototype allowed us to verify that the import of .ADDIS files was sufficiently complete to allow constructing analysis datasets.
+As a result of the prototyping work, we fine-tuned both the relational data model and the RDF representation of the meta-data.
+However, significant tension remains: for example the definition of interventions is largely defined in the relational data model, which limits its flexibility to drug-based interventions, and limits semantic rules to matching the definitions of drugs (i.e. compounds) rather than the entire intervention regimen.
+We also discovered that the REST interface we defined originally did not allow us to optimize query performance sufficiently, and therefore it required a redesign.
+
+#### Triple stores, existing terminologies ####
+
+A second prototype explored the capabilities of a number of existing triple stores, as well as their ability to handle key medical terminologies such as SNOMED CT, the ATC classification, ICD-10, MedDRA, and LOINC.
+In addition, a prototype web frontend allowed full-text search within these terminologies, as well as browsing their hierarchy.
+Mappings to ADDIS datasets could also be retrieved.
+Through this process, we identified Apache Jena (with Fuseki) as the triplestore of choice.
+It could easily handle the relatively large terminologies, and can support the much larger sets of triples that we expect to store in the future.
+It also has good support for the SPARQL 1.1 specification and full text indexing (using a Lucene plugin), requirements we also discovered thanks to this prototype.
+Finally, Apache Jena is an open source project with a very extensible architecture.
+
+#### Event sourcing with RDF ####
+
+[Event sourcing](http://martinfowler.com/eaaDev/EventSourcing.html) is a design pattern for the design of applications in which every change to the state of the application needs to be captured.
+This allows for example reconstructing the state of the application at any past point in time.
+An implementation of this design pattern using RDF named graphs was designed and tested, first using a static dataset and a number of SPARQL queries.
+Subsequently, an extension to the Fuseki web service for Jena was developed.
+It enabled fully transparent SPARQL querying of the store at any point in time, as well as updating the store using a REST interface.
+
+#### Pure RDF data model ####
+
+The initial vertical prototype used a relational database for the more well-defined parts of the data model (i.e. those describing the study design and measurements) and a triple store for the more open-ended parts (i.e. higher level concepts).
+However, this generates some tension at the interface between these components.
+In addition, an event sourcing implementation would have to work across this barrier, so would need to be implemented consistently for these two very different technology stacks.
+Therefore, another prototype was constructed to evaluate the possibility of using a triple store for both TrialVerse and ConceptMapper.
+This consists of a converter from ADDIS datafiles to RDF, and a set of SPARQL queries implementing the key used cases from the ADDIS point of view (i.e. matching studies to concept definitions and constructing datasets).
+This was successful and should allow for a full implementation of the "read-only API" envisaged in the ADDIS 2 architecture.
+
+#### ADDIS 2 R1 - R3 ####
+
+The relational database schema, triplestore, and importer were deemed to be of sufficient quality to serve as the basis of the initial releases of ADDIS 2, pending the further design of the TrialVerse and ConceptMapper components.
+Several design decisions of the prototype were also carried over, such as implementing the backend using Java and the Spring framework and the frontend using AngularJS.
+Although the Core component developed during Releases 1-3 is not considered a prototype, the TrialVerse and ConceptMapper components are, and are expected to undergo a full rewrite.
+The first two releases were based on the relational database model, and a transition to the RDF data model was made in Release 3.
 
 ### Preliminary design ###
 
