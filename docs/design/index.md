@@ -83,6 +83,10 @@ This section explains the aims, requirements, and architecture of the ADDIS 2 pr
 
 **TODO**
 
+ - Viable data management solution / collaborative database building
+ - GetReal analysis capabilities
+ - Work with industry on interfacing in-house systems? Is not in the DoW but could be implied due to IPD.
+
 ### Rationale for re-development ###
 
 ADDIS 1 is a cross-platform desktop application implemented in Java, designed for use by a single user.
