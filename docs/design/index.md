@@ -212,6 +212,37 @@ However, in doing so we keep in mind that the ConceptMapper component is expecte
 
 **TODO**
 
+This section elaborates on the requirements for the data management component by presenting a number of use cases.
+Some use cases will be from the perspective of an end-user, while others may be from the perspective of another software component interacting with the system.
+
+#### Working with a dataset ####
+
+**TODO** How do we expect users to interact with datasets once they have been "finalized" - construct analyses etc.
+
+#### Provenance and versioning ####
+
+**TODO** How will these topics be handled and presented to users?
+
+#### Creating datasets ####
+
+**TODO** How will datasets be constructed as collections of individual studies with meta-data mappings?
+
+#### Data entry and import ####
+
+**TODO** What are users' options for entering data and/or importing it?
+
+#### Working together ####
+
+**TODO** How will projects with multiple persons be able to work together? How can projects re-use work done previously by others?
+
+#### Literature screening ####
+
+**TODO** (This is out of scope for GetReal, but needs to be considered from a "future proofing" perspective) How will users identify studies from the literature? How can we speed this up using our structured data?
+
+#### Embargo ####
+
+**TODO** Can we let users / teams place their reviews under embargo for a certain time or until publication? Is this a potential business model?
+
 ### Prototypes ###
 
 To explore the design space for the TrialVerse and ConceptMapper components, several prototypes were constructed.
