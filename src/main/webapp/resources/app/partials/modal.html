@@ -4,8 +4,8 @@
   </div>
 
   <div class="reveal-modal-bg" ng-style="bgStyle(model.show)"></div>
-  <div class="reveal-modal open" ng-style="fgStyle(model.show)">
+  <div class="mcda-reveal-modal reveal-modal open" ng-style="fgStyle(model.show)">
     <div ng-transclude></div>
-    <a class="close-reveal-modal" ng-click="model.close()">&times;</a>
+    <a class="close-reveal-modal" ng-click="model.closeCancel()">&times;</a>
   </div>
 </div>
