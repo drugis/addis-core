@@ -104,13 +104,14 @@ define(
       }
     ]);
 
-    app.config(['Tasks', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES', '$httpProvider',
-      function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider) {
+    app.config(['Tasks', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES', '$httpProvider', '$animateProvider',
+      function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider, $animateProvider) {
         var baseTemplatePath = 'app/views/';
         var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
         var gemtcWebBaseTemplatePath = 'app/js/bower_components/gemtc-web/app/views/';
 
         $httpProvider.interceptors.push('SessionExpiredInterceptor');
+        $animateProvider.classNameFilter(/sidepanel/);
 
         $stateProvider
           .state('projects', {
