@@ -14,7 +14,6 @@ require.config({
     'foundation': 'bower_components/foundation/js/foundation.min',
     'select2': 'bower_components/select2/select2',
     'angular-select2': 'bower_components/angular-ui-select2/src/select2',
-    'NProgress': 'bower_components/nprogress/nprogress',
     'd3': 'bower_components/d3/d3.min',
     'nvd3': 'bower_components/nvd3/nv.d3.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',

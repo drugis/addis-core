@@ -26,7 +26,6 @@ require.config({
     'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
     'mcda' : 'bower_components/mcda-web/app/js',
     'gemtc-web' : 'bower_components/gemtc-web/app/js',
-    'NProgress': 'bower_components/nprogress/nprogress',
     'd3': 'bower_components/d3/d3.min',
     'nvd3': 'bower_components/nvd3/nv.d3.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
