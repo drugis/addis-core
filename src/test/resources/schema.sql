@@ -187,3 +187,11 @@ ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN studyUid VARCHAR;
 --changeset stroombergc:12
 ALTER TABLE ArmExclusion DROP COLUMN trialverseId;
 ALTER TABLE ArmExclusion ADD COLUMN trialverseUid VARCHAR;
+
+--changeset reidd:13
+CREATE TABLE remarks (
+  id serial NOT NULL,
+  scenarioId INT NOT NULL,
+  remarks TEXT,
+  FOREIGN KEY(scenarioId) REFERENCES Scenario(id)
+);

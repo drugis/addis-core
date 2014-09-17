@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
 
@@ -22,6 +23,7 @@ public class RemarksController extends AbstractAddisCoreController {
     RemarksRepository remarksRepository;
 
     @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/scenarios/{scenarioId}/remarks", method = RequestMethod.GET)
+    @ResponseBody
     public Remarks getRemarks(@PathVariable Integer scenarioId) {
         return remarksRepository.get(scenarioId);
     }

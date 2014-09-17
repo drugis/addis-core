@@ -31,3 +31,5 @@ INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-1, '-10
 INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-2, '-102', -6);
 
 INSERT INTO public.interventionInclusion (id, interventionId, analysisId) VALUES (-1, 2, -6);
+
+INSERT INTO public.remarks( id, scenarioId, remarks) VALUES(-1, 1, 'yo yo yo !');

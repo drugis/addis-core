@@ -11,6 +11,7 @@ import org.drugis.addis.models.repository.PataviTaskRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.remarks.repository.RemarksRepository;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.factory.RestOperationsFactory;
@@ -114,5 +115,9 @@ public class TestConfig {
   public PataviTaskRepository mockPataviTaskRepository() {
     return mock(PataviTaskRepository.class);
   }
+
+  @Bean
+  public RemarksRepository mockRemarksRepository() { return mock(RemarksRepository.class);}
+
 }
 

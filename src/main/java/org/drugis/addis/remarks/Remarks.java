@@ -20,6 +20,7 @@ public class Remarks {
     private Integer id;
 
     private Integer scenarioId;
+
     @JsonRawValue
     private String remarks;
 
