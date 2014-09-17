@@ -190,8 +190,8 @@ ALTER TABLE ArmExclusion ADD COLUMN trialverseUid VARCHAR;
 
 --changeset reidd:13
 CREATE TABLE remarks (
-  id serial NOT NULL,
-  scenarioId INT NOT NULL,
+  id SERIAL NOT NULL,
+  analysisId INT NOT NULL,
   remarks TEXT,
-  FOREIGN KEY(scenarioId) REFERENCES Scenario(id)
+  FOREIGN KEY(analysisId) REFERENCES SingleStudyBenefitRiskAnalysis(id)
 );

@@ -3,10 +3,6 @@ package org.drugis.addis.remarks.repository.impl;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.remarks.Remarks;
 import org.drugis.addis.remarks.repository.RemarksRepository;
-import org.drugis.addis.scenarios.Scenario;
-import org.drugis.addis.scenarios.repository.ScenarioRepository;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,8 +13,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
@@ -33,11 +29,34 @@ public class RemarksRepositoryImplTest {
 
   @Test
   public void testGet() throws Exception {
-    Integer scenarioId = 1;
+    Integer analysisId = -1;
     Integer remarksId = -1;
     Remarks expected = em.find(Remarks.class, remarksId);
 
-    Remarks actual = remarksRepository.get(scenarioId);
+    Remarks actual = remarksRepository.find(analysisId);
     assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testCreate() {
+    Integer analysisId = -1;
+    String remarksString = "remarks string";
+    Remarks remarks = remarksRepository.create(analysisId, remarksString);
+    assertEquals(analysisId, remarks.getAnalysisId());
+    assertEquals(remarksString, remarks.getRemarks());
+    assertNotNull(remarks.getId());
+  }
+
+  @Test
+  public void testUpdate() {
+
+    String remarksStr = "remax string 2: the revenge";
+    Remarks update = new Remarks(-1, -1, remarksStr);
+
+    Remarks updated = remarksRepository.update(update);
+    Remarks stored = em.find(Remarks.class, -1);
+
+    assertEquals(stored.getAnalysisId(), updated.getAnalysisId());
+    assertEquals(stored.getRemarks(), remarksStr);
   }
 }

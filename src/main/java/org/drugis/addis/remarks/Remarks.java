@@ -19,7 +19,7 @@ public class Remarks {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer scenarioId;
+    private Integer analysisId;
 
     @JsonRawValue
     private String remarks;
@@ -27,9 +27,14 @@ public class Remarks {
     public Remarks() {
     }
 
-    public Remarks(Integer id, Integer scenarioId, String remarks) {
+  public Remarks(Integer analysisId, String remarks) {
+    this.analysisId = analysisId;
+    this.remarks = remarks;
+  }
+
+    public Remarks(Integer id, Integer analysisId, String remarks) {
         this.id = id;
-        this.scenarioId = scenarioId;
+        this.analysisId = analysisId;
         this.remarks = remarks;
     }
 
@@ -37,8 +42,8 @@ public class Remarks {
         return id;
     }
 
-    public Integer getScenarioId() {
-        return scenarioId;
+    public Integer getAnalysisId() {
+        return analysisId;
     }
 
     public String getRemarks() {
@@ -59,7 +64,7 @@ public class Remarks {
 
         if (!id.equals(remarks1.id)) return false;
         if (!remarks.equals(remarks1.remarks)) return false;
-        if (!scenarioId.equals(remarks1.scenarioId)) return false;
+        if (!analysisId.equals(remarks1.analysisId)) return false;
 
         return true;
     }
@@ -67,7 +72,7 @@ public class Remarks {
     @Override
     public int hashCode() {
         int result = id.hashCode();
-        result = 31 * result + scenarioId.hashCode();
+        result = 31 * result + analysisId.hashCode();
         result = 31 * result + remarks.hashCode();
         return result;
     }

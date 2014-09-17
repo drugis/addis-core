@@ -20,12 +20,26 @@ public class RemarksRepositoryImpl implements RemarksRepository {
     EntityManager em;
 
     @Override
-    public Remarks get(Integer scenarioId) {
+    public Remarks find(Integer analysisId) {
         TypedQuery<Remarks> query = em.createQuery(
                 "FROM Remarks r " +
-                "WHERE r.scenarioId = :scenarioId", Remarks.class);
-        query.setParameter("scenarioId", scenarioId);
+                "WHERE r.analysisId= :analysisId", Remarks.class);
+        query.setParameter("analysisId", analysisId);
         List<Remarks> resultList = query.getResultList();
-        return resultList.size() == 0 ? new Remarks() : resultList.get(0);
+        return resultList.size() == 0 ? null : resultList.get(0);
     }
+
+  @Override
+  public Remarks update(Remarks remarks) {
+    Remarks oldRemark = em.find(Remarks.class, remarks.getId());
+    oldRemark.setRemarks(remarks.getRemarks());
+    return oldRemark;
+  }
+
+  @Override
+  public Remarks create(Integer analysisId, String remarks) {
+    Remarks newRemarks = new Remarks(analysisId, remarks);
+    em.persist(newRemarks);
+    return newRemarks;
+  }
 }
