@@ -215,25 +215,113 @@ However, in doing so we keep in mind that the ConceptMapper component is expecte
 This section elaborates on the requirements for the data management component by presenting a number of use cases.
 Some use cases will be from the perspective of an end-user, while others may be from the perspective of another software component interacting with the system.
 
+In general, we make a distinction between several types of record:
+
+ - Datasets: user-created collections of studies and meta-data about those studies.
+ - Extractions: user-provided information on existing objects, e.g. studies and systematic reviews.
+ - ...
+
+Note that not all functional requirements need to be satisfied by direct implementation in ADDIS.
+Some could also be achieved by interoperation with other systems.
+Moreover, all features are subject to prioritization and therefore it is likely that not all of the requirements will be satisfied by the end of the project.
+The main aim of listing them here is to provide a basis for the overall design of the system and for the prioritization of features.
+
 #### Working with a dataset ####
 
-**TODO** How do we expect users to interact with datasets once they have been "finalized" - construct analyses etc.
+These requirements cover how we expect users to interact with a completed dataset, i.e. a single version of a dataset as it is used in an analysis project in ADDIS.
+These are intentionally broad, as the specific analysis functionality to be built is out of scope for this document.
+
+**F1.1** Any authenticated user must be able to create a project based on an available dataset. A title and description of the project must be provided by the user.
+
+**F1.2** When viewing a project, any user must be presented with information on the dataset on which it is based. This information must link to a detailed view of this dataset (F1.5). (See [Mockup 001](#mockup001))
+
+**F1.3** Any project participant must be able to create logical matching rules that define an intervention or an outcome. Such matching rules should be able to make use of terms from structured terminologies (e.g. ATC codes), as well as set restrictions on other properties such as dose. Templates should be provided for common scenarios (e.g. drug treatments). (See [Mockup 011](#mockup011))
+
+**F1.4** ADDIS must be able to automatically apply defined matching rules (F1.3) to the project dataset to create analysis datasets for e.g. network meta-analysis. Matching should be intelligent, and e.g. make use of mappings between terminologies. For example, listing both the ATC code and the SNOMED CT code as in [Mockup 011](#mockup011) could be redundant if it is already known that these concepts are equivalent.
+
+**F1.5** When viewing a dataset, the user is shown information on how study inclusion was decided upon, as well as how data were extracted. (See [Mockup 002](#mockup002))
+
+**F1.6** When viewing a dataset, the user is show a table of basic information on each of the studies included in that dataset. Each row links to a detailed record on that study (F1.7). (See [Mockup 002](#mockup002))
+
+**F1.7** When viewing a study, the user is first presented with a summary view of the key characteristics. This summary view links to a details view. (See [Mockup 005](#mockup005))
+
+**F1.8** The detailed view shows the full semantic detail of the study, including basic study characteristics, population and eligibility information, the arms and epochs ([Mockup 006](#mockup006)), the activities performed ([Mockup 007](#mockup007)), the predefined outcome measures, the actual participant flow, study results, and the mapping of study concepts to structured vocabularies and ontologies ([Mockup 008](#mockup008)).
 
 #### Provenance and versioning ####
 
-**TODO** How will these topics be handled and presented to users?
+Because the analyses being done in ADDIS potentially have a large impact, it is important to keep track of how datasets originated, and who made particular changes.
+
+**F2.1** Users must be able to log in to the system. The system must enforce that a user is logged in before they can make changes to any extraction or dataset.
+
+**F2.2** When a dataset or extraction is updated, ADDIS must be able to access the older versions of that record, so that an analysis that is based on an older version will continue to work and will continue to yield the same results ([Mockup 001](#mockup001)).
+
+**F2.3** When viewing a dataset or extraction, the user is shown information on who created it, whether this is the most recent version, and when it has last been updated ([Mockup 002](#mockup002), [003](#mockup003), [015](#mockup015)).
+
+**F2.4** The user must be able to verify the entire edit history of a dataset or extraction, including who made the changes and what were the precise changes made ([Mockup 013](#mockup013), [009](#mockup009)).
+
+**F2.5** A logged in user can edit any dataset or extraction. When doing so, these changes are continuously saved to their working copy on their account. When the user is satisfied with the changes, they are prompted to check them before saving, and to provide a description of the reasons for their changes ([Mockup 009](#mockup009)). Only changes that have been so saved will be available outside of the edit view for that dataset or extraction. If the dataset or extraction was previously created by another user, saving an edited version will create a full copy of the record, including the full history.
+
+**F2.6** Users who have created datasets or extractions are notified when other users have made changes to their records, and are prompted to accept or reject these changes ([Mockup 016](#mockup016)).
+
+**F2.7** Multiple alternative extractions of a single object may exist. When viewing an extraction, this is clearly displayed to users ([Mockup003](#mockup003)).
+
+**F2.8** The system should encourage contributions by clearly assigning credit for extractions and datasets. For example, a user profile page can showcase contributions made by the user ([Mockup 012](#mockup012)).
+
+**F2.9** Extractions or partial extractions of publications or registry entries can also be made by software agents.
+Credit for such extractions should be assigned to both the software agent and the entity that initiated the running of the software agent ([Mockup 016](#mockup016)).
+
+**F2.10** Extractions can be performed using predefined extraction forms, where the system provides a mapping from the extraction forms to the appropriate data structures.
 
 #### Creating datasets ####
 
-**TODO** How will datasets be constructed as collections of individual studies with meta-data mappings?
+**F3.1** Any user must be able to create a new dataset. The user will be prompted to provide a title and a description, as well as a method for study selection (F3.2-F3.5) and for data extraction (F3.6; F4.*).
+
+**F3.2** Studies can be selected based on the inclusions of an existing systematic review, by referring to a specific extraction of that review ([Mockup 002](#mockup002), [003](#mockup003)).
+
+**F3.3** Studies can be selected based on the inclusions of several existing systematic reviews, by referring to specific extractions of those reviews (umbrella reviews).
+
+**F3.4** Studies can be selected ad hoc from the full database.
+
+**F3.5** Studies can be selected based on a literature screening project (F6.*).
+
+**F3.6** The dataset can refer to pre-existing extractions of the selected studies.
 
 #### Data entry and import ####
 
-**TODO** What are users' options for entering data and/or importing it?
+**F4.1** The study edit view allows the user to edit the full semantic detail of the study, including basic study characteristics, population and eligibility information, the arms and epochs ([Mockup 006](#mockup006)), the activities performed ([Mockup 007](#mockup007)), the predefined outcome measures, the actual participant flow, study results, and the mapping of study concepts to structured vocabularies and ontologies ([Mockup 008](#mockup008)).
+These are represented at a sufficient level of detail to allow automated matching and reasoning by ADDIS, but the user interface is specialized to presenting RCT information to users so that entering data correctly is not an overly complex task.
+
+**F4.2** Extractions can be created by annotating the abstract of an article (e.g. identifying interventions and outcomes). TO BE SPECIFIED FURTHER.
+
+**F4.3** Extractions can be created by annotating the full text of an article (e.g. identifying interventions and outcomes). TO BE SPECIFIED FURTHER.
+
+**F4.4** The system will continuously extract and update data from ClinicalTrials.gov records (and potentially other structured sources). As per F4.1 and F2.5, users can further complete and refine such extractions ([Mockup 016](#mockup016)).
+
+**F4.5** Third parties are able to deploy their own software agents to contribute automated extractions similar to F4.4.
+
+**TODO** Defining mappings between concepts.
 
 #### Working together ####
 
-**TODO** How will projects with multiple persons be able to work together? How can projects re-use work done previously by others?
+**F5.1** Projects with multiple participants will be able to set rules for study selection and data extraction to ensure a certain level of quality (F5.2-F5.4).
+
+**F5.2** Group data entry without any restrictions: participants can select existing extractions for use in the project, or perform data extractions ad hoc.
+
+**F5.3** Group data entry without use of existing extractions.
+
+**F5.4** Double- or triple-blind data extraction with resolution of conflicts. The system detects and rates agreement between extractors.
+
+#### In-house deployments ####
+
+For industry and HTA stakeholders in-house deployments of the software will be important. This will allow them to keep sensitive data and analyses private.
+
+**F6.1** It must be possible do deploy ADDIS in-house.
+
+**F6.2** It must be possible to build front-ends for in-house databases so that the in-house ADDIS can interface with them.
+
+**F6.3** It must be possible for ADDIS to interface with multiple data sources, for example multiple in-house systems or an in-house data source and the public version of ADDIS.
+
+**F6.4** There must be an interchange format and functionality to selectively transfer data and analyses without allowing third parties access to those data. For example to transfer data from industry to HTA systems.
 
 #### Literature screening ####
 
@@ -242,6 +330,10 @@ Some use cases will be from the perspective of an end-user, while others may be 
 #### Embargo ####
 
 **TODO** Can we let users / teams place their reviews under embargo for a certain time or until publication? Is this a potential business model?
+
+#### Curation and discussion ####
+
+**TODO** There needs to be some source of authority on what extractions are of high quality and relevant to certain areas. Many approaches are possible, e.g. a user reputation system, an algorithm for computing a "concensus", or an approach where certain community groups create large curated datasets. In addition there needs to be a forum for discussion on difficult extractions, and this should be embedded with the extractions thembselves.
 
 ### Prototypes ###
 
@@ -304,6 +396,122 @@ The first two releases were based on the relational database model, and a transi
 ### Preliminary design ###
 
 **TODO**
+
+ * Semantic web / RDF for knowledge representation
+    - Flexible data modeling; relevant for "fuzzy" concepts like outcomes
+    - Use existing technology for matching and reasoning
+    - Use existing terminologies and ontologies to provide background knowledge
+ * OAuth + ORCiD for authentication
+ * Event sourcing
+ * Git-like model for collaboration
+ * Specialized UI for data entry and basic mapping of concepts
+ * Generalized knowledge modelling UI for experts to create / upload higher level ontologies and complex mappings.
+
+### Mockups ###
+
+The mockups are unfortunately crude hand drawings for now.
+At the top of each mockup is a mock address bar with an example URL and a mockup number.
+Generally titles are given in all capital letters and hyperlinks are indicated by an underline.
+Often hyperlinks refer to other mockups, which is indicated with an arrow pointing to the number of that mockup.
+Links to outside of the system are inidicated by a box with an arrow pointing out of it (this element would also be shown in the final system).
+A pencil pointing into a box is used as a general "edit" icon / button.
+
+<a name="mockup001">
+![Mockup 001](/images/mockup001.png)
+
+**Mockup 001** Project overview.
+</a>
+
+<a name="mockup002">
+![Mockup 002](/images/mockup002.png)
+
+**Mockup 002** Dataset overview when a more recent version is available.
+</a>
+
+<a name="mockup003">
+![Mockup 003](/images/mockup003.png)
+
+**Mockup 003** Dataset overview when it is the most recent version.
+</a>
+
+<a name="mockup004">
+![Mockup 004](/images/mockup004.png)
+
+**Mockup 004** Overview of a partially extracted systematic review.
+</a>
+
+<a name="mockup005">
+![Mockup 005](/images/mockup005.png)
+
+**Mockup 005** Summary view of an extracted RCT.
+</a>
+
+<a name="mockup006">
+![Mockup 006](/images/mockup006.png)
+
+**Mockup 006** Details view of an extracted RCT: arms and epochs.
+</a>
+
+<a name="mockup007">
+![Mockup 007](/images/mockup007.png)
+
+**Mockup 007** Details view of an extracted RCT: activities.
+</a>
+
+<a name="mockup008">
+![Mockup 008](/images/mockup008.png)
+
+**Mockup 008** Details view of an extracted RCT: mapping entities to higher-level concepts.
+The user has made changes to this extraction (indicated bottom left).
+</a>
+
+<a name="mockup009">
+![Mockup 009](/images/mockup009.png)
+
+**Mockup 009** Checking and saving changes made to a data extraction.
+</a>
+
+<a name="mockup010">
+![Mockup 010](/images/mockup010.png)
+
+**Mockup 010** Starting a new extraction based on a PubMed abstract.
+</a>
+
+<a name="mockup011">
+![Mockup 011](/images/mockup011.png)
+
+**Mockup 011** Defining an intervention matching rule in ADDIS.
+</a>
+
+<a name="mockup012">
+![Mockup 012](/images/mockup012.png)
+
+**Mockup 012** Defining a concept mapping based on a predefined template in TrialVerse.
+</a>
+
+<a name="mockup013">
+![Mockup 013](/images/mockup013.png)
+
+**Mockup 013** A user profile page in TrialVerse.
+</a>
+
+<a name="mockup014">
+![Mockup 014](/images/mockup014.png)
+
+**Mockup 014** A dataset history overview in TrialVerse (showing only the latest entry).
+</a>
+
+<a name="mockup015">
+![Mockup 015](/images/mockup015.png)
+
+**Mockup 015** Provenance information of a trial that was partially extracted using an automated tool.
+</a>
+
+<a name="mockup016">
+![Mockup 016](/images/mockup016.png)
+
+**Mockup 016** The user is notified that another user has made changes to their extraction and given the opportunity to incorporate those changes.
+</a>
 
 ## (OLD) Contents ##
 
