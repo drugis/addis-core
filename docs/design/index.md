@@ -335,6 +335,108 @@ For industry and HTA stakeholders in-house deployments of the software will be i
 
 **TODO** There needs to be some source of authority on what extractions are of high quality and relevant to certain areas. Many approaches are possible, e.g. a user reputation system, an algorithm for computing a "concensus", or an approach where certain community groups create large curated datasets. In addition there needs to be a forum for discussion on difficult extractions, and this should be embedded with the extractions thembselves.
 
+### Preliminary design ###
+
+This describes the rough design (conceptual model) of the data management components of ADDIS 2.
+It is motivated by the overall requirements and architecture of ADDIS 2 (Section 2) and the functional requirements of the data management components (Section 3.1).
+It is further informed by a number of prototypes that were constructed to explore the design space for the data management components (Section 3.3).
+
+**TODO**
+
+ * Semantic web / RDF for knowledge representation
+    - Flexible data modeling; relevant for "fuzzy" concepts like outcomes
+    - Use existing technology for matching and reasoning
+    - Use existing terminologies and ontologies to provide background knowledge
+ * Boundary of TrialVerse / ConceptMapper
+    - Specialized UI for data entry and basic mapping of concepts
+    - Generalized knowledge modelling UI for experts to create / upload higher level ontologies and complex mappings.
+ * Event sourcing
+ * Git-like model for collaboration
+ * OAuth + ORCiD for authentication
+
+#### Knowledge representation using semantic web technologies ####
+
+Semantic web technologies provide a common framework that allows data to be shared and reused across application, enterprise, and community boundaries.
+They do this by enabling automated reasoning about the meaning (semantics) of the data.
+The Resource Description Framework (RDF) is the foundation of the semantic web, and enables the description of resources in the form of subject-predicate-object triples.
+Because predicates are first class objects in RDF, their properties can also be described using RDF.
+This makes RDF an incredibly powerful and flexible way of describing data and meta-data.
+Collections of triples are called graphs, and such graphs can be assigned a name so that they themselves can be described using RDF.
+Named graphs are a useful way of recording context information on a collection of statements, for example their provenance.
+Databases that store data in RDF format are called triple stores, and we have selected the Apache Jena triple store for ADDIS 2 (see Section 3.3.2).
+
+A large number of tools for knowledge representation, reasoning, and querying build on top of RDF.
+This includes the Web Ontology Language (OWL), a widely used language for knowledge representation that is supported by a variety of reasoning software.
+OWL has been used in many knowledge representation project in the biomedical domain, and is the underlying technology for the [NCBO BioPortal](http://bioportal.bioontology.org/), among others.
+Many key vocabularies and ontologies in medicine are either primarily developed in OWL, or have a derived representation in OWL.
+Examples include the SNOMED Clinical Terms, the BRIDG model, and the Ontology of Clinical Research (OCRe).
+OWL is also a key enabling technology in the IMI Open PHACTS project, which aims for wider integration of pharmacological data across the industry.
+
+Because semantic web technologies were designed to allow flexible modeling of the semantics of heterogeneous data sources, they are a good fit for the modeling of complex concepts, where we can not anticipate the data modeling needs completely (F-TODO).
+Moreover, a range of mature tools for both automated reasoning and rule-based matching are available, which could form the underlying technology for a more flexible system of matching complex concepts for analysis (F1.8).
+This is further aided by the availability of many standard vocabularies and ontologies in a compatible format (F1.8, F-TODO).
+Named graphs provide a natural mechanism for recording provenance information (F2.3).
+As described in Section 3.3, an RDF representation of the ADDIS 1 data model has already been developed and successfully applied to perform basic matching tasks like those performed by ADDIS 1.
+Future work will aim to align the data model further with the BRIDG model and other CDISC standards, as well as the OCRe.
+
+Because there are a number of interchange formats for RDF, any data stored in an RDF triple store can easily be transferred to other parties (F6.4).
+RDF can also be nested in XML documents, so could in principle also be used to enhance files in the current ADDIS 1 XML format.
+
+#### TrialVerse and ConceptMapper ####
+
+TrialVerse and ConceptMapper are closely related components that must work together well for data management in ADDIS 2 to be successful.
+Therefore, most of this document does not make a clear distinction between the two, but rather looks at what both components must be able to achieve when used together.
+As defined in the architecture, the division between the components is as follows:
+
+  - TrialVerse: where researchers share structured RCT data
+  - ConceptMapper: where definitions (concepts) can be deposited, refined, and mapped
+
+We can now describe the responsibilities and characteristics of these components in more detail.
+
+##### TrialVerse #####
+
+The TrialVerse component is responsible for all data that is specific to a single randomized controlled trial.
+Typically these data conform to a relatively well known data model that corresponds closely to the one developed for ADDIS 1.
+The constrained domain for this component allows us to develop a user-friendly data entry interface where expertise in knowledge representation will not be required.
+TrialVerse will integrate ConceptMapper to provide the "Mappings" feature (F-TODO), where more fine-grained descriptions of e.g. interventions and outcomes can be provided.
+
+##### ConceptMapper #####
+
+ConceptMapper is a repository for higher level concepts and their interrelationships.
+It should allow access to existing vocabularies and ontologies (provided that an appropriate license can be obtained) as well as allow users to create their own concepts and mappings.
+It is responsible for handling the less well defined structures in clinical trials, such as the semantics of interventions and outcomes.
+This is a complex domain, and for users with knowledge representation expertise there will be a low level interface that enables direct access to the underlying representation.
+In addition to this, we will enable less experienced users to define the most common types through predefined templates (F-TODO).
+That this component is separate from TrialVerse is key to our strategy for integrating other sources of data besides RCTs in the future (Section 2).
+
+ConceptMapper is also responsible for providing functionality for the matching of intervention and outcome concepts to the ADDIS 2 analysis components, as well as the user interface components for defining matching rules.
+
+#### Versioning and Provenance ####
+
+It is important to keep an accurate audit trail and a user accessible log of changes made to any record in TrialVerse and ConceptMapper.
+To this end, we will implement the [event sourcing](http://martinfowler.com/eaaDev/EventSourcing.html) design pattern on top of RDF named graphs.
+In event sourcing, a record of every change made to the database (event) is kept, and the state at any past point in time can be reconstructed from that event log.
+In simple terms, this is achieved as follows:
+
+ - For every "chunk" of data (e.g. a randomized controlled trial, an ontology, or a dataset) a named graph is created. Think of this as a document.
+ - Every time the named graph is edited and saved, the added and removed triples are recorded, together with information on when the changes were made and by whom.
+ - Every version of every named graph is given a unique ID, so that even when changes are made by another person than the original author, the version history can correctly refer back to the previous versions by the original author. In effect, we construct a graph of previous versions of each named graph.
+ - Note that both the data (named graphs) and the meta-data (provenance information) can be stored in RDF. A prototype implementation of this was constructed (Section 3.3.3).
+
+This implementation of the event sourcing pattern is also inspired by the [Datomic](http://www.datomic.com/) immutable database and the [Git](http://git-scm.com/) version control system.
+
+By implementing the database in this way, all past versions of the data can be reconstructed as needed (F2.2) and provenance information including a full edit history is always accessible (F2.3, F2.4).
+Moreover, because the history of an entry by one user can be referred to from further edits by another user, it becomes trivial to let any user non-destructively edit any entry (F2.5), and it is trivial to detect when this has happened (F2.6).
+The stability of an event sourced database is also important from the perspective of integrating data from multiple deployments of TrialVerse and/or ConceptMapper: once a specific version of a graph is known, it will never change (F6.3).
+
+#### Collaboration ####
+
+**TODO** How we will (initially) facilitate collaboration by a Git-like branching / merging model. More formalized approaches can build on top of this. Diffing RDF is easy except for the presence of blank nodes.
+
+#### Authentication ####
+
+**TODO** We plan to use OAuth / ORCiD because it is researcher-oriented. OAuth should also allow easy integration of alternative providers.
+
 ### Prototypes ###
 
 To explore the design space for the TrialVerse and ConceptMapper components, several prototypes were constructed.
@@ -392,20 +494,6 @@ The relational database schema, triplestore, and importer were deemed to be of s
 Several design decisions of the prototype were also carried over, such as implementing the backend using Java and the Spring framework and the frontend using AngularJS.
 Although the Core component developed during Releases 1-3 is not considered a prototype, the TrialVerse and ConceptMapper components are, and are expected to undergo a full rewrite.
 The first two releases were based on the relational database model, and a transition to the RDF data model was made in Release 3.
-
-### Preliminary design ###
-
-**TODO**
-
- * Semantic web / RDF for knowledge representation
-    - Flexible data modeling; relevant for "fuzzy" concepts like outcomes
-    - Use existing technology for matching and reasoning
-    - Use existing terminologies and ontologies to provide background knowledge
- * OAuth + ORCiD for authentication
- * Event sourcing
- * Git-like model for collaboration
- * Specialized UI for data entry and basic mapping of concepts
- * Generalized knowledge modelling UI for experts to create / upload higher level ontologies and complex mappings.
 
 ### Mockups ###
 
