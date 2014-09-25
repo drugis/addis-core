@@ -24,6 +24,7 @@ define(
     'mcda/services/remoteWorkspaces',
     'mcda/services/taskDependencies',
     'mcda/services/errorHandling',
+    'mcda/services/routeFactory',
     'mcda/services/hashCodeService',
     'mcda/services/partialValueFunction',
     'mcda/services/remoteRemarks',
@@ -39,6 +40,7 @@ define(
       'elicit.controllers',
       'elicit.pvfService',
       'elicit.util',
+      'elicit.routeFactory',
       'mm.foundation',
       'ngAnimate'
     ];
@@ -104,8 +106,8 @@ define(
       }
     ]);
 
-    app.config(['Tasks', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES', '$httpProvider', '$animateProvider',
-      function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider, $animateProvider) {
+    app.config(['Tasks', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES', '$httpProvider', '$animateProvider', 'MCDARouteProvider',
+      function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider, $animateProvider, MCDARouteProvider) {
         var baseTemplatePath = 'app/views/';
         var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
         var gemtcWebBaseTemplatePath = 'app/js/bower_components/gemtc-web/app/views/';
@@ -167,49 +169,17 @@ define(
             templateUrl: baseTemplatePath + 'networkMetaAnalysisView.html',
             controller: 'NetworkMetaAnalysisController'
           })
-          .state('analysis.scenario', {
-            url: '/scenarios/:scenarioId',
-            templateUrl: mcdaBaseTemplatePath + 'scenario.html',
-            resolve: {
-              currentWorkspace: ['$stateParams', 'RemoteWorkspaces',
-                function($stateParams, Workspaces) {
-                  return Workspaces.get($stateParams.analysisId);
-                }
-              ],
-              currentScenario: function($stateParams, currentWorkspace) {
-                return currentWorkspace.getScenario($stateParams.scenarioId);
-              }
-            },
-            controller: 'ScenarioController'
-          })
           .state('analysis.model', {
             url: '/models/:modelId',
             templateUrl: gemtcWebBaseTemplatePath + 'modelView.html',
             controller: 'ModelController'
           });
 
-        _.each(Tasks.available, function(task) {
-          var templateUrl = mcdaBaseTemplatePath + task.templateUrl;
-          $stateProvider.state(task.id, {
-            parent: 'analysis.scenario',
-            url: '/' + task.id,
-            templateUrl: templateUrl,
-            controller: task.controller,
-            resolve: {
-              taskDefinition: function(currentScenario, TaskDependencies) {
-                var def = TaskDependencies.extendTaskDefinition(task);
-                return def;
-              }
-            }
-          });
-        });
-
         // Default route
         $urlRouterProvider.otherwise('/projects');
-
+        MCDARouteProvider.buildRoutes($stateProvider, 'analysis', mcdaBaseTemplatePath);
       }
     ]);
-
 
     return app;
   });

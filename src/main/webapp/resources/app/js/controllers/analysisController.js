@@ -22,8 +22,8 @@ define([], function() {
           analysisId: analysis.id
         });
       }
-
     });
+
     $q.all([currentAnalysis.$promise, currentProject.$promise]).then(function() {
       if (currentAnalysis.problem) {
         $scope.isProblemDefined = true;
