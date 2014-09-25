@@ -294,9 +294,15 @@ More refined functionality could also allow the user to create entities directly
 
 **F4.4** Third parties are able to deploy their own software agents to contribute automated extractions similar to F4.4.
 
-**TODO** Defining mappings between concepts.
+**F4.5** The user will be able to define concepts (e.g. outcomes and interventions) in terms of higher level concepts though the use of logical relationships ([Mockup 012](#mockup012)).
+The higher level concepts could be (1) references to terms from well-known vocabularies, (2) references to concepts defined by users (F4.5), or (3) placeholders defined only within the study.
+The system should offer interfaces of varying levels of complexity, for example templates for common types of definitions and direct access to the underlying representation for complex cases.
 
-#### Working together ####
+**F4.6** The user is able to define their own terminologies, and these are subject to the same versioning and provenance requirements as all other data (F2.*).
+In the most basic form this means just defining terms and their descriptions.
+More advanced users will be able to create (or upload) a set of terms with their interrelationships (similar to e.g. SNOMED CT).
+
+#### Working together; curation and discussion ####
 
 **F5.1** Projects with multiple participants will be able to set rules for study selection and data extraction to ensure a certain level of quality (F5.2-F5.4).
 In part, this is supported by the ability to view edit histories and changes between versions (F2.*).
@@ -306,6 +312,8 @@ In part, this is supported by the ability to view edit histories and changes bet
 **F5.3** Group data entry without use of existing extractions.
 
 **F5.4** Double- or triple-blind data extraction with resolution of conflicts. The system detects and rates agreement between extractors.
+
+**TODO** There needs to be some source of authority on what extractions are of high quality and relevant to certain areas. Many approaches are possible, e.g. a user reputation system, an algorithm for computing a "concensus", or an approach where certain community groups create large curated datasets. In addition there needs to be a forum for discussion on difficult extractions, and this should be embedded with the extractions thembselves.
 
 #### In-house deployments ####
 
@@ -319,17 +327,13 @@ For industry and HTA stakeholders in-house deployments of the software will be i
 
 **F6.4** There must be an interchange format and functionality to selectively transfer data and analyses without allowing third parties access to those data. For example to transfer data from industry to HTA systems.
 
-#### Literature screening ####
-
-**TODO** (This is out of scope for GetReal, but needs to be considered from a "future proofing" perspective) How will users identify studies from the literature? How can we speed this up using our structured data?
-
 #### Embargo ####
 
 **TODO** Can we let users / teams place their reviews under embargo for a certain time or until publication? Is this a potential business model?
 
-#### Curation and discussion ####
+#### Literature screening ####
 
-**TODO** There needs to be some source of authority on what extractions are of high quality and relevant to certain areas. Many approaches are possible, e.g. a user reputation system, an algorithm for computing a "concensus", or an approach where certain community groups create large curated datasets. In addition there needs to be a forum for discussion on difficult extractions, and this should be embedded with the extractions thembselves.
+**TODO** (This is out of scope for GetReal, but needs to be considered from a "future proofing" perspective) How will users identify studies from the literature? How can we speed this up using our structured data?
 
 ### Preliminary design ###
 
