@@ -198,28 +198,23 @@ To better support this scenario there should be clearly separated read-only (to 
 
 ## Data management ##
 
-**TODO**
-
 In the ADDIS 2 architecture, the responsibility for data management is shared by the TrialVerse and ConceptMapper components:
 
-  - TrialVerse ...
-  - ConceptMapper ...
+ - TrialVerse: where researchers share structured RCT data
+ - ConceptMapper: where definitions (concepts) can be deposited, refined, and mapped
 
-We now proceed to design these two components in tandem ...
+We now proceed to design these two components in tandem, to arrive at an optimal solution for RCT data management in ADDIS 2.
 However, in doing so we keep in mind that the ConceptMapper component is expected to collaborate with other components besides TrialVerse, e.g. components dealing with real world data.
 
 ### Requirements ###
 
-**TODO**
-
-This section elaborates on the requirements for the data management component by presenting a number of use cases.
-Some use cases will be from the perspective of an end-user, while others may be from the perspective of another software component interacting with the system.
+This section elaborates on the requirements for the data management component, some of which will be from the perspective of an end-user, while others may be from the perspective of another software component interacting with the system or an organization wishing to make use of ADDIS 2.
 
 In general, we make a distinction between several types of record:
 
  - Datasets: user-created collections of studies and meta-data about those studies.
  - Extractions: user-provided information on existing objects, e.g. studies and systematic reviews.
- - ...
+ - ... **TODO**
 
 Note that not all functional requirements need to be satisfied by direct implementation in ADDIS.
 Some could also be achieved by interoperation with other systems.
@@ -241,7 +236,7 @@ These are intentionally broad, as the specific analysis functionality to be buil
 
 **F1.5** When viewing a dataset, the user is shown information on how study inclusion was decided upon, as well as how data were extracted. (See [Mockup 002](#mockup002))
 
-**F1.6** When viewing a dataset, the user is show a table of basic information on each of the studies included in that dataset. Each row links to a detailed record on that study (F1.7). (See [Mockup 002](#mockup002))
+**F1.6** When viewing a dataset, the user is shown a table of basic information on each of the studies included in that dataset. Each row links to a detailed record on that study (F1.7). (See [Mockup 002](#mockup002))
 
 **F1.7** When viewing a study, the user is first presented with a summary view of the key characteristics. This summary view links to a details view. (See [Mockup 005](#mockup005))
 
@@ -291,19 +286,20 @@ Credit for such extractions should be assigned to both the software agent and th
 **F4.1** The study edit view allows the user to edit the full semantic detail of the study, including basic study characteristics, population and eligibility information, the arms and epochs ([Mockup 006](#mockup006)), the activities performed ([Mockup 007](#mockup007)), the predefined outcome measures, the actual participant flow, study results, and the mapping of study concepts to structured vocabularies and ontologies ([Mockup 008](#mockup008)).
 These are represented at a sufficient level of detail to allow automated matching and reasoning by ADDIS, but the user interface is specialized to presenting RCT information to users so that entering data correctly is not an overly complex task.
 
-**F4.2** Extractions can be created by annotating the abstract of an article (e.g. identifying interventions and outcomes). TO BE SPECIFIED FURTHER.
+**F4.2** Extractions can be created by annotating the abstract or full text of an article.
+The user will be able to highlight text as being relevant to certain pre-defined labels (e.g. interventions, outcomes, etc.) and this will result in the textual information being copied into the appropriate location of the data entry view (F4.1).
+More refined functionality could also allow the user to create entities directly from the annotation view.
 
-**F4.3** Extractions can be created by annotating the full text of an article (e.g. identifying interventions and outcomes). TO BE SPECIFIED FURTHER.
+**F4.3** The system will continuously extract and update data from ClinicalTrials.gov records (and potentially other structured sources). As per F4.1 and F2.5, users can further complete and refine such extractions ([Mockup 016](#mockup016)).
 
-**F4.4** The system will continuously extract and update data from ClinicalTrials.gov records (and potentially other structured sources). As per F4.1 and F2.5, users can further complete and refine such extractions ([Mockup 016](#mockup016)).
-
-**F4.5** Third parties are able to deploy their own software agents to contribute automated extractions similar to F4.4.
+**F4.4** Third parties are able to deploy their own software agents to contribute automated extractions similar to F4.4.
 
 **TODO** Defining mappings between concepts.
 
 #### Working together ####
 
 **F5.1** Projects with multiple participants will be able to set rules for study selection and data extraction to ensure a certain level of quality (F5.2-F5.4).
+In part, this is supported by the ability to view edit histories and changes between versions (F2.*).
 
 **F5.2** Group data entry without any restrictions: participants can select existing extractions for use in the project, or perform data extractions ad hoc.
 
@@ -340,19 +336,6 @@ For industry and HTA stakeholders in-house deployments of the software will be i
 This describes the rough design (conceptual model) of the data management components of ADDIS 2.
 It is motivated by the overall requirements and architecture of ADDIS 2 (Section 2) and the functional requirements of the data management components (Section 3.1).
 It is further informed by a number of prototypes that were constructed to explore the design space for the data management components (Section 3.3).
-
-**TODO**
-
- * Semantic web / RDF for knowledge representation
-    - Flexible data modeling; relevant for "fuzzy" concepts like outcomes
-    - Use existing technology for matching and reasoning
-    - Use existing terminologies and ontologies to provide background knowledge
- * Boundary of TrialVerse / ConceptMapper
-    - Specialized UI for data entry and basic mapping of concepts
-    - Generalized knowledge modelling UI for experts to create / upload higher level ontologies and complex mappings.
- * Event sourcing
- * Git-like model for collaboration
- * OAuth + ORCiD for authentication
 
 #### Knowledge representation using semantic web technologies ####
 
