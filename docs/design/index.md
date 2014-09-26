@@ -72,10 +72,9 @@ This section explains the aims, requirements, and architecture of the ADDIS 2 pr
 
 We believe that science needs to be transparent for it to function properly.
 This means not only that data should be openly accessible, but also that scientific software must be open source.
-In addition, this applies to modeling and decision making, in that both the underlying evidence and the value judgments should be as explicit and transparent as possible to enable accountability.
-We want to achieve this by linking the various systems and tools involved in the process from collecting the evidence to the final decision, thereby making the process traceable.
-
-We also believe in the power of information technology the enhance the efficiency of commonplace tasks such as data collection and extraction, and the ability of social platforms to reduce duplication of effort by allowing users to share the results of their work with minimal effort.
+This also applies to modeling and decision making based on scientific data, in that both the underlying evidence and the value judgments should be as explicit and transparent as possible to enable accountability.
+In the drug development, approval, and reimbursement processes, we want to achieve this by linking the various systems and tools involved, from collecting the evidence to the final decision.
+Furthermore, we believe in the power of information technology to enhance the efficiency of commonplace tasks such as data collection and extraction, and the ability of collaborative platforms to eliminate duplication of effort by allowing users to easily share their work, including all intermediate products.
 
 ### Aims and objectives within GetReal ###
 
@@ -208,12 +207,6 @@ However, in doing so we keep in mind that the ConceptMapper component is expecte
 ### Requirements ###
 
 This section elaborates on the requirements for the data management component, some of which will be from the perspective of an end-user, while others may be from the perspective of another software component interacting with the system or an organization wishing to make use of ADDIS 2.
-
-In general, we make a distinction between several types of record:
-
- - Datasets: user-created collections of studies and meta-data about those studies.
- - Extractions: user-provided information on existing objects, e.g. studies and systematic reviews.
- - ... **TODO**
 
 Note that not all functional requirements need to be satisfied by direct implementation in ADDIS.
 Some could also be achieved by interoperation with other systems.
