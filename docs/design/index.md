@@ -366,9 +366,9 @@ Many key vocabularies and ontologies in medicine are either primarily developed 
 Examples include the SNOMED Clinical Terms, the BRIDG model, and the Ontology of Clinical Research (OCRe).
 OWL is also a key enabling technology in the IMI Open PHACTS project, which aims for wider integration of pharmacological data across the industry.
 
-Because semantic web technologies were designed to allow flexible modeling of the semantics of heterogeneous data sources, they are a good fit for the modeling of complex concepts, where we can not anticipate the data modeling needs completely (F-TODO).
-Moreover, a range of mature tools for both automated reasoning and rule-based matching are available, which could form the underlying technology for a more flexible system of matching complex concepts for analysis (F1.8).
-This is further aided by the availability of many standard vocabularies and ontologies in a compatible format (F1.8, F-TODO).
+Because semantic web technologies were designed to allow flexible modeling of the semantics of heterogeneous data sources, they are a good fit for the modeling of complex concepts, where we can not anticipate the data modeling needs completely (F4.5-6).
+Moreover, a range of mature tools for both automated reasoning and rule-based matching are available, which could form the underlying technology for a more flexible system of matching complex concepts for analysis (F1.4-5).
+This is further aided by the availability of many standard vocabularies and ontologies in a compatible format (F1.4, F4.5).
 Named graphs provide a natural mechanism for recording provenance information (F2.3).
 As described in Section 3.3, an RDF representation of the ADDIS 1 data model has already been developed and successfully applied to perform basic matching tasks like those performed by ADDIS 1.
 Future work will aim to align the data model further with the BRIDG model and other CDISC standards, as well as the OCRe.
@@ -391,23 +391,23 @@ We can now describe the responsibilities and characteristics of these components
 
 The TrialVerse component is responsible for all data that is specific to a single randomized controlled trial.
 Typically these data conform to a relatively well known data model that corresponds closely to the one developed for ADDIS 1.
-The constrained domain for this component allows us to develop a user-friendly data entry interface where expertise in knowledge representation will not be required.
-TrialVerse will integrate ConceptMapper to provide the "Mappings" feature (F-TODO), where more fine-grained descriptions of e.g. interventions and outcomes can be provided.
+The constrained domain for this component allows us to develop a user-friendly data entry interface where expertise in knowledge representation will not be required (F4.1-2).
+TrialVerse will integrate ConceptMapper to provide the "Mappings" feature (F4.5-6), where more fine-grained descriptions of e.g. interventions and outcomes can be provided.
 
 ##### ConceptMapper #####
 
 ConceptMapper is a repository for higher level concepts and their interrelationships.
-It should allow access to existing vocabularies and ontologies (provided that an appropriate license can be obtained) as well as allow users to create their own concepts and mappings.
+It should allow access to existing vocabularies and ontologies (provided that an appropriate license can be obtained) as well as allow users to create their own concepts and mappings (F4.5-6).
 It is responsible for handling the less well defined structures in clinical trials, such as the semantics of interventions and outcomes.
 This is a complex domain, and for users with knowledge representation expertise there will be a low level interface that enables direct access to the underlying representation.
-In addition to this, we will enable less experienced users to define the most common types through predefined templates (F-TODO).
+In addition to this, we will enable less experienced users to define the most common types through predefined templates.
 That this component is separate from TrialVerse is key to our strategy for integrating other sources of data besides RCTs in the future (Section 2).
 
 ConceptMapper is also responsible for providing functionality for the matching of intervention and outcome concepts to the ADDIS 2 analysis components, as well as the user interface components for defining matching rules.
 
 #### Versioning and Provenance ####
 
-It is important to keep an accurate audit trail and a user accessible log of changes made to any record in TrialVerse and ConceptMapper.
+It is important to keep an accurate audit trail and a user accessible log of changes made to any record in TrialVerse and ConceptMapper (F2.*).
 To this end, we will implement the [event sourcing](http://martinfowler.com/eaaDev/EventSourcing.html) design pattern on top of RDF named graphs.
 In event sourcing, a record of every change made to the database (event) is kept, and the state at any past point in time can be reconstructed from that event log.
 In simple terms, this is achieved as follows:
@@ -422,6 +422,7 @@ This implementation of the event sourcing pattern is also inspired by the [Datom
 By implementing the database in this way, all past versions of the data can be reconstructed as needed (F2.2) and provenance information including a full edit history is always accessible (F2.3, F2.4).
 Moreover, because the history of an entry by one user can be referred to from further edits by another user, it becomes trivial to let any user non-destructively edit any entry (F2.5), and it is trivial to detect when this has happened (F2.6).
 The stability of an event sourced database is also important from the perspective of integrating data from multiple deployments of TrialVerse and/or ConceptMapper: once a specific version of a graph is known, it will never change (F6.3).
+The recorded provenance information is also a solid basis for assigning credit for contributions (F2.8).
 
 The above assumes the ability to calculate differences between RDF graphs, and to apply those differences to RDF graphs.
 Approaches for this have been discussed in the literature (e.g. Auer and Herre, 2007, A Versioning and Evolution Framework for RDF Knowledge Bases, Perspectives of Systems Informatics, Lecture Notes in Computer Science 4378:55-69).
@@ -429,26 +430,26 @@ Approaches for this have been discussed in the literature (e.g. Auer and Herre, 
 #### Collaboration ####
 
 The basic model for collaboration builds on the ability to reason about versions of RDF graphs and the differences between those versions (as discussed in the Section 3.2.3).
-Because every version of a graph has a unique identifier, even when changes are made by another person than the original author, the version history can correctly refer back to the previous versions by the original author.
-This enables a very general model for collaboration where users can decide whether or not to include changes made by others in their own dataset.
-Moreover, users are asked to accompany every version with a short message that explains the intention and reasoning behind their changes, this creates a venue for discussion.
-This will be expanded further to allow others to comment on specific versions, e.g. to respond to the reasoning by the version author or to point out a mistake.
+Because every version of a graph has a unique identifier, even when changes are made by another person than the original author, the version history can correctly refer back to the previous versions by the original author (F2.5).
+This enables a very general model for collaboration where users can decide whether or not to include changes made by others in their own dataset (F5.1, F5.2, F5.5).
+Moreover, users are asked to accompany every version with a short message that explains the intention and reasoning behind their changes, this creates a venue for discussion (F5.6).
+This will be expanded further to allow others to comment on specific versions, e.g. to respond to the reasoning by the version author or to point out a mistake (F5.6).
 
 Selectively applying specific sets of changes to an extraction is not trivial, and not always possible.
 The paper referenced above (Auer and Herre, 2007) outlines a possible approach, and further implementation details can be taken from source control systems such as Git.
 
 Other methods for collaboration would build on top of this system.
 For example, a group of researchers could work to build a curated dataset of depression trials by constantly monitoring the database for changes and additions to those trials and vetting them before they become part of the curated dataset.
-Rules for systematic review projects (e.g. double data entry) could also be implemented on top of this system, either through human intervention or by the application of an automated ruleset.
+Rules for systematic review projects (e.g. double data entry) could also be implemented on top of this system, either through human intervention or by the application of an automated ruleset (F5.3, F5.4).
 
 #### Authentication ####
 
-The [OAuth 2.0](http://oauth.net/2/), an open industry standard specification for authentication on the internet, will be used to authenticate users for ADDIS 2.
+The [OAuth 2.0](http://oauth.net/2/), an open industry standard specification for authentication on the internet, will be used to authenticate users for ADDIS 2 (F2.1).
 Our preferred authentication provider will be [ORCiD](http://orcid.org), the open researcher and contributor ID, which is currently emerging as the de facto standard in scientific publishing.
 It has been adopted by most major publishers as well as a number of funding bodies and universities, among others.
 This will not only enable us to authenticate researchers, but also to automatically link their profiles to their scientific track record.
 
-In addition, because OAuth is an open standard, it should also allow straightforward integration with other authentication providers, e.g. in-house systems.
+In addition, because OAuth is an open standard, it should also allow straightforward integration with other authentication providers, e.g. in-house systems (F6.1).
 
 ### Prototypes ###
 
@@ -613,13 +614,3 @@ The user has made changes to this extraction (indicated bottom left).
 
 **Mockup 016** The user is notified that another user has made changes to their extraction and given the opportunity to incorporate those changes.
 </a>
-
-## (OLD) Contents ##
-
-- [Use cases](usecases.html)
-- [Prototypes](prototypes.html)
-- [Meta-data model](metadata.html)
-- [RCT data model](rct.html)
-- [Interaction model](interaction.html)
-
-NOTE: to compile this document, install [n3pygments](https://github.com/gertvv/n3pygments).
