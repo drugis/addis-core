@@ -55,7 +55,6 @@
     <div ui-view></div>
     <script>
       window.mcdaBasePath = 'app/js/bower_components/mcda-web/';
-      window.patavi = { "WS_URI": "wss://patavi.drugis.org/ws" };
       window.config = {
         user : {
           id : ${account.id},
@@ -63,13 +62,9 @@
           firstName : "${account.firstName}",
           LastName : "${account.lastName}"
         },
+        WS_URI: "wss://patavi.drugis.org/ws",
         workspaceName: 'analyses',
-        workspacesRepository : {
-          type : "Remote",
-          url : "/workspaces/",
-          _csrf_token : "${_csrf.token}",
-          _csrf_header : "${_csrf.headerName}"
-        },
+        workspacesRepositoryUrl : "/projects/:projectId/analyses/:analysisId",
         _csrf_token : "${_csrf.token}",
         _csrf_header : "${_csrf.headerName}"
       };

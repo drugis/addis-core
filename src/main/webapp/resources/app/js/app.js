@@ -21,24 +21,26 @@ define(
     'mcda/controllers',
     'mcda/controllers',
     'mcda/directives',
-    'mcda/services/remoteWorkspaces',
+    'mcda/services/workspaceResource',
     'mcda/services/taskDependencies',
     'mcda/services/errorHandling',
     'mcda/services/routeFactory',
+    'mcda/services/pataviService',
     'mcda/services/hashCodeService',
     'mcda/services/partialValueFunction',
-    'mcda/services/remoteRemarks',
+    'mcda/services/workspaceService',
     'mcda/services/util'
   ],
   function(angular, require, $, Config) {
     var mcdaDependencies = [
       'elicit.errorHandling',
-      'elicit.remoteWorkspaces',
-      'elicit.remoteRemarks',
+      'elicit.workspaceResource',
       'elicit.taskDependencies',
       'elicit.directives',
       'elicit.controllers',
       'elicit.pvfService',
+      'elicit.workspaceService',
+      'elicit.pataviService',
       'elicit.util',
       'elicit.routeFactory',
       'mm.foundation',
@@ -147,14 +149,14 @@ define(
             resolve: {
               currentAnalysis: ['$stateParams', 'AnalysisResource',
                 function($stateParams, AnalysisResource) {
-                  return AnalysisResource.get($stateParams);
+                  return AnalysisResource.get($stateParams).$promise;
                 }
               ],
               currentProject: ['$stateParams', 'ProjectResource',
                 function($stateParams, ProjectResource) {
                   return ProjectResource.get({
                     projectId: $stateParams.projectId
-                  });
+                  }).$promise;
                 }
               ]
             },

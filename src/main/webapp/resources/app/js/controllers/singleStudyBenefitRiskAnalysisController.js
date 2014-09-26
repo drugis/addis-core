@@ -1,8 +1,8 @@
 'use strict';
 define(['underscore'], function() {
   var dependencies = ['$scope', '$stateParams', '$state', '$q', '$window',
-    'OutcomeResource', 'InterventionResource',
-    'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource', 'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW'
+    'OutcomeResource', 'InterventionResource','Select2UtilService', 'TrialverseStudyResource', 'ProblemResource',
+     'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW'
   ];
   var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $q, $window,
     OutcomeResource, InterventionResource,
@@ -81,7 +81,7 @@ define(['underscore'], function() {
           .getDefaultScenario()
           .then(function(scenario) {
             $state.go(DEFAULT_VIEW, {
-              scenarioId: scenario.id
+              id: scenario.id
             });
           });
       };
@@ -94,7 +94,7 @@ define(['underscore'], function() {
                 .then(SingleStudyBenefitRiskAnalysisService.getDefaultScenario)
                 .then(function(scenario) {
                   $state.go(DEFAULT_VIEW, {
-                    scenarioId: scenario.id
+                    id: scenario.id
                   });
                 });
             } else {

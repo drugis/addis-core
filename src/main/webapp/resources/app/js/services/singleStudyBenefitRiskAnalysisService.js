@@ -5,7 +5,7 @@ define(['angular'], function() {
 
     var getDefaultScenario = function() {
       return ScenarioResource
-        .query($stateParams)
+        .query(_.omit($stateParams, 'id'))
         .$promise
         .then(function(scenarios) {
           return scenarios[0];

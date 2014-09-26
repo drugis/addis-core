@@ -1,7 +1,12 @@
 define([], function() {
   var dependencies = ['$scope', '$state', '$q', '$window', 'currentAnalysis', 'currentProject', 'ANALYSIS_TYPES']
   var AnalysisController = function($scope, $state, $q, $window, currentAnalysis, currentProject, ANALYSIS_TYPES) {
+
+    // for addis use
     $scope.analysis = currentAnalysis;
+
+    // for mcda use
+    $scope.workspace = $scope.analysis; 
     $scope.project = currentProject;
     $scope.loading = {
       loaded: false

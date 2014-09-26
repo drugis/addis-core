@@ -2,10 +2,10 @@
 define([], function() {
   var dependencies = ['$resource'];
   var ScenarioResource = function($resource) {
-    return $resource('/projects/:projectId/analyses/:analysisId/scenarios/:scenarioId', {
+    return $resource('/projects/:projectId/analyses/:analysisId/scenarios/:id', {
       projectId: '@projectId',
       analysisId: '@analysisId',
-      scenarioId: '@id'
+      id: '@id'
     });
   };
   return dependencies.concat(ScenarioResource);
