@@ -519,98 +519,98 @@ Links to outside of the system are inidicated by a box with an arrow pointing ou
 A pencil pointing into a box is used as a general "edit" icon / button.
 
 <a name="mockup001">
-![Mockup 001](/images/mockup001.png)
+![Mockup 001](images/mockup001.png)
 
 **Mockup 001** Project overview.
 </a>
 
 <a name="mockup002">
-![Mockup 002](/images/mockup002.png)
+![Mockup 002](images/mockup002.png)
 
 **Mockup 002** Dataset overview when a more recent version is available.
 </a>
 
 <a name="mockup003">
-![Mockup 003](/images/mockup003.png)
+![Mockup 003](images/mockup003.png)
 
 **Mockup 003** Dataset overview when it is the most recent version.
 </a>
 
 <a name="mockup004">
-![Mockup 004](/images/mockup004.png)
+![Mockup 004](images/mockup004.png)
 
 **Mockup 004** Overview of a partially extracted systematic review.
 </a>
 
 <a name="mockup005">
-![Mockup 005](/images/mockup005.png)
+![Mockup 005](images/mockup005.png)
 
 **Mockup 005** Summary view of an extracted RCT.
 </a>
 
 <a name="mockup006">
-![Mockup 006](/images/mockup006.png)
+![Mockup 006](images/mockup006.png)
 
 **Mockup 006** Details view of an extracted RCT: arms and epochs.
 </a>
 
 <a name="mockup007">
-![Mockup 007](/images/mockup007.png)
+![Mockup 007](images/mockup007.png)
 
 **Mockup 007** Details view of an extracted RCT: activities.
 </a>
 
 <a name="mockup008">
-![Mockup 008](/images/mockup008.png)
+![Mockup 008](images/mockup008.png)
 
 **Mockup 008** Details view of an extracted RCT: mapping entities to higher-level concepts.
 The user has made changes to this extraction (indicated bottom left).
 </a>
 
 <a name="mockup009">
-![Mockup 009](/images/mockup009.png)
+![Mockup 009](images/mockup009.png)
 
 **Mockup 009** Checking and saving changes made to a data extraction.
 </a>
 
 <a name="mockup010">
-![Mockup 010](/images/mockup010.png)
+![Mockup 010](images/mockup010.png)
 
 **Mockup 010** Starting a new extraction based on a PubMed abstract.
 </a>
 
 <a name="mockup011">
-![Mockup 011](/images/mockup011.png)
+![Mockup 011](images/mockup011.png)
 
 **Mockup 011** Defining an intervention matching rule in ADDIS.
 </a>
 
 <a name="mockup012">
-![Mockup 012](/images/mockup012.png)
+![Mockup 012](images/mockup012.png)
 
 **Mockup 012** Defining a concept mapping based on a predefined template in TrialVerse.
 </a>
 
 <a name="mockup013">
-![Mockup 013](/images/mockup013.png)
+![Mockup 013](images/mockup013.png)
 
 **Mockup 013** A user profile page in TrialVerse.
 </a>
 
 <a name="mockup014">
-![Mockup 014](/images/mockup014.png)
+![Mockup 014](images/mockup014.png)
 
 **Mockup 014** A dataset history overview in TrialVerse (showing only the latest entry).
 </a>
 
 <a name="mockup015">
-![Mockup 015](/images/mockup015.png)
+![Mockup 015](images/mockup015.png)
 
 **Mockup 015** Provenance information of a trial that was partially extracted using an automated tool.
 </a>
 
 <a name="mockup016">
-![Mockup 016](/images/mockup016.png)
+![Mockup 016](images/mockup016.png)
 
 **Mockup 016** The user is notified that another user has made changes to their extraction and given the opportunity to incorporate those changes.
 </a>
