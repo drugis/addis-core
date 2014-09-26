@@ -269,6 +269,8 @@ Credit for such extractions should be assigned to both the software agent and th
 
 #### Creating datasets ####
 
+Datasets are collections of studies together with their meta-data.
+
 **F3.1** Any user must be able to create a new dataset. The user will be prompted to provide a title and a description, as well as a method for study selection (F3.2-F3.5) and for data extraction (F3.6; F4.*).
 
 **F3.2** Studies can be selected based on the inclusions of an existing systematic review, by referring to a specific extraction of that review ([Mockup 002](#mockup002), [003](#mockup003)).
@@ -277,11 +279,15 @@ Credit for such extractions should be assigned to both the software agent and th
 
 **F3.4** Studies can be selected ad hoc from the full database.
 
-**F3.5** Studies can be selected based on a literature screening project (F6.*).
+**F3.5** Studies can be selected based on a literature screening project (i.e. a pre-defined list of publications).
 
 **F3.6** The dataset can refer to pre-existing extractions of the selected studies.
 
 #### Data entry and import ####
+
+There must be a way of users to enter data for use in analyses.
+The system should aim to make this as painless and efficient as possible, for example by exploiting existing sources of structured data.
+However, users must be in complete control of the final extraction.
 
 **F4.1** The study edit view allows the user to edit the full semantic detail of the study, including basic study characteristics, population and eligibility information, the arms and epochs ([Mockup 006](#mockup006)), the activities performed ([Mockup 007](#mockup007)), the predefined outcome measures, the actual participant flow, study results, and the mapping of study concepts to structured vocabularies and ontologies ([Mockup 008](#mockup008)).
 These are represented at a sufficient level of detail to allow automated matching and reasoning by ADDIS, but the user interface is specialized to presenting RCT information to users so that entering data correctly is not an overly complex task.
@@ -304,6 +310,8 @@ More advanced users will be able to create (or upload) a set of terms with their
 
 #### Working together; curation and discussion ####
 
+To create large and reliable sets of randomized controlled trials it is important that teams can work together, both to tackle larger numbers of studies and to ensure reliable data entry.
+
 **F5.1** Projects with multiple participants will be able to set rules for study selection and data extraction to ensure a certain level of quality (F5.2-F5.4).
 In part, this is supported by the ability to view edit histories and changes between versions (F2.*).
 
@@ -313,7 +321,12 @@ In part, this is supported by the ability to view edit histories and changes bet
 
 **F5.4** Double- or triple-blind data extraction with resolution of conflicts. The system detects and rates agreement between extractors.
 
-**TODO** There needs to be some source of authority on what extractions are of high quality and relevant to certain areas. Many approaches are possible, e.g. a user reputation system, an algorithm for computing a "consensus", or an approach where certain community groups create large curated datasets. In addition there needs to be a forum for discussion on difficult extractions, and this should be embedded with the extractions thembselves.
+**F5.5** The system will enable curation: users can create large collections containing the highest quality extractions relevant to a certain area. This may or may not be automated, in whole or in part.
+
+**F5.6** The system should enable users to discuss difficult extractions, and these discussion should clearly be linked to the extrations (or versions thereof) at hand.
+
+**F5.7** The system will collect metrics on users, in order to assess their impact and reliability.
+Among other things, this will aim to detect fraudulent or other anomolous behaviour.
 
 #### In-house deployments ####
 
@@ -329,11 +342,13 @@ For industry and HTA stakeholders in-house deployments of the software will be i
 
 #### Embargo ####
 
-**TODO** Can we let users / teams place their reviews under embargo for a certain time or until publication? Is this a potential business model?
+By default, all data entered in ADDIS will be public (but in the case of in-house deployments a company may limit who can access the system).
+Some teams may wish to limit access to their data for a time, for example so that they can publish their review before others can make use of the data.
+For-pay temporary embargoes of project data is a potential business model for ADDIS.
 
-#### Literature screening ####
+**F7.1** The system should allow users to pay to place their data under embargo. The data will be disclosed after a pre-specified amount of time, or until publication of an article (whichever comes first).
 
-**TODO** (This is out of scope for GetReal, but needs to be considered from a "future proofing" perspective) How will users identify studies from the literature? How can we speed this up using our structured data?
+**F7.2** After an embargo is lifted, the full edit history of the data are made public. The parts of the history that have been under embargo will be annotated with the terms and begin and end date of the embargo.
 
 ### Preliminary design ###
 
