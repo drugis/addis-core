@@ -70,22 +70,21 @@ This section explains the aims, requirements, and architecture of the ADDIS 2 pr
 
 *Note*: this section reflects the views of the ADDIS development team, and not necessarily those of the consortium as a whole.
 
-**TODO**
+We believe that science needs to be transparent for it to function properly.
+This means not only that data should be openly accessible, but also that scientific software must be open source.
+In addition, this applies to modeling and decision making, in that both the underlying evidence and the value judgments should be as explicit and transparent as possible to enable accountability.
+We want to achieve this by linking the various systems and tools involved in the process from collecting the evidence to the final decision, thereby making the process traceable.
 
- - Transparency
-    * Scientific software should be open source
-    * Data should be open
-    * Decisions should be made explicity / accountable
-    * ...
- - ...
+We also believe in the power of information technology the enhance the efficiency of commonplace tasks such as data collection and extraction, and the ability of social platforms to reduce duplication of effort by allowing users to share the results of their work with minimal effort.
 
 ### Aims and objectives within GetReal ###
 
-**TODO**
+In short, the main objectives within GetReal are:
 
- - Viable data management solution / collaborative database building
- - GetReal analysis capabilities
- - Work with industry on interfacing in-house systems? Is not in the DoW but could be implied due to IPD.
+ - To develop a viable data management solution for ADDIS that enables collaborative database building by teams of analysts (whether academic teams, drug development teams, or assessment teams)
+ - To develop analysis capabilities that align with the GetReal objectives of using real world data in drug development and assessment
+ - For the software to serve as a showcase for the methodologies and case studies developed in GetReal
+ - To work with industry, HTA, and regulatory stakeholders to explore how ADDIS can be used in drug development and assessment, for example to support submissions to authorities
 
 ### Rationale for re-development ###
 
