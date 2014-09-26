@@ -50,7 +50,7 @@ public class RemarksController extends AbstractAddisCoreController {
     if (remarks.getId() != null) {
       return remarksRepository.update(remarks);
     } else {
-      Remarks created = remarksRepository.create(remarks.getAnalysisId(), remarks.getRemarks());
+      Remarks created = remarksRepository.create(analysisId, remarks.getRemarks());
       response.setStatus(HttpServletResponse.SC_CREATED);
       return created;
     }
