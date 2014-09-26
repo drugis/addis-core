@@ -313,7 +313,7 @@ In part, this is supported by the ability to view edit histories and changes bet
 
 **F5.4** Double- or triple-blind data extraction with resolution of conflicts. The system detects and rates agreement between extractors.
 
-**TODO** There needs to be some source of authority on what extractions are of high quality and relevant to certain areas. Many approaches are possible, e.g. a user reputation system, an algorithm for computing a "concensus", or an approach where certain community groups create large curated datasets. In addition there needs to be a forum for discussion on difficult extractions, and this should be embedded with the extractions thembselves.
+**TODO** There needs to be some source of authority on what extractions are of high quality and relevant to certain areas. Many approaches are possible, e.g. a user reputation system, an algorithm for computing a "consensus", or an approach where certain community groups create large curated datasets. In addition there needs to be a forum for discussion on difficult extractions, and this should be embedded with the extractions thembselves.
 
 #### In-house deployments ####
 
@@ -407,7 +407,7 @@ In simple terms, this is achieved as follows:
 
  - For every "chunk" of data (e.g. a randomized controlled trial, an ontology, or a dataset) a named graph is created. Think of this as a document.
  - Every time the named graph is edited and saved, the added and removed triples are recorded, together with information on when the changes were made and by whom.
- - Every version of every named graph is given a unique ID, so that even when changes are made by another person than the original author, the version history can correctly refer back to the previous versions by the original author. In effect, we construct a graph of previous versions of each named graph.
+ - Every version of every named graph is given a unique ID. In effect, we construct a graph of previous versions of each named graph.
  - Note that both the data (named graphs) and the meta-data (provenance information) can be stored in RDF. A prototype implementation of this was constructed (Section 3.3.3).
 
 This implementation of the event sourcing pattern is also inspired by the [Datomic](http://www.datomic.com/) immutable database and the [Git](http://git-scm.com/) version control system.
@@ -416,13 +416,32 @@ By implementing the database in this way, all past versions of the data can be r
 Moreover, because the history of an entry by one user can be referred to from further edits by another user, it becomes trivial to let any user non-destructively edit any entry (F2.5), and it is trivial to detect when this has happened (F2.6).
 The stability of an event sourced database is also important from the perspective of integrating data from multiple deployments of TrialVerse and/or ConceptMapper: once a specific version of a graph is known, it will never change (F6.3).
 
+The above assumes the ability to calculate differences between RDF graphs, and to apply those differences to RDF graphs.
+Approaches for this have been discussed in the literature (e.g. Auer and Herre, 2007, A Versioning and Evolution Framework for RDF Knowledge Bases, Perspectives of Systems Informatics, Lecture Notes in Computer Science 4378:55-69).
+
 #### Collaboration ####
 
-**TODO** How we will (initially) facilitate collaboration by a Git-like branching / merging model. More formalized approaches can build on top of this. Diffing RDF is easy except for the presence of blank nodes.
+The basic model for collaboration builds on the ability to reason about versions of RDF graphs and the differences between those versions (as discussed in the Section 3.2.3).
+Because every version of a graph has a unique identifier, even when changes are made by another person than the original author, the version history can correctly refer back to the previous versions by the original author.
+This enables a very general model for collaboration where users can decide whether or not to include changes made by others in their own dataset.
+Moreover, users are asked to accompany every version with a short message that explains the intention and reasoning behind their changes, this creates a venue for discussion.
+This will be expanded further to allow others to comment on specific versions, e.g. to respond to the reasoning by the version author or to point out a mistake.
+
+Selectively applying specific sets of changes to an extraction is not trivial, and not always possible.
+The paper referenced above (Auer and Herre, 2007) outlines a possible approach, and further implementation details can be taken from source control systems such as Git.
+
+Other methods for collaboration would build on top of this system.
+For example, a group of researchers could work to build a curated dataset of depression trials by constantly monitoring the database for changes and additions to those trials and vetting them before they become part of the curated dataset.
+Rules for systematic review projects (e.g. double data entry) could also be implemented on top of this system, either through human intervention or by the application of an automated ruleset.
 
 #### Authentication ####
 
-**TODO** We plan to use OAuth / ORCiD because it is researcher-oriented. OAuth should also allow easy integration of alternative providers.
+The [OAuth 2.0](http://oauth.net/2/), an open industry standard specification for authentication on the internet, will be used to authenticate users for ADDIS 2.
+Our preferred authentication provider will be [ORCiD](http://orcid.org), the open researcher and contributor ID, which is currently emerging as the de facto standard in scientific publishing.
+It has been adopted by most major publishers as well as a number of funding bodies and universities, among others.
+This will not only enable us to authenticate researchers, but also to automatically link their profiles to their scientific track record.
+
+In addition, because OAuth is an open standard, it should also allow straightforward integration with other authentication providers, e.g. in-house systems.
 
 ### Prototypes ###
 
