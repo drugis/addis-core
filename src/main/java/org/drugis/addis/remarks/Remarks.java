@@ -16,9 +16,6 @@ import javax.persistence.Id;
 public class Remarks {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     private Integer analysisId;
 
     @JsonRawValue
@@ -31,16 +28,6 @@ public class Remarks {
     this.analysisId = analysisId;
     this.remarks = remarks;
   }
-
-    public Remarks(Integer id, Integer analysisId, String remarks) {
-        this.id = id;
-        this.analysisId = analysisId;
-        this.remarks = remarks;
-    }
-
-    public Integer getId() {
-        return id;
-    }
 
     public Integer getAnalysisId() {
         return analysisId;
@@ -55,25 +42,23 @@ public class Remarks {
         this.remarks = remarks;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
 
-        Remarks remarks1 = (Remarks) o;
+    Remarks remarks1 = (Remarks) o;
 
-        if (!id.equals(remarks1.id)) return false;
-        if (!remarks.equals(remarks1.remarks)) return false;
-        if (!analysisId.equals(remarks1.analysisId)) return false;
+    if (!analysisId.equals(remarks1.analysisId)) return false;
+    if (remarks != null ? !remarks.equals(remarks1.remarks) : remarks1.remarks != null) return false;
 
-        return true;
-    }
+    return true;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + analysisId.hashCode();
-        result = 31 * result + remarks.hashCode();
-        return result;
-    }
+  @Override
+  public int hashCode() {
+    int result = analysisId.hashCode();
+    result = 31 * result + (remarks != null ? remarks.hashCode() : 0);
+    return result;
+  }
 }

@@ -47,7 +47,7 @@ public class RemarksController extends AbstractAddisCoreController {
     analysisService.checkCoordinates(projectId, analysisId);
     projectService.checkOwnership(projectId, principal);
 
-    if (remarks.getId() != null) {
+    if (remarksRepository.find(remarks.getAnalysisId()) != null) {
       return remarksRepository.update(remarks);
     } else {
       Remarks created = remarksRepository.create(analysisId, remarks.getRemarks());

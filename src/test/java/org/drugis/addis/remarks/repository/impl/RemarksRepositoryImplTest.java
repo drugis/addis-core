@@ -30,8 +30,7 @@ public class RemarksRepositoryImplTest {
   @Test
   public void testGet() throws Exception {
     Integer analysisId = -1;
-    Integer remarksId = -1;
-    Remarks expected = em.find(Remarks.class, remarksId);
+    Remarks expected = em.find(Remarks.class, analysisId);
 
     Remarks actual = remarksRepository.find(analysisId);
     assertEquals(expected, actual);
@@ -39,22 +38,23 @@ public class RemarksRepositoryImplTest {
 
   @Test
   public void testCreate() {
-    Integer analysisId = -1;
+    Integer analysisId = -2;
     String remarksString = "remarks string";
     Remarks remarks = remarksRepository.create(analysisId, remarksString);
     assertEquals(analysisId, remarks.getAnalysisId());
     assertEquals(remarksString, remarks.getRemarks());
-    assertNotNull(remarks.getId());
+    assertNotNull(remarksRepository.find(analysisId));
   }
 
   @Test
   public void testUpdate() {
 
     String remarksStr = "remax string 2: the revenge";
-    Remarks update = new Remarks(-1, -1, remarksStr);
+    int analysisId = -1;
+    Remarks update = new Remarks(analysisId, remarksStr);
 
     Remarks updated = remarksRepository.update(update);
-    Remarks stored = em.find(Remarks.class, -1);
+    Remarks stored = em.find(Remarks.class, analysisId);
 
     assertEquals(stored.getAnalysisId(), updated.getAnalysisId());
     assertEquals(stored.getRemarks(), remarksStr);

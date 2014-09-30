@@ -31,7 +31,7 @@ public class RemarksRepositoryImpl implements RemarksRepository {
 
   @Override
   public Remarks update(Remarks remarks) {
-    Remarks oldRemark = em.find(Remarks.class, remarks.getId());
+    Remarks oldRemark = em.find(Remarks.class, remarks.getAnalysisId());
     oldRemark.setRemarks(remarks.getRemarks());
     return oldRemark;
   }

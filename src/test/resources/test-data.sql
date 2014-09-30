@@ -32,4 +32,4 @@ INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-2, '-10
 
 INSERT INTO public.interventionInclusion (id, interventionId, analysisId) VALUES (-1, 2, -6);
 
-INSERT INTO public.remarks( id, analysisId, remarks) VALUES(-1, -1, 'yo yo yo !');
+INSERT INTO public.remarks(analysisId, remarks) VALUES(-1, 'yo yo yo !');

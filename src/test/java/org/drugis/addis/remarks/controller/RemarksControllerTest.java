@@ -80,17 +80,15 @@ public class RemarksControllerTest {
 
   @Test
   public void testGetRemarks() throws Exception {
-    Integer remarksId = 11;
     String remarksStr = "{" +
             "\"HAM-D responders\":\"test content 1\"" +
             "}";
     Integer analysisId = 2;
-    Remarks remarks = new Remarks(remarksId, analysisId, remarksStr);
+    Remarks remarks = new Remarks(analysisId, remarksStr);
     when(remarksRepository.find(analysisId)).thenReturn(remarks);
     mockMvc.perform(get("/projects/22/analyses/2/remarks").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.id", is(remarksId)))
             .andExpect(jsonPath("$.analysisId", is(analysisId)));
     verify(remarksRepository).find(analysisId);
   }
@@ -102,10 +100,11 @@ public class RemarksControllerTest {
     String remarksStr = "{" +
             "\"HAM-D responders\":\"test content 1\"" +
             "}";
-    Remarks remarks = new Remarks(null, analysisId, remarksStr);
+    Remarks remarks = new Remarks(analysisId, remarksStr);
     String content = TestUtils.createJson(remarks);
     Scenario scenario = mock(Scenario.class);
     when(scenario.getWorkspace()).thenReturn(analysisId);
+    when(remarksRepository.find(analysisId)).thenReturn(null);
     when(remarksRepository.create(analysisId, remarksStr)).thenReturn(remarks);
     mockMvc.perform(post("/projects/22/analyses/2/remarks")
       .principal(user)
@@ -116,6 +115,7 @@ public class RemarksControllerTest {
     .andExpect(jsonPath("$.analysisId", is(analysisId)));
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
+    verify(remarksRepository).find(analysisId);
     verify(remarksRepository).create(analysisId, remarksStr);
   }
 
@@ -126,12 +126,13 @@ public class RemarksControllerTest {
     String remarksStr = "{" +
             "\"HAM-D responders\":\"test content 1\"" +
             "}";
-    Remarks remarks = new Remarks(-1, analysisId, remarksStr);
+    Remarks remarks = new Remarks(analysisId, remarksStr);
     String content = TestUtils.createJson(remarks);
     Scenario scenario = mock(Scenario.class);
     when(scenario.getWorkspace()).thenReturn(analysisId);
 
     when(remarksRepository.update(remarks)).thenReturn(remarks);
+    when(remarksRepository.find(analysisId)).thenReturn(remarks);
     mockMvc.perform(post("/projects/22/analyses/2/remarks")
             .principal(user)
             .content(content)
@@ -141,6 +142,7 @@ public class RemarksControllerTest {
             .andExpect(jsonPath("$.analysisId", is(analysisId)));
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
+    verify(remarksRepository).find(analysisId);
     verify(remarksRepository).update(remarks);
   }
 
