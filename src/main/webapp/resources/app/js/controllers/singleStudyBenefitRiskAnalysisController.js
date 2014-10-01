@@ -50,16 +50,16 @@ define(['underscore'], function() {
       $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
 
       $scope.select2Options = {
-        'readonly': $scope.$parent.editMode.disableEditing
+        'readonly': $scope.editMode.disableEditing
       };
 
       //  angular ui bug work-around, select2-ui does not properly watch for changes in the select2-options 
       $('#criteriaSelect')
         .select2()
-        .select2('readonly', $scope.$parent.editMode.disableEditing);
+        .select2('readonly', $scope.editMode.disableEditing);
       $('#interventionsSelect')
         .select2()
-        .select2('readonly', $scope.$parent.editMode.disableEditing);
+        .select2('readonly', $scope.editMode.disableEditing);
 
       $scope.studies = TrialverseStudyResource.query({
         namespaceUid: $scope.project.namespaceUid

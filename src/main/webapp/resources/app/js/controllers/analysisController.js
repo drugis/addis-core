@@ -1,43 +1,36 @@
+'use strict';
 define([], function() {
-  var dependencies = ['$scope', '$state', '$q', '$window', 'currentAnalysis', 'currentProject', 'ANALYSIS_TYPES']
+  var dependencies = ['$scope', '$state', '$q', '$window', 'currentAnalysis', 'currentProject', 'ANALYSIS_TYPES'];
   var AnalysisController = function($scope, $state, $q, $window, currentAnalysis, currentProject, ANALYSIS_TYPES) {
 
     // for addis use
     $scope.analysis = currentAnalysis;
 
     // for mcda use
-    $scope.workspace = $scope.analysis; 
+    $scope.workspace = $scope.analysis;
     $scope.project = currentProject;
-    $scope.loading = {
-      loaded: false
-    };
-    $scope.editMode = {
-      disableEditing: true
-    }
+
     $scope.isProblemDefined = false;
 
-    currentAnalysis.$promise.then(function(analysis) {
-      var analysisType = _.find(ANALYSIS_TYPES, function(type) {
-        return type.label === analysis.analysisType;
+    var analysisType = _.find(ANALYSIS_TYPES, function(type) {
+      return type.label === currentAnalysis.analysisType;
+    });
+
+    if ($state.current && $state.current.name === 'analysis') {
+      $state.go(analysisType.stateName, {
+        type: currentAnalysis.analysisType,
+        analysisId: currentAnalysis.id
       });
+    }
 
-      if ($state.current && $state.current.name === 'analysis') {
-        $state.go(analysisType.stateName, {
-          type: analysis.analysisType,
-          analysisId: analysis.id
-        });
-      }
-    });
-
-    $q.all([currentAnalysis.$promise, currentProject.$promise]).then(function() {
-      if (currentAnalysis.problem) {
-        $scope.isProblemDefined = true;
-      }
-      var userIsOwner = $window.config.user.id === currentProject.owner.id;
-      $scope.editMode.disableEditing = !userIsOwner || $scope.isProblemDefined;
-      $scope.loading.loaded = true;
-    });
-  }
+    if (currentAnalysis.problem) {
+      $scope.isProblemDefined = true;
+    }
+    $scope.editMode = {
+      isUserOwner: $window.config.user.id === currentProject.owner.id,
+    };
+    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined;
+  };
 
   return dependencies.concat(AnalysisController);
 });

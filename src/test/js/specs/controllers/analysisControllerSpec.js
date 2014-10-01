@@ -28,16 +28,11 @@ define(['angular', 'angular-mocks', 'controllers'],
       beforeEach(inject(function($rootScope, $q) {
         scope = $rootScope;
 
-        analysisDeferred = $q.defer();
-        mockAnalysis = {
-          $promise: analysisDeferred.promise
-        };
-        projectDeferred = $q.defer();
+        mockAnalysis = {};
         mockProject = {
           owner: {
             id: 1
-          },
-          $promise: projectDeferred.promise
+          }
         };
         controllerArguments = {
           $scope: scope,
@@ -55,10 +50,6 @@ define(['angular', 'angular-mocks', 'controllers'],
           $controller('AnalysisController', controllerArguments);
         }));
 
-        it('should set loading.loaded to false', function() {
-          expect(scope.loading.loaded).toBeFalsy();
-        });
-
         it('should place analysis and project on the scope', function() {
           expect(scope.analysis).toBe(mockAnalysis);
           expect(scope.project).toBe(mockProject);
@@ -67,9 +58,7 @@ define(['angular', 'angular-mocks', 'controllers'],
         it('should set isProblemDefined to be false when the controller is initialized ', function() {
           expect(scope.isProblemDefined).toBeFalsy();
         });
-
       });
-
 
       describe('when a non-base analysis state is loaded', function() {
         beforeEach(inject(function($controller) {
@@ -80,9 +69,6 @@ define(['angular', 'angular-mocks', 'controllers'],
 
           controllerArguments.$state = state;
           $controller('AnalysisController', controllerArguments);
-
-          analysisDeferred.resolve(mockAnalysis);
-          scope.$apply();
         }));
 
         it('should not navigate', function() {
@@ -102,9 +88,6 @@ define(['angular', 'angular-mocks', 'controllers'],
 
           controllerArguments.$state = state;
           $controller('AnalysisController', controllerArguments);
-
-          analysisDeferred.resolve(mockAnalysis);
-          scope.$apply();
         }));
 
         it('should navigate to the appropriate state', function() {
@@ -116,7 +99,20 @@ define(['angular', 'angular-mocks', 'controllers'],
 
       });
 
-      describe('when the analysis is loaded', function() {
+      describe('when the analysis is owned by someone else', function() {
+        beforeEach(inject(function($controller) {
+          mockProject.owner = {
+            id: 2
+          };
+          $controller('AnalysisController', controllerArguments);
+        }));
+
+        it('it should not be editable', function() {
+          expect(scope.editMode.disableEditing).toBeTruthy();
+        });
+      });
+
+      describe('when the analysis is owned and no problem is defined', function() {
         beforeEach(inject(function($controller) {
           state = jasmine.createSpyObj('$state', ['go']);
 
@@ -125,68 +121,35 @@ define(['angular', 'angular-mocks', 'controllers'],
 
           controllerArguments.$state = state;
           $controller('AnalysisController', controllerArguments);
-
-          analysisDeferred.resolve(mockAnalysis);
-          scope.$apply();
         }));
 
-
-        it('should only make loading.loaded true when both project and analysis are loaded', function() {
-          expect(scope.loading.loaded).toBeFalsy();
-          projectDeferred.resolve();
-          scope.$apply();
-          expect(scope.loading.loaded).toBeTruthy();
-        });
-
         it('should allow editing owned analyses', function() {
-          projectDeferred.resolve();
-          scope.$apply();
-
           expect(scope.project.owner.id).toEqual(mockWindow.config.user.id);
           expect(scope.editMode.disableEditing).toBeFalsy();
         });
 
-        it('should not allow editing of non-owned analyses', function() {
-          mockProject.owner = {
-            id: 2
-          };
-          projectDeferred.resolve(mockProject);
-          scope.$apply();
-
-          expect(scope.editMode.disableEditing).toBeTruthy();
+        it('isProblemDefined should be false', function() {
+          expect(scope.isProblemDefined).toBeFalsy();
         });
+      });
 
-        it('should not allow editing of an analysis with a defined problem', function() {
+      describe('when the analysis has a defined problem', function() {
+
+        beforeEach(inject(function($controller) {
           mockAnalysis.problem = {
             foo: 'bar'
           };
-          analysisDeferred.resolve(mockAnalysis);
-          projectDeferred.resolve();
-          scope.$apply();
+          $controller('AnalysisController', controllerArguments);
+        }));
 
+        it('should not be editable', function() {
           expect(scope.editMode.disableEditing).toBeTruthy();
         });
 
-        it('should set isProblemDefined to be false when the project and analysis have been loaded, but the analysis has no problem defined',
-          function() {
-            mockAnalysis.problem = null;
-            projectDeferred.resolve();
-            analysisDeferred.resolve(mockAnalysis);
-            scope.$apply();
-            expect(scope.isProblemDefined).toBeFalsy();
-          });
-
-        it('should set isProblemDefined to be true when the project and analysis have been loaded, and the analysis has a problem defined',
-          function() {
-            mockAnalysis.problem = {
-              mock: 'problem'
-            };
-            projectDeferred.resolve();
-            analysisDeferred.resolve(mockAnalysis);
-            scope.$apply();
+        it('isProblemDefined should be true', function() {
             expect(scope.isProblemDefined).toBeTruthy();
           });
-
       });
+
     });
   });
