@@ -8,5 +8,6 @@ define(function (require) {
     .filter('splitOnTokenFilter', require('filters/splitOnTokenFilter'))
     .filter('ontologyFilter', require('filters/ontologyFilter'))
     .filter('anchorEpochFilter', require('filters/anchorEpochFilter'))
+    .filter('categoricalFilter', require('filters/categoricalFilter'))
     .filter('activityTypeFilter', require('filters/activityTypeFilter'));
 });

@@ -143,6 +143,7 @@
                     <span ng-show="dataArmValue.count">{{dataArmValue.count}}</span>
                     <span ng-show="dataArmValue.sampleSize && dataArmValue.count"> / {{dataArmValue.sampleSize}}</span>
                     <span ng-show="dataArmValue.sampleSize && dataArmValue.mean">({{dataArmValue.sampleSize}})</span>
+                    <span ng-show="dataArmValue.values">{{dataArmValue.values | categoricalFilter}}</span>   
                 </td>
             </tr>
             </tbody>
@@ -156,7 +157,7 @@
     <div class="column large-12">
 
         <table>
-            <thead id="adverseEvents-table">
+            <thead id="endpoints-table">
             <tr>
                 <th>Endpoints</th>
                 <th>Measurement moment</th>
@@ -179,6 +180,7 @@
                     <span ng-show="dataArmValue.count || (dataArmValue.count === 0)">{{dataArmValue.count}}</span>
                     <span ng-show="dataArmValue.sampleSize && dataArmValue.count || (dataArmValue.count === 0)"> / {{dataArmValue.sampleSize}}</span>
                     <span ng-show="dataArmValue.sampleSize && dataArmValue.mean">({{dataArmValue.sampleSize}})</span>
+                    <span ng-show="dataArmValue.values">{{dataArmValue.values | categoricalFilter}}</span>  
                 </td>
             </tr>
             </tbody>
@@ -215,6 +217,7 @@
                     <span ng-show="dataArmValue.count || (dataArmValue.count === 0)">{{dataArmValue.count}}</span>
                     <span ng-show="dataArmValue.sampleSize && dataArmValue.count || (dataArmValue.count === 0)"> / {{dataArmValue.sampleSize}}</span>
                     <span ng-show="dataArmValue.sampleSize && dataArmValue.mean">({{dataArmValue.sampleSize}})</span>
+                    <span ng-show="dataArmValue.values">{{dataArmValue.values | categoricalFilter}}</span>  
                 </td>
             </tr>
             </tbody>

@@ -337,7 +337,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
                 .sampleSize(sampleSize)
                 .sampleDuration(sampleDuration)
                 .build();
-      } else {
+        moment.getStudyDataArmValues().add(studyDataArmValue);
+      } else if (jsonObject.containsKey("mean")) {
         studyDataArmValue = new ContinuousStudyDataArmValue
                 .ContinuousStudyDataArmValueBuilder(armInstanceUid, armLabel)
                 .mean(jsonObject.containsKey("mean") ? Double.parseDouble((String) jsonObject.get("mean")) : null)
@@ -345,10 +346,28 @@ public class TriplestoreServiceImpl implements TriplestoreService {
                 .sampleSize(sampleSize)
                 .sampleDuration(sampleDuration)
                 .build();
+        moment.getStudyDataArmValues().add(studyDataArmValue);
+      } else {
+        CategoricalStudyDataArmValue existingValue = findExistingCategoricalArmValue(armInstanceUid, moment.getStudyDataArmValues());
+        if(existingValue == null) {
+          existingValue = new CategoricalStudyDataArmValue(armInstanceUid, armLabel);
+          moment.getStudyDataArmValues().add(existingValue);
+        }
+        Pair<String, Integer> value = Pair.of((String) jsonObject.get("categoryLabel"), Integer.parseInt((String) jsonObject.get("categoryCount")));
+        existingValue.getValues().add(value);
       }
-      moment.getStudyDataArmValues().add(studyDataArmValue);
+
     }
     return new ArrayList<>(stringStudyDataMap.values());
+  }
+
+  private CategoricalStudyDataArmValue findExistingCategoricalArmValue(String armInstanceUid, List<AbstractStudyDataArmValue> studyDataArmValues) {
+    for(AbstractStudyDataArmValue armValue: studyDataArmValues) {
+      if (armValue.getArmInstanceUid().equals(armInstanceUid) && armValue instanceof CategoricalStudyDataArmValue) {
+        return (CategoricalStudyDataArmValue) armValue;
+      }
+    }
+    return null;
   }
 
 

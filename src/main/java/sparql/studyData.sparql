@@ -16,6 +16,8 @@ SELECT
   ?count
   ?mean
   ?std
+  ?categoryLabel
+  ?categoryCount
   ?momentUid
   ?relativeToAnchor
   ?timeOffset
@@ -47,6 +49,12 @@ SELECT
      OPTIONAL {
          ?measurementJoinInstance ontology:mean ?mean ;
          ontology:standard_deviation ?std .
+     }
+     OPTIONAL {
+        ?measurementJoinInstance ontology:category_count ?node .
+        ?node
+          ontology:category ?categoryLabel ;
+          ontology:count ?categoryCount .
      }
      ?momentUid
          ontology:relative_to_epoch ?relativeToEpoch ;

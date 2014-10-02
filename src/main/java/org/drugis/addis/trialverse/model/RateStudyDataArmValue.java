@@ -5,18 +5,29 @@ package org.drugis.addis.trialverse.model;
  */
 public class RateStudyDataArmValue extends AbstractStudyDataArmValue {
 
+  private Integer sampleSize;
+  private String sampleDuration;
   private Long count;
 
   private RateStudyDataArmValue(RateStudyDataArmValueBuilder builder) {
     super(builder.armInstanceUid,
-            builder.armLabel,
-            builder.sampleSize,
-            builder.sampleDuration);
+            builder.armLabel);
+
+    this.sampleSize = builder.sampleSize;
+    this.sampleDuration = builder.sampleDuration;
     this.count = builder.count;
   }
 
   public Long getCount() {
     return count;
+  }
+
+  public Integer getSampleSize() {
+    return sampleSize;
+  }
+
+  public String getSampleDuration() {
+    return sampleDuration;
   }
 
   public static class RateStudyDataArmValueBuilder {

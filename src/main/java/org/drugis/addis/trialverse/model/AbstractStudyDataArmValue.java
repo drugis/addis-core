@@ -8,14 +8,9 @@ public abstract class AbstractStudyDataArmValue {
   private final String armInstanceUid;
   private final String armLabel;
 
-  private final Integer sampleSize;
-  private final String sampleDuration;
-
-  protected AbstractStudyDataArmValue(String armInstanceUid, String armLabel, Integer sampleSize, String sampleDuration) {
+  protected AbstractStudyDataArmValue(String armInstanceUid, String armLabel) {
     this.armLabel = armLabel;
     this.armInstanceUid = armInstanceUid;
-    this.sampleSize = sampleSize;
-    this.sampleDuration = sampleDuration;
   }
 
   public String getArmInstanceUid() {
@@ -24,14 +19,6 @@ public abstract class AbstractStudyDataArmValue {
 
   public String getArmLabel() {
     return armLabel;
-  }
-
-  public Integer getSampleSize() {
-    return sampleSize;
-  }
-
-  public String getSampleDuration() {
-    return sampleDuration;
   }
 
 }

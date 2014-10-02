@@ -5,16 +5,19 @@ package org.drugis.addis.trialverse.model;
  */
 public class ContinuousStudyDataArmValue extends AbstractStudyDataArmValue {
 
+  private Integer sampleSize;
+  private String sampleDuration;
   private Double mean;
   private Double std;
 
   private ContinuousStudyDataArmValue(ContinuousStudyDataArmValueBuilder builder) {
     super(builder.armInstanceUid,
-            builder.armLabel,
-            builder.sampleSize,
-            builder.sampleDuration);
+            builder.armLabel);
+    this.sampleSize = builder.sampleSize;
+    this.sampleDuration = builder.sampleDuration;
     this.mean = builder.mean;
     this.std = builder.std;
+
   }
 
   public Double getMean() {
@@ -23,6 +26,14 @@ public class ContinuousStudyDataArmValue extends AbstractStudyDataArmValue {
 
   public Double getStd() {
     return std;
+  }
+
+  public Integer getSampleSize() {
+    return sampleSize;
+  }
+
+  public String getSampleDuration() {
+    return sampleDuration;
   }
 
   public static class ContinuousStudyDataArmValueBuilder {
