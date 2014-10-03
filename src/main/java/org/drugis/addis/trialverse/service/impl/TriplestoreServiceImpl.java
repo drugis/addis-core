@@ -39,6 +39,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private final static Logger logger = LoggerFactory.getLogger(TriplestoreServiceImpl.class);
 
   private final static String TRIPLESTORE_URI = System.getenv("TRIPLESTORE_URI");
+  private final static String STUDY_QUERY = loadResource("sparql/studyQuery.sparql");
   private final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
   private final static String STUDY_ARMS_QUERY = loadResource("sparql/studyArms.sparql");
   private final static String STUDY_ARMS_EPOCHS = loadResource("sparql/studyEpochs.sparql");
@@ -176,22 +177,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Override
   public List<Study> queryStudies(String namespaceUid) {
     List<Study> studies = new ArrayList<>();
-    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
-            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "\n" +
-            "PREFIX study: <http://trials.drugis.org/studies/>\n" +
-            "\n" +
-            "SELECT ?study ?title ?label WHERE {\n" +
-            "  GRAPH dataset:" + namespaceUid + " {\n" +
-            "    ?dataset ontology:contains_study ?study .\n" +
-            "  }\n" +
-            "  GRAPH ?study {\n" +
-            "    ?study rdfs:label ?label .\n" +
-            "    ?study rdfs:comment ?title .\n" +
-            "  }\n" +
-            "}";
+    String query = StringUtils.replace(STUDY_QUERY, "$namespaceUid", namespaceUid);
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
@@ -199,7 +185,11 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       uid = subStringAfterLastSymbol(uid, '/');
       String name = JsonPath.read(binding, "$.label.value");
       String title = JsonPath.read(binding, "$.title.value");
-      studies.add(new Study(uid, name, title));
+      String outcomeUidStr = JsonPath.read(binding, "$.outcomeUids.value");
+      String[] outcomeUids = StringUtils.split(outcomeUidStr, ", ");
+      String interventionUidStr = JsonPath.read(binding, "$.interventionUids.value");
+      String[] interventionUids = StringUtils.split(interventionUidStr, ", ");
+      studies.add(new Study(uid, name, title, Arrays.asList(outcomeUids), Arrays.asList(interventionUids)));
     }
     return studies;
   }

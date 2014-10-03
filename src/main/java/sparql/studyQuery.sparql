@@ -1,0 +1,35 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+PREFIX study: <http://trials.drugis.org/studies/>
+
+SELECT ?study ?title ?label ?outcomeUids ?interventionUids WHERE {
+  GRAPH dataset:$namespaceUid {
+   ?dataset ontology:contains_study ?study .
+  }
+  GRAPH ?study {
+    ?study rdfs:label ?label .
+    ?study rdfs:comment ?title .
+    {
+      SELECT ?study (group_concat(?outcomeUid; separator = ", ") as ?outcomeUids)
+      WHERE {
+        GRAPH ?study {
+          ?study ontology:has_outcome ?outcomeUid .
+        }
+      } GROUP BY ?study
+    }
+    {
+      SELECT ?study (group_concat(?drugUid; separator = ", ") as ?interventionUids)
+      WHERE {
+        GRAPH ?dataset {
+          ?drugUid rdfs:subClassOf ontology:Drug .
+        }
+        GRAPH ?study {
+          ?instance a ?drugUid .
+        }
+      } GROUP BY ?study
+    }
+  }
+}
