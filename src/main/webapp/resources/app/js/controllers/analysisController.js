@@ -3,6 +3,8 @@ define([], function() {
   var dependencies = ['$scope', '$state', '$q', '$window', 'currentAnalysis', 'currentProject', 'ANALYSIS_TYPES'];
   var AnalysisController = function($scope, $state, $q, $window, currentAnalysis, currentProject, ANALYSIS_TYPES) {
 
+    $scope.loading = {loaded : true};
+
     // for addis use
     $scope.analysis = currentAnalysis;
 
