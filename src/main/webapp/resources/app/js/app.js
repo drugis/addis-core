@@ -6,13 +6,14 @@ define(
     'mcda/config',
     'foundation',
     'angular-ui-router',
+    'angular-select',
+    'ngSanitize',
     'controllers',
     'directives',
     'filters',
     'interceptors',
     'resources',
     'services',
-    'angular-select2',
     'gemtc-web/controllers',
     'gemtc-web/resources',
     'gemtc-web/constants',
@@ -48,14 +49,15 @@ define(
     ];
     var dependencies = [
       'ui.router',
+      'ngSanitize',
+      'ui.select',
       'addis.controllers',
       'addis.directives',
       'addis.resources',
       'addis.services',
       'addis.filters',
       'addis.interceptors',
-      'addis.directives',
-      'ui.select2'
+      'addis.directives'
     ];
     var gemtcWebDependencies = [
       'gemtc.controllers',
@@ -107,6 +109,14 @@ define(
         });
       }
     ]);
+
+    // app.config(function(uiSelectConfig) {
+    //   uiSelectConfig.theme = 'selectize';
+    // });
+
+    app.config(function(uiSelectConfig) {
+  uiSelectConfig.theme = 'select2';
+});
 
     app.config(['Tasks', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES', '$httpProvider', '$animateProvider', 'MCDARouteProvider',
       function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider, $animateProvider, MCDARouteProvider) {

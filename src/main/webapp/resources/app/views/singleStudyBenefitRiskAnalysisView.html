@@ -12,7 +12,7 @@
         </div>
         <div class="row">
             <div class="columns large-6 nested-view">
-                <select id="criteriaSelect" multiple ui-select2 ng-model="selectedOutcomeIds"
+                <select id="criteriaSelect" ng-model="selectedOutcomeIds"
                         data-placeholder="no criteria selected">
                     <option ng-repeat="outcome in outcomes" value={{outcome.id}}>{{outcome.name}}</option>
                 </select>
@@ -30,12 +30,17 @@
             Selected Alternatives
         </div>
         <div class="row">
-            <div class="columns large-6 nested-view">
-                <select id="interventionsSelect" multiple ui-select2 ng-model="selectedInterventionIds"
-                        data-placeholder="no interventions selected">
-                    <option ng-repeat="intervention in interventions" value={{intervention.id}}>{{intervention.name}}
-                    </option>
-                </select>
+            <div class="columns large-6 ">
+                <ui-select multiple theme="select2" ng-model="selectedInterventions" >
+                        <ui-select-match>{{$item.name}}</ui-select-match>
+                    <ui-select-choices repeat="intervention in interventions track by intervention.id | filter: $select.search" >
+                        <div ng-bind-html="intervention.name | highlight: $select.search">
+                    </div>
+                         yo name: {{intervention.name}}
+
+                         <span ng-repeat="bla in myList"style="color:red">{{bla}}</span>
+                    </ui-select-choices>
+                </ui-select>
 
                 <div class="panel callout radius">
                     Note that at least two interventions should be selected so that a tradeoff can be made.

@@ -12,6 +12,8 @@ define(['underscore'], function() {
       projectId: $stateParams.projectId
     };
 
+    $scope.myList = ['foo', 'bar', 'snoe'];
+
     var outcomes = OutcomeResource.query(projectIdParam);
     var interventions = InterventionResource.query(projectIdParam);
 
@@ -52,14 +54,6 @@ define(['underscore'], function() {
       $scope.select2Options = {
         'readonly': $scope.editMode.disableEditing
       };
-
-      //  angular ui bug work-around, select2-ui does not properly watch for changes in the select2-options 
-      $('#criteriaSelect')
-        .select2()
-        .select2('readonly', $scope.editMode.disableEditing);
-      $('#interventionsSelect')
-        .select2()
-        .select2('readonly', $scope.editMode.disableEditing);
 
       $scope.studies = TrialverseStudyResource.query({
         namespaceUid: $scope.project.namespaceUid
