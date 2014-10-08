@@ -14,45 +14,35 @@ define(['underscore'], function() {
 
     $scope.outcomes = $scope.analysis.selectedOutcomes;
     $scope.interventions = $scope.analysis.selectedInterventions;
-    
+
+    function analysisChanged(oldValue, newValue) {
+      if (newValue.length !== oldValue.length) {
+        $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
+        $scope.errorMessage = {};
+        // use AnalysisResource.save as to keep the binding on analysis.selectedOptions alive
+        AnalysisResource.save($scope.analysis);
+      }
+    }
+
+    function concatWithNoDuplicates(source, target) {
+      var filtered = _.filter(source, function(sourceItem) {
+        return !_.find(target, function(targetItem) {
+          return targetItem.id === sourceItem.id;
+        });
+      });
+      return filtered.concat(target);
+    }
+
     OutcomeResource.query(projectIdParam, function(outcomes) {
       // use same object in options list as in selected option list, as ui-select uses object equality internaly
-      angular.forEach(outcomes, function(outcome) {
-        var found = _.find($scope.outcomes, function(outcomeOption) {
-          return outcomeOption.id === outcome.id;
-        });
-        if (!found) {
-          $scope.outcomes.push(outcome);
-        }
-      });
-      $scope.$watchCollection('analysis.selectedOutcomes', function(oldValue, newValue) {
-        if (newValue.length !== oldValue.length) {
-          $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
-          $scope.errorMessage = {};
-          // use AnalysisResource.save as to keep the binding on analysis.selectedOptions alive
-          AnalysisResource.save($scope.analysis);
-        }
-      });
+      $scope.outcomes = concatWithNoDuplicates(outcomes, $scope.outcomes);
+      $scope.$watchCollection('analysis.selectedOutcomes', analysisChanged);
     });
 
     InterventionResource.query(projectIdParam, function(interventions) {
       // use same object in options list as in selected option list, as ui-select uses object equality internaly
-      angular.forEach(interventions, function(intervention) {
-        var found = _.find($scope.interventions, function(interventionOption) {
-          return interventionOption.id === intervention.id;
-        });
-        if (!found) {
-          $scope.interventions.push(intervention);
-        }
-      });
-      $scope.$watchCollection('analysis.selectedInterventions', function(oldValue, newValue) {
-        if (newValue.length !== oldValue.length) {
-          $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
-          $scope.errorMessage = {};
-          // use AnalysisResource.save as to keep the binding on analysis.selectedOptions alive
-          AnalysisResource.save($scope.analysis);
-        }
-      });
+      $scope.interventions = concatWithNoDuplicates(interventions, $scope.interventions);
+      $scope.$watchCollection('analysis.selectedInterventions', analysisChanged);
     });
 
     $scope.isValidAnalysis = false;
