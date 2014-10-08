@@ -1,8 +1,8 @@
 'use strict';
 define(['underscore'], function() {
   var dependencies = ['$scope', '$stateParams', '$state', '$q', '$window',
-    'OutcomeResource', 'InterventionResource','Select2UtilService', 'TrialverseStudyResource', 'ProblemResource',
-     'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW'
+    'OutcomeResource', 'InterventionResource', 'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource',
+    'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW'
   ];
   var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $q, $window,
     OutcomeResource, InterventionResource,
@@ -12,94 +12,91 @@ define(['underscore'], function() {
       projectId: $stateParams.projectId
     };
 
-    $scope.myList = ['foo', 'bar', 'snoe'];
+    $scope.availablePersons = [{
+      name: 'Gert',
+      age: 12
+    }, {
+      name: 'Connor',
+      age: 13
+    }, {
+      name: 'Bob',
+      age: 14
+    }, {
+      name: 'Joel',
+      age: 15
+    }, {
+      name: 'Daan',
+      age: 10
+    }];
+    $scope.persons = {
+      mySelected: [$scope.availablePersons[2]]
+    };
 
-    var outcomes = OutcomeResource.query(projectIdParam);
-    var interventions = InterventionResource.query(projectIdParam);
-
-    var initialiseOutcomes = function(outcomes) {
-      $scope.outcomes = outcomes;
-      $scope.selectedOutcomeIds = Select2UtilService.objectsToIds($scope.analysis.selectedOutcomes);
+    $scope.outcomes = OutcomeResource.query(projectIdParam, function() {
       $scope.$watchCollection('selectedOutcomeIds', function(newValue) {
         if (newValue.length !== $scope.analysis.selectedOutcomes.length) {
-          $scope.analysis.selectedOutcomes = Select2UtilService.idsToObjects($scope.selectedOutcomeIds, $scope.outcomes);
           $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
           $scope.errorMessage = {};
           $scope.analysis.$save();
         }
       });
-    };
+    });
 
-    var initialiseInterventions = function(interventions) {
-      $scope.interventions = interventions;
+    $scope.interventions = InterventionResource.query(projectIdParam, function() {
       $scope.selectedInterventionIds = Select2UtilService.objectsToIds($scope.analysis.selectedInterventions);
       $scope.$watchCollection('selectedInterventionIds', function(newValue) {
         if (newValue.length !== $scope.analysis.selectedInterventions.length) {
-          $scope.analysis.selectedInterventions = Select2UtilService.idsToObjects($scope.selectedInterventionIds, $scope.interventions);
           $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
           $scope.errorMessage = {};
           $scope.analysis.$save();
         }
       });
-    };
-
-    $scope.analysis = $scope.$parent.analysis;
-    $scope.project = $scope.$parent.project;
-    $scope.isValidAnalysis = false;
-    $scope.errorMessage = {};
-
-    $q.all([$scope.analysis.$promise, $scope.project.$promise]).then(function() {
-      $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
-
-      $scope.select2Options = {
-        'readonly': $scope.editMode.disableEditing
-      };
-
-      $scope.studies = TrialverseStudyResource.query({
-        namespaceUid: $scope.project.namespaceUid
-      });
-
-      outcomes.$promise.then(initialiseOutcomes);
-      interventions.$promise.then(initialiseInterventions);
-
-      $scope.$watch('analysis.studyUid', function(newValue, oldValue) {
-        if (oldValue !== newValue) {
-          $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
-          $scope.errorMessage = {};
-          $scope.analysis.$save();
-        }
-      });
-
-      $scope.goToDefaultScenarioView = function() {
-        SingleStudyBenefitRiskAnalysisService
-          .getDefaultScenario()
-          .then(function(scenario) {
-            $state.go(DEFAULT_VIEW, {
-              id: scenario.id
-            });
-          });
-      };
-      $scope.createProblem = function() {
-        SingleStudyBenefitRiskAnalysisService.getProblem($scope.analysis)
-          .then(function(problem) {
-            if (SingleStudyBenefitRiskAnalysisService.validateProblem($scope.analysis, problem)) {
-              $scope.analysis.problem = problem;
-              $scope.analysis.$save()
-                .then(SingleStudyBenefitRiskAnalysisService.getDefaultScenario)
-                .then(function(scenario) {
-                  $state.go(DEFAULT_VIEW, {
-                    id: scenario.id
-                  });
-                });
-            } else {
-              $scope.errorMessage = {
-                text: 'The selected study and the selected citeria/alternatives do not match.'
-              };
-            }
-          });
-      };
     });
 
+    $scope.isValidAnalysis = false;
+    $scope.errorMessage = {};
+    $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
+
+    $scope.studies = TrialverseStudyResource.query({
+      namespaceUid: $scope.project.namespaceUid
+    });
+
+    $scope.$watch('analysis.studyUid', function(newValue, oldValue) {
+      if (oldValue !== newValue) {
+        $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
+        $scope.errorMessage = {};
+        $scope.analysis.$save();
+      }
+    });
+
+    $scope.goToDefaultScenarioView = function() {
+      SingleStudyBenefitRiskAnalysisService
+        .getDefaultScenario()
+        .then(function(scenario) {
+          $state.go(DEFAULT_VIEW, {
+            id: scenario.id
+          });
+        });
+    };
+    $scope.createProblem = function() {
+      SingleStudyBenefitRiskAnalysisService.getProblem($scope.analysis)
+        .then(function(problem) {
+          if (SingleStudyBenefitRiskAnalysisService.validateProblem($scope.analysis, problem)) {
+            $scope.analysis.problem = problem;
+            $scope.analysis.$save()
+              .then(SingleStudyBenefitRiskAnalysisService.getDefaultScenario)
+              .then(function(scenario) {
+                $state.go(DEFAULT_VIEW, {
+                  id: scenario.id
+                });
+              });
+          } else {
+            $scope.errorMessage = {
+              text: 'The selected study and the selected citeria/alternatives do not match.'
+            };
+          }
+        });
+    };
 
   };
   return dependencies.concat(SingleStudyBenefitRiskAnalysisController);

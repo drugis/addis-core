@@ -3,7 +3,6 @@
 @import"foundation";
 @import"drugis";
 @import"main";
-@import"foundation-select2";
 @import"../js/bower_components/mcda-web/app/css/mcda-drugis.css";
 
 $addis-grey : $crumb-bg;
@@ -198,4 +197,9 @@ $table-title-margin-bottom: 4px;
 }
 .graph-legend {
   padding: 0.5rem 1rem;
+}
+
+/////////////////////// select 2 ////////////////////////////////////////////
+.addis-select2 {
+  width: 600px;
 }
