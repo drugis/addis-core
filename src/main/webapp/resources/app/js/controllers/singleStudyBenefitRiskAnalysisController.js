@@ -2,53 +2,55 @@
 define(['underscore'], function() {
   var dependencies = ['$scope', '$stateParams', '$state', '$q', '$window',
     'OutcomeResource', 'InterventionResource', 'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource',
-    'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW'
+    'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW', 'AnalysisResource'
   ];
   var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $q, $window,
     OutcomeResource, InterventionResource,
-    Select2UtilService, TrialverseStudyResource, ProblemResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW) {
+    Select2UtilService, TrialverseStudyResource, ProblemResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW, AnalysisResource) {
 
     var projectIdParam = {
       projectId: $stateParams.projectId
     };
 
-    $scope.availablePersons = [{
-      name: 'Gert',
-      age: 12
-    }, {
-      name: 'Connor',
-      age: 13
-    }, {
-      name: 'Bob',
-      age: 14
-    }, {
-      name: 'Joel',
-      age: 15
-    }, {
-      name: 'Daan',
-      age: 10
-    }];
-    $scope.persons = {
-      mySelected: [$scope.availablePersons[2]]
-    };
-
-    $scope.outcomes = OutcomeResource.query(projectIdParam, function() {
-      $scope.$watchCollection('selectedOutcomeIds', function(newValue) {
-        if (newValue.length !== $scope.analysis.selectedOutcomes.length) {
+    $scope.outcomes = $scope.analysis.selectedOutcomes;
+    $scope.interventions = $scope.analysis.selectedInterventions;
+    
+    OutcomeResource.query(projectIdParam, function(outcomes) {
+      // use same object in options list as in selected option list, as ui-select uses object equality internaly
+      angular.forEach(outcomes, function(outcome) {
+        var found = _.find($scope.outcomes, function(outcomeOption) {
+          return outcomeOption.id === outcome.id;
+        });
+        if (!found) {
+          $scope.outcomes.push(outcome);
+        }
+      });
+      $scope.$watchCollection('analysis.selectedOutcomes', function(oldValue, newValue) {
+        if (newValue.length !== oldValue.length) {
           $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
           $scope.errorMessage = {};
-          $scope.analysis.$save();
+          // use AnalysisResource.save as to keep the binding on analysis.selectedOptions alive
+          AnalysisResource.save($scope.analysis);
         }
       });
     });
 
-    $scope.interventions = InterventionResource.query(projectIdParam, function() {
-      $scope.selectedInterventionIds = Select2UtilService.objectsToIds($scope.analysis.selectedInterventions);
-      $scope.$watchCollection('selectedInterventionIds', function(newValue) {
-        if (newValue.length !== $scope.analysis.selectedInterventions.length) {
+    InterventionResource.query(projectIdParam, function(interventions) {
+      // use same object in options list as in selected option list, as ui-select uses object equality internaly
+      angular.forEach(interventions, function(intervention) {
+        var found = _.find($scope.interventions, function(interventionOption) {
+          return interventionOption.id === intervention.id;
+        });
+        if (!found) {
+          $scope.interventions.push(intervention);
+        }
+      });
+      $scope.$watchCollection('analysis.selectedInterventions', function(oldValue, newValue) {
+        if (newValue.length !== oldValue.length) {
           $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
           $scope.errorMessage = {};
-          $scope.analysis.$save();
+          // use AnalysisResource.save as to keep the binding on analysis.selectedOptions alive
+          AnalysisResource.save($scope.analysis);
         }
       });
     });
@@ -65,7 +67,7 @@ define(['underscore'], function() {
       if (oldValue !== newValue) {
         $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
         $scope.errorMessage = {};
-        $scope.analysis.$save();
+        AnalysisResource.save($scope.analysis);
       }
     });
 
