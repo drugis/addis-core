@@ -18,36 +18,69 @@ require.config({
     'angular': 'bower_components/angular/angular',
     'angular-resource': 'bower_components/angular-resource/angular-resource',
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
-    'select2' : 'bower_components/select2/select2',
-    'angular-select2': 'bower_components/angular-ui-select2/src/select2',
+    'angular-select': 'bower_components/angular-ui-select/dist/select.min',
     'foundation': 'bower_components/foundation/js/foundation',
     'jasmine': 'bower_components/jasmine/lib/jasmine-core/jasmine',
     'jasmine-html': 'bower_components/jasmine/lib/jasmine-core/jasmine-html',
     'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
-    'mcda' : 'bower_components/mcda-web/app/js',
-    'gemtc-web' : 'bower_components/gemtc-web/app/js',
+    'mcda': 'bower_components/mcda-web/app/js',
+    'gemtc-web': 'bower_components/gemtc-web/app/js',
     'd3': 'bower_components/d3/d3.min',
     'nvd3': 'bower_components/nvd3/nv.d3.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
     'moment': 'bower_components/moment/min/moment.min',
     'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
-    'angularanimate': 'bower_components/angular-animate/angular-animate.min'
+    'angularanimate': 'bower_components/angular-animate/angular-animate',
+    'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize'
   },
   baseUrl: '/base/app/js',
   shim: {
-    'jQuery': {exports: 'jQuery'},
-    'foundation': {deps: ['jQuery']},
-    'angular': { deps: ['jQuery'], exports : 'angular'},
-    'select2': {deps: ['jQuery'], exports : 'select2'},
-    'angular-select2': {deps: ['angular', 'select2'], exports: 'angular-select2'},
-    'angular-ui-router': { deps: ['angular']},
-    'd3': { exports : 'd3' },
-    'nvd3': { deps: ['d3'], exports : 'nv' },
-    'angular-resource': { deps: ['angular'], exports: 'angular-resource'},
-    'angular-mocks': { deps: ['angular'], exports: 'angular.mock' },
-    'underscore': { exports : '_'},
-    'jasmine': { exports: 'jasmine' },
-    'jasmine-html': { deps: ['jasmine'], exports: 'jasmine' }
+    'jQuery': {
+      exports: 'jQuery'
+    },
+    'foundation': {
+      deps: ['jQuery']
+    },
+    'angular': {
+      deps: ['jQuery'],
+      exports: 'angular'
+    },
+    'angular-select': {
+      deps: ['angular', 'jQuery'],
+      exports: 'angular-select'
+    },
+    'ngSanitize': {
+      deps: ['angular'],
+      exports: 'ngSanitize'
+    },
+    'angular-ui-router': {
+      deps: ['angular']
+    },
+    'd3': {
+      exports: 'd3'
+    },
+    'nvd3': {
+      deps: ['d3'],
+      exports: 'nv'
+    },
+    'angular-resource': {
+      deps: ['angular'],
+      exports: 'angular-resource'
+    },
+    'angular-mocks': {
+      deps: ['angular'],
+      exports: 'angular.mock'
+    },
+    'underscore': {
+      exports: '_'
+    },
+    'jasmine': {
+      exports: 'jasmine'
+    },
+    'jasmine-html': {
+      deps: ['jasmine'],
+      exports: 'jasmine'
+    }
   },
   priority: ['angular'],
 
@@ -60,7 +93,9 @@ require.config({
 
 window.name = "NG_DEFER_BOOTSTRAP!";
 window.config = {
-  _csrf_token : 'token',
-  _csrf_header : 'header',
-   workspacesRepository: { service: "LocalWorkspaces" }
+  _csrf_token: 'token',
+  _csrf_header: 'header',
+  workspacesRepository: {
+    service: "LocalWorkspaces"
+  }
 };
