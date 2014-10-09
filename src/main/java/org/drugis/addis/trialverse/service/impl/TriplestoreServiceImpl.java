@@ -39,6 +39,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private final static Logger logger = LoggerFactory.getLogger(TriplestoreServiceImpl.class);
 
   private final static String TRIPLESTORE_URI = System.getenv("TRIPLESTORE_URI");
+  private final static String NAMESPACE_QUERY = loadResource("sparql/namespaceQuery.sparql");
   private final static String STUDY_QUERY = loadResource("sparql/studyQuery.sparql");
   private final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
   private final static String STUDY_ARMS_QUERY = loadResource("sparql/studyArms.sparql");
@@ -64,19 +65,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Override
   public Collection<Namespace> queryNameSpaces() {
-    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
-            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "\n" +
-            "SELECT ?dataset ?label ?comment (COUNT(DISTINCT(?study)) AS ?numberOfStudies) WHERE {\n" +
-            "  GRAPH ?dataset {\n" +
-            "    ?dataset a ontology:Dataset .\n" +
-            "    ?dataset rdfs:label ?label .\n" +
-            "    ?dataset rdfs:comment ?comment .\n" +
-            "    ?dataset ontology:contains_study ?study" +
-            "  }\n" +
-            "} GROUP BY ?dataset ?label ?comment\n";
+    String query = NAMESPACE_QUERY;
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     List<Namespace> namespaces = new ArrayList<>(bindings.size());
@@ -86,7 +75,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String name = JsonPath.read(binding, "$.label.value");
       String description = JsonPath.read(binding, "$.comment.value");
       Integer numberOfStudies = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfStudies.value"));
-      String sourceUrl = "TODO"; //FIXME
+      String sourceUrl = JsonPath.read(binding, "$.sourceUrl.value");
       namespaces.add(new Namespace(uid, name, description, numberOfStudies, sourceUrl));
     }
     return namespaces;

@@ -42,7 +42,7 @@
         <!-- Right Nav Section -->
         <ul class="right">
           <li class="has-dropdown not-click">
-            <a href="#"><i class="fa fa-user fa-fw"></i> <c:out value="${account.firstName} ${account.lastName} " /></a>
+            <a href="#"><img src="http://www.gravatar.com/avatar/${userMD5}?s=45&d=mm"><c:out value="${account.firstName} ${account.lastName} " /></a>
             <ul class="dropdown">
               <li>
                 <a href="#" onClick="signout()">Sign out</a>

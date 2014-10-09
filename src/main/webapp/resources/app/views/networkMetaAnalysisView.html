@@ -104,7 +104,8 @@
                 <td colspan="7">No studies measuring selected outcome.</td>
             </tr>
             <tr ng-repeat="dataRow in trialData" ng-class="{topborder: dataRow.firstStudyRow}">
-                <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">{{dataRow.study}}
+                <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">
+                    <a ui-sref="study({namespaceUid: project.namespaceUid, studyUid: dataRow.studyUid})">{{dataRow.study}}</a>
                     <div class="info" ng-show="lessThanTwoInterventionArms(dataRow)">Fewer than two included
                         interventions. This study will be excluded.
                     </div>
