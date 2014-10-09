@@ -9,6 +9,12 @@
   <http://pubs.drugis.org/documents/1>
     rdf:type bibo:AcademicArticle ;
     dc:identifier <info:pmid/16172440> ;
+    rdfs:seeAlso [
+      dcterms:source "http://pubmed.com/16172440"^^xsd:anyURI ;
+      dcterms:format "text/html" ;
+      dcterms:title "Efficacy and safety of second-generation anti... [Ann Intern Med. 2005] - PubMed - NCBI"@en ;
+      dcterms:language "en"
+    ] ;
     dc:title "Efficacy and safety of second-generation antidepressants in the treatment of major depressive disorder." ;
     dc:creator <http://pubs.drugis.org/agents/1> ;
     dc:creator <http://pubs.drugis.org/agents/2> ;
@@ -62,6 +68,12 @@
   <http://pubs.drugis.org/documents/2>
     rdf:type bibo:Report ;
     dc:identifier "http://www.ema.europa.eu/docs/en_GB/document_library/EPAR_-_Public_assessment_report/human/002293/WC500119206.pdf" ;
+    rdfs:seeAlso [
+      dcterms:source "http://www.ema.europa.eu/docs/en_GB/document_library/EPAR_-_Public_assessment_report/human/002293/WC500119206.pdf"^^xsd:anyURI ;
+      dcterms:format "application/pdf" ;
+      dcterms:title "Edarbi : EPAR - Public assessment report" ;
+      dcterms:language "en"
+    ] ;
     dc:title "Edarbi : EPAR - Public assessment report" ;
     dc:isPartOf <http://pubs.drugis.org/collections/2> ;
     bibo:handle "EMEA/H/C/002293" ;
