@@ -18,10 +18,11 @@
         <div ng-bind-html="outcome.name | highlight: $select.search"></div>
         </ui-select-choices>
         
+        
+        </ui-select >
         <div class="panel callout radius">
           Note that at least two criteria should be selected so that a tradeoff can be made.
         </div>
-        </ui-select >
       </div>
     </div>
   </div>
@@ -38,10 +39,10 @@
         <ui-select-choices repeat="intervention in interventions | filter: $select.search">
         <div ng-bind-html="intervention.name | highlight: $select.search"></div>
         </ui-select-choices>
+        </ui-select >
         <div class="panel callout radius">
           Note that at least two interventions should be selected so that a tradeoff can be made.
         </div>
-        </ui-select >
       </div>
     </div>
   </div>
@@ -53,9 +54,19 @@
         <div class="nested-view-header">
           Selected Study
         </div>
-        <select ng-model="analysis.studyUid" ng-disabled="editMode.disableEditing"
-          ng-options="study.uid as study.name for study in studies | orderBy:'name'">
-        </select>
+
+        <ui-select class="addis-select2" style="width: 600px;" theme="select2" ng-model="studyModel.selectedStudy" data-placeholder="no study selected" on-select="onStudySelect($item, $model)">
+          <ui-select-match>{{$select.selected.name}}</ui-select-match>
+            <ui-select-choices repeat="study in studies | orderBy:'name' | filter: $select.search">
+            <div ng-bind-html="study.name | highlight: $select.search"></div>
+          </ui-select-choices>
+          
+        </ui-select >
+
+<!--         <div>
+          <span>{{studyModel.selectedStudy | json }}</span>
+        </div> -->
+
         <div class="panel callout radius">
           <span class="alert round label">Placeholder</span>
           Choose from which study to take the data for analysis. Note that the selected study must contain
