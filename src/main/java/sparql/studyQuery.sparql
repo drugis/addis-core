@@ -16,7 +16,9 @@ SELECT ?study ?title ?label ?outcomeUids ?interventionUids WHERE {
       SELECT ?study (group_concat(?outcomeUid; separator = ", ") as ?outcomeUids)
       WHERE {
         GRAPH ?study {
-          ?study ontology:has_outcome ?outcomeUid .
+          ?study ontology:has_outcome ?outcomeInstanceUid .
+          ?outcomeInstanceUid a ?outcomeUid .
+
         }
       } GROUP BY ?study
     }

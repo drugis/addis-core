@@ -182,25 +182,61 @@ define(['angular', 'angular-mocks', 'services'], function() {
         }));
     });
 
-    describe('keyify', function() {
+    describe("concatWithNoDuplicates", function() {
+
       beforeEach(function() {
         stateParams = jasmine.createSpyObj('stateParams', ['foo']);
         module('addis', function($provide) {
           $provide.value('$stateParams', stateParams);
         });
       });
+      beforeEach(module('addis.services'));
 
-      it('should remove non-alphanumeric characters', inject(function(SingleStudyBenefitRiskAnalysisService) {
-        expect(SingleStudyBenefitRiskAnalysisService.keyify("i'm/not$alpha&numeric")).toBe('imnotalphanumeric');
-      }));
+      it('should add the source objects to the target if not already on target',
+        inject(function($rootScope, $q, $location, SingleStudyBenefitRiskAnalysisService) {
 
-      it('should convert whitespace to dashes', inject(function(SingleStudyBenefitRiskAnalysisService) {
-        expect(SingleStudyBenefitRiskAnalysisService.keyify('a horse a horse my')).toBe('a-horse-a-horse-my');
-      }));
+          var source = [{name: 'bob'}, {name: 'dave'}];
+          var target = [{name: 'mark'},{name: 'dave'}, {name: 'lisa'}];
 
-      it('should convert upper case to lowercase', inject(function(SingleStudyBenefitRiskAnalysisService) {
-        expect(SingleStudyBenefitRiskAnalysisService.keyify('IM NOT SHOUTING')).toBe('im-not-shouting');
-      }));
+          var isNameEqual = function(option, seachItem) {
+            return option.name === seachItem.name;
+          };
+
+          var expectResult = [ { name : 'bob' }, { name : 'mark' }, { name : 'dave' }, { name : 'lisa' } ];
+
+          expect(SingleStudyBenefitRiskAnalysisService.concatWithNoDuplicates(source, target, isNameEqual)).toEqual(expectResult);
+        })
+      );
+
     });
+
+    describe("findMissing", function() {
+
+      beforeEach(function() {
+        stateParams = jasmine.createSpyObj('stateParams', ['foo']);
+        module('addis', function($provide) {
+          $provide.value('$stateParams', stateParams);
+        });
+      });
+      beforeEach(module('addis.services'));
+
+      it('should return a list of objects that a missing form the optionsList',
+        inject(function($rootScope, $q, $location, SingleStudyBenefitRiskAnalysisService) {
+
+          var seachList = [{name: 'bob'}, {name: 'dave'}];
+          var optionsList = [{name: 'mark'},{name: 'dave'}, {name: 'lisa'}];
+
+          var isNameEqual = function(option, seachItem) {
+            return option.name === seachItem.name;
+          };
+
+          // so here 'bob' is missing from the options lsit right
+          expect(SingleStudyBenefitRiskAnalysisService.findMissing(seachList, optionsList, isNameEqual)).toEqual([{name: 'bob'}]);
+        })
+      );
+
+    });
+
+
   });
 });

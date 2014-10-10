@@ -8529,3 +8529,40 @@ table.network-meta-analysis-table tr.topborder td {
 .graph-legend {
   padding: 0.5rem 1rem;
 }
+
+/* line 203, ../../sass/addis-drugis.scss */
+.addis-select2.select2-container-multi .select2-choices .select2-search-choice {
+  margin-top: 8px;
+}
+
+/* line 207, ../../sass/addis-drugis.scss */
+.addis-select2.select2-container .select2-choice {
+  height: 34px;
+  filter: none;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(1%, #eeeeee), color-stop(15%, white));
+  background-image: -webkit-linear-gradient(top, #eeeeee 1%, white 15%);
+  background-image: -moz-linear-gradient(top, #eeeeee 1%, white 15%);
+  background-image: linear-gradient(to bottom, #eeeeee 1%, #ffffff 15%);
+  border-radius: 0px;
+  line-height: normal;
+  padding: 8px;
+}
+/* line 218, ../../sass/addis-drugis.scss */
+.addis-select2.select2-container .select2-choice .select2-arrow {
+  background: #fff;
+  border-left: none;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(1%, #eeeeee), color-stop(15%, white));
+  background-image: -webkit-linear-gradient(top, #eeeeee 1%, white 15%);
+  background-image: -moz-linear-gradient(top, #eeeeee 1%, white 15%);
+  background-image: linear-gradient(to bottom, #eeeeee 1%, #ffffff 15%);
+}
+
+/* line 228, ../../sass/addis-drugis.scss */
+.addis-select2.ui-select-multiple.select2.select2-container.select2-container-multi {
+  margin-bottom: 1.6rem;
+}
+
+/* line 232, ../../sass/addis-drugis.scss */
+.ssbr-warning-information {
+  color: rgba(41, 62, 163, 0.85);
+}

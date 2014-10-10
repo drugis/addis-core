@@ -725,6 +725,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "    }\n" +
             "  }\n" +
             "}\n";
+
+    logger.info(query);
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     List<SingleStudyBenefitRiskMeasurementRow> measurementObjects = new ArrayList<>();

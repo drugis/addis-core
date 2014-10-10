@@ -17,26 +17,20 @@ define(['angular'], function() {
         analysis.selectedOutcomes.length >= 2;
     };
 
-    var keyify = function(input) {
-      var output =  input.replace(/[^a-zA-Z0-9 ]/g, '').replace(/ /g, '-').toLowerCase();
-      return output;
-    };
-
     var verifyCell = function(performanceEntry, outcome, intervention) {
-      var result = performanceEntry.criterionUri === outcome.semanticOutcomeUri 
-        && performanceEntry.alternativeUri === intervention.semanticInterventionUri;
+      var result = performanceEntry.criterionUri === outcome.semanticOutcomeUri && performanceEntry.alternativeUri === intervention.semanticInterventionUri;
       return result;
     };
 
     var findPerformanceEntry = function(performanceTable, outcome, intervention) {
-      var result =  _.find(performanceTable, function(performanceEntry) {
+      var result = _.find(performanceTable, function(performanceEntry) {
         return verifyCell(performanceEntry, outcome, intervention);
       });
       return result;
     };
 
     var checkAllInterventionsForOutcome = function(performanceTable, outcome, selectedInterventions) {
-      var result =  _.every(selectedInterventions, function(intervention) {
+      var result = _.every(selectedInterventions, function(intervention) {
         return findPerformanceEntry(performanceTable, outcome, intervention);
       });
       return result;
@@ -54,12 +48,26 @@ define(['angular'], function() {
       return ProblemResource.get($stateParams).$promise;
     };
 
+    var concatWithNoDuplicates = function(source, target, comparatorFunction) {
+      var complement = findMissing(source, target, comparatorFunction);
+      return complement.concat(target);
+    };
+
+    var findMissing = function(searchList, optionList, comparatorFunction) {
+      return _.filter(searchList, function(searchItem) {
+        return !_.find(optionList, function(option) {
+          return comparatorFunction(option, searchItem);
+        });
+      });
+    };
+
     return {
       getProblem: getProblem,
       validateProblem: validateProblem,
       getDefaultScenario: getDefaultScenario,
       validateAnalysis: validateAnalysis,
-      keyify: keyify
+      concatWithNoDuplicates: concatWithNoDuplicates,
+      findMissing: findMissing
     };
   };
   return dependencies.concat(SingleStudyBenefitRiskAnalysisService);

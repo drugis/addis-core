@@ -56,6 +56,12 @@ require.config({
     'angular-ui-router': {
       deps: ['angular']
     },
+    'angularanimate': {
+      deps: ['angular']
+    },
+    'mmfoundation': {
+      deps: ['angular']
+    },
     'd3': {
       exports: 'd3'
     },

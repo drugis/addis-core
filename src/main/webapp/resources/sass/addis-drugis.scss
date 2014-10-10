@@ -200,6 +200,37 @@ $table-title-margin-bottom: 4px;
 }
 
 /////////////////////// select 2 ////////////////////////////////////////////
-.addis-select2 {
-  width: 600px;
+.addis-select2.select2-container-multi .select2-choices .select2-search-choice {
+  margin-top: 8px;
 }
+
+.addis-select2.select2-container .select2-choice {
+  height: 34px;
+  filter: none;
+background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(1%, #eee), color-stop(15%, #fff));
+background-image: -webkit-linear-gradient(top, #eee 1%, #fff 15%);
+background-image: -moz-linear-gradient(top, #eee 1%, #fff 15%);
+background-image: linear-gradient(to bottom, #eee 1%, #fff 15%);
+border-radius: 0px;
+line-height:normal;
+padding: 8px;
+
+  .select2-arrow {
+    background: #fff;
+    border-left: none; // override select2
+background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(1%, #eee), color-stop(15%, #fff));
+background-image: -webkit-linear-gradient(top, #eee 1%, #fff 15%);
+background-image: -moz-linear-gradient(top, #eee 1%, #fff 15%);
+background-image: linear-gradient(to bottom, #eee 1%, #fff 15%);
+  }
+}
+
+.addis-select2.ui-select-multiple.select2.select2-container.select2-container-multi {
+  margin-bottom: 1.6rem;
+}  
+  
+.ssbr-warning-information {
+  color: rgba(41, 62, 163, 0.85);
+}
+
+

@@ -1,53 +1,107 @@
 'use strict';
 define(['underscore'], function() {
   var dependencies = ['$scope', '$stateParams', '$state', '$q', '$window',
-    'OutcomeResource', 'InterventionResource', 'Select2UtilService', 'TrialverseStudyResource', 'ProblemResource',
+    'OutcomeResource', 'InterventionResource', 'TrialverseStudyResource', 'ProblemResource',
     'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW', 'AnalysisResource'
   ];
   var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $q, $window,
-    OutcomeResource, InterventionResource,
-    Select2UtilService, TrialverseStudyResource, ProblemResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW, AnalysisResource) {
+    OutcomeResource, InterventionResource, TrialverseStudyResource, ProblemResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW, AnalysisResource) {
 
     var projectIdParam = {
       projectId: $stateParams.projectId
     };
 
+    var projectNamespaceUid = {
+      namespaceUid: $scope.project.namespaceUid
+    };
+
+    var isIdEqual = function(left, right) {
+      return left.id === right.id;
+    };
+
     $scope.outcomes = $scope.analysis.selectedOutcomes;
     $scope.interventions = $scope.analysis.selectedInterventions;
-
-    OutcomeResource.query(projectIdParam, function(outcomes) {
-      // use same object in options list as in selected option list, as ui-select uses object equality internaly
-      $scope.outcomes = concatWithNoDuplicates(outcomes, $scope.outcomes);
-      $scope.$watchCollection('analysis.selectedOutcomes', analysisChanged);
-    });
-
-    InterventionResource.query(projectIdParam, function(interventions) {
-      // use same object in options list as in selected option list, as ui-select uses object equality internaly
-      $scope.interventions = concatWithNoDuplicates(interventions, $scope.interventions);
-      $scope.$watchCollection('analysis.selectedInterventions', analysisChanged);
-    });
-
-    $scope.isValidAnalysis = false;
-    $scope.errorMessage = {};
-    $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
-
     $scope.studyModel = {
       selectedStudy: {}
     };
+    $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
 
-    $scope.studies = TrialverseStudyResource.query({
-      namespaceUid: $scope.project.namespaceUid
-    }, function(studies) {
-      $scope.studyModel.selectedStudy = _.find(studies, function(study) {
-        return study.uid === $scope.analysis.studyUid;
+    function outcomesChanged() {
+      $scope.studies = getStudiesWithMissingOutcomes($scope.studies);
+      updateAnalysis();
+    }
+
+    function interventionsChanged() {
+      $scope.studies = getStudiesWithMissingInterventions($scope.studies);
+      updateAnalysis();
+    }
+
+    OutcomeResource.query(projectIdParam).$promise.then(function(outcomes) {
+      // use same object in options list as in selected option list, as ui-select uses object equality internaly
+      $scope.outcomes = SingleStudyBenefitRiskAnalysisService.concatWithNoDuplicates(outcomes, $scope.outcomes, isIdEqual);
+      $scope.$watchCollection('analysis.selectedOutcomes', function(oldValue, newValue) {
+        if (newValue.length !== oldValue.length) {
+          outcomesChanged();
+        }
       });
     });
 
+    InterventionResource.query(projectIdParam).$promise.then(function(interventions) {
+      // use same object in options list as in selected option list, as ui-select uses object equality internaly
+      $scope.interventions = SingleStudyBenefitRiskAnalysisService.concatWithNoDuplicates(interventions, $scope.interventions, isIdEqual);
+      $scope.$watchCollection('analysis.selectedInterventions', function(oldValue, newValue) {
+        if (newValue.length !== oldValue.length) {
+          interventionsChanged();
+        }
+      });
+    });
+
+    $scope.studies = [];
+    TrialverseStudyResource.query(projectNamespaceUid).$promise.then(function(studies) {
+      $scope.studies = studies;
+      $scope.studyModel.selectedStudy = _.find(studies, function(study) {
+        return study.uid === $scope.analysis.studyUid;
+      });
+      $scope.studies = getStudiesWithMissingOutcomes($scope.studies);
+      $scope.studies = getStudiesWithMissingInterventions($scope.studies);
+    });
+
+    function isSameOutcome(studyOutcomeUri, selectedOutcome) {
+      var lastIndexOfSlash = studyOutcomeUri.lastIndexOf('/');
+      var idPart = studyOutcomeUri.substring(lastIndexOfSlash + 1);
+      return selectedOutcome.semanticOutcomeUri === idPart;
+    }
+
+    function isSameIntervention(studyOutcomeUri, selectedOutcome) {
+      var lastIndexOfSlash = studyOutcomeUri.lastIndexOf('/');
+      var idPart = studyOutcomeUri.substring(lastIndexOfSlash + 1);
+      return selectedOutcome.semanticInterventionUri === idPart;
+    }
+
+    function getStudiesWithMissingOutcomes(studies) {
+      return _.map(studies, function(study) {
+        study.missingOutcomes = SingleStudyBenefitRiskAnalysisService.findMissing(
+          $scope.analysis.selectedOutcomes, study.outcomeUids, isSameOutcome);
+        return study;
+      });
+    }
+
+    function getStudiesWithMissingInterventions(studies) {
+      return _.map(studies, function(study) {
+        study.missingInterventions = SingleStudyBenefitRiskAnalysisService.findMissing(
+          $scope.analysis.selectedInterventions, study.interventionUids, isSameIntervention);
+        return study;
+      });
+    }
+
+    function updateAnalysis() {
+      $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
+      AnalysisResource.save($scope.analysis);
+    }
+
     $scope.onStudySelect = function(item) {
       $scope.analysis.studyUid = item.uid;
-      $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
-      $scope.errorMessage = {};
-      AnalysisResource.save($scope.analysis);
+      updateAnalysis();
     };
 
 
@@ -61,41 +115,17 @@ define(['underscore'], function() {
         });
     };
 
-    function analysisChanged(oldValue, newValue) {
-      if (newValue.length !== oldValue.length) {
-        $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
-        $scope.errorMessage = {};
-        // use AnalysisResource.save as to keep the binding on analysis.selectedOptions alive
-        AnalysisResource.save($scope.analysis);
-      }
-    }
-
-    function concatWithNoDuplicates(source, target) {
-      var filtered = _.filter(source, function(sourceItem) {
-        return !_.find(target, function(targetItem) {
-          return targetItem.id === sourceItem.id;
-        });
-      });
-      return filtered.concat(target);
-    }
-
     $scope.createProblem = function() {
       SingleStudyBenefitRiskAnalysisService.getProblem($scope.analysis)
         .then(function(problem) {
-          if (SingleStudyBenefitRiskAnalysisService.validateProblem($scope.analysis, problem)) {
-            $scope.analysis.problem = problem;
-            $scope.analysis.$save()
-              .then(SingleStudyBenefitRiskAnalysisService.getDefaultScenario)
-              .then(function(scenario) {
-                $state.go(DEFAULT_VIEW, {
-                  id: scenario.id
-                });
+          $scope.analysis.problem = problem;
+          AnalysisResource.save($scope.analysis).$promise
+            .then(SingleStudyBenefitRiskAnalysisService.getDefaultScenario)
+            .then(function(scenario) {
+              $state.go(DEFAULT_VIEW, {
+                id: scenario.id
               });
-          } else {
-            $scope.errorMessage = {
-              text: 'The selected study and the selected citeria/alternatives do not match.'
-            };
-          }
+            });
         });
     };
 
