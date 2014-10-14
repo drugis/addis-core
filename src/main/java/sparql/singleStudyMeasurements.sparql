@@ -3,6 +3,7 @@ PREFIX dataset: <http://trials.drugis.org/datasets/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 
 PREFIX entity: <http://trials.drugis.org/entities/>
 PREFIX instance: <http://trials.drugis.org/instances/>
@@ -14,7 +15,7 @@ SELECT DISTINCT ?interventionTypeUid ?interventionLabel ?outcomeTypeUid ?outcome
     ?dataset ontology:contains_study ?study .
   }
   GRAPH study:$studyUid {
-    ?study rdfs:label ?studyName .
+    #?study rdfs:label ?studyName . # debug info
     ?study ontology:has_outcome ?outcomeInstance .
     $outcomeUnionString .
     ?outcomeInstance a ?outcomeTypeUid .
@@ -31,10 +32,12 @@ SELECT DISTINCT ?interventionTypeUid ?interventionLabel ?outcomeTypeUid ?outcome
         ontology:applied_to_arm ?arm ;
         ontology:applied_in_epoch ?epoch
       ] ;
-      ontology:administered_drugs ([ ontology:treatment_has_drug ?interventionInstance ]) .
+      ontology:administered_drugs ?administeredDrugs .
+    ?administeredDrugs list:member ?administeredDrug .
+    ?administeredDrug ontology:treatment_has_drug ?interventionInstance .
 
-    ?epoch rdfs:label ?epochLabel .
-    ?arm rdfs:label ?armLabel .
+    #?epoch rdfs:label ?epochLabel .  # debug info
+    #?arm rdfs:label ?armLabel .  # debug info
 
     # also get the measurement while we're here
     ?measurementMoment
