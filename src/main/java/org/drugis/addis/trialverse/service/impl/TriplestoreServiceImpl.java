@@ -663,74 +663,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     query = StringUtils.replace(query, "$outcomeUnionString",  buildOutcomeUnionString(outcomeUids));
     query = StringUtils.replace(query, "$interventionUnionString", buildInterventionUnionString(interventionUids));
     logger.info(query);
-//
-//    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
-//            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
-//            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-//            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-//            "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n" +
-//            "\n" +
-//            "PREFIX entity: <http://trials.drugis.org/entities/>\n" +
-//            "PREFIX instance: <http://trials.drugis.org/instances/>\n" +
-//            "PREFIX study: <http://trials.drugis.org/studies/>\n" +
-//            "\n" +
-//            "SELECT DISTINCT ?interventionTypeUid ?interventionLabel ?outcomeTypeUid ?outcomeInstanceLabel ?mean ?stdDev ?count ?sampleSize WHERE {\n" +
-//            "  GRAPH ?dataset {\n" +
-//            "    ?dataset a ontology:Dataset .\n" +
-//            "    ?dataset ontology:contains_study ?study .\n" +
-//            "  }\n" +
-//            "  GRAPH study:" + studyUid + " {\n" +
-//            "    ?study rdfs:label ?studyName .\n" +
-//            "    ?study ontology:has_outcome ?outcomeInstance .\n" +
-//            outcomeUnionString +
-//            ".\n" +
-//            "    ?outcomeInstance a ?outcomeTypeUid .\n" +
-//            "    ?outcomeInstance rdfs:label ?outcomeInstanceLabel .\n" +
-//            interventionUnionString +
-//            " .\n" +
-//            "    ?interventionInstance a ?interventionTypeUid .\n" +
-//            "  }\n" +
-//            "  GRAPH ?study {\n" +
-//            "    ?interventionInstance rdfs:label ?interventionLabel .\n" +
-//            "    ?study ontology:has_arm ?arm .\n" +
-//            "    ?study ontology:has_primary_epoch ?epoch .\n" +
-//            "    ?activity a ontology:TreatmentActivity ;\n" +
-//            "      ontology:activity_application [\n" +
-//            "        ontology:applied_to_arm ?arm ;\n" +
-//            "        ontology:applied_in_epoch ?epoch\n" +
-//            "      ] ;\n" +
-//            "      ontology:administered_drugs ([ ontology:treatment_has_drug ?interventionInstance ]) .\n" +
-//            "\n" +
-//            "    ?epoch rdfs:label ?epochLabel .\n" +
-//            "    ?arm rdfs:label ?armLabel .\n" +
-//            "\n" +
-//            "    # also get the measurement while we're here\n" +
-//            "    ?measurementMoment\n" +
-//            "      ontology:relative_to_epoch ?epoch ;\n" +
-//            "      ontology:relative_to_anchor ontology:anchorEpochEnd ;\n" +
-//            "      ontology:time_offset \"-P0D\"^^xsd:duration .\n" +
-//            "\n" +
-//            "    ?measurement\n" +
-//            "      ontology:of_moment ?measurementMoment ;\n" +
-//            "      ontology:of_outcome ?outcomeInstance ;\n" +
-//            "      ontology:of_arm ?arm .\n" +
-//            "\n" +
-//            "    OPTIONAL {\n" +
-//            "      ?measurement\n" +
-//            "        ontology:mean ?mean ;\n" +
-//            "        ontology:standard_deviation ?stdDev ;\n" +
-//            "        ontology:sample_size ?sampleSize .\n" +
-//            "    }\n" +
-//            "\n" +
-//            "    OPTIONAL {\n" +
-//            "      ?measurement\n" +
-//            "        ontology:count ?count ;\n" +
-//            "        ontology:sample_size ?sampleSize .\n" +
-//            "    }\n" +
-//            "  }\n" +
-//            "}\n";
 
- //   logger.info(query);
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     List<SingleStudyBenefitRiskMeasurementRow> measurementObjects = new ArrayList<>();
