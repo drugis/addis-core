@@ -62,7 +62,7 @@
   <div class="columns large-6 ">
     <div ng-switch on="isProblemDefined">
       <button ng-disabled="!isValidAnalysis || studyModel.selectedStudy.missingOutcomes.length > 0 
-        || studyModel.selectedStudy.missingInterventions.length > 0" ng-switch-when="false" ng-click="createProblem()">Perform MCDA
+        || studyModel.selectedStudy.missingInterventions.length > 0 || !studyModel.selectedStudy" ng-switch-when="false" ng-click="createProblem()">Perform MCDA
       Analysis
       </button>
       <span class="error-message">{{errorMessage.text}}</span>
