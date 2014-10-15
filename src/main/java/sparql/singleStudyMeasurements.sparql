@@ -32,8 +32,7 @@ SELECT DISTINCT ?interventionTypeUid ?interventionLabel ?outcomeTypeUid ?outcome
         ontology:applied_to_arm ?arm ;
         ontology:applied_in_epoch ?epoch
       ] ;
-      ontology:administered_drugs ?administeredDrugs .
-    ?administeredDrugs list:member ?administeredDrug .
+      ontology:administered_drugs ([ ontology:treatment_has_drug ?interventionInstance ]) .
     ?administeredDrug ontology:treatment_has_drug ?interventionInstance .
 
     #?epoch rdfs:label ?epochLabel .  # debug info

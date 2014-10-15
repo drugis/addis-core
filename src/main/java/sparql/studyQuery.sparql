@@ -2,6 +2,7 @@ PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX dataset: <http://trials.drugis.org/datasets/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 
 PREFIX study: <http://trials.drugis.org/studies/>
 
@@ -12,6 +13,17 @@ SELECT ?study ?title ?label ?outcomeUids ?interventionUids WHERE {
   GRAPH ?study {
     ?study rdfs:label ?label .
     ?study rdfs:comment ?title .
+    { 
+      # count the number of drug use in a treatment
+      SELECT DISTINCT ?study (COUNT(?administeredDrug) as ?drugCount) 
+      WHERE {
+        ?study rdf:type ontology:Study . 
+        ?activity 
+          a ontology:TreatmentActivity ;
+          ontology:administered_drugs ?administeredDrugs .
+        ?administeredDrugs list:member ?administeredDrug .
+      } GROUP BY ?study ?activity
+    }
     {
       SELECT ?study (group_concat(?outcomeUid; separator = ", ") as ?outcomeUids)
       WHERE {
@@ -34,4 +46,6 @@ SELECT ?study ?title ?label ?outcomeUids ?interventionUids WHERE {
       } GROUP BY ?study
     }
   }
+  # filter out studies using combination treatments
+  FILTER (?drugCount < 2)
 }
