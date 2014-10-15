@@ -23,12 +23,14 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
     }, {
       uid: 'uid2'
     }];
+    var q;
 
 
     beforeEach(module('addis.controllers'));
 
     beforeEach(inject(function($controller, $q, $rootScope) {
 
+      q = $q;
       scope = $rootScope;
 
       // set the mock state params 
@@ -85,7 +87,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         'TrialverseStudyResource': trialverseStudyResource,
         'ProblemResource': problemResource,
         'SingleStudyBenefitRiskAnalysisService': singleStudyBenefitRiskAnalysisService,
-        'DEFAULT_VIEW': 'someview',
+        'DEFAULT_VIEW': 'DEFAULT_VIEW',
         'AnalysisResource': analysisResource
       });
     }));
@@ -173,11 +175,101 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
     describe('when a study is selected', function() {
       it('should place the selected items ui on the analysis as the studyUid', function() {
         scope.onStudySelect({
-          uid: 'yo uid'
+          uid: 'test-uid'
         });
-        expect(scope.analysis.studyUid).toEqual('yo uid');
+        expect(scope.analysis.studyUid).toEqual('test-uid');
       });
     });
+
+    describe('when outcomes, intervetions and studies haven been resolved and the selected outcomes change', function() {
+      beforeEach(function() {
+        outcomesDeferred.resolve(mockOutcomes);
+        interventionDeferred.resolve(mockInterventions);
+        studiesDeferred.resolve(mockStudies);
+        scope.$apply();
+      });
+
+      it('should revalidate and save the analysis', function() {
+        var mockOutcome = {name : 'mockOutcome'};
+        scope.analysis.selectedOutcomes.push(mockOutcome);
+        scope.$apply();
+        scope.dirty = true;
+
+        expect(singleStudyBenefitRiskAnalysisService.validateAnalysis).toHaveBeenCalled();
+        expect(analysisResource.save).toHaveBeenCalled();
+      });
+    });
+
+    describe('when outcomes, intervetions and studies haven been resolved and the selected interventions change', function() {
+      beforeEach(function() {
+        outcomesDeferred.resolve(mockOutcomes);
+        interventionDeferred.resolve(mockInterventions);
+        studiesDeferred.resolve(mockStudies);
+        scope.$apply();
+      });
+
+      it('should revalidate and save the analysis', function() {
+        var mockOutcome = {name : 'mockOutcome'};
+        scope.analysis.selectedInterventions.pop(mockOutcome);
+        scope.$apply();
+        scope.dirty = true;
+
+        expect(singleStudyBenefitRiskAnalysisService.validateAnalysis).toHaveBeenCalled();
+        expect(analysisResource.save).toHaveBeenCalled();
+      });
+    });
+
+    describe('when goToOverView is called', function() {
+      var defaultScenarioId = 324; 
+      var defaultScenario = {name: 'defaultScenario', id: defaultScenarioId};
+      var defaultScenarioDeferred;
+
+      beforeEach(function() {
+        defaultScenarioDeferred = q.defer();
+        defaultScenario.$promise = defaultScenarioDeferred.promise;
+        singleStudyBenefitRiskAnalysisService.getDefaultScenario.and.returnValue(defaultScenario.$promise);
+        defaultScenarioDeferred.resolve(defaultScenario);
+        scope.goToDefaultScenarioView();
+        scope.$apply();
+      });
+      
+      it('should go to the default view using the default scenario id', function(){
+        expect(singleStudyBenefitRiskAnalysisService.getDefaultScenario).toHaveBeenCalled();
+        expect(state.go).toHaveBeenCalledWith('DEFAULT_VIEW', {
+          id: defaultScenarioId
+        });
+      });
+
+    });
+
+    describe('when createProblem is called', function() {
+      var problem = {name: 'problem'};
+      var problemDeferred;
+      var analysisDeferred;
+
+
+      beforeEach(function() {
+        problemDeferred = q.defer();
+        problem.$promise = problemDeferred.promise;
+        analysisDeferred = q.defer();
+        scope.analysis.$promise = analysisDeferred.promise;
+        singleStudyBenefitRiskAnalysisService.getProblem.and.returnValue(problem.$promise);
+        analysisResource.save.and.returnValue(scope.analysis)
+        problemDeferred.resolve(problem);
+        analysisDeferred.resolve();
+        scope.createProblem();
+        scope.$apply();
+      });
+
+
+      it('should create the problem, save the analysis and then go to the defaultScenario view', function() {
+        expect(scope.analysis.problem).toEqual(problem);
+        expect(analysisResource.save).toHaveBeenCalled();
+        expect(singleStudyBenefitRiskAnalysisService.getDefaultScenario).toHaveBeenCalled();
+      })
+    });
+
+      
 
   });
 });

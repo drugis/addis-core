@@ -82,6 +82,7 @@ define(['underscore'], function() {
       return _.map(studies, function(study) {
         study.missingOutcomes = SingleStudyBenefitRiskAnalysisService.findMissing(
           $scope.analysis.selectedOutcomes, study.outcomeUids, isSameOutcome);
+        study = addGroup(study);
         return study;
       });
     }
@@ -90,20 +91,38 @@ define(['underscore'], function() {
       return _.map(studies, function(study) {
         study.missingInterventions = SingleStudyBenefitRiskAnalysisService.findMissing(
           $scope.analysis.selectedInterventions, study.interventionUids, isSameIntervention);
+        study = addGroup(study);
         return study;
       });
     }
+
+    // Add a 'group' property for sorting alfabetical within groups while placing the 'valid' group on top of the options list
+    var addGroup = function(study) {
+      if (isValidStudyOption(study)) {
+        study.group = 0;
+      } else {
+        study.group = 1;
+      }
+      return study;
+    };
+
+    var isValidStudyOption = function(study) {
+      return !((study.missingOutcomes && study.missingOutcomes.length > 0) || (study.missingInterventions && study.missingInterventions.length > 0));
+    };
 
     function updateAnalysis() {
       $scope.isValidAnalysis = SingleStudyBenefitRiskAnalysisService.validateAnalysis($scope.analysis);
       AnalysisResource.save($scope.analysis);
     }
 
+    $scope.studyGroupFn = function(study) {
+      return isValidStudyOption(study) ? 'Valid studies' : 'Studies missing outcomes or interventions';
+    };
+
     $scope.onStudySelect = function(item) {
       $scope.analysis.studyUid = item.uid;
       updateAnalysis();
     };
-
 
     $scope.goToDefaultScenarioView = function() {
       SingleStudyBenefitRiskAnalysisService
@@ -116,17 +135,12 @@ define(['underscore'], function() {
     };
 
     $scope.createProblem = function() {
-      SingleStudyBenefitRiskAnalysisService.getProblem($scope.analysis)
-        .then(function(problem) {
-          $scope.analysis.problem = problem;
-          AnalysisResource.save($scope.analysis).$promise
-            .then(SingleStudyBenefitRiskAnalysisService.getDefaultScenario)
-            .then(function(scenario) {
-              $state.go(DEFAULT_VIEW, {
-                id: scenario.id
-              });
-            });
+      SingleStudyBenefitRiskAnalysisService.getProblem($scope.analysis).then(function(problem) {
+        $scope.analysis.problem = problem;
+        AnalysisResource.save($scope.analysis).$promise.then(function() {
+          $scope.goToDefaultScenarioView();
         });
+      });
     };
 
   };

@@ -48,7 +48,7 @@
           <ui-select-match>{{$select.selected.name}}
             <i ng-if="$select.selected.missingOutcomes.length > 0 || $select.selected.missingInterventions.length > 0" class="fa fa-exclamation-triangle"></i>
         </ui-select-match>
-            <ui-select-choices repeat="study in studies | orderBy:'name' | filter: $select.search">
+            <ui-select-choices group-by="studyGroupFn" repeat="study in studies | orderBy:['group', 'name'] | filter: $select.search">
             <span ng-bind-html="study.name | highlight: $select.search"></span>
             <i ng-if="study.missingOutcomes.length > 0 || study.missingInterventions.length > 0" class="fa fa-exclamation-triangle"></i>
           </ui-select-choices>
@@ -65,7 +65,6 @@
         || studyModel.selectedStudy.missingInterventions.length > 0 || !studyModel.selectedStudy" ng-switch-when="false" ng-click="createProblem()">Perform MCDA
       Analysis
       </button>
-      <span class="error-message">{{errorMessage.text}}</span>
       <button ng-switch-when="true" ng-click="goToDefaultScenarioView()">Go to MCDA Analysis</button>
     </div>
     <p ng-if="analysis.selectedOutcomes.length < 2"><i class="fa fa-exclamation-triangle"></i> <em >At least two criteria should be selected so that a tradeoff can be made.</em></p>
