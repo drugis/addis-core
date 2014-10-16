@@ -11,7 +11,7 @@
     <div>
       Selected Criteria
     </div>
-    <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="analysis.selectedOutcomes" data-placeholder="no criteria selected">
+    <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="analysis.selectedOutcomes" data-placeholder="no criteria selected" ng-disabled="editMode.disableEditing">
       <ui-select-match>{{$item.name}}</ui-select-match>
       <ui-select-choices repeat="outcome in outcomes | filter: $select.search">
         <div ng-bind-html="outcome.name | highlight: $select.search"></div>
@@ -27,7 +27,7 @@
       Selected Alternatives
     </div>
 
-    <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="analysis.selectedInterventions" data-placeholder="no alternative selected">
+    <ui-select class="addis-select2" style="width:100%;" multiple theme="select2" ng-model="analysis.selectedInterventions" data-placeholder="no alternative selected" ng-disabled="editMode.disableEditing">
       <ui-select-match>{{$item.name}}</ui-select-match>
       <ui-select-choices repeat="intervention in interventions | filter: $select.search">
         <div ng-bind-html="intervention.name | highlight: $select.search"></div>
@@ -44,7 +44,7 @@
         <div >
           Selected Study
         </div>
-        <ui-select class="addis-select2" ng-disabled="disabled" style="width:100%;" theme="select2" ng-model="studyModel.selectedStudy" data-placeholder="no study selected" on-select="onStudySelect($item, $model)">
+        <ui-select class="addis-select2" style="width:100%;" theme="select2" ng-model="studyModel.selectedStudy" data-placeholder="no study selected" on-select="onStudySelect($item, $model)" ng-disabled="editMode.disableEditing">
           <ui-select-match>{{$select.selected.name}}
             <i ng-if="$select.selected.missingOutcomes.length > 0 || $select.selected.missingInterventions.length > 0" class="fa fa-exclamation-triangle"></i>
         </ui-select-match>
