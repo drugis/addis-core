@@ -21,6 +21,8 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.SignInUtils;
 import org.drugis.addis.security.UsernameAlreadyInUseException;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.web.ProviderSignInUtils;
@@ -32,6 +34,8 @@ import org.springframework.web.context.request.WebRequest;
 @Controller
 public class SignupController {
 
+  final static Logger logger = LoggerFactory.getLogger(SignupController.class);
+
 	private final AccountRepository accountRepository;
 
 	@Inject
@@ -41,6 +45,7 @@ public class SignupController {
 
 	@RequestMapping(value="/signup", method=RequestMethod.GET)
 	public String signupForm(WebRequest request) {
+    logger.info("sign up for new account");
 		Connection<?> connection = ProviderSignInUtils.getConnection(request);
 		if (connection != null) {
 			UserProfile profile = connection.fetchUserProfile();
@@ -50,9 +55,11 @@ public class SignupController {
 				ProviderSignInUtils.handlePostSignUp(account.getUsername(), request);
 				return "redirect:/";
 			} else {
+        logger.error("No account available ");
 				return null;
 			}
 		} else {
+      logger.error("No connection available ");
 			return null;
 		}
 	}
@@ -61,9 +68,11 @@ public class SignupController {
 		try {
 			Account account = new Account(profile.getUsername(), profile.getFirstName(), profile.getLastName());
 			accountRepository.createAccount(account);
+      logger.info("new account created");
 			return account;
 		} catch (UsernameAlreadyInUseException e) {
-			return null;
+			logger.error("UsernameAlreadyInUseException");
+      return null;
 		}
 	}
 }
