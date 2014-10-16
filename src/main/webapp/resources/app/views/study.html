@@ -63,7 +63,7 @@
             <dl class="horizontal horizontal-large">
                 <dt>Pubmed links</dt>
                 <dd ng-repeat="uri in studyDetails.pubmedUrls | splitOnTokenFilter">
-                    <a target="_blank" ng-href={{uri}}>{{uri}}</a>
+                    <a target="_blank" ng-href={{uri}}>{{uri}} <i class="fa fa-external-link"></i></a>
                 </dd>
                 <dd ng-show="!studyDetails.pubmedUrls.length"><em>no links available</em></dd>
             </dl>
