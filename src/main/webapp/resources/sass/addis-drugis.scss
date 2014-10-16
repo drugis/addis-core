@@ -61,6 +61,16 @@ label {
   display: block;
   color: $drugis-color;
 }
+
+// header ////
+.user-image {
+  margin-top: -1px;
+  margin-right: 4px;
+  height: 32px;
+  border-radius: 15px;
+}
+
+
 /////////// property lists /////////////////
 
 div.row.property-section {
