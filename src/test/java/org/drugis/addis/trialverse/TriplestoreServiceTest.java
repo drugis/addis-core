@@ -175,6 +175,19 @@ public class TriplestoreServiceTest {
   }
 
   @Test
+  public void testQueryStudies() {
+    String namespaceUid = "namespaceUid";
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleQueryStudiesResult.json");
+    createMockTrialverseService(mockResult);
+
+    List<Study> result = triplestoreService.queryStudies(namespaceUid);
+    assertEquals(5, result.size()); // epar example
+    assertEquals(3, result.get(4).getTreatmentArms().size());
+    // this one should have a multi drug arm
+    assertEquals(2, ((StudyTreatmentArm) result.get(4).getTreatmentArms().toArray()[2]).getInterventionUids().size());
+  }
+
+  @Test
   public void testRegEx() {
     String studyOptionsString = "1|2";
     String uri1 = "foo/study/1/whatevr";

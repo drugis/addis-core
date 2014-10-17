@@ -166,22 +166,40 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Override
   public List<Study> queryStudies(String namespaceUid) {
-    List<Study> studies = new ArrayList<>();
     String query = StringUtils.replace(STUDY_QUERY, "$namespaceUid", namespaceUid);
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+
+    Map<String, Study> studyCache = new HashMap<>();
+    Map<Pair<String, String>, StudyTreatmentArm> studyArmsCache = new HashMap<>();
+
     for (Object binding : bindings) {
-      String uid = JsonPath.read(binding, "$.study.value");
-      uid = subStringAfterLastSymbol(uid, '/');
+      String studyUid = JsonPath.read(binding, "$.study.value");
+      studyUid = subStringAfterLastSymbol(studyUid, '/');
       String name = JsonPath.read(binding, "$.label.value");
       String title = JsonPath.read(binding, "$.title.value");
       String outcomeUidStr = JsonPath.read(binding, "$.outcomeUids.value");
       String[] outcomeUids = StringUtils.split(outcomeUidStr, ", ");
-      String interventionUidStr = JsonPath.read(binding, "$.interventionUids.value");
-      String[] interventionUids = StringUtils.split(interventionUidStr, ", ");
-      studies.add(new Study(uid, name, title, Arrays.asList(outcomeUids), Arrays.asList(interventionUids)));
+      String armUid = (String) JsonPath.read(binding, "$.armUid.value");
+      String interventionUid = JsonPath.read(binding, "$.drugUid.value");
+
+      Study study = studyCache.get(studyUid);
+      if(study == null) {
+        study = new Study(studyUid, name, title, Arrays.asList(outcomeUids));
+      }
+
+      StudyTreatmentArm studyArm = studyArmsCache.get(Pair.of(studyUid, armUid));
+      if(studyArm == null) {
+        studyArm = new StudyTreatmentArm(armUid);
+      }
+
+      studyArm.getInterventionUids().add(interventionUid);
+      studyArmsCache.put(Pair.of(studyUid, armUid), studyArm);
+      study.getTreatmentArms().add(studyArm);
+      studyCache.put(studyUid, study);
+
     }
-    return studies;
+    return new ArrayList<>(studyCache.values());
   }
 
   @Override

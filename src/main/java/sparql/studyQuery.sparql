@@ -6,24 +6,24 @@ PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 
 PREFIX study: <http://trials.drugis.org/studies/>
 
-SELECT ?study ?title ?label ?outcomeUids ?interventionUids WHERE {
+SELECT ?study ?title ?label ?outcomeUids ?armUid ?drugUid  WHERE {
   GRAPH dataset:$namespaceUid {
    ?dataset ontology:contains_study ?study .
   }
   GRAPH ?study {
     ?study rdfs:label ?label .
     ?study rdfs:comment ?title .
-    { 
-      # count the number of drug use in a treatment
-      SELECT DISTINCT ?study (COUNT(?administeredDrug) as ?drugCount) 
-      WHERE {
-        ?study rdf:type ontology:Study . 
-        ?activity 
-          a ontology:TreatmentActivity ;
-          ontology:administered_drugs ?administeredDrugs .
-        ?administeredDrugs list:member ?administeredDrug .
-      } GROUP BY ?study ?activity
-    }
+    ?activity 
+      a ontology:TreatmentActivity ;
+      ontology:activity_application [
+        ontology:applied_to_arm ?armUid
+      ] ;
+      ontology:administered_drugs ?administeredDrugs .
+    ?administeredDrugs list:member ?administeredDrug .
+    ?armUid rdfs:label ?armLabel .
+    ?administeredDrug ontology:treatment_has_drug ?treatmentDrug .
+    ?treatmentDrug rdfs:label ?drugLabel .
+    ?treatmentDrug a ?drugUid .
     {
       SELECT ?study (group_concat(?outcomeUid; separator = ", ") as ?outcomeUids)
       WHERE {
@@ -34,18 +34,5 @@ SELECT ?study ?title ?label ?outcomeUids ?interventionUids WHERE {
         }
       } GROUP BY ?study
     }
-    {
-      SELECT ?study (group_concat(?drugUid; separator = ", ") as ?interventionUids)
-      WHERE {
-        GRAPH ?dataset {
-          ?drugUid rdfs:subClassOf ontology:Drug .
-        }
-        GRAPH ?study {
-          ?instance a ?drugUid .
-        }
-      } GROUP BY ?study
-    }
   }
-  # filter out studies using combination treatments
-  FILTER (?drugCount < 2)
 }

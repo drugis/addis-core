@@ -1,27 +1,29 @@
 package org.drugis.addis.trialverse.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by daan on 3/19/14.
  */
 public class Study {
+
   private String uid;
   private String name;
   private String title;
   private List<String> outcomeUids = new ArrayList<>();
-  private List<String> interventionUids = new ArrayList<>();
+  private Set<StudyTreatmentArm> treatmentArms = new HashSet<>();
 
   public Study() {
   }
 
-  public Study(String uid, String name, String title, List<String> outcomeUids, List<String> interventionUids) {
+  public Study(String uid, String name, String title, List<String> outcomeUids) {
     this.uid = uid;
     this.name = name;
     this.title = title;
     this.outcomeUids = outcomeUids;
-    this.interventionUids = interventionUids;
   }
 
   public String getUid() {
@@ -40,8 +42,8 @@ public class Study {
     return outcomeUids;
   }
 
-  public List<String> getInterventionUids() {
-    return interventionUids;
+  public Set<StudyTreatmentArm> getTreatmentArms() {
+    return treatmentArms;
   }
 
   @Override
@@ -51,10 +53,10 @@ public class Study {
 
     Study study = (Study) o;
 
-    if (!interventionUids.equals(study.interventionUids)) return false;
     if (!name.equals(study.name)) return false;
-    if (!outcomeUids.equals(study.outcomeUids)) return false;
+    if (outcomeUids != null ? !outcomeUids.equals(study.outcomeUids) : study.outcomeUids != null) return false;
     if (!title.equals(study.title)) return false;
+    if (treatmentArms != null ? !treatmentArms.equals(study.treatmentArms) : study.treatmentArms != null) return false;
     if (!uid.equals(study.uid)) return false;
 
     return true;
@@ -65,8 +67,8 @@ public class Study {
     int result = uid.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + title.hashCode();
-    result = 31 * result + outcomeUids.hashCode();
-    result = 31 * result + interventionUids.hashCode();
+    result = 31 * result + (outcomeUids != null ? outcomeUids.hashCode() : 0);
+    result = 31 * result + (treatmentArms != null ? treatmentArms.hashCode() : 0);
     return result;
   }
 }

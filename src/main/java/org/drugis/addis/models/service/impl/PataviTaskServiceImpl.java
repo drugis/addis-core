@@ -9,6 +9,8 @@ import org.drugis.addis.models.repository.PataviTaskRepository;
 import org.drugis.addis.models.service.PataviTaskService;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 import org.drugis.addis.problems.service.ProblemService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -18,6 +20,7 @@ import javax.inject.Inject;
  */
 @Service
 public class PataviTaskServiceImpl implements PataviTaskService {
+  final static Logger logger = LoggerFactory.getLogger(PataviTaskServiceImpl.class);
   public final static String PATAVI_URI_BASE = System.getenv("PATAVI_URI");
 
   @Inject
@@ -39,7 +42,7 @@ public class PataviTaskServiceImpl implements PataviTaskService {
       NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
       pataviTask = pataviTaskRepository.createPataviTask(modelId, problem);
     }
-    System.out.println("PATAVI_URI_BASE: " + PATAVI_URI_BASE);
+    logger.info("PATAVI_URI_BASE: " + PATAVI_URI_BASE);
     return new PataviTaskUriHolder(PATAVI_URI_BASE + pataviTask.getId());
   }
 }

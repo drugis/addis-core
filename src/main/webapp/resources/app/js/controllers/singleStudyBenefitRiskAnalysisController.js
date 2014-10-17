@@ -62,9 +62,24 @@ define(['underscore'], function() {
       $scope.studyModel.selectedStudy = _.find(studies, function(study) {
         return study.uid === $scope.analysis.studyUid;
       });
+
+      _.each(studies, function(study) {
+        study.interventionUids = compileListOfInterventionUids(study);
+      });
+
       $scope.studies = getStudiesWithMissingOutcomes($scope.studies);
       $scope.studies = getStudiesWithMissingInterventions($scope.studies);
     });
+
+    function compileListOfInterventionUids(study) {
+      var interventionUids = [];
+
+      _.each(study.treatmentArms, function(treatmentArm) {
+        interventionUids = interventionUids.concat(treatmentArm.interventionUids);
+      });
+
+      return interventionUids;
+    }
 
     function isSameOutcome(studyOutcomeUri, selectedOutcome) {
       var lastIndexOfSlash = studyOutcomeUri.lastIndexOf('/');
