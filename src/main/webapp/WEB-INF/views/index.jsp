@@ -65,7 +65,7 @@
           firstName : "${account.firstName}",
           LastName : "${account.lastName}"
         },
-        WS_URI: "wss://patavi.drugis.org/ws",
+        WS_URI: "${pataviMcdaWsUri}",
         workspaceName: 'analyses',
         workspacesRepositoryUrl : "/projects/:projectId/analyses/:analysisId",
         _csrf_token : "${_csrf.token}",
