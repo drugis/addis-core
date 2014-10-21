@@ -8,6 +8,12 @@ define(['underscore'], function() {
     OutcomeResource, InterventionResource, TrialverseStudyResource, ProblemResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW, AnalysisResource) {
 
     $scope.studies = [];
+    $scope.outcomes = $scope.analysis.selectedOutcomes;
+    $scope.interventions = $scope.analysis.selectedInterventions;
+    $scope.studyModel = {
+      selectedStudy: {}
+    };
+
     var projectIdParam = {
       projectId: $stateParams.projectId
     };
@@ -20,12 +26,6 @@ define(['underscore'], function() {
       return left.id === right.id;
     };
 
-    $scope.outcomes = $scope.analysis.selectedOutcomes;
-    $scope.interventions = $scope.analysis.selectedInterventions;
-    $scope.studyModel = {
-      selectedStudy: {}
-    };
-
     var hasMissingOutcomes = function(study) {
       return study.missingOutcomes && study.missingOutcomes.length > 0;
     };
@@ -34,7 +34,7 @@ define(['underscore'], function() {
       return study.missingInterventions && study.missingInterventions.length > 0;
     };
 
-    $scope.validateAnalysis = function(analysis) {
+    $scope.isValidAnalysis = function(analysis) {
       var twoOrMoreInerventions = analysis.selectedInterventions.length >= 2;
       var twoOrMoreOutcomes = analysis.selectedOutcomes.length >= 2;
       var noMatchedMixedTreatmentArm = $scope.studyModel.selectedStudy && !$scope.studyModel.selectedStudy.hasMatchedMixedTreatmentArm;
@@ -45,17 +45,18 @@ define(['underscore'], function() {
       return result;
     };
 
-    $scope.isValidAnalysis = $scope.validateAnalysis($scope.analysis);
-
     function outcomesChanged() {
-      $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
-      updateAnalysis();
+      SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
+      SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.selectedInterventions);
+      SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
+      saveAnalysis();
     }
 
     function interventionsChanged() {
-      $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.selectedInterventions);
-      $scope.studies = SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.selectedInterventions);
-      updateAnalysis();
+      SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.selectedInterventions);
+      SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.selectedInterventions);
+      SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
+      saveAnalysis();
     }
 
     OutcomeResource.query(projectIdParam).$promise.then(function(outcomes) {
@@ -88,10 +89,10 @@ define(['underscore'], function() {
         study.interventionUids = compileListOfInterventionUids(study);
       });
 
-      $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
-      $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.selectedInterventions);
-      $scope.studies = SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.selectedInterventions);
-      $scope.isValidAnalysis = $scope.validateAnalysis($scope.analysis);
+      SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
+      SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.selectedInterventions);
+      SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.selectedInterventions);
+      SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
     });
 
     function compileListOfInterventionUids(study) {
@@ -104,23 +105,18 @@ define(['underscore'], function() {
       return interventionUids;
     }
 
-    function updateAnalysis() {
-      $scope.isValidAnalysis = $scope.validateAnalysis($scope.analysis);
+    function saveAnalysis() {
       AnalysisResource.save($scope.analysis);
     }
 
     $scope.studyGroupFn = function(study) {
-      console.log('group yo');
-      return $scope.isValidStudy(study) ? 'Analysable studies' : 'Un-analysable Studies';
-    };
-
-    $scope.isValidStudy = function(study) {
-      return SingleStudyBenefitRiskAnalysisService.isValidStudyOption(study);
+      console.log('studyGroup fn');
+      return SingleStudyBenefitRiskAnalysisService.isValidStudyOption(study) ? 'Analysable studies' : 'Un-analysable Studies';
     };
 
     $scope.onStudySelect = function(item) {
       $scope.analysis.studyUid = item.uid;
-      updateAnalysis();
+      saveAnalysis();
     };
 
     $scope.goToDefaultScenarioView = function() {

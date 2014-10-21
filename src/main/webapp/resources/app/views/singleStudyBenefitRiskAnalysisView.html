@@ -46,11 +46,11 @@
     </div>
     <ui-select class="addis-select2" style="width:100%;" theme="select2" ng-model="studyModel.selectedStudy" data-placeholder="no study selected" on-select="onStudySelect($item, $model)" ng-disabled="editMode.disableEditing">
       <ui-select-match>{{$select.selected.name}}
-        <i ng-if="$select.selected.missingOutcomes.length > 0 || $select.selected.missingInterventions.length > 0 || $select.selected.hasMatchedMixedTreatmentArm" class="fa fa-exclamation-triangle"></i>
+        <i ng-if="$select.selected.group === 1" class="fa fa-exclamation-triangle"></i>
       </ui-select-match>
       <ui-select-choices group-by="studyGroupFn" repeat="study in studies | orderBy:['group', 'name'] | filter: $select.search">
         <span ng-bind-html="study.name | highlight: $select.search"></span>
-        <i ng-if="study.hasMatchedMixedTreatmentArm || study.missingOutcomes.length > 0 || study.missingInterventions.length > 0" class="fa fa-exclamation-triangle"></i>
+        <i ng-if="study.group === 1" class="fa fa-exclamation-triangle"></i>
       </ui-select-choices>
     </ui-select>
     <p class="fixed-height-info-container">
@@ -59,11 +59,15 @@
   </div>
 </div>
 
-
 <div class="row">
   <div class="columns large-6 ">
     <div ng-switch on="isProblemDefined">
-      <button ng-disabled="!isValidAnalysis" ng-switch-when="false" ng-click="createProblem()">Perform MCDA Analysis
+      <button ng-disabled="analysis.selectedOutcomes.length < 2 ||
+                               analysis.selectedInterventions.length < 2 ||
+                               !studyModel.selectedStudy ||
+                               studyModel.selectedStudy.missingInterventions.length > 0 ||
+                               studyModel.selectedStudy.missingOutcomes.length > 0 ||
+                               studyModel.selectedStudy.hasMatchedMixedTreatmentArm" ng-switch-when="false" ng-click="createProblem()">Perform MCDA Analysis
       </button>
       <button ng-switch-when="true" ng-click="goToDefaultScenarioView()">Go to MCDA Analysis</button>
     </div>

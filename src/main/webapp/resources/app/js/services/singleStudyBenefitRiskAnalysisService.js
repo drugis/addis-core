@@ -57,9 +57,10 @@ define(['angular'], function() {
     };
 
     var isValidStudyOption = function(study) {
-      return !(study.hasMatchedMixedTreatmentArm ||
-        (study.missingOutcomes && study.missingOutcomes.length > 0) ||
-        (study.missingInterventions && study.missingInterventions.length > 0));
+      var noMissingOutcomes =  study.missingOutcomes ? study.missingOutcomes.length === 0 : true;
+      var noMissingInterventions = study.missingInterventions ? study.missingInterventions.length === 0 : true;
+      var noMixedTreatmentArm =  !study.hasMatchedMixedTreatmentArm;
+      return noMissingOutcomes && noMissingInterventions && noMixedTreatmentArm;
     };
 
     // Add a 'group' property for sorting alphabetically within groups while placing the 'valid' group on top of the options list
@@ -69,7 +70,6 @@ define(['angular'], function() {
       } else {
         study.group = 1;
       }
-      return study;
     };
 
     function isSameOutcome(studyOutcomeUri, selectedOutcome) {
@@ -85,22 +85,22 @@ define(['angular'], function() {
     }
 
     var addMissingOutcomesToStudies = function(studies, selectedOutcomes) {
-      return _.map(studies, function(study) {
-        study.missingOutcomes = findMissing(
-          selectedOutcomes, study.outcomeUids, isSameOutcome);
-        study = addGroup(study);
-        return study;
+      return _.each(studies, function(study) {
+        study.missingOutcomes = findMissing(selectedOutcomes, study.outcomeUids, isSameOutcome);
       });
     };
 
     var addMissingInterventionsToStudies = function(studies, selectedInterventions) {
-      return _.map(studies, function(study) {
-        study.missingInterventions = findMissing(
-          selectedInterventions, study.interventionUids, isSameIntervention);
-        study = addGroup(study);
-        return study;
+      return _.each(studies, function(study) {
+        study.missingInterventions = findMissing(selectedInterventions, study.interventionUids, isSameIntervention);
       });
     };
+
+    var recalculateGroup = function(studies) {
+        _.each(studies, function(study) {
+          addGroup(study);
+        });
+    }
 
     function findMatchingIntervention(selectedInterventions, treatmentArm) {
       return _.find(selectedInterventions, function(selectedIntervention) {
@@ -111,11 +111,10 @@ define(['angular'], function() {
     }
 
     var addHasMatchedMixedTreatmentArm = function(studies, selectedInterventions) {
-      return _.map(studies, function(study) {
+      _.each(studies, function(study) {
         study.hasMatchedMixedTreatmentArm = _.some(study.treatmentArms, function(treatmentArm) {
           return treatmentArm.interventionUids.length > 1 && findMatchingIntervention(selectedInterventions, treatmentArm);
         });
-        return study;
       });
     };
 
@@ -127,7 +126,8 @@ define(['angular'], function() {
       addMissingOutcomesToStudies: addMissingOutcomesToStudies,
       addMissingInterventionsToStudies: addMissingInterventionsToStudies,
       addHasMatchedMixedTreatmentArm: addHasMatchedMixedTreatmentArm,
-      isValidStudyOption: isValidStudyOption
+      isValidStudyOption: isValidStudyOption,
+      recalculateGroup: recalculateGroup
     };
   };
   return dependencies.concat(SingleStudyBenefitRiskAnalysisService);

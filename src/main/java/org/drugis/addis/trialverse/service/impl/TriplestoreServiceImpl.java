@@ -708,6 +708,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   private String queryTripleStore(String query) {
+    logger.info("Triplestore uri = " + TRIPLESTORE_URI);
+    logger.info("sparql query = " + query);
     Map<String, String> vars = new HashMap<>();
     vars.put("query", query);
     vars.put("output", "json");
