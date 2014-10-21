@@ -24,11 +24,22 @@ define(['underscore'], function() {
     $scope.studyModel = {
       selectedStudy: {}
     };
+
+    var hasMissingOutcomes = function(study) {
+      return study.missingOutcomes && study.missingOutcomes.length > 0;
+    };
+
+    var hasMissingInterventions = function(study) {
+      return study.missingInterventions && study.missingInterventions.length > 0;
+    };
+
     $scope.validateAnalysis = function(analysis) {
       return analysis.selectedInterventions.length >= 2 &&
         analysis.selectedOutcomes.length >= 2 &&
-        $scope.selectedStudy &&
-        !$scope.selectedStudy.hasMatchedMixedTreatmentArm;
+        $scope.studyModel.selectedStudy &&
+        !$scope.studyModel.selectedStudy.hasMatchedMixedTreatmentArm &&
+        !hasMissingOutcomes($scope.studyModel.selectedStudy) &&
+        !hasMissingInterventions($scope.studyModel.selectedStudy);
     };
 
 
