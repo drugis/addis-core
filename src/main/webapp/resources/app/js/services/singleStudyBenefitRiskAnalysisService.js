@@ -12,11 +12,6 @@ define(['angular'], function() {
         });
     };
 
-    var validateAnalysis = function(analysis) {
-      return analysis.selectedInterventions.length >= 2 &&
-        analysis.selectedOutcomes.length >= 2;
-    };
-
     var verifyCell = function(performanceEntry, outcome, intervention) {
       var result = performanceEntry.criterionUri === outcome.semanticOutcomeUri && performanceEntry.alternativeUri === intervention.semanticInterventionUri;
       return result;
@@ -61,13 +56,78 @@ define(['angular'], function() {
       });
     };
 
+    var isValidStudyOption = function(study) {
+      return !(study.hasMatchedMixedTreatmentArm ||
+        (study.missingOutcomes && study.missingOutcomes.length > 0) ||
+        (study.missingInterventions && study.missingInterventions.length > 0));
+    };
+
+    // Add a 'group' property for sorting alphabetically within groups while placing the 'valid' group on top of the options list
+    var addGroup = function(study) {
+      if (isValidStudyOption(study)) {
+        study.group = 0;
+      } else {
+        study.group = 1;
+      }
+      return study;
+    };
+
+    function isSameOutcome(studyOutcomeUri, selectedOutcome) {
+      var lastIndexOfSlash = studyOutcomeUri.lastIndexOf('/');
+      var idPart = studyOutcomeUri.substring(lastIndexOfSlash + 1);
+      return selectedOutcome.semanticOutcomeUri === idPart;
+    }
+
+    function isSameIntervention(studyInterventionUri, selectedIntervention) {
+      var lastIndexOfSlash = studyInterventionUri.lastIndexOf('/');
+      var idPart = studyInterventionUri.substring(lastIndexOfSlash + 1);
+      return selectedIntervention.semanticInterventionUri === idPart;
+    }
+
+    var addMissingOutcomesToStudies = function(studies, selectedOutcomes) {
+      return _.map(studies, function(study) {
+        study.missingOutcomes = findMissing(
+          selectedOutcomes, study.outcomeUids, isSameOutcome);
+        study = addGroup(study);
+        return study;
+      });
+    };
+
+    var addMissingInterventionsToStudies = function(studies, selectedInterventions) {
+      return _.map(studies, function(study) {
+        study.missingInterventions = findMissing(
+          selectedInterventions, study.interventionUids, isSameIntervention);
+        study = addGroup(study);
+        return study;
+      });
+    };
+
+    function findMatchingIntervention(selectedInterventions, treatmentArm) {
+      return _.find(selectedInterventions, function(selectedIntervention) {
+        return _.find(treatmentArm.interventionUids, function(interventionUid) {
+          return isSameIntervention(interventionUid, selectedIntervention);
+        });
+      });
+    }
+
+    var addHasMatchedMixedTreatmentArm = function(studies, selectedInterventions) {
+      return _.map(studies, function(study) {
+        study.hasMatchedMixedTreatmentArm = _.some(study.treatmentArms, function(treatmentArm) {
+          return treatmentArm.interventionUids.length > 1 && findMatchingIntervention(selectedInterventions, treatmentArm);
+        });
+        return study;
+      });
+    };
+
     return {
       getProblem: getProblem,
       validateProblem: validateProblem,
       getDefaultScenario: getDefaultScenario,
-      validateAnalysis: validateAnalysis,
       concatWithNoDuplicates: concatWithNoDuplicates,
-      findMissing: findMissing
+      addMissingOutcomesToStudies: addMissingOutcomesToStudies,
+      addMissingInterventionsToStudies: addMissingInterventionsToStudies,
+      addHasMatchedMixedTreatmentArm: addHasMatchedMixedTreatmentArm,
+      isValidStudyOption: isValidStudyOption
     };
   };
   return dependencies.concat(SingleStudyBenefitRiskAnalysisService);

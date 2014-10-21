@@ -1,5 +1,5 @@
 define(['angular', 'angular-mocks', 'services'], function() {
-  describe("The singleStudyBenefitRisk Analysis service", function() {
+  describe('The singleStudyBenefitRisk Analysis service', function() {
 
     var mockProblemResource,
       mockScenarioResource,
@@ -84,51 +84,6 @@ define(['angular', 'angular-mocks', 'services'], function() {
           $provide.value('$stateParams', stateParams);
         });
       });
-
-      it("should reject analyses that contain fewer than two selectedInterventions and two selectedOutcomes",
-        inject(function($rootScope, $q, $location, $stateParams, SingleStudyBenefitRiskAnalysisService) {
-          var invalidAnalysis = {
-            selectedInterventions: [],
-            selectedOutcomes: []
-          };
-          expect(SingleStudyBenefitRiskAnalysisService.validateAnalysis(invalidAnalysis)).toBeFalsy();
-
-          invalidAnalysis = {
-            selectedInterventions: [1],
-            selectedOutcomes: []
-          };
-          expect(SingleStudyBenefitRiskAnalysisService.validateAnalysis(invalidAnalysis)).toBeFalsy();
-
-          invalidAnalysis = {
-            selectedInterventions: [],
-            selectedOutcomes: [1]
-          };
-          expect(SingleStudyBenefitRiskAnalysisService.validateAnalysis(invalidAnalysis)).toBeFalsy();
-
-          invalidAnalysis = {
-            selectedInterventions: [1, 2, 3],
-            selectedOutcomes: []
-          };
-          expect(SingleStudyBenefitRiskAnalysisService.validateAnalysis(invalidAnalysis)).toBeFalsy();
-
-          invalidAnalysis = {
-            selectedInterventions: [],
-            selectedOutcomes: [1, 2, 3]
-          };
-          expect(SingleStudyBenefitRiskAnalysisService.validateAnalysis(invalidAnalysis)).toBeFalsy();
-
-          var validAnalysis = {
-            selectedInterventions: [1, 2],
-            selectedOutcomes: [1, 2]
-          };
-          expect(SingleStudyBenefitRiskAnalysisService.validateAnalysis(invalidAnalysis)).toBeFalsy();
-
-          validAnalysis = {
-            selectedInterventions: [1, 2, 3],
-            selectedOutcomes: [1, 2, 3]
-          };
-          expect(SingleStudyBenefitRiskAnalysisService.validateAnalysis(invalidAnalysis)).toBeFalsy();
-        }));
     });
 
     describe("validateProblem", function() {
@@ -195,14 +150,32 @@ define(['angular', 'angular-mocks', 'services'], function() {
       it('should add the source objects to the target if not already on target',
         inject(function($rootScope, $q, $location, SingleStudyBenefitRiskAnalysisService) {
 
-          var source = [{name: 'bob'}, {name: 'dave'}];
-          var target = [{name: 'mark'},{name: 'dave'}, {name: 'lisa'}];
+          var source = [{
+            name: 'bob'
+          }, {
+            name: 'dave'
+          }];
+          var target = [{
+            name: 'mark'
+          }, {
+            name: 'dave'
+          }, {
+            name: 'lisa'
+          }];
 
           var isNameEqual = function(option, seachItem) {
             return option.name === seachItem.name;
           };
 
-          var expectResult = [ { name : 'bob' }, { name : 'mark' }, { name : 'dave' }, { name : 'lisa' } ];
+          var expectResult = [{
+            name: 'bob'
+          }, {
+            name: 'mark'
+          }, {
+            name: 'dave'
+          }, {
+            name: 'lisa'
+          }];
 
           expect(SingleStudyBenefitRiskAnalysisService.concatWithNoDuplicates(source, target, isNameEqual)).toEqual(expectResult);
         })
@@ -210,8 +183,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
     });
 
-    describe("findMissing", function() {
-
+    describe('addHasMatchedMixedTreatmentArm', function() {
       beforeEach(function() {
         stateParams = jasmine.createSpyObj('stateParams', ['foo']);
         module('addis', function($provide) {
@@ -219,24 +191,40 @@ define(['angular', 'angular-mocks', 'services'], function() {
         });
       });
       beforeEach(module('addis.services'));
-
-      it('should return a list of objects that a missing form the optionsList',
-        inject(function($rootScope, $q, $location, SingleStudyBenefitRiskAnalysisService) {
-
-          var seachList = [{name: 'bob'}, {name: 'dave'}];
-          var optionsList = [{name: 'mark'},{name: 'dave'}, {name: 'lisa'}];
-
-          var isNameEqual = function(option, seachItem) {
-            return option.name === seachItem.name;
-          };
-
-          // so here 'bob' is missing from the options lsit right
-          expect(SingleStudyBenefitRiskAnalysisService.findMissing(seachList, optionsList, isNameEqual)).toEqual([{name: 'bob'}]);
-        })
-      );
-
+      it('should set hasMatchedMixedTreatmentArm to true for each study in which a selected intervention is matched to a mixed' +
+        'treatment arm', inject(function(SingleStudyBenefitRiskAnalysisService) {
+          var studies = [{
+            treatmentArms: [{
+              interventionUids: [
+                'uid 1',
+                'uid 2'
+              ]
+            }, {
+              interventionUids: [
+                'uid 3'
+              ]
+            }]
+          }, {
+            treatmentArms: [{
+              interventionUids: [
+                'uid 1'
+              ]
+            }, {
+              interventionUids: [
+                'uid 2'
+              ]
+            }]
+          }];
+          var selectedInterventions = [{
+            semanticInterventionUri: 'uid 1'
+          }, {
+            semanticInterventionUri: 'uid 2'
+          }];
+          var modifiedStudies = SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm(studies, selectedInterventions);
+          expect(modifiedStudies[0].hasMatchedMixedTreatmentArm).toBeTruthy();
+          expect(modifiedStudies[1].hasMatchedMixedTreatmentArm).toBeFalsy();
+        }));
     });
-
 
   });
 });

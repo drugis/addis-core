@@ -16,14 +16,14 @@
       <ui-select-choices repeat="outcome in outcomes | filter: $select.search">
         <div ng-bind-html="outcome.name | highlight: $select.search"></div>
       </ui-select-choices>
-    </ui-select >
+    </ui-select>
   </div>
 </div>
 
 <div class="row">
   <div class="columns large-6 ">
 
-    <div >
+    <div>
       Selected Alternatives
     </div>
 
@@ -32,59 +32,73 @@
       <ui-select-choices repeat="intervention in interventions | filter: $select.search">
         <div ng-bind-html="intervention.name | highlight: $select.search"></div>
       </ui-select-choices>
-    </ui-select >
-    </div>
-
+    </ui-select>
   </div>
+
+</div>
 </div>
 
 
-    <div class="row">
-      <div class="columns large-6" >
-        <div >
-          Selected Study
-        </div>
-        <ui-select class="addis-select2" style="width:100%;" theme="select2" ng-model="studyModel.selectedStudy" data-placeholder="no study selected" on-select="onStudySelect($item, $model)" ng-disabled="editMode.disableEditing">
-          <ui-select-match>{{$select.selected.name}}
-            <i ng-if="$select.selected.missingOutcomes.length > 0 || $select.selected.missingInterventions.length > 0" class="fa fa-exclamation-triangle"></i>
-        </ui-select-match>
-            <ui-select-choices group-by="studyGroupFn" repeat="study in studies | orderBy:['group', 'name'] | filter: $select.search">
-            <span ng-bind-html="study.name | highlight: $select.search"></span>
-            <i ng-if="study.missingOutcomes.length > 0 || study.missingInterventions.length > 0" class="fa fa-exclamation-triangle"></i>
-          </ui-select-choices>
-        </ui-select >
-        <p class="fixed-height-info-container"><!-- dummy --></p>
-      </div>
+<div class="row">
+  <div class="columns large-6">
+    <div>
+      Selected Study
     </div>
+    <ui-select class="addis-select2" style="width:100%;" theme="select2" ng-model="studyModel.selectedStudy" data-placeholder="no study selected" on-select="onStudySelect($item, $model)" ng-disabled="editMode.disableEditing">
+      <ui-select-match>{{$select.selected.name}}
+        <i ng-if="$select.selected.missingOutcomes.length > 0 || $select.selected.missingInterventions.length > 0 || $select.selected.hasMatchedMixedTreatmentArm" class="fa fa-exclamation-triangle"></i>
+      </ui-select-match>
+      <ui-select-choices group-by="studyGroupFn" repeat="study in studies | orderBy:['group', 'name'] | filter: $select.search">
+        <span ng-bind-html="study.name | highlight: $select.search"></span>
+        <i ng-if="study.hasMatchedMixedTreatmentArm || study.missingOutcomes.length > 0 || study.missingInterventions.length > 0" class="fa fa-exclamation-triangle"></i>
+      </ui-select-choices>
+    </ui-select>
+    <p class="fixed-height-info-container">
+      <!-- dummy -->
+    </p>
+  </div>
+</div>
 
 
 <div class="row">
   <div class="columns large-6 ">
     <div ng-switch on="isProblemDefined">
-      <button ng-disabled="!isValidAnalysis || studyModel.selectedStudy.missingOutcomes.length > 0 
-        || studyModel.selectedStudy.missingInterventions.length > 0 || !studyModel.selectedStudy" ng-switch-when="false" ng-click="createProblem()">Perform MCDA
-      Analysis
+      <button ng-disabled="!isValidAnalysis" ng-switch-when="false" ng-click="createProblem()">Perform MCDA Analysis
       </button>
       <button ng-switch-when="true" ng-click="goToDefaultScenarioView()">Go to MCDA Analysis</button>
     </div>
-    <p ng-if="analysis.selectedOutcomes.length < 2"><i class="fa fa-exclamation-triangle"></i> <em >At least two criteria should be selected so that a tradeoff can be made.</em></p>
+    <p ng-if="analysis.selectedOutcomes.length < 2"><i class="fa fa-exclamation-triangle"></i>
+      <em>At least two criteria should be selected so that a tradeoff can be made.</em>
+    </p>
     <div ng-if="studyModel.selectedStudy.missingOutcomes.length > 0">
       <p>
         <em><i class="fa fa-exclamation-triangle"></i>
-      Selected study lacks these outcomes: <span ng-repeat="missingOutcome in studyModel.selectedStudy.missingOutcomes">{{missingOutcome.name}}<span ng-if="!$last">, </span></span>
-      </em>
+          Selected study lacks these outcomes:
+          <span ng-repeat="missingOutcome in studyModel.selectedStudy.missingOutcomes">{{missingOutcome.name}}
+            <span ng-if="!$last">,</span>
+          </span>
+        </em>
       </p>
     </div>
-     <p ng-if="analysis.selectedInterventions.length < 2" ><i class="fa fa-exclamation-triangle"></i> <em >At least two interventions should be selected so that a tradeoff can be made.</em></p>
+    <p ng-if="analysis.selectedInterventions.length < 2"><i class="fa fa-exclamation-triangle"></i>
+      <em>At least two interventions should be selected so that a tradeoff can be made.</em>
+    </p>
     <div ng-if="studyModel.selectedStudy.missingInterventions.length > 0">
       <p>
         <em>
-        <i class="fa fa-exclamation-triangle"></i> Selected study lacks these intervention: <span ng-repeat="missingIntervention in studyModel.selectedStudy.missingInterventions">{{missingIntervention.name}}<span ng-if="!$last">, </span></span>
-      </em>
+          <i class="fa fa-exclamation-triangle"></i> Selected study lacks these intervention(s):
+          <span ng-repeat="missingIntervention in studyModel.selectedStudy.missingInterventions">{{missingIntervention.name}}
+            <span ng-if="!$last">,</span>
+          </span>
+        </em>
       </p>
-
-  </div>
+    </div>
+    <div ng-if="studyModel.selectedStudy.hasMatchedMixedTreatmentArm">
+      <p>
+        <em>
+          <i class="fa fa-exclamation-triangle"></i> Selected study has a mixed-treatment arm for at least one of the selected alternatives. We do not currently support analysis of such studies.
+        </em>
+      </p>
+    </div>
   </div>
 </div>
-
-
