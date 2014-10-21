@@ -7,6 +7,7 @@ define(['underscore'], function() {
   var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $q, $window,
     OutcomeResource, InterventionResource, TrialverseStudyResource, ProblemResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW, AnalysisResource) {
 
+    $scope.studies = [];
     var projectIdParam = {
       projectId: $stateParams.projectId
     };
@@ -34,14 +35,15 @@ define(['underscore'], function() {
     };
 
     $scope.validateAnalysis = function(analysis) {
-      return analysis.selectedInterventions.length >= 2 &&
-        analysis.selectedOutcomes.length >= 2 &&
-        $scope.studyModel.selectedStudy &&
-        !$scope.studyModel.selectedStudy.hasMatchedMixedTreatmentArm &&
-        !hasMissingOutcomes($scope.studyModel.selectedStudy) &&
-        !hasMissingInterventions($scope.studyModel.selectedStudy);
-    };
+      var twoOrMoreInerventions = analysis.selectedInterventions.length >= 2;
+      var twoOrMoreOutcomes = analysis.selectedOutcomes.length >= 2;
+      var noMatchedMixedTreatmentArm = $scope.studyModel.selectedStudy && !$scope.studyModel.selectedStudy.hasMatchedMixedTreatmentArm;
+      var noMissingOutcomes = $scope.studyModel.selectedStudy && !hasMissingOutcomes($scope.studyModel.selectedStudy);
+      var noMissingInterventions = $scope.studyModel.selectedStudy && !hasMissingInterventions($scope.studyModel.selectedStudy);
 
+      var result = twoOrMoreInerventions && twoOrMoreOutcomes && noMatchedMixedTreatmentArm && noMissingOutcomes && noMissingInterventions;
+      return result;
+    };
 
     $scope.isValidAnalysis = $scope.validateAnalysis($scope.analysis);
 
@@ -76,7 +78,6 @@ define(['underscore'], function() {
       });
     });
 
-    $scope.studies = [];
     TrialverseStudyResource.query(projectNamespaceUid).$promise.then(function(studies) {
       $scope.studies = studies;
       $scope.studyModel.selectedStudy = _.find(studies, function(study) {
@@ -90,6 +91,7 @@ define(['underscore'], function() {
       $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
       $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.selectedInterventions);
       $scope.studies = SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.selectedInterventions);
+      $scope.isValidAnalysis = $scope.validateAnalysis($scope.analysis);
     });
 
     function compileListOfInterventionUids(study) {
@@ -102,13 +104,13 @@ define(['underscore'], function() {
       return interventionUids;
     }
 
-
     function updateAnalysis() {
       $scope.isValidAnalysis = $scope.validateAnalysis($scope.analysis);
       AnalysisResource.save($scope.analysis);
     }
 
     $scope.studyGroupFn = function(study) {
+      console.log('group yo');
       return $scope.isValidStudy(study) ? 'Analysable studies' : 'Un-analysable Studies';
     };
 
