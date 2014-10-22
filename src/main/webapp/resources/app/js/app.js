@@ -30,11 +30,13 @@ define(
     'mcda/services/hashCodeService',
     'mcda/services/partialValueFunction',
     'mcda/services/workspaceService',
+    'mcda/services/scaleRangeService',
     'mcda/services/util'
   ],
   function(angular, require, $, Config) {
     var mcdaDependencies = [
       'elicit.errorHandling',
+      'elicit.scaleRangeService',
       'elicit.workspaceResource',
       'elicit.taskDependencies',
       'elicit.directives',
