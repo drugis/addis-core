@@ -9,9 +9,9 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
     var analysisResource = jasmine.createSpyObj('AnalysisResource', ['save']);
     var trialverseStudyResource = jasmine.createSpyObj('TrialverseStudyResource', ['query']);
     var problemResource = jasmine.createSpyObj('problemResource', ['get']);
-    var singleStudyBenefitRiskAnalysisService = jasmine.createSpyObj('singleStudyBenefitRiskAnalysisService', ['getProblem', 'getDefaultScenario', 'validateAnalysis', 'validateProblem',
+    var singleStudyBenefitRiskAnalysisService = jasmine.createSpyObj('singleStudyBenefitRiskAnalysisService', ['getProblem', 'getDefaultScenario', 'validateProblem',
       'concatWithNoDuplicates', 'addMissingOutcomesToStudies', 'addMissingInterventionsToStudies',
-      'addHasMatchedMixedTreatmentArm'
+      'addHasMatchedMixedTreatmentArm', 'recalculateGroup'
     ]);
     var outcomesDeferred;
     var interventionDeferred;
@@ -64,7 +64,6 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       }];
 
       // set a mock result value for the service call
-      singleStudyBenefitRiskAnalysisService.validateAnalysis.and.returnValue(false);
       singleStudyBenefitRiskAnalysisService.concatWithNoDuplicates.and.returnValue(mockOutcomes);
       singleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies.and.returnValue(mockStudies);
       singleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies.and.returnValue(mockStudies);
@@ -106,43 +105,43 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
             selectedInterventions: [],
             selectedOutcomes: []
           };
-          expect(scope.validateAnalysis(invalidAnalysis)).toBeFalsy();
+          expect(scope.isValidAnalysis(invalidAnalysis)).toBeFalsy();
 
           invalidAnalysis = {
             selectedInterventions: [1],
             selectedOutcomes: []
           };
-          expect(scope.validateAnalysis(invalidAnalysis)).toBeFalsy();
+          expect(scope.isValidAnalysis(invalidAnalysis)).toBeFalsy();
 
           invalidAnalysis = {
             selectedInterventions: [],
             selectedOutcomes: [1]
           };
-          expect(scope.validateAnalysis(invalidAnalysis)).toBeFalsy();
+          expect(scope.isValidAnalysis(invalidAnalysis)).toBeFalsy();
 
           invalidAnalysis = {
             selectedInterventions: [1, 2, 3],
             selectedOutcomes: []
           };
-          expect(scope.validateAnalysis(invalidAnalysis)).toBeFalsy();
+          expect(scope.isValidAnalysis(invalidAnalysis)).toBeFalsy();
 
           invalidAnalysis = {
             selectedInterventions: [],
             selectedOutcomes: [1, 2, 3]
           };
-          expect(scope.validateAnalysis(invalidAnalysis)).toBeFalsy();
+          expect(scope.isValidAnalysis(invalidAnalysis)).toBeFalsy();
 
           var validAnalysis = {
             selectedInterventions: [1, 2],
             selectedOutcomes: [1, 2]
           };
-          expect(scope.validateAnalysis(invalidAnalysis)).toBeFalsy();
+          expect(scope.isValidAnalysis(invalidAnalysis)).toBeFalsy();
 
           validAnalysis = {
             selectedInterventions: [1, 2, 3],
             selectedOutcomes: [1, 2, 3]
           };
-          expect(scope.validateAnalysis(invalidAnalysis)).toBeFalsy();
+          expect(scope.isValidAnalysis(invalidAnalysis)).toBeFalsy();
         });
 
       it('should set the outcomes to equal the already selected outcomes', function() {
@@ -225,7 +224,6 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
     describe('when outcomes, interventions and studies haven been resolved and the selected outcomes change', function() {
       beforeEach(function() {
-        spyOn(scope, 'validateAnalysis');
         outcomesDeferred.resolve(mockOutcomes);
         interventionDeferred.resolve(mockInterventions);
         studiesDeferred.resolve(mockStudies);
@@ -240,14 +238,12 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         scope.$apply();
         scope.dirty = true;
 
-        expect(scope.validateAnalysis).toHaveBeenCalled();
         expect(analysisResource.save).toHaveBeenCalled();
       });
     });
 
     describe('when outcomes, interventions and studies haven been resolved and the selected interventions change', function() {
       beforeEach(function() {
-        spyOn(scope, 'validateAnalysis');
         outcomesDeferred.resolve(mockOutcomes);
         interventionDeferred.resolve(mockInterventions);
         studiesDeferred.resolve(mockStudies);
@@ -262,7 +258,6 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         scope.$apply();
         scope.dirty = true;
 
-        expect(scope.validateAnalysis).toHaveBeenCalled();
         expect(analysisResource.save).toHaveBeenCalled();
       });
     });

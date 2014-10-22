@@ -49,6 +49,11 @@ define(['underscore'], function() {
       SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
       SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.selectedInterventions);
       SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
+
+      // necessary because angular-select uses $watchcollection instead of $watch
+      $scope.studies.push({
+        key: 'dirtyElement'
+      });
       saveAnalysis();
     }
 
@@ -56,6 +61,11 @@ define(['underscore'], function() {
       SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.selectedInterventions);
       SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.selectedInterventions);
       SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
+
+      // necessary because angular-select uses $watchcollection instead of $watch
+      $scope.studies.push({
+        key: 'dirtyElement'
+      });
       saveAnalysis();
     }
 
@@ -81,6 +91,8 @@ define(['underscore'], function() {
 
     TrialverseStudyResource.query(projectNamespaceUid).$promise.then(function(studies) {
       $scope.studies = studies;
+      $scope.studyArrayLength = studies.length;
+
       $scope.studyModel.selectedStudy = _.find(studies, function(study) {
         return study.uid === $scope.analysis.studyUid;
       });
@@ -106,13 +118,11 @@ define(['underscore'], function() {
     }
 
     function saveAnalysis() {
-      AnalysisResource.save($scope.analysis);
+      AnalysisResource.save($scope.analysis, function() {
+        // necessary because angular-select uses $watchcollection instead of $watch
+        $scope.studies = $scope.studies.splice(0, $scope.studyArrayLength);
+      });
     }
-
-    $scope.studyGroupFn = function(study) {
-      console.log('studyGroup fn');
-      return SingleStudyBenefitRiskAnalysisService.isValidStudyOption(study) ? 'Analysable studies' : 'Un-analysable Studies';
-    };
 
     $scope.onStudySelect = function(item) {
       $scope.analysis.studyUid = item.uid;

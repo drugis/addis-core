@@ -57,9 +57,9 @@ define(['angular'], function() {
     };
 
     var isValidStudyOption = function(study) {
-      var noMissingOutcomes =  study.missingOutcomes ? study.missingOutcomes.length === 0 : true;
+      var noMissingOutcomes = study.missingOutcomes ? study.missingOutcomes.length === 0 : true;
       var noMissingInterventions = study.missingInterventions ? study.missingInterventions.length === 0 : true;
-      var noMixedTreatmentArm =  !study.hasMatchedMixedTreatmentArm;
+      var noMixedTreatmentArm = !study.hasMatchedMixedTreatmentArm;
       return noMissingOutcomes && noMissingInterventions && noMixedTreatmentArm;
     };
 
@@ -67,8 +67,10 @@ define(['angular'], function() {
     var addGroup = function(study) {
       if (isValidStudyOption(study)) {
         study.group = 0;
+        study.groupLabel = 'Analysable studies';
       } else {
         study.group = 1;
+        study.groupLabel = 'Un-analysable Studies';
       }
     };
 
@@ -97,10 +99,10 @@ define(['angular'], function() {
     };
 
     var recalculateGroup = function(studies) {
-        _.each(studies, function(study) {
-          addGroup(study);
-        });
-    }
+      _.each(studies, function(study) {
+        addGroup(study);
+      });
+    };
 
     function findMatchingIntervention(selectedInterventions, treatmentArm) {
       return _.find(selectedInterventions, function(selectedIntervention) {

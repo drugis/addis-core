@@ -22,7 +22,6 @@
 
 <div class="row">
   <div class="columns large-6 ">
-
     <div>
       Selected Alternatives
     </div>
@@ -36,7 +35,6 @@
   </div>
 
 </div>
-</div>
 
 
 <div class="row">
@@ -48,14 +46,12 @@
       <ui-select-match>{{$select.selected.name}}
         <i ng-if="$select.selected.group === 1" class="fa fa-exclamation-triangle"></i>
       </ui-select-match>
-      <ui-select-choices group-by="studyGroupFn" repeat="study in studies | orderBy:['group', 'name'] | filter: $select.search">
+      <ui-select-choices group-by="'groupLabel'" repeat="study in studies | orderBy:['group', 'name'] | filter: $select.search">
         <span ng-bind-html="study.name | highlight: $select.search"></span>
         <i ng-if="study.group === 1" class="fa fa-exclamation-triangle"></i>
       </ui-select-choices>
     </ui-select>
-    <p class="fixed-height-info-container">
-      <!-- dummy -->
-    </p>
+    <p class="fixed-height-info-container"><!-- dummy spacer--></p>
   </div>
 </div>
 

@@ -220,9 +220,9 @@ define(['angular', 'angular-mocks', 'services'], function() {
           }, {
             semanticInterventionUri: 'uid 2'
           }];
-          var modifiedStudies = SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm(studies, selectedInterventions);
-          expect(modifiedStudies[0].hasMatchedMixedTreatmentArm).toBeTruthy();
-          expect(modifiedStudies[1].hasMatchedMixedTreatmentArm).toBeFalsy();
+          SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm(studies, selectedInterventions);
+          expect(studies[0].hasMatchedMixedTreatmentArm).toBeTruthy();
+          expect(studies[1].hasMatchedMixedTreatmentArm).toBeFalsy();
         }));
     });
 
