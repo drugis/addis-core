@@ -67,10 +67,10 @@ define(['angular'], function() {
     var addGroup = function(study) {
       if (isValidStudyOption(study)) {
         study.group = 0;
-        study.groupLabel = 'Analysable studies';
+        study.groupLabel = 'Compatible studies';
       } else {
         study.group = 1;
-        study.groupLabel = 'Un-analysable Studies';
+        study.groupLabel = 'Incompatible Studies';
       }
     };
 
