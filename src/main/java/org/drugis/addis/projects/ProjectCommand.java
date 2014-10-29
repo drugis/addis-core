@@ -1,7 +1,5 @@
 package org.drugis.addis.projects;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * Created by daan on 3/5/14.
  */
@@ -9,14 +7,22 @@ public class ProjectCommand {
   private String name;
   private String description;
   private String namespaceUid;
+  private String datasetVersion;
 
   public ProjectCommand() {
   }
 
-  public ProjectCommand(String name, String description, String namespaceUid) {
+  public ProjectCommand(String name, String namespaceUid, String datasetVersion) {
+    this.name = name;
+    this.namespaceUid = namespaceUid;
+    this.datasetVersion = datasetVersion;
+  }
+
+  public ProjectCommand(String name, String description, String namespaceUid, String datasetVersion) {
     this.name = name;
     this.description = description;
     this.namespaceUid = namespaceUid;
+    this.datasetVersion = datasetVersion;
   }
 
   public String getName() {
@@ -24,11 +30,15 @@ public class ProjectCommand {
   }
 
   public String getDescription() {
-    return description == null ? StringUtils.EMPTY : description;
+    return description;
   }
 
   public String getNamespaceUid() {
     return namespaceUid;
+  }
+
+  public String getDatasetVersion() {
+    return datasetVersion;
   }
 
   @Override
@@ -38,6 +48,7 @@ public class ProjectCommand {
 
     ProjectCommand that = (ProjectCommand) o;
 
+    if (!datasetVersion.equals(that.datasetVersion)) return false;
     if (description != null ? !description.equals(that.description) : that.description != null) return false;
     if (!name.equals(that.name)) return false;
     if (!namespaceUid.equals(that.namespaceUid)) return false;
@@ -50,6 +61,7 @@ public class ProjectCommand {
     int result = name.hashCode();
     result = 31 * result + (description != null ? description.hashCode() : 0);
     result = 31 * result + namespaceUid.hashCode();
+    result = 31 * result + datasetVersion.hashCode();
     return result;
   }
 }

@@ -1,9 +1,9 @@
 INSERT INTO public.account (id, username, firstname, lastname, password) VALUES (1, 'foo@bar.com', 'Connor', 'Bonnor', null);
 INSERT INTO public.account (id, username, firstname, lastname, password) VALUES (2, 'test@bla.com', 'Daan', 'Baan', null);
 
-INSERT INTO public.project (id, owner, name, description, namespaceUid) VALUES (1, 1, 'testname 1', 'testdescription 1', 'namespaceUid-1');
-INSERT INTO public.project (id, owner, name, description, namespaceUid) VALUES (2, 2, 'testname 2', 'testdescription 2', 'namespaceUid-1');
-INSERT INTO public.project (id, owner, name, description, namespaceUid) VALUES (3, 1, 'testname 3', 'testdescription 3', 'namespaceUid-2');
+INSERT INTO public.project (id, owner, name, description, namespaceUid, datasetversion) VALUES (1, 1, 'testname 1', 'testdescription 1', 'namespaceUid-1', 'version-1');
+INSERT INTO public.project (id, owner, name, description, namespaceUid, datasetversion) VALUES (2, 2, 'testname 2', 'testdescription 2', 'namespaceUid-1', 'version-1');
+INSERT INTO public.project (id, owner, name, description, namespaceUid, datasetversion) VALUES (3, 1, 'testname 3', 'testdescription 3', 'namespaceUid-2', 'version-1');
 
 INSERT INTO public.outcome (id, project, name, motivation, semanticOutcomeLabel, semanticOutcomeUri) VALUES (1, 1, 'outcome 1', 'outcome description 1', 'outcome1', 'org.drugis.addis.outcome://outcome1');
 INSERT INTO public.outcome (id, project, name, motivation, semanticOutcomeLabel, semanticOutcomeUri) VALUES (2, 1, 'outcome 2', 'outcome description 2', 'outcome2', 'org.drugis.addis.outcome://outcome2');

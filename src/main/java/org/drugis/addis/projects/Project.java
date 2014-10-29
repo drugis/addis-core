@@ -28,62 +28,51 @@ public class Project implements Serializable {
   @Column
   private String namespaceUid;
 
+  @Column
+  private String datasetVersion;
+
   public Project() {
   }
 
-  public Project(Integer id, Account owner, String name, String description, String namespaceUid) {
+  public Project(Integer id, Account owner, String name, String description, String namespaceUid, String datasetVersion) {
     this.id = id;
     this.owner = owner;
     this.name = name;
     this.description = description;
     this.namespaceUid = namespaceUid;
+    this.datasetVersion = datasetVersion;
   }
 
-  public Project(Account owner, String name, String description, String namespaceUid) {
+  public Project(Account owner, String name, String description, String namespaceUid, String datasetVersion) {
     this.owner = owner;
     this.name = name;
     this.description = description;
     this.namespaceUid = namespaceUid;
+    this.datasetVersion = datasetVersion;
   }
 
   public Integer getId() {
     return id;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
   public Account getOwner() {
     return owner;
-  }
-
-  public void setOwner(Account owner) {
-    this.owner = owner;
   }
 
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
   public String getDescription() {
     return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
   }
 
   public String getNamespaceUid() {
     return namespaceUid;
   }
 
-  public void setNamespaceUid(String namespaceUid) {
-    this.namespaceUid = namespaceUid;
+  public String getDatasetVersion() {
+    return datasetVersion;
   }
 
   @Override
@@ -93,11 +82,12 @@ public class Project implements Serializable {
 
     Project project = (Project) o;
 
-    if (!description.equals(project.description)) return false;
+    if (!datasetVersion.equals(project.datasetVersion)) return false;
+    if (description != null ? !description.equals(project.description) : project.description != null) return false;
     if (id != null ? !id.equals(project.id) : project.id != null) return false;
     if (!name.equals(project.name)) return false;
-    if (!owner.equals(project.owner)) return false;
     if (!namespaceUid.equals(project.namespaceUid)) return false;
+    if (!owner.equals(project.owner)) return false;
 
     return true;
   }
@@ -107,8 +97,9 @@ public class Project implements Serializable {
     int result = id != null ? id.hashCode() : 0;
     result = 31 * result + owner.hashCode();
     result = 31 * result + name.hashCode();
-    result = 31 * result + description.hashCode();
+    result = 31 * result + (description != null ? description.hashCode() : 0);
     result = 31 * result + namespaceUid.hashCode();
+    result = 31 * result + datasetVersion.hashCode();
     return result;
   }
 }

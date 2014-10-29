@@ -195,3 +195,7 @@ CREATE TABLE remarks (
   PRIMARY KEY(analysisId),
   FOREIGN KEY(analysisId) REFERENCES SingleStudyBenefitRiskAnalysis(id)
 );
+
+--changeset stroombergc:14
+ALTER TABLE project ADD COLUMN datasetVersion VARCHAR;
+--rollback ALTER TABLE project drop column datasetVersion
