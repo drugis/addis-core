@@ -76,7 +76,7 @@ public class ProblemServiceImpl implements ProblemService {
       treatments.add(new TreatmentEntry(intervention.getId(), intervention.getName()));
     }
 
-    List<ObjectNode> trialDataStudies = trialverseService.getTrialData(project.getNamespaceUid(),
+    List<ObjectNode> trialDataStudies = trialverseService.getTrialData(project.getNamespaceUid(), project.getDatasetVersion(),
             analysis.getOutcome().getSemanticOutcomeUri(), alternativeUris);
     ObjectMapper mapper = new ObjectMapper();
     List<TrialDataStudy> convertedTrialDataStudies = new ArrayList<>();

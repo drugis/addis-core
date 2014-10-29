@@ -160,6 +160,7 @@ public class ProblemServiceTest {
   @Test
   public void testGetNetworkMetaAnalysisProblem() throws ResourceDoesNotExistException {
     String namespaceUid = "UID 1";
+    String version = "version 1";
     Integer projectId = 2;
     Integer analysisId = 3;
 
@@ -172,6 +173,8 @@ public class ProblemServiceTest {
     analysis.getExcludedArms().add(new ArmExclusion(analysis, "888L")); // trialDataArm with armId4
 
     Project project = mock(Project.class);
+    when(project.getDatasetVersion()).thenReturn(version);
+
     SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
     SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
     SemanticIntervention semanticIntervention3 = new SemanticIntervention("uri3", "label3");
@@ -197,14 +200,14 @@ public class ProblemServiceTest {
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
-    when(trialverseService.getTrialData(namespaceUid, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"))).thenReturn(trialDataNode);
+    when(trialverseService.getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"))).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(projectId, analysisId);
     verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(namespaceUid, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"));
+    verify(trialverseService).getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"));
 
     assertNotNull(problem);
     assertEquals(3, problem.getEntries().size());
@@ -215,6 +218,7 @@ public class ProblemServiceTest {
   @Test
   public void testGetNetworkAnalysisProblemWithInterventionInclusions() throws ResourceDoesNotExistException {
     String namespaceUid = "UID 1";
+    String version = "version 1";
     Integer projectId = 2;
     Integer analysisId = 3;
 
@@ -233,6 +237,7 @@ public class ProblemServiceTest {
     Project project = mock(Project.class);
     when(project.getId()).thenReturn(projectId);
     when(project.getNamespaceUid()).thenReturn(namespaceUid);
+    when(project.getDatasetVersion()).thenReturn(version);
 
     InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis, intervention1.getId());
     InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention3.getId());
@@ -252,14 +257,14 @@ public class ProblemServiceTest {
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
-    when(trialverseService.getTrialData(namespaceUid, outcomeUri, Arrays.asList("uri1", "uri3"))).thenReturn(trialDataNode);
+    when(trialverseService.getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"))).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(projectId, analysisId);
     verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(namespaceUid, outcomeUri, Arrays.asList("uri1", "uri3"));
+    verify(trialverseService).getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"));
 
     assertEquals(2, problem.getEntries().size());
   }
