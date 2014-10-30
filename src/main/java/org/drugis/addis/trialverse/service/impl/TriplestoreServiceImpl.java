@@ -734,7 +734,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     vars.put("query", query);
     vars.put("output", "json");
     RestOperations restOperations =  restOperationsFactory.build();
-    return restOperations.getForObject(TRIPLESTORE_URI + "?query={query}&output={output}&version=" + version, String.class, vars);
+    return restOperations.getForObject(TRIPLESTORE_URI + "?query={query}&output={output}&event=" + version, String.class, vars);
   }
 
   private String queryHistory(String query) {
