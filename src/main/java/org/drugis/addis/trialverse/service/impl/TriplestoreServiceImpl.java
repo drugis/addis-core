@@ -135,7 +135,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "  }\n" +
             "}\n";
     //System.out.println(query);
-    String response = queryTripleStore(query);
+    String response = queryTripleStore(query, version);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.outcome.value");
@@ -163,7 +163,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "  }\n" +
             "}\n";
 
-    String response = queryTripleStore(query);
+    String response = queryTripleStore(query, version);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.intervention.value");
@@ -177,7 +177,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Override
   public List<Study> queryStudies(String namespaceUid, String version) {
     String query = StringUtils.replace(STUDY_QUERY, "$namespaceUid", namespaceUid);
-    String response = queryTripleStore(query);
+    String response = queryTripleStore(query, version);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
 
     Map<String, Study> studyCache = new HashMap<>();
@@ -190,7 +190,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String title = JsonPath.read(binding, "$.title.value");
       String outcomeUidStr = JsonPath.read(binding, "$.outcomeUids.value");
       String[] outcomeUids = StringUtils.split(outcomeUidStr, ", ");
-      String armUid = (String) JsonPath.read(binding, "$.armUid.value");
+      String armUid = JsonPath.read(binding, "$.armUid.value");
       String interventionUid = JsonPath.read(binding, "$.drugUid.value");
 
       Study study = studyCache.get(studyUid);
@@ -644,7 +644,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "    }\n" +
             "  }\n" +
             "}\n";
-    String response = queryTripleStore(query);
+    String response = queryTripleStore(query, version);
     // System.out.println(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     Map<String, TrialDataStudy> trialDataStudies = new HashMap<>();
@@ -692,7 +692,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     query = StringUtils.replace(query, "$interventionUnionString", buildInterventionUnionString(interventionUids));
     logger.info(query);
 
-    String response = queryTripleStore(query);
+    String response = queryTripleStore(query, version);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     List<SingleStudyBenefitRiskMeasurementRow> measurementObjects = new ArrayList<>();
     for (Object binding : bindings) {
@@ -724,8 +724,17 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     vars.put("query", query);
     vars.put("output", "json");
     RestOperations restOperations =  restOperationsFactory.build();
-    String result = restOperations.getForObject(TRIPLESTORE_URI + "?query={query}&output={output}", String.class, vars);
-    return result;
+    return restOperations.getForObject(TRIPLESTORE_URI + "?query={query}&output={output}", String.class, vars);
+  }
+
+  private String queryTripleStore(String query, String version) {
+    logger.info("Triplestore uri = " + TRIPLESTORE_URI);
+    logger.info("sparql query = " + query);
+    Map<String, String> vars = new HashMap<>();
+    vars.put("query", query);
+    vars.put("output", "json");
+    RestOperations restOperations =  restOperationsFactory.build();
+    return restOperations.getForObject(TRIPLESTORE_URI + "?query={query}&output={output}&version=" + version, String.class, vars);
   }
 
   private String queryHistory(String query) {
@@ -735,8 +744,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     vars.put("query", query);
     vars.put("output", "json");
     RestOperations restOperations =  restOperationsFactory.build();
-    String result = restOperations.getForObject(HISTORY_URI + "?query={query}&output={output}", String.class, vars);
-    return result;
+    return restOperations.getForObject(HISTORY_URI + "?query={query}&output={output}", String.class, vars);
   }
 
   private String subStringAfterLastSymbol(String inStr, char symbol) {
