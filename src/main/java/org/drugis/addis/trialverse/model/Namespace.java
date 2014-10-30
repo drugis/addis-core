@@ -10,16 +10,18 @@ public class Namespace {
   private String description;
   private Integer numberOfStudies;
   private String sourceUrl;
+  private String version;
 
   public Namespace() {
   }
 
-  public Namespace(String uid, String name, String description, Integer numberOfStudies, String sourceUrl) {
+  public Namespace(String uid, String name, String description, Integer numberOfStudies, String sourceUrl, String version) {
     this.uid = uid;
     this.name = name;
     this.description = description;
     this.numberOfStudies = numberOfStudies;
     this.sourceUrl = sourceUrl;
+    this.version = version;
   }
 
   public String getUid() {
@@ -42,6 +44,10 @@ public class Namespace {
     return sourceUrl;
   }
 
+  public String getVersion() {
+    return version;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -54,6 +60,7 @@ public class Namespace {
     if (!numberOfStudies.equals(namespace.numberOfStudies)) return false;
     if (!sourceUrl.equals(namespace.sourceUrl)) return false;
     if (!uid.equals(namespace.uid)) return false;
+    if (!version.equals(namespace.version)) return false;
 
     return true;
   }
@@ -65,6 +72,7 @@ public class Namespace {
     result = 31 * result + description.hashCode();
     result = 31 * result + numberOfStudies.hashCode();
     result = 31 * result + sourceUrl.hashCode();
+    result = 31 * result + version.hashCode();
     return result;
   }
 }

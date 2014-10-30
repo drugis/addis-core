@@ -178,7 +178,8 @@ define(['d3'], function(d3) {
         .get({
           namespaceUid: $scope.project.namespaceUid,
           outcomeUri: $scope.analysis.outcome.semanticOutcomeUri,
-          interventionUris: includedInterventionUris
+          interventionUris: includedInterventionUris,
+          version: $scope.project.datasetVersion
         })
         .$promise
         .then(function(trialverseData) {

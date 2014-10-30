@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestOperations;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -38,8 +39,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   private final static Logger logger = LoggerFactory.getLogger(TriplestoreServiceImpl.class);
 
-  private final static String TRIPLESTORE_URI = System.getenv("TRIPLESTORE_URI");
+  private final static String LATEST_EVENT_QUERY = loadResource("sparql/latestEvent.sparql");
   private final static String NAMESPACE_QUERY = loadResource("sparql/namespaceQuery.sparql");
+  private final static String NAMESPACE = loadResource("sparql/namespace.sparql");
   private final static String STUDY_QUERY = loadResource("sparql/studyQuery.sparql");
   private final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
   private final static String STUDY_ARMS_QUERY = loadResource("sparql/studyArms.sparql");
@@ -63,12 +65,29 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return "";
   }
 
+  private String getLatestEvent() {
+    String query = LATEST_EVENT_QUERY;
+    String response = queryHistory(query);
+    String lastEventId;
+
+    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    if(bindings.size() != 1) {
+      logger.error("there can only be one latestEvent");
+      throw new RuntimeException();
+    }
+    Object binding = bindings.get(0);
+     lastEventId = JsonPath.read(binding, "$.lastEventId.value");
+
+    return lastEventId;
+  }
+
 
   @Override
   public Collection<Namespace> queryNameSpaces() {
     String query = NAMESPACE_QUERY;
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
+    String currentVersionUri = getLatestEvent();
     List<Namespace> namespaces = new ArrayList<>(bindings.size());
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.dataset.value");
@@ -77,38 +96,29 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String description = JsonPath.read(binding, "$.comment.value");
       Integer numberOfStudies = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfStudies.value"));
       String sourceUrl = JsonPath.read(binding, "$.sourceUrl.value");
-      namespaces.add(new Namespace(uid, name, description, numberOfStudies, sourceUrl));
+      namespaces.add(new Namespace(uid, name, description, numberOfStudies, sourceUrl, currentVersionUri));
     }
     return namespaces;
   }
 
   @Override
   public Namespace getNamespace(String uid) {
-    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
-            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "\n" +
-            "SELECT ?dataset ?label ?comment (COUNT(DISTINCT(?study)) AS ?numberOfStudies) WHERE {\n" +
-            "  GRAPH dataset:" + uid + " {\n" +
-            "    ?dataset a ontology:Dataset .\n" +
-            "    ?dataset rdfs:label ?label .\n" +
-            "    ?dataset rdfs:comment ?comment .\n" +
-            "  }\n" +
-            "} GROUP BY ?dataset ?label ?comment\n";
+    String query = StringUtils.replace(NAMESPACE, "$namespaceUid", uid);
+
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     Object binding = bindings.get(0);
     String name = JsonPath.read(binding, "$.label.value");
     String description = JsonPath.read(binding, "$.comment.value");
     Integer numberOfStudies = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfStudies.value"));
-    String sourceUrl = "TODO"; //FIXME
-    return new Namespace(uid, name, description, numberOfStudies, sourceUrl);
+    String sourceUrl = JsonPath.read(binding, "$.sourceUrl.value");
+    String currentVersionURI = getLatestEvent();
+    return new Namespace(uid, name, description, numberOfStudies, sourceUrl, currentVersionURI);
   }
 
 
   @Override
-  public List<SemanticOutcome> getOutcomes(String namespaceUid) {
+  public List<SemanticOutcome> getOutcomes(String namespaceUid, String version) {
     List<SemanticOutcome> outcomes = new ArrayList<>();
 
     String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
@@ -137,7 +147,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<SemanticIntervention> getInterventions(String namespaceUid) {
+  public List<SemanticIntervention> getInterventions(String namespaceUid, String version) {
     List<SemanticIntervention> interventions = new ArrayList<>();
 
     String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
@@ -165,7 +175,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<Study> queryStudies(String namespaceUid) {
+  public List<Study> queryStudies(String namespaceUid, String version) {
     String query = StringUtils.replace(STUDY_QUERY, "$namespaceUid", namespaceUid);
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
@@ -569,7 +579,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<TrialDataStudy> getTrialData(String namespaceUid, String outcomeUid, List<String> interventionUids) {
+  public List<TrialDataStudy> getTrialData(String namespaceUid, String version, String outcomeUid, List<String> interventionUids) {
     String interventionUnion = buildInterventionUnionString(interventionUids);
     String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
             "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
@@ -675,7 +685,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String studyUid, List<String> outcomeUids, List<String> interventionUids) {
+  public List<SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String studyUid, String version, List<String> outcomeUids, List<String> interventionUids) {
 
     String query = StringUtils.replace(SINGLE_STUDY_MEASUREMENTS, "$studyUid", studyUid);
     query = StringUtils.replace(query, "$outcomeUnionString",  buildOutcomeUnionString(outcomeUids));
@@ -713,7 +723,20 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     Map<String, String> vars = new HashMap<>();
     vars.put("query", query);
     vars.put("output", "json");
-    return restOperationsFactory.build().getForObject(TRIPLESTORE_URI + "?query={query}&output={output}", String.class, vars);
+    RestOperations restOperations =  restOperationsFactory.build();
+    String result = restOperations.getForObject(TRIPLESTORE_URI + "?query={query}&output={output}", String.class, vars);
+    return result;
+  }
+
+  private String queryHistory(String query) {
+    logger.info("Triplestore uri = " + HISTORY_URI);
+    logger.info("sparql query = " + query);
+    Map<String, String> vars = new HashMap<>();
+    vars.put("query", query);
+    vars.put("output", "json");
+    RestOperations restOperations =  restOperationsFactory.build();
+    String result = restOperations.getForObject(HISTORY_URI + "?query={query}&output={output}", String.class, vars);
+    return result;
   }
 
   private String subStringAfterLastSymbol(String inStr, char symbol) {

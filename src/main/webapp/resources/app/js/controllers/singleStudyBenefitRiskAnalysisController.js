@@ -19,7 +19,8 @@ define(['underscore'], function() {
     };
 
     var projectNamespaceUid = {
-      namespaceUid: $scope.project.namespaceUid
+      namespaceUid: $scope.project.namespaceUid,
+      version: $scope.project.datasetVersion
     };
 
     var isIdEqual = function(left, right) {

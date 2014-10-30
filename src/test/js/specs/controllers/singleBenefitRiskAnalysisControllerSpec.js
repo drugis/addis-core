@@ -27,6 +27,10 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       uid: 'uid2'
     }];
     var q;
+    var mockProject = {
+      namespaceUid: 456,
+      datasetVersion: 'version'
+    };
 
 
     beforeEach(module('addis.controllers'));
@@ -42,9 +46,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       mockStateParams.analysisId = 2;
 
       // set a mockNameSpace for the current project
-      scope.project = {
-        namespaceUid: 456
-      };
+      scope.project = mockProject
 
       // set some mock outcomes and interventions
       scope.analysis = {
@@ -166,7 +168,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
       it('should query studies for the current project', function() {
         expect(trialverseStudyResource.query).toHaveBeenCalledWith({
-          namespaceUid: 456
+          namespaceUid: 456,
+          version: mockProject.datasetVersion
         });
       });
     });

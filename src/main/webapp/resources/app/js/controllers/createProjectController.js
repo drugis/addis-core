@@ -12,6 +12,7 @@ define([], function() {
     $scope.createProject = function(newProject) {
       this.model = {};  // clear modal form by resetting model in current scope
       newProject.namespaceUid = $scope.createProjectModal.selectedNamespace.uid;
+      newProject.datasetVersion = $scope.createProjectModal.selectedNamespace.version;
       ProjectResource.save(newProject, function(savedProject) {
         $state.go('project', {
           projectId: savedProject.id

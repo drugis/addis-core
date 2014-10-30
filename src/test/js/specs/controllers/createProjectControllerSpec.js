@@ -32,9 +32,10 @@ define(['angular', 'angular-mocks', 'controllers'],
         expect(scope.namespaces.length).toBe(1);
       });
 
-      it('should place the selected namespace on createProjectModal and  show the modal dialog', function() {
+      it('should place the selected namespace on createProjectModal and show the modal dialog', function() {
         var selectedNamespace = {
           uid: 'uid',
+          version: 'version',
           name: 'name'
         };
         scope.showCreateProjectModal(selectedNamespace);
@@ -49,12 +50,15 @@ define(['angular', 'angular-mocks', 'controllers'],
         };
         var selectedNamespace = {
           uid: 'uid',
+          version: 'version',
           name: 'name'
         };
         scope.showCreateProjectModal(selectedNamespace);
         scope.model = newProject;
         scope.createProject(newProject);
         expect(projectResource.save).toHaveBeenCalled();
+        expect(newProject.namespaceUid).toEqual(selectedNamespace.uid);
+        expect(newProject.datasetVersion).toEqual(selectedNamespace.version);
         expect(scope.model).toEqual({});
       });
     });

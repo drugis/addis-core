@@ -1,0 +1,23 @@
+{
+  "head": {
+    "vars": [ "dataset" , "label" , "comment" , "sourceUrl" , "numberOfStudies" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "dataset": { "type": "uri" , "value": "http://trials.drugis.org/datasets/fa8b36b5-74b7-4615-9da2-ab08dac302ad" } ,
+        "label": { "type": "literal" , "value": "Edarbi EPAR" } ,
+        "comment": { "type": "literal" , "value": "Hypertension dataset based on the Edarbi EPAR" } ,
+        "sourceUrl": { "datatype": "http://www.w3.org/2001/XMLSchema#anyURI" , "type": "typed-literal" , "value": "http://www.ema.europa.eu/docs/en_GB/document_library/EPAR_-_Public_assessment_report/human/002293/WC500119206.pdf" } ,
+        "numberOfStudies": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "5" }
+      } ,
+      {
+        "dataset": { "type": "uri" , "value": "http://trials.drugis.org/datasets/dc98f02a-c30b-4877-8b54-acb5885ad04b" } ,
+        "label": { "type": "literal" , "value": "Hansen 2005" } ,
+        "comment": { "type": "literal" , "value": "Depression dataset based on the Hansen et al. (2005) systematic review" } ,
+        "sourceUrl": { "datatype": "http://www.w3.org/2001/XMLSchema#anyURI" , "type": "typed-literal" , "value": "http://pubmed.com/16172440" } ,
+        "numberOfStudies": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "43" }
+      }
+    ]
+  }
+}

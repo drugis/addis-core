@@ -34,6 +34,7 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
       var scope,
         projectResource,
         mockProject = {
+          datasetVersion: 'version',
           $promise: {
             then: function() {}
           }
@@ -242,7 +243,8 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         projectDeferred.resolve();
         scope.$apply();
         expect(trialverseResource.get).toHaveBeenCalledWith({
-          namespaceUid: mockProject.namespaceUid
+          namespaceUid: mockProject.namespaceUid,
+          version: mockProject.datasetVersion
         });
         expect(scope.trialverse).toEqual(mockTrialverse);
       });
@@ -251,7 +253,8 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         projectDeferred.resolve();
         scope.$apply();
         expect(semanticOutcomeResource.query).toHaveBeenCalledWith({
-          namespaceUid: mockProject.namespaceUid
+          namespaceUid: mockProject.namespaceUid,
+          version: mockProject.datasetVersion
         });
         expect(scope.semanticOutcomes).toEqual(mockSemanticOutcomes);
       });
@@ -273,7 +276,8 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         projectDeferred.resolve();
         scope.$apply();
         expect(semanticInterventionResource.query).toHaveBeenCalledWith({
-          namespaceUid: mockProject.namespaceUid
+          namespaceUid: mockProject.namespaceUid,
+          version: mockProject.datasetVersion
         });
         expect(scope.semanticInterventions).toEqual(mockSemanticInterventions);
       });

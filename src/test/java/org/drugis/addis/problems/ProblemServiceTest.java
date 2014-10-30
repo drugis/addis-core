@@ -83,7 +83,9 @@ public class ProblemServiceTest {
   public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException {
 
     int projectId = 1;
+    String projectVersion = "projectVersion";
     Project project = mock(Project.class);
+    when(project.getDatasetVersion()).thenReturn(projectVersion);
     when(projectRepository.get(projectId)).thenReturn(project);
 
     int analysisId = 2;
@@ -133,7 +135,7 @@ public class ProblemServiceTest {
 
     List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementRows = Arrays.asList(row1, row2, row3, row4);
 
-    when(triplestoreService.getSingleStudyMeasurements(anyString(), anyList(), anyList())).thenReturn(measurementRows);
+    when(triplestoreService.getSingleStudyMeasurements(anyString(), anyString(), anyList(), anyList())).thenReturn(measurementRows);
 
     AbstractMeasurementEntry measurementEntry = mock(ContinuousMeasurementEntry.class);
     List<AbstractMeasurementEntry> performanceTable = Arrays.asList(measurementEntry);
@@ -144,7 +146,7 @@ public class ProblemServiceTest {
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(projectId, analysisId);
-    verify(triplestoreService).getSingleStudyMeasurements(studyUid, outcomeUids, interventionUids);
+    verify(triplestoreService).getSingleStudyMeasurements(studyUid, projectVersion, outcomeUids, interventionUids);
     verify(performanceTablebuilder).build(measurementRows);
 
     assertNotNull(actualProblem);

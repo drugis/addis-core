@@ -28,7 +28,7 @@ Set up the environment:
 (NB: the Patavi URI assumes caching of patavi results via addis. If that is not desired omit ```/staged/```)
 
 ```
-export TRIPLESTORE_URI=http://localhost:3030/ds/query
+export TRIPLESTORE_BASE_URI=http://localhost:3030
 export PATAVI_URI=http://localhost:3000/ws/staged/
 
 export ADDIS_CORE_DB_CHANGELOG=database.sql

@@ -13,27 +13,31 @@ import java.util.List;
  * Created by connor on 2/28/14.
  */
 public interface TriplestoreService {
+  public final static String TRIPLESTORE_BASE_URI = System.getenv("TRIPLESTORE_BASE_URI");
+  public final static String TRIPLESTORE_URI =  TRIPLESTORE_BASE_URI + "/current/query";
+  public final static String HISTORY_URI = TRIPLESTORE_BASE_URI + "/history/query";
+
   public Collection<Namespace> queryNameSpaces();
 
   public Namespace getNamespace(String uid);
 
-  public List<SemanticOutcome> getOutcomes(String namespaceUid);
+  public List<SemanticOutcome> getOutcomes(String namespaceUid, String version);
 
-  public List<SemanticIntervention> getInterventions(String namespaceUid);
+  public List<SemanticIntervention> getInterventions(String namespaceUid, String version);
 
-  public List<Study> queryStudies(String namespaceUid);
+  public List<Study> queryStudies(String namespaceUid, String version);
 
   public List<StudyWithDetails> queryStudydetails(String namespaceUid);
-
+  
   public StudyWithDetails getStudydetails(String namespaceUid, String studyUid) throws ResourceDoesNotExistException;
 
   public JSONArray getStudyArms(String namespaceUid, String studyUid);
 
   public JSONArray getStudyEpochs(String namespaceUid, String studyUid);
 
-  public List<TrialDataStudy> getTrialData(String namespaceUid, String outcomeUri, List<String> interventionUris);
+  public List<TrialDataStudy> getTrialData(String namespaceUid, String version, String outcomeUri, List<String> interventionUris);
 
-  public List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String studyUid, List<String> outcomeUids, List<String> interventionUids);
+  public List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String studyUid, String version, List<String> outcomeUids, List<String> interventionUids);
 
   public List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid);
 

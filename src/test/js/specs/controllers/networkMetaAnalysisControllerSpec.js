@@ -15,7 +15,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       projectDeferred,
       mockProject = {
         id: 11,
-        namespaceUid: '123-a-dda456'
+        namespaceUid: '123-a-dda456',
+        datasetVersion: 'version'
       },
       mockStateParams = {
         analysisId: 1,
@@ -184,7 +185,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
           expect(trialverseTrialDataResource.get).toHaveBeenCalledWith({
             namespaceUid: mockProject.namespaceUid,
             outcomeUri: mockOutcomes[0].semanticOutcomeUri,
-            interventionUris: []
+            interventionUris: [],
+            version: mockProject.datasetVersion
           });
           trialverseTrailDataDeferred.resolve();
           scope.$apply();
