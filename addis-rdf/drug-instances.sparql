@@ -1,0 +1,25 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+PREFIX entity: <http://trials.drugis.org/entities/>
+PREFIX instance: <http://trials.drugis.org/instances/>
+PREFIX study: <http://trials.drugis.org/studies/>
+
+SELECT ?study ?drug ?instance WHERE {
+  GRAPH ?dataset {
+    ?dataset a ontology:Dataset .
+  }
+  GRAPH ?dataset { # Dummy study select
+    ?dataset ontology:contains_study ?study .
+    #?study rdfs:label "TAK491-011 / NCT00591253" .
+  }
+  GRAPH ?dataset { # Dummy drug select
+    ?drug rdfs:subClassOf ontology:Drug .
+    ?drug rdfs:label "Azilsartan" .
+  }
+  GRAPH ?study {
+    ?instance a ?drug .
+  }
+}

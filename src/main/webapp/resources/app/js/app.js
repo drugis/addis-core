@@ -3,16 +3,17 @@ define(
   ['angular',
     'require',
     'jQuery',
-    'mcda/config',
-    'foundation'
+    'foundation',
+    'angular-ui-router',
+    'controllers',
   ],
-  function(angular, require, $, Config) {
+  function(angular, require, $) {
     var dependencies = [
-      'ui.router'
+      'ui.router',
+      'trialverse.controllers'
     ];
 
     var app = angular.module('trialverse', dependencies);
-
 
     app.run(['$rootScope', '$window', '$http',
       function($rootScope, $window, $http) {
@@ -23,33 +24,30 @@ define(
         $rootScope.$on('$viewContentLoaded', function() {
           $(document).foundation();
         });
-
-//        $rootScope.$safeApply = function($scope, fn) {
-//          var phase = $scope.$root.$$phase;
-//          if (phase === '$apply' || phase === '$digest') {
-//            this.$eval(fn);
-//          } else {
-//            this.$apply(fn);
-//          }
-//        };
-
       }
     ]);
 
-    app.config([$stateProvider', '$urlRouterProvider' '$httpProvider',
-      function($stateProvider, $urlRouterProvider, $httpProvider,  ) {
-        var baseTemplatePath = 'app/views/';
-
-        $stateProvider
-          .state('hello', {
-            url: '/hello',
-            templateUrl: baseTemplatePath + 'hello.html'
-          });
+    app.config(['$stateProvider', '$urlRouteProvider'], function($stateProvider, $urlRouteProvider) {
+      var baseTemplatePath = 'app/views'
+      $stateProvider
+        .state('datasets', {
+          url: '/datasets',
+          templateUrl: baseTemplatePath + 'datasets.html',
+          controller: 'DatasetsController'
+        })
+        .state('create-dataset', {
+          url: '/create-dataset',
+          templateUrl: baseTemplatePath + 'createDataset.html',
+          controller: 'CreateDatasetController'
+        })
+        .state('hello', {
+          url: '/hello',
+          templateUrl: baseTemplatePath + 'hello.html'
+        });
 
         // Default route
         $urlRouterProvider.otherwise('/hello');
-      }
-    ]);
+    });
 
     return app;
   });

@@ -1,0 +1,48 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+PREFIX entity: <http://trials.drugis.org/entities/>
+PREFIX instance: <http://trials.drugis.org/instances/>
+PREFIX study: <http://trials.drugis.org/studies/>
+
+SELECT ?studyLabel ?armLabel ?epochLabel WHERE {
+  GRAPH ?dataset {
+    ?dataset a ontology:Dataset .
+  }
+  GRAPH ?dataset { # Dummy study select
+    ?dataset ontology:contains_study ?study .
+  }
+  GRAPH ?dataset { # Dummy drug select
+    ?drug1
+      rdfs:subClassOf ontology:Drug ;
+      rdfs:label "Azilsartan" .
+    ?drug2
+      rdfs:subClassOf ontology:Drug ;
+      rdfs:label "Chlortalidone" .
+  }
+  GRAPH ?study {
+    ?study rdfs:label ?studyLabel .
+
+    ?drug1Instance a ?drug1 .
+    ?drug2Instance a ?drug2 .
+
+    ?study ontology:has_arm ?arm .
+    ?study ontology:has_primary_epoch ?epoch .
+    ?activity a ontology:TreatmentActivity ;
+      ontology:activity_application [
+        ontology:applied_to_arm ?arm ;
+        ontology:applied_in_epoch ?epoch
+      ] ;
+      ontology:administered_drugs/rdf:rest*/rdf:first [ ontology:treatment_has_drug ?drug1Instance ] ;
+      ontology:administered_drugs/rdf:rest*/rdf:first [ ontology:treatment_has_drug ?drug2Instance ] .
+
+    MINUS { # limit to collections of exactly 2 element(s)
+      ?activity ontology:administered_drugs/rdf:rest{2}/rdf:first ?x .
+    }
+
+    ?epoch rdfs:label ?epochLabel .
+    ?arm rdfs:label ?armLabel .
+  }
+}

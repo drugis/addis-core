@@ -3,7 +3,6 @@
 require.config({
   paths: {
     'jQuery': 'bower_components/jquery/jquery.min',
-    'underscore': 'bower_components/underscore/underscore-min',
     'angular': 'bower_components/angular/angular',
     'angular-resource': 'bower_components/angular-resource/angular-resource',
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
@@ -15,7 +14,7 @@ require.config({
   shim: {
     'jQuery': {
       exports: 'jQuery'
-    }
+    },
     'angular': {
       deps: ['jQuery'],
       exports: 'angular'
@@ -29,9 +28,6 @@ require.config({
     },
     'angular-ui-router': {
       deps: ['angular']
-    },
-    'underscore': {
-      exports: '_'
     },
     'foundation': {
       deps: ['jQuery']

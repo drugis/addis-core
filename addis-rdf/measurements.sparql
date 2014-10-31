@@ -1,0 +1,71 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> 
+
+PREFIX entity: <http://trials.drugis.org/entities/>
+PREFIX instance: <http://trials.drugis.org/instances/>
+PREFIX study: <http://trials.drugis.org/studies/>
+
+SELECT ?studyLabel ?armLabel ?epochLabel ?outcomeLabel ?mean ?stdDev ?count ?sampleSize WHERE {
+  GRAPH ?dataset {
+    ?dataset a ontology:Dataset .
+  }
+  GRAPH ?dataset { # Dummy study select
+    ?dataset ontology:contains_study ?study .
+  }
+  GRAPH ?dataset { # Dummy drug select
+    ?drug
+      rdfs:subClassOf ontology:Drug ;
+      rdfs:label "Fluoxetine" .
+  }
+  GRAPH ?dataset { # Dummy outcome select
+    ?outcome
+      rdfs:subClassOf ontology:Endpoint ;
+      rdfs:label "HAM-D Responders" ;
+      rdfs:label ?outcomeLabel .
+  }
+  GRAPH ?study {
+    ?study rdfs:label ?studyLabel .
+
+    ?drugInstance a ?drug .
+    ?study ontology:has_arm ?arm .
+    ?study ontology:has_primary_epoch ?epoch .
+    ?activity a ontology:TreatmentActivity ;
+      ontology:activity_application [
+        ontology:applied_to_arm ?arm ;
+        ontology:applied_in_epoch ?epoch
+      ] ;
+      ontology:administered_drugs ([ ontology:treatment_has_drug ?drugInstance ]) .
+
+    ?epoch rdfs:label ?epochLabel .
+    ?arm rdfs:label ?armLabel .
+
+    # also get the measurement while we're here
+    ?outcomeInstance a ?outcome .
+
+    ?measurementMoment
+      ontology:relative_to_epoch ?epoch ;
+      ontology:relative_to_anchor ontology:anchorEpochEnd ;
+      ontology:time_offset "-P0D"^^xsd:duration .
+
+    ?measurement
+      ontology:of_moment ?measurementMoment ;
+      ontology:of_outcome ?outcomeInstance ;
+      ontology:of_arm ?arm .
+
+    OPTIONAL {
+      ?measurement
+        ontology:mean ?mean ;
+        ontology:standard_deviation ?stdDev ;
+        ontology:sample_size ?sampleSize .
+    }
+
+    OPTIONAL {
+      ?measurement
+        ontology:count ?count ;
+        ontology:sample_size ?sampleSize .
+    }
+  }
+}

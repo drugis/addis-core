@@ -12,3 +12,4 @@ dbms/*Example.sql
 /trialverse.log
 /studies
 *.swp
+src/main/webapp/resources/app/js/bower_components/
