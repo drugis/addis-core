@@ -42,7 +42,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
   };
 
-  @Transactional("ptmAddisCore")
+  @Transactional()
   public void createAccount(Account user) throws UsernameAlreadyInUseException {
     try {
       jdbcTemplate.update(
