@@ -13,11 +13,11 @@
 
 <!-- Foundation 3 for IE 8 and earlier -->
 <!--[if lt IE 9]>
-<link rel="stylesheet" href="<c:url value="/app/css/addis-drugis-ie8.css" />">
+<link rel="stylesheet" href="<c:url value="/app/css/trialverse-drugis-ie8.css" />">
 <![endif]-->
 <!-- Foundation 5 for IE 9 and earlier -->
 <!--[if gt IE 8]><!-->
-<link rel="stylesheet" href="<c:url value="/app/css/addis-drugis.css" />">
+<link rel="stylesheet" href="<c:url value="/app/css/trialverse-drugis.css" />">
 <!--<![endif]-->
 <script type="text/javascript" src="<c:url value="/app/js/bower_components/foundation/js/vendor/modernizr.js" />"></script>
 <script type="text/javascript" src="<c:url value="/app/js/bower_components/bowser/bowser.min.js" />"></script>

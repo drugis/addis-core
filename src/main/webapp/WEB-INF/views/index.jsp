@@ -13,7 +13,7 @@
     <title>addis.drugis.org</title>
 
     <link rel="stylesheet" type="text/css" href="app/js/bower_components/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="<c:url value="/app/css/addis-drugis.css" />">
+    <link rel="stylesheet" type="text/css" href="<c:url value="/app/css/trialverse-drugis.css" />">
     <script src="app/js/bower_components/requirejs/require.js" data-main="app/js/main.js"></script>
   </head>
 

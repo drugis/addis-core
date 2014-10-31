@@ -2,7 +2,7 @@
 
 require.config({
   paths: {
-    'jQuery': 'bower_components/jquery/jquery.min',
+    'jQuery': 'bower_components/jquery/dist/jquery.min',
     'angular': 'bower_components/angular/angular',
     'angular-resource': 'bower_components/angular-resource/angular-resource',
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
@@ -16,7 +16,6 @@ require.config({
       exports: 'jQuery'
     },
     'angular': {
-      deps: ['jQuery'],
       exports: 'angular'
     },
     'mmfoundation': {

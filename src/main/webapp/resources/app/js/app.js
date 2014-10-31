@@ -27,27 +27,29 @@ define(
       }
     ]);
 
-    app.config(['$stateProvider', '$urlRouteProvider'], function($stateProvider, $urlRouteProvider) {
-      var baseTemplatePath = 'app/views'
-      $stateProvider
-        .state('datasets', {
-          url: '/datasets',
-          templateUrl: baseTemplatePath + 'datasets.html',
-          controller: 'DatasetsController'
-        })
-        .state('create-dataset', {
-          url: '/create-dataset',
-          templateUrl: baseTemplatePath + 'createDataset.html',
-          controller: 'CreateDatasetController'
-        })
-        .state('hello', {
-          url: '/hello',
-          templateUrl: baseTemplatePath + 'hello.html'
-        });
+    app.config(['$stateProvider', '$urlRouterProvider',
+      function($stateProvider, $urlRouterProvider) {
+        var baseTemplatePath = 'app/views/';
+        $stateProvider
+          .state('datasets', {
+            url: '/datasets',
+            templateUrl: baseTemplatePath + 'datasets.html',
+            controller: 'DatasetsController'
+          })
+          .state('create-dataset', {
+            url: '/create-dataset',
+            templateUrl: baseTemplatePath + 'createDataset.html',
+            controller: 'CreateDatasetController'
+          })
+          .state('hello', {
+            url: '/hello',
+            templateUrl: baseTemplatePath + 'hello.html'
+          });
 
         // Default route
         $urlRouterProvider.otherwise('/hello');
-    });
+      }
+    ]);
 
     return app;
   });

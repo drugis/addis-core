@@ -8,7 +8,7 @@
 <link rel="shortcut icon" href="<c:url value="/app/img/favicon.ico" />" type="image/x-icon" />
 
 <title>addis.drugis.org</title>
-<link rel="stylesheet" type="text/css" href="<c:url value="/app/css/addis-drugis.css" />">
+<link rel="stylesheet" type="text/css" href="<c:url value="/app/css/trialverse-drugis.css" />">
 
 </head>
 <body>
