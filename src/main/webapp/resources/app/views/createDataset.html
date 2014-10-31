@@ -1,3 +1,24 @@
-<div>
-
+<div class="row">
+  <div class="large-8 columns">
+    <h3>Create a new dataset</h3>
+  </div>
+</div>
+<div class="row">
+  <div class="large-8 columns">
+    <label>Name
+      <input type="text" ng-model="dataset.name">
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-8 columns">
+    <label>Description
+      <textarea rows="8" ng-model="dataset.description"></textarea>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-8 columns">
+    <button class="success" ng-click="createDataset()">Create dataset</button>
+  </div>
 </div>

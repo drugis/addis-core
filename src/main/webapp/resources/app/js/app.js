@@ -6,11 +6,13 @@ define(
     'foundation',
     'angular-ui-router',
     'controllers',
+    'services'
   ],
   function(angular, require, $) {
     var dependencies = [
       'ui.router',
-      'trialverse.controllers'
+      'trialverse.controllers',
+      'trialverse.services'
     ];
 
     var app = angular.module('trialverse', dependencies);
