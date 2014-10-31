@@ -1,0 +1,4 @@
+[submodule "src/main/webapp/resources/drugis-css"]
+	path = src/main/webapp/resources/drugis-css
+	url = https://github.com/drugis/drugis-css
+	branch = master
