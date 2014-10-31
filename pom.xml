@@ -304,31 +304,31 @@
                     </systemProperties>
                 </configuration>
             </plugin>
-            <!--<plugin>-->
-            <!--<groupId>com.kelveden</groupId>-->
-            <!--<artifactId>maven-karma-plugin</artifactId>-->
-            <!--<version>1.6</version>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<phase>test</phase>-->
-            <!--<goals>-->
-            <!--<goal>start</goal>-->
-            <!--</goals>-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--<configuration>-->
-            <!--<configFile>src/test/js/karma.conf.js</configFile>-->
-            <!--<junitReportFile>src/test/karma-test-results.xml</junitReportFile>-->
-            <!--<browsers>Chrome</browsers>-->
-            <!--<autoWatch>false</autoWatch>-->
-            <!--<singleRun>true</singleRun>-->
-            <!--<colors>true</colors>-->
-            <!--<skipKarma>false</skipKarma>-->
-            <!--<skipTests>false</skipTests>-->
-            <!--<karmaFailureIgnore>false</karmaFailureIgnore>-->
-            <!--<reporters>dots,junit,coverage</reporters>-->
-            <!--</configuration>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>com.kelveden</groupId>
+                <artifactId>maven-karma-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configFile>src/test/js/karma.conf.js</configFile>
+                    <junitReportFile>src/test/karma-test-results.xml</junitReportFile>
+                    <browsers>Chrome</browsers>
+                    <autoWatch>false</autoWatch>
+                    <singleRun>true</singleRun>
+                    <colors>true</colors>
+                    <skipKarma>false</skipKarma>
+                    <skipTests>false</skipTests>
+                    <karmaFailureIgnore>false</karmaFailureIgnore>
+                    <reporters>dots,junit,coverage</reporters>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
