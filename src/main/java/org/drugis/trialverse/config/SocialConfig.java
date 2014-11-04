@@ -56,8 +56,8 @@ public class SocialConfig extends SocialConfigurerAdapter {
 
   @Override
   public void addConnectionFactories(ConnectionFactoryConfigurer cfConfig, Environment env) {
-    final String key = System.getenv("ADDIS_CORE_OAUTH_GOOGLE_KEY");
-    final String secret = System.getenv("ADDIS_CORE_OAUTH_GOOGLE_SECRET");
+    final String key = System.getenv("TRIALVERSE_OAUTH_GOOGLE_KEY");
+    final String secret = System.getenv("TRIALVERSE_OAUTH_GOOGLE_SECRET");
     cfConfig.addConnectionFactory(new GoogleConnectionFactory(key, secret));
   }
 
