@@ -45,7 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private ApplicationContext context;
 
   @Inject
-  @Qualifier("dsAddisCore")
+  @Qualifier("dsTrialverse")
   private DataSource dataSource;
 
   @Override

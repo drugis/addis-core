@@ -33,7 +33,7 @@ import java.sql.SQLException;
 public class AccountRepositoryImpl implements AccountRepository {
 
   @Inject
-  @Qualifier("jtAddisCore")
+  @Qualifier("jtTrialverse")
   private JdbcTemplate jdbcTemplate;
 
   private RowMapper<Account> rowMapper = new RowMapper<Account>() {

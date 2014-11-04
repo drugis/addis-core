@@ -28,6 +28,6 @@ public class SigninController {
 
   @RequestMapping(value = "/signin", method = RequestMethod.GET)
   public void signin() {
-    logger.debug("signin user");
+    logger.info("signin user");
   }
 }

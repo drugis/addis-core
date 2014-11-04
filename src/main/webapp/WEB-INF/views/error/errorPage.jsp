@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width" />
 <link rel="shortcut icon" href="<c:url value="/app/img/favicon.ico" />" type="image/x-icon" />
 
-<title>addis.drugis.org</title>
+<title>trialverse.drugis.org</title>
 <link rel="stylesheet" type="text/css" href="<c:url value="/app/css/trialverse-drugis.css" />">
 
 </head>

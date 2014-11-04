@@ -42,7 +42,7 @@ public class JpaRepositoryTestConfig {
     return transactionManager;
   }
 
-  @Bean(name = "jtAddisCore")
+  @Bean(name = "jtTrialverse")
   public JdbcTemplate jdbcTemplate() {
     return new JdbcTemplate(dataSource());
   }
@@ -61,7 +61,7 @@ public class JpaRepositoryTestConfig {
     em.setJpaVendorAdapter(vendorAdapter);
     em.setPackagesToScan("org.drugis.trialverse.security");
     em.setDataSource(dataSource());
-    em.setPersistenceUnitName("addisCore");
+    em.setPersistenceUnitName("trialverse");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
     em.setJpaProperties(additionalProperties());
     em.afterPropertiesSet();

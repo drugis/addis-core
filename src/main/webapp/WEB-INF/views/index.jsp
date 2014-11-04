@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width" />
     <link rel="shortcut icon" href="<c:url value="/app/img/favicon.ico" />" type="image/x-icon" />
 
-    <title>addis.drugis.org</title>
+    <title>trialverse.drugis.org</title>
 
     <link rel="stylesheet" type="text/css" href="app/js/bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="<c:url value="/app/css/trialverse-drugis.css" />">
@@ -19,9 +19,6 @@
 
   <body>
     <session-expired-directive></session-expired-directive>
-    <form method="POST" action="<c:url value="/signout" />" id="signout_form">
-      <input type="hidden" name="_csrf" value="<c:out value="${_csrf.token}" />" />
-    </form>
 
     <nav class="top-bar" data-topbar>
       <ul class="title-area">
@@ -39,7 +36,7 @@
             <a href="#"><img class="user-image" src="https://secure.gravatar.com/avatar/${userMD5}?s=43&d=mm"> <c:out value="${account.firstName} ${account.lastName} " /></a>
             <ul class="dropdown">
               <li>
-                <a href="#" onClick="signout()">Sign out</a>
+                <a href="signin?logout">Sign out</a>
               </li>
             </ul>
           </li>
