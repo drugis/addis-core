@@ -46,13 +46,16 @@ public class SignupController {
   @RequestMapping(value = "/signup", method = RequestMethod.GET)
   public String signupForm(WebRequest request) {
     logger.info("sign up for new account");
-    Connection<?> connection = ProviderSignInUtils.getConnection(request);
+    ProviderSignInUtils utils = new ProviderSignInUtils();
+    Connection<?> connection = utils.getConnectionFromSession(request);
     if (connection != null) {
+      logger.info(" C o N n e c t i o n  NOT null");
       UserProfile profile = connection.fetchUserProfile();
+      logger.info("profile fetched. name: " + profile.getName() + " username: " + profile.getUsername() + " email: " + profile.getEmail());
       Account account = createAccount(profile);
       if (account != null) {
         SignInUtils.signin(account.getUsername());
-        ProviderSignInUtils.handlePostSignUp(account.getUsername(), request);
+        utils.doPostSignUp(account.getUsername(), request);
         return "redirect:/";
       } else {
         logger.error("No account available ");
@@ -66,6 +69,7 @@ public class SignupController {
 
   private Account createAccount(UserProfile profile) {
     try {
+      logger.info("creating new account");
       Account account = new Account(profile.getEmail(), profile.getFirstName(), profile.getLastName());
       accountRepository.createAccount(account);
       logger.info("new account created");

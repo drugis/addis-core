@@ -70,7 +70,7 @@
       <div class="columns">
         <p><a href="#">trialverse.drugis.org</a> is designed do stuff</p>
         <form id="SignInForm" action="auth/google" method="GET">
-        <input type="hidden" name="scope" value="openid email profile" />
+        <input type="hidden" name="scope" value="profile email" />
           <div>
             <button class=" button" type="submit" tabindex="1" href=>Sign In with Google</button>
           </div>
