@@ -1,14 +1,10 @@
 package org.drugis.trialverse.dataset.repository.impl;
 
-import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.sparql.core.DatasetGraph;
-import com.hp.hpl.jena.sparql.core.DatasetGraphFactory;
-import com.hp.hpl.jena.sparql.graph.GraphFactory;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFLanguages;
+import com.hp.hpl.jena.query.DatasetAccessor;
+import com.hp.hpl.jena.query.DatasetAccessorFactory;
+import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.vocabulary.DC;
+
 import org.drugis.trialverse.dataset.repository.DatasetRepository;
 import org.drugis.trialverse.security.Account;
 
@@ -17,29 +13,31 @@ import java.util.UUID;
 /**
  * Created by connor on 04/11/14.
  */
-public class DatasetRepositoryImpl implements DatasetRepository {
 
-  public final static String DATASET = "http://trials.drugis.org/datasets/";
-  public final String DC_CREATOR = "http://purl.org/dc/elements/1.1/creator";
+
+public class DatasetRepositoryImpl implements DatasetRepository {
+  public static String eTag = null;
+
 
   @Override
   public String createDataset(String title, String description, Account owner) {
 
+    DatasetAccessor dataAccessor = DatasetAccessorFactory.createHTTP("http://localhost:3030/current/data");
+
     String uuid = UUID.randomUUID().toString();
     String datasetIdentifier = DATASET + uuid;
 
-    DatasetGraph datasetGraph = DatasetGraphFactory.createMem();
-    Graph graph = GraphFactory.createGraphMem();
+    Model model = ModelFactory.createDefaultModel();
 
-    Node datasetURI = NodeFactory.createURI(datasetIdentifier);
-    Node creatorRel = NodeFactory.createURI(DC_CREATOR);
-    Node creatorName = NodeFactory.createLiteral(owner.getUsername());
+    Resource datasetURI = model.createResource(datasetIdentifier);
+    Property creatorRel = DC.creator;
+    Literal creatorName = model.createLiteral(owner.getUsername());
 
-    graph.add(new Triple(datasetURI, creatorRel, creatorName));
+    model.add(datasetURI, creatorRel, creatorName);
 
-    datasetGraph.addGraph(datasetURI, graph);
+    dataAccessor.putModel(datasetIdentifier, model);
 
-    RDFDataMgr.createDatasetWriter(RDFLanguages.TRIG).write(System.out, datasetGraph, null, null, null);
+//    doPUT(new HttpClient(), "http://localhost:3030/current/data/datasets/" + uuid, out.toString());
 
     return datasetIdentifier;
   }

@@ -104,6 +104,11 @@
             <artifactId>jena-core</artifactId>
             <version>2.12.1</version>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>commons-httpclient</groupId>-->
+            <!--<artifactId>commons-httpclient</artifactId>-->
+            <!--<version>3.1</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.apache.jena</groupId>
@@ -118,18 +123,14 @@
                  <groupId>xml-apis</groupId>
                  <artifactId>xml-apis</artifactId>
              </exclusion>
-             <exclusion>
-                 <groupId>org.apache.httpcomponents</groupId>
-                 <artifactId>httpclient</artifactId>
-             </exclusion>
-             <exclusion>
-                 <groupId>org.apache.httpcomponents</groupId>
-                 <artifactId>httpcore</artifactId>
-             </exclusion>
-             <exclusion>
-                 <groupId>org.apache.httpcomponents</groupId>
-                 <artifactId>httpclient</artifactId>
-             </exclusion>
+             <!--<exclusion>-->
+                 <!--<groupId>org.apache.httpcomponents</groupId>-->
+                 <!--<artifactId>httpcore</artifactId>-->
+             <!--</exclusion>-->
+             <!--<exclusion>-->
+                 <!--<groupId>org.apache.httpcomponents</groupId>-->
+                 <!--<artifactId>httpclient</artifactId>-->
+             <!--</exclusion>-->
              <exclusion>
                  <groupId>org.apache.httpcomponents</groupId>
                  <artifactId>httpclient-cache</artifactId>
