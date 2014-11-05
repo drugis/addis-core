@@ -15,19 +15,21 @@ clinical trials will be set up:
 Running
 -------
 
-NOTE: the TrialVerse spring prototype is currently not being used, and may
-not run against the most recent database schema. It is left here mainly as
-documentation. See drugis/addis-core for the current stub implementation.
+Create a trialverse user with password 'develop'
 
-	sudo apt-get install openjdk-7-jdk maven postgresql postgresql-client postgresql-contrib-9.1 libsaxonb-java
-	sudo update-alternatives --config java # choose java 7
-
-	sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'develop'"
 	sudo -u postgres createuser -S -D -R trialverse
 	sudo -u postgres psql -c "ALTER USER trialverse WITH PASSWORD 'develop'"
 
-	cd dbms
-	./rebuild.sh
-	cd ..
+Configure environment variables (NB google secret/key assumes localhost:8090)
 
-	mvn jetty:run
+    export TRIALVERSE_DB_CHANGELOG=database.sql
+    export TRIALVERSE_DB_DRIVER=org.postgresql.Driver
+    export TRIALVERSE_DB_URL=jdbc:postgresql://localhost/trialverse
+    export TRIALVERSE_DB_USERNAME=trialverse
+    export TRIALVERSE_DB_PASSWORD=develop
+    export TRIALVERSE_OAUTH_GOOGLE_SECRET=JMta9pPfckdE9GMnxKvTm3We
+    export TRIALVERSE_OAUTH_GOOGLE_KEY=356525985053-j71rekspvj3ds507700srb8hl7955m32.apps.googleusercontent.com
+
+Run tomcat:
+
+    mvn tomcat7:run
