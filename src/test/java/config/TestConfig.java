@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mock;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(excludeFilters = {@ComponentScan.Filter(Configuration.class)}, basePackages = {"org.drugis.trialverse.error"})
+@ComponentScan(excludeFilters = {@ComponentScan.Filter(Configuration.class)}, basePackages = {"org.drugis.trialverse"})
 public class TestConfig {
   @Bean
   public AccountRepository mockAccountRepository() {
