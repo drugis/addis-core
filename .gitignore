@@ -13,3 +13,4 @@ dbms/*Example.sql
 /studies
 *.swp
 src/main/webapp/resources/app/js/bower_components/
+.idea
