@@ -3,15 +3,15 @@
     <!-- disable session persistence since it doesn't work for OAuth anyway -->
 
     <Resource
-            name="jdbc/addiscore"
+            name="jdbc/trialverse"
             auth="Container"
-            type="javax.sql.DataSource" driverClassName="${ADDIS_CORE_DB_DRIVER}"
-            url="${ADDIS_CORE_DB_URL}"
-            username="${ADDIS_CORE_DB_USERNAME}" password="${ADDIS_CORE_DB_PASSWORD}"
+            type="javax.sql.DataSource" driverClassName="${TRIALVERSE_DB_DRIVER}"
+            url="${TRIALVERSE_DB_URL}"
+            username="${TRIALVERSE_DB_USERNAME}" password="${TRIALVERSE_DB_PASSWORD}"
             maxActive="20" maxIdle="10" maxWait="-1"/>
 
-    <ResourceLink name="jdbc/addiscore"
-                  global="jdbc/addiscore"
+    <ResourceLink name="jdbc/trialverse"
+                  global="jdbc/trialverse"
                   type="javax.sql.DataSource"/>
 
 </Context>

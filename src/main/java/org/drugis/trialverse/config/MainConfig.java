@@ -42,36 +42,36 @@ import java.util.Properties;
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {"org.drugis.trialverse.security"})
 public class MainConfig {
-  @Bean(name = "dsAddisCore")
+  @Bean(name = "dsTrialverse")
   public DataSource dataSource() {
     DataSource ds;
     JndiTemplate jndi = new JndiTemplate();
     try {
-      ds = (DataSource) jndi.lookup("java:/comp/env/jdbc/addiscore");
+      ds = (DataSource) jndi.lookup("java:/comp/env/jdbc/trialverse");
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
     return ds;
   }
 
-  @Bean(name = "ptmAddisCore")
-  public PlatformTransactionManager transactionManager(@Qualifier("emAddisCore") EntityManagerFactory entityManagerFactory) {
+  @Bean(name = "ptmTrialverse")
+  public PlatformTransactionManager transactionManager(@Qualifier("emTrialverse") EntityManagerFactory entityManagerFactory) {
     JpaTransactionManager transactionManager = new JpaTransactionManager();
     transactionManager.setEntityManagerFactory(entityManagerFactory);
     return transactionManager;
   }
 
-  @Bean(name = "jtAddisCore")
+  @Bean(name = "jtTrialverse")
   public JdbcTemplate jdbcTemplate() {
     return new JdbcTemplate(dataSource());
   }
 
-  @Bean(name = "petppAddisCore")
+  @Bean(name = "petppTrialverse")
   public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
     return new PersistenceExceptionTranslationPostProcessor();
   }
 
-  @Bean(name = "emAddisCore")
+  @Bean(name = "emTrialverse")
   public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
     HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
     vendorAdapter.setGenerateDdl(false);
@@ -81,7 +81,7 @@ public class MainConfig {
     em.setJpaVendorAdapter(vendorAdapter);
     em.setPackagesToScan("org.drugis.trialverse.security");
     em.setDataSource(dataSource());
-    em.setPersistenceUnitName("addisCore");
+    em.setPersistenceUnitName("trialverse");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
 
     em.afterPropertiesSet();

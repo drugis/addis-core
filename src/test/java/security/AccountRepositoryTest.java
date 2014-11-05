@@ -26,7 +26,7 @@ public class AccountRepositoryTest {
   @Inject
   private AccountRepository accountRepository;
 
-  @PersistenceContext(unitName = "addisCore")
+  @PersistenceContext(unitName = "trialverse")
   EntityManager em;
 
   @Test
