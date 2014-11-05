@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
+import static org.junit.Assert.assertTrue;
+
 public class DatasetRepositoryTest {
 
   @InjectMocks
@@ -21,6 +23,6 @@ public class DatasetRepositoryTest {
   @Test
   public void testCreateDataset() throws Exception {
     String result = datasetRepository.createDataset("my-title", "my-description", new Account("my-owner", "fn", "ln"));
-
+    assertTrue(result.startsWith(DatasetRepository.DATASET));
   }
 }

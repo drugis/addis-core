@@ -1,34 +1,45 @@
 package org.drugis.trialverse.dataset.repository.impl;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.query.DatasetAccessor;
+import com.hp.hpl.jena.query.DatasetAccessorFactory;
+import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.vocabulary.DC;
+
 import org.drugis.trialverse.dataset.repository.DatasetRepository;
 import org.drugis.trialverse.security.Account;
+
+import java.util.UUID;
 
 /**
  * Created by connor on 04/11/14.
  */
-public class DatasetRepositoryImpl implements DatasetRepository {
 
-  private final static String BASE_UIR = "http://trialverse/dataset";
+
+public class DatasetRepositoryImpl implements DatasetRepository {
+  public static String eTag = null;
+
 
   @Override
   public String createDataset(String title, String description, Account owner) {
 
-    //create an empty Model
+    DatasetAccessor dataAccessor = DatasetAccessorFactory.createHTTP("http://localhost:3030/current/data");
+
+    String uuid = UUID.randomUUID().toString();
+    String datasetIdentifier = DATASET + uuid;
+
     Model model = ModelFactory.createDefaultModel();
 
-    // create the resource
-    Resource dataset = model.createResource(BASE_UIR + "/" + title);
+    Resource datasetURI = model.createResource(datasetIdentifier);
+    Property creatorRel = DC.creator;
+    Literal creatorName = model.createLiteral(owner.getUsername());
 
-    // add the property
-    dataset.addProperty(  )
+    model.add(datasetURI, creatorRel, creatorName);
 
-    model.write(System.out, "TURTLE");
+    dataAccessor.putModel(datasetIdentifier, model);
 
-    return "jep jep";
+//    doPUT(new HttpClient(), "http://localhost:3030/current/data/datasets/" + uuid, out.toString());
+
+    return datasetIdentifier;
   }
 
 
