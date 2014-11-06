@@ -7,14 +7,12 @@ import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.security.Account;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class DatasetRepositoryTest {
@@ -27,7 +25,7 @@ public class DatasetRepositoryTest {
   DatasetRepository datasetRepository;
 
   private
-  DatasetAccessor datasetAccessor  = mock(DatasetAccessor.class);
+  DatasetAccessor datasetAccessor = mock(DatasetAccessor.class);
 
   @Before
   public void setUp() {
@@ -43,7 +41,6 @@ public class DatasetRepositoryTest {
     verifyNoMoreInteractions(datasetService);
   }
 
-  @Ignore
   @Test
   public void testCreateDataset() throws Exception {
     Account owner = new Account("my-owner", "fn", "ln");

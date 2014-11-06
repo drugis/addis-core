@@ -31,13 +31,13 @@ public class DatasetServiceImpl implements DatasetService {
 
   @Override
   public Model createDatasetModel(Account owner, String datasetIdentifier) {
-      Model model = ModelFactory.createDefaultModel();
+    Model model = ModelFactory.createDefaultModel();
 
-      Resource datasetURI = model.createResource(datasetIdentifier);
-      Property creatorRel = DC.creator;
-      Literal creatorName = model.createLiteral(owner.getUsername());
+    Resource datasetURI = model.createResource(datasetIdentifier);
+    Property creatorRel = DC.creator;
+    Literal creatorName = model.createLiteral(owner.getUsername());
 
-      return model.add(datasetURI, creatorRel, creatorName);
-    }
+    return model.add(datasetURI, creatorRel, creatorName);
+  }
 
 }
