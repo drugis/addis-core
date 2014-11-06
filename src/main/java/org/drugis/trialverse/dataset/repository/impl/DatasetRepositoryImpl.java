@@ -5,6 +5,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import org.drugis.trialverse.dataset.repository.DatasetRepository;
 import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.security.Account;
+import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
 
@@ -12,6 +13,7 @@ import javax.inject.Inject;
  * Created by connor on 04/11/14.
  */
 
+@Repository
 public class DatasetRepositoryImpl implements DatasetRepository {
 
   @Inject
