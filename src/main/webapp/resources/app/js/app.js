@@ -4,15 +4,16 @@ define(
     'require',
     'jQuery',
     'foundation',
+    'mmfoundation',
     'angular-ui-router',
-    'controllers',
-    'services'
+    'dataset/dataset',
+    'angular-resource'
   ],
-  function(angular, require, $) {
+  function(angular) {
     var dependencies = [
       'ui.router',
-      'trialverse.controllers',
-      'trialverse.services'
+      'mm.foundation.modal',
+      'trialverse.dataset'
     ];
 
     var app = angular.module('trialverse', dependencies);
@@ -31,25 +32,20 @@ define(
 
     app.config(['$stateProvider', '$urlRouterProvider',
       function($stateProvider, $urlRouterProvider) {
-        var baseTemplatePath = 'app/views/';
         $stateProvider
           .state('datasets', {
             url: '/datasets',
-            templateUrl: baseTemplatePath + 'datasets.html',
+            templateUrl: 'app/js/dataset/datasets.html',
             controller: 'DatasetsController'
           })
           .state('create-dataset', {
             url: '/create-dataset',
-            templateUrl: baseTemplatePath + 'createDataset.html',
+            templateUrl: 'app/js/dataset/createDataset.html',
             controller: 'CreateDatasetController'
-          })
-          .state('hello', {
-            url: '/hello',
-            templateUrl: baseTemplatePath + 'hello.html'
           });
 
         // Default route
-        $urlRouterProvider.otherwise('/hello');
+        $urlRouterProvider.otherwise('/datasets');
       }
     ]);
 

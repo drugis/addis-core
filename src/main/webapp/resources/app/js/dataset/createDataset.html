@@ -1,0 +1,27 @@
+<form novalidate ng-submit="createDataset()">
+    <div class="row">
+        <div class="large-8 columns">
+            <h3>Create a new dataset</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-8 columns">
+            <label>Name
+                <input autofocus type="text" ng-model="dataset.title">
+            </label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-8 columns">
+            <label>Description
+                <textarea rows="8" ng-model="dataset.description"></textarea>
+            </label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-8 columns">
+            <button class="success" type="submit" ng-disabled="!dataset.title">Create</button>
+        </div>
+    </div>
+    <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>
