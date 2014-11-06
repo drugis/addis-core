@@ -4,9 +4,9 @@ import com.hp.hpl.jena.query.DatasetAccessor;
 import com.hp.hpl.jena.query.DatasetAccessorFactory;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.DC;
-
 import org.drugis.trialverse.dataset.repository.DatasetRepository;
 import org.drugis.trialverse.security.Account;
+import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
@@ -14,7 +14,7 @@ import java.util.UUID;
  * Created by connor on 04/11/14.
  */
 
-
+@Repository
 public class DatasetRepositoryImpl implements DatasetRepository {
   public static String eTag = null;
 
@@ -41,8 +41,6 @@ public class DatasetRepositoryImpl implements DatasetRepository {
 
     return datasetIdentifier;
   }
-
-
 
 
 }
