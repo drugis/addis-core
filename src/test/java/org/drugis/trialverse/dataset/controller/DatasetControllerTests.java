@@ -77,7 +77,7 @@ public class DatasetControllerTests {
   @Test
   public void testCreateProject() throws Exception {
     String newDatasetUid = "http://some.thing.like/this/asd123";
-    DatasetCommand datasetCommand = new DatasetCommand("dataset title", "some description");
+    DatasetCommand datasetCommand = new DatasetCommand("dataset title");
     String jsonContent = TestUtils.createJson(datasetCommand);
     when(datasetRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john)).thenReturn(newDatasetUid);
     mockMvc

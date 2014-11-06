@@ -20,7 +20,7 @@ import java.security.Principal;
  * Created by connor on 6-11-14.
  */
 @Controller
-@RequestMapping(value = "/datasets")
+@RequestMapping
 public class DatasetController {
 
   @Inject
@@ -29,7 +29,7 @@ public class DatasetController {
   @Inject
   private AccountRepository accountRepository;
 
-  @RequestMapping(method = RequestMethod.POST)
+  @RequestMapping(value = "/datasets", method = RequestMethod.POST)
   @ResponseBody
   public Dataset createDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody DatasetCommand datasetCommand) {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());

@@ -45,9 +45,9 @@ public class Dataset {
 
     Dataset dataset = (Dataset) o;
 
-    if (Uid != null ? !Uid.equals(dataset.Uid) : dataset.Uid != null) return false;
+    if (!Uid.equals(dataset.Uid)) return false;
     if (!creator.equals(dataset.creator)) return false;
-    if (!description.equals(dataset.description)) return false;
+    if (description != null ? !description.equals(dataset.description) : dataset.description != null) return false;
     if (!title.equals(dataset.title)) return false;
 
     return true;
@@ -55,10 +55,10 @@ public class Dataset {
 
   @Override
   public int hashCode() {
-    int result = Uid != null ? Uid.hashCode() : 0;
+    int result = Uid.hashCode();
     result = 31 * result + creator.hashCode();
     result = 31 * result + title.hashCode();
-    result = 31 * result + description.hashCode();
+    result = 31 * result + (description != null ? description.hashCode() : 0);
     return result;
   }
 }

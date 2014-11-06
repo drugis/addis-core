@@ -8288,34 +8288,79 @@ input[type='file'] {
   background-color: #006837;
 }
 
-/* line 9, ../../sass/trialverse-drugis.scss */
+/**
+ * Animations from mmfoundation
+ */
+/* line 4, ../../sass/_mmfoundation-animations.scss */
+.fade {
+  opacity: 0;
+  -webkit-transition: opacity .15s linear;
+  transition: opacity .15s linear;
+}
+
+/* line 9, ../../sass/_mmfoundation-animations.scss */
+.fade.in {
+  opacity: 1;
+}
+
+/* line 13, ../../sass/_mmfoundation-animations.scss */
+.reveal-modal.fade {
+  -webkit-transition: -webkit-transform .3s ease-out;
+  -moz-transition: -moz-transform .3s ease-out;
+  -o-transition: -o-transform .3s ease-out;
+  transition: transform .3s ease-out;
+  -webkit-transform: translate(0, -25%);
+  -ms-transform: translate(0, -25%);
+  transform: translate(0, -25%);
+}
+
+/* line 22, ../../sass/_mmfoundation-animations.scss */
+.reveal-modal.in {
+  -webkit-transform: translate(0, 0);
+  -ms-transform: translate(0, 0);
+  transform: translate(0, 0);
+}
+
+/* line 28, ../../sass/_mmfoundation-animations.scss */
+.reveal-modal-bg.fade {
+  filter: alpha(opacity=0);
+  opacity: 0;
+}
+
+/* line 32, ../../sass/_mmfoundation-animations.scss */
+.reveal-modal-bg.in {
+  filter: alpha(opacity=50);
+  opacity: .5;
+}
+
+/* line 10, ../../sass/trialverse-drugis.scss */
 .alert {
   color: #e66464;
 }
 
-/* line 12, ../../sass/trialverse-drugis.scss */
+/* line 13, ../../sass/trialverse-drugis.scss */
 .warning {
   color: #f2973c;
 }
 
-/* line 15, ../../sass/trialverse-drugis.scss */
+/* line 16, ../../sass/trialverse-drugis.scss */
 .info {
   color: #77c0de;
 }
 
-/* line 18, ../../sass/trialverse-drugis.scss */
+/* line 19, ../../sass/trialverse-drugis.scss */
 .color-stripe {
   background: #cc3333;
   height: 0.45rem;
 }
 
-/* line 23, ../../sass/trialverse-drugis.scss */
+/* line 24, ../../sass/trialverse-drugis.scss */
 .error-message {
   display: block;
   color: #cc3333;
 }
 
-/* line 29, ../../sass/trialverse-drugis.scss */
+/* line 30, ../../sass/trialverse-drugis.scss */
 .user-image {
   margin-top: -1px;
   margin-right: 4px;

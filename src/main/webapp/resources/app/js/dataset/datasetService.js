@@ -1,5 +1,5 @@
 'use strict';
-define(['angular'], function() {
+var DatasetService = define(['angular'], function() {
   var dependencies = [];
 
   var DatasetService = function() {
