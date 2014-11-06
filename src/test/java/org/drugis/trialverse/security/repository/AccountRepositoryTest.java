@@ -1,8 +1,7 @@
-package security;
+package org.drugis.trialverse.security.repository;
 
-import config.JpaRepositoryTestConfig;
+import org.drugis.trialverse.config.TestConfig;
 import org.drugis.trialverse.security.Account;
-import org.drugis.trialverse.security.repository.AccountRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,7 +19,7 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
-@ContextConfiguration(classes = {JpaRepositoryTestConfig.class})
+@ContextConfiguration(classes = {TestConfig.JpaRepositoryTestConfig.class})
 public class AccountRepositoryTest {
 
   @Inject
