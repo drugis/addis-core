@@ -1,7 +1,9 @@
 package org.drugis.trialverse.dataset.controller;
 
+import com.hp.hpl.jena.vocabulary.RDF;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
+import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
@@ -27,7 +29,18 @@ public class DatasetController {
   private DatasetWriteRepository datasetWriteRepository;
 
   @Inject
+  private DatasetReadRepository datasetReadRepository;
+
+  @Inject
   private AccountRepository accountRepository;
+
+  @RequestMapping(value = "/datasets", method = RequestMethod.GET)
+  @ResponseBody
+  public RDF getDatasets(HttpServletRequest request, HttpServletResponse response, Principal currentUser) {
+    Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
+
+    return datasetReadRepository.query(currentUserAccount);
+  }
 
   @RequestMapping(value = "/datasets", method = RequestMethod.POST)
   @ResponseBody
