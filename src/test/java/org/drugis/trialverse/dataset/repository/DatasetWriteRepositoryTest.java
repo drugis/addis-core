@@ -53,7 +53,7 @@ public class DatasetWriteRepositoryTest {
   public void testCreateDataset() throws Exception {
     Account owner = new Account("my-owner", "fn", "ln");
     String title = "my-title";
-    String description = "my-description";
+    String description = "description";
     String result = datasetWriteRepository.createDataset(title, description, owner);
 
     assertEquals(DATASET_URI, result);
@@ -62,6 +62,26 @@ public class DatasetWriteRepositoryTest {
     assertEquals(title, model.getRDFNode(NodeFactory.createLiteral(title)).toString());
     assertEquals(owner.getUsername(), model.getRDFNode(NodeFactory.createLiteral(owner.getUsername())).toString());
     assertEquals(description, model.getRDFNode(NodeFactory.createLiteral(description)).toString());
+
+    verify(jenaFactory).getDatasetAccessor();
+    verify(jenaFactory).createDatasetURI();
+    verify(jenaFactory).createModel();
+  }
+
+  @Test
+  public void testCreateDatasetWithNullDescription() throws Exception {
+    Account owner = new Account("my-owner", "fn", "ln");
+    String title = "my-title";
+    String description = null;
+    String result = datasetWriteRepository.createDataset(title, description, owner);
+
+    assertEquals(DATASET_URI, result);
+
+    assertEquals(DATASET_URI, model.getResource(DATASET_URI).getURI());
+    assertEquals(title, model.getRDFNode(NodeFactory.createLiteral(title)).toString());
+    assertEquals(owner.getUsername(), model.getRDFNode(NodeFactory.createLiteral(owner.getUsername())).toString());
+    String ontologyDataset = "ontology:DataSet";
+    assertEquals(ontologyDataset, model.getRDFNode(NodeFactory.createLiteral(ontologyDataset)).toString());
 
     verify(jenaFactory).getDatasetAccessor();
     verify(jenaFactory).createDatasetURI();

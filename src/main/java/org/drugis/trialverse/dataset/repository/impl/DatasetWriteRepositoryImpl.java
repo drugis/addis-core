@@ -6,6 +6,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DC;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
@@ -27,16 +28,20 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   private Model createDatasetModel(String datasetIdentifier, Account owner, String title, String description) {
     Model model = jenaFactory.createModel();
 
+    model.setNsPrefix("ontology", "http://trials.drugis.org/ontology#");
+
     Resource datasetURI = model.createResource(datasetIdentifier);
 
-    Literal titleLiteral = model.createLiteral(title);
-    Literal creatorName = model.createLiteral(owner.getUsername());
-    Literal descriptionLiteral = model.createLiteral(description);
+    Resource datasetOntologyURI = model.createResource("http://trials.drugis.org/ontology#DataSet");
+
+    if (description != null) {
+      model.add(datasetURI, RDFS.comment, description);
+    }
 
     return model
-            .add(datasetURI, DC.creator, creatorName)
-            .add(datasetURI, RDFS.comment, descriptionLiteral)
-            .add(datasetURI, RDFS.label, titleLiteral);
+            .add(datasetURI, DC.creator, owner.getUsername())
+            .add(datasetURI, RDFS.label, title)
+            .add(datasetURI, RDF.type, datasetOntologyURI);
   }
 
   @Override
