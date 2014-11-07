@@ -37,8 +37,7 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
-        "org.drugis.trialverse.error",
-        "org.drugis.trialverse.security"})
+        "org.drugis.trialverse"})
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {"org.drugis.trialverse.security"})
 public class MainConfig {
