@@ -1,7 +1,7 @@
 package org.drugis.trialverse.dataset.controller;
 
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
-import org.drugis.trialverse.dataset.repository.DatasetRepository;
+import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.testutils.TestUtils;
@@ -39,7 +39,7 @@ public class DatasetControllerTest {
   private AccountRepository accountRepository;
 
   @Mock
-  private DatasetRepository datasetRepository;
+  private DatasetWriteRepository datasetWriteRepository;
 
   @Inject
   private WebApplicationContext webApplicationContext;
@@ -58,7 +58,7 @@ public class DatasetControllerTest {
   @Before
   public void setUp() {
     accountRepository = mock(AccountRepository.class);
-    datasetRepository = mock(DatasetRepository.class);
+    datasetWriteRepository = mock(DatasetWriteRepository.class);
     datasetController = new DatasetController();
 
     initMocks(this);
@@ -71,7 +71,7 @@ public class DatasetControllerTest {
 
   @After
   public void tearDown() {
-    verifyNoMoreInteractions(accountRepository, datasetRepository);
+    verifyNoMoreInteractions(accountRepository, datasetWriteRepository);
   }
 
   @Test
@@ -79,7 +79,7 @@ public class DatasetControllerTest {
     String newDatasetUid = "http://some.thing.like/this/asd123";
     DatasetCommand datasetCommand = new DatasetCommand("dataset title");
     String jsonContent = TestUtils.createJson(datasetCommand);
-    when(datasetRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john)).thenReturn(newDatasetUid);
+    when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john)).thenReturn(newDatasetUid);
     mockMvc
             .perform(post("/datasets")
                             .principal(user)
@@ -90,6 +90,6 @@ public class DatasetControllerTest {
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.uri", is(newDatasetUid)));
     verify(accountRepository).findAccountByUsername(john.getUsername());
-    verify(datasetRepository).createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john);
+    verify(datasetWriteRepository).createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john);
   }
 }

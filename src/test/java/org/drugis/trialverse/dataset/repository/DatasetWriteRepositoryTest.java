@@ -3,7 +3,7 @@ package org.drugis.trialverse.dataset.repository;
 import com.hp.hpl.jena.query.DatasetAccessor;
 import com.hp.hpl.jena.rdf.model.Model;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
-import org.drugis.trialverse.dataset.repository.impl.DatasetRepositoryImpl;
+import org.drugis.trialverse.dataset.repository.impl.DatasetWriteRepositoryImpl;
 import org.drugis.trialverse.security.Account;
 import org.junit.After;
 import org.junit.Before;
@@ -15,21 +15,21 @@ import org.mockito.MockitoAnnotations;
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class DatasetRepositoryTest {
+public class DatasetWriteRepositoryTest {
 
   private static final java.lang.String DATASET_URI = "dataset uri";
   @Mock
   private JenaFactory jenaFactory;
 
   @InjectMocks
-  DatasetRepository datasetRepository;
+  DatasetWriteRepository datasetWriteRepository;
 
   private
   DatasetAccessor datasetAccessor = mock(DatasetAccessor.class);
 
   @Before
   public void setUp() {
-    datasetRepository = new DatasetRepositoryImpl();
+    datasetWriteRepository = new DatasetWriteRepositoryImpl();
     MockitoAnnotations.initMocks(this);
 
     Model model = mock(Model.class);
@@ -46,7 +46,7 @@ public class DatasetRepositoryTest {
   @Test
   public void testCreateDataset() throws Exception {
     Account owner = new Account("my-owner", "fn", "ln");
-    String result = datasetRepository.createDataset("my-title", "my-description", owner);
+    String result = datasetWriteRepository.createDataset("my-title", "my-description", owner);
 
     assertEquals(DATASET_URI, result);
 
