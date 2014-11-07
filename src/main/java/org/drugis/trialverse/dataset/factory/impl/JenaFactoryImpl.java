@@ -15,7 +15,7 @@ import java.util.UUID;
 @Service
 public class JenaFactoryImpl implements JenaFactory {
 
-  private final static String TRIPLESTORE_URI = System.getenv("TRIPLESTORE_BASE_URI") + "current/data";
+  private final static String TRIPLESTORE_URI = System.getenv("TRIPLESTORE_BASE_URI") + "/current/data";
 
   @Override
   public DatasetAccessor getDatasetAccessor() {
