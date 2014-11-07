@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @Configuration
 @EnableWebMvc
-public class DatasetControllerTests {
+public class DatasetControllerTest {
 
   private MockMvc mockMvc;
 
@@ -88,7 +88,7 @@ public class DatasetControllerTests {
             )
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.uid", is(newDatasetUid)));
+            .andExpect(jsonPath("$.uri", is(newDatasetUid)));
     verify(accountRepository).findAccountByUsername(john.getUsername());
     verify(datasetRepository).createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john);
   }
