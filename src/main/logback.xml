@@ -11,7 +11,7 @@
     </appender>
 
     <appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>c:/tmp/rest-demo.log</File>
+        <File>~/springLog.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
             <FileNamePattern>rest-demo.%d{yyyy-MM-dd}.log</FileNamePattern>
@@ -39,14 +39,14 @@
     </appender>
 
     <logger name="org.codingpedia" additivity="false">
-        <level value="DEBUG"/>
+        <level value="INFO"/>
         <appender-ref ref="dailyRollingFileAppender"/>
         <appender-ref ref="minuteRollingFileAppender"/>
         <appender-ref ref="consoleAppender"/>
     </logger>
 
     <root>
-        <level value="DEBUG"/>
+        <level value="INFO"/>
         <appender-ref ref="consoleAppender"/>
     </root>
 </configuration>

@@ -411,7 +411,7 @@
                 <configuration>
                     <configFile>src/test/js/karma.conf.js</configFile>
                     <junitReportFile>src/test/karma-test-results.xml</junitReportFile>
-                    <browsers>Chrome</browsers>
+                    <browsers>PhantomJS</browsers>
                     <autoWatch>false</autoWatch>
                     <singleRun>true</singleRun>
                     <colors>true</colors>
