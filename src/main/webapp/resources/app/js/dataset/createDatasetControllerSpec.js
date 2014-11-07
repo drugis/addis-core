@@ -3,7 +3,7 @@ define(['angular', 'angular-mocks'], function() {
   describe('create dataset controller', function() {
     var scope,
       mockDatasetResource = jasmine.createSpyObj('DatasetResource', ['save']),
-      mockModalInstance = jasmine.createSpyObj('$modalInstance', ['close']),
+      mockModalInstance = jasmine.createSpyObj('$modalInstance', ['close', 'dismiss']),
       mockSuccessCallback = jasmine.createSpy('successCallback'),
       mockState = jasmine.createSpyObj('$state', ['go']),
       mockDataset = {
@@ -54,5 +54,16 @@ define(['angular', 'angular-mocks'], function() {
         });
       })
     });
+
+    it('should place cancel on the scope', function() {
+      expect(scope.cancel).not.toBe(null);
+    });
+
+    describe('cancel', function() {
+      it('should close the modalInstance', function() {
+        scope.cancel();
+        expect(mockModalInstance.close).toHaveBeenCalled();
+      })
+    })
   });
 });
