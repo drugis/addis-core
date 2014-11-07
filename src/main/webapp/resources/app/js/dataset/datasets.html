@@ -1,0 +1,11 @@
+<div>
+    <h1>Your datasets</h1>
+
+    <button ng-click="createDatasetDialog()">New</button>
+    <div ng-repeat="dataset in datasets">
+        {{dataset.title}}
+    </div>
+
+    <p ng-if="dataset">Dataset created: {{dataset.uri}}</p>
+
+</div>

@@ -1,0 +1,38 @@
+@import"settings";
+@import"trialverse-settings";
+@import"foundation";
+@import"drugis";
+@import"main";
+@import"mmfoundation-animations";
+
+$addis-grey : $crumb-bg;
+$addis-grey-border : $crumb-border-color;
+ .alert {
+  color: $alert-color;
+}
+.warning {
+  color: $warning-color;
+}
+.info {
+  color: darken($info-color, 10%);
+}
+.color-stripe {
+  background: $drugis-color;
+  height: 0.45rem;
+}
+
+.error-message {
+  display: block;
+  color: $drugis-color;
+}
+
+// header ////
+.user-image {
+  margin-top: -1px;
+  margin-right: 4px;
+  height: 32px;
+  border-radius: 15px;
+}
+
+
+
