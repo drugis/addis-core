@@ -12,8 +12,9 @@ define([],
           controller: 'CreateDatasetController',
           resolve: {
             successCallback: function() {
-              return function() {
-                console.log('called back yo');
+              return function(dataset) {
+                console.log('dataset created: ' + dataset.uri);
+                $scope.dataset = dataset;
               };
             }
           }

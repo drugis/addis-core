@@ -7,7 +7,7 @@ import org.drugis.trialverse.security.Account;
  */
 public class Dataset {
 
-  private String Uid;
+  private String uri;
   private Account creator;
   private String title;
   private String description;
@@ -15,15 +15,15 @@ public class Dataset {
   public Dataset() {
   }
 
-  public Dataset(String uid, Account creator, String title, String description) {
-    Uid = uid;
+  public Dataset(String uri, Account creator, String title, String description) {
+    this.uri = uri;
     this.creator = creator;
     this.title = title;
     this.description = description;
   }
 
-  public String getUid() {
-    return Uid;
+  public String getUri() {
+    return uri;
   }
 
   public Account getCreator() {
@@ -45,7 +45,7 @@ public class Dataset {
 
     Dataset dataset = (Dataset) o;
 
-    if (!Uid.equals(dataset.Uid)) return false;
+    if (!uri.equals(dataset.uri)) return false;
     if (!creator.equals(dataset.creator)) return false;
     if (description != null ? !description.equals(dataset.description) : dataset.description != null) return false;
     if (!title.equals(dataset.title)) return false;
@@ -55,7 +55,7 @@ public class Dataset {
 
   @Override
   public int hashCode() {
-    int result = Uid.hashCode();
+    int result = uri.hashCode();
     result = 31 * result + creator.hashCode();
     result = 31 * result + title.hashCode();
     result = 31 * result + (description != null ? description.hashCode() : 0);

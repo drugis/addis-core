@@ -7,7 +7,7 @@ define([],
       $scope.createDataset = function() {
         DatasetResource.save($scope.dataset, function(dataset) {
           console.log('dataset ' + dataset + 'created');
-          successCallback();
+          successCallback(dataset);
         });
         $modalInstance.close();
       };
