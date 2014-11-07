@@ -1,7 +1,10 @@
 package org.drugis.trialverse.dataset.repository;
 
+import com.hp.hpl.jena.graph.NodeFactory;
+import com.hp.hpl.jena.graph.Node_Literal;
 import com.hp.hpl.jena.query.DatasetAccessor;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.impl.DatasetWriteRepositoryImpl;
 import org.drugis.trialverse.security.Account;
@@ -27,12 +30,15 @@ public class DatasetWriteRepositoryTest {
   private
   DatasetAccessor datasetAccessor = mock(DatasetAccessor.class);
 
+  Model model;
+
   @Before
   public void setUp() {
     datasetWriteRepository = new DatasetWriteRepositoryImpl();
     MockitoAnnotations.initMocks(this);
 
-    Model model = mock(Model.class);
+    model = ModelFactory.createDefaultModel();
+
     when(jenaFactory.getDatasetAccessor()).thenReturn(datasetAccessor);
     when(jenaFactory.createDatasetURI()).thenReturn(DATASET_URI);
     when(jenaFactory.createModel()).thenReturn(model);
@@ -46,12 +52,21 @@ public class DatasetWriteRepositoryTest {
   @Test
   public void testCreateDataset() throws Exception {
     Account owner = new Account("my-owner", "fn", "ln");
-    String result = datasetWriteRepository.createDataset("my-title", "my-description", owner);
+    String title = "my-title";
+    String description = "my-description";
+    String result = datasetWriteRepository.createDataset(title, description, owner);
 
     assertEquals(DATASET_URI, result);
+
+    assertEquals(DATASET_URI, model.getResource(DATASET_URI).getURI());
+    assertEquals(title, model.getRDFNode(NodeFactory.createLiteral(title)).toString());
+    assertEquals(owner.getUsername(), model.getRDFNode(NodeFactory.createLiteral(owner.getUsername())).toString());
+    assertEquals(description, model.getRDFNode(NodeFactory.createLiteral(description)).toString());
 
     verify(jenaFactory).getDatasetAccessor();
     verify(jenaFactory).createDatasetURI();
     verify(jenaFactory).createModel();
+
+
   }
 }
