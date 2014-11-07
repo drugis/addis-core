@@ -7,7 +7,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DC;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
-import org.drugis.trialverse.dataset.repository.DatasetRepository;
+import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.security.Account;
 import org.springframework.stereotype.Repository;
 
@@ -18,7 +18,7 @@ import javax.inject.Inject;
  */
 
 @Repository
-public class DatasetRepositoryImpl implements DatasetRepository {
+public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
   @Inject
   private JenaFactory jenaFactory;

@@ -2,7 +2,7 @@ package org.drugis.trialverse.dataset.controller;
 
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
-import org.drugis.trialverse.dataset.repository.DatasetRepository;
+import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.springframework.stereotype.Controller;
@@ -24,7 +24,7 @@ import java.security.Principal;
 public class DatasetController {
 
   @Inject
-  private DatasetRepository datasetRepository;
+  private DatasetWriteRepository datasetWriteRepository;
 
   @Inject
   private AccountRepository accountRepository;
@@ -33,7 +33,7 @@ public class DatasetController {
   @ResponseBody
   public Dataset createDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody DatasetCommand datasetCommand) {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-    String uid = datasetRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), currentUserAccount);
+    String uid = datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), currentUserAccount);
     response.setStatus(HttpServletResponse.SC_CREATED);
     response.setHeader("Location", request.getRequestURL() + "/" + uid);
     return new Dataset(uid, currentUserAccount, datasetCommand.getTitle(), datasetCommand.getDescription());
