@@ -8,7 +8,8 @@ require.config({
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
     'domReady': 'bower_components/requirejs-domready/domReady',
     'foundation': 'bower_components/foundation/js/foundation.min',
-    'mmfoundation': 'bower_components/angular-foundation/mm-foundation'
+    'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
+    'rdfstore': 'bower_components/rdfstore-js/index'
   },
   baseUrl: 'app/js',
   shim: {
@@ -33,6 +34,9 @@ require.config({
     },
     'domReady': {
       exports: 'domReady'
+    },
+    'rdfstore' : {
+      exports: 'rdfstore'
     }
   },
   priority: ['angular']
