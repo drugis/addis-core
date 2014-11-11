@@ -4,6 +4,22 @@ define(['rdfstore-js'],
     var dependencies = ['$scope', '$modal', 'DatasetResource'];
     var DatasetsController = function($scope, $modal, DatasetResource) {
 
+      var query =
+      'prefix dc: <http://purl.org/dc/elements/1.1/>' +
+      'prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
+      'prefix dataset: <http://trials.drugis.org/datasets/>' +
+        'select' +
+        '  ?title ?description ?creator ' +
+        'where { ' +
+        ' ?datasetUri dc:creator ?creator;' +
+        '   rdfs:label ?title;' +
+        '   rdfs:comment ?description }';
+
+// prefix dc: <http://purl.org/dc/elements/1.1/>
+// prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+// prefix dataset: <http://trials.drugis.org/datasets/>
+// prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+// prefix ontology: <http://trials.drugis.org/ontology#>
       $scope.testOutput = {
         data: []
       };
@@ -14,7 +30,9 @@ define(['rdfstore-js'],
           store.load('text/turtle', result.graphData, function(isSuccess, b) {
             console.log('succes ? ' + isSuccess);
             console.log('number of triples ' + b);
-            store.execute('select * where { ?a ?b ?c .}', function(isSuccessFullQuery, result) {
+            store.setPrefix('dc', 'http://purl.org/dc/elements/1.1/');
+            store.setPrefix('rdfs', 'http://www.w3.org/2000/01/rdf-schema#');
+            store.execute(query, function(isSuccessFullQuery, result) {
               $scope.testOutput.data = result;
               $scope.$apply();
             });
