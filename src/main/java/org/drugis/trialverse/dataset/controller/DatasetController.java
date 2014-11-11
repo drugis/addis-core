@@ -1,5 +1,6 @@
 package org.drugis.trialverse.dataset.controller;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
 
 /**
@@ -41,10 +44,15 @@ public class DatasetController {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
 
     HttpResponse response = datasetReadRepository.queryDatasets(currentUserAccount);
-
     httpServletResponse.setHeader("Content-Type", "text/turtle");
-    httpServletResponse.getOutputStream().write(response.getEntity().getContent().read());
 
+    InputStream inputStream = response.getEntity().getContent();
+    ServletOutputStream outputStream = httpServletResponse.getOutputStream();
+
+
+    IOUtils.copy(inputStream, outputStream);
+    inputStream.close();
+    outputStream.close();
   }
 
   @RequestMapping(value = "/datasets", method = RequestMethod.POST)
