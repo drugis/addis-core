@@ -13,4 +13,6 @@ public class WebConstants {
           MediaType.APPLICATION_JSON.getSubtype(),
           Charset.forName("utf8"));
   public final static String APPLICATION_JSON_UTF8_VALUE = "application/json; charset=UTF-8";
+  public final static String TRIPLESTORE_BASE_URI = System.getenv("TRIPLESTORE_BASE_URI");
 }
+
