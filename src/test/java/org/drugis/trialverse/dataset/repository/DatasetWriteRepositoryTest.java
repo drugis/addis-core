@@ -1,7 +1,6 @@
 package org.drugis.trialverse.dataset.repository;
 
 import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.Node_Literal;
 import com.hp.hpl.jena.query.DatasetAccessor;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -80,7 +79,7 @@ public class DatasetWriteRepositoryTest {
     assertEquals(DATASET_URI, model.getResource(DATASET_URI).getURI());
     assertEquals(title, model.getRDFNode(NodeFactory.createLiteral(title)).toString());
     assertEquals(owner.getUsername(), model.getRDFNode(NodeFactory.createLiteral(owner.getUsername())).toString());
-    String ontologyDataset = "ontology:DataSet";
+    String ontologyDataset = "ontology:Dataset";
     assertEquals(ontologyDataset, model.getRDFNode(NodeFactory.createLiteral(ontologyDataset)).toString());
 
     verify(jenaFactory).getDatasetAccessor();

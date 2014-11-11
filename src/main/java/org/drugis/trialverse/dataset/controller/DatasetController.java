@@ -1,6 +1,6 @@
 package org.drugis.trialverse.dataset.controller;
 
-import com.hp.hpl.jena.vocabulary.RDF;
+import org.apache.http.HttpResponse;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.security.Principal;
 
 /**
@@ -36,10 +37,14 @@ public class DatasetController {
 
   @RequestMapping(value = "/datasets", method = RequestMethod.GET)
   @ResponseBody
-  public RDF getDatasets(HttpServletRequest request, HttpServletResponse response, Principal currentUser) {
+  public void getDatasets(HttpServletRequest request, HttpServletResponse httpServletResponse, Principal currentUser) throws IOException {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
 
-    return datasetReadRepository.query(currentUserAccount);
+    HttpResponse response = datasetReadRepository.queryDatasets(currentUserAccount);
+
+    httpServletResponse.setHeader("Content-Type", "text/turtle");
+    httpServletResponse.getOutputStream().write(response.getEntity().getContent().read());
+
   }
 
   @RequestMapping(value = "/datasets", method = RequestMethod.POST)
