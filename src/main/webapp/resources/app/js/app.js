@@ -7,7 +7,8 @@ define(
     'mmfoundation',
     'angular-ui-router',
     'dataset/dataset',
-    'angular-resource'
+    'angular-resource',
+    'rdfstore-js'
   ],
   function(angular) {
     var dependencies = [

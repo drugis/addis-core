@@ -1,15 +1,32 @@
 'use strict';
-define([],
+define(['rdfstore-js'],
   function() {
-    var dependencies = ['$scope', '$modal'];
-    var DatasetsController = function($scope, $modal) {
+    var dependencies = ['$scope', '$modal', 'DatasetResource'];
+    var DatasetsController = function($scope, $modal, DatasetResource) {
 
-      $scope.items = ['item1', 'item2', 'item3'];
+      $scope.testOutput = {
+        data: []
+      };
+
+      DatasetResource.query(function(result) {
+
+        window.rdfstore.create(function(store) {
+          store.load('text/turtle', result.graphData, function(isSuccess, b) {
+            console.log('succes ? ' + isSuccess);
+            console.log('number of triples ' + b);
+            store.execute('select * where { ?a ?b ?c .}', function(isSuccessFullQuery, result) {
+              $scope.testOutput.data = result;
+              $scope.$apply();
+            });
+          });
+        });
+
+      });
 
       function onDatasetCreation(dataset) {
         console.log('dataset created: ' + dataset.uri);
         $scope.dataset = dataset;
-      };
+      }
 
       $scope.createDatasetDialog = function() {
         $modal.open({
