@@ -1,5 +1,6 @@
 package org.drugis.trialverse.dataset.controller;
 
+import com.google.common.io.ByteStreams;
 import org.apache.http.HttpResponse;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
@@ -37,14 +38,13 @@ public class DatasetController {
 
   @RequestMapping(value = "/datasets", method = RequestMethod.GET)
   @ResponseBody
-  public void getDatasets(HttpServletRequest request, HttpServletResponse httpServletResponse, Principal currentUser) throws IOException {
+  public void getDatasets(HttpServletRequest request, HttpServletResponse servletResponse, Principal currentUser) throws IOException {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
 
     HttpResponse response = datasetReadRepository.queryDatasets(currentUserAccount);
 
-    httpServletResponse.setHeader("Content-Type", "text/turtle");
-    httpServletResponse.getOutputStream().write(response.getEntity().getContent().read());
-
+    servletResponse.setHeader("Content-Type", "text/turtle");
+    ByteStreams.copy(response.getEntity().getContent(), servletResponse.getOutputStream());
   }
 
   @RequestMapping(value = "/datasets", method = RequestMethod.POST)
