@@ -1,4 +1,4 @@
-package org.drugis.trialverse.dataset.repository.factory;
+package org.drugis.trialverse.dataset.factory;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
