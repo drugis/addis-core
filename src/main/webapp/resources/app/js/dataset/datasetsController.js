@@ -1,15 +1,14 @@
 'use strict';
-define([],
-  function() {
-    var dependencies = ['$scope', '$modal'];
-    var DatasetsController = function($scope, $modal) {
+define(['rdfstore', 'lodash'],
+  function(rdfstore, _) {
+    var dependencies = ['$scope', '$modal', 'DatasetService'];
+    var DatasetsController = function($scope, $modal, DatasetService) {
 
-      $scope.items = ['item1', 'item2', 'item3'];
+      DatasetService.loadDatasets();
 
       function onDatasetCreation(dataset) {
-        console.log('dataset created: ' + dataset.uri);
-        $scope.dataset = dataset;
-      };
+        DatasetService.loadDatasets();
+      }
 
       $scope.createDatasetDialog = function() {
         $modal.open({

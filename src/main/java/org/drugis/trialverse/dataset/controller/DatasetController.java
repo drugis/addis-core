@@ -42,7 +42,6 @@ public class DatasetController {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
 
     HttpResponse response = datasetReadRepository.queryDatasets(currentUserAccount);
-
     servletResponse.setHeader("Content-Type", "text/turtle");
     ByteStreams.copy(response.getEntity().getContent(), servletResponse.getOutputStream());
   }

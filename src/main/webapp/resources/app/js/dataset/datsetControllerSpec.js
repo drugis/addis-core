@@ -2,7 +2,10 @@
 define(['angular', 'angular-mocks'], function () {
   describe('dataset controller', function() {
 
-    var scope, mockModal = jasmine.createSpyObj('$mock', ['open']);
+    var scope,
+    mockModal = jasmine.createSpyObj('$mock', ['open']),
+    mockDatasetService = jasmine.createSpyObj('DatasetService', ['loadDatasets'])
+    ;
 
     beforeEach(module('trialverse.dataset'));
 
@@ -10,7 +13,8 @@ define(['angular', 'angular-mocks'], function () {
       scope = $rootScope;
       $controller('DatasetsController', {
         $scope: scope,
-        $modal: mockModal
+        $modal: mockModal,
+        DatasetService: mockDatasetService
       });
 
     }));
@@ -18,6 +22,10 @@ define(['angular', 'angular-mocks'], function () {
     it('should place createDatasetDialog on the scope', function() {
       expect(scope.createDatasetDialog).not.toBe(null);
     });
+
+    it('should call loadDatasets', function() {
+      expect(mockDatasetService.loadDatasets).toHaveBeenCalled();
+    })
 
     describe('createDatasetDialog', function() {
       it('should open a modal', function() {

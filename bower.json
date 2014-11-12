@@ -28,6 +28,7 @@
     "rdfstore-js": "https://raw.githubusercontent.com/antoniogarrote/rdfstore-js/master/dist/browser/rdf_store_min.js",
     "jquery": "~2.1.1",
     "angular-resource": "~1.3.2",
-    "rdfstore-js": "https://raw.githubusercontent.com/antoniogarrote/rdfstore-js/master/dist/browser/rdf_store.js"
+    "rdfstore-js": "https://raw.githubusercontent.com/antoniogarrote/rdfstore-js/master/dist/browser/rdf_store.js",
+    "lodash" : "2.4.1"
   }
 }
