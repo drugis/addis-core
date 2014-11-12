@@ -7704,26 +7704,31 @@ th.hide-for-touch {
   display: table-cell !important;
 }
 
+/* line 1, ../../sass/_main.scss */
+[ng\:cloak], [ng-cloak], .ng-cloak {
+  display: none !important;
+}
+
 /* Tabs */
-/* line 3, ../../sass/_main.scss */
+/* line 7, ../../sass/_main.scss */
 div.tabs {
   padding: 10px;
 }
 
-/* line 6, ../../sass/_main.scss */
+/* line 10, ../../sass/_main.scss */
 ul.tabsNavigation {
   margin: 0 10px;
   padding: 0;
   text-align: left;
 }
 
-/* line 11, ../../sass/_main.scss */
+/* line 15, ../../sass/_main.scss */
 ul.tabsNavigation > li {
   list-style: none;
   display: inline;
 }
 
-/* line 15, ../../sass/_main.scss */
+/* line 19, ../../sass/_main.scss */
 ul.tabsNavigation > li > a {
   font-size: 0.875em;
   border: 1px solid #E0E0E0;
@@ -7732,35 +7737,35 @@ ul.tabsNavigation > li > a {
   text-decoration: none;
 }
 
-/* line 22, ../../sass/_main.scss */
+/* line 26, ../../sass/_main.scss */
 ul.tabsNavigation > li > a:hover {
   background-color: #F6F6F6;
 }
 
-/* line 25, ../../sass/_main.scss */
+/* line 29, ../../sass/_main.scss */
 ul.tabsNavigation > li.current > a {
   background: #fff;
   color: #222;
   border-bottom: 1px solid #fff;
 }
 
-/* line 30, ../../sass/_main.scss */
+/* line 34, ../../sass/_main.scss */
 div.fakeTabsContent {
   border-top: 1px solid #E0E0E0;
 }
 
 /* inline results */
-/* line 35, ../../sass/_main.scss */
+/* line 39, ../../sass/_main.scss */
 #results .loader, .hidden {
   display: none;
 }
 
-/* line 39, ../../sass/_main.scss */
+/* line 43, ../../sass/_main.scss */
 #results.loading > img {
   opacity: 0.5;
 }
 
-/* line 43, ../../sass/_main.scss */
+/* line 47, ../../sass/_main.scss */
 #results.loading .loader {
   float: left;
   position: relative;
@@ -7774,12 +7779,12 @@ div.fakeTabsContent {
   padding: 5px;
 }
 
-/* line 56, ../../sass/_main.scss */
+/* line 60, ../../sass/_main.scss */
 #results.loading .graph {
   display: none;
 }
 
-/* line 60, ../../sass/_main.scss */
+/* line 64, ../../sass/_main.scss */
 .jslider-bg i.x {
   -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
   -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
@@ -7789,12 +7794,12 @@ div.fakeTabsContent {
   display: inline-block;
 }
 
-/* line 69, ../../sass/_main.scss */
+/* line 73, ../../sass/_main.scss */
 input[type='file'] {
   width: auto !important;
 }
 
-/* line 73, ../../sass/_main.scss */
+/* line 77, ../../sass/_main.scss */
 .alert-box {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
@@ -7804,317 +7809,317 @@ input[type='file'] {
 * This product includes color specifications and designs developed by Cynthia
 * Brewer (http://colorbrewer.org/).
 */
-/* line 82, ../../sass/_main.scss */
+/* line 86, ../../sass/_main.scss */
 .RdYlGn .q0-3 {
   background-color: #fc8d59;
 }
 
-/* line 83, ../../sass/_main.scss */
+/* line 87, ../../sass/_main.scss */
 .RdYlGn .q1-3 {
   background-color: #ffffbf;
 }
 
-/* line 84, ../../sass/_main.scss */
+/* line 88, ../../sass/_main.scss */
 .RdYlGn .q2-3 {
   background-color: #91cf60;
 }
 
-/* line 85, ../../sass/_main.scss */
+/* line 89, ../../sass/_main.scss */
 .RdYlGn .q0-4 {
   background-color: #d7191c;
 }
 
-/* line 86, ../../sass/_main.scss */
+/* line 90, ../../sass/_main.scss */
 .RdYlGn .q1-4 {
   background-color: #fdae61;
 }
 
-/* line 87, ../../sass/_main.scss */
+/* line 91, ../../sass/_main.scss */
 .RdYlGn .q2-4 {
   background-color: #a6d96a;
 }
 
-/* line 88, ../../sass/_main.scss */
+/* line 92, ../../sass/_main.scss */
 .RdYlGn .q3-4 {
   background-color: #1a9641;
 }
 
-/* line 89, ../../sass/_main.scss */
+/* line 93, ../../sass/_main.scss */
 .RdYlGn .q0-5 {
   background-color: #d7191c;
 }
 
-/* line 90, ../../sass/_main.scss */
+/* line 94, ../../sass/_main.scss */
 .RdYlGn .q1-5 {
   background-color: #fdae61;
 }
 
-/* line 91, ../../sass/_main.scss */
+/* line 95, ../../sass/_main.scss */
 .RdYlGn .q2-5 {
   background-color: #ffffbf;
 }
 
-/* line 92, ../../sass/_main.scss */
+/* line 96, ../../sass/_main.scss */
 .RdYlGn .q3-5 {
   background-color: #a6d96a;
 }
 
-/* line 93, ../../sass/_main.scss */
+/* line 97, ../../sass/_main.scss */
 .RdYlGn .q4-5 {
   background-color: #1a9641;
 }
 
-/* line 94, ../../sass/_main.scss */
+/* line 98, ../../sass/_main.scss */
 .RdYlGn .q0-6 {
   background-color: #d73027;
 }
 
-/* line 95, ../../sass/_main.scss */
+/* line 99, ../../sass/_main.scss */
 .RdYlGn .q1-6 {
   background-color: #fc8d59;
 }
 
-/* line 96, ../../sass/_main.scss */
+/* line 100, ../../sass/_main.scss */
 .RdYlGn .q2-6 {
   background-color: #fee08b;
 }
 
-/* line 97, ../../sass/_main.scss */
+/* line 101, ../../sass/_main.scss */
 .RdYlGn .q3-6 {
   background-color: #d9ef8b;
 }
 
-/* line 98, ../../sass/_main.scss */
+/* line 102, ../../sass/_main.scss */
 .RdYlGn .q4-6 {
   background-color: #91cf60;
 }
 
-/* line 99, ../../sass/_main.scss */
+/* line 103, ../../sass/_main.scss */
 .RdYlGn .q5-6 {
   background-color: #1a9850;
 }
 
-/* line 100, ../../sass/_main.scss */
+/* line 104, ../../sass/_main.scss */
 .RdYlGn .q0-7 {
   background-color: #d73027;
 }
 
-/* line 101, ../../sass/_main.scss */
+/* line 105, ../../sass/_main.scss */
 .RdYlGn .q1-7 {
   background-color: #fc8d59;
 }
 
-/* line 102, ../../sass/_main.scss */
+/* line 106, ../../sass/_main.scss */
 .RdYlGn .q2-7 {
   background-color: #fee08b;
 }
 
-/* line 103, ../../sass/_main.scss */
+/* line 107, ../../sass/_main.scss */
 .RdYlGn .q3-7 {
   background-color: #ffffbf;
 }
 
-/* line 104, ../../sass/_main.scss */
+/* line 108, ../../sass/_main.scss */
 .RdYlGn .q4-7 {
   background-color: #d9ef8b;
 }
 
-/* line 105, ../../sass/_main.scss */
+/* line 109, ../../sass/_main.scss */
 .RdYlGn .q5-7 {
   background-color: #91cf60;
 }
 
-/* line 106, ../../sass/_main.scss */
+/* line 110, ../../sass/_main.scss */
 .RdYlGn .q6-7 {
   background-color: #1a9850;
 }
 
-/* line 107, ../../sass/_main.scss */
+/* line 111, ../../sass/_main.scss */
 .RdYlGn .q0-8 {
   background-color: #d73027;
 }
 
-/* line 108, ../../sass/_main.scss */
+/* line 112, ../../sass/_main.scss */
 .RdYlGn .q1-8 {
   background-color: #f46d43;
 }
 
-/* line 109, ../../sass/_main.scss */
+/* line 113, ../../sass/_main.scss */
 .RdYlGn .q2-8 {
   background-color: #fdae61;
 }
 
-/* line 110, ../../sass/_main.scss */
+/* line 114, ../../sass/_main.scss */
 .RdYlGn .q3-8 {
   background-color: #fee08b;
 }
 
-/* line 111, ../../sass/_main.scss */
+/* line 115, ../../sass/_main.scss */
 .RdYlGn .q4-8 {
   background-color: #d9ef8b;
 }
 
-/* line 112, ../../sass/_main.scss */
+/* line 116, ../../sass/_main.scss */
 .RdYlGn .q5-8 {
   background-color: #a6d96a;
 }
 
-/* line 113, ../../sass/_main.scss */
+/* line 117, ../../sass/_main.scss */
 .RdYlGn .q6-8 {
   background-color: #66bd63;
 }
 
-/* line 114, ../../sass/_main.scss */
+/* line 118, ../../sass/_main.scss */
 .RdYlGn .q7-8 {
   background-color: #1a9850;
 }
 
-/* line 115, ../../sass/_main.scss */
+/* line 119, ../../sass/_main.scss */
 .RdYlGn .q0-9 {
   background-color: #d73027;
 }
 
-/* line 116, ../../sass/_main.scss */
+/* line 120, ../../sass/_main.scss */
 .RdYlGn .q1-9 {
   background-color: #f46d43;
 }
 
-/* line 117, ../../sass/_main.scss */
+/* line 121, ../../sass/_main.scss */
 .RdYlGn .q2-9 {
   background-color: #fdae61;
 }
 
-/* line 118, ../../sass/_main.scss */
+/* line 122, ../../sass/_main.scss */
 .RdYlGn .q3-9 {
   background-color: #fee08b;
 }
 
-/* line 119, ../../sass/_main.scss */
+/* line 123, ../../sass/_main.scss */
 .RdYlGn .q4-9 {
   background-color: #ffffbf;
 }
 
-/* line 120, ../../sass/_main.scss */
+/* line 124, ../../sass/_main.scss */
 .RdYlGn .q5-9 {
   background-color: #d9ef8b;
 }
 
-/* line 121, ../../sass/_main.scss */
+/* line 125, ../../sass/_main.scss */
 .RdYlGn .q6-9 {
   background-color: #a6d96a;
 }
 
-/* line 122, ../../sass/_main.scss */
+/* line 126, ../../sass/_main.scss */
 .RdYlGn .q7-9 {
   background-color: #66bd63;
 }
 
-/* line 123, ../../sass/_main.scss */
+/* line 127, ../../sass/_main.scss */
 .RdYlGn .q8-9 {
   background-color: #1a9850;
 }
 
-/* line 124, ../../sass/_main.scss */
+/* line 128, ../../sass/_main.scss */
 .RdYlGn .q0-10 {
   background-color: #a50026;
 }
 
-/* line 125, ../../sass/_main.scss */
+/* line 129, ../../sass/_main.scss */
 .RdYlGn .q1-10 {
   background-color: #d73027;
 }
 
-/* line 126, ../../sass/_main.scss */
+/* line 130, ../../sass/_main.scss */
 .RdYlGn .q2-10 {
   background-color: #f46d43;
 }
 
-/* line 127, ../../sass/_main.scss */
+/* line 131, ../../sass/_main.scss */
 .RdYlGn .q3-10 {
   background-color: #fdae61;
 }
 
-/* line 128, ../../sass/_main.scss */
+/* line 132, ../../sass/_main.scss */
 .RdYlGn .q4-10 {
   background-color: #fee08b;
 }
 
-/* line 129, ../../sass/_main.scss */
+/* line 133, ../../sass/_main.scss */
 .RdYlGn .q5-10 {
   background-color: #d9ef8b;
 }
 
-/* line 130, ../../sass/_main.scss */
+/* line 134, ../../sass/_main.scss */
 .RdYlGn .q6-10 {
   background-color: #a6d96a;
 }
 
-/* line 131, ../../sass/_main.scss */
+/* line 135, ../../sass/_main.scss */
 .RdYlGn .q7-10 {
   background-color: #66bd63;
 }
 
-/* line 132, ../../sass/_main.scss */
+/* line 136, ../../sass/_main.scss */
 .RdYlGn .q8-10 {
   background-color: #1a9850;
 }
 
-/* line 133, ../../sass/_main.scss */
+/* line 137, ../../sass/_main.scss */
 .RdYlGn .q9-10 {
   background-color: #006837;
 }
 
-/* line 134, ../../sass/_main.scss */
+/* line 138, ../../sass/_main.scss */
 .RdYlGn .q0-11 {
   background-color: #a50026;
 }
 
-/* line 135, ../../sass/_main.scss */
+/* line 139, ../../sass/_main.scss */
 .RdYlGn .q1-11 {
   background-color: #d73027;
 }
 
-/* line 136, ../../sass/_main.scss */
+/* line 140, ../../sass/_main.scss */
 .RdYlGn .q2-11 {
   background-color: #f46d43;
 }
 
-/* line 137, ../../sass/_main.scss */
+/* line 141, ../../sass/_main.scss */
 .RdYlGn .q3-11 {
   background-color: #fdae61;
 }
 
-/* line 138, ../../sass/_main.scss */
+/* line 142, ../../sass/_main.scss */
 .RdYlGn .q4-11 {
   background-color: #fee08b;
 }
 
-/* line 139, ../../sass/_main.scss */
+/* line 143, ../../sass/_main.scss */
 .RdYlGn .q5-11 {
   background-color: #ffffbf;
 }
 
-/* line 140, ../../sass/_main.scss */
+/* line 144, ../../sass/_main.scss */
 .RdYlGn .q6-11 {
   background-color: #d9ef8b;
 }
 
-/* line 141, ../../sass/_main.scss */
+/* line 145, ../../sass/_main.scss */
 .RdYlGn .q7-11 {
   background-color: #a6d96a;
 }
 
-/* line 142, ../../sass/_main.scss */
+/* line 146, ../../sass/_main.scss */
 .RdYlGn .q8-11 {
   background-color: #66bd63;
 }
 
-/* line 143, ../../sass/_main.scss */
+/* line 147, ../../sass/_main.scss */
 .RdYlGn .q9-11 {
   background-color: #1a9850;
 }
 
-/* line 144, ../../sass/_main.scss */
+/* line 148, ../../sass/_main.scss */
 .RdYlGn .q10-11 {
   background-color: #006837;
 }
