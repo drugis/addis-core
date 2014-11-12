@@ -10,9 +10,9 @@ var DatasetService = define(['angular'], function() {
       'select' +
       '  ?datasetUri ?title ?description ?creator ' +
       'where { ' +
-      ' ?datasetUri dc:creator ?creator;' +
-      '   rdfs:label ?title;' +
-      '   rdfs:comment ?description }';
+      ' ?datasetUri dc:creator ?creator ;' +
+      '   rdfs:label ?title .' +
+      '   OPTIONAL {?datasetUri rdfs:comment ?description .} }';
 
     function findUUIDFromString(str) {
       return str.substr(str.lastIndexOf('/') + 1);
