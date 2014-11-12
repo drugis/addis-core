@@ -23,9 +23,9 @@ public class TrialverseIOUtilsServiceImpl implements TrialverseIOUtilesService {
   @Override
   public void writeResponceContentToServletResponce(HttpResponse httpResponse, HttpServletResponse httpServletResponse) {
     httpServletResponse.setHeader("Content-Type", "application/json");
-    try {
-      InputStream inputStream = httpResponse.getEntity().getContent();
-      ServletOutputStream outputStream = httpServletResponse.getOutputStream();
+    try (InputStream inputStream = httpResponse.getEntity().getContent();
+         ServletOutputStream outputStream = httpServletResponse.getOutputStream();
+    ) {
       IOUtils.copy(inputStream, outputStream);
       inputStream.close();
       outputStream.close();

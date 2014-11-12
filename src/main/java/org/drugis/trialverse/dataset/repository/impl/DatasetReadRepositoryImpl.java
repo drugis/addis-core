@@ -6,14 +6,17 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
+import org.drugis.trialverse.dataset.repository.factory.HttpClientFactory;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.util.WebConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -24,7 +27,13 @@ import java.net.URISyntaxException;
 @Repository
 public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
+  public final static String QUERY_CURRENT_URL_PART = "/current/query";
+
+  private final static Logger logger = LoggerFactory.getLogger(DatasetReadRepositoryImpl.class);
   private final static String SINGLE_STUDY_MEASUREMENTS = loadResource("queryDatasetsConstruct.sparql");
+
+  @Inject
+  private HttpClientFactory httpClientFactory;
 
   private static String loadResource(String filename) {
     try {
@@ -44,19 +53,19 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   @Override
   public HttpResponse queryDatasets(Account currentUserAccount) {
     try {
-      HttpClient client = HttpClients.createDefault();
-      URIBuilder builder = new URIBuilder(WebConstants.TRIPLESTORE_BASE_URI + "/current/query");
+      HttpClient client = httpClientFactory.build();
+      URIBuilder builder = new URIBuilder(WebConstants.TRIPLESTORE_BASE_URI + QUERY_CURRENT_URL_PART);
       builder.setParameter("query", SINGLE_STUDY_MEASUREMENTS);
       HttpGet request = new HttpGet(builder.build());
       request.setHeader("Accept", "text/turtle");
       HttpResponse response = client.execute(request);
       return response;
     } catch (URISyntaxException e) {
-      e.printStackTrace();
+      logger.error(e.toString());
     } catch (ClientProtocolException e) {
-      e.printStackTrace();
+      logger.error(e.toString());
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error(e.toString());
     }
     return null;
   }
