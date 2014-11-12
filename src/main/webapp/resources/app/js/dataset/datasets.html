@@ -1,9 +1,11 @@
-<div>
-    <h2>Your datasets</h2>
+<div class="row">
+  <div class="columns 12-large">
+    <h1>Your datasets</h1>
 
     <button ng-click="createDatasetDialog()">New</button>
 
-    <div ng-repeat="dataset in datasets">
+    <ul>
+    <li ng-repeat="dataset in datasets">
         <a ui-sref="dataset({datasetId: dataset.uuid})">{{dataset.title.value}} <span ng-if="dataset.description.value"> - {{dataset.description.value}}</span></a>
-    </div>
+    </li>
 </div>

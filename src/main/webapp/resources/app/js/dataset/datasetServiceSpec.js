@@ -13,10 +13,10 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    describe('loadDatasets', function() {
+    describe('getDatasets', function() {
 
       it('should query the datasetResource', inject(function(DatasetService) {
-        DatasetService.loadDatasets();
+        DatasetService.getDatasets();
         expect(mockDatasetResource.query).toHaveBeenCalled();
       }));
 
