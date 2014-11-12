@@ -8,7 +8,8 @@ define(
     'angular-ui-router',
     'dataset/dataset',
     'angular-resource',
-    'rdfstore-js'
+    'rdfstore',
+    'lodash'
   ],
   function(angular) {
     var dependencies = [

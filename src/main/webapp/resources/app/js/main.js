@@ -9,7 +9,8 @@ require.config({
     'domReady': 'bower_components/requirejs-domready/domReady',
     'foundation': 'bower_components/foundation/js/foundation.min',
     'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
-    'rdfstore-js': 'bower_components/rdfstore-js/index'
+    'rdfstore': 'bower_components/rdfstore-js/index',
+    'lodash' : 'bower_components/lodash/dist/lodash.min'
   },
   baseUrl: 'app/js',
   shim: {
@@ -35,8 +36,8 @@ require.config({
     'domReady': {
       exports: 'domReady'
     },
-    'rdfstore-js': {
-      exports: 'rdfstore-js'
+    'rdfstore': {
+      exports: 'rdfstore'
     }
   },
   priority: ['angular']

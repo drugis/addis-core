@@ -14,17 +14,16 @@ console.log(tests);
 require.config({
   paths: {
     'jQuery': 'bower_components/jquery/dist/jquery',
-    'underscore': 'bower_components/underscore/underscore',
     'angular': 'bower_components/angular/angular',
     'angular-resource': 'bower_components/angular-resource/angular-resource',
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
-    'angular-select': 'bower_components/angular-ui-select/dist/select.min',
     'foundation': 'bower_components/foundation/js/foundation',
     'jasmine': 'bower_components/jasmine/lib/jasmine-core/jasmine',
     'jasmine-html': 'bower_components/jasmine/lib/jasmine-core/jasmine-html',
     'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
-    'moment': 'bower_components/moment/min/moment.min',
-    'mmfoundation': 'bower_components/angular-foundation/mm-foundation'
+    'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
+    'rdfstore': 'bower_components/rdfstore-js/index',
+    'lodash': 'bower_components/lodash/dist/lodash.min'
   },
   baseUrl: '/base/app/js',
   shim: {
