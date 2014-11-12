@@ -6,6 +6,7 @@ import org.apache.http.HttpResponse;
 import org.drugis.trialverse.dataset.repository.impl.DatasetReadRepositoryImpl;
 import org.drugis.trialverse.security.Account;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -24,6 +25,7 @@ public class DatasetReadRepositoryTest {
     datasetReadRepository = new DatasetReadRepositoryImpl();
   }
 
+  @Ignore
   @Test
   public void testQueryDatasets() throws Exception {
     Account account = mock(Account.class);

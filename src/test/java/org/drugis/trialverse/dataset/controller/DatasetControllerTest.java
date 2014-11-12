@@ -1,15 +1,19 @@
 package org.drugis.trialverse.dataset.controller;
 
+import org.apache.http.HttpResponse;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
+import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.testutils.TestUtils;
 import org.drugis.trialverse.util.WebConstants;
+import org.drugis.trialverse.util.service.TrialverseIOUtilesService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,11 +22,13 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -40,6 +46,12 @@ public class DatasetControllerTest {
 
   @Mock
   private DatasetWriteRepository datasetWriteRepository;
+
+  @Mock
+  private DatasetReadRepository datasetReadRepository;
+
+  @Mock
+  private TrialverseIOUtilesService trialverseIOUtilesService;
 
   @Inject
   private WebApplicationContext webApplicationContext;
@@ -91,5 +103,33 @@ public class DatasetControllerTest {
             .andExpect(jsonPath("$.uri", is(newDatasetUid)));
     verify(accountRepository).findAccountByUsername(john.getUsername());
     verify(datasetWriteRepository).createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john);
+  }
+
+  @Test
+  public void queryDatasetsRequestPath() throws Exception {
+    HttpResponse mockResponse = mock(HttpResponse.class);
+    when(datasetReadRepository.queryDatasets(john)).thenReturn(mockResponse);
+    when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
+
+    mockMvc.perform((get("/datasets")).principal(user)).andExpect(status().isOk());
+
+    verify(accountRepository).findAccountByUsername(user.getName());
+    verify(datasetReadRepository).queryDatasets(john);
+    verify(trialverseIOUtilesService).writeResponceContentToServletResponce(Matchers.any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
+  }
+
+  @Test
+  public void queryDatasets() throws Exception {
+    HttpResponse mockResponse = mock(HttpResponse.class);
+    HttpServletResponse mockServletResponse = mock(HttpServletResponse.class);
+    when(datasetReadRepository.queryDatasets(john)).thenReturn(mockResponse);
+    when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
+
+    datasetController.queryDatasets(mockServletResponse, user);
+
+    verify(accountRepository).findAccountByUsername(user.getName());
+    verify(datasetReadRepository).queryDatasets(john);
+    verify(trialverseIOUtilesService).writeResponceContentToServletResponce(mockResponse, mockServletResponse);
+
   }
 }
