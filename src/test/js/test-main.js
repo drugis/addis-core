@@ -71,7 +71,11 @@ require.config({
     'jasmine-html': {
       deps: ['jasmine'],
       exports: 'jasmine'
+    },
+    'rdfstore': {
+      exports: 'rdfstore'
     }
+
   },
   priority: ['angular'],
 

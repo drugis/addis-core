@@ -7,6 +7,7 @@ define(
     'mmfoundation',
     'angular-ui-router',
     'dataset/dataset',
+    'rdfstoreWrap/rdfstoreWrap',
     'angular-resource',
     'rdfstore',
     'lodash'
@@ -15,7 +16,8 @@ define(
     var dependencies = [
       'ui.router',
       'mm.foundation.modal',
-      'trialverse.dataset'
+      'trialverse.dataset',
+      'trialverse.rdfstoreWrap'
     ];
 
     var app = angular.module('trialverse', dependencies);

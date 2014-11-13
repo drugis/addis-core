@@ -1,8 +1,8 @@
 'use strict';
-var DatasetService = define(['angular'], function() {
-  var dependencies = ['$q', 'DatasetResource'];
+define(['angular'], function() {
+  var dependencies = ['$q', 'DatasetResource', 'RdfstoreService'];
 
-  var DatasetService = function($q, DatasetResource) {
+  var DatasetService = function($q, DatasetResource, RdfstoreService) {
     var datasetQuery =
       'prefix dc: <http://purl.org/dc/elements/1.1/>' +
       'prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
@@ -13,6 +13,8 @@ var DatasetService = define(['angular'], function() {
       ' ?datasetUri dc:creator ?creator;' +
       '   rdfs:label ?title;' +
       '   rdfs:comment ?description }';
+
+    var datasetGraphStore;
 
     function findUUIDFromString(str) {
       return str.substr(str.lastIndexOf('/') + 1);
@@ -26,19 +28,18 @@ var DatasetService = define(['angular'], function() {
     }
 
     function getDatasets() {
-      var datasets = $q.defer();
-      DatasetResource.query(function(resourceResult) {
+      var promiseHolder = $q.defer();
+      DatasetResource.query().$promise.then(function(resourceResult) {
 
-        rdfstore.create(function(store) {
-          store.load('text/turtle', resourceResult.graphData, function() {
-            store.execute(datasetQuery, function(success, result) {
-              datasets.resolve(attachUUIDs(result));
-            });
+        RdfstoreService.load(datasetGraphStore, resourceResult.graphData)
+          .promise.then(function(datasetGraphStore) {
+            RdfstoreService.execute(datasetGraphStore, datasetQuery)
+              .promise.then(function(result) {
+                promiseHolder.resolve(attachUUIDs(result));
+              });
           });
-        });
-
       });
-      return datasets;
+      return promiseHolder;
     }
 
     return {
