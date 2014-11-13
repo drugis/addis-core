@@ -32,13 +32,13 @@ public class DatasetReadRepositoryTest {
   DatasetReadRepository datasetReadRepository;
 
   HttpClient mockHttpClient = mock(HttpClient.class);
-  HttpResponse mockResponce = mock(HttpResponse.class);
+  HttpResponse mockResponse = mock(HttpResponse.class);
 
   @Before
   public void init() throws IOException {
     datasetReadRepository = new DatasetReadRepositoryImpl();
     MockitoAnnotations.initMocks(this);
-    when(mockHttpClient.execute(any(HttpGet.class))).thenReturn(mockResponce);
+    when(mockHttpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
     when(httpClientFactory.build()).thenReturn(mockHttpClient);
   }
 
@@ -46,7 +46,7 @@ public class DatasetReadRepositoryTest {
   public void testQueryDatasets() throws Exception {
     Account account = mock(Account.class);
     HttpResponse httpResponse = datasetReadRepository.queryDatasets(account);
-    assertEquals(mockResponce, httpResponse);
+    assertEquals(mockResponse, httpResponse);
     verify(mockHttpClient).execute(any(HttpGet.class));
 
   }

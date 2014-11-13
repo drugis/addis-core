@@ -21,15 +21,15 @@ import static org.mockito.Mockito.when;
  */
 public class TrialverseIOUtilsServiceTest {
 
-  TrialverseIOUtilesService trialverseIOUtilesService;
+  TrialverseIOUtilsService trialverseIOUtilsService;
 
   @Before
   public void init() {
-    trialverseIOUtilesService = new TrialverseIOUtilsServiceImpl();
+    trialverseIOUtilsService = new TrialverseIOUtilsServiceImpl();
   }
 
   @Test
-  public void testWriteResponceContentToServletResponce() throws IOException {
+  public void testWriteResponseContentToServletResponse() throws IOException {
     String testContentAsString = "This is just a test !";
     HttpResponse input = mock(HttpResponse.class);
     HttpEntity httpEntity = mock(HttpEntity.class);
@@ -39,7 +39,7 @@ public class TrialverseIOUtilsServiceTest {
     when(input.getEntity().getContent()).thenReturn(inStream);
     MockHttpServletResponse output = new MockHttpServletResponse();
 
-    trialverseIOUtilesService.writeResponceContentToServletResponce(input, output);
+    trialverseIOUtilsService.writeResponseContentToServletResponse(input, output);
     assertEquals(testContentAsString, output.getContentAsString());
   }
 }

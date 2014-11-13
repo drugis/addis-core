@@ -7,7 +7,8 @@ import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
-import org.drugis.trialverse.util.service.TrialverseIOUtilesService;
+import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,7 @@ import java.security.Principal;
  * Created by connor on 6-11-14.
  */
 @Controller
-@RequestMapping
+@RequestMapping(value = "/datasets")
 public class DatasetController {
 
   @Inject
@@ -33,12 +34,12 @@ public class DatasetController {
   private DatasetReadRepository datasetReadRepository;
 
   @Inject
-  private TrialverseIOUtilesService trialverseIOUtilesService;
+  private TrialverseIOUtilsService trialverseIOUtilsService;
 
   @Inject
   private AccountRepository accountRepository;
 
-  @RequestMapping(value = "/datasets", method = RequestMethod.POST)
+  @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
   public Dataset createDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody DatasetCommand datasetCommand) {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
@@ -48,11 +49,13 @@ public class DatasetController {
     return new Dataset(uid, currentUserAccount, datasetCommand.getTitle(), datasetCommand.getDescription());
   }
 
-  @RequestMapping(value = "/datasets", method = RequestMethod.GET)
+  @RequestMapping(method = RequestMethod.GET)
   @ResponseBody
   public void queryDatasets(HttpServletResponse httpServletResponse, Principal currentUser) {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
+    httpServletResponse.setHeader("Content-Type", "text/turtle");
+
     HttpResponse response = datasetReadRepository.queryDatasets(currentUserAccount);
-    trialverseIOUtilesService.writeResponceContentToServletResponce(response, httpServletResponse);
+    trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
   }
 }

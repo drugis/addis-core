@@ -7,6 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Created by connor on 12-11-14.
  */
-public interface TrialverseIOUtilesService {
-  void writeResponceContentToServletResponce(HttpResponse httpResponse, HttpServletResponse httpServletResponse);
+public interface TrialverseIOUtilsService {
+  void writeResponseContentToServletResponse(HttpResponse httpResponse, HttpServletResponse httpServletResponse);
 }

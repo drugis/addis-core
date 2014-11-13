@@ -8,7 +8,7 @@ import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.testutils.TestUtils;
 import org.drugis.trialverse.util.WebConstants;
-import org.drugis.trialverse.util.service.TrialverseIOUtilesService;
+import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -51,7 +52,7 @@ public class DatasetControllerTest {
   private DatasetReadRepository datasetReadRepository;
 
   @Mock
-  private TrialverseIOUtilesService trialverseIOUtilesService;
+  private TrialverseIOUtilsService trialverseIOUtilsService;
 
   @Inject
   private WebApplicationContext webApplicationContext;
@@ -111,11 +112,13 @@ public class DatasetControllerTest {
     when(datasetReadRepository.queryDatasets(john)).thenReturn(mockResponse);
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
-    mockMvc.perform((get("/datasets")).principal(user)).andExpect(status().isOk());
+    mockMvc.perform((get("/datasets")).principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("text/turtle"));
 
     verify(accountRepository).findAccountByUsername(user.getName());
     verify(datasetReadRepository).queryDatasets(john);
-    verify(trialverseIOUtilesService).writeResponceContentToServletResponce(Matchers.any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(Matchers.any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
   }
 
   @Test
@@ -129,7 +132,7 @@ public class DatasetControllerTest {
 
     verify(accountRepository).findAccountByUsername(user.getName());
     verify(datasetReadRepository).queryDatasets(john);
-    verify(trialverseIOUtilesService).writeResponceContentToServletResponce(mockResponse, mockServletResponse);
+    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(mockResponse, mockServletResponse);
 
   }
 }

@@ -28,7 +28,7 @@ import java.net.URISyntaxException;
 @Repository
 public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
-  public final static String QUERY_CURRENT_URL_PART = "/current/query";
+  public final static String QUERY_AFFIX = "/current/query";
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetReadRepositoryImpl.class);
   private final static String SINGLE_STUDY_MEASUREMENTS = loadResource("queryDatasetsConstruct.sparql");
@@ -55,7 +55,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   public HttpResponse queryDatasets(Account currentUserAccount) {
     try {
       HttpClient client = httpClientFactory.build();
-      URIBuilder builder = new URIBuilder(WebConstants.TRIPLESTORE_BASE_URI + QUERY_CURRENT_URL_PART);
+      URIBuilder builder = new URIBuilder(WebConstants.TRIPLESTORE_BASE_URI + QUERY_AFFIX);
       String query = StringUtils.replace(SINGLE_STUDY_MEASUREMENTS, "$owner", "'" + currentUserAccount.getUsername() + "'");
       builder.setParameter("query", query);
       HttpGet request = new HttpGet(builder.build());
