@@ -1,6 +1,7 @@
 package org.drugis.trialverse.dataset.repository.impl;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -55,7 +56,8 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     try {
       HttpClient client = httpClientFactory.build();
       URIBuilder builder = new URIBuilder(WebConstants.TRIPLESTORE_BASE_URI + QUERY_CURRENT_URL_PART);
-      builder.setParameter("query", SINGLE_STUDY_MEASUREMENTS);
+      String query = StringUtils.replace(SINGLE_STUDY_MEASUREMENTS, "$owner", "'" + currentUserAccount.getUsername() + "'");
+      builder.setParameter("query", query);
       HttpGet request = new HttpGet(builder.build());
       request.setHeader("Accept", "text/turtle");
       HttpResponse response = client.execute(request);
