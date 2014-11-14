@@ -32,6 +32,8 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetReadRepositoryImpl.class);
   private final static String SINGLE_STUDY_MEASUREMENTS = loadResource("queryDatasetsConstruct.sparql");
+  private final static String STUDIES_WITH_DETAILS = loadResource("queryStudiesWithDetails.sparql");
+  private final static String DATASET_GRAPH = loadResource("constructDataset.sparql");
 
   @Inject
   private HttpClientFactory httpClientFactory;
@@ -51,15 +53,14 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     return "";
   }
 
-  @Override
-  public HttpResponse queryDatasets(Account currentUserAccount) {
+  private HttpResponse doQuery(String query) {
     try {
       HttpClient client = httpClientFactory.build();
       URIBuilder builder = new URIBuilder(WebConstants.TRIPLESTORE_BASE_URI + QUERY_AFFIX);
-      String query = StringUtils.replace(SINGLE_STUDY_MEASUREMENTS, "$owner", "'" + currentUserAccount.getUsername() + "'");
       builder.setParameter("query", query);
+      builder.setParameter("output", "json");
       HttpGet request = new HttpGet(builder.build());
-      request.setHeader("Accept", "text/turtle");
+      request.setHeader("Accept", "application/json");
       HttpResponse response = client.execute(request);
       return response;
     } catch (URISyntaxException e) {
@@ -70,5 +71,17 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
       logger.error(e.toString());
     }
     return null;
+  }
+
+  @Override
+  public HttpResponse queryDatasets(Account currentUserAccount) {
+    String query = StringUtils.replace(SINGLE_STUDY_MEASUREMENTS, "$owner", "'" + currentUserAccount.getUsername() + "'");
+    return doQuery(query);
+  }
+
+  @Override
+  public HttpResponse getDataset(String datasetUUID) {
+    String query = StringUtils.replace(DATASET_GRAPH, "$datasetUUID", datasetUUID);
+    return doQuery(query);
   }
 }

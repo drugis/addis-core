@@ -16,7 +16,7 @@ define(['angular', 'rdfstore'], function(angular, rdfstore) {
     function load(store, data) {
       var promiseHolder = $q.defer();
       init(store).promise.then(function(store) {
-        store.load('text/turtle', data, function() {
+        store.load('application/ld+json', data, function() {
           promiseHolder.resolve(store);
         });
       });

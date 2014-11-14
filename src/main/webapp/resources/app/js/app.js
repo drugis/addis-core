@@ -46,6 +46,11 @@ define(
             url: '/create-dataset',
             templateUrl: 'app/js/dataset/createDataset.html',
             controller: 'CreateDatasetController'
+          })
+          .state('dataset', {
+            url: '/dataset/:datasetUUID',
+            templateUrl: 'app/js/dataset/dataset.html',
+            controller: 'DatasetController'
           });
 
         // Default route

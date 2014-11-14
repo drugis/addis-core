@@ -133,6 +133,22 @@ public class DatasetControllerTest {
     verify(accountRepository).findAccountByUsername(user.getName());
     verify(datasetReadRepository).queryDatasets(john);
     verify(trialverseIOUtilsService).writeResponseContentToServletResponse(mockResponse, mockServletResponse);
+  }
+
+  @Test
+  public void testGetDatasetRequestPath() throws Exception {
+    String uuid = "uuuuiiid-yeswecan";
+    HttpResponse mockResponse = mock(HttpResponse.class);
+    when(datasetReadRepository.getDataset(uuid)).thenReturn(mockResponse);
+    when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
+
+    mockMvc.perform((get("/datasets/" + uuid)).principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("text/turtle"));
+
+    verify(datasetReadRepository).getDataset(uuid);
+    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(Matchers.any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
 
   }
+
 }

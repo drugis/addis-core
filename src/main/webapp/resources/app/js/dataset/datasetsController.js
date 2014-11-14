@@ -1,6 +1,6 @@
 'use strict';
-define(['rdfstore', 'lodash'],
-  function(rdfstore, _) {
+define([],
+  function() {
     var dependencies = ['$scope', '$q', '$modal', 'DatasetService'];
     var DatasetsController = function($scope, $q, $modal, DatasetService) {
 

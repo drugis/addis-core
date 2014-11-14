@@ -10,8 +10,8 @@ define(['angular'], function() {
       'select' +
       '  ?datasetUri ?title ?description ?creator ' +
       'where { ' +
-      ' ?datasetUri dc:creator ?creator ;' +
-      '   rdfs:label ?title .' +
+      '   ?datasetUri rdfs:label ?title .' +
+      '   OPTIONAL {?datasetUri dc:creator ?creator .}' +
       '   OPTIONAL {?datasetUri rdfs:comment ?description .} }';
 
     var datasetGraphStore;

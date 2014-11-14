@@ -10,10 +10,7 @@ import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -56,6 +53,15 @@ public class DatasetController {
     httpServletResponse.setHeader("Content-Type", "text/turtle");
 
     HttpResponse response = datasetReadRepository.queryDatasets(currentUserAccount);
+    trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
+  }
+
+  @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.GET)
+  @ResponseBody
+  public void getDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) {
+    httpServletResponse.setHeader("Content-Type", "text/turtle");
+
+    HttpResponse response = datasetReadRepository.getDataset(datasetUUID);
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
   }
 }

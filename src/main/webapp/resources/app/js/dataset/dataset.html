@@ -1,0 +1,18 @@
+<div class="row">
+  <div class="columns large-12">
+  <h1>Dataset:</h1></div><h2>{{dataset.label}}</h2>
+    </div>
+</div>
+<div class="row">
+  <div class="columns large-12">
+    Description: {{dataset.comment}}
+    Owner: {{dataset.creator}}
+  </div>
+</div>
+<div class="row">
+  <div class="columns large-12">
+  <h2>Studies</h2>
+  <ul>
+    <li ng-repeat="study in dataset.studies">{{study.title}}</li>
+  </div>
+</div>
