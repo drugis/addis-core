@@ -8,6 +8,9 @@ define([],
       });
       StudiesWithDetailResource.get($stateParams).$promise.then(function(result) {
         $scope.studiesWithDetail = result['@graph'];
+        if(!$scope.studiesWithDetail) {
+          $scope.studiesWithDetail = {};
+        }
         $scope.studiesWithDetail.$resolved = true;
       });
 
