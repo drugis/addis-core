@@ -50,7 +50,7 @@ public class DatasetController {
   @ResponseBody
   public void queryDatasets(HttpServletResponse httpServletResponse, Principal currentUser) {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-    httpServletResponse.setHeader("Content-Type", "text/turtle");
+    httpServletResponse.setHeader("Content-Type", "application/ld+json");
 
     HttpResponse response = datasetReadRepository.queryDatasets(currentUserAccount);
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);

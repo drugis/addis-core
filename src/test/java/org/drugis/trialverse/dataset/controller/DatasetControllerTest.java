@@ -114,7 +114,7 @@ public class DatasetControllerTest {
 
     mockMvc.perform((get("/datasets")).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType("text/turtle"));
+            .andExpect(content().contentType("application/ld+json"));
 
     verify(accountRepository).findAccountByUsername(user.getName());
     verify(datasetReadRepository).queryDatasets(john);
@@ -144,7 +144,7 @@ public class DatasetControllerTest {
 
     mockMvc.perform((get("/datasets/" + uuid)).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType("text/turtle"));
+            .andExpect(content().contentType("application/ld+json"));
 
     verify(datasetReadRepository).getDataset(uuid);
     verify(trialverseIOUtilsService).writeResponseContentToServletResponse(Matchers.any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
