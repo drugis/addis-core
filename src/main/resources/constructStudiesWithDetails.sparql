@@ -1,0 +1,103 @@
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+PREFIX study: <http://trials.drugis.org/studies/>
+
+CONSTRUCT { 
+  ?study 
+    rdfs:label ?label ;
+    rdfs:comment ?title;
+    ontology:has_allocation ?allocation ;
+    ontology:has_blinding ?blinding ;
+    ontology:status ?status ;
+    ontology:has_number_of_centers ?numberOfCenters ;
+    ontology:hasIndicationLabel ?indication ;
+    ontology:has_start_date ?startDate ;
+    ontology:has_end_date ?endDate ;
+    ontology:doseType ?doseType ;
+    ontology:usesDrugs ?drugNames ;
+    ontology:publications ?publications ;
+    ontology:studySize ?studySize ;
+    ontology:numberOfArms ?numberOfArms .
+
+} WHERE {
+  GRAPH dataset:$datasetUUID {
+    dataset:$datasetUUID ontology:contains_study ?study .
+  }
+  GRAPH ?study {
+  ?study 
+    rdfs:label ?label ;
+    rdfs:comment ?title;
+    ontology:has_allocation ?allocation ;
+    ontology:has_blinding ?blinding ;
+    OPTIONAL {
+      ?study ontology:status ?status .
+    }
+    OPTIONAL {
+      ?study ontology:has_number_of_centers ?numberOfCenters .
+    }
+    OPTIONAL {
+      ?study ontology:has_indication ?indication_instance .
+      ?indication_instance rdfs:label ?indication .
+    }
+    OPTIONAL {
+      ?study ontology:has_start_date ?startDate .
+    }
+    OPTIONAL {
+      ?study ontology:has_end_date ?endDate .
+    }
+    OPTIONAL {
+       SELECT ?study ?doseType
+         WHERE {
+          BIND ('Flexible' as ?doseType)
+           ?activity a ontology:TreatmentActivity ;
+             ontology:activity_application [
+               ontology:applied_to_arm ?arm 
+             ] ;
+             ontology:administered_drugs/rdf:rest*/rdf:first [ a ontology:TitratedDoseDrugTreatment ] .
+             ?study ontology:has_arm ?arm .
+          } GROUP BY ?study ?doseType
+            HAVING (COUNT(*) > 0)
+    }
+    OPTIONAL
+    {
+      SELECT ?study (group_concat(?drugName; separator = ', ') as ?drugNames)
+      WHERE {
+        GRAPH ?dataset {
+          ?drug rdfs:subClassOf ontology:Drug .
+          ?dataset ontology:contains_study ?study 
+        }
+        GRAPH ?study {
+          ?instance a ?drug .
+          ?instance rdfs:label ?drugName.
+        }
+      } GROUP BY ?study
+    }
+    OPTIONAL
+    {
+      SELECT ?study (group_concat(?publication; separator = ', ') as ?publications)
+      WHERE {
+        GRAPH ?study {
+          OPTIONAL {
+            ?study ontology:has_publication [
+              ontology:has_id ?publication
+            ] .
+          }
+        }
+      } GROUP BY ?study
+    }
+    {
+      SELECT ?study (COUNT(?arm) as ?numberOfArms) (SUM(?numberOfParticipantsStarting) as ?studySize)
+        WHERE {
+          GRAPH ?study {
+            ?arm a ontology:Arm .
+            ?participantsStarting ontology:of_arm ?arm .
+            ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .
+          }
+        } GROUP BY ?study
+    }
+  }
+}

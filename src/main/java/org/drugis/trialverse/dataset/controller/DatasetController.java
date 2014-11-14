@@ -64,4 +64,15 @@ public class DatasetController {
     HttpResponse response = datasetReadRepository.getDataset(datasetUUID);
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
   }
+
+  @RequestMapping(value = "/{datasetUUID}/studiesWithDetail", method = RequestMethod.GET)
+  @ResponseBody
+  public void queryStudiesWithDetail(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) {
+    httpServletResponse.setHeader("Content-Type", "text/turtle");
+
+    HttpResponse response = datasetReadRepository.queryDatasetsWithDetail(datasetUUID);
+    trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
+  }
+
+
 }

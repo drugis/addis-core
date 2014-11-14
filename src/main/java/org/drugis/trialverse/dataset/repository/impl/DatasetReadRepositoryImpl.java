@@ -32,7 +32,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetReadRepositoryImpl.class);
   private final static String SINGLE_STUDY_MEASUREMENTS = loadResource("queryDatasetsConstruct.sparql");
-  private final static String STUDIES_WITH_DETAILS = loadResource("queryStudiesWithDetails.sparql");
+  private final static String STUDIES_WITH_DETAILS = loadResource("constructStudiesWithDetails.sparql");
   private final static String DATASET_GRAPH = loadResource("constructDataset.sparql");
 
   @Inject
@@ -82,6 +82,12 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   @Override
   public HttpResponse getDataset(String datasetUUID) {
     String query = StringUtils.replace(DATASET_GRAPH, "$datasetUUID", datasetUUID);
+    return doQuery(query);
+  }
+
+  @Override
+  public HttpResponse queryDatasetsWithDetail(String datasetUUID) {
+    String query = StringUtils.replace(STUDIES_WITH_DETAILS, "$datasetUUID", datasetUUID);
     return doQuery(query);
   }
 }

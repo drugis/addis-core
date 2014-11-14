@@ -1,0 +1,24 @@
+<h3>Columns to be shown</h3>
+
+<form name="projectForm">
+    <div class="row">
+        <div class="large-12 column">
+            <ul class="no-bullet">
+                <li ng-repeat="column in tableOptions.columns">
+                    <input id="{{column.id}}" ng-model="column.visible" type="checkbox">
+                    <label ng-click="column.visible = !column.visible">{{column.label}}</label>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-12 column">
+            <ul class="button-group">
+                <li>
+                    <button class="button" ng-click="cancel()">Close</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>

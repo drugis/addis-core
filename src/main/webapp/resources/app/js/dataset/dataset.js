@@ -12,5 +12,11 @@ define(function (require) {
 
     //resources
     .factory('DatasetResource', require('dataset/datasetResource'))
+    .factory('StudiesWithDetailResource', require('dataset/studiesWithDetailResource'))
+
+    //filters
+    .filter('splitOnTokenFilter', require('dataset/splitOnTokenFilter'))
+    .filter('dosingFilter', require('dataset/dosingFilter'))
+    .filter('stripFrontFilter', require('dataset/stripFrontFilter'))
     ;
 });

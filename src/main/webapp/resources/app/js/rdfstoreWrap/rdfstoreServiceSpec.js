@@ -52,7 +52,7 @@ define(['angular', 'angular-mocks', 'rdfstore'],
           $rootScope.$digest();
 
           expect(result).toEqual(mockStore);
-          expect(mockStore.load).toHaveBeenCalledWith('text/turtle', 'mockData', jasmine.any(Function));
+          expect(mockStore.load).toHaveBeenCalledWith('application/ld+json', 'mockData', jasmine.any(Function));
         }));
       });
 
