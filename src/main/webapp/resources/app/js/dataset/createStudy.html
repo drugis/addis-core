@@ -1,0 +1,27 @@
+<form novalidate ng-submit="createStudy()">
+    <div class="row">
+        <div class="large-8 columns">
+            <h3>Create a new study</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-8 columns">
+            <label>Short Name (e.g. Hansen 2005)
+                <input autofocus type="text" ng-model="study.title">
+            </label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-8 columns">
+            <label>Title
+                <textarea rows="8" ng-model="study.description"></textarea>
+            </label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-8 columns">
+            <button class="success" type="submit" ng-disabled="!study.title">Create</button>
+        </div>
+    </div>
+    <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>

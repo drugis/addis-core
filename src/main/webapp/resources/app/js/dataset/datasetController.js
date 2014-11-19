@@ -30,6 +30,18 @@ define([],
         });
       };
 
+      $scope.showStudyDialog = function() {
+        $modal.open({
+          templateUrl: 'app/js/dataset/createStudy.html',
+          scope: $scope,
+          controller: function($scope, $modalInstance) {
+            $scope.cancel = function() {
+              $modalInstance.dismiss('cancel');
+            };
+          }
+        });
+      };
+
       $scope.tableOptions = {
         columns: [{
           id: 'comment',
