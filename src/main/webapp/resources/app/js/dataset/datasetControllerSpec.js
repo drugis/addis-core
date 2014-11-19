@@ -5,6 +5,7 @@ define(['angular', 'angular-mocks'], function() {
     var scope,
       mockModal = jasmine.createSpyObj('$mock', ['open']),
       mockDatasetService = jasmine.createSpyObj('DatasetService', ['getDatasets']),
+      mockUUIDService = jasmine.createSpyObj('UUIDService', ['generate']),
       mockDatasetsResult,
       mockDatasetsDeferred;
 
@@ -21,7 +22,8 @@ define(['angular', 'angular-mocks'], function() {
       $controller('DatasetsController', {
         $scope: scope,
         $modal: mockModal,
-        DatasetService: mockDatasetService
+        DatasetService: mockDatasetService,
+        UUIDService: mockUUIDService
       });
     }));
 

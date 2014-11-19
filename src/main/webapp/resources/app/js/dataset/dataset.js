@@ -1,7 +1,7 @@
 'use strict';
 define(function (require) {
   var angular = require('angular');
-  return angular.module('trialverse.dataset', ['ngResource'])
+  return angular.module('trialverse.dataset', ['ngResource', 'trialverse.util'])
     //controllers
     .controller('DatasetsController', require('dataset/datasetsController'))
     .controller('CreateDatasetController', require('dataset/createDatasetController'))

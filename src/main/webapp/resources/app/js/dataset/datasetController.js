@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$modal', 'DatasetResource', 'StudiesWithDetailResource'];
-    var DatasetController = function($scope, $stateParams, $modal, DatasetResource, StudiesWithDetailResource) {
+    var dependencies = ['$scope', '$stateParams', '$modal', 'DatasetResource', 'StudiesWithDetailResource', 'UUIDService'];
+    var DatasetController = function($scope, $stateParams, $modal, DatasetResource, StudiesWithDetailResource, UUIDService) {
       DatasetResource.get($stateParams).$promise.then(function(result) {
         $scope.dataset = result['@graph'][0];
       });
@@ -13,6 +13,10 @@ define([],
         }
         $scope.studiesWithDetail.$resolved = true;
       });
+
+      $scope.createStudy = function() {
+        var uuid = UUIDService.generate();
+      };
 
       $scope.showTableOptions = function() {
         $modal.open({
