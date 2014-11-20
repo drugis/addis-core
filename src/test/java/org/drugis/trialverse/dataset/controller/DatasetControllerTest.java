@@ -112,7 +112,7 @@ public class DatasetControllerTest {
     when(datasetReadRepository.queryDatasets(john)).thenReturn(mockResponse);
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
-    mockMvc.perform((get("/datasets")).principal(user))
+    mockMvc.perform(get("/datasets").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/ld+json"));
 

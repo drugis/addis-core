@@ -2,6 +2,12 @@ package org.drugis.trialverse.testutils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -17,4 +23,16 @@ public class TestUtils {
     }
     return null;
   }
+
+  public static String loadResource(Class clazz, String filename) {
+    try {
+      InputStream stream = clazz.getResourceAsStream(filename);
+      return IOUtils.toString(stream, "UTF-8");
+    } catch (IOException e) {
+      e.printStackTrace();
+      assertTrue(false);
+    }
+    return "";
+  }
+
 }
