@@ -1,22 +1,24 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$modal', 'DatasetResource', 'StudiesWithDetailResource', 'UUIDService'];
-    var DatasetController = function($scope, $stateParams, $modal, DatasetResource, StudiesWithDetailResource, UUIDService) {
+    var dependencies = ['$scope', '$stateParams', '$modal', 'DatasetResource',
+      'StudiesWithDetailResource', 'UUIDService', 'StudyService', 'StudyResource'
+    ];
+    var DatasetController = function($scope, $stateParams, $modal, DatasetResource,
+      StudiesWithDetailResource, UUIDService, StudyService, StudyResource) {
       DatasetResource.get($stateParams).$promise.then(function(result) {
         $scope.dataset = result['@graph'][0];
       });
-      StudiesWithDetailResource.get($stateParams).$promise.then(function(result) {
-        $scope.studiesWithDetail = result['@graph'];
-        if(!$scope.studiesWithDetail) {
-          $scope.studiesWithDetail = {};
-        }
-        $scope.studiesWithDetail.$resolved = true;
-      });
 
-      $scope.createStudy = function() {
-        var uuid = UUIDService.generate();
-      };
+      function loadStudiesWithDetail() {
+        StudiesWithDetailResource.get($stateParams).$promise.then(function(result) {
+          $scope.studiesWithDetail = result['@graph'];
+          if (!$scope.studiesWithDetail) {
+            $scope.studiesWithDetail = {};
+          }
+          $scope.studiesWithDetail.$resolved = true;
+        });
+      }
 
       $scope.showTableOptions = function() {
         $modal.open({
@@ -35,12 +37,26 @@ define([],
           templateUrl: 'app/js/dataset/createStudy.html',
           scope: $scope,
           controller: function($scope, $modalInstance) {
+            $scope.createStudy = function(study) {
+              var uuid = UUIDService.generate();
+              var newStudy = StudyService.createEmptyStudyJsonLD(uuid, study);
+              StudyResource.put({
+                datasetUUID: $stateParams.datasetUUID,
+                studyUUID: uuid
+              }, newStudy).$promise.then(function() {
+                loadStudiesWithDetail();
+                $modalInstance.close();
+              });
+            };
+
             $scope.cancel = function() {
               $modalInstance.dismiss('cancel');
             };
           }
         });
       };
+
+      loadStudiesWithDetail();
 
       $scope.tableOptions = {
         columns: [{

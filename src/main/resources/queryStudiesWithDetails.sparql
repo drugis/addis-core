@@ -50,19 +50,19 @@ GRAPH ?study {
     OPTIONAL {
       ?study ontology:has_end_date ?endDate .
     }
-      OPTIONAL {
-         SELECT ?study ?doseType
-           WHERE {
-            BIND ('Flexible' as ?doseType)
-             ?activity a ontology:TreatmentActivity ;
-               ontology:activity_application [
-                 ontology:applied_to_arm ?arm 
-               ] ;
-               ontology:administered_drugs/rdf:rest*/rdf:first [ a ontology:TitratedDoseDrugTreatment ] .
-               ?study ontology:has_arm ?arm .
-            } GROUP BY ?study ?doseType
-              HAVING (COUNT(*) > 0)
-      }
+  OPTIONAL {
+     SELECT ?study ?doseType
+       WHERE {
+        BIND ('Flexible' as ?doseType)
+         ?activity a ontology:TreatmentActivity ;
+           ontology:activity_application [
+             ontology:applied_to_arm ?arm
+           ] ;
+           ontology:administered_drugs/rdf:rest*/rdf:first [ a ontology:TitratedDoseDrugTreatment ] .
+           ?study ontology:has_arm ?arm .
+        } GROUP BY ?study ?doseType
+          HAVING (COUNT(*) > 0)
+  }
     OPTIONAL
     {
       SELECT ?study (group_concat(?drugName; separator = ', ') as ?drugNames)
@@ -90,7 +90,7 @@ GRAPH ?study {
         }
       } GROUP BY ?study
     }
-    {
+    OPTIONAL {
       SELECT ?study (COUNT(?arm) as ?numberOfArms) (SUM(?numberOfParticipantsStarting) as ?studySize)
         WHERE {
           GRAPH ?study {

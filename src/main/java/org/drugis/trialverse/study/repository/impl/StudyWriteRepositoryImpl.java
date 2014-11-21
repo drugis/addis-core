@@ -31,7 +31,7 @@ public class StudyWriteRepositoryImpl implements StudyWriteRepository {
   private String createGraphUri(String studyUUID) {
     URIBuilder builder = null;
     try {
-      builder = new URIBuilder(WebConstants.TRIPLESTORE_BASE_URI + "/data");
+      builder = new URIBuilder(WebConstants.TRIPLESTORE_BASE_URI + "/current/data");
       builder.addParameter("graph", "http://trials.drugis.org/studies/" + studyUUID);
       return builder.build().toString();
     } catch (URISyntaxException e) {
