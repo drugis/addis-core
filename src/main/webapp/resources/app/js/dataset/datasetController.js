@@ -7,6 +7,7 @@ define([],
     var DatasetController = function($scope, $stateParams, $modal, DatasetResource,
       StudiesWithDetailResource, UUIDService, StudyService, StudyResource) {
       DatasetResource.get($stateParams).$promise.then(function(result) {
+        $scope.datasetJSON = result;
         $scope.dataset = result['@graph'][0];
       });
 
@@ -18,6 +19,14 @@ define([],
           }
           $scope.studiesWithDetail.$resolved = true;
         });
+      }
+
+      function addStudyToDatasetGraph(studyUUID, datasetGraph) {
+        // left-associated concat needed because it's not a list if dataset only
+        // contains one study
+        var newStudyList = ['http://trials.drugis.org/studies/' + studyUUID].concat(datasetGraph['@graph'][0].contains_study);
+        datasetGraph['@graph'][0].contains_study = newStudyList;
+        return datasetGraph;
       }
 
       $scope.showTableOptions = function() {
@@ -44,8 +53,13 @@ define([],
                 datasetUUID: $stateParams.datasetUUID,
                 studyUUID: uuid
               }, newStudy).$promise.then(function() {
-                loadStudiesWithDetail();
-                $modalInstance.close();
+                $scope.datasetJSON = addStudyToDatasetGraph($scope.datasetJSON);
+                DatasetResource.save({
+                  datasetUUID: $stateParams.datasetUUID
+                }, $scope.datasetJSON).$promise.then(function() {
+                  loadStudiesWithDetail();
+                  $modalInstance.close();
+                });
               });
             };
 

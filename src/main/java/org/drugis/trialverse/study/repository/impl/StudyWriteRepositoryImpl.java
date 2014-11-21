@@ -28,10 +28,10 @@ public class StudyWriteRepositoryImpl implements StudyWriteRepository {
 
   private final static Logger logger = LoggerFactory.getLogger(StudyWriteRepositoryImpl.class);
 
-  private String createGraphUri(String studyUUID) {
+  private String createStudyGraphUri(String studyUUID) {
     URIBuilder builder = null;
     try {
-      builder = new URIBuilder(WebConstants.TRIPLESTORE_BASE_URI + "/current/data");
+      builder = new URIBuilder(WebConstants.TRIPLESTORE_DATA_URI + "/data");
       builder.addParameter("graph", "http://trials.drugis.org/studies/" + studyUUID);
       return builder.build().toString();
     } catch (URISyntaxException e) {
@@ -57,13 +57,13 @@ public class StudyWriteRepositoryImpl implements StudyWriteRepository {
 
   @Override
   public void createStudy(String studyUUID, String studyContent) {
-    HttpPut request = new HttpPut(createGraphUri(studyUUID));
+    HttpPut request = new HttpPut(createStudyGraphUri(studyUUID));
     doRequest(studyContent, request);
   }
 
   @Override
   public void updateStudy(String studyUUID, String studyContent) {
-    HttpPost request = new HttpPost(createGraphUri(studyUUID));
+    HttpPost request = new HttpPost(createStudyGraphUri(studyUUID));
     doRequest(studyContent, request);
   }
 }

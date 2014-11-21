@@ -14,5 +14,6 @@ public class WebConstants {
           Charset.forName("utf8"));
   public final static String APPLICATION_JSON_UTF8_VALUE = "application/json; charset=UTF-8";
   public final static String TRIPLESTORE_BASE_URI = System.getenv("TRIPLESTORE_BASE_URI");
+  public final static String TRIPLESTORE_DATA_URI = TRIPLESTORE_BASE_URI + "/current";
 }
 

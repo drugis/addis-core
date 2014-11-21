@@ -1,6 +1,9 @@
 package org.drugis.trialverse.dataset.controller;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.security.Principal;
 
 /**
@@ -74,5 +79,18 @@ public class DatasetController {
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
   }
 
+
+  @RequestMapping(value="/{datasetUUID}", method = RequestMethod.POST)
+  public void updateDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
+                            @PathVariable String datasetUUID) throws IOException {
+    Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
+    // TODO: permission checking
+    BufferedReader reader = request.getReader();
+    String datasetContent = IOUtils.toString(reader);
+
+    datasetWriteRepository.updateDataset(datasetUUID, datasetContent);
+    response.setStatus(HttpStatus.SC_OK);
+
+  }
 
 }

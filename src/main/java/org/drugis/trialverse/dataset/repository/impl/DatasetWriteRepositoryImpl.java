@@ -6,12 +6,24 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DC;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
+import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.util.WebConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * Created by connor on 04/11/14.
@@ -19,9 +31,40 @@ import javax.inject.Inject;
 
 @Repository
 public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
+  @Inject
+  private HttpClientFactory httpClientFactory;
 
   @Inject
   private JenaFactory jenaFactory;
+
+  @Inject
+  private final static Logger logger = LoggerFactory.getLogger(DatasetWriteRepositoryImpl.class);
+
+  private String createDatasetGraphUri(String datasetUUID) {
+    URIBuilder builder = null;
+    try {
+      builder = new URIBuilder(WebConstants.TRIPLESTORE_DATA_URI + "/data");
+      builder.addParameter("graph", "http://trials.drugis.org/datasets/" + datasetUUID);
+      return builder.build().toString();
+    } catch (URISyntaxException e) {
+      logger.error(e.toString());
+    }
+    return "";
+  }
+
+  private HttpResponse doRequest(String datasetContent, HttpEntityEnclosingRequestBase request) {
+    try {
+      HttpClient client = httpClientFactory.build();
+      StringEntity entity = new StringEntity(datasetContent, "UTF-8");
+      entity.setContentType("application/ld+json");
+      request.setEntity(entity);
+      request.setHeader("Accept", "application/ld+json");
+      return client.execute(request);
+    } catch (IOException e) {
+      logger.error(e.toString());
+    }
+    return null;
+  }
 
   private Model createDatasetModel(String datasetIdentifier, Account owner, String title, String description) {
     Model model = jenaFactory.createModel();
@@ -46,6 +89,12 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     dataSetAccessor.putModel(datasetIdentifier, model);
 
     return datasetIdentifier;
+  }
+
+  @Override
+  public void updateDataset(String datasetUUID, String datasetContent) {
+    HttpPost request = new HttpPost(createDatasetGraphUri(datasetUUID));
+    doRequest(datasetContent, request);
   }
 
 

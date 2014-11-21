@@ -148,7 +148,20 @@ public class DatasetControllerTest {
 
     verify(datasetReadRepository).getDataset(uuid);
     verify(trialverseIOUtilsService).writeResponseContentToServletResponse(Matchers.any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
+  }
 
+  @Test
+  public void testUpdateDataset() throws Exception {
+    String datasetContent = "content";
+    when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
+    String datasetUUID = "uid";
+    mockMvc.perform(post("/datasets/" + datasetUUID)
+            .principal(user)
+            .content(datasetContent))
+            .andExpect(status().isOk())
+            ;
+    verify(accountRepository).findAccountByUsername(user.getName());
+    verify(datasetWriteRepository).updateDataset(datasetUUID, datasetContent);
   }
 
 }
