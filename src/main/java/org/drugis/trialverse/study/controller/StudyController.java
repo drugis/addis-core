@@ -1,7 +1,6 @@
 package org.drugis.trialverse.study.controller;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.security.Account;
@@ -32,15 +31,14 @@ public class StudyController {
   private StudyWriteRepository studyWriteRepository;
 
   @Inject
-  DatasetReadRepository datasetReadRepository;
+  private DatasetReadRepository datasetReadRepository;
 
-  @RequestMapping(value="/{studyUUID}", method = RequestMethod.POST)
+
+  @RequestMapping(value = "/{studyUUID}", method = RequestMethod.POST)
   public void updateStudy(HttpServletRequest request, Principal currentUser,
                           @PathVariable String datasetUUID, @PathVariable String studyUUID) throws IOException {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-
-    HttpResponse dataset = datasetReadRepository.getDataset(datasetUUID);
-    dataset.getEntity().getContent().toString();
+//todo check if user is dataset owner
 
     BufferedReader reader = request.getReader();
     String studyContent = IOUtils.toString(reader);
@@ -49,11 +47,11 @@ public class StudyController {
   @RequestMapping(value="/{studyUUID}", method = RequestMethod.PUT)
   public void createStudy(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable String studyUUID) throws IOException {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
+//todo check if user is dataset owner
+
     BufferedReader reader = request.getReader();
     String studyContent = IOUtils.toString(reader);
-
     studyWriteRepository.createStudy(studyUUID, studyContent);
     response.setStatus(HttpStatus.SC_OK);
-
   }
 }
