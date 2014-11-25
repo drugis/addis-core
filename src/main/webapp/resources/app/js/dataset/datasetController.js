@@ -53,7 +53,7 @@ define([],
                 datasetUUID: $stateParams.datasetUUID,
                 studyUUID: uuid
               }, newStudy).$promise.then(function() {
-                $scope.datasetJSON = addStudyToDatasetGraph($scope.datasetJSON);
+                $scope.datasetJSON = addStudyToDatasetGraph(uuid, $scope.datasetJSON);
                 DatasetResource.save({
                   datasetUUID: $stateParams.datasetUUID
                 }, $scope.datasetJSON).$promise.then(function() {
