@@ -38,7 +38,6 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   @Inject
   private JenaFactory jenaFactory;
 
-  @Inject
   private final static Logger logger = LoggerFactory.getLogger(DatasetWriteRepositoryImpl.class);
 
   private String createDatasetGraphUri(String datasetUUID) {
