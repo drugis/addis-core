@@ -29,10 +29,16 @@ CONSTRUCT {
   }
   GRAPH ?study {
   ?study 
-    rdfs:label ?label ;
-    rdfs:comment ?title;
-    ontology:has_allocation ?allocation ;
-    ontology:has_blinding ?blinding ;
+    rdfs:label ?label .
+    OPTIONAL {
+      ?study rdfs:comment ?title .
+    }
+    OPTIONAL {
+      ?study ontology:has_allocation ?allocation .
+    }
+    OPTIONAL {
+      ?study ontology:has_blinding ?blinding .
+    }
     OPTIONAL {
       ?study ontology:status ?status .
     }
@@ -89,6 +95,7 @@ CONSTRUCT {
         }
       } GROUP BY ?study
     }
+    OPTIONAL
     {
       SELECT ?study (COUNT(?arm) as ?numberOfArms) (SUM(?numberOfParticipantsStarting) as ?studySize)
         WHERE {
