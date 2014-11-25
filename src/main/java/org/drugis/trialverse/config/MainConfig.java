@@ -15,6 +15,7 @@
  */
 package org.drugis.trialverse.config;
 
+import org.drugis.trialverse.util.WebConstants;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,6 +32,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -41,6 +43,11 @@ import java.util.Properties;
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {"org.drugis.trialverse.security"})
 public class MainConfig {
+
+  // load environment variables on deploy
+  @Inject
+  WebConstants webConstants;
+
   @Bean(name = "dsTrialverse")
   public DataSource dataSource() {
     DataSource ds;

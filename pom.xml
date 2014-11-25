@@ -347,7 +347,7 @@
                             <url>${env.TRIALVERSE_DB_URL}</url>
                             <username>${env.TRIALVERSE_DB_USERNAME}</username>
                             <password>${env.TRIALVERSE_DB_PASSWORD}</password>
-                            <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                          <promptOnNonLocalDatabase>true</promptOnNonLocalDatabase>
                         </configuration>
                         <goals>
                             <goal>update</goal>
@@ -396,7 +396,6 @@
                         <TRIALVERSE_DB_URL>${env.TRIALVERSE_DB_URL}</TRIALVERSE_DB_URL>
                         <TRIALVERSE_DB_USERNAME>${env.TRIALVERSE_DB_USERNAME}</TRIALVERSE_DB_USERNAME>
                         <TRIALVERSE_DB_PASSWORD>${env.TRIALVERSE_DB_PASSWORD}</TRIALVERSE_DB_PASSWORD>
-                        <TRIPLESTORE_URI>${env.TRIPLESTORE_URI}</TRIPLESTORE_URI>
                     </systemProperties>
                 </configuration>
             </plugin>
