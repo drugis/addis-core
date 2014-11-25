@@ -29,7 +29,11 @@ public class TrialverseIOUtilsServiceImpl implements TrialverseIOUtilsService {
       inputStream.close();
       outputStream.close();
     } catch (IOException e) {
+      logger.error("Error writing jena response to client request");
       logger.error(e.toString());
     }
+
+    Integer statusCode = httpResponse.getStatusLine().getStatusCode();
+    httpServletResponse.setStatus(statusCode);
   }
 }

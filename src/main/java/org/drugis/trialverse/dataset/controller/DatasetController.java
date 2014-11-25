@@ -1,9 +1,7 @@
 package org.drugis.trialverse.dataset.controller;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -11,7 +9,6 @@ import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,7 +77,7 @@ public class DatasetController {
   }
 
 
-  @RequestMapping(value="/{datasetUUID}", method = RequestMethod.POST)
+  @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.POST)
   public void updateDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
                             @PathVariable String datasetUUID) throws IOException {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
@@ -88,8 +85,8 @@ public class DatasetController {
     BufferedReader reader = request.getReader();
     String datasetContent = IOUtils.toString(reader);
 
-    datasetWriteRepository.updateDataset(datasetUUID, datasetContent);
-    response.setStatus(HttpStatus.SC_OK);
+    HttpResponse jenaResponce = datasetWriteRepository.updateDataset(datasetUUID, datasetContent);
+    response.setStatus(jenaResponce.getStatusLine().getStatusCode());
 
   }
 

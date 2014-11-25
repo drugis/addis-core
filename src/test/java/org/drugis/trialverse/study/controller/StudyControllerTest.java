@@ -1,5 +1,9 @@
 package org.drugis.trialverse.study.controller;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolVersion;
+import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.message.BasicStatusLine;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.study.repository.StudyWriteRepository;
@@ -9,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -63,11 +68,14 @@ public class StudyControllerTest {
     String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
     String datasetUUID = "datasetUUID";
     String studyUUID = "studyUUID";
+    BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.CREATED.value(), "some good reason");
+    HttpResponse httpResponse = new BasicHttpResponse(statusLine);
+    when(studyWriteRepository.createStudy(studyUUID, jsonContent)).thenReturn(httpResponse);
     mockMvc.perform(
         put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
           .content(jsonContent)
           .principal(user))
-        .andExpect(status().isOk());
+            .andExpect(status().isCreated());
     verify(accountRepository).findAccountByUsername(user.getName());
     verify(studyWriteRepository).createStudy(studyUUID, jsonContent);
   }

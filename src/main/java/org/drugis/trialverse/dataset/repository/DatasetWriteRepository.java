@@ -1,5 +1,6 @@
 package org.drugis.trialverse.dataset.repository;
 
+import org.apache.http.HttpResponse;
 import org.drugis.trialverse.security.Account;
 
 /**
@@ -8,5 +9,5 @@ import org.drugis.trialverse.security.Account;
 public interface DatasetWriteRepository {
   String createDataset(String title, String description, Account owner);
 
-  void updateDataset(String datasetUUID, String datasetContent);
+  HttpResponse updateDataset(String datasetUUID, String datasetContent);
 }

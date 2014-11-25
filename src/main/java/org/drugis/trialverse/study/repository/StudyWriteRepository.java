@@ -1,11 +1,13 @@
 package org.drugis.trialverse.study.repository;
 
+import org.apache.http.HttpResponse;
+
 /**
  * Created by daan on 20-11-14.
  */
 public interface StudyWriteRepository {
 
-  public void createStudy(String studyUUID, String jsonContent);
+  public HttpResponse createStudy(String studyUUID, String jsonContent);
 
-  public void updateStudy(String studyUUID, String studyContent);
+  public HttpResponse updateStudy(String studyUUID, String studyContent);
 }

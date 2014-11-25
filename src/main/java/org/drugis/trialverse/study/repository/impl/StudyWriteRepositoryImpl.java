@@ -41,29 +41,32 @@ public class StudyWriteRepositoryImpl implements StudyWriteRepository {
   }
 
   private HttpResponse doRequest(String studyContent, HttpEntityEnclosingRequestBase request) {
+    HttpClient client = httpClientFactory.build();
+    HttpResponse response = null;
     try {
-      HttpClient client = httpClientFactory.build();
       StringEntity entity = new StringEntity(studyContent, "UTF-8");
       entity.setContentType("application/ld+json");
       request.setEntity(entity);
       request.setHeader("Accept", "application/ld+json");
-      return client.execute(request);
+      response = client.execute(request);
     } catch (IOException e) {
       logger.error(e.toString());
     }
-    return null;
+    return response;
   }
 
 
   @Override
-  public void createStudy(String studyUUID, String studyContent) {
+  public HttpResponse createStudy(String studyUUID, String studyContent) {
     HttpPut request = new HttpPut(createStudyGraphUri(studyUUID));
-    doRequest(studyContent, request);
+    HttpResponse response = doRequest(studyContent, request);
+    return response;
   }
 
   @Override
-  public void updateStudy(String studyUUID, String studyContent) {
+  public HttpResponse updateStudy(String studyUUID, String studyContent) {
     HttpPost request = new HttpPost(createStudyGraphUri(studyUUID));
-    doRequest(studyContent, request);
+    HttpResponse response = doRequest(studyContent, request);
+    return response;
   }
 }

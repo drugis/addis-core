@@ -1,7 +1,7 @@
 package org.drugis.trialverse.study.controller;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpStatus;
+import org.apache.http.HttpResponse;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
@@ -42,8 +42,9 @@ public class StudyController {
 
     BufferedReader reader = request.getReader();
     String studyContent = IOUtils.toString(reader);
-    studyWriteRepository.updateStudy(studyUUID, studyContent);
+    HttpResponse fusekiResponce = studyWriteRepository.updateStudy(studyUUID, studyContent);
   }
+
   @RequestMapping(value="/{studyUUID}", method = RequestMethod.PUT)
   public void createStudy(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable String studyUUID) throws IOException {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
@@ -51,7 +52,7 @@ public class StudyController {
 
     BufferedReader reader = request.getReader();
     String studyContent = IOUtils.toString(reader);
-    studyWriteRepository.createStudy(studyUUID, studyContent);
-    response.setStatus(HttpStatus.SC_OK);
+    HttpResponse fusekiResponce = studyWriteRepository.createStudy(studyUUID, studyContent);
+    response.setStatus(fusekiResponce.getStatusLine().getStatusCode());
   }
 }

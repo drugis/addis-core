@@ -1,6 +1,9 @@
 package org.drugis.trialverse.dataset.controller;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolVersion;
+import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.message.BasicStatusLine;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
@@ -16,7 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -151,14 +154,17 @@ public class DatasetControllerTest {
   }
 
   @Test
-  public void testUpdateDataset() throws Exception {
+  public void testUpdateDatasetAndCheckIfStatusIsPassedOn() throws Exception {
     String datasetContent = "content";
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
     String datasetUUID = "uid";
+    BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.I_AM_A_TEAPOT.value(), "some good reason");
+    HttpResponse httpResponse = new BasicHttpResponse(statusLine);
+    when(datasetWriteRepository.updateDataset(datasetUUID, datasetContent)).thenReturn(httpResponse);
     mockMvc.perform(post("/datasets/" + datasetUUID)
             .principal(user)
             .content(datasetContent))
-            .andExpect(status().isOk())
+            .andExpect(status().isIAmATeapot())
             ;
     verify(accountRepository).findAccountByUsername(user.getName());
     verify(datasetWriteRepository).updateDataset(datasetUUID, datasetContent);

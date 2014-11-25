@@ -16,6 +16,7 @@ import org.mockito.Mock;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -33,6 +34,7 @@ public class StudyWriteRepositoryTest {
 
   @Before
   public void setUp() throws IOException {
+
     studyWriteRepository = new StudyWriteRepositoryImpl();
     initMocks(this);
     reset(httpClientFactory, mockHttpClient);
@@ -49,7 +51,8 @@ public class StudyWriteRepositoryTest {
   @Test
   public void testCreateStudy() throws IOException {
     String studyJson = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
-    studyWriteRepository.createStudy("test", studyJson);
+    HttpResponse response = studyWriteRepository.createStudy("test", studyJson);
+    assertNotNull(response);
     verify(mockHttpClient).execute(any(HttpPut.class));
   }
   @Test

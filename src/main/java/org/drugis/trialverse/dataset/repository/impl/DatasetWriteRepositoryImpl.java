@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
+import org.apache.jena.atlas.web.HttpException;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
@@ -53,17 +54,18 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   }
 
   private HttpResponse doRequest(String datasetContent, HttpEntityEnclosingRequestBase request) {
+    HttpClient client = httpClientFactory.build();
+    HttpResponse response = null;
     try {
-      HttpClient client = httpClientFactory.build();
       StringEntity entity = new StringEntity(datasetContent, "UTF-8");
       entity.setContentType("application/ld+json");
       request.setEntity(entity);
       request.setHeader("Accept", "application/ld+json");
-      return client.execute(request);
+      response = client.execute(request);
     } catch (IOException e) {
       logger.error(e.toString());
     }
-    return null;
+    return response;
   }
 
   private Model createDatasetModel(String datasetIdentifier, Account owner, String title, String description) {
@@ -86,15 +88,21 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     DatasetAccessor dataSetAccessor = jenaFactory.getDatasetAccessor();
     String datasetIdentifier = jenaFactory.createDatasetURI();
     Model model = createDatasetModel(datasetIdentifier, owner, title, description);
-    dataSetAccessor.putModel(datasetIdentifier, model);
 
+    try {
+      dataSetAccessor.putModel(datasetIdentifier, model);
+    } catch (HttpException e) {
+      logger.error("Unable to create dataset, responceCode from jena: " + e.getResponseCode());
+      // todo thow new blocking exception to signal the front-end something has gone very wrong
+    }
     return datasetIdentifier;
   }
 
   @Override
-  public void updateDataset(String datasetUUID, String datasetContent) {
+  public HttpResponse updateDataset(String datasetUUID, String datasetContent) {
     HttpPost request = new HttpPost(createDatasetGraphUri(datasetUUID));
-    doRequest(datasetContent, request);
+    HttpResponse response = doRequest(datasetContent, request);
+    return response;
   }
 
 
