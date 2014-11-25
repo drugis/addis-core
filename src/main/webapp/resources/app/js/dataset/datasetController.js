@@ -24,8 +24,8 @@ define([],
       function addStudyToDatasetGraph(studyUUID, datasetGraph) {
         // left-associated concat needed because it's not a list if dataset only
         // contains one study
-        var newStudyList = ['http://trials.drugis.org/studies/' + studyUUID].concat(datasetGraph['@graph'][0].contains_study);
-        datasetGraph['@graph'][0].contains_study = newStudyList;
+        var newStudyURI = 'http://trials.drugis.org/studies/' + studyUUID;
+        datasetGraph['@graph'][0].contains_study = newStudyURI;
         return datasetGraph;
       }
 
