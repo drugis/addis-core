@@ -1,6 +1,6 @@
 package org.drugis.trialverse.dataset.repository;
 
-import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpResponse;
 import org.drugis.trialverse.security.Account;
 
@@ -10,7 +10,7 @@ import org.drugis.trialverse.security.Account;
 public interface DatasetReadRepository {
   public HttpResponse queryDatasets(Account currentUserAccount);
 
-  public HttpResponse getDataset(String datasetUUID);
+  public Model getDataset(String datasetUUID);
 
   public HttpResponse queryDatasetsWithDetail(String datasetUUID);
 

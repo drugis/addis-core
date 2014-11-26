@@ -1,5 +1,5 @@
 'use strict';
-define(['angular'], function() {
+define(['angular'], function(angular) {
   var dependencies = ['$q', 'DatasetResource', 'RdfstoreService'];
 
   var DatasetService = function($q, DatasetResource, RdfstoreService) {
@@ -42,8 +42,26 @@ define(['angular'], function() {
       return promiseHolder;
     }
 
+    function addStudyToDatasetGraph(studyUUID, datasetGraph) {
+      var newGraph = angular.copy(datasetGraph);
+
+      newGraph['@context'].contains_study = {
+        '@id': 'http://trials.drugis.org/ontology#contains_study',
+        '@type': '@id'
+      };
+      newGraph['@context'].ontology = 'http://trials.drugis.org/ontology#';
+      newGraph['@context'].study = 'http://trials.drugis.org/studies/';
+      if (!newGraph.contains_study) {
+        newGraph.contains_study = 'study:' + studyUUID;
+      } else {
+        newGraph.contains_study = ['study:' + studyUUID].concat(newGraph.contains_study);
+      }
+      return newGraph;
+    }
+
     return {
-      getDatasets: getDatasets
+      getDatasets: getDatasets,
+      addStudyToDatasetGraph: addStudyToDatasetGraph
     };
   };
 

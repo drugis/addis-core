@@ -1,5 +1,6 @@
 package org.drugis.trialverse.dataset.controller;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
@@ -56,15 +57,16 @@ public class DatasetController {
 
     HttpResponse response = datasetReadRepository.queryDatasets(currentUserAccount);
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
+    httpServletResponse.setStatus(response.getStatusLine().getStatusCode());
   }
 
   @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.GET)
   @ResponseBody
-  public void getDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) {
+  public void getDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws IOException {
+    Model datasetModel = datasetReadRepository.getDataset(datasetUUID);
+    trialverseIOUtilsService.writeModelToServletResponse(datasetModel, httpServletResponse);
     httpServletResponse.setHeader("Content-Type", "application/ld+json");
-
-    HttpResponse response = datasetReadRepository.getDataset(datasetUUID);
-    trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
+    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
   }
 
   @RequestMapping(value = "/{datasetUUID}/studiesWithDetail", method = RequestMethod.GET)
@@ -74,6 +76,7 @@ public class DatasetController {
 
     HttpResponse response = datasetReadRepository.queryDatasetsWithDetail(datasetUUID);
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
+    httpServletResponse.setStatus(response.getStatusLine().getStatusCode());
   }
 
 

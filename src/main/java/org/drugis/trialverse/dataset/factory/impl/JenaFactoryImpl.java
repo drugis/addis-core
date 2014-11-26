@@ -8,6 +8,7 @@ import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.util.WebConstants;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.UUID;
 
 /**
@@ -16,9 +17,12 @@ import java.util.UUID;
 @Service
 public class JenaFactoryImpl implements JenaFactory {
 
+  @Inject
+  private WebConstants webConstants;
+
   @Override
   public DatasetAccessor getDatasetAccessor() {
-    return DatasetAccessorFactory.createHTTP(WebConstants.TRIPLESTORE_BASE_URI + "/current/data");
+    return DatasetAccessorFactory.createHTTP(webConstants.getTriplestoreBaseUri() + "/current/data");
   }
 
   @Override

@@ -55,7 +55,7 @@ define(['angular', 'angular-mocks'], function() {
           storeDeferred.resolve(mockStore);
           datasetsDeferred.resolve(mockDatasets);
 
-          var resolvedResult
+          var resolvedResult;
           result.promise.then(function(result) {
             resolvedResult = result;
           });
@@ -67,6 +67,52 @@ define(['angular', 'angular-mocks'], function() {
           expect(resolvedResult).not.toBe(undefined);
         }));
 
+      });
+
+    });
+
+    describe('addStudyToDatasetGraph', function() {
+
+      describe('when the graph does not contain any studies', function() {
+
+        it('should add context, and a single contains_study', inject(function(DatasetService) {
+          var emptyDatsetGraph = {
+            '@context' : {}
+          };
+          var newUUID = 'newuuid';
+          var result = DatasetService.addStudyToDatasetGraph(newUUID, emptyDatsetGraph);
+          expect(result['@context'].contains_study).toBeDefined();
+          expect(result.contains_study).toEqual('study:' + newUUID);
+        }));
+      });
+
+
+      describe('when the graph contains precisely one study', function() {
+
+        it('should convert contains_study to an array and add the new study', inject(function(DatasetService) {
+          var emptyDatsetGraph = {
+            '@context' : {},
+            contains_study : 'pre-existing-uuid'
+          };
+          var newUUID = 'newuuid';
+          var result = DatasetService.addStudyToDatasetGraph(newUUID, emptyDatsetGraph);
+          expect(result['@context'].contains_study).toBeDefined();
+          expect(result.contains_study).toEqual(['study:' + newUUID, 'pre-existing-uuid']);
+        }));
+      });
+      describe('when the graph contains more than one study', function() {
+
+        it('should add the new study', inject(function(DatasetService) {
+          var preExistingUuids  = ['pre-existing-uuid1', 'pre-existing-uuid2'], 
+          emptyDatsetGraph = {
+            '@context' : {},
+            contains_study : preExistingUuids
+          };
+          var newUUID = 'newuuid';
+          var result = DatasetService.addStudyToDatasetGraph(newUUID, emptyDatsetGraph);
+          expect(result['@context'].contains_study).toBeDefined();
+          expect(result.contains_study).toEqual(['study:' + newUUID].concat(preExistingUuids));
+        }));
       });
 
     });

@@ -32,6 +32,10 @@ import java.net.URISyntaxException;
 
 @Repository
 public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
+
+  @Inject
+  private WebConstants webConstants;
+
   @Inject
   private HttpClientFactory httpClientFactory;
 
@@ -43,7 +47,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   private String createDatasetGraphUri(String datasetUUID) {
     URIBuilder builder = null;
     try {
-      builder = new URIBuilder(WebConstants.TRIPLESTORE_DATA_URI + "/data");
+      builder = new URIBuilder(webConstants.getTriplestoreDataUri() + "/data");
       builder.addParameter("graph", "http://trials.drugis.org/datasets/" + datasetUUID);
       return builder.build().toString();
     } catch (URISyntaxException e) {

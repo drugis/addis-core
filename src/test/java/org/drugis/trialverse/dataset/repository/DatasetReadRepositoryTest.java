@@ -8,6 +8,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.repository.impl.DatasetReadRepositoryImpl;
 import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -28,6 +29,9 @@ public class DatasetReadRepositoryTest {
   @Mock
   HttpClientFactory httpClientFactory;
 
+  @Mock
+  WebConstants webConstants;
+
   @InjectMocks
   DatasetReadRepository datasetReadRepository;
 
@@ -36,8 +40,11 @@ public class DatasetReadRepositoryTest {
 
   @Before
   public void init() throws IOException {
+    webConstants = mock(WebConstants.class);
     datasetReadRepository = new DatasetReadRepositoryImpl();
     MockitoAnnotations.initMocks(this);
+
+    when(webConstants.getTriplestoreBaseUri()).thenReturn("baseUri");
     when(mockHttpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
     when(httpClientFactory.build()).thenReturn(mockHttpClient);
   }

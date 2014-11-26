@@ -1,5 +1,6 @@
 package org.drugis.trialverse.dataset.controller;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicHttpResponse;
@@ -60,6 +61,9 @@ public class DatasetControllerTest {
   @Inject
   private WebApplicationContext webApplicationContext;
 
+  @Inject
+  private WebConstants webConstants;
+
   @InjectMocks
   private DatasetController datasetController;
 
@@ -100,10 +104,10 @@ public class DatasetControllerTest {
             .perform(post("/datasets")
                             .principal(user)
                             .content(jsonContent)
-                            .contentType(WebConstants.APPLICATION_JSON_UTF8)
+                            .contentType(webConstants.getApplicationJsonUtf8())
             )
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(webConstants.getApplicationJsonUtf8()))
             .andExpect(jsonPath("$.uri", is(newDatasetUid)));
     verify(accountRepository).findAccountByUsername(john.getUsername());
     verify(datasetWriteRepository).createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john);
@@ -111,7 +115,8 @@ public class DatasetControllerTest {
 
   @Test
   public void queryDatasetsRequestPath() throws Exception {
-    HttpResponse mockResponse = mock(HttpResponse.class);
+    HttpResponse mockResponse = mock(HttpResponse.class, RETURNS_DEEP_STUBS);
+    when(mockResponse.getStatusLine().getStatusCode()).thenReturn(200);
     when(datasetReadRepository.queryDatasets(john)).thenReturn(mockResponse);
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
@@ -126,7 +131,8 @@ public class DatasetControllerTest {
 
   @Test
   public void queryDatasets() throws Exception {
-    HttpResponse mockResponse = mock(HttpResponse.class);
+    HttpResponse mockResponse = mock(HttpResponse.class, RETURNS_DEEP_STUBS);
+    when(mockResponse.getStatusLine().getStatusCode()).thenReturn(200);
     HttpServletResponse mockServletResponse = mock(HttpServletResponse.class);
     when(datasetReadRepository.queryDatasets(john)).thenReturn(mockResponse);
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
@@ -141,8 +147,8 @@ public class DatasetControllerTest {
   @Test
   public void testGetDatasetRequestPath() throws Exception {
     String uuid = "uuuuiiid-yeswecan";
-    HttpResponse mockResponse = mock(HttpResponse.class);
-    when(datasetReadRepository.getDataset(uuid)).thenReturn(mockResponse);
+    Model model = mock(Model.class);
+    when(datasetReadRepository.getDataset(uuid)).thenReturn(model);
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
     mockMvc.perform((get("/datasets/" + uuid)).principal(user))
@@ -150,7 +156,7 @@ public class DatasetControllerTest {
             .andExpect(content().contentType("application/ld+json"));
 
     verify(datasetReadRepository).getDataset(uuid);
-    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(Matchers.any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
   }
 
   @Test

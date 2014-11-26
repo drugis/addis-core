@@ -8,6 +8,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.study.repository.impl.StudyWriteRepositoryImpl;
 import org.drugis.trialverse.testutils.TestUtils;
+import org.drugis.trialverse.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,16 +30,20 @@ public class StudyWriteRepositoryTest {
   @Mock
   private HttpClientFactory httpClientFactory;
 
+  @Mock
+  private WebConstants webConstants;
+
   @InjectMocks
   StudyWriteRepository studyWriteRepository;
 
   @Before
   public void setUp() throws IOException {
-
+    webConstants = mock(WebConstants.class);
     studyWriteRepository = new StudyWriteRepositoryImpl();
     initMocks(this);
     reset(httpClientFactory, mockHttpClient);
 
+    when(webConstants.getTriplestoreDataUri()).thenReturn("BaseUri/current");
     when(httpClientFactory.build()).thenReturn(mockHttpClient);
     when(mockHttpClient.execute(any(HttpEntityEnclosingRequestBase.class))).thenReturn(mockResponse);
   }

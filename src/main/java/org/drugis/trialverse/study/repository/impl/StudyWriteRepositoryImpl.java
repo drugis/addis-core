@@ -23,6 +23,10 @@ import java.net.URISyntaxException;
  */
 @Repository
 public class StudyWriteRepositoryImpl implements StudyWriteRepository {
+
+  @Inject
+  private WebConstants webConstants;
+
   @Inject
   private HttpClientFactory httpClientFactory;
 
@@ -31,7 +35,7 @@ public class StudyWriteRepositoryImpl implements StudyWriteRepository {
   private String createStudyGraphUri(String studyUUID) {
     URIBuilder builder = null;
     try {
-      builder = new URIBuilder(WebConstants.TRIPLESTORE_DATA_URI + "/data");
+      builder = new URIBuilder(webConstants.getTriplestoreDataUri() + "/data");
       builder.addParameter("graph", "http://trials.drugis.org/studies/" + studyUUID);
       return builder.build().toString();
     } catch (URISyntaxException e) {

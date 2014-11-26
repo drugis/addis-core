@@ -1,5 +1,7 @@
 package org.drugis.trialverse.dataset.repository.impl;
 
+import com.hp.hpl.jena.query.DatasetAccessor;
+import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
@@ -8,6 +10,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
+import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.util.WebConstants;
@@ -33,10 +36,15 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   private final static Logger logger = LoggerFactory.getLogger(DatasetReadRepositoryImpl.class);
   private final static String SINGLE_STUDY_MEASUREMENTS = loadResource("queryDatasetsConstruct.sparql");
   private final static String STUDIES_WITH_DETAILS = loadResource("constructStudiesWithDetails.sparql");
-  private final static String DATASET_GRAPH = loadResource("constructDataset.sparql");
 
   @Inject
   private HttpClientFactory httpClientFactory;
+
+  @Inject
+  private WebConstants webConstants;
+
+  @Inject
+  private JenaFactory jenaFactory;
 
   private static String loadResource(String filename) {
     try {
@@ -56,7 +64,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   private HttpResponse doQuery(String query) {
     try {
       HttpClient client = httpClientFactory.build();
-      URIBuilder builder = new URIBuilder(WebConstants.TRIPLESTORE_BASE_URI + QUERY_AFFIX);
+      URIBuilder builder = new URIBuilder(webConstants.getTriplestoreBaseUri() + QUERY_AFFIX);
       builder.setParameter("query", query);
       builder.setParameter("output", "json");
       HttpGet request = new HttpGet(builder.build());
@@ -80,9 +88,10 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public HttpResponse getDataset(String datasetUUID) {
-    String query = StringUtils.replace(DATASET_GRAPH, "$datasetUUID", datasetUUID);
-    return doQuery(query);
+  public Model getDataset(String datasetUUID) {
+    DatasetAccessor datasetAccessor = jenaFactory.getDatasetAccessor();
+    Model model = datasetAccessor.getModel("http://trials.drugis.org/datasets/" + datasetUUID);
+    return model;
   }
 
   @Override

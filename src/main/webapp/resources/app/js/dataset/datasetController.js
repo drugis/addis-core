@@ -1,14 +1,14 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$modal', 'DatasetResource',
+    var dependencies = ['$scope', '$stateParams', '$modal', 'DatasetService', 'DatasetResource',
       'StudiesWithDetailResource', 'UUIDService', 'StudyService', 'StudyResource'
     ];
-    var DatasetController = function($scope, $stateParams, $modal, DatasetResource,
+    var DatasetController = function($scope, $stateParams, $modal, DatasetService, DatasetResource,
       StudiesWithDetailResource, UUIDService, StudyService, StudyResource) {
       DatasetResource.get($stateParams).$promise.then(function(result) {
         $scope.datasetJSON = result;
-        $scope.dataset = result['@graph'][0];
+        $scope.dataset = result;
       });
 
       function loadStudiesWithDetail() {
@@ -19,14 +19,6 @@ define([],
           }
           $scope.studiesWithDetail.$resolved = true;
         });
-      }
-
-      function addStudyToDatasetGraph(studyUUID, datasetGraph) {
-        // left-associated concat needed because it's not a list if dataset only
-        // contains one study
-        var newStudyURI = 'http://trials.drugis.org/studies/' + studyUUID;
-        datasetGraph['@graph'][0].contains_study = newStudyURI;
-        return datasetGraph;
       }
 
       $scope.showTableOptions = function() {
@@ -53,7 +45,7 @@ define([],
                 datasetUUID: $stateParams.datasetUUID,
                 studyUUID: uuid
               }, newStudy).$promise.then(function() {
-                $scope.datasetJSON = addStudyToDatasetGraph(uuid, $scope.datasetJSON);
+                $scope.datasetJSON = DatasetService.addStudyToDatasetGraph(uuid, $scope.datasetJSON);
                 DatasetResource.save({
                   datasetUUID: $stateParams.datasetUUID
                 }, $scope.datasetJSON).$promise.then(function() {
