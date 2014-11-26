@@ -1,11 +1,14 @@
 package org.drugis.trialverse.dataset.repository.impl;
 
 import com.hp.hpl.jena.query.DatasetAccessor;
+import com.hp.hpl.jena.query.QueryException;
 import com.hp.hpl.jena.rdf.model.Model;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -13,6 +16,7 @@ import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +28,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.security.Principal;
 
 /**
  * Created by daan on 7-11-14.
@@ -31,11 +36,12 @@ import java.net.URISyntaxException;
 @Repository
 public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
-  public final static String QUERY_AFFIX = "/current/query";
-
   private final static Logger logger = LoggerFactory.getLogger(DatasetReadRepositoryImpl.class);
   private final static String SINGLE_STUDY_MEASUREMENTS = loadResource("queryDatasetsConstruct.sparql");
   private final static String STUDIES_WITH_DETAILS = loadResource("constructStudiesWithDetails.sparql");
+  private final static String IS_OWNER_QUERY = loadResource("askIsOwner.sparql");
+
+  public final static String QUERY_AFFIX = "/current/query";
 
   @Inject
   private HttpClientFactory httpClientFactory;
@@ -50,15 +56,11 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     try {
       Resource myData = new ClassPathResource(filename);
       InputStream stream = myData.getInputStream();
-      String query = IOUtils.toString(stream, "UTF-8");
-      if (query.isEmpty()) {
-
-      }
-      return query;
+      return IOUtils.toString(stream, "UTF-8");
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return "";
+    throw new LoadResourceException("could not load resource " + filename);
   }
 
   private HttpResponse doQuery(String query) {
@@ -69,16 +71,11 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
       builder.setParameter("output", "json");
       HttpGet request = new HttpGet(builder.build());
       request.setHeader("Accept", "application/json");
-      HttpResponse response = client.execute(request);
-      return response;
-    } catch (URISyntaxException e) {
-      logger.error(e.toString());
-    } catch (ClientProtocolException e) {
-      logger.error(e.toString());
-    } catch (IOException e) {
+      return client.execute(request);
+    } catch (URISyntaxException | IOException e) {
       logger.error(e.toString());
     }
-    return null;
+    throw new QueryException("Could not execute query " + query);
   }
 
   @Override
@@ -90,13 +87,35 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   @Override
   public Model getDataset(String datasetUUID) {
     DatasetAccessor datasetAccessor = jenaFactory.getDatasetAccessor();
-    Model model = datasetAccessor.getModel("http://trials.drugis.org/datasets/" + datasetUUID);
-    return model;
+    return datasetAccessor.getModel(Namespaces.DATASET_NAMESPACE + datasetUUID);
   }
 
   @Override
   public HttpResponse queryDatasetsWithDetail(String datasetUUID) {
     String query = StringUtils.replace(STUDIES_WITH_DETAILS, "$datasetUUID", datasetUUID);
     return doQuery(query);
+  }
+
+  @Override
+  public boolean isOwner(Principal principal) {
+    boolean isOwner = false;
+    String query = StringUtils.replace(IS_OWNER_QUERY, "$owner", "'" + principal.getName() + "'");
+    HttpResponse response = doQuery(query);
+
+    JSONParser jsonParser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+    try {
+      JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getEntity().getContent());
+      isOwner = (Boolean) jsonObject.get("boolean");
+    } catch (ParseException | IOException e) {
+      logger.error("could not parse result from check owner query");
+      logger.error(e.toString());
+    }
+    return isOwner;
+  }
+
+  private static class LoadResourceException extends RuntimeException {
+    public LoadResourceException(String s) {
+      super(s);
+    }
   }
 }

@@ -17,6 +17,7 @@ import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     URIBuilder builder = null;
     try {
       builder = new URIBuilder(webConstants.getTriplestoreDataUri() + "/data");
-      builder.addParameter("graph", "http://trials.drugis.org/datasets/" + datasetUUID);
+      builder.addParameter("graph", Namespaces.DATASET_NAMESPACE + datasetUUID);
       return builder.build().toString();
     } catch (URISyntaxException e) {
       logger.error(e.toString());
