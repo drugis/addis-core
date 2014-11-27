@@ -6,6 +6,7 @@ define(function (require) {
     .controller('DatasetsController', require('dataset/datasetsController'))
     .controller('CreateDatasetController', require('dataset/createDatasetController'))
     .controller('DatasetController', require('dataset/datasetController'))
+    .controller('CreateStudyController', require('dataset/createStudyController'))
 
     //services
     .factory('DatasetService', require('dataset/datasetService'))

@@ -9,6 +9,7 @@
             <label>Short Name (e.g. Hansen 2005)
                 <input autofocus type="text" ng-model="study.shortName">
             </label>
+            <label class="alert" ng-show="!isUniqueShortName(study.shortName)">Short name must be unique</label>
         </div>
     </div>
     <div class="row">
@@ -20,7 +21,7 @@
     </div>
     <div class="row">
         <div class="large-8 columns">
-            <button class="success" type="submit" ng-disabled="!study.title">Create</button>
+            <button class="success" type="submit" ng-disabled="!study.title || !isUniqueShortName(study.shortName)">Create</button>
         </div>
     </div>
     <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
