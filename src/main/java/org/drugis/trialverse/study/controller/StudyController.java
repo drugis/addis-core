@@ -3,9 +3,10 @@ package org.drugis.trialverse.study.controller;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
-import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.exception.MethodNotAllowedException;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.study.repository.StudyWriteRepository;
+import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,7 @@ import java.security.Principal;
  */
 @Controller
 @RequestMapping(value = "/datasets/{datasetUUID}/studies")
-public class StudyController {
+public class StudyController extends AbstractTrialverseController {
   @Inject
   private AccountRepository accountRepository;
 
@@ -35,24 +36,30 @@ public class StudyController {
 
 
   @RequestMapping(value = "/{studyUUID}", method = RequestMethod.POST)
-  public void updateStudy(HttpServletRequest request, Principal currentUser,
-                          @PathVariable String datasetUUID, @PathVariable String studyUUID) throws IOException {
-    Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-//todo check if user is dataset owner
+  public void updateStudy(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
+                          @PathVariable String datasetUUID, @PathVariable String studyUUID)
+          throws IOException, MethodNotAllowedException {
+    if (datasetReadRepository.isOwner(currentUser)) {
+      BufferedReader reader = request.getReader();
+      String studyContent = IOUtils.toString(reader);
+      HttpResponse fusekiResponse = studyWriteRepository.updateStudy(studyUUID, studyContent);
+      response.setStatus(fusekiResponse.getStatusLine().getStatusCode());
+    } else {
+      throw new MethodNotAllowedException();
+    }
 
-    BufferedReader reader = request.getReader();
-    String studyContent = IOUtils.toString(reader);
-    HttpResponse fusekiResponce = studyWriteRepository.updateStudy(studyUUID, studyContent);
   }
 
-  @RequestMapping(value="/{studyUUID}", method = RequestMethod.PUT)
-  public void createStudy(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable String studyUUID) throws IOException {
-    Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-//todo check if user is dataset owner
-
-    BufferedReader reader = request.getReader();
-    String studyContent = IOUtils.toString(reader);
-    HttpResponse fusekiResponce = studyWriteRepository.createStudy(studyUUID, studyContent);
-    response.setStatus(fusekiResponce.getStatusLine().getStatusCode());
+  @RequestMapping(value = "/{studyUUID}", method = RequestMethod.PUT)
+  public void createStudy(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable String studyUUID)
+          throws IOException, MethodNotAllowedException {
+    if (datasetReadRepository.isOwner(currentUser)) {
+      BufferedReader reader = request.getReader();
+      String studyContent = IOUtils.toString(reader);
+      HttpResponse fusekiResponse = studyWriteRepository.createStudy(studyUUID, studyContent);
+      response.setStatus(fusekiResponse.getStatusLine().getStatusCode());
+    } else {
+      throw new MethodNotAllowedException();
+    }
   }
 }

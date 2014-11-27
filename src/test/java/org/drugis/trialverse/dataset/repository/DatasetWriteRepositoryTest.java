@@ -26,10 +26,9 @@ public class DatasetWriteRepositoryTest {
   @InjectMocks
   DatasetWriteRepository datasetWriteRepository;
 
-  private
-  DatasetAccessor datasetAccessor = mock(DatasetAccessor.class);
+  private DatasetAccessor datasetAccessor = mock(DatasetAccessor.class);
 
-  Model model;
+  private Model model;
 
   @Before
   public void setUp() {

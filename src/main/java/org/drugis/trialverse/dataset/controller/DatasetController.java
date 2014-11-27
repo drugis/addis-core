@@ -7,8 +7,10 @@ import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
+import org.drugis.trialverse.exception.MethodNotAllowedException;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
+import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +27,7 @@ import java.security.Principal;
  */
 @Controller
 @RequestMapping(value = "/datasets")
-public class DatasetController {
+public class DatasetController extends AbstractTrialverseController {
 
   @Inject
   private DatasetWriteRepository datasetWriteRepository;
@@ -82,14 +84,16 @@ public class DatasetController {
 
   @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.POST)
   public void updateDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
-                            @PathVariable String datasetUUID) throws IOException {
-    Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-    // TODO: permission checking
-    BufferedReader reader = request.getReader();
-    String datasetContent = IOUtils.toString(reader);
+                            @PathVariable String datasetUUID) throws IOException, MethodNotAllowedException {
+    if (datasetReadRepository.isOwner(currentUser)) {
+      BufferedReader reader = request.getReader();
+      String datasetContent = IOUtils.toString(reader);
 
-    HttpResponse jenaResponce = datasetWriteRepository.updateDataset(datasetUUID, datasetContent);
-    response.setStatus(jenaResponce.getStatusLine().getStatusCode());
+      HttpResponse jenaResponce = datasetWriteRepository.updateDataset(datasetUUID, datasetContent);
+      response.setStatus(jenaResponce.getStatusLine().getStatusCode());
+    } else {
+      throw new MethodNotAllowedException();
+    }
 
   }
 

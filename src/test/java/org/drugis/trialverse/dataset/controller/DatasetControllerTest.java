@@ -162,18 +162,35 @@ public class DatasetControllerTest {
   @Test
   public void testUpdateDatasetAndCheckIfStatusIsPassedOn() throws Exception {
     String datasetContent = "content";
-    when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
     String datasetUUID = "uid";
     BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.I_AM_A_TEAPOT.value(), "some good reason");
     HttpResponse httpResponse = new BasicHttpResponse(statusLine);
+    when(datasetReadRepository.isOwner(user)).thenReturn(true);
     when(datasetWriteRepository.updateDataset(datasetUUID, datasetContent)).thenReturn(httpResponse);
+
     mockMvc.perform(post("/datasets/" + datasetUUID)
             .principal(user)
             .content(datasetContent))
             .andExpect(status().isIAmATeapot())
             ;
-    verify(accountRepository).findAccountByUsername(user.getName());
+
+    verify(datasetReadRepository).isOwner(user);
     verify(datasetWriteRepository).updateDataset(datasetUUID, datasetContent);
+  }
+
+  @Test
+  public void testUpdateDatasetWithNonOwnerUser() throws Exception {
+    String datasetContent = "content";
+    String datasetUUID = "uid";
+
+    when(datasetReadRepository.isOwner(user)).thenReturn(false);
+
+    mockMvc.perform(post("/datasets/" + datasetUUID)
+            .principal(user)
+            .content(datasetContent)).andExpect(status().isForbidden());
+
+    verify(datasetReadRepository).isOwner(user);
+    verifyZeroInteractions(datasetWriteRepository);
   }
 
 }
