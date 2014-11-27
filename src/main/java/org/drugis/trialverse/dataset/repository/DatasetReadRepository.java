@@ -17,6 +17,8 @@ public interface DatasetReadRepository {
 
   public HttpResponse queryDatasetsWithDetail(String datasetUUID);
 
-  public boolean isOwner(Principal principal);
+  public boolean isOwner(String datasetUUID, Principal principal);
+
+  public boolean containsStudyWithShortname(String datasetUUID, String shortName);
 
 }

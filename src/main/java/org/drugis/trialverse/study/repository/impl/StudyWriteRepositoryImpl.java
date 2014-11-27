@@ -6,7 +6,7 @@ import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.study.repository.StudyWriteRepository;
 import org.drugis.trialverse.util.WebConstants;
@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
+import javax.servlet.ServletRequest;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -44,13 +45,13 @@ public class StudyWriteRepositoryImpl implements StudyWriteRepository {
     return "";
   }
 
-  private HttpResponse doRequest(String studyContent, HttpEntityEnclosingRequestBase request) {
+  private HttpResponse doRequest(ServletRequest servletRequest, HttpEntityEnclosingRequestBase request) {
     HttpClient client = httpClientFactory.build();
     HttpResponse response = null;
     try {
-      StringEntity entity = new StringEntity(studyContent, "UTF-8");
-      entity.setContentType("application/ld+json");
-      request.setEntity(entity);
+      InputStreamEntity inputStreamEntity = new InputStreamEntity(servletRequest.getInputStream());
+      inputStreamEntity.setContentType("application/ld+json");
+      request.setEntity(inputStreamEntity);
       request.setHeader("Accept", "application/ld+json");
       response = client.execute(request);
     } catch (IOException e) {
@@ -61,16 +62,16 @@ public class StudyWriteRepositoryImpl implements StudyWriteRepository {
 
 
   @Override
-  public HttpResponse createStudy(String studyUUID, String studyContent) {
+  public HttpResponse createStudy(String studyUUID, ServletRequest servletRequest) {
     HttpPut request = new HttpPut(createStudyGraphUri(studyUUID));
-    HttpResponse response = doRequest(studyContent, request);
+    HttpResponse response = doRequest(servletRequest, request);
     return response;
   }
 
   @Override
-  public HttpResponse updateStudy(String studyUUID, String studyContent) {
+  public HttpResponse updateStudy(String studyUUID, ServletRequest servletRequest) {
     HttpPost request = new HttpPost(createStudyGraphUri(studyUUID));
-    HttpResponse response = doRequest(studyContent, request);
+    HttpResponse response = doRequest(servletRequest, request);
     return response;
   }
 }

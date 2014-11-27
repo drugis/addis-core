@@ -6,8 +6,8 @@ import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.security.Account;
-import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.study.repository.StudyWriteRepository;
+import org.drugis.trialverse.study.service.StudyService;
 import org.drugis.trialverse.testutils.TestUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -16,12 +16,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 import static org.mockito.Mockito.*;
@@ -40,13 +42,13 @@ public class StudyControllerTest {
   private WebApplicationContext webApplicationContext;
 
   @Mock
-  private AccountRepository accountRepository;
-
-  @Mock
   private StudyWriteRepository studyWriteRepository;
 
   @Mock
   private DatasetReadRepository datasetReadRepository;
+
+  @Mock
+  private StudyService studyService;
 
   @InjectMocks
   private StudyController studyController;
@@ -56,22 +58,20 @@ public class StudyControllerTest {
 
   @Before
   public void setUp() throws Exception {
-    accountRepository = mock(AccountRepository.class);
     studyWriteRepository = mock(StudyWriteRepository.class);
     datasetReadRepository = mock(DatasetReadRepository.class);
+    studyService = mock(StudyService.class);
     studyController = new StudyController();
 
     initMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(studyController).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn(john.getUsername());
-    when(accountRepository.findAccountByUsername("john@apple.co.uk")).thenReturn(john);
-
   }
 
   @After
   public void tearDown() throws Exception {
-    verifyNoMoreInteractions(accountRepository, studyWriteRepository);
+    verifyNoMoreInteractions(studyWriteRepository);
   }
 
   @Test
@@ -81,8 +81,8 @@ public class StudyControllerTest {
     String studyUUID = "studyUUID";
     BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.CREATED.value(), "some good reason");
     HttpResponse httpResponse = new BasicHttpResponse(statusLine);
-    when(datasetReadRepository.isOwner(user)).thenReturn(true);
-    when(studyWriteRepository.createStudy(studyUUID, jsonContent)).thenReturn(httpResponse);
+    when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(true);
+    when(studyService.createStudy(anyString(), anyString(), any(HttpServletRequest.class))).thenReturn(httpResponse);
 
     mockMvc.perform(
             put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
@@ -90,8 +90,8 @@ public class StudyControllerTest {
                     .principal(user))
             .andExpect(status().isCreated());
 
-    verify(datasetReadRepository).isOwner(user);
-    verify(studyWriteRepository).createStudy(studyUUID, jsonContent);
+    verify(datasetReadRepository).isOwner(datasetUUID, user);
+    verify(studyService).createStudy(anyString(), anyString(), any(HttpServletRequest.class));
   }
 
   @Test
@@ -99,26 +99,27 @@ public class StudyControllerTest {
     String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
     String datasetUUID = "datasetUUID";
     String studyUUID = "studyUUID";
-    when(datasetReadRepository.isOwner(user)).thenReturn(false);
+    when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(false);
 
     mockMvc.perform(
             put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
                     .content(jsonContent)
                     .principal(user)).andExpect(status().isForbidden());
 
-    verify(datasetReadRepository).isOwner(user);
+    verify(datasetReadRepository).isOwner(datasetUUID, user);
     verifyZeroInteractions(studyWriteRepository);
   }
 
   @Test
   public void testUpdateStudy() throws Exception {
     String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
+    MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
     String datasetUUID = "datasetUUID";
     String studyUUID = "studyUUID";
     BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
     HttpResponse httpResponse = new BasicHttpResponse(statusLine);
-    when(datasetReadRepository.isOwner(user)).thenReturn(true);
-    when(studyWriteRepository.updateStudy(studyUUID, jsonContent)).thenReturn(httpResponse);
+    when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(true);
+    when(studyWriteRepository.updateStudy(anyString(), any(HttpServletRequest.class))).thenReturn(httpResponse);
 
     mockMvc.perform(
             post("/datasets/" + datasetUUID + "/studies/" + studyUUID)
@@ -126,8 +127,8 @@ public class StudyControllerTest {
                     .principal(user))
             .andExpect(status().isOk());
 
-    verify(datasetReadRepository).isOwner(user);
-    verify(studyWriteRepository).updateStudy(studyUUID, jsonContent);
+    verify(datasetReadRepository).isOwner(datasetUUID, user);
+    verify(studyWriteRepository).updateStudy(anyString(), any(HttpServletRequest.class));
   }
 
   @Test
@@ -135,13 +136,13 @@ public class StudyControllerTest {
     String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
     String datasetUUID = "datasetUUID";
     String studyUUID = "studyUUID";
-    when(datasetReadRepository.isOwner(user)).thenReturn(false);
+    when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(false);
 
     mockMvc.perform(
             post("/datasets/" + datasetUUID + "/studies/" + studyUUID)
                     .content(jsonContent)
                     .principal(user)).andExpect(status().isForbidden());
 
-    verify(datasetReadRepository).isOwner(user);
+    verify(datasetReadRepository).isOwner(datasetUUID, user);
   }
 }

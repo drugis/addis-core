@@ -1,21 +1,23 @@
 package org.drugis.trialverse.study.repository;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.study.repository.impl.StudyWriteRepositoryImpl;
-import org.drugis.trialverse.testutils.TestUtils;
 import org.drugis.trialverse.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.mock.web.DelegatingServletInputStream;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
@@ -42,10 +44,9 @@ public class StudyWriteRepositoryTest {
     studyWriteRepository = new StudyWriteRepositoryImpl();
     initMocks(this);
     reset(httpClientFactory, mockHttpClient);
-
     when(webConstants.getTriplestoreDataUri()).thenReturn("BaseUri/current");
     when(httpClientFactory.build()).thenReturn(mockHttpClient);
-    when(mockHttpClient.execute(any(HttpEntityEnclosingRequestBase.class))).thenReturn(mockResponse);
+
   }
 
   @After
@@ -55,16 +56,30 @@ public class StudyWriteRepositoryTest {
 
   @Test
   public void testCreateStudy() throws IOException {
-    String studyJson = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
-    HttpResponse response = studyWriteRepository.createStudy("test", studyJson);
+    String studyUUID = "studyUUID";
+    HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
+    InputStream inputStream = IOUtils.toInputStream("content");
+    DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
+    when(mockHttpServletRequest.getInputStream()).thenReturn(delegatingServletInputStream);
+    when(mockHttpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
+    HttpResponse response = studyWriteRepository.createStudy(studyUUID, mockHttpServletRequest);
+
     assertNotNull(response);
-    verify(mockHttpClient).execute(any(HttpPut.class));
+    verify(mockHttpClient).execute(any(HttpPut.class)); // todo fix this
   }
+
   @Test
   public void testUpdateStudy() throws IOException {
-    String studyJson = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
-    studyWriteRepository.updateStudy("test", studyJson);
-    verify(mockHttpClient).execute(any(HttpPost.class));  // FIXME: something weird here, also succeeds on HttpPut.class
+    String studyUUID = "studyUUID";
+    HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
+    InputStream inputStream = IOUtils.toInputStream("content");
+    DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
+    when(mockHttpServletRequest.getInputStream()).thenReturn(delegatingServletInputStream);
+
+    HttpResponse response = studyWriteRepository.updateStudy(studyUUID, mockHttpServletRequest);
+
+    verify(mockHttpClient).execute(any(HttpPut.class));
+    // FIXME: something weird here, also succeeds on HttpPut.class
   }
 
 }

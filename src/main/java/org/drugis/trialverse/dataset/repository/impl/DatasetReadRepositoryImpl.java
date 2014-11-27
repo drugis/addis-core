@@ -3,6 +3,7 @@ package org.drugis.trialverse.dataset.repository.impl;
 import com.hp.hpl.jena.query.DatasetAccessor;
 import com.hp.hpl.jena.query.QueryException;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -40,6 +41,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   private final static String SINGLE_STUDY_MEASUREMENTS = loadResource("queryDatasetsConstruct.sparql");
   private final static String STUDIES_WITH_DETAILS = loadResource("constructStudiesWithDetails.sparql");
   private final static String IS_OWNER_QUERY = loadResource("askIsOwner.sparql");
+  private final static String CONTAINS_STUDY_WITH_SHORTNAME = loadResource("askContainsStudyWithLabel.sparql");
 
   public final static String QUERY_AFFIX = "/current/query";
 
@@ -97,9 +99,10 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public boolean isOwner(Principal principal) {
+  public boolean isOwner(String datasetUUID, Principal principal) {
     boolean isOwner = false;
     String query = StringUtils.replace(IS_OWNER_QUERY, "$owner", "'" + principal.getName() + "'");
+    query = StringUtils.replace(query, "$dataset", datasetUUID);
     HttpResponse response = doQuery(query);
 
     JSONParser jsonParser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
@@ -111,6 +114,21 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
       logger.error(e.toString());
     }
     return isOwner;
+  }
+
+  @Override
+  public boolean containsStudyWithShortname(String datasetUUID, String shortName) {
+    Boolean containsStudyWithShortname = false;
+    String query = StringUtils.replace(CONTAINS_STUDY_WITH_SHORTNAME, "$dataset", datasetUUID);
+    query = StringUtils.replace(query, "$shortName", shortName);
+    HttpResponse response = doQuery(query);
+    try {
+      containsStudyWithShortname = JsonPath.read(response.getEntity().getContent(), "$.boolean");
+    } catch (IOException e) {
+      logger.error(e.toString());
+    }
+
+    return containsStudyWithShortname;
   }
 
   private static class LoadResourceException extends RuntimeException {

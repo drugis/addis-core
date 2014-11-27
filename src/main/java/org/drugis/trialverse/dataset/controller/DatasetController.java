@@ -85,7 +85,7 @@ public class DatasetController extends AbstractTrialverseController {
   @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.POST)
   public void updateDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
                             @PathVariable String datasetUUID) throws IOException, MethodNotAllowedException {
-    if (datasetReadRepository.isOwner(currentUser)) {
+    if (datasetReadRepository.isOwner(datasetUUID, currentUser)) {
       BufferedReader reader = request.getReader();
       String datasetContent = IOUtils.toString(reader);
 

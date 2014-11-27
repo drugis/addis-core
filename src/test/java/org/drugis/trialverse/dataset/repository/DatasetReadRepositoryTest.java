@@ -24,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.Principal;
 import java.util.zip.GZIPInputStream;
@@ -52,7 +53,7 @@ public class DatasetReadRepositoryTest {
   @Before
   public void init() throws IOException {
     mockHttpClient = mock(HttpClient.class);
-    mockResponse = mock(HttpResponse.class);
+    mockResponse = mock(HttpResponse.class, RETURNS_DEEP_STUBS);
 
     webConstants = mock(WebConstants.class);
     jenaFactory = mock(JenaFactory.class);
@@ -97,7 +98,7 @@ public class DatasetReadRepositoryTest {
 
   @Test
   public void testIsOwnerWhenQuerySaysTrue() throws IOException {
-
+    String datasetUUID = "datasetUUID";
     Principal principal = mock(Principal.class);
     HttpResponse mockResponse = mock(HttpResponse.class, RETURNS_DEEP_STUBS);
     JSONObject jsonObject = new JSONObject();
@@ -105,14 +106,14 @@ public class DatasetReadRepositoryTest {
     when(mockResponse.getEntity().getContent()).thenReturn(IOUtils.toInputStream(jsonObject.toJSONString()));
     when(mockHttpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
 
-    Boolean result = datasetReadRepository.isOwner(principal);
+    Boolean result = datasetReadRepository.isOwner(datasetUUID, principal);
 
     assertTrue(result);
   }
 
   @Test
   public void testIsOwnerWhenQuerySaysFalse() throws IOException {
-
+    String datasetUUID = "datasetUUID";
     Principal principal = mock(Principal.class);
     HttpResponse mockResponse = mock(HttpResponse.class, RETURNS_DEEP_STUBS);
     JSONObject jsonObject = new JSONObject();
@@ -120,9 +121,20 @@ public class DatasetReadRepositoryTest {
     when(mockResponse.getEntity().getContent()).thenReturn(IOUtils.toInputStream(jsonObject.toJSONString()));
     when(mockHttpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
 
-    Boolean result = datasetReadRepository.isOwner(principal);
+    Boolean result = datasetReadRepository.isOwner(datasetUUID, principal);
 
     assertFalse(result);
+  }
+
+  @Test
+  public void testContainsStudyWithShortName() throws IOException {
+    String datasetUUID = "uuid-1";
+    String shortName = "shortName";
+
+    InputStream stream = IOUtils.toInputStream("{\"boolean\":true}");
+    when(mockResponse.getEntity().getContent()).thenReturn(stream);
+    Boolean result = datasetReadRepository.containsStudyWithShortname(datasetUUID, shortName);
+    assertTrue(result);
   }
 
   @After

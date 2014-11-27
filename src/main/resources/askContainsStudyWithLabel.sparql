@@ -1,0 +1,11 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX study: <http://trials.drugis.org/studies/>
+
+ASK {
+  GRAPH dataset:$dataset {
+    dataset:$dataset ontology:contains_study ?study .
+  }
+  GRAPH ?study {
+    ?study rdfs:label $shortName .
+  }
+}
