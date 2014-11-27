@@ -120,7 +120,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   public boolean containsStudyWithShortname(String datasetUUID, String shortName) {
     Boolean containsStudyWithShortname = false;
     String query = StringUtils.replace(CONTAINS_STUDY_WITH_SHORTNAME, "$dataset", datasetUUID);
-    query = StringUtils.replace(query, "$shortName", shortName);
+    query = StringUtils.replace(query, "$shortName", "'" + shortName + "'");
     HttpResponse response = doQuery(query);
     try {
       containsStudyWithShortname = JsonPath.read(response.getEntity().getContent(), "$.boolean");
