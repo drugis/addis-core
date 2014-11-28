@@ -10,7 +10,7 @@ define([], function() {
       $scope.dataset = result;
     });
 
-    function loadStudiesWithDetail() {
+    $scope.loadStudiesWithDetail = function() {
       StudiesWithDetailResource.get($stateParams).$promise.then(function(result) {
         $scope.studiesWithDetail = result['@graph'];
         if (!$scope.studiesWithDetail) {
@@ -40,7 +40,7 @@ define([], function() {
       });
     };
 
-    loadStudiesWithDetail();
+    $scope.loadStudiesWithDetail();
 
     $scope.tableOptions = {
       columns: [{

@@ -62,7 +62,7 @@ public class StudyWriteRepositoryTest {
     DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
     when(mockHttpServletRequest.getInputStream()).thenReturn(delegatingServletInputStream);
     when(mockHttpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
-    HttpResponse response = studyWriteRepository.createStudy(studyUUID, mockHttpServletRequest);
+    HttpResponse response = studyWriteRepository.createStudy(studyUUID, "");
 
     assertNotNull(response);
     verify(mockHttpClient).execute(any(HttpPut.class)); // todo fix this
@@ -76,7 +76,7 @@ public class StudyWriteRepositoryTest {
     DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
     when(mockHttpServletRequest.getInputStream()).thenReturn(delegatingServletInputStream);
 
-    HttpResponse response = studyWriteRepository.updateStudy(studyUUID, mockHttpServletRequest);
+    HttpResponse response = studyWriteRepository.updateStudy(studyUUID, "");
 
     verify(mockHttpClient).execute(any(HttpPut.class));
     // FIXME: something weird here, also succeeds on HttpPut.class

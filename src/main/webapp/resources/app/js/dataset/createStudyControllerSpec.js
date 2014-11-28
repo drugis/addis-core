@@ -37,6 +37,9 @@ define(['angular', 'angular-mocks'], function() {
 
     describe('isUniqueShortName', function() {
       it('should be true if the shortname is not already in the list', function() {
+        scope.studiesWithDetail = {
+          $resolved: true
+        };
         expect(scope.isUniqueShortName('connor')).toBe(true);
         scope.studiesWithDetail = [{
           label: 'daan'

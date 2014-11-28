@@ -1,7 +1,6 @@
 package org.drugis.trialverse.dataset.controller;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.security.Principal;
 
@@ -86,8 +84,8 @@ public class DatasetController extends AbstractTrialverseController {
   public void updateDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
                             @PathVariable String datasetUUID) throws IOException, MethodNotAllowedException {
     if (datasetReadRepository.isOwner(datasetUUID, currentUser)) {
-      BufferedReader reader = request.getReader();
-      String datasetContent = IOUtils.toString(reader);
+
+      String datasetContent = readContent(request);
 
       HttpResponse jenaResponce = datasetWriteRepository.updateDataset(datasetUUID, datasetContent);
       response.setStatus(jenaResponce.getStatusLine().getStatusCode());

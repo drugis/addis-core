@@ -1,5 +1,6 @@
 package org.drugis.trialverse.util.controller;
 
+import org.apache.commons.io.IOUtils;
 import org.drugis.trialverse.exception.MethodNotAllowedException;
 import org.drugis.trialverse.exception.ResourceDoesNotExistException;
 import org.slf4j.Logger;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 /**
  * Created by connor on 27-11-14.
@@ -51,6 +54,17 @@ public class AbstractTrialverseController {
   public ErrorResponse handleIllegalArgumentException(HttpServletRequest request) {
     logger.error("Bad request.\n{}", request.getQueryString());
     return new ErrorResponse(400, "Bad request");
+  }
+
+  protected String readContent(HttpServletRequest request) {
+    BufferedReader reader = null;
+    try {
+      reader = request.getReader();
+      return IOUtils.toString(reader);
+    } catch (IOException e) {
+      logger.error(e.toString());
+    }
+    return "";
   }
 
 }

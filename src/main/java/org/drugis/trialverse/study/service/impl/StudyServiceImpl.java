@@ -9,7 +9,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.servlet.ServletRequest;
 import java.io.IOException;
 
 /**
@@ -25,13 +24,13 @@ public class StudyServiceImpl implements StudyService {
   private DatasetReadRepository datasetReadRepository;
 
   @Override
-  public HttpResponse createStudy(String datasetUUID, String studyUUID, ServletRequest request) throws DuplicateKeyException, IOException {
-    String shortName = JsonPath.read(request.getInputStream(), "$.@graph[0].label");
+  public HttpResponse createStudy(String datasetUUID, String studyUUID, String content) throws DuplicateKeyException, IOException {
+    String shortName = JsonPath.read(content, "$.@graph[0].label");
 
     if (datasetReadRepository.containsStudyWithShortname(datasetUUID, shortName)) {
       throw new DuplicateKeyException("dataset already contains study with this short name");
     }
 
-    return studyWriteRepository.createStudy(studyUUID, request);
+    return studyWriteRepository.createStudy(studyUUID, content);
   }
 }

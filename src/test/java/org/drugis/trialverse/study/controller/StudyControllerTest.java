@@ -23,7 +23,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 import static org.mockito.Mockito.*;
@@ -79,10 +78,11 @@ public class StudyControllerTest {
     String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
     String datasetUUID = "datasetUUID";
     String studyUUID = "studyUUID";
+
     BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.CREATED.value(), "some good reason");
     HttpResponse httpResponse = new BasicHttpResponse(statusLine);
     when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(true);
-    when(studyService.createStudy(anyString(), anyString(), any(HttpServletRequest.class))).thenReturn(httpResponse);
+    when(studyService.createStudy(datasetUUID, studyUUID, jsonContent)).thenReturn(httpResponse);
 
     mockMvc.perform(
             put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
@@ -91,7 +91,7 @@ public class StudyControllerTest {
             .andExpect(status().isCreated());
 
     verify(datasetReadRepository).isOwner(datasetUUID, user);
-    verify(studyService).createStudy(anyString(), anyString(), any(HttpServletRequest.class));
+    verify(studyService).createStudy(datasetUUID, studyUUID, jsonContent);
   }
 
   @Test
@@ -119,7 +119,7 @@ public class StudyControllerTest {
     BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
     HttpResponse httpResponse = new BasicHttpResponse(statusLine);
     when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(true);
-    when(studyWriteRepository.updateStudy(anyString(), any(HttpServletRequest.class))).thenReturn(httpResponse);
+    when(studyWriteRepository.updateStudy(studyUUID, jsonContent)).thenReturn(httpResponse);
 
     mockMvc.perform(
             post("/datasets/" + datasetUUID + "/studies/" + studyUUID)
@@ -128,7 +128,7 @@ public class StudyControllerTest {
             .andExpect(status().isOk());
 
     verify(datasetReadRepository).isOwner(datasetUUID, user);
-    verify(studyWriteRepository).updateStudy(anyString(), any(HttpServletRequest.class));
+    verify(studyWriteRepository).updateStudy(studyUUID, jsonContent);
   }
 
   @Test

@@ -11,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.mock.web.DelegatingServletInputStream;
 
-import javax.servlet.ServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -44,20 +43,20 @@ public class StudyServiceTest {
 
   @Test
   public void testCreateStudy() throws IOException {
-    ServletRequest request = mock(ServletRequest.class);
+
     String mockRequestBody = loadMockObject();
     InputStream inputStream = IOUtils.toInputStream(mockRequestBody);
     DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
-    when(request.getInputStream()).thenReturn(delegatingServletInputStream);
+
 
     String datasetUUID = "uuid-1";
     String studyUUID = "s-uuid-1";
     String shortName = "short name";
     when(datasetReadRepository.containsStudyWithShortname(datasetUUID, shortName)).thenReturn(false);
     HttpResponse mockResponse = mock(HttpResponse.class);
-    when(studyWriteRepository.createStudy(studyUUID, request)).thenReturn(mockResponse);
+    when(studyWriteRepository.createStudy(studyUUID, mockRequestBody)).thenReturn(mockResponse);
 
-    HttpResponse response = studyService.createStudy(datasetUUID, studyUUID, request);
+    HttpResponse response = studyService.createStudy(datasetUUID, studyUUID, mockRequestBody);
 
     assertNotNull(response);
   }
