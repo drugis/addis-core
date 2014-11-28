@@ -55,6 +55,11 @@ define(
             url: '/dataset/:datasetUUID',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
+          })
+          .state('study', {
+            url: '/dataset/:datasetUUID/study/:studyUUID',
+            templateUrl: 'app/js/study/view/study.html',
+            controller: 'StudyController'
           });
 
         // Default route
