@@ -4,3 +4,36 @@
         <h5><em>{{study.comment}}<em></h5>
     </div>
 </div>
+
+<div class="row">
+    <div class="columns large-12">
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="columns large-2" style="border-right: solid 1px #dddddd;">
+        <ul class="side-nav">
+            <li class="active"><a href="">Arms</a></li>
+        </ul>
+    </div>
+
+    <div class="columns large-10">
+        <h3>Arms <a>
+            <i class="fa fa-info-circle fa-fw"></i>
+        </a>
+        </h3>
+
+        <div ng-if="!study.arms">
+            <p>This study currently contains no arms
+
+            <p>
+
+            <div>
+                <div ng-repeat="arm in study.arms">
+                    <div>{{arm.label}}</div>
+                </div>
+
+                <a href="" class="button success">Add arm</a>
+            </div>
+        </div>
