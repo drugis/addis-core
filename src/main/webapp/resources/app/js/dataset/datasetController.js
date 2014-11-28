@@ -1,10 +1,10 @@
 'use strict';
 define([], function() {
   var dependencies = ['$scope', '$stateParams', '$modal', 'DatasetService', 'DatasetResource',
-    'StudiesWithDetailResource'
+    'StudiesWithDetailResource', 'JsonLdService'
   ];
   var DatasetController = function($scope, $stateParams, $modal, DatasetService, DatasetResource,
-    StudiesWithDetailResource) {
+    StudiesWithDetailResource, JsonLdService) {
     DatasetResource.get($stateParams).$promise.then(function(result) {
       $scope.datasetJSON = result;
       $scope.dataset = result;
@@ -13,12 +13,13 @@ define([], function() {
     $scope.loadStudiesWithDetail = function() {
       StudiesWithDetailResource.get($stateParams).$promise.then(function(result) {
         $scope.studiesWithDetail = result['@graph'];
+        $scope.studiesWithDetail = JsonLdService.rewriteAtIds($scope.studiesWithDetail);
         if (!$scope.studiesWithDetail) {
           $scope.studiesWithDetail = {};
         }
         $scope.studiesWithDetail.$resolved = true;
       });
-    }
+    };
 
     $scope.showTableOptions = function() {
       $modal.open({
