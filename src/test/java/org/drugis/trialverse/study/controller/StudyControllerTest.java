@@ -1,14 +1,17 @@
 package org.drugis.trialverse.study.controller;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.study.repository.StudyReadRepository;
 import org.drugis.trialverse.study.repository.StudyWriteRepository;
 import org.drugis.trialverse.study.service.StudyService;
 import org.drugis.trialverse.testutils.TestUtils;
+import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,12 +26,13 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Configuration
@@ -44,7 +48,13 @@ public class StudyControllerTest {
   private StudyWriteRepository studyWriteRepository;
 
   @Mock
+  private StudyReadRepository studyReadRepository;
+
+  @Mock
   private DatasetReadRepository datasetReadRepository;
+
+  @Mock
+  private TrialverseIOUtilsService trialverseIOUtilsService;
 
   @Mock
   private StudyService studyService;
@@ -57,6 +67,7 @@ public class StudyControllerTest {
 
   @Before
   public void setUp() throws Exception {
+    studyReadRepository = mock(StudyReadRepository.class);
     studyWriteRepository = mock(StudyWriteRepository.class);
     datasetReadRepository = mock(DatasetReadRepository.class);
     studyService = mock(StudyService.class);
@@ -71,6 +82,22 @@ public class StudyControllerTest {
   @After
   public void tearDown() throws Exception {
     verifyNoMoreInteractions(studyWriteRepository);
+  }
+
+  @Test
+  public void testGetStudy() throws Exception {
+    String datasetUUID = "datasetUUID";
+    String studyUUID = "studyUUID";
+    Model studyModel = mock(Model.class);
+    when(studyReadRepository.getStudy(studyUUID)).thenReturn(studyModel);
+
+
+    mockMvc.perform(get("/datasets/" + datasetUUID + "/studies/" + studyUUID).principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/ld+json"));
+
+    verify(studyReadRepository).getStudy(studyUUID);
+    verify(trialverseIOUtilsService).writeModelToServletResponse(any(Model.class), any(HttpServletResponse.class));
   }
 
   @Test
