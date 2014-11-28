@@ -6,7 +6,6 @@ define([],
 
       StudyResource.get($stateParams).$promise.then(function(study) {
         $scope.study = study;
-        console.log('get succes');
       });
     };
 
