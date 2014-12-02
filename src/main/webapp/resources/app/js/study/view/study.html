@@ -28,15 +28,20 @@
             <p class="panel">This study currently contains no arms </p>
         </div>
         <div ng-if="study.arms">
-            <div class="panel" ng-repeat="arm in study.arms">
+            <div class="panel clearfix" ng-repeat="arm in study.arms">
+                <div class="edit-item-controls right">
+                    <a href=""> <i class="fa fa-edit fa-2x fa-fw"></i> </a>
+                    <a href=""><i class="fa fa-trash-o fa-2x fa-fw"></i></a>
+                </div>
                 <ul class="no-bullet">
                     <li><span><strong>Arm {{$index + 1}}: </strong></span> <span>{{arm.label}}</span></li>
                     <li><span><strong>Description: </strong></span><span>{{arm.comment || "none"}}</span></li>
                 </ul>
+
             </div>
         </div>
 
-        <a href="" class="button success"><i class="fa fa-plus"></i> Add arm</a>
+        <a ng-click="showArmDialog()" class="button success"><i class="fa fa-plus"></i> Add arm</a>
 
     </div>
 
@@ -50,6 +55,9 @@
         </div>
         <div ng-if="study.epochs">
             <div class="panel" ng-repeat="epoch in study.epochs">
+                <div class="edit-item-controls">
+                    <a href="" class="right"> <i class="fa fa-edit fa-2x"></i> </a>
+                </div>
                 <ul class="no-bullet">
                     <li><span><strong>Epoch {{$index + 1}}: </strong><span> <span>{{epoch.label}}</span></li>
                     <li><span><strong>Description: </strong><span> <span>{{arm.comment || "none"}}</span></li>
