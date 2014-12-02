@@ -8377,3 +8377,9 @@ input[type='file'] {
   height: 32px;
   border-radius: 15px;
 }
+
+/* line 37, ../../sass/trialverse-drugis.scss */
+.study-item {
+  margin: 0 0 3rem 0;
+  border-left: solid 1px #dddddd;
+}

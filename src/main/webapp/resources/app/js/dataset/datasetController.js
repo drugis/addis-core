@@ -16,6 +16,7 @@ define([], function() {
 
       $scope.datasetJSON = dataset;
       $scope.dataset = dataset;
+      $scope.dataset.uuid = $stateParams.datasetUUID;
     });
 
     $scope.loadStudiesWithDetail = function() {
