@@ -5,9 +5,17 @@ define([], function() {
   ];
   var DatasetController = function($scope, $stateParams, $modal, DatasetService, DatasetResource,
     StudiesWithDetailResource, JsonLdService) {
+
     DatasetResource.get($stateParams).$promise.then(function(result) {
-      $scope.datasetJSON = result;
-      $scope.dataset = result;
+      var dataset = result
+      if (dataset['@graph']) {
+        dataset = _.find(dataset['@graph'], function(item){
+          return item['@type'] === 'http://trials.drugis.org/ontology#Dataset';
+        });
+      }
+
+      $scope.datasetJSON = dataset;
+      $scope.dataset = dataset;
     });
 
     $scope.loadStudiesWithDetail = function() {
