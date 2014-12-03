@@ -6,10 +6,6 @@ define(['rdfstore'],
 
       var store;
 
-      function getStore() {
-        return this.store;
-      }
-
       function createEmptyStudyJsonLD(uuid, study) {
         return {
           '@graph': [{
@@ -79,8 +75,6 @@ define(['rdfstore'],
 
         this.store.execute(studyDataQuery, function(success, results) {
           if (success) {
-            //$scope.study = results.length === 1 ? results[0] : console.error('single result expexted');
-            //$scope.$apply(); // rdf store does not trigger apply
             var studyData = results.length === 1 ? results[0] : console.error('single result expexted');
             defer.resolve(studyData);
           } else {
@@ -109,8 +103,6 @@ define(['rdfstore'],
 
         this.store.execute(armsQuery, function(success, results) {
           if (success) {
-            //$scope.arms = results;
-            //$scope.$apply(); // rdf store does not trigger apply
             defer.resolve(results);
           } else {
             console.error('armsQuery failed!');
@@ -141,8 +133,7 @@ define(['rdfstore'],
         queryStudyData: queryStudyData,
         queryArmData: queryArmData,
         createEmptyStudyJsonLD: createEmptyStudyJsonLD,
-        addArm: addArm,
-        getStore: getStore
+        addArm: addArm
       };
     };
 
