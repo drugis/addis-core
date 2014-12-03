@@ -49,9 +49,9 @@ public class StudyController extends AbstractTrialverseController {
   public void getStudy(HttpServletResponse response, @PathVariable String studyUUID) {
     // todo maybe check coordinates ?
     Model studyModel = studyReadRepository.getStudy(studyUUID);
-    trialverseIOUtilsService.writeModelToServletResponse(studyModel, response);
-    response.setHeader("Content-Type", "application/ld+json");
     response.setStatus(HttpServletResponse.SC_OK);
+    response.setHeader("Content-Type", "text/n3   ");
+    trialverseIOUtilsService.writeModelToServletResponse(studyModel, response);
   }
 
 

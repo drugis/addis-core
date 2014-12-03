@@ -40,11 +40,11 @@ public class TrialverseIOUtilsServiceImpl implements TrialverseIOUtilsService {
   @Override
   public void writeModelToServletResponse(Model model, HttpServletResponse httpServletResponse) {
     try (ServletOutputStream outputStream = httpServletResponse.getOutputStream()) {
-      RDFDataMgr.write(outputStream, model, Lang.JSONLD);
+      RDFDataMgr.write(outputStream, model, Lang.N3);
     } catch (IOException e) {
       logger.error("Error writing jena model response to client response");
       logger.error(e.toString());
     }
-    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+
   }
 }

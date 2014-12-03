@@ -10,7 +10,10 @@ require.config({
     'foundation': 'bower_components/foundation/js/foundation.min',
     'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
     'rdfstore': 'bower_components/rdfstore-js/index',
-    'lodash' : 'bower_components/lodash/dist/lodash.min'
+    'lodash': 'bower_components/lodash/dist/lodash.min',
+    'jquery-rdfquery-core': 'bower_components/jquery-rdfquery/js/jquery.rdfquery.core',
+    'jquery-rdfquery-rdfa': 'bower_components/jquery-rdfquery/js/jquery.rdfquery.rdfa',
+    'jquery-rdfquery-rules': 'bower_components/jquery-rdfquery/js/jquery.rdfquery.rules'
   },
   baseUrl: 'app/js',
   shim: {
@@ -38,6 +41,18 @@ require.config({
     },
     'rdfstore': {
       exports: 'rdfstore'
+    },
+    'jquery-rdfquery-core': {
+      deps: ['jQuery'],
+      exports: 'rdfqueryCore'
+    },
+    'jquery-rdfquery-rdfa': {
+      deps: ['jQuery'],
+      exports: 'rdfqueryRdfa'
+    },
+    'jquery-rdfquery-rules': {
+      deps: ['jQuery'],
+      exports: 'rdfqueryRules'
     }
   },
   priority: ['angular']

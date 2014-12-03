@@ -1,10 +1,19 @@
 'use strict';
-define([],
-  function() {
-    var dependencies = ['$scope', '$stateParams', 'StudyResource', '$location', '$anchorScroll', '$modal', 'RdfstoreService'];
-    var StudyController = function($scope, $stateParams, StudyResource, $location, $anchorScroll, $modal, RdfstoreService) {
+define(['angular', 'rdfstore', 'jquery-rdfquery-core', 'jquery-rdfquery-rdfa', 'jquery-rdfquery-rules'],
+  function(angular, rdfstore, rdfqueryCore, rdfqueryRdfa, rdfqueryRules) {
+    var dependencies = ['$scope', '$stateParams', 'StudyResource', '$location', '$anchorScroll', '$modal', 'RdfstoreService', '$http'];
+    var StudyController = function($scope, $stateParams, StudyResource, $location, $anchorScroll, $modal, RdfstoreService, $http) {
 
-      StudyResource.get($stateParams).$promise.then(function(result) {
+      var req = {
+        method: 'GET',
+        url: 'http://localhost:8090/datasets/dc98f02a-c30b-4877-8b54-acb5885ad04b/studies/02f2456e-1b0f-4095-9e3b-123f0d9ee1a1',
+        headers: {
+          'Content-Type': 'text/n3'
+        }
+      };
+
+      $http(req).success(function(data, status, headers, config) {
+        //StudyResource.get($stateParams).$promise.then(function(result) {
         // var arms;
         // var study;
 
@@ -34,33 +43,75 @@ define([],
           'prefix study: <http://trials.drugis.org/studies/>' +
           'prefix instance: <http://trials.drugis.org/instances/>' +
           'select' +
-          ' ?a ?b ?c ' +
-          ' where { ' +
-          '    ?a rdf:type ontology:Arm .' +
-          '    ?a ?b ?c . ' +
+          ' ?label' +
+          ' where {' +
+          '    ?armUid' +
+          '      rdf:type ontology:Arm ;' +
+          '      rdfs:label ?label . ' +
           '}';
 
-        var data = {} ;
-        data['@context'] = result['@context'];
-        data['@graph'] = result['@graph'];
+        // $.rdf.databank([
+        //   $.rdf.triple('_:book1 dc:title "SPARQL Tutorial" .', {
+        //     namespaces: { dc: 'http://purl.org/dc/elements/1.1/' }
+        //   }),
+        //   $.rdf.triple('_:book1  ns:price  42 .', {
+        //     namespaces: { ns: 'http://www.example.org/ns/' }
+        //   })]);
 
-        RdfstoreService.load(store,  data['@graph'])
-          .promise.then(function(store) {
-            store.graph(function(isSucces, result) {
-               console.log(isSucces);
-              console.log(result);
+
+        // var foo = $.rdf().load(result, {});
+        // console.log(foo);
+
+
+        rdfstore.create(function(store) {
+          store.load('text/n3', data, function(success, results) {
+
+            var query =
+              'prefix ontology: <http://trials.drugis.org/ontology#>' +
+              'prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
+              'prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
+              'prefix study: <http://trials.drugis.org/studies/>' +
+              'prefix instance: <http://trials.drugis.org/instances/>' +
+              'select' +
+              ' ?label' +
+              ' where {' +
+              '    ?armUid' +
+              '      rdf:type ontology:Arm ;' +
+              '      rdfs:label ?label . ' +
+              '}';
+
+            store.execute(query, function(success, results) {
+              if (success) {
+                console.log(results);
+              } else {
+                console.error('query failed!');
+              }
             });
-            store.execute(query, function(isSucces, result) {
-               console.log(isSucces);
-              _.each(result, function(r){
-                console.log(r);
-              });
-            });
-            RdfstoreService.execute(store, query)
-              .promise.then(function(result) {
-             //   console.log(result);
-              });
           });
+        });
+
+        // var data = {} ;
+        // data['@context'] = result['@context'];
+        // data['@graph'] = result['@graph'];
+
+        // RdfstoreService.load(store,  data['@graph'])
+        //   .promise.then(function(store) {
+        //     store.graph(function(isSucces, result) {
+        //        console.log(isSucces);
+        //       console.log(result);
+        //     });
+        //     store.execute(query, function(isSucces, result) {
+        //        console.log(isSucces);
+        //       _.each(result, function(r){
+        //         console.log(r);
+        //       });
+        //     });
+        //     RdfstoreService.execute(store, query)
+        //       .promise.then(function(result) {
+        //      //   console.log(result);
+        //       });
+        //   });
+        //  });
       });
 
       $scope.sideNavClick = function(anchor) {
