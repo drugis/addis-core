@@ -1,7 +1,7 @@
 <div class="row">
     <div class="columns large-12">
-        <h1>{{study.label}}</h1>
-        <h5><em>{{study.comment}}<em></h5>
+        <h1>{{study.label.value}}</h1>
+        <h5><em>{{study.comment.value}}<em></h5>
     </div>
 </div>
 
@@ -24,18 +24,18 @@
     <div id="arms" class="columns large-11 study-item">
         <h3>Arms <a> <i class="fa fa-info-circle fa-fw"></i></a></h3>
 
-        <div ng-if="!study.arms">
+        <div ng-if="!arms.length > 0">
             <p class="panel">This study currently contains no arms </p>
         </div>
-        <div ng-if="study.arms">
-            <div class="panel clearfix" ng-repeat="arm in study.arms">
+        <div ng-if="arms">
+            <div class="panel clearfix" ng-repeat="arm in arms">
                 <div class="edit-item-controls right">
                     <a href=""> <i class="fa fa-edit fa-2x fa-fw"></i> </a>
                     <a href=""><i class="fa fa-trash-o fa-2x fa-fw"></i></a>
                 </div>
                 <ul class="no-bullet">
-                    <li><span><strong>Arm {{$index + 1}}: </strong></span> <span>{{arm.label}}</span></li>
-                    <li><span><strong>Description: </strong></span><span>{{arm.comment || "none"}}</span></li>
+                    <li><span><strong>Arm {{$index + 1}}: </strong></span> <span>{{arm.label.value}}</span></li>
+                    <li><span><strong>Description: </strong></span><span>{{arm.comment.value || "none"}}</span></li>
                 </ul>
 
             </div>
