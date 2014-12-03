@@ -94,7 +94,7 @@ public class StudyControllerTest {
 
     mockMvc.perform(get("/datasets/" + datasetUUID + "/studies/" + studyUUID).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType("application/ld+json"));
+            .andExpect(content().contentType("text/n3"));
 
     verify(studyReadRepository).getStudy(studyUUID);
     verify(trialverseIOUtilsService).writeModelToServletResponse(any(Model.class), any(HttpServletResponse.class));
