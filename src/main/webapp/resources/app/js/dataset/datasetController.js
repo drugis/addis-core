@@ -1,22 +1,44 @@
 'use strict';
-define([], function() {
+define(['rdfstore'],
+ function(rdfstore) {
   var dependencies = ['$scope', '$stateParams', '$modal', 'DatasetService', 'DatasetResource',
     'StudiesWithDetailResource', 'JsonLdService'
   ];
   var DatasetController = function($scope, $stateParams, $modal, DatasetService, DatasetResource,
     StudiesWithDetailResource, JsonLdService) {
 
-    DatasetResource.get($stateParams).$promise.then(function(result) {
-      var dataset = result
-      if (dataset['@graph']) {
-        dataset = _.find(dataset['@graph'], function(item){
-          return item['@type'] === 'http://trials.drugis.org/ontology#Dataset';
-        });
-      }
+    var store,
+      datasetQuery =
+      'prefix ontology: <http://trials.drugis.org/ontology#>' +
+      'prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
+      'prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
+      'prefix instance: <http://trials.drugis.org/instances/>' +
+      'select' +
+      ' ?label ?comment' +
+      ' where {' +
+      '    ?datasetUid' +
+      '      rdf:type ontology:Dataset ;' +
+      '      rdfs:label ?label ; ' +
+      '      rdfs:comment ?comment . ' +
+      '}';
 
-      $scope.datasetJSON = dataset;
-      $scope.dataset = dataset;
-      $scope.dataset.uuid = $stateParams.datasetUUID;
+    DatasetResource.get($stateParams, function(responce, status) {
+
+      rdfstore.create(function(store) {
+        store.load('text/n3', responce.n3Data, function(success, results) {
+
+          store.execute(datasetQuery, function(success, results) {
+            if (success) {
+              $scope.dataset = results.length === 1 ? results[0] : console.error('single result expexted');
+              $scope.dataset.uuid = $stateParams.datasetUUID;
+              $scope.$apply(); // rdf store does not trigger apply
+            } else {
+              console.error('query failed!');
+            }
+          });
+
+        });
+      });
     });
 
     $scope.loadStudiesWithDetail = function() {
