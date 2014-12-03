@@ -5,6 +5,7 @@ define([], function() {
   ];
   var CreateStudyController = function($scope, $stateParams, $modalInstance, DatasetService, DatasetResource,
      UUIDService, StudyService, StudyResource) {
+    
     $scope.isUniqueShortName = function(shortName) {
       return !$scope.studiesWithDetail.length > 0 || !_.find($scope.studiesWithDetail, function(existingStudy) {
         return existingStudy.label === shortName;

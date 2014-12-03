@@ -6,6 +6,7 @@ define(function (require) {
   return angular.module('trialverse.study', [])
     // controllers
     .controller('StudyController', require('study/studyController'))
+    .controller('ArmController', require('study/armController'))
 
     //services
     .factory('StudyService', require('study/studyService'))
