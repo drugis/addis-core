@@ -4,7 +4,7 @@ define(['rdfstore'],
     var dependencies = ['$q', 'UUIDService'];
     var StudyService = function($q, UUIDService) {
 
-      var store;
+      var that = this;
 
       function createEmptyStudyJsonLD(uuid, study) {
         return {
@@ -45,7 +45,7 @@ define(['rdfstore'],
           '                   rdfs:comment   "' + arm.comment + '" . ' +
           ' }';
 
-        this.store.execute(addArmQuery, function(success, results) {
+        that.store.execute(addArmQuery, function(success, results) {
           if (success) {
             console.log('add arm success');
             defer.resolve(results);
@@ -74,7 +74,7 @@ define(['rdfstore'],
           '      rdfs:comment ?comment . ' +
           '}';
 
-        this.store.execute(studyDataQuery, function(success, results) {
+        that.store.execute(studyDataQuery, function(success, results) {
           if (success) {
             var studyData = results.length === 1 ? results[0] : console.error('single result expexted');
             defer.resolve(studyData);
@@ -101,7 +101,7 @@ define(['rdfstore'],
           '     OPTIONAL { ?armURI rdfs:comment ?comment . } ' +
           '}';
 
-        this.store.execute(armsQuery, function(success, results) {
+        that.store.execute(armsQuery, function(success, results) {
           if (success) {
             defer.resolve(results);
           } else {
@@ -113,7 +113,6 @@ define(['rdfstore'],
 
       function loadStore(data) {
         var defer = $q.defer();
-        var that = this;
         rdfstore.create(function(store) {
           that.store = store;
           that.store.load('text/n3', data, function(success, results) {
@@ -128,12 +127,22 @@ define(['rdfstore'],
         return defer.promise;
       }
 
+      function exportGraph() {
+        var defer = $q.defer();
+
+        that.store.graph(function(success, graph) {
+          defer.resolve(graph.toNT());
+        });
+        return defer.promise;
+      }
+
       return {
         loadStore: loadStore,
         queryStudyData: queryStudyData,
         queryArmData: queryArmData,
         createEmptyStudyJsonLD: createEmptyStudyJsonLD,
-        addArm: addArm
+        addArm: addArm,
+        exportGraph: exportGraph
       };
     };
 

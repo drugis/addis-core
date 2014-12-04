@@ -7,9 +7,9 @@ define([],
       $scope.study = {};
       $scope.arms = {};
 
-      StudyResource.get($stateParams, function(responce, status) {
+      StudyResource.get($stateParams, function(response) {
         StudyService.
-        loadStore(responce.n3Data)
+        loadStore(response.n3Data)
           .then(function(numberOfTriples) {
             console.log('loading study-store success, ' + numberOfTriples + ' triples loaded');
 
@@ -34,7 +34,7 @@ define([],
         }
       };
 
-      function onArmCreation(arm) {
+      function onArmCreation() {
         console.log('arm created callback succes');
         StudyService.queryArmData().then(function(armsQueryResult) {
           $scope.arms = armsQueryResult;
@@ -53,7 +53,17 @@ define([],
           }
         });
       };
-    };
 
+      $scope.saveStudy = function() {
+        StudyService.exportGraph().then(function(graph) {
+          StudyResource.put({
+            datasetUUID: $stateParams.datasetUUID,
+            studyUUID: $stateParams.studyUUID
+          }, graph, function() {
+            console.log('graph saved');
+          });
+        });
+      };
+    };
     return dependencies.concat(StudyController);
   });

@@ -7,7 +7,6 @@ import org.apache.http.HttpResponse;
  */
 public interface StudyWriteRepository {
 
-  public HttpResponse createStudy(String studyUUID, String content);
 
   public HttpResponse updateStudy(String studyUUID, String content);
 }

@@ -7,6 +7,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
+import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.study.repository.StudyWriteRepository;
 import org.drugis.trialverse.util.WebConstants;
@@ -49,9 +50,8 @@ public class StudyWriteRepositoryImpl implements StudyWriteRepository {
     HttpResponse response = null;
     try {
       StringEntity stringEntity = new StringEntity(content, "UTF-8");
-      stringEntity.setContentType("application/ld+json");
+      stringEntity.setContentType(RDFLanguages.N3.getContentType().getContentType());
       request.setEntity(stringEntity);
-      request.setHeader("Accept", "application/ld+json");
       response = client.execute(request);
     } catch (IOException e) {
       logger.error(e.toString());
@@ -59,17 +59,9 @@ public class StudyWriteRepositoryImpl implements StudyWriteRepository {
     return response;
   }
 
-
-  @Override
-  public HttpResponse createStudy(String studyUUID, String content) {
-    HttpPut request = new HttpPut(createStudyGraphUri(studyUUID));
-    HttpResponse response = doRequest(content, request);
-    return response;
-  }
-
   @Override
   public HttpResponse updateStudy(String studyUUID, String content) {
-    HttpPost request = new HttpPost(createStudyGraphUri(studyUUID));
+    HttpPut request = new HttpPut(createStudyGraphUri(studyUUID));
     HttpResponse response = doRequest(content, request);
     return response;
   }

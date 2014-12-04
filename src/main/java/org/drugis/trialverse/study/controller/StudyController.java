@@ -2,11 +2,11 @@ package org.drugis.trialverse.study.controller;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpResponse;
+import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.exception.MethodNotAllowedException;
 import org.drugis.trialverse.study.repository.StudyReadRepository;
 import org.drugis.trialverse.study.repository.StudyWriteRepository;
-import org.drugis.trialverse.study.service.StudyService;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.springframework.stereotype.Controller;
@@ -40,9 +40,6 @@ public class StudyController extends AbstractTrialverseController {
   @Inject
   private TrialverseIOUtilsService trialverseIOUtilsService;
 
-  @Inject
-  private StudyService studyService;
-
 
   @RequestMapping(value = "/{studyUUID}", method = RequestMethod.GET)
   @ResponseBody
@@ -50,36 +47,19 @@ public class StudyController extends AbstractTrialverseController {
     // todo maybe check coordinates ?
     Model studyModel = studyReadRepository.getStudy(studyUUID);
     response.setStatus(HttpServletResponse.SC_OK);
-    response.setHeader("Content-Type", "text/n3   ");
+    response.setHeader("Content-Type", RDFLanguages.N3.getContentType().getContentType());
     trialverseIOUtilsService.writeModelToServletResponse(studyModel, response);
   }
 
 
-  @RequestMapping(value = "/{studyUUID}", method = RequestMethod.POST)
-  public void updateStudy(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
-                          @PathVariable String datasetUUID, @PathVariable String studyUUID)
+  @RequestMapping(value = "/{studyUUID}", method = RequestMethod.PUT)
+  public void update(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
+                     @PathVariable String datasetUUID, @PathVariable String studyUUID)
           throws IOException, MethodNotAllowedException {
-
     String studyContent = readContent(request);
 
     if (datasetReadRepository.isOwner(datasetUUID, currentUser)) {
       HttpResponse fusekiResponse = studyWriteRepository.updateStudy(studyUUID, studyContent);
-      response.setStatus(fusekiResponse.getStatusLine().getStatusCode());
-    } else {
-      throw new MethodNotAllowedException();
-    }
-
-  }
-
-  @RequestMapping(value = "/{studyUUID}", method = RequestMethod.PUT)
-  public void createStudy(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
-                          @PathVariable String datasetUUID, @PathVariable String studyUUID)
-          throws IOException, MethodNotAllowedException {
-
-    String studyContent = readContent(request);
-
-    if (datasetReadRepository.isOwner(datasetUUID, currentUser)) {
-      HttpResponse fusekiResponse = studyService.createStudy(datasetUUID, studyUUID, studyContent);
       response.setStatus(fusekiResponse.getStatusLine().getStatusCode());
     } else {
       throw new MethodNotAllowedException();

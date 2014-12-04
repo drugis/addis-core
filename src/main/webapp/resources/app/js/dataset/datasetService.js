@@ -102,7 +102,7 @@ define(['rdfstore'], function(rdfstore) {
     function exportGraph() {
       var defer = $q.defer();
 
-      that.store.graph(function(sucksAss, graph) {
+      that.store.graph(function(success, graph) {
         defer.resolve(graph.toNT());
       });
       return defer.promise;
