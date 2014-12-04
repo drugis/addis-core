@@ -89,17 +89,16 @@ define(['rdfstore'],
       function queryArmData() {
         var defer = $q.defer();
         var armsQuery =
-          'prefix ontology: <http://trials.drugis.org/ontology#>' +
-          'prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
-          'prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
-          'prefix study: <http://trials.drugis.org/studies/>' +
-          'prefix instance: <http://trials.drugis.org/instances/>' +
-          'select' +
-          ' ?label' +
+          ' prefix ontology: <http://trials.drugis.org/ontology#>' +
+          ' prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
+          ' prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
+          ' select' +
+          ' ?armURI ?label ?comment ' +
           ' where {' +
-          '    ?armUid' +
+          '    ?armURI ' +
           '      rdf:type ontology:Arm ;' +
           '      rdfs:label ?label . ' +
+          '     OPTIONAL { ?armURI rdfs:comment ?comment . } ' +
           '}';
 
         this.store.execute(armsQuery, function(success, results) {
