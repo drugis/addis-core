@@ -53,20 +53,20 @@ public class DatasetController extends AbstractTrialverseController {
   @ResponseBody
   public void queryDatasets(HttpServletResponse httpServletResponse, Principal currentUser) {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-    httpServletResponse.setHeader("Content-Type", "application/ld+json");
-
+    httpServletResponse.setHeader("Content-Type", "text/n3");
     HttpResponse response = datasetReadRepository.queryDatasets(currentUserAccount);
-    trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
     httpServletResponse.setStatus(response.getStatusLine().getStatusCode());
+    trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
+
   }
 
   @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.GET)
   @ResponseBody
   public void getDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws IOException {
     Model datasetModel = datasetReadRepository.getDataset(datasetUUID);
-    trialverseIOUtilsService.writeModelToServletResponse(datasetModel, httpServletResponse);
-    httpServletResponse.setHeader("Content-Type", "application/ld+json");
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+    httpServletResponse.setHeader("Content-Type", "text/n3");
+    trialverseIOUtilsService.writeModelToServletResponse(datasetModel, httpServletResponse);
   }
 
   @RequestMapping(value = "/{datasetUUID}/studiesWithDetail", method = RequestMethod.GET)

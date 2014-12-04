@@ -3,7 +3,21 @@ define(['rdfstore'], function(rdfstore) {
   var dependencies = ['$q', 'DatasetResource', 'RdfstoreService'];
   var DatasetService = function($q, DatasetResource, RdfstoreService) {
 
-    var store;
+
+    var that = this;
+    that.query =
+      ' PREFIX dc: <http://purl.org/dc/elements/1.1/>' +
+      ' PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
+      ' PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
+      ' PREFIX dataset: <http://trials.drugis.org/datasets/>' +
+      ' PREFIX ontology: <http://trials.drugis.org/ontology#>' +
+      ' SELECT' +
+      ' ?datasetUri ?label ?comment' +
+      ' WHERE { ' +
+      '   ?datasetUri rdfs:label ?label ; ' +
+      '     rdf:type ontology:Dataset . ' +
+      '   OPTIONAL { ?datasetUri rdfs:comment ?comment . } ' +
+      ' }';
 
     function findUUIDFromString(str) {
       return str.substr(str.lastIndexOf('/') + 1);
@@ -17,73 +31,89 @@ define(['rdfstore'], function(rdfstore) {
     }
 
     function loadStore(data) {
-        var defer = $q.defer();
-        var that = this;
-        rdfstore.create(function(store) {
-          that.store = store;
-          that.store.load('text/n3', data, function(success, results) {
-            if (success) {
-              defer.resolve(results);
-            } else {
-              console.error('failed loading store');
-              defer.reject();
-            }
-          });
+      var defer = $q.defer();
+      rdfstore.create(function(store) {
+        that.store = store;
+
+        that.store.load('text/n3', data, function(success, results) {
+          if (success) {
+            defer.resolve(results);
+          } else {
+            console.error('failed loading store');
+            defer.reject();
+          }
         });
-        return defer.promise;
-      }
-
-    function getDatasets() {
-      var promiseHolder = $q.defer();
-      var datasetsQuery =
-        'prefix dc: <http://purl.org/dc/elements/1.1/>' +
-        'prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
-        'prefix dataset: <http://trials.drugis.org/datasets/>' +
-        'select' +
-        '  ?datasetUri ?title ?description ?creator ' +
-        'where { ' +
-        '   ?datasetUri rdfs:label ?title .' +
-        '   OPTIONAL {?datasetUri dc:creator ?creator .}' +
-        '   OPTIONAL {?datasetUri rdfs:comment ?description .} }';
-
-      DatasetResource.query().$promise.then(function(resourceResult) {
-
-        RdfstoreService.load(datasetGraphStore, resourceResult.graphData)
-          .promise.then(function(datasetGraphStore) {
-            RdfstoreService.execute(datasetGraphStore, datasetsQuery)
-              .promise.then(function(result) {
-                promiseHolder.resolve(attachUUIDs(result));
-              });
-          });
       });
-      return promiseHolder;
+      return defer.promise;
     }
 
-    function addStudyToDatasetGraph(studyUUID) {
+    function queryDatasetsOverview() {
       var defer = $q.defer();
-      RdfstoreService.execute(datasetGraphStore, datasetQuery).promise.then(function(result) {
-        var newGraph = angular.copy(result);
 
-        newGraph['@context'].contains_study = {
-          '@id': 'http://trials.drugis.org/ontology#contains_study',
-          '@type': '@id'
-        };
-        newGraph['@context'].ontology = 'http://trials.drugis.org/ontology#';
-        newGraph['@context'].study = 'http://trials.drugis.org/studies/';
-        if (!newGraph.contains_study) {
-          newGraph.contains_study = 'study:' + studyUUID;
+      that.store.execute(that.query, function(success, results) {
+        if (success) {
+          defer.resolve(results);
         } else {
-          newGraph.contains_study = ['study:' + studyUUID].concat(newGraph.contains_study);
+          console.error('dataset query failed!');
+          defer.reject();
         }
-        defer.resolve(newGraph);
+      });
+      return defer.promise;
+    }
+
+    function queryDataset() {
+      var defer = $q.defer();
+
+      that.store.execute(that.query, function(success, results) {
+        if (success) {
+          results.length === 1 ? defer.resolve(results[0]) : defer.reject('single result expected');
+        } else {
+          console.error('dataset query failed!');
+          defer.reject();
+        }
+      });
+      return defer.promise;
+    }
+
+    function addStudyToDatasetGraph(datasetUUID, studyUUID) {
+      var defer = $q.defer();
+
+      var query =
+        'PREFIX ontology: <http://trials.drugis.org/ontology#>' +
+        'PREFIX study: <http://trials.drugis.org/studies/>' +
+        'PREFIX dataset: <http://trials.drugis.org/datasets/>' +
+
+        ' INSERT DATA {' +
+        '  dataset:' + datasetUUID + ' ontology:contains_study study:' + studyUUID +
+        ' }';
+
+      that.store.execute(query, function(success, result) {
+        if (success) {
+          console.log('create study update dataset success');
+          defer.resolve(result);
+        } else {
+          console.error('create study update dataset failed');
+        }
+      });
+
+      return defer.promise;
+    }
+
+    function exportGraph() {
+      var defer = $q.defer();
+
+      that.store.graph(function(sucksAss, graph) {
+        defer.resolve(graph.toNT());
       });
       return defer.promise;
     }
 
     return {
       loadStore: loadStore,
-      getDatasets: getDatasets,
-      addStudyToDatasetGraph: addStudyToDatasetGraph
+      queryDatasetsOverview: queryDatasetsOverview,
+      queryDataset: queryDataset,
+      addStudyToDatasetGraph: addStudyToDatasetGraph,
+      exportGraph: exportGraph
     };
   };
 

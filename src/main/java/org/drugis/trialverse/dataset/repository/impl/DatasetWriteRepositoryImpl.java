@@ -13,6 +13,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.jena.atlas.web.HttpException;
+import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
@@ -57,21 +58,6 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     return "";
   }
 
-  private HttpResponse doRequest(String datasetContent, HttpEntityEnclosingRequestBase request) {
-    HttpClient client = httpClientFactory.build();
-    HttpResponse response = null;
-    try {
-      StringEntity entity = new StringEntity(datasetContent, "UTF-8");
-      entity.setContentType("application/ld+json");
-      request.setEntity(entity);
-      request.setHeader("Accept", "application/ld+json");
-      response = client.execute(request);
-    } catch (IOException e) {
-      logger.error(e.toString());
-    }
-    return response;
-  }
-
   private Model createDatasetModel(String datasetIdentifier, Account owner, String title, String description) {
     Model model = jenaFactory.createModel();
     model.setNsPrefix("ontology", "http://trials.drugis.org/ontology#");
@@ -105,7 +91,16 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   @Override
   public HttpResponse updateDataset(String datasetUUID, String datasetContent) {
     HttpPost request = new HttpPost(createDatasetGraphUri(datasetUUID));
-    HttpResponse response = doRequest(datasetContent, request);
+    HttpClient client = httpClientFactory.build();
+    HttpResponse response = null;
+    try {
+      StringEntity entity = new StringEntity(datasetContent, "UTF-8");
+      entity.setContentType(RDFLanguages.N3.getContentType().getContentType());
+      request.setEntity(entity);
+      response = client.execute(request);
+    } catch (IOException e) {
+      logger.error(e.toString());
+    }
     return response;
   }
 

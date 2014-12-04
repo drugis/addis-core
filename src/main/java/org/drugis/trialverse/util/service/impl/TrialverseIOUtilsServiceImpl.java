@@ -29,8 +29,6 @@ public class TrialverseIOUtilsServiceImpl implements TrialverseIOUtilsService {
          ServletOutputStream outputStream = httpServletResponse.getOutputStream()
     ) {
       IOUtils.copy(inputStream, outputStream);
-      inputStream.close();
-      outputStream.close();
     } catch (IOException e) {
       logger.error("Error writing jena response to client response");
       logger.error(e.toString());

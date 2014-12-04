@@ -17,11 +17,11 @@
             <thead>
             <tr>
                 <th class="sortable"
-                    ng-click="tableOptions.orderByField = 'name'; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
+                    ng-click="tableOptions.orderByField = 'label'; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
                     Name
-                    <i ng-show="tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'name'"
+                    <i ng-show="tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'"
                        class="fa fa-caret-up"></i>
-                    <i ng-show="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'name'"
+                    <i ng-show="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'"
                        class="fa fa-caret-down"></i>
                 </th>
                 <th class="sortable" ng-show="column.visible" ng-repeat="column in tableOptions.columns"

@@ -18,17 +18,22 @@ define([], function() {
       StudyResource.put({
         datasetUUID: $stateParams.datasetUUID,
         studyUUID: uuid
-      }, newStudy).$promise.then(function() {
-        DatasetService.addStudyToDatasetGraph(uuid, $scope.datasetJSON).then(function(newGraph) {
-          $scope.datasetJSON = newGraph;
-          DatasetResource.save({
-            datasetUUID: $stateParams.datasetUUID
-          }, $scope.datasetJSON).$promise.then(function() {
-            $scope.loadStudiesWithDetail();
-            $modalInstance.close();
-          });
-        });
+      }, newStudy, function() {
 
+        DatasetService.addStudyToDatasetGraph($stateParams.datasetUUID, uuid).then(function() {
+
+          DatasetService.exportGraph().then(function(graph) {
+
+            DatasetResource.save({
+              datasetUUID: $stateParams.datasetUUID
+            }, graph, function() {
+
+              $scope.loadStudiesWithDetail();
+              $modalInstance.close();
+            });
+          });
+
+        });
       });
     };
 

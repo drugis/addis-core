@@ -1,32 +1,23 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$q', '$modal', 'DatasetResource', 'DatasetService'];
-    var DatasetsController = function($scope, $q, $modal, DatasetResource, DatasetService) {
-
-      DatasetResource.query(function(responce) {
-        DatasetService.loadStore(responce.n3Data).then(function(numberOfTriples) {
-          console.log('loading dataset-store success, ' + numberOfTriples + ' triples loaded');
-          DatasetService.queryDatasets().then(function(queryResult) {
-            $scope.datasets = queryResult;
-          }, function(){
-            console.error('failed loading datasetstore')
-          });
-        });
-      });
+    var dependencies = ['$scope', '$q', '$modal', '$filter', 'DatasetResource', 'DatasetService'];
+    var DatasetsController = function($scope, $q, $modal, $filter, DatasetResource, DatasetService) {
 
       function loadDatasets() {
-        var datasetsPromise = DatasetService.getDatasets();
-        datasetsPromise.promise.then(function(datasets) {
-          $scope.datasets = datasets;
+        DatasetResource.query(function(response) {
+          DatasetService.loadStore(response.n3Data).then(function(numberOfTriples) {
+            console.log('loading dataset-store success, ' + numberOfTriples + ' triples loaded');
+            DatasetService.queryDatasetsOverview().then(function(queryResult) {
+              $scope.datasets = queryResult;
+            }, function() {
+              console.error('failed loading datasetstore')
+            });
+          });
         });
       }
 
-      function onDatasetCreation(dataset) {
-        loadDatasets();
-      }
-
-      // loadDatasets();
+      loadDatasets();
 
       $scope.createDatasetDialog = function() {
         $modal.open({
@@ -34,11 +25,14 @@ define([],
           controller: 'CreateDatasetController',
           resolve: {
             successCallback: function() {
-              return onDatasetCreation;
+              return loadDatasets;
             }
           }
         });
       };
+
+      $scope.stripFrontFilter = $filter('stripFrontFilter');
+
     };
     return dependencies.concat(DatasetsController);
   });
