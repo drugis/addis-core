@@ -20,8 +20,7 @@ define([], function() {
               n3Data: data // property on Responce object to access raw result data 
             };
           }
-        }
-      }, {
+        },
         'put': {
           method: 'put'
         }

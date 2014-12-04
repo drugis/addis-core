@@ -36,6 +36,9 @@ define([],
 
       function onArmCreation(arm) {
         console.log('arm created callback succes');
+        StudyService.queryArmData().then(function(armsQueryResult) {
+          $scope.arms = armsQueryResult;
+        });
       }
 
       $scope.showArmDialog = function() {

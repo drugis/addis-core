@@ -31,9 +31,8 @@ define(['rdfstore'],
       }
 
       function addArm(arm) {
-
+        var defer = $q.defer();
         var uuid = UUIDService.generate();
-
         var addArmQuery =
           'PREFIX ontology: <http://trials.drugis.org/ontology#>' +
           'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
@@ -49,11 +48,13 @@ define(['rdfstore'],
         this.store.execute(addArmQuery, function(success, results) {
           if (success) {
             console.log('add arm success');
-            console.log(results);
+            defer.resolve(results);
           } else {
             console.error('armsQuery failed!');
+            defer.reject();
           }
         });
+        return defer.promise;
       }
 
       function queryStudyData() {

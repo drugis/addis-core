@@ -6,9 +6,17 @@ define([],
       $scope.arm = {};
 
       $scope.createArm = function () {
-         console.log('arm ' + $scope.arm + 'create');
-        $modalInstance.close();
-      }
+        StudyService.addArm($scope.arm).then(function() {
+          console.log('arm ' + $scope.arm + 'create');
+          successCallback();
+          $modalInstance.close();
+        },
+        function() {
+          console.error('failed to add arm');
+          $modalInstance.dismiss('cancel');
+        });
+         
+      };
 
       $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
