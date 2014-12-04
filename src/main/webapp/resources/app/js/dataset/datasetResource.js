@@ -22,7 +22,7 @@ define([], function() {
         isArray: false,
         transformResponse: function(data) {
           return {
-            graphData: data
+            n3Data: data // property on Responce object to access raw result data
           };
         },
       }

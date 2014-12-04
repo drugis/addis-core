@@ -1,11 +1,11 @@
 'use strict';
 define([], function() {
   var dependencies = ['$scope', '$stateParams', '$modalInstance', 'DatasetService', 'DatasetResource',
-     'UUIDService', 'StudyService', 'StudyResource'
+    'UUIDService', 'StudyService', 'StudyResource'
   ];
   var CreateStudyController = function($scope, $stateParams, $modalInstance, DatasetService, DatasetResource,
-     UUIDService, StudyService, StudyResource) {
-    
+    UUIDService, StudyService, StudyResource) {
+
     $scope.isUniqueShortName = function(shortName) {
       return !$scope.studiesWithDetail.length > 0 || !_.find($scope.studiesWithDetail, function(existingStudy) {
         return existingStudy.label === shortName;
@@ -19,13 +19,16 @@ define([], function() {
         datasetUUID: $stateParams.datasetUUID,
         studyUUID: uuid
       }, newStudy).$promise.then(function() {
-        $scope.datasetJSON = DatasetService.addStudyToDatasetGraph(uuid, $scope.datasetJSON);
-        DatasetResource.save({
-          datasetUUID: $stateParams.datasetUUID
-        }, $scope.datasetJSON).$promise.then(function() {
-          $scope.loadStudiesWithDetail();
-          $modalInstance.close();
+        DatasetService.addStudyToDatasetGraph(uuid, $scope.datasetJSON).then(function(newGraph) {
+          $scope.datasetJSON = newGraph;
+          DatasetResource.save({
+            datasetUUID: $stateParams.datasetUUID
+          }, $scope.datasetJSON).$promise.then(function() {
+            $scope.loadStudiesWithDetail();
+            $modalInstance.close();
+          });
         });
+
       });
     };
 
