@@ -1,7 +1,7 @@
 'use strict';
 define(['rdfstore'], function(rdfstore) {
-  var dependencies = ['$q', 'DatasetResource', 'RdfstoreService'];
-  var DatasetService = function($q, DatasetResource, RdfstoreService) {
+  var dependencies = ['$q'];
+  var DatasetService = function($q) {
 
 
     var that = this;
@@ -37,6 +37,7 @@ define(['rdfstore'], function(rdfstore) {
 
         that.store.load('text/n3', data, function(success, results) {
           if (success) {
+            console.log('resolve angular defer');
             defer.resolve(results);
           } else {
             console.error('failed loading store');

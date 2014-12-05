@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  xdescribe('dataset service', function() {
+  describe('dataset service', function() {
 
     var mockDatasetResource,
       mockRdfstoreService,
@@ -17,67 +17,47 @@ define(['angular', 'angular-mocks'], function() {
 
     beforeEach(module('trialverse.dataset'));
 
-    beforeEach(function() {
-      mockDatasetResource = jasmine.createSpyObj('DatasetResource', ['query']);
-      mockRdfstoreService = jasmine.createSpyObj('RdfstoreService', ['load', 'execute']);
+    xdescribe('loadStore', function() {
+      it('should load data', inject(function(DatasetService, $rootScope, $q) {
 
-      module('trialverse', function($provide) {
-        $provide.value('DatasetResource', mockDatasetResource);
-        $provide.value('RdfstoreService', mockRdfstoreService);
-      });
-    });
+        var data =
+          '<http://trials.drugis.org/datasets/ca3fcadd-a227-447f-a473-a7e58fd0ca06> a <http://trials.drugis.org/ontology#Dataset> ;\n' +
+          '  <http://www.w3.org/2000/01/rdf-schema#comment> "test"; \n' +
+          '  <http://www.w3.org/2000/01/rdf-schema#label> "werkt ie nog";\n' +
+          '  <http://purl.org/dc/elements/1.1/creator> "flutadres@gmail.com" .\n';
 
-    describe('getDatasets', function() {
-      var resourceDeferred, storeDeferred, datasetsDeferred, result;
+        var result = DatasetService.loadStore(data);
+        // $rootScope.$digest();
+        // .then(function(loadResult) {
+        //   expect(result).toBe(loadResult);
+        // }, function(failureResult) {
+        //   expect(false).toBeTrue();
+        // });
+        // expect(result).not.toBeNull();
+        // result.then(function(successResult) {
+        //   expect(result).toEqual(4);
+        // });
+        // $rootScope
+        console.log('wut')
+        $q.when(result).then(function(){
+          console.log("waterpomp tang");
+        });
 
-      beforeEach(inject(function($q, DatasetService) {
-        resourceDeferred = $q.defer();
-        var resourceResult = {
-          $promise: resourceDeferred.promise
-        };
-        storeDeferred = $q.defer();
-        datasetsDeferred = $q.defer();
-        mockDatasetResource.query.and.returnValue(resourceResult);
-        mockRdfstoreService.load.and.returnValue(storeDeferred);
-        mockRdfstoreService.execute.and.returnValue(datasetsDeferred);
-        result = DatasetService.getDatasets();
-      }));
-
-      it('should query the datasetResource', function() {
-        expect(mockDatasetResource.query).toHaveBeenCalled();
-        expect(result.promise).not.toBe(null);
-      });
-
-      describe('when all promises are resolved', function() {
-
-        it('should resolve to a list of datasets', inject(function($rootScope) {
-          resourceDeferred.resolve(resourceDeferred);
-          storeDeferred.resolve(mockStore);
-          datasetsDeferred.resolve(mockDatasets);
-
-          var resolvedResult;
-          result.promise.then(function(result) {
-            resolvedResult = result;
-          });
-
+        console.log('digesting');
+        window.setInterval(function(){
           $rootScope.$digest();
+        }, 5000);
 
-          expect(resolvedResult.length).toBe(2);
-          expect(resolvedResult[0].uuid).toBe('uid1');
-          expect(resolvedResult).not.toBe(undefined);
-        }));
-
-      });
-
+      }));
     });
 
-    describe('addStudyToDatasetGraph', function() {
+    xdescribe('addStudyToDatasetGraph', function() {
 
       describe('when the graph does not contain any studies', function() {
 
         it('should add context, and a single contains_study', inject(function(DatasetService) {
           var emptyDatsetGraph = {
-            '@context' : {}
+            '@context': {}
           };
           var newUUID = 'newuuid';
           var result = DatasetService.addStudyToDatasetGraph(newUUID, emptyDatsetGraph);
@@ -91,8 +71,8 @@ define(['angular', 'angular-mocks'], function() {
 
         it('should convert contains_study to an array and add the new study', inject(function(DatasetService) {
           var emptyDatsetGraph = {
-            '@context' : {},
-            contains_study : 'pre-existing-uuid'
+            '@context': {},
+            contains_study: 'pre-existing-uuid'
           };
           var newUUID = 'newuuid';
           var result = DatasetService.addStudyToDatasetGraph(newUUID, emptyDatsetGraph);
@@ -103,11 +83,11 @@ define(['angular', 'angular-mocks'], function() {
       describe('when the graph contains more than one study', function() {
 
         it('should add the new study', inject(function(DatasetService) {
-          var preExistingUuids  = ['pre-existing-uuid1', 'pre-existing-uuid2'],
-          emptyDatsetGraph = {
-            '@context' : {},
-            contains_study : preExistingUuids
-          };
+          var preExistingUuids = ['pre-existing-uuid1', 'pre-existing-uuid2'],
+            emptyDatsetGraph = {
+              '@context': {},
+              contains_study: preExistingUuids
+            };
           var newUUID = 'newuuid';
           var result = DatasetService.addStudyToDatasetGraph(newUUID, emptyDatsetGraph);
           expect(result['@context'].contains_study).toBeDefined();
