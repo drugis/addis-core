@@ -56,10 +56,9 @@ public class StudyController extends AbstractTrialverseController {
   public void update(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
                      @PathVariable String datasetUUID, @PathVariable String studyUUID)
           throws IOException, MethodNotAllowedException {
-    String studyContent = readContent(request);
 
     if (datasetReadRepository.isOwner(datasetUUID, currentUser)) {
-      HttpResponse fusekiResponse = studyWriteRepository.updateStudy(studyUUID, studyContent);
+      HttpResponse fusekiResponse = studyWriteRepository.updateStudy(studyUUID, request.getInputStream());
       response.setStatus(fusekiResponse.getStatusLine().getStatusCode());
     } else {
       throw new MethodNotAllowedException();

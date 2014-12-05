@@ -1,6 +1,7 @@
 package org.drugis.trialverse.study.controller;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicHttpResponse;
@@ -16,6 +17,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 import java.security.Principal;
 
 import static org.mockito.Mockito.*;
@@ -115,23 +118,24 @@ public class StudyControllerTest {
 
   @Test
   public void testUpdateStudy() throws Exception {
-    String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
+    String updateContent = "updateContent";
+    InputStream contentStream = IOUtils.toInputStream(updateContent);
     MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
     String datasetUUID = "datasetUUID";
     String studyUUID = "studyUUID";
     BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
     HttpResponse httpResponse = new BasicHttpResponse(statusLine);
     when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(true);
-    when(studyWriteRepository.updateStudy(studyUUID, jsonContent)).thenReturn(httpResponse);
+    when(studyWriteRepository.updateStudy(anyString(), Matchers.any(InputStream.class))).thenReturn(httpResponse);
 
     mockMvc.perform(
             put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
-                    .content(jsonContent)
+                    .content(updateContent)
                     .principal(user))
             .andExpect(status().isOk());
 
     verify(datasetReadRepository).isOwner(datasetUUID, user);
-    verify(studyWriteRepository).updateStudy(studyUUID, jsonContent);
+    verify(studyWriteRepository).updateStudy(anyString(), Matchers.any(InputStream.class));
   }
 
   @Test
