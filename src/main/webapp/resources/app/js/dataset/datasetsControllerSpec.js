@@ -4,7 +4,7 @@ define(['angular', 'angular-mocks'], function() {
 
     var scope, httpBackend,
       mockModal = jasmine.createSpyObj('$mock', ['open']),
-      mockDatasetService = jasmine.createSpyObj('DatasetService', ['loadStore', 'queryDatasets']),
+      mockDatasetService = jasmine.createSpyObj('DatasetService', ['loadStore', 'queryDatasetsOverview']),
       mockLoadStoreDeferred,
       mockQueryDatasetsDeferred;
 
@@ -19,7 +19,7 @@ define(['angular', 'angular-mocks'], function() {
       mockQueryDatasetsDeferred = $q.defer();
 
       mockDatasetService.loadStore.and.returnValue(mockLoadStoreDeferred.promise);
-      mockDatasetService.queryDatasets.and.returnValue(mockQueryDatasetsDeferred.promise);
+      mockDatasetService.queryDatasetsOverview.and.returnValue(mockQueryDatasetsDeferred.promise);
 
       httpBackend.expectGET('/datasets').respond('datasets');
 
@@ -42,7 +42,7 @@ define(['angular', 'angular-mocks'], function() {
        expect(mockDatasetService.loadStore).toHaveBeenCalled();
        mockLoadStoreDeferred.resolve(101);
        scope.$digest();
-       expect(mockDatasetService.queryDatasets).toHaveBeenCalled();
+       expect(mockDatasetService.queryDatasetsOverview).toHaveBeenCalled();
        mockQueryDatasetsDeferred.resolve('query resolved');
        scope.$digest();
        expect(scope.datasets).toBe('query resolved');
