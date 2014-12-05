@@ -1,7 +1,7 @@
 'use strict';
 define(['rdfstore'], function(rdfstore) {
-  var dependencies = ['$q', 'DatasetResource', 'RdfstoreService'];
-  var DatasetService = function($q, DatasetResource, RdfstoreService) {
+  var dependencies = ['$q'];
+  var DatasetService = function($q) {
 
 
     var that = this;
