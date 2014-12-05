@@ -6,28 +6,33 @@ define(['rdfstore'],
 
       var that = this;
 
-      function createEmptyStudyJsonLD(uuid, study) {
-        return {
-          '@graph': [{
-            '@id': 'study:' + uuid,
-            '@type': 'ontology:Study',
-            'label': study.shortName,
-            'comment': study.title
-          }],
-          '@id': 'urn:x-arq:DefaultGraphNode',
-          '@context': {
-            'atc': 'http://www.whocc.no/ATC2011/',
-            'comment': 'http://www.w3.org/2000/01/rdf-schema#comment',
-            'dataset': 'http://trials.drugis.org/datasets/',
-            'dc': 'http://purl.org/dc/elements/1.1/',
-            'label': 'http://www.w3.org/2000/01/rdf-schema#label',
-            'ontology': 'http://trials.drugis.org/ontology#',
-            'owl': 'http://www.w3.org/2002/07/owl#',
-            'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-            'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
-            'study': 'http://trials.drugis.org/studies/',
-          }
-        };
+      function createEmptyStudy(uuid, study) {
+        var defer = $q.defer();
+        var query =
+          'PREFIX ontology: <http://trials.drugis.org/ontology#>' +
+          'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
+          'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
+          'PREFIX study: <http://trials.drugis.org/studies/>' +
+          ' INSERT DATA ' +
+          ' { study:' + uuid + ' rdfs:label "' + study.label + '" ; ' +
+          '                   rdf:type  ontology:Study ; ' +
+          '                   rdfs:comment   "' + study.comment + '" . ' +
+          ' }';
+
+        rdfstore.create(function(newStudyStore) {
+          newStudyStore.execute(query, function(success, result) {
+            if (success) {
+              console.log('create study success');
+              newStudyStore.graph(function(success, graph) {
+                defer.resolve(graph.toNT());
+              });
+            } else {
+              console.error('create study failed!');
+              defer.reject();
+            }
+          });
+        });
+        return defer.promise;
       }
 
       function addArm(arm) {
@@ -45,10 +50,10 @@ define(['rdfstore'],
           '                   rdfs:comment   "' + arm.comment + '" . ' +
           ' }';
 
-        that.store.execute(addArmQuery, function(success, results) {
+        that.store.execute(addArmQuery, function(success) {
           if (success) {
             console.log('add arm success');
-            defer.resolve(results);
+            defer.resolve();
           } else {
             console.error('armsQuery failed!');
             defer.reject();
@@ -140,7 +145,7 @@ define(['rdfstore'],
         loadStore: loadStore,
         queryStudyData: queryStudyData,
         queryArmData: queryArmData,
-        createEmptyStudyJsonLD: createEmptyStudyJsonLD,
+        createEmptyStudy: createEmptyStudy,
         addArm: addArm,
         exportGraph: exportGraph
       };

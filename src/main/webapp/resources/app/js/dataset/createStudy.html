@@ -7,21 +7,23 @@
     <div class="row">
         <div class="large-8 columns">
             <label>Short Name (e.g. Hansen 2005)
-                <input autofocus type="text" ng-model="study.shortName">
+                <input autofocus type="text" ng-model="study.label">
             </label>
-            <label class="alert" ng-show="!isUniqueShortName(study.shortName)">Short name must be unique</label>
+            <label class="alert" ng-show="!isUniqueShortName(study.label)">Short name must be unique</label>
         </div>
     </div>
     <div class="row">
         <div class="large-8 columns">
             <label>Title
-                <textarea rows="8" ng-model="study.title"></textarea>
+                <textarea rows="8" ng-model="study.comment"></textarea>
             </label>
         </div>
     </div>
     <div class="row">
         <div class="large-8 columns">
-            <button class="success" type="submit" ng-disabled="!study.title || !isUniqueShortName(study.shortName)">Create</button>
+            <button class="success" type="submit" ng-disabled="!study.comment || !isUniqueShortName(study.label)">
+                Create
+            </button>
         </div>
     </div>
     <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>

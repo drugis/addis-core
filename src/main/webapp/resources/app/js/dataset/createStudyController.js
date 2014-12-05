@@ -14,27 +14,31 @@ define([], function() {
 
     $scope.createStudy = function(study) {
       var uuid = UUIDService.generate();
-      var newStudy = StudyService.createEmptyStudyJsonLD(uuid, study);
-      StudyResource.put({
-        datasetUUID: $stateParams.datasetUUID,
-        studyUUID: uuid
-      }, newStudy, function() {
+      StudyService.createEmptyStudy(uuid, study).then(function(newStudy) {
 
-        DatasetService.addStudyToDatasetGraph($stateParams.datasetUUID, uuid).then(function() {
+        StudyResource.put({
+          datasetUUID: $stateParams.datasetUUID,
+          studyUUID: uuid
+        }, newStudy, function() {
 
-          DatasetService.exportGraph().then(function(graph) {
+          DatasetService.addStudyToDatasetGraph($stateParams.datasetUUID, uuid).then(function() {
 
-            DatasetResource.save({
-              datasetUUID: $stateParams.datasetUUID
-            }, graph, function() {
+            DatasetService.exportGraph().then(function(graph) {
 
-              $scope.loadStudiesWithDetail();
-              $modalInstance.close();
+              DatasetResource.save({
+                datasetUUID: $stateParams.datasetUUID
+              }, graph, function() {
+
+                $scope.loadStudiesWithDetail();
+                $modalInstance.close();
+              });
             });
-          });
 
+          });
         });
+
       });
+
     };
 
     $scope.cancel = function() {
