@@ -7,8 +7,8 @@ define([],
     var DatasetController = function($scope, $stateParams, $modal, DatasetService, DatasetResource,
       StudiesWithDetailResource, JsonLdService) {
 
-      DatasetResource.get($stateParams, function(responce) {
-        DatasetService.loadStore(responce.n3Data).then(function() {
+      DatasetResource.get($stateParams, function(response) {
+        DatasetService.loadStore(response.n3Data).then(function() {
           DatasetService.queryDataset().then(function(dataset) {
             $scope.dataset = dataset;
             $scope.dataset.uuid = $stateParams.datasetUUID;
@@ -17,13 +17,12 @@ define([],
       });
 
       $scope.loadStudiesWithDetail = function() {
-        StudiesWithDetailResource.get($stateParams).$promise.then(function(result) {
+        StudiesWithDetailResource.get($stateParams, function(result) {
           $scope.studiesWithDetail = result['@graph'];
           $scope.studiesWithDetail = JsonLdService.rewriteAtIds($scope.studiesWithDetail);
           if (!$scope.studiesWithDetail) {
             $scope.studiesWithDetail = {};
           }
-          $scope.studiesWithDetail.$resolved = true;
         });
       };
 
