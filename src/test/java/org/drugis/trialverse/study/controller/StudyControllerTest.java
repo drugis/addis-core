@@ -9,7 +9,6 @@ import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.study.repository.StudyReadRepository;
 import org.drugis.trialverse.study.repository.StudyWriteRepository;
-import org.drugis.trialverse.study.service.StudyService;
 import org.drugis.trialverse.testutils.TestUtils;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.junit.After;
@@ -56,9 +55,6 @@ public class StudyControllerTest {
   @Mock
   private TrialverseIOUtilsService trialverseIOUtilsService;
 
-  @Mock
-  private StudyService studyService;
-
   @InjectMocks
   private StudyController studyController;
 
@@ -70,7 +66,6 @@ public class StudyControllerTest {
     studyReadRepository = mock(StudyReadRepository.class);
     studyWriteRepository = mock(StudyWriteRepository.class);
     datasetReadRepository = mock(DatasetReadRepository.class);
-    studyService = mock(StudyService.class);
     studyController = new StudyController();
 
     initMocks(this);
@@ -98,27 +93,6 @@ public class StudyControllerTest {
 
     verify(studyReadRepository).getStudy(studyUUID);
     verify(trialverseIOUtilsService).writeModelToServletResponse(any(Model.class), any(HttpServletResponse.class));
-  }
-
-  @Test
-  public void testCreateStudy() throws Exception {
-    String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
-    String datasetUUID = "datasetUUID";
-    String studyUUID = "studyUUID";
-
-    BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.CREATED.value(), "some good reason");
-    HttpResponse httpResponse = new BasicHttpResponse(statusLine);
-    when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(true);
-    when(studyService.createStudy(datasetUUID, studyUUID, jsonContent)).thenReturn(httpResponse);
-
-    mockMvc.perform(
-            put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
-                    .content(jsonContent)
-                    .principal(user))
-            .andExpect(status().isCreated());
-
-    verify(datasetReadRepository).isOwner(datasetUUID, user);
-    verify(studyService).createStudy(datasetUUID, studyUUID, jsonContent);
   }
 
   @Test

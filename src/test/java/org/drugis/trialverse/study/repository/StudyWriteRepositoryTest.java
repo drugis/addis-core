@@ -3,7 +3,6 @@ package org.drugis.trialverse.study.repository;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.study.repository.impl.StudyWriteRepositoryImpl;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -52,20 +50,6 @@ public class StudyWriteRepositoryTest {
   @After
   public void tearDown() {
     verifyNoMoreInteractions(mockHttpClient);
-  }
-
-  @Test
-  public void testCreateStudy() throws IOException {
-    String studyUUID = "studyUUID";
-    HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
-    InputStream inputStream = IOUtils.toInputStream("content");
-    DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
-    when(mockHttpServletRequest.getInputStream()).thenReturn(delegatingServletInputStream);
-    when(mockHttpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
-    HttpResponse response = studyWriteRepository.createStudy(studyUUID, "");
-
-    assertNotNull(response);
-    verify(mockHttpClient).execute(any(HttpPut.class)); // todo fix this
   }
 
   @Test
