@@ -85,10 +85,7 @@ public class DatasetController extends AbstractTrialverseController {
   public void updateDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
                             @PathVariable String datasetUUID) throws IOException, MethodNotAllowedException {
     if (datasetReadRepository.isOwner(datasetUUID, currentUser)) {
-
-      String datasetContent = readContent(request);
-
-      HttpResponse jenaResponce = datasetWriteRepository.updateDataset(datasetUUID, datasetContent);
+      HttpResponse jenaResponce = datasetWriteRepository.updateDataset(datasetUUID, request.getInputStream());
       response.setStatus(jenaResponce.getStatusLine().getStatusCode());
     } else {
       throw new MethodNotAllowedException();
