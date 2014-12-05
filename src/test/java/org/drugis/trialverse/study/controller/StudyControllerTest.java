@@ -5,6 +5,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
+import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.study.repository.StudyReadRepository;
@@ -30,7 +31,8 @@ import java.security.Principal;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -89,7 +91,7 @@ public class StudyControllerTest {
 
     mockMvc.perform(get("/datasets/" + datasetUUID + "/studies/" + studyUUID).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType("text/n3"));
+            .andExpect(content().contentType(RDFLanguages.N3.getContentType().getContentType()));
 
     verify(studyReadRepository).getStudy(studyUUID);
     verify(trialverseIOUtilsService).writeModelToServletResponse(any(Model.class), any(HttpServletResponse.class));
@@ -123,7 +125,7 @@ public class StudyControllerTest {
     when(studyWriteRepository.updateStudy(studyUUID, jsonContent)).thenReturn(httpResponse);
 
     mockMvc.perform(
-            post("/datasets/" + datasetUUID + "/studies/" + studyUUID)
+            put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
                     .content(jsonContent)
                     .principal(user))
             .andExpect(status().isOk());
@@ -140,7 +142,7 @@ public class StudyControllerTest {
     when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(false);
 
     mockMvc.perform(
-            post("/datasets/" + datasetUUID + "/studies/" + studyUUID)
+            put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
                     .content(jsonContent)
                     .principal(user)).andExpect(status().isForbidden());
 

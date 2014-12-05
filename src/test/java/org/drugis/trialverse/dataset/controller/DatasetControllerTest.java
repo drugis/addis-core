@@ -5,6 +5,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
+import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
@@ -122,7 +123,7 @@ public class DatasetControllerTest {
 
     mockMvc.perform(get("/datasets").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType("application/ld+json"));
+            .andExpect(content().contentType(RDFLanguages.N3.getContentType().getContentType()));
 
     verify(accountRepository).findAccountByUsername(user.getName());
     verify(datasetReadRepository).queryDatasets(john);
@@ -153,7 +154,7 @@ public class DatasetControllerTest {
 
     mockMvc.perform((get("/datasets/" + uuid)).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType("application/ld+json"));
+            .andExpect(content().contentType(RDFLanguages.N3.getContentType().getContentType()));
 
     verify(datasetReadRepository).getDataset(uuid);
     verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
