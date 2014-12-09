@@ -1,7 +1,7 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$q', 'RdfstoreService'];
-  var DatasetService = function($q, RdfstoreService) {
+  var dependencies = ['$q', 'RdfStoreService'];
+  var DatasetService = function($q, RdfStoreService) {
 
     var that = this;
     that.query =
@@ -31,7 +31,7 @@ define([], function() {
 
     function loadStore(data) {
       var defer = $q.defer();
-      RdfstoreService.create(function(store) {
+      RdfStoreService.create(function(store) {
         that.store = store;
 
         that.store.load('text/n3', data, function(success, results) {

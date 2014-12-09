@@ -21,7 +21,7 @@ define(['angular', 'angular-mocks', 'rdfstore'], function(rdfstore) {
 
 
     beforeEach(module('trialverse.dataset', function($provide) {
-      $provide.value('RdfstoreService', rdfstoreService);
+      $provide.value('RdfStoreService', rdfstoreService);
     }));
 
 

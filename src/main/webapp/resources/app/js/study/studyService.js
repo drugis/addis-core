@@ -1,8 +1,8 @@
 'use strict';
-define(['rdfstore'],
-  function(rdfstore) {
-    var dependencies = ['$q', 'UUIDService'];
-    var StudyService = function($q, UUIDService) {
+define([],
+  function() {
+    var dependencies = ['$q', 'UUIDService', 'RdfStoreService'];
+    var StudyService = function($q, UUIDService, RdfStoreService) {
 
       var that = this;
 
@@ -19,7 +19,7 @@ define(['rdfstore'],
           '                   rdfs:comment   "' + study.comment + '" . ' +
           ' }';
 
-        rdfstore.create(function(newStudyStore) {
+        RdfStoreService.create(function(newStudyStore) {
           newStudyStore.execute(query, function(success, result) {
             if (success) {
               console.log('create study success');

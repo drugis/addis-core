@@ -6,6 +6,6 @@ define(function (require) {
   return angular.module('trialverse.util', [])
     .factory('UUIDService', require('util/uuidService'))
     .factory('JsonLdService', require('util/jsonLdService'))
-    .factory('RdfstoreService', require('util/rdfstoreService'))
+    .factory('RdfStoreService', require('util/rdfstoreService'))
     ;
 });
