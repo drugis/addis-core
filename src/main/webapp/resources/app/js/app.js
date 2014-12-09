@@ -9,7 +9,6 @@ define(
     'dataset/dataset',
     'util/util',
     'study/study',
-    'rdfstoreWrap/rdfstoreWrap',
     'angular-resource',
     'rdfstore',
     'lodash'
@@ -19,7 +18,6 @@ define(
       'ui.router',
       'mm.foundation.modal',
       'trialverse.dataset',
-      'trialverse.rdfstoreWrap',
       'trialverse.util',
       'trialverse.study'
     ];

@@ -17,9 +17,7 @@ define([],
               $scope.study = studyQueryResult;
             });
 
-            StudyService.queryArmData().then(function(armsQueryResult) {
-              $scope.arms = armsQueryResult;
-            });
+            reloadArms();
           }, function() {
             console.error('failed loading study-store');
           });
@@ -34,8 +32,7 @@ define([],
         }
       };
 
-      function onArmCreation() {
-        console.log('arm created callback succes');
+      function reloadArms() {
         StudyService.queryArmData().then(function(armsQueryResult) {
           $scope.arms = armsQueryResult;
         });
@@ -48,7 +45,7 @@ define([],
           controller: 'ArmController',
           resolve: {
             successCallback: function() {
-              return onArmCreation;
+              return reloadArms;
             }
           }
         });
