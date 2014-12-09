@@ -1,0 +1,8 @@
+<div class="edit-item-controls right">
+  <a ng-click="editArm()"> <i class="fa fa-edit fa-2x fa-fw"></i> </a>
+  <a href=""><i class="fa fa-trash-o fa-2x fa-fw"></i></a>
+</div>
+<ul class="no-bullet">
+  <li><span><strong>Arm {{$armIndex + 1}}: </strong></span> <span>{{arm.label.value}}</span></li>
+  <li><span><strong>Description: </strong></span><span>{{arm.comment.value || "none"}}</span></li>
+</ul>

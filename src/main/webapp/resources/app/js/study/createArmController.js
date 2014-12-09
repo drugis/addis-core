@@ -2,7 +2,7 @@
 define([],
   function() {
     var dependencies = ['$scope', '$state', '$modalInstance', 'StudyService', 'successCallback'];
-    var ArmController = function($scope, $state, $modalInstance, StudyService, successCallback) {
+    var CreateArmController = function($scope, $state, $modalInstance, StudyService, successCallback) {
       $scope.arm = {};
 
       $scope.createArm = function () {
@@ -22,5 +22,5 @@ define([],
         $modalInstance.dismiss('cancel');
       };
     };
-    return dependencies.concat(ArmController);
+    return dependencies.concat(CreateArmController);
   });

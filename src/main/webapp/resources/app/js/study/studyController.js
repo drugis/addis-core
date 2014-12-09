@@ -37,12 +37,13 @@ define([],
           $scope.arms = armsQueryResult;
         });
       }
+      $scope.reloadArms = reloadArms;
 
       $scope.showArmDialog = function() {
         $modal.open({
           templateUrl: 'app/js/study/view/arm.html',
           scope: $scope,
-          controller: 'ArmController',
+          controller: 'CreateArmController',
           resolve: {
             successCallback: function() {
               return reloadArms;

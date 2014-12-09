@@ -6,6 +6,27 @@ define([],
 
       var that = this;
 
+      function doQuery(query) {
+        var defer = $q.defer();
+        console.log('executing ' + query)
+        that.store.execute(query, function(success) {
+          if (success) {
+            console.log('query success');
+            defer.resolve(success);
+         
+            that.store.graph(function(success, graph) {
+            console.log('ga hoor hier dan ');
+              console.log(graph.toNT());
+            });
+            console.log()
+          } else {
+            console.error('query failed! ' + query);
+            defer.reject();
+          }
+        });
+        return defer.promise;
+      }
+
       function createEmptyStudy(uuid, study) {
         var defer = $q.defer();
         var query =
@@ -147,7 +168,8 @@ define([],
         queryArmData: queryArmData,
         createEmptyStudy: createEmptyStudy,
         addArm: addArm,
-        exportGraph: exportGraph
+        exportGraph: exportGraph,
+        doQuery: doQuery
       };
     };
 

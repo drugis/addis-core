@@ -30,14 +30,8 @@
         </div>
         <div ng-if="arms">
             <div class="panel clearfix" ng-repeat="arm in arms">
-                <div class="edit-item-controls right">
-                    <a href=""> <i class="fa fa-edit fa-2x fa-fw"></i> </a>
-                    <a href=""><i class="fa fa-trash-o fa-2x fa-fw"></i></a>
-                </div>
-                <ul class="no-bullet">
-                    <li><span><strong>Arm {{$index + 1}}: </strong></span> <span>{{arm.label.value}}</span></li>
-                    <li><span><strong>Description: </strong></span><span>{{arm.comment.value || "none"}}</span></li>
-                </ul>
+                <study-arm armIndex="{{$index}}" arm="arm" callback="reloadArms"></study-arm>
+                
 
             </div>
         </div>
