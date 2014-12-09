@@ -91,11 +91,16 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     List<Namespace> namespaces = new ArrayList<>(bindings.size());
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.dataset.value");
-      uid = subStringAfterLastSymbol(uid, '/');
+	  uid = subStringAfterLastSymbol(uid, '/');
       String name = JsonPath.read(binding, "$.label.value");
       String description = JsonPath.read(binding, "$.comment.value");
       Integer numberOfStudies = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfStudies.value"));
-      String sourceUrl = JsonPath.read(binding, "$.sourceUrl.value");
+      String sourceUrl = null;
+      try {
+        // Need to upgrade json-path to eliminate try/catch:
+        // .using(Configuration.defaultConfiguration().addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL))
+        sourceUrl = JsonPath.read(binding, "$.sourceUrl.value");
+      } catch (Exception e) {}
       namespaces.add(new Namespace(uid, name, description, numberOfStudies, sourceUrl, currentVersionUri));
     }
     return namespaces;
@@ -111,7 +116,10 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     String name = JsonPath.read(binding, "$.label.value");
     String description = JsonPath.read(binding, "$.comment.value");
     Integer numberOfStudies = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfStudies.value"));
-    String sourceUrl = JsonPath.read(binding, "$.sourceUrl.value");
+    String sourceUrl = null;
+    try {
+      sourceUrl = JsonPath.read(binding, "$.sourceUrl.value");
+    } catch (Exception e) {}
     String currentVersionURI = getLatestEvent();
     return new Namespace(uid, name, description, numberOfStudies, sourceUrl, currentVersionURI);
   }
