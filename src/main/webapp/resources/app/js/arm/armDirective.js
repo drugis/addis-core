@@ -1,8 +1,8 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$modal'];
+  var dependencies = ['$modal', 'ArmService'];
 
-  var ArmDirective = function($modal) {
+  var ArmDirective = function($modal, ArmService) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/arm/arm.html',
@@ -29,7 +29,7 @@ define([], function() {
         };
 
         scope.deleteArm = function() {
-          console.log('delete arm');
+          ArmService.deleteArm(scope.arm).then(scope.callback);
         };
       }
 

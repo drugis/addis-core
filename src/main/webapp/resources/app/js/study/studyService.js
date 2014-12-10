@@ -69,7 +69,7 @@ define([],
           ' { instance:' + uuid + ' rdfs:label "' + arm.label + '" ; ' +
           '                   rdf:type  ontology:Arm ; ' +
           '                   rdfs:comment   "' + arm.comment + '" . ' +
-          '   study:' + studyUUID + ' ontology:contains_arm instance:' + uuid + '. ' +
+          '   study:' + studyUUID + ' ontology:has_arm instance:' + uuid + '. ' +
           ' }';
 
         that.store.execute(addArmQuery, function(success) {

@@ -1,0 +1,12 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+
+DELETE {
+  <$armURI> ?p ?o .
+  ?studyUUID ontology:has_arm <$armURI> .
+}
+WHERE {
+  ?studyUUID ontology:has_arm <$armURI> .
+  <$armURI> ?p ?o .
+}
