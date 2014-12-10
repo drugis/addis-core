@@ -9,16 +9,10 @@ define([],
       function doQuery(query) {
         var defer = $q.defer();
         console.log('executing ' + query)
-        that.store.execute(query, function(success) {
+        that.store.execute(query, function(success, result) {
           if (success) {
-            console.log('query success');
-            defer.resolve(success);
-
-            that.store.graph(function(success, graph) {
-            console.log('ga hoor hier dan ');
-              console.log(graph.toNT());
-            });
-            console.log()
+            console.log('study service query result: ' + result);
+            defer.resolve(result);
           } else {
             console.error('query failed! ' + query);
             defer.reject();

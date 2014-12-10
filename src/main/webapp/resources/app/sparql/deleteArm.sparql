@@ -4,9 +4,7 @@ PREFIX ontology: <http://trials.drugis.org/ontology#>
 
 DELETE {
   <$armURI> ?p ?o .
-  ?studyUUID ontology:has_arm <$armURI> .
 }
 WHERE {
-  ?studyUUID ontology:has_arm <$armURI> .
   <$armURI> ?p ?o .
 }

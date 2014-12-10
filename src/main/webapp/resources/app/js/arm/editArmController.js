@@ -5,7 +5,7 @@ define([],
     var EditArmController = function($scope, $state, $modalInstance, ArmService, successCallback) {
 
       $scope.editArm = function () {
-        ArmService.edit($scope.arm).then(function() {
+        ArmService.editArm($scope.arm).then(function() {
           successCallback();
           $modalInstance.close();
         },
