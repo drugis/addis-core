@@ -13,7 +13,7 @@ define([],
           if (success) {
             console.log('query success');
             defer.resolve(success);
-         
+
             that.store.graph(function(success, graph) {
             console.log('ga hoor hier dan ');
               console.log(graph.toNT());
@@ -56,7 +56,7 @@ define([],
         return defer.promise;
       }
 
-      function addArm(arm) {
+      function addArm(arm, studyUUID) {
         var defer = $q.defer();
         var uuid = UUIDService.generate();
         var addArmQuery =
@@ -69,6 +69,7 @@ define([],
           ' { instance:' + uuid + ' rdfs:label "' + arm.label + '" ; ' +
           '                   rdf:type  ontology:Arm ; ' +
           '                   rdfs:comment   "' + arm.comment + '" . ' +
+          '   study:' + studyUUID + ' ontology:contains_arm instance:' + uuid + '. ' +
           ' }';
 
         that.store.execute(addArmQuery, function(success) {

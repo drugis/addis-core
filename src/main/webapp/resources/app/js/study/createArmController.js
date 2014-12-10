@@ -6,7 +6,7 @@ define([],
       $scope.arm = {};
 
       $scope.createArm = function () {
-        StudyService.addArm($scope.arm).then(function() {
+        StudyService.addArm($scope.arm, $state.params.studyUUID).then(function() {
           console.log('arm ' + $scope.arm + 'create');
           successCallback();
           $modalInstance.close();
@@ -15,7 +15,7 @@ define([],
           console.error('failed to add arm');
           $modalInstance.dismiss('cancel');
         });
-         
+
       };
 
       $scope.cancel = function() {
