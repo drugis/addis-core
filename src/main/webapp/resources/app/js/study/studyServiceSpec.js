@@ -7,17 +7,16 @@ define(['angular', 'angular-mocks'], function() {
     beforeEach(module('trialverse.study'));
 
     beforeEach(function() {
-  
+
       uUIDService = jasmine.createSpyObj('UUIDService', ['generate']);
 
       module('trialverse', function($provide) {
-    //    $provide.value('$q', $q);
         $provide.value('UUIDService', uUIDService);
       });
     });
 
     describe('createEmptyStudy', function() {
-      
+
       var studyService;
       var q;
       var scope;
@@ -42,7 +41,7 @@ define(['angular', 'angular-mocks'], function() {
         var promise = studyService.createEmptyStudy(uuid, study);
 
         expect(promise.$$state.value).toBeDefined();
-       
+
       });
 
     });

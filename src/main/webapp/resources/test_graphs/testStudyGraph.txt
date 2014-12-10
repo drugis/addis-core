@@ -1,0 +1,13 @@
+<http://trials.drugis.org/instances/4a58d0a0-3c45-474e-8926-0d1fb250e5ce>
+        a       <http://trials.drugis.org/ontology#Arm> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "1324" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "een arm is geen arm toch" .
+
+<http://trials.drugis.org/studies/967a27f6-6015-4398-82e4-494db735c0a9>
+        a       <http://trials.drugis.org/ontology#Study> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "test" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "study 1" .
