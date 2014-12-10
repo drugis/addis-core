@@ -1,36 +1,22 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$resource', 'StudyService'];
-    var ArmService = function($resource, StudyService) {
+    var dependencies = ['$resource', 'StudyService', 'SparqlResource'];
+    var ArmService = function($resource, StudyService, SparqlResource) {
 
-      var query ;
-      getResource('editArmWithComment.sparql');
-
-
-      function getResource(name) {
-        return $resource('app/js/study/directives/arm/sparql/:name', {name: name}, {
-          'get': {
-            method: 'get',
-            transformResponse: function(data) {
-              return {
-                data: data 
-              };
-            }
-          }
-        }).get(function(result) {
-          query = result;
-        });
-      }
+      var query = SparqlResource.get('editArmWithComment.sparql');
 
       function edit(arm) {
-        var editArmQuery = query.data.replace(/\$armURI/g, arm.armURI.value)
-                              .replace('$newArmLabel', arm.label.value)
-                              .replace('$newArmComment', arm.comment.value);
-
-        return StudyService.doQuery(editArmQuery);
+        var defer = $q.defer();
+        query.$promise.then(function(query) {
+          var editArmQuery =
+            query.replace(/\$armURI/g, arm.armURI.value)
+            .replace('$newArmLabel', arm.label.value)
+            .replace('$newArmComment', arm.comment.value);
+          defer.resolve(StudyService.doQuery(editArmQuery));
+        });
+        return defer.promise;
       }
-
 
       return {
         edit: edit

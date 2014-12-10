@@ -9,6 +9,7 @@ define(
     'dataset/dataset',
     'util/util',
     'study/study',
+    'arm/arm',
     'angular-resource',
     'rdfstore',
     'lodash'
@@ -19,7 +20,8 @@ define(
       'mm.foundation.modal',
       'trialverse.dataset',
       'trialverse.util',
-      'trialverse.study'
+      'trialverse.study',
+      'trialverse.arm'
     ];
 
     var app = angular.module('trialverse', dependencies);

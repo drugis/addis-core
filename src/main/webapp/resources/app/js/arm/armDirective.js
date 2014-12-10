@@ -5,7 +5,7 @@ define([], function() {
   var ArmDirective = function($modal) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/study/directives/arm/arm.html',
+      templateUrl: 'app/js/arm/arm.html',
       scope: {
         arm: '=arm',
         callback: '=callback'
@@ -14,7 +14,7 @@ define([], function() {
 
         scope.editArm = function() {
           $modal.open({
-            templateUrl: 'app/js/study/directives/arm/editArm.html',
+            templateUrl: 'app/js/arm/editArm.html',
             scope: scope,
             controller: 'EditArmController',
             resolve: {
