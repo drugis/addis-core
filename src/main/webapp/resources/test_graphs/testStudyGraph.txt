@@ -5,6 +5,13 @@
         <http://www.w3.org/2000/01/rdf-schema#label>
                 "een arm is geen arm toch" .
 
+<http://trials.drugis.org/instances/123>
+        a       <http://trials.drugis.org/ontology#Arm> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "my comment" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "arm2" .
+
 <http://trials.drugis.org/studies/967a27f6-6015-4398-82e4-494db735c0a9>
         a       <http://trials.drugis.org/ontology#Study> ;
         <http://www.w3.org/2000/01/rdf-schema#comment>

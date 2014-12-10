@@ -2,7 +2,8 @@
 define(['angular', 'angular-mocks'], function() {
   describe('the arm service', function() {
 
-    var mockStudyService = jasmine.createSpyObj('StudyService', ['doQuery']);
+    var rootScope, q, testStore, httpBackend, armService, rdfStoreService, rawSparql, graphAsText,
+      mockStudyService = jasmine.createSpyObj('StudyService', ['doQuery']);
     var armsQuery =
       ' prefix ontology: <http://trials.drugis.org/ontology#>' +
       ' prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
@@ -16,6 +17,8 @@ define(['angular', 'angular-mocks'], function() {
       '     OPTIONAL { ?armURI rdfs:comment ?comment . } ' +
       '}';
 
+    var originalTimeout;
+
     beforeEach(module('trialverse.util'));
     beforeEach(module('trialverse.arm'));
 
@@ -25,75 +28,73 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
+    beforeEach(inject(function($q, $rootScope, $httpBackend, ArmService, RdfStoreService) {
+      var xmlHTTP = new XMLHttpRequest();
+
+      q = $q;
+      httpBackend = $httpBackend;
+      rootScope = $rootScope;
+      armService = ArmService;
+      rdfStoreService = RdfStoreService;
+
+      xmlHTTP.open('GET', 'base/app/sparql/editArmWithComment.sparql', false);
+      xmlHTTP.send(null);
+      rawSparql = xmlHTTP.responseText;
+
+      xmlHTTP.open('GET', 'base/test_graphs/testStudyGraph.txt', false);
+      xmlHTTP.send(null);
+      graphAsText = xmlHTTP.responseText;
+
+      httpBackend.expectGET('app/sparql/editArmWithComment.sparql').respond(rawSparql);
+      httpBackend.flush();
+
+    }));
+
+    beforeEach(function(done) {
+      rdfStoreService.create(function(store) {
+        testStore = store;
+        testStore.load('text/n3', graphAsText, function(success, results) {
+          console.log('test store loaded, ' + results + ' triples loaded');
+          done();
+        });
+      });
+    });
 
     describe('edit', function() {
-      it('should do a query with replaced values', inject(function($rootScope, $httpBackend, ArmService, RdfStoreService) {
 
-        var xmlHTTP = new XMLHttpRequest();
-        xmlHTTP.open('GET', 'base/app/sparql/editArmWithComment.sparql', false);
-        xmlHTTP.send(null);
-        var rawSparql = xmlHTTP.responseText;
-
-        xmlHTTP.open('GET', 'base/test_graphs/testStudyGraph.txt', false);
-        xmlHTTP.send(null);
-        var graphAsText = xmlHTTP.responseText;
-
+      it('should do a query with replaced values', function(done) {
         var mockArm = {
-          armURI: {
-            value: 'http://trials.drugis.org/instances/4a58d0a0-3c45-474e-8926-0d1fb250e5ce'
-          },
-          label: {
-            value: 'new arm label'
-          },
-          comment: {
-            value: 'new arm comment'
-          }
-        };
-
-        $httpBackend.expectGET('app/sparql/editArmWithComment.sparql').respond(rawSparql);
+            armURI: {
+              value: 'http://trials.drugis.org/instances/4a58d0a0-3c45-474e-8926-0d1fb250e5ce'
+            },
+            label: {
+              value: 'new arm label'
+            },
+            comment: {
+              value: 'new arm comment'
+            }
+          };
 
         mockStudyService.doQuery.and.callFake(function(query) {
+          var defer = q.defer();
           testStore.execute(query, function(success) {
-            console.log('edit complete');
+            defer.resolve();
+          });
+          return defer.promise;
+        });
+
+        armService.edit(mockArm).then(function() {
+          testStore.execute(armsQuery, function(success, results) {
+            expect(results[0].armURI.value).toEqual(mockArm.armURI.value);
+            expect(results[0].label.value).toEqual(mockArm.label.value);
+            expect(results[0].comment.value).toEqual(mockArm.comment.value);
+            done();
           });
         });
 
-        var testStore;
-        var resultArm;
-        RdfStoreService.create(function(store) {
-          testStore = store;
-          testStore.load('text/n3', graphAsText, function(success, results) {
-            console.log('test store loaded, ' + results + 'triples loaded');
+        rootScope.$digest();
 
-            $httpBackend.flush();
-            $rootScope.$digest();
-
-            ArmService.edit(mockArm);
-
-            $rootScope.$digest();
-
-            testStore.execute(armsQuery, function(success, results) {
-              console.log("new arms are :");
-              angular.forEach(results, function(arm) {
-                console.log(arm.armURI.value);
-                console.log(arm.label.value);
-                console.log(arm.comment.value);
-              });
-              resultArm = results[0];
-              checkResult();
-
-            });
-
-          });
-        });
-
-        function checkResult() {
-          expect(resultArm.armURI.value).toEqual(mockArm.armURI.value);
-          expect(resultArm.label.value).toEqual(mockArm.label.value);
-          expect(resultArm.comment.value).toEqual(mockArm.comment.value);
-        }
-
-      }));
+      });
     });
   });
 });

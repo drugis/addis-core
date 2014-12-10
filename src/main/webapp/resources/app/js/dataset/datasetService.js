@@ -36,7 +36,6 @@ define([], function() {
 
         that.store.load('text/n3', data, function(success, results) {
           if (success) {
-            console.log('resolve angular defer');
             defer.resolve(results);
           } else {
             console.error('failed loading store');
