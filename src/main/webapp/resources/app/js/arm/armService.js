@@ -8,11 +8,11 @@ define([],
         name: 'editArmWithComment.sparql'
       });
 
-      var deleteArmQuery = SparqlResource.get({
+      var rawDeleteArmQuery = SparqlResource.get({
         name: 'deleteArm.sparql'
       });
 
-      var deleteHasArmQuery = SparqlResource.get({
+      var rawDeleteHasArmQuery = SparqlResource.get({
         name: 'deleteHasArm.sparql'
       });
 
@@ -23,33 +23,26 @@ define([],
             .replace('$newArmLabel', arm.label.value)
             .replace('$newArmComment', arm.comment.value);
           defer.resolve(StudyService.doQuery(editArmQuery));
-        })
+        });
         return defer.promise;
       }
 
       function deleteArm(arm) {
         var defer = $q.defer();
-        deleteArmQuery.$promise.then(function(query) {
-          var deleteArmQuery = query.data.replace(/\$armURI/g, arm.armURI.value);
-          defer.resolve(StudyService.doQuery(deleteArmQuery));
+
+        $q.all([rawDeleteArmQuery.$promise, rawDeleteHasArmQuery.$promise]).then(function() {
+          var deleteArmQuery = rawDeleteArmQuery.data.replace(/\$armURI/g, arm.armURI.value);
+          var deleteHasArmQuery = rawDeleteHasArmQuery.data.replace(/\$armURI/g, arm.armURI.value);
+          defer.resolve($q.all([StudyService.doQuery(deleteArmQuery),
+            StudyService.doQuery(deleteHasArmQuery)
+          ]));
         });
         return defer.promise;
-      }
-
-      function deleteHasArm(arm) {
-        var defer = $q.defer();
-        deleteHasArmQuery.$promise.then(function(query) {
-          var deleteHasArmQuery = query.data.replace(/\$armURI/g, arm.armURI.value);
-          defer.resolve(StudyService.doQuery(deleteHasArmQuery));
-        });
-        return defer.promise;
-
       }
 
       return {
         editArm: editArm,
-        deleteArm: deleteArm,
-        deleteHasArm: deleteHasArm
+        deleteArm: deleteArm
       };
     };
 

@@ -30,9 +30,6 @@ define([], function() {
 
         scope.deleteArm = function() {
           ArmService.deleteArm(scope.arm)
-            .then(function() {
-              ArmService.deleteHasArm(scope.arm);
-            })
             .then(scope.callback);
         };
       }
