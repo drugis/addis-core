@@ -12,6 +12,10 @@ define([],
         name: 'deleteArm.sparql'
       });
 
+      var deleteHasArmQuery = SparqlResource.get({
+        name: 'deleteHasArm.sparql'
+      });
+
       function editArm(arm) {
         var defer = $q.defer();
         editArmQuery.$promise.then(function(query) {
@@ -32,9 +36,20 @@ define([],
         return defer.promise;
       }
 
+      function deleteHasArm(arm) {
+        var defer = $q.defer();
+        deleteHasArmQuery.$promise.then(function(query) {
+          var deleteHasArmQuery = query.data.replace(/\$armURI/g, arm.armURI.value);
+          defer.resolve(StudyService.doQuery(deleteHasArmQuery));
+        });
+        return defer.promise;
+
+      }
+
       return {
         editArm: editArm,
-        deleteArm: deleteArm
+        deleteArm: deleteArm,
+        deleteHasArm: deleteHasArm
       };
     };
 

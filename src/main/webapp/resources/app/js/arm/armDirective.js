@@ -22,14 +22,18 @@ define([], function() {
                 return function() {
                   console.log('its a success !');
                   scope.callback();
-                }
+                };
               }
             }
           });
         };
 
         scope.deleteArm = function() {
-          ArmService.deleteArm(scope.arm).then(scope.callback);
+          ArmService.deleteArm(scope.arm)
+            .then(function() {
+              ArmService.deleteHasArm(scope.arm);
+            })
+            .then(scope.callback);
         };
       }
 
