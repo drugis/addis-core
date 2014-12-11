@@ -1,10 +1,11 @@
-<form novalidate ng-submit="createArm()">
+<form novalidate ng-submit="addItem()">
     <div class="row">
         <div class="large-8 columns">
-            <h3>Create a new arm</h3>
+            <h3>Create a new {{itemName}}</h3>
         </div>
     </div>
-    <div class="row">
+    <ng-include="{{addItemUrl}}">
+    <!-- <div class="row">
         <div class="large-8 columns">
             <label>Name
                 <input autofocus="true" type="text" ng-model="arm.label">
@@ -17,10 +18,10 @@
                 <textarea rows="8" ng-model="arm.comment"></textarea>
             </label>
         </div>
-    </div>
+    </div> -->
     <div class="row">
         <div class="large-8 columns">
-            <button class="success" type="submit" ng-disabled="!arm.label">Create</button>
+            <button class="success" type="submit" ng-disabled="!mayCreate()">Create</button>
         </div>
     </div>
     <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>

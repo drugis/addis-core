@@ -33,8 +33,6 @@
         <div ng-if="arms">
             <div class="panel clearfix" ng-repeat="arm in arms">
                 <study-arm armIndex="{{$index}}" arm="arm" callback="reloadArms"></study-arm>
-
-
             </div>
         </div>
 
@@ -42,27 +40,25 @@
 
     </div>
 
-    <!---------------------------------------- Epochs ---------------------------->
 
-    <div id="epochs" class="columns large-11 study-item">
-        <h3>Epochs <a> <i class="fa fa-info-circle fa-fw"></i> </a></h3>
+    <!---------------------------------------- Population Characteristics ---------------------------->
 
-        <div ng-if="!study.epochs">
-            <p class="panel">This study currently contains no epochs </p>
+    <study-category service="PopulationCharacteristicService" may-create="item.label && item.comment"></study-category>
+
+    <div id="{{categoryAnchorId}}" class="columns large-11 study-item">
+        <h3>{{categoryHeader}}<a> <i class="fa fa-info-circle fa-fw"></i></a></h3>
+
+        <div ng-if="!categoryItems.length > 0">
+            <p class="panel">{{categoryEmptyMessage}}</p>
         </div>
-        <div ng-if="study.epochs">
-            <div class="panel" ng-repeat="epoch in study.epochs">
-                <div class="edit-item-controls">
-                    <a href="" class="right"> <i class="fa fa-edit fa-2x"></i> </a>
-                </div>
-                <ul class="no-bullet">
-                    <li><span><strong>Epoch {{$index + 1}}: </strong><span> <span>{{epoch.label}}</span></li>
-                    <li><span><strong>Description: </strong><span> <span>{{arm.comment || "none"}}</span></li>
-                    <li><span><strong>Duration: </strong><span> <span>{{arm.comment || "no duration"}}</span></li>
-                </ul>
+        <div ng-if="categoryItems">
+            <div class="panel clearfix" ng-repeat="categoryItem in categoryItems">
+                <categoryItemDirective itemIndex="{{$index}}" categoryItem="categoryItem" callback="reloadItems"></categoryItemDirective>
             </div>
         </div>
 
-        <a href="" class="button success"><i class="fa fa-plus"></i> Add Epoch</a>
+        <a ng-click="createPopulationCharacteristicDialog()" class="button success"><i class="fa fa-plus"></i> Add arm</a>
+
     </div>
+
 
