@@ -7,6 +7,10 @@ define([],
       $scope.study = {};
       $scope.arms = {};
 
+      $scope.isStudyModified = function() {
+        return StudyService.isStudyModified();
+      };
+
       StudyResource.get($stateParams, function(response) {
         StudyService.
         loadStore(response.n3Data)
@@ -59,6 +63,7 @@ define([],
             studyUUID: $stateParams.studyUUID
           }, graph, function() {
             console.log('graph saved');
+            StudyService.studySaved();
           });
         });
       };

@@ -2,7 +2,9 @@
     <div class="columns large-6 medium-9 small-12">
         <h1>{{study.label.value}}</h1>
         <h5><em>{{study.comment.value}}</em></h5>
-        <button ng-click="saveStudy()">Save</button>
+        <button ng-disabled="!isStudyModified()" ng-click="saveStudy()">Save</button>
+        <div ng-show="isStudyModified()"><em class="subheader">Unsaved changes</em></div>
+        <div ng-show="!isStudyModified()"><em class="subheader">There are no unsaved changes</em></div>
     </div>
 </div>
 
@@ -31,7 +33,7 @@
         <div ng-if="arms">
             <div class="panel clearfix" ng-repeat="arm in arms">
                 <study-arm armIndex="{{$index}}" arm="arm" callback="reloadArms"></study-arm>
-                
+
 
             </div>
         </div>

@@ -4,8 +4,12 @@ define([],
     var dependencies = ['$q', '$resource', 'StudyService', 'SparqlResource'];
     var ArmService = function($q, $resource, StudyService, SparqlResource) {
 
-      var editArmQuery = SparqlResource.get({
+      var editArmWithCommentQuery = SparqlResource.get({
         name: 'editArmWithComment.sparql'
+      });
+
+      var editArmWithoutCommentQuery = SparqlResource.get({
+        name: 'editArmWithoutComment.sparql'
       });
 
       var rawDeleteArmQuery = SparqlResource.get({
@@ -18,12 +22,20 @@ define([],
 
       function editArm(arm) {
         var defer = $q.defer();
-        editArmQuery.$promise.then(function(query) {
-          var editArmQuery = query.data.replace(/\$armURI/g, arm.armURI.value)
-            .replace('$newArmLabel', arm.label.value)
-            .replace('$newArmComment', arm.comment.value);
-          defer.resolve(StudyService.doQuery(editArmQuery));
-        });
+        if (arm.comment) {
+          editArmWithCommentQuery.$promise.then(function(query) {
+            var editArmWithCommentQuery = query.data.replace(/\$armURI/g, arm.armURI.value)
+              .replace('$newArmLabel', arm.label.value)
+              .replace('$newArmComment', arm.comment.value);
+            defer.resolve(StudyService.doModifyingQuery(editArmWithCommentQuery));
+          });
+        } else {
+          editArmWithoutCommentQuery.$promise.then(function(query) {
+            var editArmWithoutCommentQuery = query.data.replace(/\$armURI/g, arm.armURI.value)
+              .replace('$newArmLabel', arm.label.value);
+            defer.resolve(StudyService.doModifyingQuery(editArmWithoutCommentQuery));
+          });
+        }
         return defer.promise;
       }
 
@@ -33,8 +45,8 @@ define([],
         $q.all([rawDeleteArmQuery.$promise, rawDeleteHasArmQuery.$promise]).then(function() {
           var deleteArmQuery = rawDeleteArmQuery.data.replace(/\$armURI/g, arm.armURI.value);
           var deleteHasArmQuery = rawDeleteHasArmQuery.data.replace(/\$armURI/g, arm.armURI.value);
-          defer.resolve($q.all([StudyService.doQuery(deleteArmQuery),
-            StudyService.doQuery(deleteHasArmQuery)
+          defer.resolve($q.all([StudyService.doModifyingQuery(deleteArmQuery),
+            StudyService.doModifyingQuery(deleteHasArmQuery)
           ]));
         });
         return defer.promise;
