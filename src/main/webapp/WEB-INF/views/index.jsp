@@ -24,7 +24,7 @@
       <ul class="title-area">
         <li class="name">
           <h1>
-            <a id="logo" href="#">trialverse.drugis.org</a>
+            <a id="logo" ui-sref="datasets">trialverse.drugis.org</a>
           </h1>
         </li>
       </ul>
