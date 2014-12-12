@@ -6,6 +6,20 @@ define([],
 
       $scope.study = {};
       $scope.arms = {};
+      $scope.categorySettings =  {
+        populationCharacteristics: {
+          service: 'PopulationCharacteristicService',
+          anchorId: 'populationCharacteristics',
+          header: 'Population Characteristics',
+          addItemController: 'CreatePopulationCharacteristicController',
+          categoryEmptyMessage: 'No population characteristics in study.',
+          itemName: 'Population Characteristic',
+          itemTemplateUrl: 'app/js/populationCharacteristic/populationCharacteristic.html',
+          addItemTemplateUrl: 'app/js/populationCharacteristic/addPopulationCharacteristic.html',
+          editItemTemplateUrl: 'app/js/populationCharacteristic/editPopulationCharacteristic.html',
+          editItemController: 'EditPopulationCharacteristicController',
+        }
+      }
 
       $scope.isStudyModified = function() {
         return StudyService.isStudyModified();
@@ -20,7 +34,6 @@ define([],
             StudyService.queryStudyData().then(function(studyQueryResult) {
               $scope.study = studyQueryResult;
             });
-
             reloadArms();
           }, function() {
             console.error('failed loading study-store');

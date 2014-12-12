@@ -1,42 +1,41 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$modal', 'ArmService'];
+  var dependencies = ['$modal', '$injector'];
 
-  var ArmDirective = function($modal, ArmService) {
+  var CategoryDirective = function($modal, $injector) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/arm/arm.html',
+      templateUrl: 'app/js/study/categoryDirective.html',
       scope: {
-        arm: '=arm',
-        callback: '=callback'
+        settings: '='
       },
       link: function(scope) {
 
-        scope.editArm = function() {
+        var service = $injector.get(scope.settings.service);
+
+        scope.reloadItems = function() {
+          service.queryItems().then(function(queryResult) {
+            scope.items = queryResult;
+            console.log('category items retrieved. ' + queryResult.length);
+          });
+        };
+
+        scope.reloadItems();
+
+        scope.addItem = function() {
           $modal.open({
-            templateUrl: 'app/js/arm/editArm.html',
+            templateUrl: scope.settings.addItemTemplateUrl,
             scope: scope,
-            controller: 'EditArmController',
+            controller: scope.settings.addItemController,
             resolve: {
               successCallback: function() {
-                return function() {
-                  console.log('its a success !');
-                  scope.callback();
-                };
+                return scope.reloadItems;
               }
             }
           });
         };
-
-        scope.deleteArm = function() {
-          ArmService.deleteArm(scope.arm)
-            .then(scope.callback);
-        };
       }
-
-
     };
   };
-
-  return dependencies.concat(ArmDirective);
+  return dependencies.concat(CategoryDirective);
 });

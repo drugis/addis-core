@@ -10,6 +10,7 @@ define(
     'util/util',
     'study/study',
     'arm/arm',
+    'populationCharacteristic/populationCharacteristic',
     'angular-resource',
     'rdfstore',
     'lodash'
@@ -21,7 +22,8 @@ define(
       'trialverse.dataset',
       'trialverse.util',
       'trialverse.study',
-      'trialverse.arm'
+      'trialverse.arm',
+      'trialverse.populationCharacteristic'
     ];
 
     var app = angular.module('trialverse', dependencies);

@@ -7,30 +7,33 @@ define([], function() {
       restrict: 'E',
       templateUrl: 'app/js/study/categoryItemDirective.html',
       scope: {
-        arm: '=arm',
-        callback: '=callback',
-        mayCreate : '&mayCreate'
+        item: '=',
+        reloadItems: '=',
+        settings: '='
       },
       link: function(scope) {
+
+        var service = $injector.get(scope.settings.service);
+
         scope.editItem = function() {
           $modal.open({
-            templateUrl: 'app/js/arm/editArm.html',
+            templateUrl: scope.settings.editItemTemplateUrl,
             scope: scope,
-            controller: 'EditArmController',
+            controller: scope.settings.editItemController,
             resolve: {
-              successCallback: function() {
-                return function() {
-                  console.log('its a success !');
-                  scope.callback();
-                };
+              callback: function() {
+                return scope.reloadItems;
+              },
+              itemService: function() {
+                return service;
               }
             }
           });
         };
 
-        scope.deleteArm = function() {
-          ArmService.deleteArm(scope.arm)
-            .then(scope.callback);
+        scope.deleteItem = function() {
+          service.deleteItem(scope.item)
+            .then(scope.reloadItems);
         };
       }
 

@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', '$resource', 'StudyService', 'SparqlResource'];
-    var ArmService = function($q, $resource, StudyService, SparqlResource) {
+    var dependencies = ['$q', 'StudyService', 'SparqlResource'];
+    var ArmService = function($q, StudyService, SparqlResource) {
 
       var editArmWithCommentQuery = SparqlResource.get({
         name: 'editArmWithComment.sparql'

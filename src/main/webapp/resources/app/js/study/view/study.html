@@ -18,47 +18,32 @@
     <div class="columns large-1">
         <ul class="side-nav">
             <li class="active"><a ng-click="sideNavClick('arms')">Arms</a></li>
-            <li class="active"><a ng-click="sideNavClick('epochs')">Epochs</a></li>
+            <li class="active"><a ng-click="sideNavClick('populationCharacteristics')">Population Characteristics</a></li>
         </ul>
     </div>
 
     <!---------------------------------------- Arms ---------------------------->
+    <div class="columns large-11">
+        <div id="arms" class="study-item">
+            <h3>Arms <a> <i class="fa fa-info-circle fa-fw"></i></a></h3>
 
-    <div id="arms" class="columns large-11 study-item">
-        <h3>Arms <a> <i class="fa fa-info-circle fa-fw"></i></a></h3>
-
-        <div ng-if="!arms.length > 0">
-            <p class="panel">This study currently contains no arms </p>
-        </div>
-        <div ng-if="arms">
-            <div class="panel clearfix" ng-repeat="arm in arms">
-                <study-arm armIndex="{{$index}}" arm="arm" callback="reloadArms"></study-arm>
+            <div ng-if="!arms.length > 0">
+                <p class="panel">This study currently contains no arms </p>
             </div>
-        </div>
-
-        <a ng-click="showArmDialog()" class="button success"><i class="fa fa-plus"></i> Add arm</a>
-
-    </div>
-
-
-    <!---------------------------------------- Population Characteristics ---------------------------->
-
-    <study-category service="PopulationCharacteristicService" may-create="item.label && item.comment"></study-category>
-
-    <div id="{{categoryAnchorId}}" class="columns large-11 study-item">
-        <h3>{{categoryHeader}}<a> <i class="fa fa-info-circle fa-fw"></i></a></h3>
-
-        <div ng-if="!categoryItems.length > 0">
-            <p class="panel">{{categoryEmptyMessage}}</p>
-        </div>
-        <div ng-if="categoryItems">
-            <div class="panel clearfix" ng-repeat="categoryItem in categoryItems">
-                <categoryItemDirective itemIndex="{{$index}}" categoryItem="categoryItem" callback="reloadItems"></categoryItemDirective>
+            <div ng-if="arms">
+                <div class="panel clearfix" ng-repeat="arm in arms">
+                    <study-arm armIndex="{{$index}}" arm="arm" callback="reloadArms"></study-arm>
+                </div>
             </div>
+
+            <a ng-click="showArmDialog()" class="button success"><i class="fa fa-plus"></i> Add arm</a>
+
         </div>
 
-        <a ng-click="createPopulationCharacteristicDialog()" class="button success"><i class="fa fa-plus"></i> Add arm</a>
 
+        <!---------------------------------------- Population Characteristics ---------------------------->
+
+        <study-category settings="categorySettings['populationCharacteristics']" items="populationCharacteristics"></study-category>
     </div>
-
+</div>
 

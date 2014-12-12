@@ -1,11 +1,11 @@
 'use strict';
-define([],
-  function() {
+define([], function() {
     var dependencies = ['$q', 'UUIDService', 'RdfStoreService'];
     var StudyService = function($q, UUIDService, RdfStoreService) {
 
       var that = this,
-        modified = false;
+        modified = false,
+        storeLoadedPromise;
 
       function doModifyingQuery(query) {
         var promise = doQuery(query);
@@ -22,14 +22,16 @@ define([],
       function doQuery(query) {
         var defer = $q.defer();
         console.log('executing ' + query);
-        that.store.execute(query, function(success, result) {
-          if (success) {
-            console.log('study service query result: ' + result);
-            defer.resolve(result);
-          } else {
-            console.error('query failed! ' + query);
-            defer.reject();
-          }
+      storeLoadedPromise.then(function() {
+          that.store.execute(query, function(success, result) {
+            if (success) {
+              console.log('study service query result: ' + result);
+              defer.resolve(result);
+            } else {
+              console.error('query failed! ' + query);
+              defer.reject();
+            }
+          });
         });
         return defer.promise;
       }
@@ -115,8 +117,14 @@ define([],
         return defer.promise;
       }
 
+      function doSingleResultQuery(query) {
+        return doQuery(query).then(function(results) {
+          var singleResult = results.length === 1 ? results[0] : console.error('single result expected');
+          return singleResult;
+        });
+      }
+
       function queryStudyData() {
-        var defer = $q.defer();
         var studyDataQuery =
           'prefix ontology: <http://trials.drugis.org/ontology#>' +
           'prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
@@ -131,17 +139,7 @@ define([],
           '      rdfs:label ?label ; ' +
           '      rdfs:comment ?comment . ' +
           '}';
-
-        that.store.execute(studyDataQuery, function(success, results) {
-          if (success) {
-            var studyData = results.length === 1 ? results[0] : console.error('single result expexted');
-            defer.resolve(studyData);
-          } else {
-            console.error('armsQuery failed!');
-            defer.reject();
-          }
-        });
-        return defer.promise;
+        return doSingleResultQuery(studyDataQuery);
       }
 
       function queryArmData() {
@@ -182,6 +180,7 @@ define([],
             }
           });
         });
+        storeLoadedPromise = defer.promise;
         return defer.promise;
       }
 

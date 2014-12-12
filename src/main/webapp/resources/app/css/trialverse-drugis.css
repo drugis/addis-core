@@ -4432,20 +4432,20 @@ kbd {
 
 /* line 14, ../../drugis-css/foundation/components/_magellan.scss */
 [data-magellan-expedition] {
-  background: red;
+  background: white;
   z-index: 50;
   min-width: 100%;
   padding: 10px;
 }
-/* line 21, ../../drugis-css/foundation/components/_magellan.scss */
+/* line 20, ../../drugis-css/foundation/components/_magellan.scss */
 [data-magellan-expedition] .sub-nav {
   margin-bottom: 0;
 }
-/* line 23, ../../drugis-css/foundation/components/_magellan.scss */
+/* line 22, ../../drugis-css/foundation/components/_magellan.scss */
 [data-magellan-expedition] .sub-nav dd {
   margin-bottom: 0;
 }
-/* line 24, ../../drugis-css/foundation/components/_magellan.scss */
+/* line 23, ../../drugis-css/foundation/components/_magellan.scss */
 [data-magellan-expedition] .sub-nav .active {
   line-height: 1.8em;
 }
@@ -8381,5 +8381,4 @@ input[type='file'] {
 /* line 37, ../../sass/trialverse-drugis.scss */
 .study-item {
   margin: 0 0 3rem 0;
-  border-left: solid 1px #dddddd;
 }

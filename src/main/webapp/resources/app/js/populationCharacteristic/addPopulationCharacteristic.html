@@ -1,0 +1,20 @@
+<form novalidate ng-submit="createPopulationCharacteristic()">
+    <div class="row">
+        <div class="large-8 columns">
+            <h3>Create a new population characteristic</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-8 columns">
+            <label>Name
+                <input autofocus type="text" ng-model="item.label">
+            </label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-8 columns">
+            <button class="success" type="submit" ng-disabled="!item.label">Create</button>
+        </div>
+    </div>
+    <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>
