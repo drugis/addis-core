@@ -1,13 +1,13 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$state', '$modalInstance', 'StudyService', 'successCallback'];
-    var CreateArmController = function($scope, $state, $modalInstance, StudyService, successCallback) {
-      $scope.arm = {};
+    var dependencies = ['$scope', '$state', '$modalInstance', 'ArmService', 'successCallback'];
+    var CreateArmController = function($scope, $state, $modalInstance, ArmService, successCallback) {
+      $scope.item = {};
 
       $scope.createArm = function () {
-        StudyService.addArm($scope.arm, $state.params.studyUUID).then(function() {
-          console.log('arm ' + $scope.arm + 'create');
+        ArmService.addItem($scope.item, $state.params.studyUUID).then(function() {
+          console.log('arm ' + $scope.item + 'create');
           successCallback();
           $modalInstance.close();
         },

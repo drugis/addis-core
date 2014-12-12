@@ -6,11 +6,9 @@ define(function (require) {
   return angular.module('trialverse.arm', ['ngResource', 'trialverse.util', 'trialverse.study'])
     // controllers
     .controller('EditArmController', require('arm/editArmController'))
+    .controller('CreateArmController', require('arm/createArmController'))
 
     //services
     .factory('ArmService', require('arm/armService'))
-
-    //resources
-    .directive('studyArm', require('arm/armDirective'))
     ;
 });

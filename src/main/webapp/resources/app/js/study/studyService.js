@@ -65,57 +65,6 @@ define([], function() {
         return defer.promise;
       }
 
-      function addArmComment(arm, uuid, defer) {
-        var addCommentQuery =
-          'PREFIX instance: <http://trials.drugis.org/instances/>' +
-          'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
-          ' INSERT DATA ' +
-          ' { instance:' + uuid + ' rdfs:comment "' + arm.comment + '" . ' +
-          ' }';
-
-        that.store.execute(addCommentQuery, function(success) {
-          if (success) {
-            modified = true;
-            console.log('add comment success');
-            defer.resolve();
-          } else {
-            console.error('add comment failed!');
-            defer.reject();
-          }
-        });
-      }
-
-      function addArm(arm, studyUUID) {
-        var defer = $q.defer();
-        var uuid = UUIDService.generate();
-        var addArmQuery =
-          'PREFIX ontology: <http://trials.drugis.org/ontology#>' +
-          'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
-          'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
-          'PREFIX study: <http://trials.drugis.org/studies/>' +
-          'PREFIX instance: <http://trials.drugis.org/instances/>' +
-          ' INSERT DATA ' +
-          ' { instance:' + uuid + ' rdfs:label "' + arm.label + '" ; ' +
-          '                   rdf:type  ontology:Arm . ' +
-          '   study:' + studyUUID + ' ontology:has_arm instance:' + uuid + '. ' +
-          ' }';
-
-        that.store.execute(addArmQuery, function(success) {
-          if (success) {
-            modified = true;
-            if (arm.comment) {
-              addArmComment(arm, uuid, defer);
-            } else {
-              defer.resolve();
-            }
-            console.log('add arm success');
-          } else {
-            console.error('armsQuery failed!');
-            defer.reject();
-          }
-        });
-        return defer.promise;
-      }
 
       function doSingleResultQuery(query) {
         return doQuery(query).then(function(results) {
@@ -140,31 +89,6 @@ define([], function() {
           '      rdfs:comment ?comment . ' +
           '}';
         return doSingleResultQuery(studyDataQuery);
-      }
-
-      function queryArmData() {
-        var defer = $q.defer();
-        var armsQuery =
-          ' prefix ontology: <http://trials.drugis.org/ontology#>' +
-          ' prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
-          ' prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
-          ' select' +
-          ' ?armURI ?label ?comment ' +
-          ' where {' +
-          '    ?armURI ' +
-          '      rdf:type ontology:Arm ;' +
-          '      rdfs:label ?label . ' +
-          '     OPTIONAL { ?armURI rdfs:comment ?comment . } ' +
-          '}';
-
-        that.store.execute(armsQuery, function(success, results) {
-          if (success) {
-            defer.resolve(results);
-          } else {
-            console.error('armsQuery failed!');
-          }
-        });
-        return defer.promise;
       }
 
       function loadStore(data) {
@@ -204,9 +128,7 @@ define([], function() {
       return {
         loadStore: loadStore,
         queryStudyData: queryStudyData,
-        queryArmData: queryArmData,
         createEmptyStudy: createEmptyStudy,
-        addArm: addArm,
         exportGraph: exportGraph,
         doModifyingQuery: doModifyingQuery,
         doNonModifyingQuery: doNonModifyingQuery,

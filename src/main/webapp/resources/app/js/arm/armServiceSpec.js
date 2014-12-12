@@ -1,9 +1,10 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  describe('the arm service', function() {
+  xdescribe('the arm service', function() {
 
     var rootScope, q, testStore, httpBackend, armService, rdfStoreService,
-      editArmWithCommentSparql, editArmWithoutCommentSparql, deleteArmSparql, deleteHasArmSparql, graphAsText,
+      queryArms, addArmQuery, addArmCommentQuery, editArmWithCommentSparql, editArmWithoutCommentSparql,
+      deleteArmSparql, deleteHasArmSparql, graphAsText,
       mockStudyService = jasmine.createSpyObj('StudyService', ['doModifyingQuery']);
     var armsQuery =
       ' prefix ontology: <http://trials.drugis.org/ontology#>' +
@@ -38,9 +39,19 @@ define(['angular', 'angular-mocks'], function() {
       armService = ArmService;
       rdfStoreService = RdfStoreService;
 
+      xmlHTTP.open('GET', 'base/app/sparql/queryArms.sparql', false);
+      xmlHTTP.send(null);
+      queryArms = xmlHTTP.responseText;
+      xmlHTTP.open('GET', 'base/app/sparql/addArmQuery.sparql', false);
+      xmlHTTP.send(null);
+      addArmQuery = xmlHTTP.responseText;
+      xmlHTTP.open('GET', 'base/app/sparql/addArmCommentQuery.sparql', false);
+      xmlHTTP.send(null);
+      addArmCommentQuery = xmlHTTP.responseText;
       xmlHTTP.open('GET', 'base/app/sparql/editArmWithComment.sparql', false);
       xmlHTTP.send(null);
       editArmWithCommentSparql = xmlHTTP.responseText;
+
       xmlHTTP.open('GET', 'base/app/sparql/editArmWithoutComment.sparql', false);
       xmlHTTP.send(null);
       editArmWithoutCommentSparql = xmlHTTP.responseText;
@@ -64,6 +75,9 @@ define(['angular', 'angular-mocks'], function() {
         return defer.promise;
       });
 
+      httpBackend.expectGET('app/sparql/queryArms.sparql').respond(queryArms);
+      httpBackend.expectGET('app/sparql/queryArms.sparql').respond(queryArms);
+      httpBackend.expectGET('app/sparql/addArmCommentQuery.sparql').respond(addArmCommentQuery);
       httpBackend.expectGET('app/sparql/editArmWithComment.sparql').respond(editArmWithCommentSparql);
       httpBackend.expectGET('app/sparql/editArmWithoutComment.sparql').respond(editArmWithoutCommentSparql);
       httpBackend.expectGET('app/sparql/deleteArm.sparql').respond(deleteArmSparql);

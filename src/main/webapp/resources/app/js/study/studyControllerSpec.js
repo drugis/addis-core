@@ -62,13 +62,9 @@ define(['angular', 'angular-mocks'], function() {
         loadStoreDeferred.resolve(3);
         scope.$digest();
         expect(mockStudyService.queryStudyData).toHaveBeenCalled();
-        expect(mockStudyService.queryArmData).toHaveBeenCalled();
         queryStudyDataDeferred.resolve(studyQueryResult);
         scope.$digest();
         expect(scope.study).toBe(studyQueryResult);
-        queryArmDataDeferred.resolve(armQueryResult);
-        scope.$digest();
-        expect(scope.arms).toBe(armQueryResult);
       });
 
     });

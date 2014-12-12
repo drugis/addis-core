@@ -6,7 +6,7 @@ define([],
 
       $scope.study = {};
       $scope.arms = {};
-      $scope.categorySettings =  {
+      $scope.categorySettings = {
         populationCharacteristics: {
           service: 'PopulationCharacteristicService',
           anchorId: 'populationCharacteristics',
@@ -18,6 +18,18 @@ define([],
           addItemTemplateUrl: 'app/js/populationCharacteristic/addPopulationCharacteristic.html',
           editItemTemplateUrl: 'app/js/populationCharacteristic/editPopulationCharacteristic.html',
           editItemController: 'EditPopulationCharacteristicController',
+        },
+        arms: {
+          service: 'ArmService',
+          anchorId: 'arms',
+          header: 'Arms',
+          addItemController: 'CreateArmController',
+          categoryEmptyMessage: 'No arms in study.',
+          itemName: 'Arm',
+          itemTemplateUrl: 'app/js/arm/arm.html',
+          addItemTemplateUrl: 'app/js/arm/addArm.html',
+          editItemTemplateUrl: 'app/js/arm/editArm.html',
+          editItemController: 'EditArmController',
         }
       }
 
@@ -30,11 +42,9 @@ define([],
         loadStore(response.n3Data)
           .then(function(numberOfTriples) {
             console.log('loading study-store success, ' + numberOfTriples + ' triples loaded');
-
             StudyService.queryStudyData().then(function(studyQueryResult) {
               $scope.study = studyQueryResult;
             });
-            reloadArms();
           }, function() {
             console.error('failed loading study-store');
           });
@@ -47,26 +57,6 @@ define([],
         } else {
           $anchorScroll();
         }
-      };
-
-      function reloadArms() {
-        StudyService.queryArmData().then(function(armsQueryResult) {
-          $scope.arms = armsQueryResult;
-        });
-      }
-      $scope.reloadArms = reloadArms;
-
-      $scope.showArmDialog = function() {
-        $modal.open({
-          templateUrl: 'app/js/study/view/arm.html',
-          scope: $scope,
-          controller: 'CreateArmController',
-          resolve: {
-            successCallback: function() {
-              return reloadArms;
-            }
-          }
-        });
       };
 
       $scope.saveStudy = function() {

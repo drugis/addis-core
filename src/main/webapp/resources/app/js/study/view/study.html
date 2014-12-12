@@ -22,27 +22,8 @@
         </ul>
     </div>
 
-    <!---------------------------------------- Arms ---------------------------->
     <div class="columns large-11">
-        <div id="arms" class="study-item">
-            <h3>Arms <a> <i class="fa fa-info-circle fa-fw"></i></a></h3>
-
-            <div ng-if="!arms.length > 0">
-                <p class="panel">This study currently contains no arms </p>
-            </div>
-            <div ng-if="arms">
-                <div class="panel clearfix" ng-repeat="arm in arms">
-                    <study-arm armIndex="{{$index}}" arm="arm" callback="reloadArms"></study-arm>
-                </div>
-            </div>
-
-            <a ng-click="showArmDialog()" class="button success"><i class="fa fa-plus"></i> Add arm</a>
-
-        </div>
-
-
-        <!---------------------------------------- Population Characteristics ---------------------------->
-
+        <study-category settings="categorySettings['arms']" items="arms"></study-category>
         <study-category settings="categorySettings['populationCharacteristics']" items="populationCharacteristics"></study-category>
     </div>
 </div>

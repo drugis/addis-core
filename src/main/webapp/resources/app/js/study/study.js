@@ -9,7 +9,6 @@ define(function (require) {
     'trialverse.populationCharacteristic'])
     // controllers
     .controller('StudyController', require('study/studyController'))
-    .controller('CreateArmController', require('study/createArmController'))
 
     //services
     .factory('StudyService', require('study/studyService'))

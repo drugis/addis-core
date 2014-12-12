@@ -7,20 +7,20 @@
     <div class="row">
         <div class="large-8 columns">
             <label>Name
-                <input autofocus="true" type="text" ng-model="arm.label">
+                <input autofocus="true" type="text" ng-model="item.label">
             </label>
         </div>
     </div>
     <div class="row">
         <div class="large-8 columns">
             <label>Description
-                <textarea rows="8" ng-model="arm.comment"></textarea>
+                <textarea rows="8" ng-model="item.comment"></textarea>
             </label>
         </div>
     </div>
     <div class="row">
         <div class="large-8 columns">
-            <button class="success" type="submit" ng-disabled="!arm.label">Create</button>
+            <button class="success" type="submit" ng-disabled="!item.label">Create</button>
         </div>
     </div>
     <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
