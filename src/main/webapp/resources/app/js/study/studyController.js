@@ -31,24 +31,30 @@ define([],
           editItemTemplateUrl: 'app/js/arm/editArm.html',
           editItemController: 'EditArmController',
         }
+      };
+
+      function reloadStudyModel() {
+        StudyService.resetStore();
+        StudyResource.get($stateParams, function(response) {
+          StudyService.
+          loadStore(response.n3Data)
+            .then(function(numberOfTriples) {
+              console.log('loading study-store success, ' + numberOfTriples + ' triples loaded');
+              StudyService.queryStudyData().then(function(studyQueryResult) {
+                $scope.study = studyQueryResult;
+              });
+            }, function() {
+              console.error('failed loading study-store');
+            });
+        });
       }
+
+      // onload
+      reloadStudyModel();
 
       $scope.isStudyModified = function() {
         return StudyService.isStudyModified();
       };
-
-      StudyResource.get($stateParams, function(response) {
-        StudyService.
-        loadStore(response.n3Data)
-          .then(function(numberOfTriples) {
-            console.log('loading study-store success, ' + numberOfTriples + ' triples loaded');
-            StudyService.queryStudyData().then(function(studyQueryResult) {
-              $scope.study = studyQueryResult;
-            });
-          }, function() {
-            console.error('failed loading study-store');
-          });
-      });
 
       $scope.sideNavClick = function(anchor) {
         var newHash = anchor;

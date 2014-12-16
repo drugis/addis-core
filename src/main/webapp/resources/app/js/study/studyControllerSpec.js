@@ -12,7 +12,7 @@ define(['angular', 'angular-mocks'], function() {
       mockAnchorScroll = jasmine.createSpy('anchorScroll'),
       mockLocation = jasmine.createSpyObj('location', ['hash']),
       mockModal = jasmine.createSpyObj('modal', ['open']),
-      mockStudyService = jasmine.createSpyObj('StudyService', ['queryArmData', 'loadStore', 'queryStudyData', 'exportGraph']),
+      mockStudyService = jasmine.createSpyObj('StudyService', ['resetStore','queryArmData', 'loadStore', 'queryStudyData', 'exportGraph']),
       loadStoreDeferred,
       queryStudyDataDeferred,
       queryArmDataDeferred,

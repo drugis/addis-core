@@ -7,6 +7,11 @@ define([], function() {
         modified = false,
         storeDefer = $q.defer();
 
+      function resetStore() {
+        storeDefer = $q.defer();
+        that.store = undefined;
+      }
+
       function doModifyingQuery(query) {
         var promise = doQuery(query);
         promise.then(function() {
@@ -121,6 +126,7 @@ define([], function() {
       }
 
       return {
+        resetStore: resetStore,
         loadStore: loadStore,
         queryStudyData: queryStudyData,
         createEmptyStudy: createEmptyStudy,
