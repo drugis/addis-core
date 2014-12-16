@@ -17,14 +17,16 @@
 <div class="row">
     <div class="columns large-2">
         <ul class="side-nav">
-            <li class="active"><a ng-click="sideNavClick('arms')">Arms</a></li>
-            <li class="active"><a ng-click="sideNavClick('populationCharacteristics')">Population Characteristics</a></li>
+            <li class=""><a ng-click="sideNavClick('arms')">Arms</a></li>
+            <li class=""><a ng-click="sideNavClick('populationCharacteristics')">Population Characteristics</a></li>
+            <li class=""><a ng-click="sideNavClick('endpoints')">Endpoints</a></li>
         </ul>
     </div>
 
     <div class="columns large-10">
         <study-category settings="categorySettings['arms']" items="arms"></study-category>
         <study-category settings="categorySettings['populationCharacteristics']" items="populationCharacteristics"></study-category>
+        <study-category settings="categorySettings['endpoints']" items="endpoints"></study-category>
         <!-- <study-category settings="categorySettings['epochs']" items="epochs"></study-category> -->
     </div>
 </div>
