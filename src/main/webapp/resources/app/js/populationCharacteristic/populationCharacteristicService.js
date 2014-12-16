@@ -35,7 +35,8 @@ define([],
         addPopulationCharacteristicQueryRaw.$promise.then(function(query) {
           var addPopulationCharacteristicQuery = query.data
             .replace(/\$UUID/g, UUIDService.generate())
-            .replace('$label', populationCharacteristic.label);
+            .replace('$label', populationCharacteristic.label)
+            .replace('$measurementType', populationCharacteristic.measurementType);
           defer.resolve(StudyService.doModifyingQuery(addPopulationCharacteristicQuery));
         });
         return defer.promise;
@@ -56,7 +57,8 @@ define([],
 
         editPopulationCharacteristicRaw.$promise.then(function(editQueryRaw) {
           var editQuery = editQueryRaw.data.replace(/\$URI/g, item.uri.value)
-            .replace('$newLabel', item.label.value);
+            .replace('$newLabel', item.label.value)
+            .replace('$newMeasurementType', item.measurementType.value);
           defer.resolve(StudyService.doModifyingQuery(editQuery));
         });
         return defer.promise;

@@ -11,5 +11,8 @@ define(function (require) {
 
     // resources
     .factory('SparqlResource', require('util/sparqlResource'))
+
+    // filters
+    .filter('ontologyFilter', require('util/filters/ontologyFilter'))
     ;
 });

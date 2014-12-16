@@ -12,8 +12,18 @@
         </div>
     </div>
     <div class="row">
+        <div class="large-6 columns">
+            <label>Measurement type</label>
+            <input ng-model="item.measurementType" type="radio" name="measurementType"
+                   value="http://trials.drugis.org/ontology#rate" id="rateOption"><label for="rateOption">rate</label>
+            <input ng-model="item.measurementType" type="radio" name="measurementType"
+                   value="http://trials.drugis.org/ontology#continuous" id="continuousOption"><label
+            for="continuousOption">continuous</label>
+        </div>
+    </div>
+    <div class="row">
         <div class="large-8 columns">
-            <button class="success" type="submit" ng-disabled="!item.label">Create</button>
+            <button class="success" type="submit" ng-disabled="!item.label || !item.measurementType">Create</button>
         </div>
     </div>
     <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
