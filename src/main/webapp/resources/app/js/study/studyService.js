@@ -5,7 +5,7 @@ define([], function() {
 
       var that = this,
         modified = false,
-        storeLoadedPromise;
+        storeDefer = $q.defer();
 
       function doModifyingQuery(query) {
         var promise = doQuery(query);
@@ -21,11 +21,9 @@ define([], function() {
 
       function doQuery(query) {
         var defer = $q.defer();
-        console.log('executing ' + query);
-      storeLoadedPromise.then(function() {
+        storeDefer.promise.then(function() {
           that.store.execute(query, function(success, result) {
             if (success) {
-              console.log('study service query result: ' + result);
               defer.resolve(result);
             } else {
               console.error('query failed! ' + query);
@@ -52,7 +50,6 @@ define([], function() {
         RdfStoreService.create(function(newStudyStore) {
           newStudyStore.execute(query, function(success) {
             if (success) {
-              console.log('create study success');
               newStudyStore.graph(function(success, graph) {
                 defer.resolve(graph.toNT());
               });
@@ -92,20 +89,18 @@ define([], function() {
       }
 
       function loadStore(data) {
-        var defer = $q.defer();
         RdfStoreService.create(function(store) {
           that.store = store;
           that.store.load('text/n3', data, function(success, results) {
             if (success) {
-              defer.resolve(results);
+              storeDefer.resolve(results);
             } else {
               console.error('failed loading store');
-              defer.reject();
+              storeDefer.reject();
             }
           });
         });
-        storeLoadedPromise = defer.promise;
-        return defer.promise;
+        return storeDefer.promise;
       }
 
       function exportGraph() {
