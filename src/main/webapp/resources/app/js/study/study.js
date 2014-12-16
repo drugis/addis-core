@@ -6,7 +6,9 @@ define(function (require) {
   return angular.module('trialverse.study', ['ngResource',
     'trialverse.util',
     'trialverse.arm',
-    'trialverse.populationCharacteristic'])
+    'trialverse.populationCharacteristic',
+    //'trialverse.epoch'
+    ])
     // controllers
     .controller('StudyController', require('study/studyController'))
 

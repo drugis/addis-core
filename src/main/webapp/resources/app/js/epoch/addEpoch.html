@@ -1,0 +1,43 @@
+<form novalidate ng-submit="createItem()">
+  <div class="row">
+    <div class="large-8 columns">
+      <h3>Create a new Epoch</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-8 columns">
+      <label>Name
+        <input autofocus="true" type="text" ng-model="item.label">
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-8 columns">
+      <label>Description
+        <textarea rows="8" ng-model="item.comment"></textarea>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-6 columns">
+      <label>Duration</label>
+      <input ng-model="item.durationType" type="radio" name="durationType"
+             value="instantaneous" id="instantaneousOption"><label for="instantaneousOption">instantaneous</label>
+      <input ng-model="item.durationType" type="radio" name="durationType"
+             value="period" id="periodOption"><label
+        for="periodOption">duration</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-6 columns">
+      <input type="number" name="input" ng-model="item.numberOfPeriods" min="0" max="99" required>
+      <select ng-model="item.periodType" ng-options="periodType.label for periodType in periodTypes"></select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-8 columns">
+      <button class="success" type="submit" ng-disabled="!item.label">Create</button>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>
