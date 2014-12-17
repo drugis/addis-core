@@ -94,6 +94,7 @@ define([],
 
       $scope.sideNavClick = function(anchor) {
         var newHash = anchor;
+        $anchorScroll.yOffset = 73;
         if ($location.hash() !== newHash) {
           $location.hash(anchor);
         } else {
