@@ -7,18 +7,6 @@ define([],
       $scope.study = {};
       $scope.arms = {};
       $scope.categorySettings = {
-        populationCharacteristics: {
-          service: 'PopulationCharacteristicService',
-          anchorId: 'populationCharacteristics',
-          header: 'Population Characteristics',
-          addItemController: 'CreatePopulationCharacteristicController',
-          categoryEmptyMessage: 'No population characteristics defined.',
-          itemName: 'Population Characteristic',
-          itemTemplateUrl: 'app/js/populationCharacteristic/populationCharacteristic.html',
-          addItemTemplateUrl: 'app/js/populationCharacteristic/addPopulationCharacteristic.html',
-          editItemTemplateUrl: 'app/js/populationCharacteristic/editPopulationCharacteristic.html',
-          editItemController: 'EditPopulationCharacteristicController',
-        },
         arms: {
           service: 'ArmService',
           anchorId: 'arms',
@@ -30,6 +18,18 @@ define([],
           addItemTemplateUrl: 'app/js/arm/addArm.html',
           editItemTemplateUrl: 'app/js/arm/editArm.html',
           editItemController: 'EditArmController',
+        },
+        populationCharacteristics: {
+          service: 'PopulationCharacteristicService',
+          anchorId: 'populationCharacteristics',
+          header: 'Population Characteristics',
+          addItemController: 'CreatePopulationCharacteristicController',
+          categoryEmptyMessage: 'No population characteristics defined.',
+          itemName: 'Population Characteristic',
+          itemTemplateUrl: 'app/js/populationCharacteristic/populationCharacteristic.html',
+          addItemTemplateUrl: 'app/js/populationCharacteristic/addPopulationCharacteristic.html',
+          editItemTemplateUrl: 'app/js/populationCharacteristic/editPopulationCharacteristic.html',
+          editItemController: 'EditPopulationCharacteristicController',
         },
         endpoints: {
           service: 'EndpointService',
@@ -43,6 +43,18 @@ define([],
           editItemTemplateUrl: 'app/js/endpoint/editEndpoint.html',
           editItemController: 'EditEndpointController',
         },
+        adverseEvents: {
+          service: 'AdverseEventService',
+          anchorId: 'adverseEvents',
+          header: 'Adverse events',
+          addItemController: 'AddAdverseEventController',
+          categoryEmptyMessage: 'No adverse events defined.',
+          itemName: 'AdverseEvent',
+          itemTemplateUrl: 'app/js/adverseEvent/adverseEvent.html',
+          addItemTemplateUrl: 'app/js/adverseEvent/addAdverseEvent.html',
+          editItemTemplateUrl: 'app/js/adverseEvent/editAdverseEvent.html',
+          editItemController: 'EditAdverseEventController',
+        },
         epochs: {
           service: 'EpochService',
           anchorId: 'epochs',
@@ -54,7 +66,7 @@ define([],
           addItemTemplateUrl: 'app/js/epoch/addEpoch.html',
           editItemTemplateUrl: 'app/js/epoch/editEpoch.html',
           editItemController: 'EditEpochController',
-        }
+        },
       };
 
       function reloadStudyModel() {

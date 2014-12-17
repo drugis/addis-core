@@ -1,18 +1,18 @@
 <form novalidate ng-submit="createItem()">
   <div class="row">
-    <div class="large-8 columns">
+    <div class="large-9 columns">
       <h3>Add a new Epoch</h3>
     </div>
   </div>
   <div class="row">
-    <div class="large-8 columns">
+    <div class="large-9 columns">
       <label>Name
         <input autofocus="true" type="text" ng-model="item.label">
       </label>
     </div>
   </div>
   <div class="row">
-    <div class="large-8 columns">
+    <div class="large-9 columns">
       <label>Description
         <textarea rows="8" ng-model="item.comment"></textarea>
       </label>
@@ -35,7 +35,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="large-8 columns">
+    <div class="large-9 columns">
       <button class="success" type="submit" ng-disabled="!item.label">Add</button>
     </div>
   </div>

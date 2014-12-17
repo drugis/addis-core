@@ -7,7 +7,8 @@ define(function (require) {
     'trialverse.util',
     'trialverse.arm',
     'trialverse.populationCharacteristic',
-    'trialverse.endpoint'])
+    'trialverse.endpoint',
+    'trialverse.adverseEvent'])
     // controllers
     .controller('StudyController', require('study/studyController'))
 

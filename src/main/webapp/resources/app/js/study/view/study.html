@@ -9,7 +9,7 @@
 </navbar-directive>
 <div class="row">
     <div class="columns large-6 medium-9 small-12">
-        <h2>{{study.label.value}}</h2>
+      <h1>{{study.label.value}}</h1>
         <h5 class="subheader">{{study.comment.value}}</h5>
     </div>
 </div>
@@ -21,11 +21,12 @@
 </div>
 
 <div class="row">
-    <div class="columns large-2">
+  <div class="columns large-2" style="position: fixed;">
         <ul class="side-nav">
             <li class=""><a ng-click="sideNavClick('arms')">Arms</a></li>
             <li class=""><a ng-click="sideNavClick('populationCharacteristics')">Population Characteristics</a></li>
             <li class=""><a ng-click="sideNavClick('endpoints')">Endpoints</a></li>
+          <li class=""><a ng-click="sideNavClick('adverseEvents')">Adverse events</a></li>
         </ul>
     </div>
 
@@ -33,6 +34,7 @@
         <study-category settings="categorySettings['arms']" items="arms"></study-category>
         <study-category settings="categorySettings['populationCharacteristics']" items="populationCharacteristics"></study-category>
         <study-category settings="categorySettings['endpoints']" items="endpoints"></study-category>
+      <study-category settings="categorySettings['adverseEvents']" items="adverseEvents"></study-category>
         <!-- <study-category settings="categorySettings['epochs']" items="epochs"></study-category> -->
     </div>
 </div>

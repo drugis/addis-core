@@ -12,6 +12,7 @@ define(
     'arm/arm',
     'populationCharacteristic/populationCharacteristic',
     'endpoint/endpoint',
+    'adverseEvent/adverseEvent',
     'angular-resource',
     'rdfstore',
     'lodash'
@@ -25,7 +26,8 @@ define(
       'trialverse.study',
       'trialverse.arm',
       'trialverse.populationCharacteristic',
-      'trialverse.endpoint'
+      'trialverse.endpoint',
+      'trialverse.adverseEvent'
     ];
 
     var app = angular.module('trialverse', dependencies);

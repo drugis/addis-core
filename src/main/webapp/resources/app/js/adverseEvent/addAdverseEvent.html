@@ -1,30 +1,29 @@
-<form novalidate ng-submit="editItem()">
+<form novalidate ng-submit="addItem()">
   <div class="row">
     <div class="large-9 columns">
-      <h3>Edit Endpoint</h3>
+      <h3>Add a new adverse event</h3>
     </div>
   </div>
   <div class="row">
     <div class="large-9 columns">
       <label>Name
-        <input autofocus type="text" ng-model="item.label.value">
+        <input autofocus type="text" ng-model="item.label">
       </label>
     </div>
   </div>
   <div class="row">
-    <div class="large-6 columns">
+    <div class="large-9 columns">
       <label>Measurement type</label>
-      <input ng-model="item.measurementType.value" type="radio" name="measurementType"
+      <input ng-model="item.measurementType" type="radio" name="measurementType"
              value="http://trials.drugis.org/ontology#rate" id="rateOption"><label for="rateOption">rate</label>
-      <input ng-model="item.measurementType.value" type="radio" name="measurementType"
+      <input ng-model="item.measurementType" type="radio" name="measurementType"
              value="http://trials.drugis.org/ontology#continuous" id="continuousOption"><label
         for="continuousOption">continuous</label>
     </div>
   </div>
   <div class="row">
     <div class="large-9 columns">
-      <button class="success" type="submit" ng-disabled="!item.label.value || !item.measurementType.value">Edit
-      </button>
+      <button class="success" type="submit" ng-disabled="!item.label || !item.measurementType">Add</button>
     </div>
   </div>
   <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
