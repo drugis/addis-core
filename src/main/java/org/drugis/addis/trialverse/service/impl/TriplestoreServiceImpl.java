@@ -358,7 +358,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
                 .sampleDuration(sampleDuration)
                 .build();
         moment.getStudyDataArmValues().add(studyDataArmValue);
-      } else {
+      } else if (jsonObject.containsKey("categoryCount")) {
         CategoricalStudyDataArmValue existingValue = findExistingCategoricalArmValue(armInstanceUid, moment.getStudyDataArmValues());
         if(existingValue == null) {
           existingValue = new CategoricalStudyDataArmValue(armInstanceUid, armLabel);
