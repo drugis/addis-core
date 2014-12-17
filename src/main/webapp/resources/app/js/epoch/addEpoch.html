@@ -28,10 +28,18 @@
         for="periodOption">duration</label>
     </div>
   </div>
-  <div class="row">
-    <div class="large-6 columns">
-      <input type="number" name="input" ng-model="item.numberOfPeriods" min="0" max="99" required>
-      <select ng-model="item.periodType" ng-options="periodType.label for periodType in periodTypes"></select>
+  <div ng-show="item.durationType == 'period'" class="row">
+    <div class="large-2 columns">
+      <input type="number" name="input" ng-model="item.numberOfPeriods" value="1" min="0" max="99">
+    </div>
+    <div class="large-4 end columns">
+      <select ng-model="item.periodType" placeholder="select unit">
+        <option>hours</option>
+        <option>days</option>
+        <option>weeks</option>
+        <option>months</option>
+        <option>years</option>
+      </select>
     </div>
   </div>
   <div class="row">
