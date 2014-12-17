@@ -1,10 +1,16 @@
+<navbar-directive>
+  <ul class="left">
+    <li class="has-form">
+      <a ng-disabled="!isStudyModified()" ng-click="saveStudy()" class="button success">Save study</a>
+    </li>
+    <li ng-show="isStudyModified()" class="has-message"><em class="header-message">Unsaved changes</em></li>
+    <li ng-show="!isStudyModified()" class="has-message"><em class="header-message">There are no unsaved changes</em></li>
+  </ul>
+</navbar-directive>
 <div class="row">
     <div class="columns large-6 medium-9 small-12">
-        <h1>{{study.label.value}}</h1>
-        <h5><em>{{study.comment.value}}</em></h5>
-        <button ng-disabled="!isStudyModified()" ng-click="saveStudy()">Save</button>
-        <div ng-show="isStudyModified()"><em class="subheader">Unsaved changes</em></div>
-        <div ng-show="!isStudyModified()"><em class="subheader">There are no unsaved changes</em></div>
+        <h2>{{study.label.value}}</h2>
+        <h5 class="subheader">{{study.comment.value}}</h5>
     </div>
 </div>
 

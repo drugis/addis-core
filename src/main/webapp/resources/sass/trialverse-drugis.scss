@@ -16,17 +16,17 @@ $addis-grey-border : $crumb-border-color;
 .info {
   color: darken($info-color, 10%);
 }
-.color-stripe {
-  background: $drugis-color;
-  height: 0.45rem;
-}
 
 .error-message {
   display: block;
   color: $drugis-color;
 }
 
-// header ////
+/////////////////////////// top nav bar 
+.top-bar-section .has-form {
+  height: 44px;
+}
+
 .user-image {
   margin-top: -1px;
   margin-right: 4px;
@@ -34,9 +34,37 @@ $addis-grey-border : $crumb-border-color;
   border-radius: 15px;
 }
 
+.has-message {
+  height: 44px;
+  padding: 9px 4px;
+}
+
+.header-message {
+  color: darken($addis-grey, 10%);
+  font-size: 13px;
+}
+
+.color-stripe {
+  background: $drugis-color;
+  height: 0.45rem;
+  -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
+  -moz-box-shadow:    0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
+}
+
+/////////////////////////// end top nav
+
+.main-content {
+  padding-top: 77px; // clear fixed navbar
+}
+
+/////////////////////////// study
+
 .study-item {
   margin: 0 0 3rem 0;
 }
+
+/////////////////////////// end study
 
 
 

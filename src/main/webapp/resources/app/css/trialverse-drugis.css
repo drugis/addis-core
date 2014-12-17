@@ -8358,16 +8358,15 @@ input[type='file'] {
   color: #77c0de;
 }
 
-/* line 19, ../../sass/trialverse-drugis.scss */
-.color-stripe {
-  background: #cc3333;
-  height: 0.45rem;
-}
-
-/* line 24, ../../sass/trialverse-drugis.scss */
+/* line 20, ../../sass/trialverse-drugis.scss */
 .error-message {
   display: block;
   color: #cc3333;
+}
+
+/* line 26, ../../sass/trialverse-drugis.scss */
+.top-bar-section .has-form {
+  height: 44px;
 }
 
 /* line 30, ../../sass/trialverse-drugis.scss */
@@ -8379,6 +8378,32 @@ input[type='file'] {
 }
 
 /* line 37, ../../sass/trialverse-drugis.scss */
+.has-message {
+  height: 44px;
+  padding: 9px 4px;
+}
+
+/* line 42, ../../sass/trialverse-drugis.scss */
+.header-message {
+  color: #dadada;
+  font-size: 13px;
+}
+
+/* line 47, ../../sass/trialverse-drugis.scss */
+.color-stripe {
+  background: #cc3333;
+  height: 0.45rem;
+  -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
+  -moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
+}
+
+/* line 57, ../../sass/trialverse-drugis.scss */
+.main-content {
+  padding-top: 77px;
+}
+
+/* line 63, ../../sass/trialverse-drugis.scss */
 .study-item {
   margin: 0 0 3rem 0;
 }
