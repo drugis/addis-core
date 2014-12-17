@@ -39,7 +39,7 @@ define(['angular', 'angular-mocks'], function() {
       armService = ArmService;
       rdfStoreService = RdfStoreService;
 
-      xmlHTTP.open('GET', 'base/app/sparql/queryArms.sparql', false);
+      xmlHTTP.open('GET', 'base/app/sparql/queryArm.sparql', false);
       xmlHTTP.send(null);
       queryArms = xmlHTTP.responseText;
       xmlHTTP.open('GET', 'base/app/sparql/addArmQuery.sparql', false);
@@ -75,8 +75,7 @@ define(['angular', 'angular-mocks'], function() {
         return defer.promise;
       });
 
-      httpBackend.expectGET('app/sparql/queryArms.sparql').respond(queryArms);
-      httpBackend.expectGET('app/sparql/queryArms.sparql').respond(queryArms);
+      httpBackend.expectGET('app/sparql/queryArm.sparql').respond(queryArms);
       httpBackend.expectGET('app/sparql/addArmCommentQuery.sparql').respond(addArmCommentQuery);
       httpBackend.expectGET('app/sparql/editArmWithComment.sparql').respond(editArmWithCommentSparql);
       httpBackend.expectGET('app/sparql/editArmWithoutComment.sparql').respond(editArmWithoutCommentSparql);

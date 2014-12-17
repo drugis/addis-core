@@ -5,6 +5,5 @@ select
 ?uri ?label ?measurementType
 where {
      ?uri rdfs:label ?label ;
-     ontology:measurementType ?measurementType ;
-     rdfs:subClassOf ontology:Endpoint .
+     rdfs:subClassOf ontology:Epoch .
 }

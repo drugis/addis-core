@@ -9,7 +9,7 @@ define([],
       });
 
       var adverseEventsQuery = SparqlResource.get({
-        name: 'queryAdverseEvents.sparql'
+        name: 'queryAdverseEvent.sparql'
       });
 
       var deleteAdverseEventRaw = SparqlResource.get({

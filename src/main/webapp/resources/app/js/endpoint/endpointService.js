@@ -2,42 +2,42 @@
 define([],
   function() {
     var dependencies = ['$q', 'StudyService', 'UUIDService', 'SparqlResource'];
-    var PopulationCharacteristicService = function($q, StudyService, UUIDService, SparqlResource) {
+    var EndpointService = function($q, StudyService, UUIDService, SparqlResource) {
 
-      var addPopulationCharacteristicQueryRaw = SparqlResource.get({
-        name: 'addPopulationCharacteristic.sparql'
+      var addEndpointQueryRaw = SparqlResource.get({
+        name: 'addEndpoint.sparql'
       });
 
-      var populationCharacteristicsQuery = SparqlResource.get({
-        name: 'queryPopulationCharacteristics.sparql'
+      var endpointQuery = SparqlResource.get({
+        name: 'queryEndpoint.sparql'
       });
 
-      var deletePopulationCharacteristicRaw = SparqlResource.get({
-        name: 'deletePopulationCharacteristic.sparql'
+      var deleteEndpointRaw = SparqlResource.get({
+        name: 'deleteEndpoint.sparql'
       });
 
-      var editPopulationCharacteristicRaw = SparqlResource.get({
-        name: 'editPopulationCharacteristic.sparql'
+      var editEndpointRaw = SparqlResource.get({
+        name: 'editEndpoint.sparql'
       });
 
       function queryItems() {
         var defer = $q.defer();
 
-        populationCharacteristicsQuery.$promise.then(function(query) {
+        endpointQuery.$promise.then(function(query) {
           defer.resolve(StudyService.doNonModifyingQuery(query.data));
         });
         return defer.promise;
       }
 
-      function addItem(populationCharacteristic) {
+      function addItem(endpoint) {
         var defer = $q.defer();
 
-        addPopulationCharacteristicQueryRaw.$promise.then(function(query) {
-          var addPopulationCharacteristicQuery = query.data
+        addEndpointQueryRaw.$promise.then(function(query) {
+          var addEndpointQuery = query.data
             .replace(/\$UUID/g, UUIDService.generate())
-            .replace('$label', populationCharacteristic.label)
-            .replace('$measurementType', populationCharacteristic.measurementType);
-          defer.resolve(StudyService.doModifyingQuery(addPopulationCharacteristicQuery));
+            .replace('$label', endpoint.label)
+            .replace('$measurementType', endpoint.measurementType);
+          defer.resolve(StudyService.doModifyingQuery(addEndpointQuery));
         });
         return defer.promise;
       }
@@ -45,7 +45,7 @@ define([],
       function deleteItem(item) {
         var defer = $q.defer();
 
-        deletePopulationCharacteristicRaw.$promise.then(function(deleteQueryRaw) {
+        deleteEndpointRaw.$promise.then(function(deleteQueryRaw) {
           var deleteQuery = deleteQueryRaw.data.replace(/\$URI/g, item.uri.value);
           defer.resolve(StudyService.doModifyingQuery(deleteQuery));
         });
@@ -55,7 +55,7 @@ define([],
       function editItem(item) {
         var defer = $q.defer();
 
-        editPopulationCharacteristicRaw.$promise.then(function(editQueryRaw) {
+        editEndpointRaw.$promise.then(function(editQueryRaw) {
           var editQuery = editQueryRaw.data.replace(/\$URI/g, item.uri.value)
             .replace('$newLabel', item.label.value)
             .replace('$newMeasurementType', item.measurementType.value);
@@ -71,5 +71,5 @@ define([],
         editItem: editItem
       };
     };
-    return dependencies.concat(PopulationCharacteristicService);
+    return dependencies.concat(EndpointService);
   });

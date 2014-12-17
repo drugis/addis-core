@@ -9,7 +9,7 @@ define([],
       });
 
       var populationCharacteristicsQuery = SparqlResource.get({
-        name: 'queryPopulationCharacteristics.sparql'
+        name: 'queryPopulationCharacteristic.sparql'
       });
 
       var deletePopulationCharacteristicRaw = SparqlResource.get({

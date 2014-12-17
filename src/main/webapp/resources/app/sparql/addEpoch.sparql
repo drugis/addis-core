@@ -1,0 +1,9 @@
+PREFIX instance: <http://trials.drugis.org/instances/>
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+INSERT DATA {
+  instance:$UUID
+    rdfs:label "$label" ;
+    rdfs:subClassOf ontology:Epoch .
+}

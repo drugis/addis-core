@@ -5,7 +5,7 @@ define([],
     var ArmService = function($q, StudyService, SparqlResource, UUIDService) {
 
       var armsQuery = SparqlResource.get({
-        name: 'queryArms.sparql'
+        name: 'queryArm.sparql'
       });
 
       var rawAddArmQuery = SparqlResource.get({
