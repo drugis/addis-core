@@ -244,6 +244,30 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return getQueryResultList(query);
   }
 
+  public Integer tryParseInt(String str) {
+    try {
+      return Integer.parseInt(str);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+
+  public Long tryParseLong(String str) {
+    try {
+      return Long.parseLong(str);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+
+  public Double tryParseDouble(String str) {
+    try {
+      return Double.parseDouble(str);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+
   @Override
   public List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid) {
     String query = StringUtils.replace(STUDY_TREATMENT_ACTIVITIES, "$namespaceUid", namespaceUid);
@@ -338,13 +362,13 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       AbstractStudyDataArmValue studyDataArmValue;
       String armInstanceUid = (String) jsonObject.get("armInstanceUid");
       String armLabel = (String) jsonObject.get("armLabel");
-      Integer sampleSize = jsonObject.containsKey("sampleSize") ? Integer.parseInt((String) jsonObject.get("sampleSize")) : null;
+      Integer sampleSize = jsonObject.containsKey("sampleSize") ? tryParseInt((String) jsonObject.get("sampleSize")) : null; // FIXME: why is this an integer when the count is Long?
       String sampleDuration = jsonObject.containsKey("sampleDuration") ? (String) jsonObject.get("sampleDuration") : null;
 
       if (jsonObject.containsKey("count")) {
         studyDataArmValue = new RateStudyDataArmValue
                 .RateStudyDataArmValueBuilder(armInstanceUid, armLabel)
-                .count(Long.parseLong((String) jsonObject.get("count")))
+                .count(tryParseLong((String) jsonObject.get("count")))
                 .sampleSize(sampleSize)
                 .sampleDuration(sampleDuration)
                 .build();
@@ -352,8 +376,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       } else if (jsonObject.containsKey("mean")) {
         studyDataArmValue = new ContinuousStudyDataArmValue
                 .ContinuousStudyDataArmValueBuilder(armInstanceUid, armLabel)
-                .mean(jsonObject.containsKey("mean") ? Double.parseDouble((String) jsonObject.get("mean")) : null)
-                .std(jsonObject.containsKey("std") ? Double.parseDouble((String) jsonObject.get("std")) : null)
+                .mean(jsonObject.containsKey("mean") ? tryParseDouble((String) jsonObject.get("mean")) : null)
+                .std(jsonObject.containsKey("std") ? tryParseDouble((String) jsonObject.get("std")) : null)
                 .sampleSize(sampleSize)
                 .sampleDuration(sampleDuration)
                 .build();
