@@ -13,10 +13,14 @@ SELECT ?dataset ?label ?comment ?sourceUrl (COUNT(DISTINCT(?study)) AS ?numberOf
     ?dataset rdfs:label ?label .
     ?dataset rdfs:comment ?comment .
     ?dataset ontology:contains_study ?study .
-    ?dataset dc:source ?sourceGraph .
   }
-  GRAPH ?sourceGraph {
-    ?sourceGraph rdfs:seeAlso ?seeAlso .
-    ?seeAlso dcterms:source ?sourceUrl .
+  OPTIONAL {
+    GRAPH ?dataset {
+      ?dataset dc:source ?sourceGraph .
+    }
+    GRAPH ?sourceGraph {
+      ?sourceGraph rdfs:seeAlso ?seeAlso .
+      ?seeAlso dcterms:source ?sourceUrl .
+    }
   }
 } GROUP BY ?dataset ?label ?comment ?sourceUrl 
