@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  xdescribe('the arm service', function() {
+  describe('the arm service', function() {
 
     var rootScope, q, testStore, httpBackend, armService, rdfStoreService,
       queryArms, addArmQuery, addArmCommentQuery, editArmWithCommentSparql, editArmWithoutCommentSparql,
@@ -76,6 +76,7 @@ define(['angular', 'angular-mocks'], function() {
       });
 
       httpBackend.expectGET('app/sparql/queryArm.sparql').respond(queryArms);
+      httpBackend.expectGET('app/sparql/addArmQuery.sparql').respond(addArmCommentQuery);
       httpBackend.expectGET('app/sparql/addArmCommentQuery.sparql').respond(addArmCommentQuery);
       httpBackend.expectGET('app/sparql/editArmWithComment.sparql').respond(editArmWithCommentSparql);
       httpBackend.expectGET('app/sparql/editArmWithoutComment.sparql').respond(editArmWithoutCommentSparql);
@@ -110,7 +111,7 @@ define(['angular', 'angular-mocks'], function() {
           }
         };
 
-        armService.editArm(mockArm).then(function() {
+        armService.editItem(mockArm).then(function() {
           testStore.execute(armsQuery, function(success, results) {
             expect(results.length).toEqual(2);
             expect(results[0].armURI.value).toEqual(mockArm.armURI.value);
@@ -137,7 +138,7 @@ define(['angular', 'angular-mocks'], function() {
           }
         };
 
-        armService.editArm(mockArm).then(function() {
+        armService.editItem(mockArm).then(function() {
           testStore.execute(armsQuery, function(success, results) {
             expect(results.length).toEqual(2);
             expect(results[0].armURI.value).toEqual(mockArm.armURI.value);
@@ -161,7 +162,7 @@ define(['angular', 'angular-mocks'], function() {
           }
         };
 
-        armService.deleteArm(mockArm).then(function() {
+        armService.deleteItem(mockArm).then(function() {
           testStore.execute(armsQuery, function(success, results) {
             expect(results.length).toEqual(1);
             done();
