@@ -18,33 +18,38 @@
       </label>
     </div>
   </div>
-  <div class="row">
+  <div class="row" ng-class="{'form-input-group': (item.duration.durationType != 'period')}">
     <div class="large-6 columns">
       <label>Duration</label>
-      <input ng-model="item.durationType" type="radio" name="durationType"
+      <input ng-model="item.duration.durationType" type="radio" name="durationType"
              value="instantaneous" id="instantaneousOption"><label for="instantaneousOption">instantaneous</label>
-      <input ng-model="item.durationType" type="radio" name="durationType"
+      <input ng-model="item.duration.durationType" type="radio" name="durationType"
              value="period" id="periodOption"><label
         for="periodOption">duration</label>
     </div>
   </div>
-  <div ng-show="item.durationType == 'period'" class="row">
-    <div class="large-2 columns">
-      <input type="number" name="input" ng-model="item.numberOfPeriods" value="1" min="0" max="99">
+  <div ng-show="item.duration.durationType == 'period'" class="row form-input-group">
+    <div class="large-offset-3 large-2 columns">
+      <label>Amount</label>
+      <input type="number" name="input" ng-model="item.duration.numberOfPeriods" min="0">
     </div>
     <div class="large-4 end columns">
-      <select ng-model="item.periodType" placeholder="select unit">
-        <option>hours</option>
-        <option>days</option>
-        <option>weeks</option>
-        <option>months</option>
-        <option>years</option>
-      </select>
+      <label>Unit</label>
+      <select ng-model="item.duration.periodType" placeholder="select unit"
+              ng-options="periodTypeOption.label for periodTypeOption in periodTypeOptions"></select>
+    </div>
+  </div>
+  <div class="row form-input-group">
+    <div class="large-9 columns">
+      <label for="isPrimaryCheckBox">Is primary epoch</label><input id="isPrimaryCheckBox"
+                                                                    ng-model="item.isPrimaryEpoch" type="checkbox">
     </div>
   </div>
   <div class="row">
     <div class="large-9 columns">
-      <button class="success" type="submit" ng-disabled="!item.label">Add</button>
+      <button class="success" type="submit"
+              ng-disabled="(!item.label || !isValidDuration(item.duration, periodTypeOptions))">Add
+      </button>
     </div>
   </div>
   <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
