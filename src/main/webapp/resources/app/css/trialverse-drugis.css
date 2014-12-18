@@ -1,4 +1,5 @@
 @import url("//fonts.googleapis.com/css?family=Droid+Sans:400,700");
+@import url("//fonts.googleapis.com/css?family=Droid+Sans:400,700");
 @import url("//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700");
 /* line 287, ../../drugis-css/foundation/components/_global.scss */
 meta.foundation-mq-small {
@@ -8343,33 +8344,33 @@ input[type='file'] {
   opacity: .5;
 }
 
-/* line 10, ../../sass/trialverse-drugis.scss */
+/* line 11, ../../sass/trialverse-drugis.scss */
 .alert {
   color: #e66464;
 }
 
-/* line 13, ../../sass/trialverse-drugis.scss */
+/* line 14, ../../sass/trialverse-drugis.scss */
 .warning {
   color: #f2973c;
 }
 
-/* line 16, ../../sass/trialverse-drugis.scss */
+/* line 17, ../../sass/trialverse-drugis.scss */
 .info {
   color: #77c0de;
 }
 
-/* line 20, ../../sass/trialverse-drugis.scss */
+/* line 21, ../../sass/trialverse-drugis.scss */
 .error-message {
   display: block;
   color: #cc3333;
 }
 
-/* line 26, ../../sass/trialverse-drugis.scss */
+/* line 27, ../../sass/trialverse-drugis.scss */
 .top-bar-section .has-form {
   height: 44px;
 }
 
-/* line 30, ../../sass/trialverse-drugis.scss */
+/* line 31, ../../sass/trialverse-drugis.scss */
 .user-image {
   margin-top: -1px;
   margin-right: 4px;
@@ -8377,19 +8378,19 @@ input[type='file'] {
   border-radius: 15px;
 }
 
-/* line 37, ../../sass/trialverse-drugis.scss */
+/* line 38, ../../sass/trialverse-drugis.scss */
 .has-message {
   height: 44px;
   padding: 9px 4px;
 }
 
-/* line 42, ../../sass/trialverse-drugis.scss */
+/* line 43, ../../sass/trialverse-drugis.scss */
 .header-message {
   color: #dadada;
   font-size: 13px;
 }
 
-/* line 47, ../../sass/trialverse-drugis.scss */
+/* line 48, ../../sass/trialverse-drugis.scss */
 .color-stripe {
   background: #cc3333;
   height: 0.45rem;
@@ -8398,12 +8399,17 @@ input[type='file'] {
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
 }
 
-/* line 57, ../../sass/trialverse-drugis.scss */
+/* line 58, ../../sass/trialverse-drugis.scss */
 .main-content {
   padding-top: 77px;
 }
 
-/* line 63, ../../sass/trialverse-drugis.scss */
+/* line 64, ../../sass/trialverse-drugis.scss */
 .study-item {
   margin: 0 0 3rem 0;
+}
+
+/* line 70, ../../sass/trialverse-drugis.scss */
+.form-input-group {
+  padding-bottom: 16px;
 }
