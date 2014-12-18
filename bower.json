@@ -25,14 +25,14 @@
     "font-awesome": "~4.0.3",
     "angular-foundation": "~0.2.2",
     "angular-foundation-assets": "https://github.com/pineconellc/angular-foundation.git#0.2.2",
-    "rdfstore-js": "https://raw.githubusercontent.com/danielreid/rdfstore-js/master/dist/browser/rdf_store.js",
+    "rdfstore-js": "https://raw.githubusercontent.com/ConnorStroomberg/rdfstore-js/issue/empty-term-in-norm-term/dist/browser/rdf_store.js",
     "jquery": "~2.1.1",
     "angular-resource": "~1.3.2",
     "lodash": "2.4.1",
     "jquery-rdfquery": "~1.0.0"
   },
   "resolutions": {
-    "angular": "1.3.6",
+    "angular": "1.3.7",
     "jquery": "~2.1.1"
   }
 }
