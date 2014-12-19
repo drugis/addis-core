@@ -10,7 +10,7 @@
         <http://www.w3.org/2000/01/rdf-schema#label>
                 "epoch 2 label" ;
         <http://trials.drugis.org/ontology#duration>
-                "P7D" .
+                "P7D"^^<http://www.w3.org/2001/XMLSchema#duration> .
 
 <http://trials.drugis.org/studies/967a27f6-6015-4398-82e4-494db735c0a9>
         a       <http://trials.drugis.org/ontology#Study> ;

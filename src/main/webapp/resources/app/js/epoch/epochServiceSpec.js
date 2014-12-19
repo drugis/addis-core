@@ -3,7 +3,7 @@ define(['angular', 'angular-mocks'], function() {
   describe('the epoch service', function() {
 
     var rootScope, q, testStore, httpBackend, epochService, rdfStoreService,
-      queryEpochs, queryAddEpoch, graphAsText,
+      queryEpochs, queryAddEpoch, queryAddEpochComment, graphAsText,
       mockStudyService = jasmine.createSpyObj('StudyService', ['doModifyingQuery', 'doNonModifyingQuery']);
 
     var originalTimeout;
@@ -34,14 +34,19 @@ define(['angular', 'angular-mocks'], function() {
       xmlHTTP.send(null);
       queryAddEpoch = xmlHTTP.responseText;
 
+      xmlHTTP.open('GET', 'base/app/sparql/addEpochComment.sparql', false);
+      xmlHTTP.send(null);
+      queryAddEpochComment = xmlHTTP.responseText;
+
       xmlHTTP.open('GET', 'base/test_graphs/epochsTestStudyGraph.n3', false);
       xmlHTTP.send(null);
       graphAsText = xmlHTTP.responseText;
+      console.log('graph as string ' + graphAsText);
 
       mockStudyService.doModifyingQuery.and.callFake(function(query) {
         var defer = q.defer();
-        console.log('query: ' + queryEpochs);
-        testStore.execute(queryEpochs, function(success) {
+        console.log('query: ' + query);
+        testStore.execute(query, function(success) {
           defer.resolve(success);
         });
         return defer.promise;
@@ -49,15 +54,16 @@ define(['angular', 'angular-mocks'], function() {
 
       mockStudyService.doNonModifyingQuery.and.callFake(function(query) {
         var defer = q.defer();
-        console.log('query: ' + queryEpochs);
-        testStore.execute(queryEpochs, function(success, results) {
-            defer.resolve(results);
+        console.log('query: ' + query);
+        testStore.execute(query, function(success, results) {
+          defer.resolve(results);
         });
         return defer.promise;
       });
 
       httpBackend.expectGET('app/sparql/queryEpoch.sparql').respond(queryEpochs);
       httpBackend.expectGET('app/sparql/addEpoch.sparql').respond(queryAddEpoch);
+      httpBackend.expectGET('app/sparql/addEpochComment.sparql').respond(queryAddEpochComment);
 
       httpBackend.flush();
 
@@ -70,6 +76,23 @@ define(['angular', 'angular-mocks'], function() {
           console.log('test store loaded, ' + results + ' triples loaded');
           done();
         });
+      });
+    });
+
+    describe('rdfstore debug', function() {
+
+      it('show the graph for debug ', function(done) {
+
+        testStore.graph(function(success, graph) {
+          console.log('export graph');
+          console.log(graph);
+          console.log('export graph to NT ');
+          console.log(graph.toNT());
+          done();
+        });
+
+        rootScope.$digest();
+
       });
     });
 
@@ -88,6 +111,7 @@ define(['angular', 'angular-mocks'], function() {
           expect(results[1].uri.value).toBe('http://trials.drugis.org/instances/epoch2uuid');
           expect(results[1].label.value).toBe('epoch 2 label');
           expect(results[1].comment).toBe(null);
+          // for rdfstore-js ^^duration bug, see trello issue for more information  
           expect(results[1].duration.value).toBe('P7D');
           done();
         });
@@ -97,19 +121,15 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    xdescribe('addEpoch', function() {
+    describe('addEpoch', function() {
 
       it('should add the epoch', function(done) {
         var mockEpoch = {
           UUID: {
             value: 'http://trials.drugis.org/instances/epoch1UUID'
           },
-          label: {
-            value: 'new epoch label'
-          },
-          comment: {
-            value: 'new epoch comment'
-          },
+          label: 'new epoch label',
+          comment: 'new epoch comment',
           duration: {
             numberOfPeriods: 13,
             periodType: {
@@ -121,10 +141,22 @@ define(['angular', 'angular-mocks'], function() {
         };
 
         epochService.addItem(mockEpoch).then(function() {
-          testStore.execute(queryAddEpoch, function(success, results) {
-            expect(success).toBe(true);
-            done();
+
+          testStore.graph(function(success, graph) {
+            console.log('export graph');
+            console.log(graph);
+            epochService.queryItems().then(function(results) {
+              // expect 2 + 1 new epoch
+              expect(results.length).toBe(3);
+              // ^^duration bug, see trello issue for more information
+              // but durationstring  part is parsed correctly  
+              expect(results[2].duration.value).toBe('P13D');
+              expect(results[2].comment.value).toBe(mockEpoch.comment);
+              expect(results[2].label.value).toBe(mockEpoch.label);
+              done();
+            });
           });
+
         });
 
         rootScope.$digest();

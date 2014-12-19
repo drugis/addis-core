@@ -14,6 +14,7 @@ define(function (require) {
 
     // filters
     .filter('ontologyFilter', require('util/filters/ontologyFilter'))
+    .filter('durationFilter', require('util/filters/durationFilter'))
 
     //directives
     .directive('navbarDirective', require('navbar/navbarDirective'))

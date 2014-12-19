@@ -11,6 +11,7 @@ require.config({
     'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
     'rdfstore': 'bower_components/rdfstore-js/index',
     'lodash': 'bower_components/lodash/dist/lodash.min',
+    'moment': 'bower_components/moment/min/moment.min',
     'jquery-rdfquery-core': 'bower_components/jquery-rdfquery/js/jquery.rdfquery.core',
     'jquery-rdfquery-rdfa': 'bower_components/jquery-rdfquery/js/jquery.rdfquery.rdfa',
     'jquery-rdfquery-rules': 'bower_components/jquery-rdfquery/js/jquery.rdfquery.rules'

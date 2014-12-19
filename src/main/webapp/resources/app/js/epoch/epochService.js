@@ -12,6 +12,10 @@ define([],
         name: 'addEpoch.sparql'
       });
 
+      var addEpochCommentQueryRaw = SparqlResource.get({
+        name: 'addEpochComment.sparql'
+      });
+
       // var deleteEpochRaw = SparqlResource.get({
       //   name: 'deleteEpoch.sparql'
       // });
@@ -23,13 +27,13 @@ define([],
       function simpleDurationBuilder(durationObject) {
         var duration = "P";
 
-        if(durationObject.periodType.type === 'time') {
+        if (durationObject.periodType.type === 'time') {
           duration = duration + "T";
         }
 
         duration = duration + durationObject.numberOfPeriods + durationObject.periodType.value;
         return duration;
-      } 
+      }
 
       function queryItems() {
         var defer = $q.defer();
@@ -42,13 +46,35 @@ define([],
 
       function addItem(item) {
         var defer = $q.defer();
+        var uuid = UUIDService.generate();
+        var promises = [];
+        var durationString = simpleDurationBuilder(item.duration);
 
+        // add epcoh
         addEpochQueryRaw.$promise.then(function(query) {
           var addEpochQuery = query.data
-            .replace(/\$UUID/g, UUIDService.generate())
+            .replace(/\$newUUID/g, uuid)
             .replace('$label', item.label)
-            .replace('$measurementType', item.measurementType);
-          defer.resolve(StudyService.doModifyingQuery(addEpochQuery));
+            .replace('$duration', durationString);
+          promises.push(StudyService.doModifyingQuery(addEpochQuery));
+        });
+
+        // optional addd comment
+        if (item.comment) {
+          addEpochCommentQueryRaw.$promise.then(function(query) {
+            var addEpochCommentQuery = query.data
+              .replace(/\$newUUID/g, uuid)
+              .replace('$comment', item.comment);
+            promises.push(StudyService.doModifyingQuery(addEpochCommentQuery));
+          });
+        }
+
+        // todo add epcoh to has_epochs end of list 
+
+        // todo add optional main epoch 
+
+        $q.all(promises).then(function() {
+          defer.resolve();
         });
         return defer.promise;
       }
@@ -78,8 +104,8 @@ define([],
       return {
         queryItems: queryItems,
         addItem: addItem,
- //       deleteItem: deleteItem,
- //       editItem: editItem
+        //       deleteItem: deleteItem,
+        //       editItem: editItem
       };
     };
     return dependencies.concat(EpochService);

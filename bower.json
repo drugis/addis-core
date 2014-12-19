@@ -29,7 +29,8 @@
     "jquery": "~2.1.1",
     "angular-resource": "~1.3.2",
     "lodash": "2.4.1",
-    "jquery-rdfquery": "~1.0.0"
+    "jquery-rdfquery": "~1.0.0",
+    "moment": "~2.8.1"
   },
   "resolutions": {
     "angular": "1.3.7",
