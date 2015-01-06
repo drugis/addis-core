@@ -62,7 +62,7 @@ define(['angular', 'angular-mocks'], function() {
       xmlHTTP.send(null);
       deleteHasArmSparql = xmlHTTP.responseText;
 
-      xmlHTTP.open('GET', 'base/test_graphs/testStudyGraph.n3', false);
+      xmlHTTP.open('GET', 'base/test_graphs/testStudyGraph.ttl', false);
       xmlHTTP.send(null);
       graphAsText = xmlHTTP.responseText;
 
@@ -76,7 +76,7 @@ define(['angular', 'angular-mocks'], function() {
       });
 
       httpBackend.expectGET('app/sparql/queryArm.sparql').respond(queryArms);
-      httpBackend.expectGET('app/sparql/addArmQuery.sparql').respond(addArmCommentQuery);
+      httpBackend.expectGET('app/sparql/addArmQuery.sparql').respond(addArmQuery);
       httpBackend.expectGET('app/sparql/addArmCommentQuery.sparql').respond(addArmCommentQuery);
       httpBackend.expectGET('app/sparql/editArmWithComment.sparql').respond(editArmWithCommentSparql);
       httpBackend.expectGET('app/sparql/editArmWithoutComment.sparql').respond(editArmWithoutCommentSparql);
@@ -89,7 +89,7 @@ define(['angular', 'angular-mocks'], function() {
     beforeEach(function(done) {
       rdfStoreService.create(function(store) {
         testStore = store;
-        testStore.load('text/n3', graphAsText, function(success, results) {
+        testStore.load('text/turtle', graphAsText, function(success, results) {
           console.log('test store loaded, ' + results + ' triples loaded');
           done();
         });
