@@ -94,7 +94,7 @@ public class StudyControllerTest {
 
     mockMvc.perform(get("/datasets/" + datasetUUID + "/studies/" + studyUUID).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(RDFLanguages.N3.getContentType().getContentType()));
+            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
     verify(studyReadRepository).getStudy(studyUUID);
     verify(trialverseIOUtilsService).writeModelToServletResponse(any(Model.class), any(HttpServletResponse.class));

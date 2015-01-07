@@ -47,7 +47,7 @@ public class StudyController extends AbstractTrialverseController {
     // todo maybe check coordinates ?
     Model studyModel = studyReadRepository.getStudy(studyUUID);
     response.setStatus(HttpServletResponse.SC_OK);
-    response.setHeader("Content-Type", RDFLanguages.N3.getContentType().getContentType());
+    response.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     trialverseIOUtilsService.writeModelToServletResponse(studyModel, response);
   }
 

@@ -125,7 +125,7 @@ public class DatasetControllerTest {
 
     mockMvc.perform(get("/datasets").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(RDFLanguages.N3.getContentType().getContentType()));
+            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
     verify(accountRepository).findAccountByUsername(user.getName());
     verify(datasetReadRepository).queryDatasets(john);
@@ -156,7 +156,7 @@ public class DatasetControllerTest {
 
     mockMvc.perform((get("/datasets/" + uuid)).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(RDFLanguages.N3.getContentType().getContentType()));
+            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
     verify(datasetReadRepository).getDataset(uuid);
     verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));

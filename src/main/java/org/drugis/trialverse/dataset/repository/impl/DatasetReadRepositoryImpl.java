@@ -81,7 +81,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   private HttpResponse doConstructQuery(String query) {
-    return doRequest(query, FUSEKI_OUTPUT_TYPES.TEXT.toString(), RDFLanguages.N3.getContentType().getContentType());
+    return doRequest(query, FUSEKI_OUTPUT_TYPES.TEXT.toString(), RDFLanguages.TURTLE.getContentType().getContentType());
   }
 
   private HttpResponse doSelectQuery(String query) {

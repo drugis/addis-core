@@ -96,7 +96,7 @@ define([], function() {
       function loadStore(data) {
         RdfStoreService.create(function(store) {
           that.store = store;
-          that.store.load('text/n3', data, function(success, results) {
+          that.store.load('text/turtle', data, function(success, results) {
             if (success) {
               storeDefer.resolve(results);
             } else {

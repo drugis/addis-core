@@ -38,14 +38,12 @@ define(['angular', 'angular-mocks'], function() {
       xmlHTTP.send(null);
       queryAddEpochComment = xmlHTTP.responseText;
 
-      xmlHTTP.open('GET', 'base/test_graphs/epochsTestStudyGraph.n3', false);
+      xmlHTTP.open('GET', 'base/test_graphs/epochsTestStudyGraph.ttl', false);
       xmlHTTP.send(null);
       graphAsText = xmlHTTP.responseText;
-      console.log('graph as string ' + graphAsText);
 
       mockStudyService.doModifyingQuery.and.callFake(function(query) {
         var defer = q.defer();
-        console.log('query: ' + query);
         testStore.execute(query, function(success) {
           defer.resolve(success);
         });
@@ -54,7 +52,6 @@ define(['angular', 'angular-mocks'], function() {
 
       mockStudyService.doNonModifyingQuery.and.callFake(function(query) {
         var defer = q.defer();
-        console.log('query: ' + query);
         testStore.execute(query, function(success, results) {
           defer.resolve(results);
         });
@@ -84,10 +81,6 @@ define(['angular', 'angular-mocks'], function() {
       it('show the graph for debug ', function(done) {
 
         testStore.graph(function(success, graph) {
-          console.log('export graph');
-          console.log(graph);
-          console.log('export graph to NT ');
-          console.log(graph.toNT());
           done();
         });
 
@@ -111,7 +104,7 @@ define(['angular', 'angular-mocks'], function() {
           expect(results[1].uri.value).toBe('http://trials.drugis.org/instances/epoch2uuid');
           expect(results[1].label.value).toBe('epoch 2 label');
           expect(results[1].comment).toBe(null);
-          // for rdfstore-js ^^duration bug, see trello issue for more information  
+          // for rdfstore-js ^^duration bug, see trello issue for more information
           expect(results[1].duration.value).toBe('P7D');
           done();
         });
@@ -143,13 +136,9 @@ define(['angular', 'angular-mocks'], function() {
         epochService.addItem(mockEpoch).then(function() {
 
           testStore.graph(function(success, graph) {
-            console.log('export graph');
-            console.log(graph);
             epochService.queryItems().then(function(results) {
               // expect 2 + 1 new epoch
               expect(results.length).toBe(3);
-              // ^^duration bug, see trello issue for more information
-              // but durationstring  part is parsed correctly  
               expect(results[2].duration.value).toBe('P13D');
               expect(results[2].comment.value).toBe(mockEpoch.comment);
               expect(results[2].label.value).toBe(mockEpoch.label);

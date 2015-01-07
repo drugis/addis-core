@@ -52,7 +52,7 @@ public class StudyWriteRepositoryImpl implements StudyWriteRepository {
     HttpResponse response = null;
     try {
       InputStreamEntity entity = new InputStreamEntity(content);
-      entity.setContentType(RDFLanguages.N3.getContentType().getContentType());
+      entity.setContentType(RDFLanguages.TURTLE.getContentType().getContentType());
       request.setEntity(entity);
       response = client.execute(request);
     } catch (IOException e) {

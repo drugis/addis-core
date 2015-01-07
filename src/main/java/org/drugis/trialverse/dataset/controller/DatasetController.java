@@ -54,7 +54,7 @@ public class DatasetController extends AbstractTrialverseController {
   @ResponseBody
   public void queryDatasets(HttpServletResponse httpServletResponse, Principal currentUser) {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-    httpServletResponse.setHeader("Content-Type", RDFLanguages.N3.getContentType().getContentType());
+    httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     HttpResponse response = datasetReadRepository.queryDatasets(currentUserAccount);
     httpServletResponse.setStatus(response.getStatusLine().getStatusCode());
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
@@ -66,7 +66,7 @@ public class DatasetController extends AbstractTrialverseController {
   public void getDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws IOException {
     Model datasetModel = datasetReadRepository.getDataset(datasetUUID);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-    httpServletResponse.setHeader("Content-Type", RDFLanguages.N3.getContentType().getContentType());
+    httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     trialverseIOUtilsService.writeModelToServletResponse(datasetModel, httpServletResponse);
   }
 

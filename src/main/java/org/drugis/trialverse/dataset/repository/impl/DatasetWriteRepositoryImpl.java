@@ -96,7 +96,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     HttpResponse response = null;
     try {
       InputStreamEntity entity = new InputStreamEntity(datasetContent);
-      entity.setContentType(RDFLanguages.N3.getContentType().getContentType());
+      entity.setContentType(RDFLanguages.TURTLE.getContentType().getContentType());
       request.setEntity(entity);
       response = client.execute(request);
       datasetContent.close();
