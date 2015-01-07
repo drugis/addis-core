@@ -46,6 +46,8 @@ define(
       }
     ]);
 
+    app.constant('FUSEKI_STORE_URL', 'http://box006.drugis.org:3031');
+
     app.config(['$stateProvider', '$urlRouterProvider',
       function($stateProvider, $urlRouterProvider) {
         $stateProvider
