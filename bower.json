@@ -29,7 +29,7 @@
     "jasmine": "~2.0.0",
     "d3": "~3.2.2",
     "nvd3": "~1.1.15-beta",
-    "mcda-web": "https://github.com/drugis/mcda-elicitation-web.git#0.8.1",
+    "mcda-web": "https://github.com/drugis/mcda-elicitation-web.git#0.9",
     "gemtc-web": "https://github.com/ConnorStroomberg/gemtc-web.git#0.0.2",
     "moment": "~2.8.1",
     "angular-ui-select": "~0.8.0",
