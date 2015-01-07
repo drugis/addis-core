@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  describe('the arm service', function() {
+  xdescribe('the arm service', function() {
 
     var rootScope, q, testStore, httpBackend, armService, rdfStoreService,
       queryArms, addArmQuery, addArmCommentQuery, editArmWithCommentSparql, editArmWithoutCommentSparql,

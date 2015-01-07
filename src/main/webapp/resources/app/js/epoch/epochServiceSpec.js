@@ -3,10 +3,9 @@ define(['angular', 'angular-mocks'], function() {
   describe('the epoch service', function() {
 
     var rootScope, q, testStore, httpBackend, epochService, rdfStoreService,
-      queryEpochs, queryAddEpoch, queryAddEpochComment, graphAsText,
+      queryEpochs, queryAddEpoch, queryAddEpochToEndOfList, queryAddEpochComment,
+      graphAsText,
       mockStudyService = jasmine.createSpyObj('StudyService', ['doModifyingQuery', 'doNonModifyingQuery']);
-
-    var originalTimeout;
 
     beforeEach(module('trialverse.util'));
     beforeEach(module('trialverse.epoch'));
@@ -26,17 +25,18 @@ define(['angular', 'angular-mocks'], function() {
       epochService = EpochService;
       rdfStoreService = RdfStoreService;
 
-      xmlHTTP.open('GET', 'base/app/sparql/queryEpoch.sparql', false);
-      xmlHTTP.send(null);
-      queryEpochs = xmlHTTP.responseText;
+      function loadAndExpectResource(resourceName) {
+        xmlHTTP.open('GET', 'base/app/sparql/' + resourceName, false);
+        xmlHTTP.send(null);
+        var response = xmlHTTP.responseText;
+        httpBackend.expectGET('app/sparql/' + resourceName).respond(response);
+        return response;
+      }
 
-      xmlHTTP.open('GET', 'base/app/sparql/addEpoch.sparql', false);
-      xmlHTTP.send(null);
-      queryAddEpoch = xmlHTTP.responseText;
-
-      xmlHTTP.open('GET', 'base/app/sparql/addEpochComment.sparql', false);
-      xmlHTTP.send(null);
-      queryAddEpochComment = xmlHTTP.responseText;
+      queryEpochs = loadAndExpectResource('queryEpoch.sparql');
+      queryAddEpoch = loadAndExpectResource('addEpoch.sparql');
+      queryAddEpochComment = loadAndExpectResource('addEpochComment.sparql');
+      queryAddEpochToEndOfList = loadAndExpectResource('addEpochToStudyEpochList.sparql');
 
       xmlHTTP.open('GET', 'base/test_graphs/epochsTestStudyGraph.ttl', false);
       xmlHTTP.send(null);
@@ -58,9 +58,6 @@ define(['angular', 'angular-mocks'], function() {
         return defer.promise;
       });
 
-      httpBackend.expectGET('app/sparql/queryEpoch.sparql').respond(queryEpochs);
-      httpBackend.expectGET('app/sparql/addEpoch.sparql').respond(queryAddEpoch);
-      httpBackend.expectGET('app/sparql/addEpochComment.sparql').respond(queryAddEpochComment);
 
       httpBackend.flush();
 
@@ -80,7 +77,7 @@ define(['angular', 'angular-mocks'], function() {
 
       it('show the graph for debug ', function(done) {
 
-        testStore.graph(function(success, graph) {
+        testStore.graph(function() {
           done();
         });
 
@@ -89,7 +86,7 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    describe('queryEpoch', function() {
+    xdescribe('queryEpoch', function() {
 
       it('should query the epoch', function(done) {
 
@@ -117,6 +114,7 @@ define(['angular', 'angular-mocks'], function() {
     describe('addEpoch', function() {
 
       it('should add the epoch', function(done) {
+        var xmlHTTP = new XMLHttpRequest();
         var mockEpoch = {
           UUID: {
             value: 'http://trials.drugis.org/instances/epoch1UUID'
@@ -133,17 +131,24 @@ define(['angular', 'angular-mocks'], function() {
           }
         };
 
+        xmlHTTP.open('GET', 'base/app/sparql/getLastItemInEpochList.sparql', false);
+        xmlHTTP.send(null);
+        var getLastItemInEpochList = xmlHTTP.responseText
+
         epochService.addItem(mockEpoch).then(function() {
 
-          testStore.graph(function(success, graph) {
-            epochService.queryItems().then(function(results) {
-              // expect 2 + 1 new epoch
-              expect(results.length).toBe(3);
-              expect(results[2].duration.value).toBe('P13D');
-              expect(results[2].comment.value).toBe(mockEpoch.comment);
-              expect(results[2].label.value).toBe(mockEpoch.label);
-              done();
-            });
+          epochService.queryItems().then(function(results) {
+            // expect 2 + 1 new epoch
+            expect(results.length).toBe(3);
+            expect(results[2].duration.value).toBe('P13D');
+            expect(results[2].comment.value).toBe(mockEpoch.comment);
+            expect(results[2].label.value).toBe(mockEpoch.label);
+            done();
+          });
+
+          testStore.execute(getLastItemInEpochList, function(success, results) {
+            console.log(results);
+            expect(results).not.toBeNull();
           });
 
         });

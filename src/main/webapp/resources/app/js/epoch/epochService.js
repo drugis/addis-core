@@ -16,6 +16,10 @@ define([],
         name: 'addEpochComment.sparql'
       });
 
+      var addEpochToEndOfListQueryRaw = SparqlResource.get({
+        name: 'addEpochToStudyEpochList.sparql'
+      });
+
       // var deleteEpochRaw = SparqlResource.get({
       //   name: 'deleteEpoch.sparql'
       // });
@@ -50,16 +54,23 @@ define([],
         var promises = [];
         var durationString = simpleDurationBuilder(item.duration);
 
-        // add epcoh
-        addEpochQueryRaw.$promise.then(function(query) {
-          var addEpochQuery = query.data
-            .replace(/\$newUUID/g, uuid)
-            .replace('$label', item.label)
-            .replace('$duration', durationString);
-          promises.push(StudyService.doModifyingQuery(addEpochQuery));
+        // // add epoch
+        // addEpochQueryRaw.$promise.then(function(query) {
+        //   var addEpochQuery = query.data
+        //     .replace(/\$newUUID/g, uuid)
+        //     .replace('$label', item.label)
+        //     .replace('$duration', durationString);
+        //   promises.push(StudyService.doModifyingQuery(addEpochQuery));
+        // });
+
+        // add epoch to list of has_epochs in study
+        addEpochToEndOfListQueryRaw.$promise.then(function(query) {
+          var addEpochToEndOfListQuery = query.data
+            .replace(/\$elementToInsert/g, uuid);
+          promises.push(StudyService.doModifyingQuery(addEpochToEndOfListQuery));
         });
 
-        // optional addd comment
+        // optional add comment
         if (item.comment) {
           addEpochCommentQueryRaw.$promise.then(function(query) {
             var addEpochCommentQuery = query.data
@@ -69,9 +80,7 @@ define([],
           });
         }
 
-        // todo add epcoh to has_epochs end of list 
-
-        // todo add optional main epoch 
+        // todo add optional main epoch
 
         $q.all(promises).then(function() {
           defer.resolve();

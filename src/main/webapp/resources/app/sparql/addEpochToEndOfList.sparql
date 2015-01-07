@@ -1,0 +1,16 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX instance: <http://trials.drugis.org/instances/>
+
+DELETE {
+  ?element rdf:rest rdf:nil .
+} INSERT {
+  ?element rdf:rest [
+    rdf:first instance:$elementToInsert ;
+    rdf:rest rdf:nil
+  ]
+} WHERE {
+  ?study ontology:has_epochs ?list .
+  ?list rdf:rest+ ?element .
+  ?element rdf:rest rdf:nil .
+}

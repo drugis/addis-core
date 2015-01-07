@@ -1,0 +1,3 @@
+SELECT ?epochsList WHERE {
+  ?study ontology:has_epochs ?epochsList .
+}

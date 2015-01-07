@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  describe('dataset service', function() {
+  xdescribe('dataset service', function() {
 
     var uUIDService, rdfStoreService;
 
