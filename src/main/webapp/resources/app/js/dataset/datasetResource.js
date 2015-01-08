@@ -9,7 +9,7 @@ define([], function() {
       'get': {
         method: 'get',
         headers: {
-          'Accept': 'text/n3'
+          'Accept': 'text/turtle'
         },
         transformResponse: function(data) {
           return {
@@ -20,7 +20,7 @@ define([], function() {
       'query': {
         method: 'GET',
         headers: {
-          'Accept': 'text/n3'
+          'Accept': 'text/turtle'
         },
         isArray: false,
         transformResponse: function(data) {

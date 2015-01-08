@@ -34,6 +34,12 @@ public class ScratchController {
     scratchService.proxyQuery(request, response);
   }
 
+  @RequestMapping(value="/{graphUUID}")
+  @ResponseBody
+  public String proxyExport(HttpServletRequest request, HttpServletResponse response, @PathVariable String graphUUID) {
+    return
+  }
+
 }
 
 

@@ -70,14 +70,12 @@ define([],
       };
 
       function reloadStudyModel() {
-        StudyService.resetStore();
         StudyResource.get($stateParams, function(response) {
-          StudyService.
-          loadStore(response.n3Data)
-            .then(function(numberOfTriples) {
-              console.log('loading study-store success, ' + numberOfTriples + ' triples loaded');
-              StudyService.queryStudyData().then(function(studyQueryResult) {
-                $scope.study = studyQueryResult;
+          StudyService.loadStore(response.data)
+            .then(function() {
+              console.log('loading study-store success');
+              StudyService.queryStudyData().then(function(queryResult) {
+                $scope.study = queryResult.data.results.bindings[0];
               });
             }, function() {
               console.error('failed loading study-store');

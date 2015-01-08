@@ -8,9 +8,9 @@ define([],
       StudiesWithDetailResource, JsonLdService) {
 
       DatasetResource.get($stateParams, function(response) {
-        DatasetService.loadStore(response.n3Data).then(function() {
-          DatasetService.queryDataset().then(function(dataset) {
-            $scope.dataset = dataset;
+        DatasetService.loadStore(response.data).then(function() {
+          DatasetService.queryDataset().then(function(queryResult) {
+            $scope.dataset = queryResult.data.results.bindings[0];
             $scope.dataset.uuid = $stateParams.datasetUUID;
           });
         });

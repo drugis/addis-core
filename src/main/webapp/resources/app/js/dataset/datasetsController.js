@@ -11,7 +11,7 @@ define([],
             DatasetService.queryDatasetsOverview().then(function(queryResult) {
               $scope.datasets = queryResult.data.results.bindings;
             }, function() {
-              console.error('failed loading datasetstore')
+              console.error('failed loading datasetstore');
             });
           });
         });
@@ -36,3 +36,5 @@ define([],
     };
     return dependencies.concat(DatasetsController);
   });
+
+

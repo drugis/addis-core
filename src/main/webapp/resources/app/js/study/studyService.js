@@ -1,142 +1,128 @@
 'use strict';
 define([], function() {
-    var dependencies = ['$q', 'UUIDService', 'RdfStoreService'];
-    var StudyService = function($q, UUIDService, RdfStoreService) {
+  var dependencies = ['$q', 'UUIDService', 'RemoteRdfStoreService'];
+  var StudyService = function($q, UUIDService, RemoteRdfStoreService) {
 
-      var that = this,
-        modified = false,
-        storeDefer = $q.defer();
+    var studyPrefix = 'http://trials.drugis.org/studies/';
+    var datasetPrefix = 'http://trials.drugis.org/datasets/';
 
-      function resetStore() {
-        storeDefer = $q.defer();
-        that.store = undefined;
-      }
+    var scratchStudyUri,
+      modified = false,
+      storeDefer = $q.defer();
 
-      function doModifyingQuery(query) {
-        var promise = doQuery(query);
-        promise.then(function() {
-          modified = true;
+    function resetStore() {
+      storeDefer = $q.defer();
+      that.store = undefined;
+    }
+
+    function doModifyingQuery(query) {
+      var promise = doQuery(query);
+      promise.then(function() {
+        modified = true;
+      });
+      return promise;
+    }
+
+    function doNonModifyingQuery(query) {
+      return doQuery(query);
+    }
+
+    function doQuery(query) {
+      var defer = $q.defer();
+      storeDefer.promise.then(function() {
+        that.store.execute(query, function(success, result) {
+          if (success) {
+            defer.resolve(result);
+          } else {
+            console.error('query failed! ' + query);
+            defer.reject();
+          }
         });
-        return promise;
-      }
+      });
+      return defer.promise;
+    }
 
-      function doNonModifyingQuery(query) {
-        return doQuery(query);
-      }
+    function createEmptyStudy(uuid, study) {
+      var query =
+        'PREFIX ontology: <http://trials.drugis.org/ontology#>' +
+        'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
+        'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
+        'PREFIX study: <http://trials.drugis.org/studies/>' +
+        ' INSERT DATA ' +
+        ' { study:' + uuid + ' rdfs:label "' + study.label + '" ; ' +
+        '                   rdf:type  ontology:Study ; ' +
+        '                   rdfs:comment   "' + study.comment + '" . ' +
+        ' }';
 
-      function doQuery(query) {
-        var defer = $q.defer();
-        storeDefer.promise.then(function() {
-          that.store.execute(query, function(success, result) {
-            if (success) {
-              defer.resolve(result);
-            } else {
-              console.error('query failed! ' + query);
-              defer.reject();
-            }
-          });
+      return RemoteRdfStoreService.create(studyPrefix)
+        .then(function(newGraphUri) {
+          scratchStudyUri = newGraphUri;
+          return RemoteRdfStoreService.executeUpdate(newGraphUri, query);
         });
-        return defer.promise;
-      }
-
-      function createEmptyStudy(uuid, study) {
-        var defer = $q.defer();
-        var query =
-          'PREFIX ontology: <http://trials.drugis.org/ontology#>' +
-          'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
-          'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
-          'PREFIX study: <http://trials.drugis.org/studies/>' +
-          ' INSERT DATA ' +
-          ' { study:' + uuid + ' rdfs:label "' + study.label + '" ; ' +
-          '                   rdf:type  ontology:Study ; ' +
-          '                   rdfs:comment   "' + study.comment + '" . ' +
-          ' }';
-
-        RdfStoreService.create(function(newStudyStore) {
-          newStudyStore.execute(query, function(success) {
-            if (success) {
-              newStudyStore.graph(function(success, graph) {
-                defer.resolve(graph.toNT());
-              });
-            } else {
-              console.error('create study failed!');
-              defer.reject();
-            }
-          });
-        });
-        return defer.promise;
-      }
+    }
 
 
-      function doSingleResultQuery(query) {
-        return doQuery(query).then(function(results) {
-          var singleResult = results.length === 1 ? results[0] : console.error('single result expected');
-          return singleResult;
-        });
-      }
+    function doSingleResultQuery(query) {
+      return doQuery(query).then(function(results) {
+        var singleResult = results.length === 1 ? results[0] : console.error('single result expected');
+        return singleResult;
+      });
+    }
 
-      function queryStudyData() {
-        var studyDataQuery =
-          'prefix ontology: <http://trials.drugis.org/ontology#>' +
-          'prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
-          'prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
-          'prefix study: <http://trials.drugis.org/studies/>' +
-          'prefix instance: <http://trials.drugis.org/instances/>' +
-          'select' +
-          ' ?label ?comment' +
-          ' where {' +
-          '    ?studyUid' +
-          '      rdf:type ontology:Study ;' +
-          '      rdfs:label ?label ; ' +
-          '      rdfs:comment ?comment . ' +
-          '}';
-        return doSingleResultQuery(studyDataQuery);
-      }
+    function queryStudyData() {
+      var studyDataQuery =
+        'prefix ontology: <http://trials.drugis.org/ontology#>' +
+        'prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
+        'prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
+        'prefix study: <http://trials.drugis.org/studies/>' +
+        'prefix instance: <http://trials.drugis.org/instances/>' +
+        'select' +
+        ' ?label ?comment' +
+        ' where {' +
+        '    ?studyUid' +
+        '      rdf:type ontology:Study ;' +
+        '      rdfs:label ?label ; ' +
+        '      rdfs:comment ?comment . ' +
+        '}';
+      return doSingleResultQuery(studyDataQuery);
+    }
 
-      function loadStore(data) {
-        RdfStoreService.create(function(store) {
-          that.store = store;
-          that.store.load('text/turtle', data, function(success, results) {
-            if (success) {
-              storeDefer.resolve(results);
-            } else {
-              console.error('failed loading store');
-              storeDefer.reject();
-            }
-          });
-        });
-        return storeDefer.promise;
-      }
+    function loadStore(data) {
+      return RemoteRdfStoreService.create(studyPrefix).then(function(graphUri) {
+        scratchStudyUri = graphUri;
+        return RemoteRdfStoreService.load(scratchStudyUri, data);
+      });
+    }
 
-      function exportGraph() {
-        var defer = $q.defer();
+    function exportGraph() {
+      var defer = $q.defer();
 
-        that.store.graph(function(success, graph) {
-          defer.resolve(graph.toNT());
-        });
-        return defer.promise;
-      }
+      that.store.graph(function(success, graph) {
+        defer.resolve(graph.toNT());
+      });
+      return defer.promise;
+    }
 
-      function isStudyModified() {
-        return modified;
-      }
+    function isStudyModified() {
+      return modified;
+    }
 
-      function studySaved() {
-        modified = false;
-      }
+    function studySaved() {
+      modified = false;
+    }
 
-      return {
-        resetStore: resetStore,
-        loadStore: loadStore,
-        queryStudyData: queryStudyData,
-        createEmptyStudy: createEmptyStudy,
-        exportGraph: exportGraph,
-        doModifyingQuery: doModifyingQuery,
-        doNonModifyingQuery: doNonModifyingQuery,
-        isStudyModified: isStudyModified,
-        studySaved: studySaved
-      };
+    return {
+      resetStore: resetStore,
+      loadStore: loadStore,
+      queryStudyData: queryStudyData,
+      createEmptyStudy: createEmptyStudy,
+      exportGraph: exportGraph,
+      doModifyingQuery: doModifyingQuery,
+      doNonModifyingQuery: doNonModifyingQuery,
+      isStudyModified: isStudyModified,
+      studySaved: studySaved
     };
+  };
 
-    return dependencies.concat(StudyService);
-  });
+  return dependencies.concat(StudyService);
+});
