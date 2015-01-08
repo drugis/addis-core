@@ -12,34 +12,32 @@ define([], function() {
     }
 
     function load(graphUri, data) {
-      return $http({
-        url: FUSEKI_STORE_URL + '/data',
-        method: 'POST',
-        data: data,
-        params: {
-          'graph': graphUri
-        },
-        headers: {
-          'Content-Type': 'text/turtle',
-          'Accept': 'application/ld+json'
+      return $http.post(FUSEKI_STORE_URL + '/data',
+        data, {
+          params: {
+            'graph': graphUri
+          },
+          headers: {
+            'Content-Type': 'text/turtle',
+            'Accept': 'application/ld+json'
+          }
         }
-      });
+      );
     }
 
     function executeUpdate(graphUri, query) {
-      return $http({
-        url: FUSEKI_STORE_URL + '/update',
-        method: 'POST',
-        data: query,
-        params: {
-          'default-graph-uri': graphUri,
-          'output': 'json'
-        },
-        headers: {
-          'Content-Type': 'application/sparql-update',
-          'Accept': 'application/ld+json'
-        }
-      });
+      return $http.post(
+        FUSEKI_STORE_URL + '/update',
+        query, {
+          params: {
+            'default-graph-uri': graphUri,
+            'output': 'json'
+          },
+          headers: {
+            'Content-Type': 'application/sparql-update',
+            'Accept': 'application/ld+json'
+          }
+        });
     }
 
     function executeQuery(graphUri, query) {
