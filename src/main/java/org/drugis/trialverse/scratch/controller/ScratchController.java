@@ -16,11 +16,24 @@ public class ScratchController {
   @Inject
   ScratchService scratchService;
 
-  @RequestMapping(method = RequestMethod.POST)
+  @RequestMapping(value="/update", method = RequestMethod.POST)
   @ResponseBody
-  public void proxy(HttpServletRequest request, HttpServletResponse response) {
-    scratchService.proxyPost(request, response);
+  public void proxyUpdate(HttpServletRequest request, HttpServletResponse response) {
+    scratchService.proxyUpdate(request, response);
   }
+
+  @RequestMapping(value="/data", method = RequestMethod.POST)
+  @ResponseBody
+  public void proxyData(HttpServletRequest request, HttpServletResponse response) {
+    scratchService.proxyData(request, response);
+  }
+
+  @RequestMapping(value="/query", method = RequestMethod.POST)
+  @ResponseBody
+  public void proxyQuery(HttpServletRequest request, HttpServletResponse response) {
+    scratchService.proxyQuery(request, response);
+  }
+
 }
 
 

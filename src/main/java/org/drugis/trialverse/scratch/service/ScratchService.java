@@ -8,5 +8,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 
 public interface ScratchService {
-  void proxyPost(HttpServletRequest request, HttpServletResponse response);
+  void proxyUpdate(HttpServletRequest request, HttpServletResponse response);
+
+  void proxyData(HttpServletRequest request, HttpServletResponse response);
+
+  void proxyQuery(HttpServletRequest request, HttpServletResponse response);
 }

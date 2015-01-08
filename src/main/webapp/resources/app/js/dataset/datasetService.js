@@ -21,18 +21,18 @@ define([], function() {
       ' }';
 
     function loadStore(data) {
-      return RemoteRdfStoreService.create(datasetPrefix).then(function(uuid) {
-        scratchDatasetUri = datasetPrefix + uuid;
+      return RemoteRdfStoreService.create(datasetPrefix).then(function(graphUri) {
+        scratchDatasetUri = graphUri;
         return RemoteRdfStoreService.load(scratchDatasetUri, data);
       });
     }
 
     function queryDatasetsOverview() {
-      return RemoteRdfStoreService.execute(scratchDatasetUri, query);
+      return RemoteRdfStoreService.executeQuery(scratchDatasetUri, query);
     }
 
     function queryDataset() {
-      return RemoteRdfStoreService.execute(scratchDatasetUri, query);
+      return RemoteRdfStoreService.executeQuery(scratchDatasetUri, query);
     }
 
     function addStudyToDatasetGraph(datasetUUID, studyUUID) {
@@ -45,7 +45,7 @@ define([], function() {
         '  dataset:' + datasetUUID + ' ontology:contains_study study:' + studyUUID +
         ' }';
 
-      return RemoteRdfStoreService.execute(scratchDatasetUri, query);
+      return RemoteRdfStoreService.executeUpdate(scratchDatasetUri, query);
     }
 
     return {
