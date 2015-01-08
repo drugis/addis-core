@@ -46,7 +46,7 @@ define(
       }
     ]);
 
-    app.constant('FUSEKI_STORE_URL', 'http://box006.drugis.org:3031');
+    app.constant('FUSEKI_STORE_URL', 'http://localhost:8090/scratch');
 
     app.config(['$stateProvider', '$urlRouterProvider',
       function($stateProvider, $urlRouterProvider) {

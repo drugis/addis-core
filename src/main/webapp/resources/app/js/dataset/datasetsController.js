@@ -6,8 +6,8 @@ define([],
 
       function loadDatasets() {
         DatasetResource.query(function(response) {
-          DatasetService.loadStore(response.n3Data).then(function(numberOfTriples) {
-            console.log('loading dataset-store success, ' + numberOfTriples + ' triples loaded');
+          DatasetService.loadStore(response.data).then(function() {
+            console.log('loading dataset-store success');
             DatasetService.queryDatasetsOverview().then(function(queryResult) {
               $scope.datasets = queryResult;
             }, function() {

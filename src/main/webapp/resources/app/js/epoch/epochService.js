@@ -20,6 +20,14 @@ define([],
         name: 'addEpochToStudyEpochList.sparql'
       });
 
+      var getLastItemInEpochList = SparqlResource.get({
+        name: 'getLastItemInEpochList.sparql'
+      });
+
+      var deleteTail = SparqlResource.get({
+        name: 'deleteTail.sparql'
+      });
+
       // var deleteEpochRaw = SparqlResource.get({
       //   name: 'deleteEpoch.sparql'
       // });
@@ -54,6 +62,29 @@ define([],
         var promises = [];
         var durationString = simpleDurationBuilder(item.duration);
 
+        var lastEpochUri;
+
+        getLastItemInEpochList.$promise.then(function(query) {
+          StudyService.doNonModifyingQuery(query.data).then(function(result) {
+            console.log(result);
+            lastEpochUri = result[0].lastEpoch.value;
+             deleteTail.$promise.then(function(query){
+                StudyService.doModifyingQuery(query.data).then(function(success){
+                  console.log("after delete" + success);
+                  addEpochToEndOfListQueryRaw.$promise.then(function(query) {
+                    var addEpochToEndOfListQuery = query.data
+                    .replace(/\$elementToInsert/g, uuid)
+                    .replace(/\$lastItem/g, lastEpochUri);
+                    StudyService.doModifyingQuery(addEpochToEndOfListQuery).then(function(succes){
+                      console.log('after insert' + succes);
+                      defer.resolve(true);
+                    });
+                  });
+                })
+             });
+          });
+        });
+
         // // add epoch
         // addEpochQueryRaw.$promise.then(function(query) {
         //   var addEpochQuery = query.data
@@ -64,27 +95,23 @@ define([],
         // });
 
         // add epoch to list of has_epochs in study
-        addEpochToEndOfListQueryRaw.$promise.then(function(query) {
-          var addEpochToEndOfListQuery = query.data
-            .replace(/\$elementToInsert/g, uuid);
-          promises.push(StudyService.doModifyingQuery(addEpochToEndOfListQuery));
-        });
+        
 
         // optional add comment
-        if (item.comment) {
-          addEpochCommentQueryRaw.$promise.then(function(query) {
-            var addEpochCommentQuery = query.data
-              .replace(/\$newUUID/g, uuid)
-              .replace('$comment', item.comment);
-            promises.push(StudyService.doModifyingQuery(addEpochCommentQuery));
-          });
-        }
+        // if (item.comment) {
+        //   addEpochCommentQueryRaw.$promise.then(function(query) {
+        //     var addEpochCommentQuery = query.data
+        //       .replace(/\$newUUID/g, uuid)
+        //       .replace('$comment', item.comment);
+        //     promises.push(StudyService.doModifyingQuery(addEpochCommentQuery));
+        //   });
+        // }
 
         // todo add optional main epoch
 
-        $q.all(promises).then(function() {
-          defer.resolve();
-        });
+        // $q.all(promises).then(function() {
+        //   defer.resolve();
+        // });
         return defer.promise;
       }
 
