@@ -2,7 +2,7 @@ define(['angular', 'angular-mocks'], function () {
   describe("The stripFront filter", function () {
     var stripFrontFilter;
 
-    beforeEach(module('trialverse.dataset'));
+    beforeEach(module('trialverse.util'));
 
     beforeEach(inject(function($filter) {
       stripFrontFilter = $filter('stripFrontFilter');

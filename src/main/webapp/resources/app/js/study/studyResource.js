@@ -17,7 +17,7 @@ define([], function() {
           },
           transformResponse: function(data) {
             return {
-              n3Data: data // property on Responce object to access raw result data 
+              data: data // property on Responce object to access raw result data
             };
           }
         },

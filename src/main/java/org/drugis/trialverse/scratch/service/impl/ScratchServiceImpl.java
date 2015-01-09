@@ -1,8 +1,10 @@
 package org.drugis.trialverse.scratch.service.impl;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.jena.riot.RDFLanguages;
@@ -55,7 +57,19 @@ public class ScratchServiceImpl implements ScratchService {
     } catch (IOException e) {
       logger.error(e.toString());
     }
+  }
 
+  private void executeGet(HttpServletRequest httpServletRequest, HttpServletResponse response, String url) {
+    try {
+      HttpGet request = new HttpGet(url + httpServletRequest.getQueryString());
+      request.setHeader("Accept", httpServletRequest.getHeader("Accept"));
+      HttpClient httpClient = httpClientFactory.build();
+      HttpResponse httpResponse = httpClient.execute(request);
+      response.setStatus(httpResponse.getStatusLine().getStatusCode());
+      trialverseIOUtilsService.writeResponseContentToServletResponse(httpResponse, response);
+    } catch (IOException e) {
+      logger.error(e.toString());
+    }
   }
 
   @Override
@@ -71,5 +85,10 @@ public class ScratchServiceImpl implements ScratchService {
   @Override
   public void proxyQuery(HttpServletRequest httpServletRequest, HttpServletResponse response) {
     executePost(httpServletRequest, response, FUSEKI_SCRATCH_QUERY_URL);
+  }
+
+  @Override
+  public void proxyGetGraph(HttpServletRequest request, HttpServletResponse response) {
+    executeGet(request, response, FUSEKI_SCRATCH_DATA_URL);
   }
 }

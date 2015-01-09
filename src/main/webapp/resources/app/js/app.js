@@ -46,7 +46,7 @@ define(
       }
     ]);
 
-    app.constant('FUSEKI_STORE_URL', 'http://localhost:8090/scratch');
+    app.constant('SCRATCH_RDF_STORE_URL', 'http://localhost:8090/scratch');
 
     app.config(['$stateProvider', '$urlRouterProvider',
       function($stateProvider, $urlRouterProvider) {

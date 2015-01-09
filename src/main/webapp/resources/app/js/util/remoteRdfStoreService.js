@@ -1,7 +1,7 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$http', 'UUIDService', 'FUSEKI_STORE_URL'];
-  var RemotestoreService = function($http, UUIDService, FUSEKI_STORE_URL) {
+  var dependencies = ['$http', 'UUIDService', 'SCRATCH_RDF_STORE_URL'];
+  var RemotestoreService = function($http, UUIDService, SCRATCH_RDF_STORE_URL) {
 
     function create(uriBase) {
       var graphUri = uriBase + UUIDService.generate();
@@ -12,14 +12,13 @@ define([], function() {
     }
 
     function load(graphUri, data) {
-      return $http.post(FUSEKI_STORE_URL + '/data',
+      return $http.post(SCRATCH_RDF_STORE_URL + '/data',
         data, {
           params: {
             'graph': graphUri
           },
           headers: {
-            'Content-Type': 'text/turtle',
-            'Accept': 'application/ld+json'
+            'Content-Type': 'text/turtle'
           }
         }
       );
@@ -27,40 +26,45 @@ define([], function() {
 
     function executeUpdate(graphUri, query) {
       return $http.post(
-        FUSEKI_STORE_URL + '/update',
+        SCRATCH_RDF_STORE_URL + '/update',
         query, {
           params: {
-            'default-graph-uri': graphUri,
             'output': 'json'
           },
           headers: {
-            'Content-Type': 'application/sparql-update',
-            'Accept': 'application/ld+json'
+            'Content-Type': 'application/sparql-update'
           }
         });
     }
 
     function executeQuery(graphUri, query) {
-      return $http({
-        url: FUSEKI_STORE_URL + '/query',
-        method: 'POST',
-        data: query,
-        params: {
-          'default-graph-uri': graphUri,
-          'output': 'json'
-        },
-        headers: {
-          'Content-Type': 'application/sparql-query',
-          'Accept': 'application/ld+json'
-        }
-      });
+      return $http.post(SCRATCH_RDF_STORE_URL + '/query',
+        query, {
+          params: {
+            'output': 'json'
+          },
+          headers: {
+            'Content-Type': 'application/sparql-query',
+            'Accept': 'application/ld+json'
+          }
+        });
+    }
+
+    function getGraph(graphUri) {
+      return $http.get(
+        SCRATCH_RDF_STORE_URL, {
+          params: {
+            graph: graphUri
+          }
+        });
     }
 
     return {
       create: create,
       load: load,
       executeUpdate: executeUpdate,
-      executeQuery: executeQuery
+      executeQuery: executeQuery,
+      getGraph: getGraph
     };
   };
   return dependencies.concat(RemotestoreService);

@@ -1,70 +1,48 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$q', 'UUIDService', 'RemoteRdfStoreService'];
-  var StudyService = function($q, UUIDService, RemoteRdfStoreService) {
+  var dependencies = ['$filter', 'UUIDService', 'RemoteRdfStoreService'];
+  var StudyService = function($filter, UUIDService, RemoteRdfStoreService) {
 
     var studyPrefix = 'http://trials.drugis.org/studies/';
-    var datasetPrefix = 'http://trials.drugis.org/datasets/';
 
     var scratchStudyUri,
-      modified = false,
-      storeDefer = $q.defer();
-
-    function resetStore() {
-      storeDefer = $q.defer();
-      that.store = undefined;
-    }
+      modified = false;
 
     function doModifyingQuery(query) {
-      var promise = doQuery(query);
-      promise.then(function() {
+      return RemoteRdfStoreService.executeUpdate(scratchStudyUri, query).then(function() {
         modified = true;
       });
-      return promise;
     }
 
     function doNonModifyingQuery(query) {
-      return doQuery(query);
+      return RemoteRdfStoreService.executeQuery(scratchStudyUri, query);
     }
 
-    function doQuery(query) {
-      var defer = $q.defer();
-      storeDefer.promise.then(function() {
-        that.store.execute(query, function(success, result) {
-          if (success) {
-            defer.resolve(result);
-          } else {
-            console.error('query failed! ' + query);
-            defer.reject();
-          }
-        });
-      });
-      return defer.promise;
-    }
-
-    function createEmptyStudy(uuid, study) {
-      var query =
-        'PREFIX ontology: <http://trials.drugis.org/ontology#>' +
-        'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
-        'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
-        'PREFIX study: <http://trials.drugis.org/studies/>' +
-        ' INSERT DATA ' +
-        ' { study:' + uuid + ' rdfs:label "' + study.label + '" ; ' +
-        '                   rdf:type  ontology:Study ; ' +
-        '                   rdfs:comment   "' + study.comment + '" . ' +
-        ' }';
-
+    function createEmptyStudy(study) {
       return RemoteRdfStoreService.create(studyPrefix)
         .then(function(newGraphUri) {
           scratchStudyUri = newGraphUri;
+          var query =
+            'PREFIX ontology: <http://trials.drugis.org/ontology#> ' +
+            'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ' +
+            'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ' +
+            'PREFIX study: <http://trials.drugis.org/studies/> ' +
+            ' INSERT DATA ' +
+            ' { ' +
+            '   GRAPH <' + newGraphUri + '> {' +
+            '    <' + newGraphUri + '> rdfs:label "' + study.label + '" ; ' +
+            '       rdf:type  ontology:Study ; ' +
+            '       rdfs:comment   "' + study.comment + '" . ' +
+            '   } ' +
+            ' }';
           return RemoteRdfStoreService.executeUpdate(newGraphUri, query);
         });
     }
 
 
     function doSingleResultQuery(query) {
-      return doQuery(query).then(function(results) {
-        var singleResult = results.length === 1 ? results[0] : console.error('single result expected');
+      return RemoteRdfStoreService.executeQuery(scratchStudyUri, query).then(function(results) {
+        var singleResult = results.data.results.bindings.length === 1 ? results.data.results.bindings[0] : console.error('single result expected');
         return singleResult;
       });
     }
@@ -78,12 +56,12 @@ define([], function() {
         'prefix instance: <http://trials.drugis.org/instances/>' +
         'select' +
         ' ?label ?comment' +
-        ' where {' +
+        ' where { GRAPH <' + scratchStudyUri + '> {' +
         '    ?studyUid' +
         '      rdf:type ontology:Study ;' +
         '      rdfs:label ?label ; ' +
         '      rdfs:comment ?comment . ' +
-        '}';
+        '}}';
       return doSingleResultQuery(studyDataQuery);
     }
 
@@ -94,13 +72,8 @@ define([], function() {
       });
     }
 
-    function exportGraph() {
-      var defer = $q.defer();
-
-      that.store.graph(function(success, graph) {
-        defer.resolve(graph.toNT());
-      });
-      return defer.promise;
+    function getStudyGraph() {
+      return RemoteRdfStoreService.getGraph(scratchStudyUri);
     }
 
     function isStudyModified() {
@@ -111,16 +84,20 @@ define([], function() {
       modified = false;
     }
 
+    function getStudyUUID() {
+      return $filter('stripFrontFilter')(scratchStudyUri, studyPrefix);
+    }
+
     return {
-      resetStore: resetStore,
       loadStore: loadStore,
       queryStudyData: queryStudyData,
       createEmptyStudy: createEmptyStudy,
-      exportGraph: exportGraph,
+      getStudyGraph: getStudyGraph,
       doModifyingQuery: doModifyingQuery,
       doNonModifyingQuery: doNonModifyingQuery,
       isStudyModified: isStudyModified,
-      studySaved: studySaved
+      studySaved: studySaved,
+      getStudyUUID: getStudyUUID
     };
   };
 

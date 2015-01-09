@@ -75,7 +75,7 @@ define([],
             .then(function() {
               console.log('loading study-store success');
               StudyService.queryStudyData().then(function(queryResult) {
-                $scope.study = queryResult.data.results.bindings[0];
+                $scope.study = queryResult;
               });
             }, function() {
               console.error('failed loading study-store');
@@ -101,7 +101,7 @@ define([],
       };
 
       $scope.saveStudy = function() {
-        StudyService.exportGraph().then(function(graph) {
+        StudyService.getGraph().then(function(graph) {
           StudyResource.put({
             datasetUUID: $stateParams.datasetUUID,
             studyUUID: $stateParams.studyUUID

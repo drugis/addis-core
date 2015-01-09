@@ -7,36 +7,38 @@ define([], function() {
     UUIDService, StudyService, StudyResource) {
 
     $scope.isUniqueShortName = function(shortName) {
-      return !$scope.studiesWithDetail.length > 0 || !_.find($scope.studiesWithDetail, function(existingStudy) {
+      var anyduplicateName = _.find($scope.studiesWithDetail, function(existingStudy) {
         return existingStudy.label === shortName;
       });
+      return !anyduplicateName;
     };
 
     $scope.createStudy = function(study) {
-      var uuid = UUIDService.generate();
-      StudyService.createEmptyStudy(uuid, study).then(function(newStudy) {
+      StudyService.createEmptyStudy(study).then(function() {
+        StudyService.getStudyGraph().then(function(queryResult) {
+        var uuid = StudyService.getStudyUUID();
 
-        StudyResource.put({
-          datasetUUID: $stateParams.datasetUUID,
-          studyUUID: uuid
-        }, newStudy, function() {
+          StudyResource.put({
+            datasetUUID: $stateParams.datasetUUID,
+            studyUUID: uuid
+          }, queryResult.data, function() {
 
-          DatasetService.addStudyToDatasetGraph($stateParams.datasetUUID, uuid).then(function() {
+            DatasetService.addStudyToDatasetGraph($stateParams.datasetUUID, uuid).then(function() {
 
-            DatasetService.exportGraph().then(function(graph) {
+              DatasetService.getDatasetGraph().then(function(graph) {
 
-              DatasetResource.save({
-                datasetUUID: $stateParams.datasetUUID
-              }, graph, function() {
+                DatasetResource.save({
+                  datasetUUID: $stateParams.datasetUUID
+                }, graph.data, function() {
 
-                $scope.loadStudiesWithDetail();
-                $modalInstance.close();
+                  $scope.loadStudiesWithDetail();
+                  $modalInstance.close();
+                });
               });
-            });
 
+            });
           });
         });
-
       });
 
     };

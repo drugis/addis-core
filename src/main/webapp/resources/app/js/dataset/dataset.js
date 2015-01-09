@@ -18,6 +18,5 @@ define(function (require) {
     //filters
     .filter('splitOnTokenFilter', require('dataset/splitOnTokenFilter'))
     .filter('dosingFilter', require('dataset/dosingFilter'))
-    .filter('stripFrontFilter', require('dataset/stripFrontFilter'))
     ;
 });

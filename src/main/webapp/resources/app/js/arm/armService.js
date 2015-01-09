@@ -33,12 +33,9 @@ define([],
       });
 
       function queryItems() {
-        var defer = $q.defer();
-
-        armsQuery.$promise.then(function(query) {
-          defer.resolve(StudyService.doNonModifyingQuery(query.data));
+        return armsQuery.$promise.then(function(query) {
+          return StudyService.doNonModifyingQuery(query.data);
         });
-        return defer.promise;
       }
 
       function addItem(arm, studyUUID) {

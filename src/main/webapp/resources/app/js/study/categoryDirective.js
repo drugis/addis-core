@@ -15,7 +15,7 @@ define([], function() {
 
         scope.reloadItems = function() {
           service.queryItems().then(function(queryResult) {
-            scope.items = queryResult;
+            scope.items = queryResult.data.results.bindings;
             console.log('category items retrieved. ' + queryResult.length);
           });
         };

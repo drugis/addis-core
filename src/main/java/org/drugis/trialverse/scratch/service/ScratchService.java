@@ -13,4 +13,6 @@ public interface ScratchService {
   void proxyData(HttpServletRequest request, HttpServletResponse response);
 
   void proxyQuery(HttpServletRequest request, HttpServletResponse response);
+
+  void proxyGetGraph(HttpServletRequest request, HttpServletResponse response);
 }
