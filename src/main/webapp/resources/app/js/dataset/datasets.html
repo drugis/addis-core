@@ -8,7 +8,17 @@
     </div>
 </div>
 
-<div class="row">
+<div ng-show="!datasetsLoaded" class="row">
+    <div class="column center large-12">
+        <i class="fa fa-spinner fa-spin fa-3x"></i>
+
+        <p>Loading datasets...
+
+        <p>
+    </div>
+</div>
+
+<div class="row" ng-show="datasetsLoaded">
     <div class="columns large-12">
         <ul>
             <li ng-cloak class="ng-cloak" ng-show="!datasets.length">No Datasets have been created yet</li>
