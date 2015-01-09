@@ -5,7 +5,9 @@ PREFIX study: <http://trials.drugis.org/studies/>
 PREFIX instance: <http://trials.drugis.org/instances/>
 INSERT DATA
 {
-  instance:$newUUID rdfs:label "$label" ;
+  graph <$graphUri> {
+    instance:$newUUID rdfs:label "$label" ;
     rdf:type  ontology:Arm .
-  study:$studyUUID ontology:has_arm instance:$newUUID .
+    study:$studyUUID ontology:has_arm instance:$newUUID .
+  }
 }

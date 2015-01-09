@@ -25,6 +25,8 @@ define([], function() {
     }
 
     function executeUpdate(graphUri, query) {
+      query = query.replace(/\$graphUri/g, graphUri);
+
       return $http.post(
         SCRATCH_RDF_STORE_URL + '/update',
         query, {
@@ -38,6 +40,8 @@ define([], function() {
     }
 
     function executeQuery(graphUri, query) {
+      query = query.replace(/\$graphUri/g, graphUri);
+
       return $http.post(SCRATCH_RDF_STORE_URL + '/query',
         query, {
           params: {

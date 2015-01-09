@@ -4,8 +4,10 @@ prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 select
 ?armURI ?label ?comment
 where {
- ?armURI
+  graph <$graphUri> {
+   ?armURI
    rdf:type ontology:Arm ;
    rdfs:label ?label .
- OPTIONAL { ?armURI rdfs:comment ?comment . }
+   OPTIONAL { ?armURI rdfs:comment ?comment . }
+ }
 }

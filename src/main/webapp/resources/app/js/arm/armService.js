@@ -32,7 +32,7 @@ define([],
         name: 'deleteHasArm.sparql'
       });
 
-      function queryItems() {
+      function queryItems(studyURI) {
         return armsQuery.$promise.then(function(query) {
           return StudyService.doNonModifyingQuery(query.data);
         });

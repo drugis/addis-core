@@ -1,4 +1,5 @@
 PREFIX ontology: <http://trials.drugis.org/ontology#>
+WITH <$graphUri>
 DELETE {
   ?studyUUID ontology:has_arm <$armURI> .
 } WHERE {

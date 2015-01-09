@@ -101,11 +101,11 @@ define([],
       };
 
       $scope.saveStudy = function() {
-        StudyService.getGraph().then(function(graph) {
+        StudyService.getStudyGraph().then(function(graph) {
           StudyResource.put({
             datasetUUID: $stateParams.datasetUUID,
             studyUUID: $stateParams.studyUUID
-          }, graph, function() {
+          }, graph.data, function() {
             console.log('graph saved');
             StudyService.studySaved();
           });

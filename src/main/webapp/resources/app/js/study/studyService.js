@@ -1,49 +1,57 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$filter', 'UUIDService', 'RemoteRdfStoreService'];
-  var StudyService = function($filter, UUIDService, RemoteRdfStoreService) {
+  var dependencies = ['$q', '$filter', 'UUIDService', 'RemoteRdfStoreService'];
+  var StudyService = function($q, $filter, UUIDService, RemoteRdfStoreService) {
 
     var studyPrefix = 'http://trials.drugis.org/studies/';
-
+    var loadDefer = $q.defer();
     var scratchStudyUri,
       modified = false;
 
     function doModifyingQuery(query) {
-      return RemoteRdfStoreService.executeUpdate(scratchStudyUri, query).then(function() {
-        modified = true;
-      });
+      return loadDefer.promise.then(function() {
+        return RemoteRdfStoreService.executeUpdate(scratchStudyUri, query).then(function() {
+          modified = true;
+        });
+      })
     }
 
     function doNonModifyingQuery(query) {
-      return RemoteRdfStoreService.executeQuery(scratchStudyUri, query);
+      return loadDefer.promise.then(function() {
+        return RemoteRdfStoreService.executeQuery(scratchStudyUri, query);
+      });
     }
 
     function createEmptyStudy(study) {
-      return RemoteRdfStoreService.create(studyPrefix)
-        .then(function(newGraphUri) {
-          scratchStudyUri = newGraphUri;
-          var query =
-            'PREFIX ontology: <http://trials.drugis.org/ontology#> ' +
-            'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ' +
-            'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ' +
-            'PREFIX study: <http://trials.drugis.org/studies/> ' +
-            ' INSERT DATA ' +
-            ' { ' +
-            '   GRAPH <' + newGraphUri + '> {' +
-            '    <' + newGraphUri + '> rdfs:label "' + study.label + '" ; ' +
-            '       rdf:type  ontology:Study ; ' +
-            '       rdfs:comment   "' + study.comment + '" . ' +
-            '   } ' +
-            ' }';
-          return RemoteRdfStoreService.executeUpdate(newGraphUri, query);
-        });
+      return loadDefer.promise.then(function() {
+        return RemoteRdfStoreService.create(studyPrefix)
+          .then(function(newGraphUri) {
+            scratchStudyUri = newGraphUri;
+            var query =
+              'PREFIX ontology: <http://trials.drugis.org/ontology#> ' +
+              'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ' +
+              'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ' +
+              'PREFIX study: <http://trials.drugis.org/studies/> ' +
+              ' INSERT DATA ' +
+              ' { ' +
+              '   GRAPH <' + newGraphUri + '> {' +
+              '    <' + newGraphUri + '> rdfs:label "' + study.label + '" ; ' +
+              '       rdf:type  ontology:Study ; ' +
+              '       rdfs:comment   "' + study.comment + '" . ' +
+              '   } ' +
+              ' }';
+            return RemoteRdfStoreService.executeUpdate(newGraphUri, query);
+          });
+      });
     }
 
 
     function doSingleResultQuery(query) {
-      return RemoteRdfStoreService.executeQuery(scratchStudyUri, query).then(function(results) {
-        var singleResult = results.data.results.bindings.length === 1 ? results.data.results.bindings[0] : console.error('single result expected');
-        return singleResult;
+      return loadDefer.promise.then(function() {
+        return RemoteRdfStoreService.executeQuery(scratchStudyUri, query).then(function(results) {
+          var singleResult = results.data.results.bindings.length === 1 ? results.data.results.bindings[0] : console.error('single result expected');
+          return singleResult;
+        });
       });
     }
 
@@ -62,18 +70,25 @@ define([], function() {
         '      rdfs:label ?label ; ' +
         '      rdfs:comment ?comment . ' +
         '}}';
-      return doSingleResultQuery(studyDataQuery);
+      return loadDefer.promise.then(function() {
+        return doSingleResultQuery(studyDataQuery);
+      });
     }
 
     function loadStore(data) {
+      loadDefer = $q.defer();
       return RemoteRdfStoreService.create(studyPrefix).then(function(graphUri) {
         scratchStudyUri = graphUri;
-        return RemoteRdfStoreService.load(scratchStudyUri, data);
+        return RemoteRdfStoreService.load(scratchStudyUri, data).then(function() {
+          loadDefer.resolve();
+        });
       });
     }
 
     function getStudyGraph() {
-      return RemoteRdfStoreService.getGraph(scratchStudyUri);
+      return loadDefer.promise.then(function() {
+        return RemoteRdfStoreService.getGraph(scratchStudyUri);
+      });
     }
 
     function isStudyModified() {

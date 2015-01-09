@@ -1,3 +1,4 @@
+WITH <$graphUri>
 DELETE {
   <$armURI> ?p ?o .
 }
