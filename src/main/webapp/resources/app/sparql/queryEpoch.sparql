@@ -4,8 +4,10 @@ prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 
 select ?uri ?label ?comment ?duration {
- ?uri rdfs:label ?label ;
-      rdf:type ontology:Epoch .
- OPTIONAL { ?uri rdfs:comment ?comment .}
- OPTIONAL { ?uri ontology:duration ?duration .}
+  graph <$graphUri> {
+   ?uri rdfs:label ?label ;
+   rdf:type ontology:Epoch .
+   OPTIONAL { ?uri rdfs:comment ?comment .}
+   OPTIONAL { ?uri ontology:duration ?duration .}
+ }
 }

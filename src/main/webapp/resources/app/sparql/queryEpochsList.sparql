@@ -1,3 +1,5 @@
 SELECT ?epochsList WHERE {
-  ?study ontology:has_epochs ?epochsList .
+  graph <$graphUri> {
+    ?study ontology:has_epochs ?epochsList .
+  }
 }
