@@ -23,26 +23,27 @@ define([], function() {
     }
 
     function createEmptyStudy(study) {
-      return loadDefer.promise.then(function() {
-        return RemoteRdfStoreService.create(studyPrefix)
-          .then(function(newGraphUri) {
-            scratchStudyUri = newGraphUri;
-            var query =
-              'PREFIX ontology: <http://trials.drugis.org/ontology#> ' +
-              'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ' +
-              'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ' +
-              'PREFIX study: <http://trials.drugis.org/studies/> ' +
-              ' INSERT DATA ' +
-              ' { ' +
-              '   GRAPH <' + newGraphUri + '> {' +
-              '    <' + newGraphUri + '> rdfs:label "' + study.label + '" ; ' +
-              '       rdf:type  ontology:Study ; ' +
-              '       rdfs:comment   "' + study.comment + '" . ' +
-              '   } ' +
-              ' }';
-            return RemoteRdfStoreService.executeUpdate(newGraphUri, query);
+      loadDefer = $q.defer();
+      return RemoteRdfStoreService.create(studyPrefix)
+        .then(function(newGraphUri) {
+          scratchStudyUri = newGraphUri;
+          var query =
+            'PREFIX ontology: <http://trials.drugis.org/ontology#> ' +
+            'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ' +
+            'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ' +
+            'PREFIX study: <http://trials.drugis.org/studies/> ' +
+            ' INSERT DATA ' +
+            ' { ' +
+            '   GRAPH <' + newGraphUri + '> {' +
+            '    <' + newGraphUri + '> rdfs:label "' + study.label + '" ; ' +
+            '       rdf:type  ontology:Study ; ' +
+            '       rdfs:comment   "' + study.comment + '" . ' +
+            '   } ' +
+            ' }';
+          return RemoteRdfStoreService.executeUpdate(newGraphUri, query).then(function() {
+            loadDefer.resolve();
           });
-      });
+        });
     }
 
 
