@@ -77,7 +77,6 @@ define([], function() {
     }
 
     function loadStore(data) {
-      loadDefer = $q.defer();
       return RemoteRdfStoreService.create(studyPrefix).then(function(graphUri) {
         scratchStudyUri = graphUri;
         return RemoteRdfStoreService.load(scratchStudyUri, data).then(function() {
@@ -104,6 +103,11 @@ define([], function() {
       return $filter('stripFrontFilter')(scratchStudyUri, studyPrefix);
     }
 
+    function reset() {
+      loadDefer = $q.defer();
+      modified = false;
+    }
+
     return {
       loadStore: loadStore,
       queryStudyData: queryStudyData,
@@ -113,7 +117,8 @@ define([], function() {
       doNonModifyingQuery: doNonModifyingQuery,
       isStudyModified: isStudyModified,
       studySaved: studySaved,
-      getStudyUUID: getStudyUUID
+      getStudyUUID: getStudyUUID,
+      reset: reset
     };
   };
 

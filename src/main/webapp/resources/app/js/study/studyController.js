@@ -3,6 +3,7 @@ define([],
   function() {
     var dependencies = ['$scope', '$stateParams', 'StudyResource', '$location', '$anchorScroll', '$modal', 'StudyService'];
     var StudyController = function($scope, $stateParams, StudyResource, $location, $anchorScroll, $modal, StudyService) {
+      StudyService.reset();
 
       $scope.study = {};
       $scope.arms = {};
