@@ -113,7 +113,7 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    describe('addEpoch', function() {
+    xdescribe('addEpoch', function() {
 
       it('should add the epoch', function(done) {
         var xmlHTTP = new XMLHttpRequest();
