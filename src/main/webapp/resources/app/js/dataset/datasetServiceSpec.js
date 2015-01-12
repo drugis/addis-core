@@ -86,7 +86,7 @@ define(['angular', 'angular-mocks'], function() {
           executeUpdateDefer.resolve(200);
           $rootScope.$digest();
           expect(promise.$$state.value).toBe(200);
-          expect(remoteRdfStoreService.executeUpdate).toHaveBeenCalledWith();
+          expect(remoteRdfStoreService.executeUpdate).toHaveBeenCalled();
         }));
       });
     });
