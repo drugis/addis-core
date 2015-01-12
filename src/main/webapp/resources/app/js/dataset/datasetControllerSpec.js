@@ -51,7 +51,7 @@ define(['angular', 'angular-mocks'], function() {
         var mockDataset = {
           data: {
             results: {
-              bindings: []
+              bindings: [{mock: 'object'}]
             }
           }
         };
@@ -62,7 +62,7 @@ define(['angular', 'angular-mocks'], function() {
         expect(mockDatasetService.queryDataset).toHaveBeenCalled();
         mockQueryDatasetDeferred.resolve(mockDataset);
         scope.$digest();
-        expect(scope.dataset).toBe(mockDataset);
+        expect(scope.dataset).toEqual({mock: 'object', uuid: 'uuid-1'});
         expect(scope.dataset.uuid).toBe(stateParams.datasetUUID);
       });
 
