@@ -2,7 +2,12 @@
 define(['angular', 'angular-mocks'], function() {
   describe('dataset service', function() {
 
-    var queryResult = 'queryResult';
+    var remoteRdfStoreService,
+      loadDefer,
+      createDefer,
+      executeQueryDefer,
+      queryResult = 'queryResult',
+      scratchUri = 'graphURI';
 
     var newStore = {
       load: function(arg1, arg2, callback) {
@@ -13,52 +18,78 @@ define(['angular', 'angular-mocks'], function() {
       }
     };
 
-    var remoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['create', 'load', 'executeUpdate', 'executeQuery', 'getGraph']);
-    var defer = $q.defer();
-    remoteRdfStoreService.create.and.returnValue(defer.promise);
-
-
     beforeEach(module('trialverse.dataset', function($provide) {
+      remoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', [
+        'create', 'load', 'executeUpdate', 'executeQuery', 'getGraph'
+      ]);
       $provide.value('RemoteRdfStoreService', remoteRdfStoreService);
     }));
 
 
     describe('loadStore', function() {
+
+      beforeEach(inject(function($q) {
+        createDefer = $q.defer();
+        loadDefer = $q.defer();
+        remoteRdfStoreService.create.and.returnValue(createDefer.promise);
+        remoteRdfStoreService.load.and.returnValue(loadDefer.promise);
+      }));
+
       it('should load data', inject(function(DatasetService, $rootScope) {
         var promise = DatasetService.loadStore('any info');
+        createDefer.resolve('graphURI');
+        loadDefer.resolve('resultString');
         $rootScope.$digest();
         expect(promise.$$state.value).toBe('resultString');
       }));
+
+      describe('queryDatasetsOverview', function() {
+
+        beforeEach(inject(function($q) {
+          executeQueryDefer = $q.defer();
+          remoteRdfStoreService.executeQuery.and.returnValue(executeQueryDefer.promise);
+        }));
+
+        it('should show a list of datasets', inject(function(DatasetService, $rootScope) {
+          var promise = DatasetService.queryDatasetsOverview();
+          executeQueryDefer.resolve('list of datasets');
+          $rootScope.$digest();
+          expect(promise.$$state.value).toBe('list of datasets');
+        }))
+      });
+
+      describe('queryDataset', function() {
+
+        beforeEach(inject(function($q) {
+          executeQueryDefer = $q.defer();
+          remoteRdfStoreService.executeQuery.and.returnValue(executeQueryDefer.promise);
+        }));
+
+        it('should not fail when a single result is returned', inject(function(DatasetService, $rootScope) {
+          var promise = DatasetService.queryDataset();
+          executeQueryDefer.resolve('single result');
+          $rootScope.$digest();
+          expect(promise.$$state.value).toBe('single result');
+        }));
+      });
+
+      describe('executeUpdate', function() {
+        var executeUpdateDefer;
+
+        beforeEach(inject(function($q) {
+          executeUpdateDefer = $q.defer();
+          remoteRdfStoreService.executeUpdate.and.returnValue(executeUpdateDefer.promise);
+        }));
+
+        it('should execute the update', inject(function(DatasetService, $rootScope) {
+          var promise = DatasetService.addStudyToDatasetGraph('datasetUUID', 'studyUUID');
+          executeUpdateDefer.resolve(200);
+          $rootScope.$digest();
+          expect(promise.$$state.value).toBe(200);
+          expect(remoteRdfStoreService.executeUpdate).toHaveBeenCalledWith();
+        }));
+      });
     });
 
-    describe('queryDatasetsOverview', function() {
-      it('should show a list of datasets', inject(function(DatasetService, $rootScope) {
-        DatasetService.loadStore('any info');
-        var promise = DatasetService.queryDatasetsOverview();
-        $rootScope.$digest();
-        expect(promise.$$state.value).toBe(queryResult);
-      }))
-    });
-
-    describe('queryDataset', function() {
-
-      it('should fail when multiple result are returned', inject(function(DatasetService, $rootScope) {
-        queryResult = [1, 2, 3];
-        DatasetService.loadStore('any info');
-        var promise = DatasetService.queryDataset();
-        $rootScope.$digest();
-        expect(promise.$$state.status).toEqual(2);
-      }));
-
-      it('should not fail when a single result is returned', inject(function(DatasetService, $rootScope) {
-        queryResult = ['single result'];
-        DatasetService.loadStore('any info');
-        var promise = DatasetService.queryDataset();
-        $rootScope.$digest();
-        expect(promise.$$state.status).toBe(1);
-        expect(promise.$$state.value).toBe(queryResult[0]);
-      }));
-
-    });
   });
 });
