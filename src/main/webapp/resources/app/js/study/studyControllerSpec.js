@@ -70,13 +70,18 @@ define(['angular', 'angular-mocks'], function() {
     });
 
     describe('saveStudy', function() {
-      it('should export the graph and PUT it to the resource', inject(function(StudyResource) {
-        spyOn(StudyResource, 'put');
-        scope.getStudyGraph();
-        getStudyGraphDeferred.resolve();
+      it('should export the graph and PUT it to the resource', inject(function(StudyResource, $q) {
+
+        httpBackend.expectPUT('/datasets/datasetUUID/studies/studyUUID').respond(200,'');
+
+        scope.saveStudy();
+        expect(mockStudyService.getStudyGraph).toHaveBeenCalled();
+
+        getStudyGraphDeferred.resolve({data: 'mock study data'});
         scope.$digest();
-        expect(StudyResource.put).toHaveBeenCalled();
-        expect(StudyService.studySaved).toHaveBeenCalled();
+        httpBackend.flush();
+        
+        expect(mockStudyService.studySaved).toHaveBeenCalled();
       }));
     });
   });
