@@ -12,11 +12,11 @@ define(['angular', 'angular-mocks'], function() {
       mockAnchorScroll = jasmine.createSpy('anchorScroll'),
       mockLocation = jasmine.createSpyObj('location', ['hash']),
       mockModal = jasmine.createSpyObj('modal', ['open']),
-      mockStudyService = jasmine.createSpyObj('StudyService', ['resetStore','queryArmData', 'loadStore', 'queryStudyData', 'exportGraph']),
+      mockStudyService = jasmine.createSpyObj('StudyService', ['reset','queryArmData', 'loadStore', 'queryStudyData', 'getStudyGraph', 'studySaved']),
       loadStoreDeferred,
       queryStudyDataDeferred,
       queryArmDataDeferred,
-      exportGraphDeferred;
+      getStudyGraphDeferred;
 
     beforeEach(module('trialverse.study'));
 
@@ -30,12 +30,12 @@ define(['angular', 'angular-mocks'], function() {
       loadStoreDeferred = $q.defer();
       queryStudyDataDeferred = $q.defer();
       queryArmDataDeferred = $q.defer();
-      exportGraphDeferred = $q.defer();
+      getStudyGraphDeferred = $q.defer();
 
       mockStudyService.loadStore.and.returnValue(loadStoreDeferred.promise);
       mockStudyService.queryStudyData.and.returnValue(queryStudyDataDeferred.promise);
       mockStudyService.queryArmData.and.returnValue(queryArmDataDeferred.promise);
-      mockStudyService.exportGraph.and.returnValue(exportGraphDeferred.promise);
+      mockStudyService.getStudyGraph.and.returnValue(getStudyGraphDeferred.promise);
 
       $controller('StudyController', {
         $scope: scope,
@@ -72,10 +72,11 @@ define(['angular', 'angular-mocks'], function() {
     describe('saveStudy', function() {
       it('should export the graph and PUT it to the resource', inject(function(StudyResource) {
         spyOn(StudyResource, 'put');
-        scope.saveStudy();
-        exportGraphDeferred.resolve();
+        scope.getStudyGraph();
+        getStudyGraphDeferred.resolve();
         scope.$digest();
         expect(StudyResource.put).toHaveBeenCalled();
+        expect(StudyService.studySaved).toHaveBeenCalled();
       }));
     });
   });

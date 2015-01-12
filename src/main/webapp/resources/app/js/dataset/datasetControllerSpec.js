@@ -48,7 +48,13 @@ define(['angular', 'angular-mocks'], function() {
 
     describe('on load', function() {
       it('should get the dataset and place its properties on the scope', function() {
-        var mockDataset = {};
+        var mockDataset = {
+          data: {
+            results: {
+              bindings: []
+            }
+          }
+        };
         httpBackend.flush();
         expect(mockDatasetService.loadStore).toHaveBeenCalled();
         mockLoadStoreDeferred.resolve();

@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks', 'rdfstore'], function(rdfstore) {
+define(['angular', 'angular-mocks'], function() {
   describe('dataset service', function() {
 
     var queryResult = 'queryResult';
@@ -13,20 +13,17 @@ define(['angular', 'angular-mocks', 'rdfstore'], function(rdfstore) {
       }
     };
 
-    var rdfstoreService = {
-      create: function(callback) {
-        callback(newStore);
-      }
-    };
+    var remoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['create', 'load', 'executeUpdate', 'executeQuery', 'getGraph']);
+    var defer = $q.defer();
+    remoteRdfStoreService.create.and.returnValue(defer.promise);
 
 
     beforeEach(module('trialverse.dataset', function($provide) {
-      $provide.value('RdfStoreService', rdfstoreService);
+      $provide.value('RemoteRdfStoreService', remoteRdfStoreService);
     }));
 
 
     describe('loadStore', function() {
-
       it('should load data', inject(function(DatasetService, $rootScope) {
         var promise = DatasetService.loadStore('any info');
         $rootScope.$digest();
