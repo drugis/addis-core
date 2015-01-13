@@ -188,23 +188,29 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    xdescribe('deleteArm', function() {
+    describe('deleteArm', function() {
 
       it('should delete the arm', function(done) {
+        studyService.doModifyingQuery.calls.reset();
         var mockArm = {
           armURI: {
             value: 'http://trials.drugis.org/instances/arm1uuid'
+          },
+          label: {
+            value: 'new arm label'
           }
         };
 
-        armService.deleteItem(mockArm).then(function() {
-          remoteRdfStore.execute(armsQuery, function(success, results) {
-            expect(results.length).toEqual(1);
-            done();
-          });
-        })
+        var doModifyingQueryDefer = q.defer();
+        studyService.doModifyingQuery.and.returnValue(doModifyingQueryDefer.promise);
 
+        var resultPromise = armService.deleteItem(mockArm);
+        doModifyingQueryDefer.resolve(200);
         rootScope.$digest();
+
+        expect(studyService.doModifyingQuery).toHaveBeenCalled();
+        expect(studyService.doModifyingQuery.calls.count()).toEqual(2);
+        done();
 
       });
 
