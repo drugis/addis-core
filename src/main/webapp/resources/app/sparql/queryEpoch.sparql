@@ -3,11 +3,15 @@ prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 
-select ?uri ?label ?comment ?duration {
+select ?uri ?label ?comment ?duration ?isPrimary {
   graph <$graphUri> {
    ?uri rdfs:label ?label ;
    rdf:type ontology:Epoch .
    OPTIONAL { ?uri rdfs:comment ?comment .}
    OPTIONAL { ?uri ontology:duration ?duration .}
+   BIND ( EXISTS {
+    ?study ontology:has_primary_epoch ?uri .
+    } AS ?isPrimary )
  }
 }
+

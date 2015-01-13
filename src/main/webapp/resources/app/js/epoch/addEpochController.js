@@ -16,14 +16,6 @@ define([],
         value: 'W',
         type: 'day',
         label: 'week(s)'
-      }, {
-        value: 'M',
-        type: 'day',
-        label: 'month(s)'
-      }, {
-        value: 'Y',
-        type: 'day',
-        label: 'year(s)'
       }];
 
       $scope.item = {
@@ -36,7 +28,7 @@ define([],
       $scope.isValidEpoch = function() {
         var valid = true;
         valid = $scope.item.label && $scope.item.label.length > 0;
-        valid = $scope.item.duration && isValidDuration(scope.item.duration);
+        valid = valid && $scope.item.duration && isValidDuration(scope.item.duration);
         return valid;
       }
 

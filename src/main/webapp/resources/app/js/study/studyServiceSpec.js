@@ -8,10 +8,8 @@ define(['angular', 'angular-mocks'], function() {
 
     beforeEach(module('trialverse', function($provide) {
       remoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['create', 'load', 'executeUpdate', 'executeQuery']);
-      // uUIDService = jasmine.createSpyObj('UUIDService', ['generate']);
 
       $provide.value('RemoteRdfStoreService', remoteRdfStoreService);
-      //   $provide.value('UUIDService', uUIDService);
     }));
 
     describe('createEmptyStudy', function() {

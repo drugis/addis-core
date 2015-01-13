@@ -1,5 +1,6 @@
 <ul class="no-bullet">
-  <li><span><strong>Epoch: </strong></span> <span>{{item.label.value}}</span></li>
+  <li ng-cloak ng-show="item.isPrimary.value === 'true'"><span><strong><span>Primary epoch: </strong></span> <span>{{item.label.value}}</span></li>
+  <li ng-cloak ng-show="item.isPrimary.value === 'false'"><span><strong>Epoch: </strong></span> <span>{{item.label.value}}</span></li>
   <li><span><strong>Description: </strong></span><span>{{item.comment.value || "none"}}</span></li>
   <li><span><strong>Duration: </strong></span><span>{{ item.duration.value | durationFilter }}</span></li>
 </ul>

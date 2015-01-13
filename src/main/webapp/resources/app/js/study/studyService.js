@@ -37,7 +37,8 @@ define([], function() {
             '   GRAPH <' + newGraphUri + '> {' +
             '    <' + newGraphUri + '> rdfs:label "' + study.label + '" ; ' +
             '       rdf:type  ontology:Study ; ' +
-            '       rdfs:comment   "' + study.comment + '" . ' +
+            '       rdfs:comment   "' + study.comment + '" ; ' +
+            '       ontology:has_epochs () .' +
             '   } ' +
             ' }';
           return RemoteRdfStoreService.executeUpdate(newGraphUri, query).then(function() {
@@ -53,13 +54,15 @@ define([], function() {
         'prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
         'prefix study: <http://trials.drugis.org/studies/>' +
         'prefix instance: <http://trials.drugis.org/instances/>' +
+        'prefix list: <http://jena.hpl.hp.com/ARQ/list#>' +
+        ' ' +
         'select' +
-        ' ?label ?comment' +
+        ' ?label ?comment ' +
         ' where { GRAPH <' + scratchStudyUri + '> {' +
         '    ?studyUid' +
         '      rdf:type ontology:Study ;' +
         '      rdfs:label ?label ; ' +
-        '      rdfs:comment ?comment . ' +
+        '      rdfs:comment ?comment .' +
         '}}';
       return loadDefer.promise.then(function() {
         return RemoteRdfStoreService.executeQuery(scratchStudyUri, studyDataQuery).then(function(results) {
