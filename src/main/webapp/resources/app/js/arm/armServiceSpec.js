@@ -1,8 +1,8 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  xdescribe('the arm service', function() {
+  describe('the arm service', function() {
 
-    var rootScope, q, testStore, httpBackend, armService, rdfStoreService,
+    var rootScope, q, httpBackend, armService, studyService,
       queryArms, addArmQuery, addArmCommentQuery, editArmWithCommentSparql, editArmWithoutCommentSparql,
       deleteArmSparql, deleteHasArmSparql, graphAsText,
       mockStudyService = jasmine.createSpyObj('StudyService', ['doModifyingQuery']);
@@ -26,18 +26,19 @@ define(['angular', 'angular-mocks'], function() {
 
     beforeEach(function() {
       module('trialverse', function($provide) {
-        $provide.value('StudyService', mockStudyService);
+        studyService = jasmine.createSpyObj('StudyService', ['doModifyingQuery']);
+        $provide.value('StudyService', studyService);
       });
     });
 
-    beforeEach(inject(function($q, $rootScope, $httpBackend, ArmService, RdfStoreService) {
+    beforeEach(inject(function($q, $rootScope, $httpBackend, ArmService) {
       var xmlHTTP = new XMLHttpRequest();
 
       q = $q;
       httpBackend = $httpBackend;
       rootScope = $rootScope;
       armService = ArmService;
-      rdfStoreService = RdfStoreService;
+      
 
       xmlHTTP.open('GET', 'base/app/sparql/queryArm.sparql', false);
       xmlHTTP.send(null);
@@ -66,15 +67,6 @@ define(['angular', 'angular-mocks'], function() {
       xmlHTTP.send(null);
       graphAsText = xmlHTTP.responseText;
 
-      mockStudyService.doModifyingQuery.and.callFake(function(query) {
-        var defer = q.defer();
-        console.log('query: ' + query);
-        testStore.execute(query, function(success) {
-          defer.resolve(success);
-        });
-        return defer.promise;
-      });
-
       httpBackend.expectGET('app/sparql/queryArm.sparql').respond(queryArms);
       httpBackend.expectGET('app/sparql/addArmQuery.sparql').respond(addArmQuery);
       httpBackend.expectGET('app/sparql/addArmCommentQuery.sparql').respond(addArmCommentQuery);
@@ -86,13 +78,58 @@ define(['angular', 'angular-mocks'], function() {
 
     }));
 
-    beforeEach(function(done) {
-      rdfStoreService.create(function(store) {
-        testStore = store;
-        testStore.load('text/turtle', graphAsText, function(success, results) {
-          console.log('test store loaded, ' + results + ' triples loaded');
-          done();
-        });
+    describe('addArm with comment', function() {
+
+      it('should edit the arm (with comment)', function(done) {
+        var mockArm = {
+          armURI: {
+            value: 'http://trials.drugis.org/instances/arm1uuid'
+          },
+          label: {
+            value: 'new arm label'
+          },
+          comment: {
+            value: 'new arm comment'
+          }
+        };
+
+        var doModifyingQueryDefer = q.defer();
+        studyService.doModifyingQuery.and.returnValue(doModifyingQueryDefer.promise);
+
+        var resultPromise = armService.addItem(mockArm, 'studyUid');
+        doModifyingQueryDefer.resolve(200);
+        rootScope.$digest();
+
+        expect(studyService.doModifyingQuery).toHaveBeenCalled();
+        expect(studyService.doModifyingQuery.calls.count()).toEqual(2);
+        done();
+      });
+    });
+
+    describe('editArm without comment', function() {
+
+      it('should edit the arm (without comment)', function(done) {
+
+        studyService.doModifyingQuery.calls.reset();
+        var mockArm = {
+          armURI: {
+            value: 'http://trials.drugis.org/instances/arm1uuid'
+          },
+          label: {
+            value: 'new arm label'
+          }
+        };
+
+        var doModifyingQueryDefer = q.defer();
+        studyService.doModifyingQuery.and.returnValue(doModifyingQueryDefer.promise);
+
+        var resultPromise = armService.addItem(mockArm, 'studyUid');
+        doModifyingQueryDefer.resolve(200);
+        rootScope.$digest();
+
+        expect(studyService.doModifyingQuery).toHaveBeenCalled();
+        expect(studyService.doModifyingQuery.calls.count()).toEqual(1);
+        done();
       });
     });
 
@@ -111,24 +148,24 @@ define(['angular', 'angular-mocks'], function() {
           }
         };
 
-        armService.editItem(mockArm).then(function() {
-          testStore.execute(armsQuery, function(success, results) {
-            expect(results.length).toEqual(2);
-            expect(results[0].armURI.value).toEqual(mockArm.armURI.value);
-            expect(results[0].label.value).toEqual(mockArm.label.value);
-            expect(results[0].comment.value).toEqual(mockArm.comment.value);
-            done();
-          });
-        });
+        var doModifyingQueryDefer = q.defer();
+        studyService.doModifyingQuery.and.returnValue(doModifyingQueryDefer.promise);
 
+        var resultPromise = armService.editItem(mockArm, 'studyUid');
+        doModifyingQueryDefer.resolve(200);
         rootScope.$digest();
 
+        expect(studyService.doModifyingQuery).toHaveBeenCalled();
+        expect(studyService.doModifyingQuery.calls.count()).toEqual(1);
+        done();
       });
     });
 
     describe('editArm without comment', function() {
 
       it('should edit the arm (without comment)', function(done) {
+
+        studyService.doModifyingQuery.calls.reset();
         var mockArm = {
           armURI: {
             value: 'http://trials.drugis.org/instances/arm1uuid'
@@ -138,22 +175,20 @@ define(['angular', 'angular-mocks'], function() {
           }
         };
 
-        armService.editItem(mockArm).then(function() {
-          testStore.execute(armsQuery, function(success, results) {
-            expect(results.length).toEqual(2);
-            expect(results[0].armURI.value).toEqual(mockArm.armURI.value);
-            expect(results[0].label.value).toEqual(mockArm.label.value);
-            expect(results[0].comment).toBe(null);
-            done();
-          });
-        });
+        var doModifyingQueryDefer = q.defer();
+        studyService.doModifyingQuery.and.returnValue(doModifyingQueryDefer.promise);
 
+        var resultPromise = armService.editItem(mockArm, 'studyUid');
+        doModifyingQueryDefer.resolve(200);
         rootScope.$digest();
 
+        expect(studyService.doModifyingQuery).toHaveBeenCalled();
+        expect(studyService.doModifyingQuery.calls.count()).toEqual(1);
+        done();
       });
     });
 
-    describe('deleteArm', function() {
+    xdescribe('deleteArm', function() {
 
       it('should delete the arm', function(done) {
         var mockArm = {
@@ -163,7 +198,7 @@ define(['angular', 'angular-mocks'], function() {
         };
 
         armService.deleteItem(mockArm).then(function() {
-          testStore.execute(armsQuery, function(success, results) {
+          remoteRdfStore.execute(armsQuery, function(success, results) {
             expect(results.length).toEqual(1);
             done();
           });
