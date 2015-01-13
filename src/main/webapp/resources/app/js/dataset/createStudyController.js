@@ -6,6 +6,8 @@ define([], function() {
   var CreateStudyController = function($scope, $stateParams, $modalInstance, DatasetService, DatasetResource,
     UUIDService, StudyService, StudyResource) {
 
+    $scope.isCreatingStudy = false;
+
     $scope.isUniqueShortName = function(shortName) {
       var anyduplicateName = _.find($scope.studiesWithDetail, function(existingStudy) {
         return existingStudy.label === shortName;
@@ -14,6 +16,7 @@ define([], function() {
     };
 
     $scope.createStudy = function(study) {
+      $scope.isCreatingStudy = true;
       StudyService.createEmptyStudy(study).then(function() {
         StudyService.getStudyGraph().then(function(queryResult) {
         var uuid = StudyService.getStudyUUID();
@@ -32,6 +35,7 @@ define([], function() {
                 }, graph.data, function() {
 
                   $scope.loadStudiesWithDetail();
+                  $scope.isCreatingStudy = true;
                   $modalInstance.close();
                 });
               });

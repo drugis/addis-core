@@ -21,7 +21,7 @@
     </div>
     <div class="row">
         <div class="large-9 columns">
-            <button class="success" type="submit" ng-disabled="!study.comment || !isUniqueShortName(study.label)">
+            <button class="success" type="submit" ng-disabled="!study.comment || !isUniqueShortName(study.label) || isCreatingStudy">
                 Create
             </button>
         </div>
