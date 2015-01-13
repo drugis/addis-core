@@ -13,7 +13,7 @@ define([], function() {
         return RemoteRdfStoreService.executeUpdate(scratchStudyUri, query).then(function() {
           modified = true;
         });
-      })
+      });
     }
 
     function doNonModifyingQuery(query) {
@@ -46,16 +46,6 @@ define([], function() {
         });
     }
 
-
-    function doSingleResultQuery(query) {
-      return loadDefer.promise.then(function() {
-        return RemoteRdfStoreService.executeQuery(scratchStudyUri, query).then(function(results) {
-          var singleResult = results.data.results.bindings.length === 1 ? results.data.results.bindings[0] : console.error('single result expected');
-          return singleResult;
-        });
-      });
-    }
-
     function queryStudyData() {
       var studyDataQuery =
         'prefix ontology: <http://trials.drugis.org/ontology#>' +
@@ -72,7 +62,9 @@ define([], function() {
         '      rdfs:comment ?comment . ' +
         '}}';
       return loadDefer.promise.then(function() {
-        return doSingleResultQuery(studyDataQuery);
+        return RemoteRdfStoreService.executeQuery(scratchStudyUri, studyDataQuery).then(function(results) {
+          return results.data.results.bindings[0];
+        });
       });
     }
 

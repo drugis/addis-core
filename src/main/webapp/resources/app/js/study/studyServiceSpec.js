@@ -1,27 +1,33 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  xdescribe('dataset service', function() {
+  describe('study service', function() {
 
-    var uUIDService, rdfStoreService;
+    var remoteRdfStoreService, studyService,
+      createDefer, loadDefer, executeUpdateDefer, executeQueryDefer,
+      rootScope;
 
-    beforeEach(module('trialverse.study'));
+    beforeEach(module('trialverse', function($provide) {
+      remoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['create', 'load', 'executeUpdate', 'executeQuery']);
+      // uUIDService = jasmine.createSpyObj('UUIDService', ['generate']);
+
+      $provide.value('RemoteRdfStoreService', remoteRdfStoreService);
+      //   $provide.value('UUIDService', uUIDService);
+    }));
 
     describe('createEmptyStudy', function() {
 
-      var studyService, q;
-
-      beforeEach(function() {
-
-        uUIDService = jasmine.createSpyObj('UUIDService', ['generate']);
-
-        module('trialverse', function($provide) {
-          $provide.value('UUIDService', uUIDService);
-        });
-      });
-
       beforeEach(inject(function($rootScope, $q, StudyService) {
+        rootScope = $rootScope;
+        createDefer = $q.defer();
+        loadDefer = $q.defer();
+        executeUpdateDefer = $q.defer();
+        executeQueryDefer = $q.defer();
+
+        remoteRdfStoreService.create.and.returnValue(createDefer.promise);
+        remoteRdfStoreService.load.and.returnValue(loadDefer.promise);
+        remoteRdfStoreService.executeUpdate.and.returnValue(executeUpdateDefer.promise);
+        remoteRdfStoreService.executeQuery.and.returnValue(executeQueryDefer.promise);
         studyService = StudyService;
-        q = $q;
       }));
 
       it('should be defined', function() {
@@ -30,53 +36,69 @@ define(['angular', 'angular-mocks'], function() {
 
       it('should return a graph of the new study', function() {
         var study = {
-          label: 'studyLabel',
-          comment: 'study comment'
+          label: 'label',
+          comment: 'comment'
         };
-        var uuid = 'uuid';
+        var newGraphUri = 'newUri';
 
-        var promise = studyService.createEmptyStudy(uuid, study);
+        var promise = studyService.createEmptyStudy(study);
 
-        expect(promise.$$state.value).toBeDefined();
+        createDefer.resolve(newGraphUri);
+        executeUpdateDefer.resolve();
 
+        rootScope.$digest();
+
+        expect(remoteRdfStoreService.executeUpdate).toHaveBeenCalledWith(newGraphUri, jasmine.any(String));
+
+        expect(promise.$$state.status).toBe(1);
       });
-
     });
 
-    describe('resetStore', function() {
-
-      var studyService, q;
-      beforeEach(function() {
-
-        uUIDService = jasmine.createSpyObj('UUIDService', ['generate']);
-        rdfStoreService = jasmine.createSpyObj('RdfStoreService', ['create']);
-
-        rdfStoreService.create.and.callFake(function(callback) {
-          callback({
-            mock: 'store',
-            load: function(arg1, arg2, callback){
-              callback(true, {mock: 'result'});
-            }
-          });
-        });
-
-        module('trialverse', function($provide) {
-          $provide.value('UUIDService', uUIDService);
-          $provide.value('RdfStoreService', rdfStoreService);
-        });
-      });
-
-      beforeEach(inject(function($rootScope, $q, StudyService) {
-        studyService = StudyService;
-        q = $q;
-        studyService.loadStore({
-          mock: 'data'
-        });
-      }));
-
+    describe('reset', function() {
       it('should empty the store and reset the storeDefer', function() {
-        studyService.resetStore();
+        studyService.reset();
+        expect(studyService.isStudyModified()).toEqual(false)
       });
     });
+
+    describe('after loading the store', function() {
+
+      it('the load promise should be resolved', function() {
+        var loadPromise = studyService.loadStore('data');
+        createDefer.resolve();
+        loadDefer.resolve();
+
+        rootScope.$digest();
+
+        expect(loadPromise.$$state.status).toBe(1);
+      });
+
+      describe('queryStudyData', function() {
+        it('should request data from the remote store', function() {
+          var data = {
+            data: {
+              results: {
+                bindings: ['foo']
+              }
+            }
+          };
+          var expected = {
+            $$state: {
+              status: 1,
+              value: 'foo'
+            }
+          };
+          var studyData = studyService.queryStudyData();
+          executeQueryDefer.resolve(data);
+          rootScope.$digest();
+
+          expect(studyData).toEqual(expected);
+
+        });
+      });
+
+    });
+
+
   });
 });
