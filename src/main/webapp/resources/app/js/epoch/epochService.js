@@ -24,13 +24,9 @@ define([],
         name: 'setEpochPrimary.sparql'
       });
 
-      // var deleteTail = SparqlResource.get({
-      //   name: 'deleteTail.sparql'
-      // });
-
-      // var deleteEpochRaw = SparqlResource.get({
-      //   name: 'deleteEpoch.sparql'
-      // });
+      var deleteEpochRaw = SparqlResource.get({
+        name: 'deleteEpoch.sparql'
+      });
 
       var editEpochRaw = SparqlResource.get({
         name: 'editEpoch.sparql'
@@ -99,15 +95,12 @@ define([],
         return $q.all(promises);
       }
 
-      // function deleteItem(item) {
-      //   var defer = $q.defer();
-
-      //   deleteEpochRaw.$promise.then(function(deleteQueryRaw) {
-      //     var deleteQuery = deleteQueryRaw.data.replace(/\$URI/g, item.uri.value);
-      //     defer.resolve(StudyService.doModifyingQuery(deleteQuery));
-      //   });
-      //   return defer.promise;
-      // }
+      function deleteItem(item) {
+        return deleteEpochRaw.$promise.then(function(deleteQueryRaw) {
+          var deleteQuery = deleteQueryRaw.data.replace(/\$URI/g, item.uri.value);
+          return StudyService.doModifyingQuery(deleteQuery);
+        });
+      }
 
       function editItem(item) {
         return editEpochRaw.$promise.then(function(editQueryRaw) {
@@ -121,7 +114,7 @@ define([],
       return {
         queryItems: queryItems,
         addItem: addItem,
-        //       deleteItem: deleteItem,
+        deleteItem: deleteItem,
         editItem: editItem
       };
     };

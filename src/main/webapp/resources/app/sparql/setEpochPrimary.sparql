@@ -1,6 +1,6 @@
 PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX instance: <http://trials.drugis.org/instances/>
-PREFIX study:	 <http://trials.drugos.org/studies/>
+PREFIX study:	 <http://trials.drugis.org/studies/>
 
 WITH <$graphUri>
 DELETE {
