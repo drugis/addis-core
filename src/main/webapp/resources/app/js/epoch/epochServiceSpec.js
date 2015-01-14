@@ -66,10 +66,11 @@ define(['angular', 'angular-mocks'], function() {
 
     describe('addEpoch', function() {
 
-      it('should add the epoch with comment', function() {
+      it('should add the epoch with comment and set primary and add it to the list', function() {
         var mockEpoch = {
           label: 'new epoch label',
           comment: 'new epoch comment',
+          isPrimaryEpoch: true,
           duration: {
             numberOfPeriods: 13,
             periodType: {
@@ -84,7 +85,7 @@ define(['angular', 'angular-mocks'], function() {
 
         rootScope.$digest();
 
-        expect(studyService.doModifyingQuery.calls.count()).toEqual(2);
+        expect(studyService.doModifyingQuery.calls.count()).toEqual(4);
 
       });
 

@@ -1,7 +1,7 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'UUIDService', 'SparqlResource'];
+    var dependencies = ['$q','StudyService', 'UUIDService', 'SparqlResource'];
     var EpochService = function($q, StudyService, UUIDService, SparqlResource) {
 
       var epochQuery = SparqlResource.get({
@@ -57,7 +57,7 @@ define([],
         });
       }
 
-      function addItem(item) {
+      function addItem(item, studyUUID) {
         var uuid = UUIDService.generate();
         var promises = [];
         var durationString = simpleDurationBuilder(item.duration);
@@ -80,9 +80,10 @@ define([],
           });
         }
         // optional is_primary
-        if(item.isPrimary) {
+        if(item.isPrimaryEpoch) {
           setEpochPrimaryQueryRaw.$promise.then(function(query) {
             var setEpochPrimaryQuery = query.data
+              .replace(/\$studyUUID/g, studyUUID)
               .replace(/\$newUUID/g, uuid);
             promises.push(StudyService.doModifyingQuery(setEpochPrimaryQuery));
           });
@@ -94,9 +95,6 @@ define([],
             .replace(/\$elementToInsert/g, uuid);
           promises.push(StudyService.doModifyingQuery(addEpochToEndOfListQuery));
         });
-
-
-        // todo add optional main epoch
 
         return $q.all(promises);
       }

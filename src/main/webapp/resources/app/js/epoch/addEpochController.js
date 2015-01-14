@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$modalInstance', 'EpochService', 'successCallback'];
-    var addEpochController = function($scope, $modalInstance, EpochService, successCallback) {
+    var dependencies = ['$scope', '$stateParams', '$modalInstance', 'EpochService', 'successCallback'];
+    var addEpochController = function($scope, $stateParams, $modalInstance, EpochService, successCallback) {
 
       $scope.periodTypeOptions = [{
         value: 'H',
@@ -56,7 +56,7 @@ define([],
 
 
       $scope.addItem = function() {
-        EpochService.addItem($scope.item)
+        EpochService.addItem($scope.item, $stateParams.studyUUID)
           .then(function() {
               successCallback();
               $modalInstance.close();

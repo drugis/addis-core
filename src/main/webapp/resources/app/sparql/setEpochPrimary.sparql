@@ -1,12 +1,13 @@
 PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX instance: <http://trials.drugis.org/instances/>
+PREFIX study:	 <http://trials.drugos.org/studies/>
 
 WITH <$graphUri>
-INSERT {
-  <$studyUri> ontology:has_primary_epoch instance:$newUUID
-}
 DELETE {
   ?study ontology:has_primary_epoch ?oldPrimary .
+}
+INSERT {
+  study:$studyUUID ontology:has_primary_epoch instance:$newUUID
 }
 WHERE {
   OPTIONAL { ?study ontology:has_primary_epoch ?oldPrimary .}

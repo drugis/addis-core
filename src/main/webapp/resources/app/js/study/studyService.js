@@ -57,9 +57,9 @@ define([], function() {
         'prefix list: <http://jena.hpl.hp.com/ARQ/list#>' +
         ' ' +
         'select' +
-        ' ?label ?comment ' +
+        ' ?studyUri ?label ?comment ' +
         ' where { GRAPH <' + scratchStudyUri + '> {' +
-        '    ?studyUid' +
+        '    ?studyUri' +
         '      rdf:type ontology:Study ;' +
         '      rdfs:label ?label ; ' +
         '      rdfs:comment ?comment .' +
