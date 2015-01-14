@@ -5,8 +5,8 @@ define(function (require) {
 
   return angular.module('trialverse.epoch', ['ngResource', 'trialverse.util', 'trialverse.study'])
     // controllers
-    .controller('EditEpochController', require('epoch/editEpochController'))
     .controller('AddEpochController', require('epoch/addEpochController'))
+    .controller('EditEpochController', require('epoch/editEpochController'))
 
     //services
     .factory('EpochService', require('epoch/epochService'))

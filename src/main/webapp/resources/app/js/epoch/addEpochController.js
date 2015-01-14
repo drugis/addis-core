@@ -32,28 +32,7 @@ define([],
         return valid;
       }
 
-      $scope.isValidDuration = function(duration, periodTypeOptions) {
-        if (!duration.durationType) {
-          return false;
-        } else if (duration.durationType === 'instantaneous') {
-          return true;
-        } else if (duration.durationType === 'period') {
-          var isValidType = _.find(periodTypeOptions, function(option) {
-            return option.value === duration.periodType.value &&
-              option.label === duration.periodType.label;
-          });
-          var isValidNumberOfPeriods = isNormalInteger(duration.numberOfPeriods);
-            return isValidType && isValidNumberOfPeriods;
-        } else {
-          throw "invalid duration type";
-        }
-      }
-
-      //http://stackoverflow.com/questions/10834796/validate-that-a-string-is-a-positive-integer
-      function isNormalInteger(str) {
-        return /^\+?(0|[1-9]\d*)$/.test(str);
-      }
-
+      $scope.isValidDuration = EpochService.isValidDuration;
 
       $scope.addItem = function() {
         EpochService.addItem($scope.item, $stateParams.studyUUID)
