@@ -17,28 +17,17 @@ define([],
         label: 'week(s)'
       }];
 
-      $scope.itemCache = {
-        label: {
-          value : $scope.item.label.value
-        },
-        comment: {
-          value : $scope.item.comment ? $scope.item.comment.value : null
-        },
-        isPrimary: {
-          value : $scope.item.isPrimary.value === 'true'
-        },
-        uri: {
-          value: $scope.item.uri.value
-        },
-        duration: itemService.transformDuration($scope.item.duration)
-      };
+      var itemCache = angular.copy($scope.item);
+      itemCache.isPrimary.value = itemCache.isPrimary.value === 'true';
+      itemCache.duration = itemService.transformDuration(itemCache.duration);
+      $scope.itemCache = itemCache;
 
-      duration: itemService.transformDuration($scope.item.duration)
-      
       $scope.isValidDuration = itemService.isValidDuration;
 
       $scope.editItem = function() {
         itemService.editItem($scope.item, $scope.itemCache, $state.params.studyUUID).then(function() {
+            console.log('edit item complete');
+            $scope.item = angular.copy($scope.itemCache);
             callback();
             $modalInstance.close();
           },

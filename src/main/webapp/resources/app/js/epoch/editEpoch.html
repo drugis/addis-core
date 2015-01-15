@@ -1,18 +1,18 @@
 <form novalidate ng-submit="editItem()">
   <div class="row">
-    <div class="large-9 columns">
+    <div class="large-9 medium-12 columns">
       <h3>Edit Epoch</h3>
     </div>
   </div>
   <div class="row">
-    <div class="large-9 columns">
+    <div class="large-9 medium-12 columns">
       <label>Name
         <input autofocus="true" type="text" ng-model="itemCache.label.value">
       </label>
     </div>
   </div>
   <div class="row">
-    <div class="large-9 columns">
+    <div class="large-9 medium-12 columns">
       <label>Description
         <textarea rows="8" ng-model="itemCache.comment.value"></textarea>
       </label>
@@ -29,11 +29,11 @@
     </div>
   </div>
   <div ng-show="itemCache.duration.durationType == 'period'" class="row form-input-group">
-    <div class="large-offset-3 large-2 columns">
+    <div class="large-offset-3 large-3 medium-6 columns">
       <label>Amount</label>
       <input type="number" name="input" ng-model="itemCache.duration.numberOfPeriods" min="0">
     </div>
-    <div class="large-4 end columns">
+    <div class="large-4 medium-6 end columns">
       <label>Unit</label>
       <select ng-model="itemCache.duration.periodType.value" placeholder="select unit"
               ng-options="periodTypeOption.value as periodTypeOption.label for periodTypeOption in periodTypeOptions"></select>
@@ -41,8 +41,8 @@
   </div>
   <div class="row form-input-group">
     <div class="large-9 columns">
-      <label for="isPrimaryCheckBox">Is primary epoch</label><input id="isPrimaryCheckBox"
-                                                                    ng-model="itemCache.isPrimary.value" type="checkbox">
+      <label for="isPrimaryCheckBox">Is primary epoch</label>
+      <input id="isPrimaryCheckBox" ng-model="itemCache.isPrimary.value" type="checkbox">
     </div>
   </div>
   <div class="row">

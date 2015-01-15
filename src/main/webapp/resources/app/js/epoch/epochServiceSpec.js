@@ -42,7 +42,6 @@ define(['angular', 'angular-mocks'], function() {
       addEpochToEndOfList = loadAndExpectResource('addEpochToEndOfList.sparql');
       setEpochPrimary = loadAndExpectResource('setEpochPrimary.sparql');
       editEpoch = loadAndExpectResource('editEpoch.sparql');
-      // deleteTail = loadAndExpectResource('deleteTail.sparql');
 
       httpBackend.flush();
 
