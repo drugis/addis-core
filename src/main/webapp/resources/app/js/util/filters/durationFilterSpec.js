@@ -25,9 +25,11 @@ define(['angular', 'angular-mocks'], function () {
       expect(durationFilter('PT0S')).toEqual('instantaneous');
     });
 
-    it('should render things as days only', function() {
+    it('should render periods >24h as days', function() {
       expect(durationFilter('P60D')).toEqual('60 day(s)');
       expect(durationFilter('P8W')).toEqual('56 day(s)');
+      expect(durationFilter('PT1H')).toEqual('1 hour(s)');
     });
+
   });
 });
