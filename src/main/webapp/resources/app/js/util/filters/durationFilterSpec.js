@@ -13,7 +13,7 @@ define(['angular', 'angular-mocks'], function () {
     });
 
     it('should humanize a valid duration', function() {
-      expect(durationFilter('P1D')).toEqual('a day');
+      expect(durationFilter('P1D')).toEqual('1 day(s)');
     });
 
     it('should replace empty periods with null', function() { // is this what we want ? :s
@@ -25,5 +25,9 @@ define(['angular', 'angular-mocks'], function () {
       expect(durationFilter('PT0S')).toEqual('instantaneous');
     });
 
+    it('should render things as days only', function() {
+      expect(durationFilter('P60D')).toEqual('60 day(s)');
+      expect(durationFilter('P8W')).toEqual('56 day(s)');
+    });
   });
 });

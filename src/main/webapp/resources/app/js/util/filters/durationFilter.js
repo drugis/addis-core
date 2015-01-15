@@ -10,7 +10,7 @@ define(['moment'], function(moment) {
       } else if (duration === 'PT0S') {
         return 'instantaneous';
       } else {
-        return moment.duration(duration).humanize();
+        return moment.duration(duration).asDays() + ' day(s)';
       }
     };
   };
