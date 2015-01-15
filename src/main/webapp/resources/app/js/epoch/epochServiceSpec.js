@@ -4,7 +4,8 @@ define(['angular', 'angular-mocks'], function() {
 
     var rootScope, q, testStore, httpBackend, epochService,
       queryEpochs, queryAddEpoch, queryAddEpochToEndOfList, queryAddEpochComment,
-      editEpoch, addEpochToEndOfList, setEpochPrimary,
+      editEpoch, addEpochToEndOfList, setEpochPrimary, deleteEpoch,
+      removeEpochPrimary, setEpochToPrimary,
       graphAsText, getLastItemInEpochList, deleteTail, nonModifyingqueryPromise,
       studyService = jasmine.createSpyObj('StudyService', ['doModifyingQuery', 'doNonModifyingQuery']);
 
@@ -41,7 +42,10 @@ define(['angular', 'angular-mocks'], function() {
       queryAddEpochComment = loadAndExpectResource('addEpochComment.sparql');
       addEpochToEndOfList = loadAndExpectResource('addEpochToEndOfList.sparql');
       setEpochPrimary = loadAndExpectResource('setEpochPrimary.sparql');
+      deleteEpoch = loadAndExpectResource('deleteEpoch.sparql');
       editEpoch = loadAndExpectResource('editEpoch.sparql');
+      removeEpochPrimary = loadAndExpectResource('removeEpochPrimary.sparql');
+      setEpochToPrimary = loadAndExpectResource('setEpochToPrimary.sparql');
 
       httpBackend.flush();
 
@@ -106,7 +110,7 @@ define(['angular', 'angular-mocks'], function() {
 
         rootScope.$digest();
 
-        expect(studyService.doModifyingQuery.calls.count()).toEqual(1);
+        expect(studyService.doModifyingQuery.calls.count()).toEqual(2);
 
       });
 
@@ -124,6 +128,9 @@ define(['angular', 'angular-mocks'], function() {
             value: 'measType'
           },
           label: 'new epoch label',
+          isPrimary: {
+            value: 'true'
+          },
           duration: {
             numberOfPeriods: 13,
             periodType: {
@@ -135,11 +142,11 @@ define(['angular', 'angular-mocks'], function() {
         };
         studyService.doModifyingQuery.calls.reset();
 
-        epochService.editItem(mockEpoch);
+        epochService.editItem(mockEpoch, mockEpoch);
 
         rootScope.$digest();
 
-        expect(studyService.doModifyingQuery.calls.count()).toEqual(1);
+        expect(studyService.doModifyingQuery.calls.count()).toEqual(2);
 
       });
     });
