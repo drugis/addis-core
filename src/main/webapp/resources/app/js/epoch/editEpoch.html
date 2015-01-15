@@ -35,8 +35,8 @@
     </div>
     <div class="large-4 medium-6 end columns">
       <label>Unit</label>
-      <select ng-model="itemCache.duration.periodType.value" placeholder="select unit"
-              ng-options="periodTypeOption.value as periodTypeOption.label for periodTypeOption in periodTypeOptions"></select>
+      <select ng-model="itemCache.duration.periodType" placeholder="select unit"
+              ng-options="periodTypeOption.label for periodTypeOption in periodTypeOptions track by periodTypeOption.value"></select>
     </div>
   </div>
   <div class="row form-input-group">

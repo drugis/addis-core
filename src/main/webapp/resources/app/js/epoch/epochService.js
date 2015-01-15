@@ -88,17 +88,18 @@ define([],
         transformedDuration = {
           durationType: 'period',
         };
+        var tempDurationStr = duration.value;
 
         if (duration.value[1] === 'T') {
-          transformedDuration.value = duration.value.slice(2); // remove 'PT'
+          tempDurationStr = tempDurationStr.slice(2); // remove 'PT'
         } else {
-          transformedDuration.value = duration.value.slice(1); // remove 'P'
+          tempDurationStr = tempDurationStr.slice(1); // remove 'P'
         }
 
         transformedDuration.periodType = {
-          value: transformedDuration.value[transformedDuration.value.length - 1]
+          value: tempDurationStr[tempDurationStr.length - 1]
         };
-        var numberOfPeriodsAsString = transformedDuration.value.substr(0, transformedDuration.value.length - 1);
+        var numberOfPeriodsAsString = tempDurationStr.substr(0, tempDurationStr.length - 1);
         transformedDuration.numberOfPeriods = parseInt(numberOfPeriodsAsString, 10);
 
         return transformedDuration;
@@ -112,49 +113,47 @@ define([],
 
       function addItem(item, studyUUID) {
         var uuid = UUIDService.generate();
-        var promises = [
-          addEpochQueryRaw.$promise,
-          addEpochCommentQueryRaw.$promise,
-          setEpochPrimaryQueryRaw.$promise,
-          addEpochToEndOfListQueryRaw.$promise
-        ];
+        var addEpochPromise, addCommentPromise, setPrimaryPromise, addToListPromise;
         var durationString = simpleDurationBuilder(item.duration);
 
         // add epoch
-        addEpochQueryRaw.$promise.then(function(query) {
+        addEpochPromise = addEpochQueryRaw.$promise.then(function(query) {
           var addEpochQuery = query.data
             .replace(/\$newUUID/g, uuid)
             .replace('$label', item.label)
             .replace('$duration', durationString);
-          promises.push(StudyService.doModifyingQuery(addEpochQuery));
+          return StudyService.doModifyingQuery(addEpochQuery);
         });
         // optional add comment
         if (item.comment) {
-          addEpochCommentQueryRaw.$promise.then(function(query) {
+          addCommentPromise = addEpochCommentQueryRaw.$promise.then(function(query) {
             var addEpochCommentQuery = query.data
               .replace(/\$newUUID/g, uuid)
               .replace('$comment', item.comment);
-            promises.push(StudyService.doModifyingQuery(addEpochCommentQuery));
+            return StudyService.doModifyingQuery(addEpochCommentQuery);
           });
         }
         // optional is_primary
         if (item.isPrimaryEpoch) {
-          setEpochPrimaryQueryRaw.$promise.then(function(query) {
+          setPrimaryPromise = setEpochPrimaryQueryRaw.$promise.then(function(query) {
             var setEpochPrimaryQuery = query.data
               .replace(/\$studyUUID/g, studyUUID)
               .replace(/\$newUUID/g, uuid);
-            promises.push(StudyService.doModifyingQuery(setEpochPrimaryQuery));
+            return StudyService.doModifyingQuery(setEpochPrimaryQuery);
           });
         }
 
         // add epoch to list of has_epochs in study
-        addEpochToEndOfListQueryRaw.$promise.then(function(query) {
+        addToListPromise = addEpochToEndOfListQueryRaw.$promise.then(function(query) {
           var addEpochToEndOfListQuery = query.data
             .replace(/\$elementToInsert/g, uuid);
-          promises.push(StudyService.doModifyingQuery(addEpochToEndOfListQuery));
+          return StudyService.doModifyingQuery(addEpochToEndOfListQuery);
         });
 
-        return $q.all(promises);
+        return $q.all([addEpochPromise,
+                       addCommentPromise,
+                       setPrimaryPromise,
+                       addToListPromise]);
       }
 
       function deleteItem(item) {
@@ -169,7 +168,7 @@ define([],
         var isPrimaryDefer, epochDefer;
 
         var newDuration = simpleDurationBuilder(newItem.duration);
-        var newCommentValue = newItem.comment ? newItem.comment.value : "";
+        var newCommentValue = newItem.comment ? newItem.comment.value : '';
 
         if (oldItem.isPrimary.value === 'true' && !newItem.isPrimary.value) {
           isPrimaryDefer = removeEpochPrimaryRaw.$promise.then(function(queryRaw) {

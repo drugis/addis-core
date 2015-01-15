@@ -20,13 +20,20 @@ define([],
       var itemCache = angular.copy($scope.item);
       itemCache.isPrimary.value = itemCache.isPrimary.value === 'true';
       itemCache.duration = itemService.transformDuration(itemCache.duration);
+
+      if(itemCache.duration.durationType === 'instantaneous') {
+        itemCache.duration.numberOfPeriods = 1;
+        itemCache.duration.periodType = $scope.periodTypeOptions[0];
+      }
       $scope.itemCache = itemCache;
 
       $scope.isValidDuration = itemService.isValidDuration;
 
       $scope.editItem = function() {
+        $scope.itemCache.duration.periodType = _.find($scope.periodTypeOptions, function(option){
+          return option.value === $scope.itemCache.duration.periodType.value;
+        });
         itemService.editItem($scope.item, $scope.itemCache, $state.params.studyUUID).then(function() {
-            console.log('edit item complete');
             $scope.item = angular.copy($scope.itemCache);
             callback();
             $modalInstance.close();

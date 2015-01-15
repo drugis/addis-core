@@ -9,7 +9,7 @@ WITH <$graphUri>
 DELETE {
   <$URI>
    rdfs:label ?label ;
-   ontology:duration "$newDuration"^^xsd:duration .
+   ontology:duration ?oldDuration .
 }
 INSERT {
   <$URI>
@@ -19,7 +19,7 @@ INSERT {
 WHERE {
   <$URI>
    rdfs:label ?label ;
-   ontology:duration "$newDuration"^^xsd:duration .
+   ontology:duration ?oldDuration .
 };
 
 ## edit comment (optional)
