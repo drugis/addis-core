@@ -166,37 +166,35 @@ define([],
 
       function editItem(oldItem, newItem, studyUuid) {
 
+        var isPrimaryDefer, epochDefer;
+
         var newDuration = simpleDurationBuilder(newItem.duration);
         var newCommentValue = newItem.comment ? newItem.comment.value : "";
 
-        var promises =
-          [removeEpochPrimaryRaw.$promise,
-            setEpochToPrimaryRaw.$promise
-          ];
-
         if (oldItem.isPrimary.value === 'true' && !newItem.isPrimary.value) {
-          removeEpochPrimaryRaw.$promise.then(function(queryRaw) {
+          isPrimaryDefer = removeEpochPrimaryRaw.$promise.then(function(queryRaw) {
             var query = queryRaw.data.replace(/\$URI/g, newItem.uri.value)
               .replace(/\$studyUuid/g, studyUuid);
-            promises.push(StudyService.doModifyingQuery(query));
+            return StudyService.doModifyingQuery(query);
           });
         } else if (newItem.isPrimary.value) {
-          setEpochToPrimaryRaw.$promise.then(function(queryRaw) {
+          isPrimaryDefer = setEpochToPrimaryRaw.$promise.then(function(queryRaw) {
             var query = queryRaw.data.replace(/\$URI/g, newItem.uri.value)
               .replace(/\$studyUuid/g, studyUuid);
-            promises.push(StudyService.doModifyingQuery(query));
+            return StudyService.doModifyingQuery(query);
           });
         }
 
-        return editEpochRaw.$promise.then(function(editQueryRaw) {
+        epochDefer = editEpochRaw.$promise.then(function(editQueryRaw) {
           var editQuery = editQueryRaw.data.replace(/\$URI/g, newItem.uri.value)
             .replace(/\$studyUuid/g, studyUuid)
             .replace(/\$newDuration/g, newDuration)
             .replace(/\$newLabel/g, newItem.label.value);
             editQuery = editQuery.replace(/\$newComment/g, newCommentValue);
-          promises.push(StudyService.doModifyingQuery(editQuery));
-          return $q.all(promises);
+          return StudyService.doModifyingQuery(editQuery);
         });
+
+        return $q.all([isPrimaryDefer, epochDefer]);
       }
 
       return {
