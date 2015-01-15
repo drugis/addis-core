@@ -1,0 +1,44 @@
+Importer TODO:
+
+ - activity administered_drugs -> has_drug_treatment ; no longer use list
+ - measurement of_arm -> of_group
+ - measurement of_outcome -> of_variable
+ - study add has_included_population
+ - convert publications to bibo:Document with bibo:pmid
+ - NCT IDs?
+
+Ontology TODO:
+
+ - solution to has_epochs
+ - import qudt for units
+
+ - Measurements
+    - measurementType
+    - category_count, categoryList
+    - count, mean, sample_size, standard_deviation
+ - Study
+    - has_start_date
+    - status
+    - has_allocation
+    - has_blinding
+    - has_eligibility_criteria
+    - has_end_date
+    - has_id
+    - has_indication
+    - has_number_of_centers
+    - has_objective
+ - Datasets / concepts
+    - Drug
+    - Indication
+    - Endpoint, AdverseEvent, PopulationCharacteristic
+ - Participant flow
+
+ - Trial registry URLs + (ID -> URL) + ID pattern?
+
+Useful ontologies to import:
+
+ - http://purl.org/NET/dc_owl2dl/terms_od
+ - http://purl.org/ontology/bibo/
+ - BRIDG?
+ - OCRe?
+ - QUDT
