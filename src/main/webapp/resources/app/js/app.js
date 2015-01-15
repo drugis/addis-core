@@ -14,6 +14,7 @@ define(
     'endpoint/endpoint',
     'adverseEvent/adverseEvent',
     'epoch/epoch',
+    'measurementMoment/measurementMoment',
     'angular-resource',
     'rdfstore',
     'lodash'
@@ -29,7 +30,8 @@ define(
       'trialverse.populationCharacteristic',
       'trialverse.endpoint',
       'trialverse.adverseEvent',
-      'trialverse.epoch'
+      'trialverse.epoch',
+      'trialverse.measurementMoment'
     ];
 
     var app = angular.module('trialverse', dependencies);

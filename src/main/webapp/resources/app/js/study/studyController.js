@@ -68,6 +68,18 @@ define([],
           editItemTemplateUrl: 'app/js/epoch/editEpoch.html',
           editItemController: 'EditEpochController',
         },
+        measurementMoments: {
+          service: 'MeasurementMomentService',
+          anchorId: 'measurementMoments',
+          header: 'MeasurementMoments',
+          addItemController: 'MeasurementMomentcontroller',
+          categoryEmptyMessage: 'No measurement moments defined.',
+          itemName: 'Measurement moment',
+          itemTemplateUrl: 'app/js/measurementMoment/measurementMoment.html',
+          addItemTemplateUrl: 'app/js/measurementMoment/editMeasurementMoment.html',
+          editItemTemplateUrl: 'app/js/measurementMoment/editMeasurementMoment.html',
+          editItemController: 'MeasurementMomentcontroller',
+        }
       };
 
       function reloadStudyModel() {

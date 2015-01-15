@@ -105,9 +105,10 @@ define([],
         return transformedDuration;
       }
 
-      function queryItems() {
-        return epochQuery.$promise.then(function(query) {
-          return StudyService.doNonModifyingQuery(query.data);
+      function queryItems(studyUuid) {
+        return epochQuery.$promise.then(function(queryRaw) {
+          var query = queryRaw.data.replace(/\$studyUuid/g, studyUuid);
+          return StudyService.doNonModifyingQuery(query);
         });
       }
 

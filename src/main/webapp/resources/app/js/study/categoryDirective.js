@@ -1,8 +1,7 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$modal', '$injector'];
-
-  var CategoryDirective = function($modal, $injector) {
+  var dependencies = ['$stateParams', '$modal', '$injector'];
+  var CategoryDirective = function($stateParams, $modal, $injector) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/study/categoryDirective.html',
@@ -14,7 +13,7 @@ define([], function() {
         var service = $injector.get(scope.settings.service);
 
         scope.reloadItems = function() {
-          service.queryItems().then(function(queryResult) {
+          service.queryItems($stateParams.studyUUID).then(function(queryResult) {
             scope.items = queryResult.data.results.bindings;
             console.log('category items retrieved. ' + queryResult.length);
           });

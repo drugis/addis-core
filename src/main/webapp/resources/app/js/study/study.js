@@ -8,7 +8,8 @@ define(function (require) {
     'trialverse.arm',
     'trialverse.populationCharacteristic',
     'trialverse.endpoint',
-    'trialverse.adverseEvent'])
+    'trialverse.adverseEvent',
+    'trialverse.measurementMoment'])
     // controllers
     .controller('StudyController', require('study/studyController'))
 
