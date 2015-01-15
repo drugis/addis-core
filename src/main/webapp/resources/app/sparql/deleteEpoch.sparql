@@ -43,6 +43,7 @@ WITH <$graphUri>
 DELETE {
   ?prevNode rdf:rest ?element .
   ?element rdf:first <$URI> .
+  ?element rdf:rest ?tail .
 }
 INSERT {
 	?prevNode rdf:rest ?tail .
