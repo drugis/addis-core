@@ -30,10 +30,10 @@ public class ScratchServiceImpl implements ScratchService {
 
 
   final static Logger logger = LoggerFactory.getLogger(ScratchServiceImpl.class);
-  public static final String FUSEKI_SCRATCH_URL = "http://box006.drugis.org:3031/ds/";
-  public static final String FUSEKI_SCRATCH_UPDATE_URL = FUSEKI_SCRATCH_URL + "update?";
-  public static final String FUSEKI_SCRATCH_DATA_URL = FUSEKI_SCRATCH_URL + "data?";
-  public static final String FUSEKI_SCRATCH_QUERY_URL = FUSEKI_SCRATCH_URL + "query?";
+  public static final String FUSEKI_SCRATCH_URL = System.getenv("TRIALVERSE_SCRATCH_URL");
+  public static final String FUSEKI_SCRATCH_UPDATE_URL = FUSEKI_SCRATCH_URL + "/ds/update?";
+  public static final String FUSEKI_SCRATCH_DATA_URL = FUSEKI_SCRATCH_URL + "/ds/data?";
+  public static final String FUSEKI_SCRATCH_QUERY_URL = FUSEKI_SCRATCH_URL + "/ds/query?";
 
   @Inject
   private HttpClientFactory httpClientFactory;
