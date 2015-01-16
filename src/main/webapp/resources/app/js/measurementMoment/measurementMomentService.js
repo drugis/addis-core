@@ -1,13 +1,22 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q'];
-    var MeasurementMomentService = function($q) {
+    var dependencies = ['$q', 'StudyService', 'SparqlResource'];
+    var MeasurementMomentService = function($q, StudyService, SparqlResource) {
+
+      var epochQuery = SparqlResource.get({
+        name: 'queryMeasurementMoment.sparql'
+      });
+
       function queryItems() {
-        return $q.defer().promise;
+        return epochQuery.$promise.then(function(query) {
+          return StudyService.doNonModifyingQuery(query.data);
+        });
       }
 
-      return { queryItems: queryItems};
+      return {
+        queryItems: queryItems
+      };
     };
     return dependencies.concat(MeasurementMomentService);
   });
