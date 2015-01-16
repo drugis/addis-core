@@ -5,13 +5,14 @@
     </div>
   </div>
   <div class="row">
-    <div class="large-9 medium-12 columns">
-      <label>Name
-        <input autofocus="true" type="text" ng-model="itemCache.label">
-      </label>
+    <label>Epoch</label>
+    <div class="large-12 columns">
+      <select ng-model="epoch" placeholder="select epoch" ng-options="epoch.label.value for epoch in epochs">
+      </select>
     </div>
   </div>
-  <div class="row" ng-class="{'form-input-group': (itemCache.duration.durationType != 'period')}">
+
+  <div class="row">
     <div class="large-12 columns">
       <input ng-model="itemCache.relativeToAnchor" type="radio" value="<http://trials.drugis.org/ontology#anchorEpochStart>" id="fromStartOption">
              <label for="fromStartOption">from start</label>
@@ -20,16 +21,16 @@
     </div>
   </div>
 
-  <div class="row" ng-class="{'form-input-group': (itemCache.duration.durationType != 'period')}">
+  <div class="row">
     <div class="large-12 columns">
-      <input ng-model="hasOffset" type="radio" value="true" id="hasNoOffsetOption">
+      <input ng-model="hasOffset" type="radio" value="false" id="hasNoOffsetOption">
              <label for="hasNoOffsetOption">no offset</label>
-      <input ng-model="hasOffset" type="radio" value="false" id="hasOffsetOption">
+      <input ng-model="hasOffset" type="radio" value="true" id="hasOffsetOption">
              <label for="hasOffsetOption">offset</label>
     </div>
   </div>
 
-  <div ng-show="itemCache.duration.durationType == 'period'" class="row form-input-group">
+  <div ng-show="hasOffset === 'true'" class="row form-input-group">
     <div class="large-offset-3 large-3 medium-6 columns">
       <label>Amount</label>
       <input type="number" name="input" ng-model="itemCache.duration.numberOfPeriods" min="0">
@@ -38,6 +39,14 @@
       <label>Unit</label>
       <select ng-model="itemCache.duration.periodType" placeholder="select unit"
               ng-options="periodTypeOption.label for periodTypeOption in periodTypeOptions track by periodTypeOption"></select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="large-9 medium-12 columns">
+      <label>Name
+        <input autofocus="true" type="text" ng-model="itemCache.label">
+      </label>
     </div>
   </div>
 

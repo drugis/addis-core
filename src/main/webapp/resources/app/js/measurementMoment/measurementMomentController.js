@@ -2,25 +2,40 @@
 define([],
   function() {
     var dependencies = ['$scope',
+      '$stateParams',
       '$modalInstance',
       'successCallback',
-      'MeasurementMomentService'
+      'MeasurementMomentService',
+      'EpochService'
     ];
-    var MeasurementMomentController = function($scope, $modalInstance, successCallback, MeasurementMomentService) {
-      $scope.anchorMoments = [{
-        uri: '<http://trials.drugis.org/ontology#anchorEpochStart>',
-        label: 'from epoch start'
+    var MeasurementMomentController = function($scope,
+      $stateParams, $modalInstance, successCallback,
+      MeasurementMomentService, EpochService) {
+
+      $scope.periodTypeOptions = [{
+        value: 'H',
+        type: 'time',
+        label: 'hour(s)'
       }, {
-        uri: '<http://trials.drugis.org/ontology#anchorEpochEnd>',
-        label: 'from epoch end'
+        value: 'D',
+        type: 'day',
+        label: 'day(s)'
+      }, {
+        value: 'W',
+        type: 'day',
+        label: 'week(s)'
       }];
 
       $scope.itemCache = {
         duration: {}
       };
 
+     EpochService.queryItems($stateParams.studyUUID).then(function(queryResult) {
+        $scope.epochs = queryResult.data.results.bindings;
+      });
+
       $scope.addItem = function() {
-        MeasurementMomentService.addItem($scope.itemCaches)
+        MeasurementMomentService.addItem($scope.itemCache)
           .then(function() {
               successCallback();
               $modalInstance.close();
