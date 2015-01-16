@@ -1,0 +1,9 @@
+INSERT DATA {
+  GRAPH <$graphUri> {
+    instance:$newItemUuid
+      rdfs:label $newLabel ;
+      ontology:relative_to_epoch $epochUri ;
+      ontology:relative_to_anchor ontology:$anchorMoment ;
+      ontology:time_offset "$timeOffset"^^xsd:duration .
+  }
+};
