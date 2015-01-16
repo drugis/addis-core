@@ -23,9 +23,7 @@ define(['angular', 'angular-mocks'], function() {
       queryResourcePromise = q.defer();
       nonModifyingQueryPromise = q.defer();
       studyService.doNonModifyingQuery.and.returnValue(nonModifyingQueryPromise);
-      sparqlResource.get.and.returnValue({
-        $promise: queryResourcePromise.promise
-      });
+      sparqlResource.get.and.returnValue(queryResourcePromise.promise);
     }));
 
     beforeEach(inject(function(MeasurementMomentService) {
