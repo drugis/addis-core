@@ -4,27 +4,16 @@ define([],
     var dependencies = ['$q', 'StudyService', 'UUIDService', 'SparqlResource'];
     var EndpointService = function($q, StudyService, UUIDService, SparqlResource) {
 
-      var addEndpointQueryRaw = SparqlResource.get({
-        name: 'addEndpoint.sparql'
-      });
-
-      var endpointQuery = SparqlResource.get({
-        name: 'queryEndpoint.sparql'
-      });
-
-      var deleteEndpointRaw = SparqlResource.get({
-        name: 'deleteEndpoint.sparql'
-      });
-
-      var editEndpointRaw = SparqlResource.get({
-        name: 'editEndpoint.sparql'
-      });
+      var addEndpointQueryRaw = SparqlResource.get('addEndpoint.sparql');
+      var endpointQuery = SparqlResource.get('queryEndpoint.sparql');
+      var deleteEndpointRaw = SparqlResource.get('deleteEndpoint.sparql');
+      var editEndpointRaw = SparqlResource.get('editEndpoint.sparql');
 
       function queryItems() {
         var defer = $q.defer();
 
-        endpointQuery.$promise.then(function(query) {
-          defer.resolve(StudyService.doNonModifyingQuery(query.data));
+        endpointQuery.then(function(query) {
+          defer.resolve(StudyService.doNonModifyingQuery(query));
         });
         return defer.promise;
       }
@@ -32,8 +21,8 @@ define([],
       function addItem(endpoint) {
         var defer = $q.defer();
 
-        addEndpointQueryRaw.$promise.then(function(query) {
-          var addEndpointQuery = query.data
+        addEndpointQueryRaw.then(function(query) {
+          var addEndpointQuery = query
             .replace(/\$UUID/g, UUIDService.generate())
             .replace('$label', endpoint.label)
             .replace('$measurementType', endpoint.measurementType);
@@ -45,8 +34,8 @@ define([],
       function deleteItem(item) {
         var defer = $q.defer();
 
-        deleteEndpointRaw.$promise.then(function(deleteQueryRaw) {
-          var deleteQuery = deleteQueryRaw.data.replace(/\$URI/g, item.uri.value);
+        deleteEndpointRaw.then(function(deleteQueryRaw) {
+          var deleteQuery = deleteQueryRaw.replace(/\$URI/g, item.uri.value);
           defer.resolve(StudyService.doModifyingQuery(deleteQuery));
         });
         return defer.promise;
@@ -55,8 +44,8 @@ define([],
       function editItem(item) {
         var defer = $q.defer();
 
-        editEndpointRaw.$promise.then(function(editQueryRaw) {
-          var editQuery = editQueryRaw.data.replace(/\$URI/g, item.uri.value)
+        editEndpointRaw.then(function(editQueryRaw) {
+          var editQuery = editQueryRaw.replace(/\$URI/g, item.uri.value)
             .replace('$newLabel', item.label.value)
             .replace('$newMeasurementType', item.measurementType.value);
           defer.resolve(StudyService.doModifyingQuery(editQuery));

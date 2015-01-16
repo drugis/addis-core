@@ -4,23 +4,18 @@ define([],
     var dependencies = ['$q', 'StudyService', 'SparqlResource'];
     var MeasurementMomentService = function($q, StudyService, SparqlResource) {
 
-      var measurementMomentQuery = SparqlResource.get({
-        name: 'queryMeasurementMoment.sparql'
-      });
-
-      var addItem = SparqlResource.get({
-        name: 'addMeasurementMoment.sparql'
-      });
+      var measurementMomentQuery = SparqlResource.get('queryMeasurementMoment.sparql');
+      var addItem = SparqlResource.get('addMeasurementMoment.sparql');
 
       function queryItems() {
-        return measurementMomentQuery.$promise.then(function(query) {
-          return StudyService.doNonModifyingQuery(query.data);
+        return measurementMomentQuery.then(function(query) {
+          return StudyService.doNonModifyingQuery(query);
         });
       }
 
       function addItem(item) {
-        return addMeasurementMomentQuery.$promise.then(function(query) {
-          return StudyService.doNonModifyingQuery(query.data);
+        return addMeasurementMomentQuery.then(function(query) {
+          return StudyService.doNonModifyingQuery(query);
         });
       }
 

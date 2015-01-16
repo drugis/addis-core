@@ -1,22 +1,19 @@
 'use strict';
 define([], function() {
+  var dependencies = ['$http'];
+  var SparqlResource = function($http) {
 
-  var dependencies = ['$resource'];
+    function get(name) {
+      return $http.get('app/sparql/' + name, {
+        name: name
+      }).then(function(result) {
+        return result.data;
+      });
+    }
 
-  var SparqlResource = function($resource) {
-
-    return $resource('app/sparql/:name', {
-      name: name
-    }, {
-      'get': {
-        method: 'get',
-        transformResponse: function(data) {
-          return {
-            data: data
-          };
-        }
-      }
-    });
+    return {
+      get: get
+    };
   };
   return dependencies.concat(SparqlResource);
 });
