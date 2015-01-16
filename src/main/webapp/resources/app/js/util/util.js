@@ -19,6 +19,7 @@ define(function (require) {
     .filter('stripFrontFilter', require('util/filters/stripFrontFilter'))
 
     //directives
-    .directive('navbarDirective', require('navbar/navbarDirective'))
+    .directive('navbarDirective', require('util/directives/navbar/navbarDirective'))
+    .directive('durationInput', require('util/directives/durationInput/durationInput'))
     ;
 });

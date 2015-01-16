@@ -1,0 +1,11 @@
+<div ng-show="durationCache.durationType == 'period'" class="row form-input-group">
+    <div class="large-offset-3 large-3 medium-6 columns">
+        <label>Amount</label>
+        <input type="number" name="input" ng-model="durationCache.numberOfPeriods" min="0">
+    </div>
+    <div class="large-4 medium-6 end columns">
+        <label>Unit</label>
+        <select ng-model="durationCache.periodType" placeholder="select unit"
+                ng-options="periodTypeOption.label for periodTypeOption in periodTypeOptions track by periodTypeOption.value"></select>
+    </div>
+</div>
