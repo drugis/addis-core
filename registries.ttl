@@ -1,0 +1,82 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix reg: <http://trials.drugis.org/registries#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ont: <http://trials.drugis.org/ontology#> .
+
+<http://trials.drugis.org/registries> a owl:Ontology .
+
+reg:ANZCTR a ont:StudyRegistry ;
+  rdfs:label "Australian New Zealand Clinical Trials Registry" ;
+  foaf:homepage <http://www.anzctr.org.au/> .
+
+reg:ReBec a ont:StudyRegistry ;
+  rdfs:label "Brazilian Clinical Trials Registry" ;
+  foaf:homepage <http://www.ensaiosclinicos.gov.br/> .
+
+reg:ChiCTR a ont:StudyRegistry ;
+  rdfs:label "Chinese Clinical Trial Registry" ;
+  foaf:homepage <http://www.chictr.org/> .
+
+reg:CRiS a ont:StudyRegistry ;
+  rdfs:label "Clinical Research Information Service, Republic of Korea" ;
+  foaf:homepage <http://cris.nih.go.kr/cris/en/use_guide/cris_introduce.jsp> .
+
+reg:CTRI a ont:StudyRegistry ;
+  rdfs:label "Clinical Trials Registry - India" ;
+  foaf:homepage <http://ctri.nic.in/> .
+
+reg:RPCEC a ont:StudyRegistry ;
+  rdfs:label "Cuban Public Registry of Clinical Trials" ;
+  foaf:homepage <http://registroclinico.sld.cu/> .
+
+reg:EU-CTR a ont:StudyRegistry ;
+  rdfs:label "EU Clinical Trials Register" ;
+  foaf:homepage <https://www.clinicaltrialsregister.eu/> .
+
+reg:DRKS a ont:StudyRegistry ;
+  rdfs:label "German Clinical Trials Register" ;
+  foaf:homepage <http://www.germanctr.de/> .
+
+reg:IRCT a ont:StudyRegistry ;
+  rdfs:label "Iranian Registry of Clinical Trials" ;
+  foaf:homepage <http://www.irct.ir/> .
+
+reg:ISRCTN a ont:StudyRegistry ;
+  rdfs:label "ISRCTN.org" ;
+  foaf:homepage <http://www.isrctn.org/> .
+
+reg:TCTR a ont:StudyRegistry ;
+  rdfs:label "Thai Clinical Trials Registry" ;
+  foaf:homepage <http://www.clinicaltrials.in.th/> .
+
+reg:NTR a ont:StudyRegistry ;
+  rdfs:label "The Netherlands National Trial Register" ;
+  foaf:homepage <http://www.trialregister.nl/> .
+
+reg:PACTR a ont:StudyRegistry ;
+  rdfs:label "Pan African Clinical Trial Registry" ;
+  foaf:homepage <http://www.pactr.org/> .
+
+reg:SLCTR a ont:StudyRegistry ;
+  rdfs:label "Sri Lanka Clinical Trials Registry" ;
+  foaf:homepage <http://www.slctr.lk/> .
+
+reg:UMINCTR a ont:StudyRegistry ;
+  rdfs:label "University Hospital Medical Information Network" ;
+  foaf:homepage <http://www.umin.ac.jp/ctr/> .
+
+reg:JapicCTI a ont:StudyRegistry ;
+  rdfs:label "Japan Pharmaceutical Information Center - Clinical Trials Information " ;
+  foaf:homepage <http://www.japic.or.jp/> .
+
+reg:JMACCTCTR a ont:StudyRegistry ;
+  rdfs:label "Japan Medical Association - Center for Clinical Trials" ;
+  foaf:homepage <http://www.jmacct.med.or.jp/> .
+
+reg:ClinicalTrials.gov a ont:StudyRegistry ;
+  rdfs:label "ClinicalTrials.gov" ;
+  foaf:homepage <https://clinicaltrials.gov/> ;
+  ont:entry_url_format "https://clinicaltrials.gov/show/%s" ;
+  ont:id_pattern "NCT[0-9]{8}" .

@@ -1,11 +1,22 @@
 Importer TODO:
 
  - activity administered_drugs -> has_drug_treatment ; no longer use list
+ - outcome is_measured_at moment
  - measurement of_arm -> of_group
  - measurement of_outcome -> of_variable
- - study add has_included_population
+ - study has_included_population X
  - convert publications to bibo:Document with bibo:pmid
  - NCT IDs?
+ - refer to measurement moments in outcomes
+ - labels for measurement moments
+ - import of overall measurements -> included_population
+ - move measurementType to instance; rate -> binary.
+ - change has_blinding_type
+ - change has_allocation_type
+ - has_indication -> has_health_condition_studied
+ - status -> has_overall_status
+ - measurementType / has_outcome -> new outcome structure
+ - define drugs / indications (conditions) at study as well as at dataset
 
 Ontology TODO:
 
@@ -13,24 +24,12 @@ Ontology TODO:
  - import qudt for units
 
  - Measurements
-    - measurementType
     - category_count, categoryList
     - count, mean, sample_size, standard_deviation
- - Study
-    - has_start_date
-    - status
-    - has_allocation
-    - has_blinding
-    - has_eligibility_criteria
-    - has_end_date
-    - has_id
-    - has_indication
+ - Study (compare these to OCRe)
     - has_number_of_centers
-    - has_objective
  - Datasets / concepts
-    - Drug
-    - Indication
-    - Endpoint, AdverseEvent, PopulationCharacteristic
+    - Define Variable or whatever
  - Participant flow
 
  - Trial registry URLs + (ID -> URL) + ID pattern?
@@ -42,3 +41,11 @@ Useful ontologies to import:
  - BRIDG?
  - OCRe?
  - QUDT
+
+
+ClinicalTrials.gov:
+
+<!ELEMENT overall_status (#PCDATA)>   <!-- Possible values:
+          Not yet recruiting | Recruiting | Enrolling by invitation |
+          Active, not recruiting | Completed | Suspended | Terminated |
+          Withdrawn | Available | No Longer Available -->
