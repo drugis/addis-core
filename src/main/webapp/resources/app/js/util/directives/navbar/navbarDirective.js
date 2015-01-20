@@ -5,7 +5,7 @@ define([], function() {
   var NavbarDirective = function($window) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/navbar/navbarDirective.html',
+      templateUrl: 'app/js/util/directives/navbar/navbarDirective.html',
       transclude: true,
       link: function(scope) {
         scope.userInfo = {
