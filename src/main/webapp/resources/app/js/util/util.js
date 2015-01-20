@@ -9,6 +9,7 @@ define(function (require) {
     .factory('JsonLdService', require('util/jsonLdService'))
     .factory('RdfStoreService', require('util/rdfstoreService'))
     .factory('RemoteRdfStoreService', require('util/remoteRdfStoreService'))
+    .factory('DurationService', require('util/durationService'))
 
     // resources
     .factory('SparqlResource', require('util/sparqlResource'))
