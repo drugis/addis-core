@@ -5,7 +5,6 @@
     </div>
   </div>
   <div class="row">
-    <label>Epoch</label>
     <div class="large-12 columns">
       <select ng-model="epoch" placeholder="select epoch" ng-options="epoch.label.value for epoch in epochs">
       </select>
@@ -31,7 +30,8 @@
   </div>
 
   <div ng-show="hasOffset === 'true'" class="row form-input-group">
-    <div class="large-offset-3 large-3 medium-6 columns">
+  <duration-input duration-string="itemCache.duration" />
+   <!--  <div class="large-offset-3 large-3 medium-6 columns">
       <label>Amount</label>
       <input type="number" name="input" ng-model="itemCache.duration.numberOfPeriods" min="0">
     </div>
@@ -39,7 +39,7 @@
       <label>Unit</label>
       <select ng-model="itemCache.duration.periodType" placeholder="select unit"
               ng-options="periodTypeOption.label for periodTypeOption in periodTypeOptions track by periodTypeOption"></select>
-    </div>
+    </div> -->
   </div>
 
   <div class="row">

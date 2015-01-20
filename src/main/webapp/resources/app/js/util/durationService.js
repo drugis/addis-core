@@ -1,7 +1,7 @@
 'use strict';
 define([], function() {
-  var dependencies = [];
-  var DurationService = function() {
+  var dependencies = ['$filter'];
+  var DurationService = function($filter) {
 
     function getPeriodTypeOptions() {
       return [{
@@ -35,9 +35,17 @@ define([], function() {
       };
     }
 
+    function generateDurationString(duration) {
+      var output = 'P';
+      output = output + (duration.periodType.isTime ? 'T' : '');
+      output = output + + duration.numberOfPeriods + duration.periodType.code;
+      return output;
+    }
+
     return {
       getPeriodTypeOptions: getPeriodTypeOptions,
-      parseDuration: parseDuration
+      parseDuration: parseDuration,
+      generateDurationString: generateDurationString
     }
   }
 

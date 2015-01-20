@@ -67,5 +67,44 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
+    describe('generateDurationString', function() {
+      it('should generate a string from hours', function() {
+        var threeHours = {
+          numberOfPeriods: 3,
+          periodType: {
+            code: 'H',
+            isTime: true,
+            label: 'hour(s)'
+          }
+        };
+        expect(durationService.generateDurationString(threeHours)).toEqual('PT3H');
+        var fourHours = threeHours;
+        fourHours.numberOfPeriods = 4;
+        expect(durationService.generateDurationString(fourHours)).toEqual('PT4H');
+      });
+      it('should generate a string from days', function() {
+        var thirteenDays = {
+          numberOfPeriods: 13,
+          periodType: {
+            code: 'D',
+            isTime: false,
+            label: 'day(s)'
+          }
+        };
+        expect(durationService.generateDurationString(thirteenDays)).toEqual('P13D');
+      });
+      it('should generate a string from weeks', function() {
+        var fourteenWeeks = {
+          numberOfPeriods: 14,
+          periodType: {
+            code: 'W',
+            isTime: false,
+            label: 'week(s)'
+          }
+        };
+        expect(durationService.generateDurationString(fourteenWeeks)).toEqual('P14W');
+      });
+    });
+
   });
 });

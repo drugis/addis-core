@@ -19,6 +19,7 @@ define([],
 
       var itemCache = angular.copy($scope.item);
       itemCache.isPrimary.value = itemCache.isPrimary.value === 'true';
+      itemCache.durationString = itemCache.duration;
       itemCache.duration = itemService.transformDuration(itemCache.duration);
 
       if(itemCache.duration.durationType === 'instantaneous') {
