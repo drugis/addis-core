@@ -106,5 +106,20 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
+    describe('isValidDuration', function() {
+      it('should return true for valid strings', function() {
+        expect(durationService.isValidDuration('PT3H')).toBe(true);
+        expect(durationService.isValidDuration('PT13H')).toBe(true);
+        expect(durationService.isValidDuration('P10D')).toBe(true);
+        expect(durationService.isValidDuration('PT0S')).toBe(true);
+      });
+      it('should return false invalid strings', function() {
+        expect(durationService.isValidDuration('Pje moederD')).toBe(false);
+        expect(durationService.isValidDuration('PTPiets moederH')).toBe(false);
+        expect(durationService.isValidDuration('PT3D')).toBe(false);
+        expect(durationService.isValidDuration('P')).toBe(false);
+      });
+    });
+
   });
 });
