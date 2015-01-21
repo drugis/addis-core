@@ -13,34 +13,28 @@ define([],
       $stateParams, $modalInstance, successCallback,
       MeasurementMomentService, EpochService, DurationService) {
 
-      $scope.periodTypeOptions = [{
-        value: 'H',
-        type: 'time',
-        label: 'hour(s)'
-      }, {
-        value: 'D',
-        type: 'day',
-        label: 'day(s)'
-      }, {
-        value: 'W',
-        type: 'day',
-        label: 'week(s)'
-      }];
+      $scope.hasOffset = 'false';
 
-      $scope.itemCache = {
-        duration: {}
+      $scope.itemScratch = {
+        offset: 'PT0S'
       };
 
-     EpochService.queryItems($stateParams.studyUUID).then(function(queryResult) {
+      EpochService.queryItems($stateParams.studyUUID).then(function(queryResult) {
         $scope.epochs = queryResult.data.results.bindings;
       });
 
-     $scope.isValidDuration = function(duration) {
-      return DurationService.isValidDuration(duration);
-     };
+      $scope.isValidDuration = function(duration) {
+        return DurationService.isValidDuration(duration);
+      };
+
+      $scope.generateLabel = MeasurementMomentService.generateLabel;
+
+      $scope.$watch($scope.itemScratch.duration, function() {
+        $scope.itemScratch.label = MeasurementMomentService.generateLabel($scope.itemScratch);
+      })
 
       $scope.addItem = function() {
-        MeasurementMomentService.addItem($scope.itemCache)
+        MeasurementMomentService.addItem($scope.itemScratch)
           .then(function() {
               successCallback();
               $modalInstance.close();

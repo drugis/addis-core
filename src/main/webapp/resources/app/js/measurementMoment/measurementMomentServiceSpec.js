@@ -4,8 +4,9 @@ define(['angular', 'angular-mocks'], function() {
     var
       sparqlResource = jasmine.createSpyObj('SparqlResource', ['get']),
       studyService = jasmine.createSpyObj('StudyService', ['doModifyingQuery', 'doNonModifyingQuery']),
+      epochService = jasmine.createSpyObj('EpochService', ['queryItems']),
       q, rootScope,
-      nonModifyingQueryPromise, queryResourcePromise,
+      nonModifyingQueryPromise, queryResourcePromise, epochQueryPromise,
       measurementMomentService;
 
     beforeEach(module('trialverse.measurementMoment'));
@@ -13,6 +14,7 @@ define(['angular', 'angular-mocks'], function() {
     beforeEach(function() {
       module('trialverse', function($provide) {
         $provide.value('StudyService', studyService);
+        $provide.value('EpochService', epochService);
         $provide.value('SparqlResource', sparqlResource);
       });
     });
@@ -22,7 +24,10 @@ define(['angular', 'angular-mocks'], function() {
       rootScope = $rootScope;
       queryResourcePromise = q.defer();
       nonModifyingQueryPromise = q.defer();
-      studyService.doNonModifyingQuery.and.returnValue(nonModifyingQueryPromise);
+      epochQueryPromise = q.defer();
+
+      epochService.queryItems.and.returnValue(epochQueryPromise.promise);
+      studyService.doNonModifyingQuery.and.returnValue(nonModifyingQueryPromise.promise);
       sparqlResource.get.and.returnValue(queryResourcePromise.promise);
     }));
 
@@ -33,25 +38,91 @@ define(['angular', 'angular-mocks'], function() {
     describe('queryItems', function() {
       it('should query the measurement moments', function() {
         var result = measurementMomentService.queryItems();
-        var queryResult = 'any string 2';
-
+        var queryResult = [{
+          epochUri: {
+            value: 1
+          }
+        }, {
+          epochUri: {
+            value: 2
+          }
+        }];
+        var expectedResult = [{
+          epochUri: {
+            value: 1
+          },
+          epoch: {
+            uri: {value: 1}
+          }
+        }, {
+          epochUri: {
+            value: 2
+          },
+          epoch: {
+            uri: {value: 2}
+          }
+        }];
+        var epochs = [{
+          uri: {
+            value: 2
+          }
+        }, {
+          uri: {
+            value: 1
+          }
+        }];
+        epochQueryPromise.resolve(epochs);
         queryResourcePromise.resolve('any string 1');
         nonModifyingQueryPromise.resolve(queryResult);
         rootScope.$digest();
 
-        expect(result.$$state.value.promise.$$state.value).toEqual(queryResult);
+        expect(result.$$state.value).toEqual(expectedResult);
       });
     });
 
     describe('generateLabel', function() {
+      describe('should return an empty string when', function() {
+        it('there is no data', function() {
+          var measurementMoment = {};
+          expect(measurementMomentService.generateLabel(measurementMoment)).toEqual('');
+        });
+        it('there is only an epoch', function() {
+          var measurementMoment = {
+            epoch: {
+              label: 'test'
+            }
+          };
+          expect(measurementMomentService.generateLabel(measurementMoment)).toEqual('');
+        });
+        it('there is an epoch and an offset but no anchor relation', function() {
+          var measurementMoment = {
+            epoch: {
+              label: 'test'
+            },
+            offset: 'PT3H'
+          };
+          expect(measurementMomentService.generateLabel(measurementMoment)).toEqual('');
+        });
+        it('there is an epoch and anchor relation but no offset', function() {
+          var measurementMoment = {
+            epoch: {
+              label: 'test'
+            },
+            relativeToAnchor: '<http://trials.drugis.org/ontology#anchorEpochStart>'
+          };
+          expect(measurementMomentService.generateLabel(measurementMoment)).toEqual('');
+        });
+      });
       it('should work for zero duration', function() {
         var measurementMoment = {
           epoch: {
             uri: 'epochUri',
-            label: 'main phase'
+            label: {
+              value: 'main phase'
+            }
           },
           relativeToAnchor: '<http://trials.drugis.org/ontology#anchorEpochStart>',
-          offset: 'PT0H'
+          offset: 'PT0S'
         };
 
         expect(measurementMomentService.generateLabel(measurementMoment))
@@ -66,7 +137,9 @@ define(['angular', 'angular-mocks'], function() {
         var measurementMoment = {
           epoch: {
             uri: 'epochUri',
-            label: 'main phase'
+            label: {
+              value: 'main phase'
+            }
           },
           relativeToAnchor: '<http://trials.drugis.org/ontology#anchorEpochStart>',
           offset: 'PT3H'
@@ -88,7 +161,9 @@ define(['angular', 'angular-mocks'], function() {
         var measurementMoment = {
           epoch: {
             uri: 'epochUri',
-            label: 'main phase'
+            label: {
+              value: 'main phase'
+            }
           },
           relativeToAnchor: '<http://trials.drugis.org/ontology#anchorEpochStart>',
           offset: 'P3D'
