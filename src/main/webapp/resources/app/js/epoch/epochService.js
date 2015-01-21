@@ -14,71 +14,6 @@ define([],
       var removeEpochPrimaryRaw = SparqlResource.get('removeEpochPrimary.sparql');
       var setEpochToPrimaryRaw = SparqlResource.get('setEpochToPrimary.sparql');
 
-      function simpleDurationBuilder(durationObject) {
-        if (durationObject.durationType === 'instantaneous') {
-          return 'PT0S';
-        }
-
-        var duration = 'P';
-
-        if (durationObject.periodType.type === 'time') {
-          duration = duration + 'T';
-        }
-
-        duration = duration + durationObject.numberOfPeriods + durationObject.periodType.value;
-        return duration;
-      }
-
-      //http://stackoverflow.com/questions/10834796/validate-that-a-string-is-a-positive-integer
-      function isNormalInteger(str) {
-        return /^\+?(0|[1-9]\d*)$/.test(str);
-      }
-
-      function isValidDuration(duration, periodTypeOptions) {
-        if (!duration.durationType) {
-          return false;
-        } else if (duration.durationType === 'instantaneous') {
-          return true;
-        } else if (duration.durationType === 'period') {
-          var isValidType = _.find(periodTypeOptions, function(option) {
-            return option.value === duration.periodType.value;
-          });
-          var isValidNumberOfPeriods = isNormalInteger(duration.numberOfPeriods);
-          return isValidType && isValidNumberOfPeriods;
-        } else {
-          throw 'invalid duration type';
-        }
-      }
-
-      function transformDuration(duration) {
-        var transformedDuration;
-
-        if (duration.value === 'PT0S') {
-          return {
-            durationType: 'instantaneous'
-          };
-        }
-
-        transformedDuration = {
-          durationType: 'period',
-        };
-        var tempDurationStr = duration.value;
-
-        if (duration.value[1] === 'T') {
-          tempDurationStr = tempDurationStr.slice(2); // remove 'PT'
-        } else {
-          tempDurationStr = tempDurationStr.slice(1); // remove 'P'
-        }
-
-        transformedDuration.periodType = {
-          value: tempDurationStr[tempDurationStr.length - 1]
-        };
-        var numberOfPeriodsAsString = tempDurationStr.substr(0, tempDurationStr.length - 1);
-        transformedDuration.numberOfPeriods = parseInt(numberOfPeriodsAsString, 10);
-
-        return transformedDuration;
-      }
-
       function queryItems(studyUuid) {
         return epochQuery.then(function(queryRaw) {
           var query = queryRaw.replace(/\$studyUuid/g, studyUuid);
@@ -142,7 +77,7 @@ define([],
 
         var isPrimaryDefer, epochDefer;
 
-        var newDuration = simpleDurationBuilder(newItem.duration);
+        var newDuration = newItem.duration.value;
         var newCommentValue = newItem.comment ? newItem.comment.value : '';
 
         if (oldItem.isPrimary.value === 'true' && !newItem.isPrimary.value) {
@@ -175,9 +110,7 @@ define([],
         queryItems: queryItems,
         addItem: addItem,
         deleteItem: deleteItem,
-        editItem: editItem,
-        transformDuration: transformDuration,
-        isValidDuration: isValidDuration
+        editItem: editItem
       };
     };
     return dependencies.concat(EpochService);

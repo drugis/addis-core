@@ -6,11 +6,12 @@ define([],
       '$modalInstance',
       'successCallback',
       'MeasurementMomentService',
-      'EpochService'
+      'EpochService',
+      'DurationService'
     ];
     var MeasurementMomentController = function($scope,
       $stateParams, $modalInstance, successCallback,
-      MeasurementMomentService, EpochService) {
+      MeasurementMomentService, EpochService, DurationService) {
 
       $scope.periodTypeOptions = [{
         value: 'H',
@@ -33,6 +34,10 @@ define([],
      EpochService.queryItems($stateParams.studyUUID).then(function(queryResult) {
         $scope.epochs = queryResult.data.results.bindings;
       });
+
+     $scope.isValidDuration = function(duration) {
+      return DurationService.isValidDuration(duration);
+     };
 
       $scope.addItem = function() {
         MeasurementMomentService.addItem($scope.itemCache)

@@ -7,48 +7,41 @@
   <div class="row">
     <div class="large-9 medium-12 columns">
       <label>Name
-        <input autofocus="true" type="text" ng-model="itemCache.label.value">
+        <input autofocus="true" type="text" ng-model="itemScratch.label.value">
       </label>
     </div>
   </div>
   <div class="row">
     <div class="large-9 medium-12 columns">
       <label>Description
-        <textarea rows="8" ng-model="itemCache.comment.value"></textarea>
+        <textarea rows="8" ng-model="itemScratch.comment.value"></textarea>
       </label>
     </div>
   </div>
-  <div class="row" ng-class="{'form-input-group': (itemCache.duration.durationType.value != 'period')}">
+  <div class="row" ng-class="{'form-input-group': (durationType != 'period')}">
     <div class="large-12 columns">
       <label>Duration</label>
-      <input ng-model="itemCache.duration.durationType" type="radio" name="durationType"
+      <input ng-model="durationType" type="radio" ng-change="changeToInstantaneous()" name="durationType"
              value="instantaneous" id="instantaneousOption"><label for="instantaneousOption">instantaneous</label>
-      <input ng-model="itemCache.duration.durationType" type="radio" name="durationType"
+      <input ng-model="durationType" type="radio" ng-change="changeToDuration()" name="durationType"
              value="period" id="periodOption"><label
         for="periodOption">duration</label>
     </div>
   </div>
-  <div ng-show="itemCache.duration.durationType == 'period'" class="row form-input-group">
-    <div class="large-offset-3 large-3 medium-6 columns">
-      <label>Amount</label>
-      <input type="number" name="input" ng-model="itemCache.duration.numberOfPeriods" min="0">
-    </div>
-    <div class="large-4 medium-6 end columns">
-      <label>Unit</label>
-      <select ng-model="itemCache.duration.periodType" placeholder="select unit"
-              ng-options="periodTypeOption.label for periodTypeOption in periodTypeOptions track by periodTypeOption.value"></select>
-    </div>
+  <div ng-show="durationType == 'period'" class="row form-input-group">
+    <duration-input duration-string="itemScratch.duration.value">
+    </duration-input>
   </div>
   <div class="row form-input-group">
     <div class="large-9 columns">
       <label for="isPrimaryCheckBox">Is primary epoch</label>
-      <input id="isPrimaryCheckBox" ng-model="itemCache.isPrimary.value" type="checkbox">
+      <input id="isPrimaryCheckBox" ng-model="itemScratch.isPrimary.value" type="checkbox">
     </div>
   </div>
   <div class="row">
     <div class="large-9 columns">
       <button class="success" type="submit"
-              ng-disabled="(!itemCache.label || !isValidDuration(itemCache.duration, periodTypeOptions))">Edit
+              ng-disabled="(!itemScratch.label || !isValidDuration(itemScratch.duration.value))">Edit
       </button>
     </div>
   </div>

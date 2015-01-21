@@ -1,41 +1,35 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$state', '$modalInstance', 'itemService', 'callback'];
-    var EditEpochController = function($scope, $state, $modalInstance, itemService, callback) {
-      $scope.periodTypeOptions = [{
-        value: 'H',
-        type: 'time',
-        label: 'hour(s)'
-      }, {
-        value: 'D',
-        type: 'day',
-        label: 'day(s)'
-      }, {
-        value: 'W',
-        type: 'day',
-        label: 'week(s)'
-      }];
+    var dependencies = ['$scope',
+      '$state', '$modalInstance',
+      'itemService', 'callback', 'DurationService'
+    ];
+    var EditEpochController = function($scope, $state, $modalInstance,
+      itemService, callback, DurationService) {
 
-      var itemCache = angular.copy($scope.item);
-      itemCache.isPrimary.value = itemCache.isPrimary.value === 'true';
-      itemCache.durationString = itemCache.duration;
-      itemCache.duration = itemService.transformDuration(itemCache.duration);
+      var itemScratch = angular.copy($scope.item);
+      itemScratch.isPrimary.value = itemScratch.isPrimary.value === 'true';
 
-      if(itemCache.duration.durationType === 'instantaneous') {
-        itemCache.duration.numberOfPeriods = 1;
-        itemCache.duration.periodType = $scope.periodTypeOptions[0];
+      $scope.itemScratch = itemScratch;
+
+      $scope.durationType = itemScratch.duration.value === 'PT0S' ? 'instantaneous' : 'period';
+
+      $scope.isValidDuration = DurationService.isValidDuration;
+
+      $scope.changeToDuration = function() {
+        if($scope.itemScratch.duration.value === 'PT0S') {
+          $scope.itemScratch.duration.value = 'PT1H';
+        }
+      };
+
+      $scope.changeToInstantaneous = function() {
+        $scope.itemScratch.duration.value = 'PT0S';
       }
-      $scope.itemCache = itemCache;
-
-      $scope.isValidDuration = itemService.isValidDuration;
 
       $scope.editItem = function() {
-        $scope.itemCache.duration.periodType = _.find($scope.periodTypeOptions, function(option){
-          return option.value === $scope.itemCache.duration.periodType.value;
-        });
-        itemService.editItem($scope.item, $scope.itemCache, $state.params.studyUUID).then(function() {
-            $scope.item = angular.copy($scope.itemCache);
+        itemService.editItem($scope.item, $scope.itemScratch, $state.params.studyUUID).then(function() {
+            $scope.item = angular.copy($scope.itemScratch);
             callback();
             $modalInstance.close();
           },

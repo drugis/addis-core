@@ -21,6 +21,6 @@ define(function (require) {
 
     //directives
     .directive('navbarDirective', require('util/directives/navbar/navbarDirective'))
-    .directive('durationInput', require('util/directives/durationInput/durationInput'))
+    .directive('durationInput', require('util/directives/durationInput/durationInputDirective'))
     ;
 });
