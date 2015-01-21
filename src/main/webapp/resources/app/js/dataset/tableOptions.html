@@ -2,9 +2,18 @@
 
 <form name="projectForm">
     <div class="row">
-        <div class="large-12 column">
+        <div class="large-6 columns medium-6">
             <ul class="no-bullet">
-                <li ng-repeat="column in tableOptions.columns">
+                <li ng-repeat="column in tableOptions.columns" ng-show="$even">
+                    <input id="{{column.id}}" ng-model="column.visible" type="checkbox">
+                    <label ng-click="column.visible = !column.visible">{{column.label}}</label>
+                </li>
+            </ul>
+
+        </div>
+        <div class="large-6 columns medium-6">
+            <ul class="no-bullet">
+                <li ng-repeat="column in tableOptions.columns" ng-show="$odd">
                     <input id="{{column.id}}" ng-model="column.visible" type="checkbox">
                     <label ng-click="column.visible = !column.visible">{{column.label}}</label>
                 </li>
@@ -12,7 +21,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="large-12 column">
+        <div class="large-12 columns">
             <ul class="button-group">
                 <li>
                     <button class="button" ng-click="cancel()">Close</button>
