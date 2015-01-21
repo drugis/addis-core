@@ -24,14 +24,13 @@ define([],
       function addItem(item, studyUUID) {
         var uuid = UUIDService.generate();
         var addEpochPromise, addCommentPromise, setPrimaryPromise, addToListPromise;
-        var durationString = simpleDurationBuilder(item.duration);
 
         // add epoch
         addEpochPromise = addEpochQueryRaw.then(function(query) {
           var addEpochQuery = query
             .replace(/\$newUUID/g, uuid)
             .replace('$label', item.label)
-            .replace('$duration', durationString);
+            .replace('$duration', item.duration);
           return StudyService.doModifyingQuery(addEpochQuery);
         });
         // optional add comment
