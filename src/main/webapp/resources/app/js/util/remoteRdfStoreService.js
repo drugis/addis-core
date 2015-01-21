@@ -44,6 +44,9 @@ define([], function() {
 
       return $http.post(SCRATCH_RDF_STORE_URL + '/query',
         query, {
+          transformResponse: function(data) {
+            return deFusekify(data);
+          },
           params: {
             'output': 'json'
           },
@@ -63,12 +66,22 @@ define([], function() {
         });
     }
 
+    function deFusekify(data) {
+      var bindings = data.data.results.bindings;
+      return _.map(bindings, function(binding) {
+        return _.object(_.map(_.pairs(binding), function(obj) {
+          return [obj[0], obj[1].value];
+        }));
+      });
+    }
+
     return {
       create: create,
       load: load,
       executeUpdate: executeUpdate,
       executeQuery: executeQuery,
-      getGraph: getGraph
+      getGraph: getGraph,
+      deFusekify: deFusekify
     };
   };
   return dependencies.concat(RemotestoreService);
