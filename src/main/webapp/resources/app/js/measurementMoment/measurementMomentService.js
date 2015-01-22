@@ -48,7 +48,7 @@ define([],
           return '';
         }
         var offsetStr = (measurementMoment.offset === 'PT0S') ? 'At' : $filter('durationFilter')(measurementMoment.offset) + ' from';
-        var anchorStr = measurementMoment.relativeToAnchor === '<http://trials.drugis.org/ontology#anchorEpochStart>' ? 'start' : 'end';
+        var anchorStr = measurementMoment.relativeToAnchor === 'http://trials.drugis.org/ontology#anchorEpochStart' ? 'start' : 'end';
         return offsetStr + ' ' + anchorStr + ' of ' + measurementMoment.epoch.label;
       }
 

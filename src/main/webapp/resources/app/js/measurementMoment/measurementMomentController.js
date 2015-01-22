@@ -4,24 +4,32 @@ define([],
     var dependencies = ['$scope',
       '$stateParams',
       '$modalInstance',
-      'successCallback',
+      'callback',
       'MeasurementMomentService',
       'EpochService',
       'DurationService'
     ];
     var MeasurementMomentController = function($scope,
-      $stateParams, $modalInstance, successCallback,
+      $stateParams, $modalInstance, callback,
       MeasurementMomentService, EpochService, DurationService) {
 
-      $scope.hasOffset = 'false';
-
-      $scope.itemScratch = {
-        offset: 'PT0S'
-      };
-
-      EpochService.queryItems($stateParams.studyUUID).then(function(queryResult) {
+      var epochsPromise = EpochService.queryItems($stateParams.studyUUID).then(function(queryResult) {
         $scope.epochs = queryResult;
+        $scope.itemScratch.epoch = _.find($scope.epochs, function(epoch) {
+          return $scope.itemScratch.epochUri === epoch.uri;
+        });
       });
+
+      if (!$scope.item) {
+        $scope.hasOffset = 'false';
+        $scope.itemScratch = {
+          offset: 'PT0S'
+        };
+      } else {
+        $scope.itemScratch = angular.copy($scope.item);
+        $scope.hasOffset = $scope.itemScratch.offset === 'PT0S' ? 'false' : 'true';
+      }
+
 
       $scope.isValidDuration = function(duration) {
         return DurationService.isValidDuration(duration);
@@ -30,13 +38,15 @@ define([],
       $scope.generateLabel = MeasurementMomentService.generateLabel;
 
       $scope.$watch('itemScratch.offset', function() {
-        $scope.itemScratch.label = MeasurementMomentService.generateLabel($scope.itemScratch);
+        epochsPromise.then(function() {
+          $scope.itemScratch.label = MeasurementMomentService.generateLabel($scope.itemScratch);
+        });
       });
 
       $scope.addItem = function() {
         MeasurementMomentService.addItem($scope.itemScratch)
           .then(function() {
-              successCallback();
+              callback();
               $modalInstance.close();
             },
             function() {
@@ -44,6 +54,10 @@ define([],
               $modalInstance.dismiss('cancel');
             });
       };
+
+      $scope.cancel = function() {
+        $modalInstance.dismiss('cancel');
+      }
     };
     return dependencies.concat(MeasurementMomentController);
   });

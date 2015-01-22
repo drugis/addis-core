@@ -8,7 +8,7 @@ INSERT DATA {
     instance:$newItemUuid
       rdfs:label "$newLabel" ;
       ontology:relative_to_epoch <$epochUri> ;
-      ontology:relative_to_anchor $anchorMoment ;
+      ontology:relative_to_anchor <$anchorMoment> ;
       ontology:time_offset "$timeOffset"^^xsd:duration .
   }
 };
