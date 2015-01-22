@@ -8,6 +8,7 @@ define([],
       StudiesWithDetailResource, JsonLdService) {
 
       DatasetResource.get($stateParams, function(response) {
+        DatasetService.reset();
         DatasetService.loadStore(response.data).then(function() {
           DatasetService.queryDataset().then(function(queryResult) {
             $scope.dataset = queryResult[0];

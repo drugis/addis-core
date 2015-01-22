@@ -3,7 +3,7 @@ define(['angular', 'angular-mocks'], function() {
   describe('dataset service', function() {
 
     var remoteRdfStoreService,
-      loadDefer,
+      loadDatasetStoreDefer,
       createDefer,
       executeQueryDefer,
       queryResult = 'queryResult',
@@ -28,46 +28,65 @@ define(['angular', 'angular-mocks'], function() {
 
     describe('loadStore', function() {
 
-      beforeEach(inject(function($q) {
+      var datasetService;
+
+      beforeEach(inject(function($q, DatasetService) {
+        datasetService = DatasetService;
         createDefer = $q.defer();
-        loadDefer = $q.defer();
+        loadDatasetStoreDefer = $q.defer();
         remoteRdfStoreService.create.and.returnValue(createDefer.promise);
-        remoteRdfStoreService.load.and.returnValue(loadDefer.promise);
+        remoteRdfStoreService.load.and.returnValue(loadDatasetStoreDefer.promise);
       }));
 
-      it('should load data', inject(function(DatasetService, $rootScope) {
-        var promise = DatasetService.loadStore('any info');
+      it('should load data', inject(function($rootScope) {
+        var promise = datasetService.loadStore('any info');
         createDefer.resolve('graphURI');
-        loadDefer.resolve('resultString');
+        loadDatasetStoreDefer.resolve();
         $rootScope.$digest();
-        expect(promise.$$state.value).toBe('resultString');
+        expect(promise.$$state.status).toBe(1);
       }));
 
       describe('queryDatasetsOverview', function() {
 
         beforeEach(inject(function($q) {
+          datasetService.loadStore('any info');
           executeQueryDefer = $q.defer();
           remoteRdfStoreService.executeQuery.and.returnValue(executeQueryDefer.promise);
         }));
 
-        it('should show a list of datasets', inject(function(DatasetService, $rootScope) {
-          var promise = DatasetService.queryDatasetsOverview();
-          executeQueryDefer.resolve('list of datasets');
+        it('should show a list of datasets', inject(function($rootScope) {
+          var expectedResult = {
+            data: {
+              results: {
+                bindings: 'list of dataset'
+              }
+            }
+          };
+          var promise = datasetService.queryDatasetsOverview();
+          executeQueryDefer.resolve(expectedResult);
+          loadDatasetStoreDefer.resolve();
+          createDefer.resolve('graphURI');
           $rootScope.$digest();
-          expect(promise.$$state.value).toBe('list of datasets');
-        }))
+
+          expect(promise.$$state.status).toBe(1);
+          expect(promise.$$state.value).toBe('list of dataset');
+
+        }));
       });
 
       describe('queryDataset', function() {
 
         beforeEach(inject(function($q) {
+          datasetService.loadStore('any info');
           executeQueryDefer = $q.defer();
           remoteRdfStoreService.executeQuery.and.returnValue(executeQueryDefer.promise);
         }));
 
-        it('should not fail when a single result is returned', inject(function(DatasetService, $rootScope) {
-          var promise = DatasetService.queryDataset();
+        it('should not fail when a single result is returned', inject(function($rootScope) {
+          var promise = datasetService.queryDataset();
           executeQueryDefer.resolve('single result');
+          loadDatasetStoreDefer.resolve();
+          createDefer.resolve('graphURI');
           $rootScope.$digest();
           expect(promise.$$state.value).toBe('single result');
         }));
@@ -77,13 +96,16 @@ define(['angular', 'angular-mocks'], function() {
         var executeUpdateDefer;
 
         beforeEach(inject(function($q) {
+          datasetService.loadStore('any info');
           executeUpdateDefer = $q.defer();
           remoteRdfStoreService.executeUpdate.and.returnValue(executeUpdateDefer.promise);
         }));
 
-        it('should execute the update', inject(function(DatasetService, $rootScope) {
-          var promise = DatasetService.addStudyToDatasetGraph('datasetUUID', 'studyUUID');
+        it('should execute the update', inject(function($rootScope) {
+          var promise = datasetService.addStudyToDatasetGraph('datasetUUID', 'studyUUID');
           executeUpdateDefer.resolve(200);
+          loadDatasetStoreDefer.resolve();
+          createDefer.resolve('graphURI');
           $rootScope.$digest();
           expect(promise.$$state.value).toBe(200);
           expect(remoteRdfStoreService.executeUpdate).toHaveBeenCalled();
