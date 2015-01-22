@@ -26,7 +26,7 @@ define([],
             });
             return measurementMoment;
           });
-        })
+        });
       }
 
       function addItem(item) {

@@ -43,13 +43,8 @@ define(['angular', 'angular-mocks'], function() {
       mockLoadStoreDeferred.resolve(101);
       scope.$digest();
       expect(mockDatasetService.queryDatasetsOverview).toHaveBeenCalled();
-      var mockResults = {
-        data: {
-          results: {
-            bindings: "my result"
-          }
-        }
-      };
+      var mockResults = "my result";
+
       mockQueryDatasetsDeferred.resolve(mockResults);
       scope.$digest();
       expect(scope.datasets).toBe('my result');
