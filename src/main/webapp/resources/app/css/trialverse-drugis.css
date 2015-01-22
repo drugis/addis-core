@@ -8365,12 +8365,17 @@ input[type='file'] {
   color: #cc3333;
 }
 
-/* line 27, ../../sass/trialverse-drugis.scss */
+/* line 26, ../../sass/trialverse-drugis.scss */
+.main-content {
+  padding-top: 56px;
+}
+
+/* line 31, ../../sass/trialverse-drugis.scss */
 .top-bar-section .has-form {
   height: 44px;
 }
 
-/* line 31, ../../sass/trialverse-drugis.scss */
+/* line 35, ../../sass/trialverse-drugis.scss */
 .user-image {
   margin-top: -1px;
   margin-right: 4px;
@@ -8378,16 +8383,11 @@ input[type='file'] {
   border-radius: 15px;
 }
 
-/* line 38, ../../sass/trialverse-drugis.scss */
-.has-message {
-  height: 44px;
-  padding: 9px 4px;
-}
-
-/* line 43, ../../sass/trialverse-drugis.scss */
-.header-message {
-  color: #dadada;
-  font-size: 13px;
+/* line 42, ../../sass/trialverse-drugis.scss */
+.topbar-text {
+  color: white;
+  padding: 0;
+  margin: 0;
 }
 
 /* line 48, ../../sass/trialverse-drugis.scss */
@@ -8399,17 +8399,50 @@ input[type='file'] {
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
 }
 
-/* line 58, ../../sass/trialverse-drugis.scss */
-.main-content {
-  padding-top: 77px;
+/* line 56, ../../sass/trialverse-drugis.scss */
+.top-bar-section ul.top-bar-content {
+  padding-top: 5px;
+  margin-left: 4rem;
 }
 
-/* line 64, ../../sass/trialverse-drugis.scss */
+/* line 61, ../../sass/trialverse-drugis.scss */
+.nav-bar-spacer {
+  padding-top: 1rem;
+}
+
+/* line 69, ../../sass/trialverse-drugis.scss */
+.side-nav .button {
+  margin-bottom: 0.5rem;
+}
+
+/* line 73, ../../sass/trialverse-drugis.scss */
+.modified-warning {
+  font-size: 14px;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+/* line 80, ../../sass/trialverse-drugis.scss */
+ul.side-nav {
+  padding: 2rem 1rem;
+  background-color: #f4f4f4;
+}
+
+/* line 85, ../../sass/trialverse-drugis.scss */
+ul.side-nav li.heading {
+  color: #008CBA;
+  font-size: 0.77778rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* line 94, ../../sass/trialverse-drugis.scss */
 .study-item {
   margin: 0 0 3rem 0;
 }
 
-/* line 70, ../../sass/trialverse-drugis.scss */
+/* line 100, ../../sass/trialverse-drugis.scss */
 .form-input-group {
   padding-bottom: 16px;
 }
