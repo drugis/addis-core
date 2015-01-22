@@ -6,7 +6,6 @@ define([],
       StudyService.reset();
 
       $scope.study = {};
-      $scope.arms = {};
       $scope.categorySettings = {
         arms: {
           service: 'ArmService',

@@ -97,8 +97,62 @@ ul.side-nav li.heading {
 
 /////////////////////////// end study
 
+////////////////////////// study category iten ///
+
 .form-input-group {
   padding-bottom: 16px;
 }
+
+///////////////////////// end study category item //
+
+//////////////////////// study results ////
+.y-head {
+  font-weight: bold;
+}
+
+//////// Tables /////////////////
+table {
+  border-collapse: collapse;
+  //remove default foundation striping
+  tr:nth-of-type(even) {
+    background-color: transparent;
+  }
+  tr {
+    th, .y-head {
+      background-color:#F5F5F5;
+    }
+    th.sortable {
+      cursor: pointer;
+    }
+    th, td {
+      border: solid 1px $addis-grey-border;
+      a:hover {
+        text-decoration: underline;
+      }
+    }
+    td.input-cell{
+      padding: 0;
+      input[type="number"] {
+       margin: 0;
+       border:0;
+       text-align: center;
+      }
+    } 
+  }
+}
+td.empty-cell {
+  background-color: $addis-grey-border;
+}
+// lighten the darken on hover
+tr.on-hover:hover {
+  background: darken($secondary-color, 0.5%);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+tr.clickable td {
+  color: $primary-color;
+}
+//////////////////////// end study results //
 
 
