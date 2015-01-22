@@ -23,8 +23,8 @@
         <ul>
             <li ng-cloak class="ng-cloak" ng-show="!datasets.length">No Datasets have been created yet</li>
             <li ng-repeat="dataset in datasets">
-                <a ui-sref="dataset({datasetUUID: stripFrontFilter(dataset.datasetUri.value, 'http://trials.drugis.org/datasets/')})">{{dataset.label.value}} <span
-                        ng-if="dataset.comment.value"> - {{dataset.comment.value}}</span></a>
+                <a ui-sref="dataset({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">{{dataset.label}} <span
+                        ng-if="dataset.comment"> - {{dataset.comment}}</span></a>
             </li>
         </ul>
     </div>

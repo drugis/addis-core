@@ -47,15 +47,15 @@ define([],
         var defer = $q.defer();
         if (arm.comment) {
           editArmWithCommentQuery.then(function(query) {
-            var editArmWithCommentQuery = query.replace(/\$armURI/g, arm.armURI.value)
-              .replace('$newArmLabel', arm.label.value)
-              .replace('$newArmComment', arm.comment.value);
+            var editArmWithCommentQuery = query.replace(/\$armURI/g, arm.armURI)
+              .replace('$newArmLabel', arm.label)
+              .replace('$newArmComment', arm.comment);
             defer.resolve(StudyService.doModifyingQuery(editArmWithCommentQuery));
           });
         } else {
           editArmWithoutCommentQuery.then(function(query) {
-            var editArmWithoutCommentQuery = query.replace(/\$armURI/g, arm.armURI.value)
-              .replace('$newArmLabel', arm.label.value);
+            var editArmWithoutCommentQuery = query.replace(/\$armURI/g, arm.armURI)
+              .replace('$newArmLabel', arm.label);
             defer.resolve(StudyService.doModifyingQuery(editArmWithoutCommentQuery));
           });
         }
@@ -66,12 +66,12 @@ define([],
         var deleteArmPromise, deleteHasArmPromise;
 
         deleteArmPromise = rawDeleteArmQuery.then(function(rawQuery){
-          var query = rawQuery.replace(/\$armURI/g, arm.armURI.value);
+          var query = rawQuery.replace(/\$armURI/g, arm.armURI);
           return StudyService.doModifyingQuery(query);
         });
 
         deleteArmPromise = rawDeleteHasArmQuery.then(function(rawQuery){
-          var query = rawQuery.replace(/\$armURI/g, arm.armURI.value);
+          var query = rawQuery.replace(/\$armURI/g, arm.armURI);
           return StudyService.doModifyingQuery(query);
         });
 

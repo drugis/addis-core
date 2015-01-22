@@ -1,11 +1,11 @@
 PREFIX ontology: <http://trials.drugis.org/ontology#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?label ?epoch ?anchor ?offset ?outcome ?outcomeLabel WHERE {
+SELECT ?label ?epochUri ?anchor ?offset ?outcome ?outcomeLabel WHERE {
   GRAPH <$graphUri> {
     ?instance
       rdfs:label ?label ;
-      ontology:relative_to_epoch ?epoch ;
+      ontology:relative_to_epoch ?epochUri ;
       ontology:relative_to_anchor ?anchor ;
       ontology:time_offset ?offset .
     OPTIONAL {

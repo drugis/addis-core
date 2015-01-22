@@ -35,7 +35,7 @@ define([],
         var defer = $q.defer();
 
         deletePopulationCharacteristicRaw.then(function(deleteQueryRaw) {
-          var deleteQuery = deleteQueryRaw.replace(/\$URI/g, item.uri.value);
+          var deleteQuery = deleteQueryRaw.replace(/\$URI/g, item.uri);
           defer.resolve(StudyService.doModifyingQuery(deleteQuery));
         });
         return defer.promise;
@@ -45,9 +45,9 @@ define([],
         var defer = $q.defer();
 
         editPopulationCharacteristicRaw.then(function(editQueryRaw) {
-          var editQuery = editQueryRaw.replace(/\$URI/g, item.uri.value)
-            .replace('$newLabel', item.label.value)
-            .replace('$newMeasurementType', item.measurementType.value);
+          var editQuery = editQueryRaw.replace(/\$URI/g, item.uri)
+            .replace('$newLabel', item.label)
+            .replace('$newMeasurementType', item.measurementType);
           defer.resolve(StudyService.doModifyingQuery(editQuery));
         });
         return defer.promise;

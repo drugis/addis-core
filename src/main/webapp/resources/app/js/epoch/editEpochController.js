@@ -9,22 +9,22 @@ define([],
       itemService, callback, DurationService) {
 
       var itemScratch = angular.copy($scope.item);
-      itemScratch.isPrimary.value = itemScratch.isPrimary.value === 'true';
+      itemScratch.isPrimary = itemScratch.isPrimary === 'true';
 
       $scope.itemScratch = itemScratch;
 
-      $scope.durationType = itemScratch.duration.value === 'PT0S' ? 'instantaneous' : 'period';
+      $scope.durationType = itemScratch.duration === 'PT0S' ? 'instantaneous' : 'period';
 
       $scope.isValidDuration = DurationService.isValidDuration;
 
       $scope.changeToDuration = function() {
-        if($scope.itemScratch.duration.value === 'PT0S') {
-          $scope.itemScratch.duration.value = 'PT1H';
+        if($scope.itemScratch.duration === 'PT0S') {
+          $scope.itemScratch.duration = 'PT1H';
         }
       };
 
       $scope.changeToInstantaneous = function() {
-        $scope.itemScratch.duration.value = 'PT0S';
+        $scope.itemScratch.duration = 'PT0S';
       }
 
       $scope.editItem = function() {
