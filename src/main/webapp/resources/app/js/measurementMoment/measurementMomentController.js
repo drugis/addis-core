@@ -20,7 +20,7 @@ define([],
       };
 
       EpochService.queryItems($stateParams.studyUUID).then(function(queryResult) {
-        $scope.epochs = queryResult.data.results.bindings;
+        $scope.epochs = queryResult;
       });
 
       $scope.isValidDuration = function(duration) {
@@ -29,9 +29,9 @@ define([],
 
       $scope.generateLabel = MeasurementMomentService.generateLabel;
 
-      $scope.$watch($scope.itemScratch.duration, function() {
+      $scope.$watch('itemScratch.offset', function() {
         $scope.itemScratch.label = MeasurementMomentService.generateLabel($scope.itemScratch);
-      })
+      });
 
       $scope.addItem = function() {
         MeasurementMomentService.addItem($scope.itemScratch)
