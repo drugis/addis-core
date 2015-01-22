@@ -31,9 +31,7 @@ define([], function() {
           '     rdf:type ontology:Dataset . ' +
           '   OPTIONAL { ?datasetUri rdfs:comment ?comment . } ' +
           ' } }';
-        return RemoteRdfStoreService.executeQuery(scratchDatasetUri, query).then(function(result){
-          return result.data.results.bindings;
-        });
+        return RemoteRdfStoreService.executeQuery(scratchDatasetUri, query);
       });
 
     }

@@ -7,7 +7,7 @@
   <div class="row">
     <div class="large-12 columns">
       Select epoch
-      <select ng-model="itemScratch.epoch" placeholder="select epoch" ng-options="epoch.label.value for epoch in epochs" ng-change="itemScratch.label = generateLabel(itemScratch)">
+      <select ng-model="itemScratch.epoch" placeholder="select epoch" ng-options="epoch.label for epoch in epochs" ng-change="itemScratch.label = generateLabel(itemScratch)">
       </select>
     </div>
   </div>
@@ -23,9 +23,9 @@
 
   <div class="row">
     <div class="large-12 columns">
-      <input ng-model="hasOffset" type="radio" value="false" id="hasNoOffsetOption" ng-change="itemScratch.label = generateLabel(itemScratch)">
+      <input ng-model="hasOffset" type="radio" value="false" id="hasNoOffsetOption" ng-change="itemScratch.offset = 'PT0S'; itemScratch.label = generateLabel(itemScratch)">
              <label for="hasNoOffsetOption">no offset</label>
-      <input ng-model="hasOffset" type="radio" value="true" id="hasOffsetOption" ng-change="itemScratch.label = generateLabel(itemScratch)">
+      <input ng-model="hasOffset" type="radio" value="true" id="hasOffsetOption" ng-change="itemScratch.offset = 'PT1H'; itemScratch.label = generateLabel(itemScratch)">
              <label for="hasOffsetOption">offset</label>
     </div>
   </div>

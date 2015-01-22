@@ -22,7 +22,7 @@ define([],
         return $q.all([epochsPromise, measurementsMomentsPromise]).then(function(){
           return _.map(measurementMoments, function(measurementMoment){
             measurementMoment.epoch = _.find(epochs, function(epoch){
-              return measurementMoment.epochUri.value === epoch.uri.value;
+              return measurementMoment.epochUri === epoch.uri;
             });
             return measurementMoment;
           });
@@ -36,7 +36,7 @@ define([],
           var query = rawQuery
             .replace('$newItemUuid', uuid)
             .replace('$newLabel', item.label)
-            .replace('$epochUri', item.epoch.uri.value)
+            .replace('$epochUri', item.epoch.uri)
             .replace('$anchorMoment', item.relativeToAnchor)
             .replace('$timeOffset', item.offset);
           return StudyService.doModifyingQuery(query);
@@ -49,7 +49,7 @@ define([],
         }
         var offsetStr = (measurementMoment.offset === 'PT0S') ? 'At' : $filter('durationFilter')(measurementMoment.offset) + ' from';
         var anchorStr = measurementMoment.relativeToAnchor === '<http://trials.drugis.org/ontology#anchorEpochStart>' ? 'start' : 'end';
-        return offsetStr + ' ' + anchorStr + ' of ' + measurementMoment.epoch.label.value;
+        return offsetStr + ' ' + anchorStr + ' of ' + measurementMoment.epoch.label;
       }
 
       return {
