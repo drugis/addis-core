@@ -82,7 +82,7 @@ define(['angular', 'angular-mocks'], function() {
           isPrimary: 'true',
           pos: '1'
         }];
-        expect(remoteRdfStoreService.deFusekify(input)).toEqual(expectedOutput);
+        expect(remoteRdfStoreService.deFusekify(JSON.stringify(input))).toEqual(expectedOutput);
       });
     });
   });

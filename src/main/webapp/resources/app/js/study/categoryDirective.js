@@ -14,7 +14,7 @@ define([], function() {
 
         scope.reloadItems = function() {
           service.queryItems($stateParams.studyUUID).then(function(queryResult) {
-            scope.items = queryResult.data.results.bindings;
+            scope.items = queryResult;
             console.log('category items retrieved. ' + queryResult.length);
           });
         };

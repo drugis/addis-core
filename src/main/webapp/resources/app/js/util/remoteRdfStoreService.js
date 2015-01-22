@@ -54,6 +54,8 @@ define([], function() {
             'Content-Type': 'application/sparql-query',
             'Accept': 'application/ld+json'
           }
+        }).then(function(response) {
+          return response.data;
         });
     }
 
@@ -67,7 +69,8 @@ define([], function() {
     }
 
     function deFusekify(data) {
-      var bindings = data.data.results.bindings;
+      var json = JSON.parse(data);
+      var bindings = json.results.bindings;
       return _.map(bindings, function(binding) {
         return _.object(_.map(_.pairs(binding), function(obj) {
           return [obj[0], obj[1].value];

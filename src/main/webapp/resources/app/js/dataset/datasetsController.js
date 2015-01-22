@@ -9,7 +9,7 @@ define([],
           DatasetService.loadStore(response.data).then(function() {
             console.log('loading dataset-store success');
             DatasetService.queryDatasetsOverview().then(function(queryResult) {
-              $scope.datasets = queryResult.data.results.bindings;
+              $scope.datasets = queryResult;
               $scope.datasetsLoaded = true;
             }, function() {
               console.error('failed loading datasetstore');

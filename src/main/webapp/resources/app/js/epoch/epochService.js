@@ -67,7 +67,7 @@ define([],
 
       function deleteItem(item) {
         return deleteEpochRaw.then(function(deleteQueryRaw) {
-          var deleteQuery = deleteQueryRaw.replace(/\$URI/g, item.uri.value);
+          var deleteQuery = deleteQueryRaw.replace(/\$URI/g, item.uri);
           return StudyService.doModifyingQuery(deleteQuery);
         });
       }
@@ -76,28 +76,28 @@ define([],
 
         var isPrimaryDefer, epochDefer;
 
-        var newDuration = newItem.duration.value;
-        var newCommentValue = newItem.comment ? newItem.comment.value : '';
+        var newDuration = newItem.duration;
+        var newCommentValue = newItem.comment ? newItem.comment : '';
 
-        if (oldItem.isPrimary.value === 'true' && !newItem.isPrimary.value) {
+        if (oldItem.isPrimary === 'true' && !newItem.isPrimary) {
           isPrimaryDefer = removeEpochPrimaryRaw.then(function(queryRaw) {
-            var query = queryRaw.replace(/\$URI/g, newItem.uri.value)
+            var query = queryRaw.replace(/\$URI/g, newItem.uri)
               .replace(/\$studyUuid/g, studyUuid);
             return StudyService.doModifyingQuery(query);
           });
-        } else if (newItem.isPrimary.value) {
+        } else if (newItem.isPrimary) {
           isPrimaryDefer = setEpochToPrimaryRaw.then(function(queryRaw) {
-            var query = queryRaw.replace(/\$URI/g, newItem.uri.value)
+            var query = queryRaw.replace(/\$URI/g, newItem.uri)
               .replace(/\$studyUuid/g, studyUuid);
             return StudyService.doModifyingQuery(query);
           });
         }
 
         epochDefer = editEpochRaw.then(function(editQueryRaw) {
-          var editQuery = editQueryRaw.replace(/\$URI/g, newItem.uri.value)
+          var editQuery = editQueryRaw.replace(/\$URI/g, newItem.uri)
             .replace(/\$studyUuid/g, studyUuid)
             .replace(/\$newDuration/g, newDuration)
-            .replace(/\$newLabel/g, newItem.label.value);
+            .replace(/\$newLabel/g, newItem.label);
             editQuery = editQuery.replace(/\$newComment/g, newCommentValue);
           return StudyService.doModifyingQuery(editQuery);
         });

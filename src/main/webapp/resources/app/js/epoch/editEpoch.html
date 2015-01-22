@@ -7,14 +7,14 @@
   <div class="row">
     <div class="large-9 medium-12 columns">
       <label>Name
-        <input autofocus="true" type="text" ng-model="itemScratch.label.value">
+        <input autofocus="true" type="text" ng-model="itemScratch.label">
       </label>
     </div>
   </div>
   <div class="row">
     <div class="large-9 medium-12 columns">
       <label>Description
-        <textarea rows="8" ng-model="itemScratch.comment.value"></textarea>
+        <textarea rows="8" ng-model="itemScratch.comment"></textarea>
       </label>
     </div>
   </div>
@@ -29,19 +29,19 @@
     </div>
   </div>
   <div ng-show="durationType == 'period'" class="row form-input-group">
-    <duration-input duration-string="itemScratch.duration.value">
+    <duration-input duration-string="itemScratch.duration">
     </duration-input>
   </div>
   <div class="row form-input-group">
     <div class="large-9 columns">
       <label for="isPrimaryCheckBox">Is primary epoch</label>
-      <input id="isPrimaryCheckBox" ng-model="itemScratch.isPrimary.value" type="checkbox">
+      <input id="isPrimaryCheckBox" ng-model="itemScratch.isPrimary" type="checkbox">
     </div>
   </div>
   <div class="row">
     <div class="large-9 columns">
       <button class="success" type="submit"
-              ng-disabled="(!itemScratch.label || !isValidDuration(itemScratch.duration.value))">Edit
+              ng-disabled="(!itemScratch.label || !isValidDuration(itemScratch.duration))">Edit
       </button>
     </div>
   </div>

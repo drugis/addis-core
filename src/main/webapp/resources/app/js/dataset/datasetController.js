@@ -10,7 +10,7 @@ define([],
       DatasetResource.get($stateParams, function(response) {
         DatasetService.loadStore(response.data).then(function() {
           DatasetService.queryDataset().then(function(queryResult) {
-            $scope.dataset = queryResult.data.results.bindings[0];
+            $scope.dataset = queryResult[0];
             $scope.dataset.uuid = $stateParams.datasetUUID;
           });
         });
