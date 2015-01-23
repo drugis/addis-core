@@ -23,6 +23,10 @@ $addis-grey-border : $crumb-border-color;
   color: $drugis-color;
 }
 
+.main-content {
+  padding-top: 56px; // clear fixed navbar
+}
+
 /////////////////////////// top nav bar 
 .top-bar-section .has-form {
   height: 44px;
@@ -35,14 +39,10 @@ $addis-grey-border : $crumb-border-color;
   border-radius: 15px;
 }
 
-.has-message {
-  height: 44px;
-  padding: 9px 4px;
-}
-
-.header-message {
-  color: darken($addis-grey, 10%);
-  font-size: 13px;
+.topbar-text {
+  color: white;
+  padding: 0;
+  margin: 0;
 }
 
 .color-stripe {
@@ -53,10 +53,40 @@ $addis-grey-border : $crumb-border-color;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
 }
 
+.top-bar-section ul.top-bar-content {
+  padding-top: 5px;
+  margin-left: 4rem;
+}
+
+.nav-bar-spacer {
+  padding-top: 1rem; // add space top top of first item under nav-bar
+}
+
+
 /////////////////////////// end top nav
 
-.main-content {
-  padding-top: 77px; // clear fixed navbar
+////////////////////////// side nav ////////////
+.side-nav .button {
+  margin-bottom: 0.5rem;
+}
+
+.modified-warning {
+  font-size: 14px;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+ul.side-nav {
+  padding: 2rem 1rem;
+  background-color: $addis-grey;
+}
+
+ul.side-nav li.heading {
+  color: #008CBA;
+  font-size: 0.77778rem;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 /////////////////////////// study
@@ -67,8 +97,63 @@ $addis-grey-border : $crumb-border-color;
 
 /////////////////////////// end study
 
+////////////////////////// study category iten ///
+
 .form-input-group {
   padding-bottom: 16px;
 }
+
+///////////////////////// end study category item //
+
+//////////////////////// study results ////
+.y-head {
+  font-weight: bold;
+}
+
+//////// Tables /////////////////
+table {
+  border-collapse: collapse;
+  //remove default foundation striping
+  tr:nth-of-type(even) {
+    background-color: transparent;
+  }
+  tr {
+    height: 1rem;
+    th, .y-head {
+      background-color:#F5F5F5;
+    }
+    th.sortable {
+      cursor: pointer;
+    }
+    th, td {
+      border: solid 1px $addis-grey-border;
+      a:hover {
+        text-decoration: underline;
+      }
+    }
+    td.input-cell{
+      padding: 0;
+      input[type="number"] {
+       margin: 0;
+       border:0;
+       text-align: center;
+      }
+    } 
+  }
+}
+td.empty-cell {
+  background-color: $addis-grey-border;
+}
+// lighten the darken on hover
+tr.on-hover:hover {
+  background: darken($secondary-color, 0.5%);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+tr.clickable td {
+  color: $primary-color;
+}
+//////////////////////// end study results //
 
 
