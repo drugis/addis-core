@@ -33,20 +33,29 @@
         <study-category settings="categorySettings['adverseEvents']" items="adverseEvents"></study-category>
         <study-category settings="categorySettings['epochs']" items="epochs"></study-category>
         <study-category settings="categorySettings['measurementMoments']" items="measurementMoments"></study-category>
+ 
+        <h3 style="color: #008CBA;
+        font-weight: bold;
+        text-align: center;
+        text-transform: uppercase;">Results</h3>
+        <div class="row">
+            <div class="columns large-12">
+                <hr>
+            </div>
+        </div>
         
+        <h3>Population characteristics results</h3>
         <table id="populationCharacteristicsResults">
-            <h5>Leeftijd results<h5>
+            <h5>Age<h5>
             <tr>
-                <th scope="column" rowspan="2"></th>
-                <th scope="column" colspan="3">Start off study</th>
+                <th>Meansurement moment</th>
+                <th>Arm</th>
+                <th>mean</th>
+                <th>± sd</th>
+                <th>N</th>
             </tr>
             <tr>
-                
-                <th scope="column" colspan="">mean</th>
-                <th scope="column" colspan="">± sd</th>
-                <th scope="column" colspan="">N</th>
-            </tr>
-            <tr>
+                <td class="y-head" rowspan="2" style="vertical-align:baseline">Start off study</td>
                 <td class="y-head">Keelsnoepjes</td>
                 <td class="input-cell"><input type="number" value="55.5"/></td>
                 <td class="input-cell"><input type="number" value="2.49"/></td>
@@ -59,195 +68,35 @@
                 <td class="input-cell"><input type="number" value="350"/></td>
             </tr>
         </table>
+
+        <table id="populationCharacteristicsResults">
+            <h5>Gender<h5>
+            <tr>
+                <th>Meansurement moment</th>
+                <th>Arm</th>
+                <th>(N) Male</th>
+                <th>(N) Female</th>
+            </tr>
+            <tr>
+                <td class="y-head" rowspan="2" style="vertical-align:baseline">Start off study (20)</td>
+                <td class="y-head">Keelsnoepjes</td>
+                <td class="input-cell"><input type="number" value="10"/></td>
+                <td class="input-cell"><input type="number" value="10"/></td>
+  
+            </tr>
+            <tr>
+                <td class="y-head">Neusspay</td>
+                <td class="input-cell"><input type="number" value="10"/></td>
+                <td class="input-cell"><input type="number" value="10"/></td>
+            </tr>
+        </table>
+        
+        <h3>Adverse events results</h3>
         <table id="adverseEventsResults">
-            <h5>Misselijk results<h5>
-            <tr>
-                <th scope="column" rowspan="2"></th>
-                <th scope="column" colspan="3">Start off study</th>
-                <th scope="column" colspan="3">Run in</th>
-                <th scope="column" colspan="3">Main phase</th>
-                <th scope="column" colspan="3">3 hours before end of study</th>
-            </tr>
-            <tr>
-                <th scope="column" colspan="">mean</th>
-                <th scope="column" colspan="">± sd</th>
-                <th scope="column" colspan="">N</th>
-                <th scope="column" colspan="">mean</th>
-                <th scope="column" colspan="">± sd</th>
-                <th scope="column" colspan="">N</th>
-                <th scope="column" colspan="">mean</th>
-                <th scope="column" colspan="">± sd</th>
-                <th scope="column" colspan="">N</th>
-                <th scope="column" colspan="">mean</th>
-                <th scope="column" colspan="">± sd</th>
-                <th scope="column" colspan="">N</th>
-            </tr>
-            <tr>
-                <td class="y-head">Keelsnoepjes</td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-            </tr>
-            <tr>
-                <td class="y-head">Neusspay</td>
-                <td class="input-cell"><input type="number" value="52.5"/></td>
-                <td class="input-cell"><input type="number" value="3.49"/></td>
-                <td class="input-cell"><input type="number" value="350"/></td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-            </tr>
-        </table>
-        omdraaien
-        <table id="adverseEventsResults2">
-            <h5>Misselijk results<h5>
-            <tr>
-                <th scope="column" rowspan="2"></th>
-                <th scope="column" colspan="3">Keelsnoepjes</th>
-                <th scope="column" colspan="3">Neusspray</th>
-                <th scope="column" colspan="3">In bed liggen</th>
-            </tr>
-            <tr>
-                <th scope="column" colspan="">mean</th>
-                <th scope="column" colspan="">± sd</th>
-                <th scope="column" colspan="">N</th>
-                <th scope="column" colspan="">mean</th>
-                <th scope="column" colspan="">± sd</th>
-                <th scope="column" colspan="">N</th>
-                <th scope="column" colspan="">mean</th>
-                <th scope="column" colspan="">± sd</th>
-                <th scope="column" colspan="">N</th>
-            </tr>
-            <tr>
-                <td class="y-head">Start off study</td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-            </tr>
-            <tr>
-                <td class="y-head">Run in</td>
-                <td class="input-cell"><input type="number" value="52.5"/></td>
-                <td class="input-cell"><input type="number" value="3.49"/></td>
-                <td class="input-cell"><input type="number" value="350"/></td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-            </tr>
-            <tr>
-                <td class="y-head">Main phase</td>
-                <td class="input-cell"><input type="number" value="52.5"/></td>
-                <td class="input-cell"><input type="number" value="3.49"/></td>
-                <td class="input-cell"><input type="number" value="350"/></td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-            </tr>
-            <tr>
-                <td class="y-head">3 hours before end of study</td>
-                <td class="input-cell"><input type="number" value="52.5"/></td>
-                <td class="input-cell"><input type="number" value="3.49"/></td>
-                <td class="input-cell"><input type="number" value="350"/></td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-            </tr>
-        </table>
-        dubbele y as headers
-        <table id="adverseEventsResults3">
-            <h5>Misselijk results<h5>
+            <h5>Nausia<h5>
             <tr>
                 <th scope="column" colspan="">Arm</th>
-                <th scope="column" colspan="">Meansure moment</th>
-                <th scope="column" colspan="">mean</th>
-                <th scope="column" colspan="">± sd</th>
-                <th scope="column" colspan="">N</th>
-            </tr>
-            <tr>
-                <td class="y-head" rowspan="4" style="vertical-align:baseline">Keelsnoepjes</td>
-                <td class="y-head">Start off study</td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-            </tr>
-            <tr>
-                <td class="y-head">Run in</td>
-                <td class="input-cell"><input type="number" value="52.5"/></td>
-                <td class="input-cell"><input type="number" value="3.49"/></td>
-                <td class="input-cell"><input type="number" value="350"/></td>
-            </tr>
-            <tr>
-                <td class="y-head">Main phase</td>
-                <td class="input-cell"><input type="number" value="52.5"/></td>
-                <td class="input-cell"><input type="number" value="3.49"/></td>
-                <td class="input-cell"><input type="number" value="350"/></td>
-            </tr>
-            <tr>
-                <td class="y-head">3 hours before end of study</td>
-                <td class="input-cell"><input type="number" value="52.5"/></td>
-                <td class="input-cell"><input type="number" value="3.49"/></td>
-                <td class="input-cell"><input type="number" value="350"/></td>
-            </tr>
-            <tr>
-                <td class="y-head" rowspan="4" style="vertical-align:baseline">Neusspray</td>
-                <td class="y-head">Start off study</td>
-                <td class="input-cell"><input type="number" value="55.5"/></td>
-                <td class="input-cell"><input type="number" value="2.49"/></td>
-                <td class="input-cell"><input type="number" value="320"/></td>
-            </tr>
-            <tr>
-                <td class="y-head">Run in</td>
-                <td class="input-cell"><input type="number" value="52.5"/></td>
-                <td class="input-cell"><input type="number" value="3.49"/></td>
-                <td class="input-cell"><input type="number" value="350"/></td>
-            </tr>
-            <tr>
-                <td class="y-head">Main phase</td>
-                <td class="input-cell"><input type="number" value="52.5"/></td>
-                <td class="input-cell"><input type="number" value="3.49"/></td>
-                <td class="input-cell"><input type="number" value="350"/></td>
-            </tr>
-            <tr>
-                <td class="y-head">3 hours before end of study</td>
-                <td class="input-cell"><input type="number" value="52.5"/></td>
-                <td class="input-cell"><input type="number" value="3.49"/></td>
-                <td class="input-cell"><input type="number" value="350"/></td>
-            </tr>
-        </table>
-        <table id="populationCharacteristicsResults2">
-            <h5>Misselijk results rate example<h5>
-            <tr>
-                <th scope="column" colspan="">Arm</th>
-                <th scope="column" colspan="">Meansure moment</th>
+                <th scope="column" colspan="">Meansurement moment</th>
                 <th scope="column" colspan="">number of occurrences</th>
                 <th scope="column" colspan="">number of paricipants</th>
             </tr>
@@ -286,7 +135,6 @@
                 
             </tr>
         </table>
-        dubbele y as headers eerst mm dan arm
         <table id="adverseEventsResults4">
             <h5>Misselijk results<h5>
             <tr>
@@ -348,9 +196,8 @@
                 <td class="input-cell"><input type="number" value="3.49"/></td>
                 <td class="input-cell"><input type="number" value="350"/></td>
             </tr>
-            
-            
         </table>
+        <h3>Endpoint results</h3>
         
     </div>
 </div>
