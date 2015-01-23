@@ -55,13 +55,7 @@ define(['angular', 'angular-mocks'], function() {
         }));
 
         it('should show a list of datasets', inject(function($rootScope) {
-          var expectedResult = {
-            data: {
-              results: {
-                bindings: 'list of dataset'
-              }
-            }
-          };
+          var expectedResult = 'list of dataset';
           var promise = datasetService.queryDatasetsOverview();
           executeQueryDefer.resolve(expectedResult);
           loadDatasetStoreDefer.resolve();

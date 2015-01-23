@@ -4,7 +4,7 @@ define(['angular', 'angular-mocks'], function() {
     var scope,
       mockDatasetResource = jasmine.createSpyObj('DatasetResource', ['save']),
       mockModalInstance = jasmine.createSpyObj('$modalInstance', ['close', 'dismiss']),
-      mockSuccessCallback = jasmine.createSpy('successCallback'),
+      mockcallback = jasmine.createSpy('callback'),
       mockState = jasmine.createSpyObj('$state', ['go']),
       mockDataset = {
         title: 'title'
@@ -25,7 +25,7 @@ define(['angular', 'angular-mocks'], function() {
         $state: mockState,
         $modalInstance: mockModalInstance,
         DatasetResource: mockDatasetResource,
-        successCallback: mockSuccessCallback
+        callback: mockcallback
       });
 
     }));
@@ -49,8 +49,8 @@ define(['angular', 'angular-mocks'], function() {
           datasetDeferred.resolve(mockDataset);
           scope.$apply();
         });
-        it('should call the successCallback', function() {
-          expect(mockSuccessCallback).toHaveBeenCalled();
+        it('should call the callback', function() {
+          expect(mockcallback).toHaveBeenCalled();
         });
       })
     });

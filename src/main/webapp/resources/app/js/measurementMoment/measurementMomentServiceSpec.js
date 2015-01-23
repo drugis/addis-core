@@ -39,37 +39,25 @@ define(['angular', 'angular-mocks'], function() {
       it('should query the measurement moments', function() {
         var result = measurementMomentService.queryItems();
         var queryResult = [{
-          epochUri: {
-            value: 1
-          }
+          epochUri: 1
         }, {
-          epochUri: {
-            value: 2
-          }
+          epochUri: 2
         }];
         var expectedResult = [{
-          epochUri: {
-            value: 1
-          },
+          epochUri: 1,
           epoch: {
-            uri: {value: 1}
+            uri: 1
           }
         }, {
-          epochUri: {
-            value: 2
-          },
+          epochUri: 2,
           epoch: {
-            uri: {value: 2}
+            uri: 2
           }
         }];
         var epochs = [{
-          uri: {
-            value: 2
-          }
+          uri: 2
         }, {
-          uri: {
-            value: 1
-          }
+          uri: 1
         }];
         epochQueryPromise.resolve(epochs);
         queryResourcePromise.resolve('any string 1');
@@ -108,7 +96,7 @@ define(['angular', 'angular-mocks'], function() {
             epoch: {
               label: 'test'
             },
-            relativeToAnchor: '<http://trials.drugis.org/ontology#anchorEpochStart>'
+            relativeToAnchor: 'http://trials.drugis.org/ontology#anchorEpochStart'
           };
           expect(measurementMomentService.generateLabel(measurementMoment)).toEqual('');
         });
@@ -117,18 +105,16 @@ define(['angular', 'angular-mocks'], function() {
         var measurementMoment = {
           epoch: {
             uri: 'epochUri',
-            label: {
-              value: 'main phase'
-            }
+            label: 'main phase'
           },
-          relativeToAnchor: '<http://trials.drugis.org/ontology#anchorEpochStart>',
+          relativeToAnchor: 'http://trials.drugis.org/ontology#anchorEpochStart',
           offset: 'PT0S'
         };
 
         expect(measurementMomentService.generateLabel(measurementMoment))
           .toEqual('At start of main phase');
 
-        measurementMoment.relativeToAnchor = '<http://trials.drugis.org/ontology#anchorEpochEnd>';
+        measurementMoment.relativeToAnchor = 'http://trials.drugis.org/ontology#anchorEpochEnd';
         expect(measurementMomentService.generateLabel(measurementMoment))
           .toEqual('At end of main phase');
       });
@@ -137,18 +123,16 @@ define(['angular', 'angular-mocks'], function() {
         var measurementMoment = {
           epoch: {
             uri: 'epochUri',
-            label: {
-              value: 'main phase'
-            }
+            label: 'main phase'
           },
-          relativeToAnchor: '<http://trials.drugis.org/ontology#anchorEpochStart>',
+          relativeToAnchor: 'http://trials.drugis.org/ontology#anchorEpochStart',
           offset: 'PT3H'
         };
 
         expect(measurementMomentService.generateLabel(measurementMoment))
           .toEqual('3 hour(s) from start of main phase');
 
-        measurementMoment.relativeToAnchor = '<http://trials.drugis.org/ontology#anchorEpochEnd>';
+        measurementMoment.relativeToAnchor = 'http://trials.drugis.org/ontology#anchorEpochEnd';
         expect(measurementMomentService.generateLabel(measurementMoment))
           .toEqual('3 hour(s) from end of main phase');
 
@@ -161,18 +145,16 @@ define(['angular', 'angular-mocks'], function() {
         var measurementMoment = {
           epoch: {
             uri: 'epochUri',
-            label: {
-              value: 'main phase'
-            }
+            label: 'main phase'
           },
-          relativeToAnchor: '<http://trials.drugis.org/ontology#anchorEpochStart>',
+          relativeToAnchor: 'http://trials.drugis.org/ontology#anchorEpochStart',
           offset: 'P3D'
         };
 
         expect(measurementMomentService.generateLabel(measurementMoment))
           .toEqual('3 day(s) from start of main phase');
 
-        measurementMoment.relativeToAnchor = '<http://trials.drugis.org/ontology#anchorEpochEnd>';
+        measurementMoment.relativeToAnchor = 'http://trials.drugis.org/ontology#anchorEpochEnd';
         expect(measurementMomentService.generateLabel(measurementMoment))
           .toEqual('3 day(s) from end of main phase');
 
