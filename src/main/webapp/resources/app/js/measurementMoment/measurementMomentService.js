@@ -6,6 +6,7 @@ define([],
 
       var measurementMomentQuery = SparqlResource.get('queryMeasurementMoment.sparql');
       var addItemQuery = SparqlResource.get('addMeasurementMoment.sparql');
+      var editItemQuery = SparqlResource.get('editMeasurementMoment.sparql');
 
       function queryItems() {
         var measurementMoments, epochs;
@@ -14,14 +15,14 @@ define([],
         });
 
         var measurementsMomentsPromise = measurementMomentQuery.then(function(query) {
-          return StudyService.doNonModifyingQuery(query).then(function (result){
+          return StudyService.doNonModifyingQuery(query).then(function(result) {
             measurementMoments = result;
           });
         });
 
-        return $q.all([epochsPromise, measurementsMomentsPromise]).then(function(){
-          return _.map(measurementMoments, function(measurementMoment){
-            measurementMoment.epoch = _.find(epochs, function(epoch){
+        return $q.all([epochsPromise, measurementsMomentsPromise]).then(function() {
+          return _.map(measurementMoments, function(measurementMoment) {
+            measurementMoment.epoch = _.find(epochs, function(epoch) {
               return measurementMoment.epochUri === epoch.uri;
             });
             return measurementMoment;
@@ -43,6 +44,18 @@ define([],
         });
       }
 
+      function editItem(item) {
+        return editItemQuery.then(function(rawQuery) {
+          var query = rawQuery
+            .replace(/\$itemUri/g, item.uri)
+            .replace('$newLabel', item.label)
+            .replace('$epochUri', item.epoch.uri)
+            .replace('$anchorMoment', item.relativeToAnchor)
+            .replace('$timeOffset', item.offset);
+          return StudyService.doModifyingQuery(query);
+        });
+      }
+
       function generateLabel(measurementMoment) {
         if (!measurementMoment.epoch || !measurementMoment.offset || !measurementMoment.relativeToAnchor) {
           return '';
@@ -55,6 +68,7 @@ define([],
       return {
         queryItems: queryItems,
         addItem: addItem,
+        editItem: editItem,
         generateLabel: generateLabel
       };
     };

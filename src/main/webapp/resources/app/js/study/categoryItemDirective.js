@@ -26,6 +26,9 @@ define([], function() {
               },
               itemService: function() {
                 return service;
+              },
+              actionType: function() {
+                return 'Edit'
               }
             }
           });

@@ -29,6 +29,9 @@ define([], function() {
             resolve: {
               callback: function() {
                 return scope.reloadItems;
+              },
+              actionType: function() {
+                return 'Add';
               }
             }
           });

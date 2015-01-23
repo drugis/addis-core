@@ -5,12 +5,13 @@ define([],
       '$stateParams',
       '$modalInstance',
       'callback',
+      'actionType',
       'MeasurementMomentService',
       'EpochService',
       'DurationService'
     ];
     var MeasurementMomentController = function($scope,
-      $stateParams, $modalInstance, callback,
+      $stateParams, $modalInstance, callback, actionType,
       MeasurementMomentService, EpochService, DurationService) {
 
       var epochsPromise = EpochService.queryItems($stateParams.studyUUID).then(function(queryResult) {
@@ -20,14 +21,44 @@ define([],
         });
       });
 
-      if (!$scope.item) {
+      $scope.addItem = function() {
+        MeasurementMomentService.addItem($scope.itemScratch)
+          .then(function() {
+              callback();
+              $modalInstance.close();
+            },
+            function() {
+              console.error('failed to create measurement moment');
+              $modalInstance.dismiss('cancel');
+            });
+      };
+
+      $scope.editItem = function() {
+        MeasurementMomentService.editItem($scope.itemScratch)
+          .then(function() {
+              callback();
+              $modalInstance.close();
+            },
+            function() {
+              console.error('failed to edit measurement moment');
+              $modalInstance.dismiss('cancel');
+            });
+      };
+
+      $scope.actionType = actionType;
+
+      if (actionType === 'Add') {
         $scope.hasOffset = 'false';
         $scope.itemScratch = {
           offset: 'PT0S'
         };
+
+        $scope.commit = $scope.addItem;
       } else {
         $scope.itemScratch = angular.copy($scope.item);
         $scope.hasOffset = $scope.itemScratch.offset === 'PT0S' ? 'false' : 'true';
+
+        $scope.commit = $scope.editItem;
       }
 
 
@@ -43,17 +74,8 @@ define([],
         });
       });
 
-      $scope.addItem = function() {
-        MeasurementMomentService.addItem($scope.itemScratch)
-          .then(function() {
-              callback();
-              $modalInstance.close();
-            },
-            function() {
-              console.error('failed to create epoch');
-              $modalInstance.dismiss('cancel');
-            });
-      };
+
+
 
       $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
