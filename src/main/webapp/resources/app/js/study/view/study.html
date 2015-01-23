@@ -1,10 +1,11 @@
 <navbar-directive>
     <ul class="left top-bar-content">
         <li><h4 class="topbar-text">{{study.label}} <small class="topbar-text">/ {{study.comment}}</small> </h4></li>
+        <li style="color:white; padding: 4px 10px">{{debug.numberOffScrollEvents}}</li>
     </ul>
 </navbar-directive>
 <div class="row">
-    <div class="columns large-2 medium-2" style="position: fixed;">
+    <div class="columns large-2 medium-2">
         <ul class="side-nav">
             <a ng-disabled="!isStudyModified()" ng-click="saveStudy()" class="button expand success">Save study</a>
             <div class="modified-warning info">

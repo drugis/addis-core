@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', 'StudyResource', '$location', '$anchorScroll', '$modal', 'StudyService'];
-    var StudyController = function($scope, $stateParams, StudyResource, $location, $anchorScroll, $modal, StudyService) {
+    var dependencies = ['$scope', '$stateParams', 'StudyResource', '$location', '$anchorScroll', '$modal', 'StudyService', '$window'];
+    var StudyController = function($scope, $stateParams, StudyResource, $location, $anchorScroll, $modal, StudyService, $window) {
       StudyService.reset();
 
       $scope.study = {};
@@ -80,6 +80,18 @@ define([],
           editItemController: 'MeasurementMomentController',
         }
       };
+
+      $scope.debug = {
+        numberOffScrollEvents: 0
+      };
+
+      var navbar = document.getElementsByClassName("side-nav");
+
+      angular.element($window).bind("scroll", function() {
+            $scope.debug.numberOffScrollEvents = this.pageYOffset;
+            $(navbar[0]).css('margin-top', this.pageYOffset );
+            $scope.$apply();
+      });
 
       function reloadStudyModel() {
         StudyResource.get($stateParams, function(response) {
