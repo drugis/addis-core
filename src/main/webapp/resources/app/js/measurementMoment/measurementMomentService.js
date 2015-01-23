@@ -7,6 +7,7 @@ define([],
       var measurementMomentQuery = SparqlResource.get('queryMeasurementMoment.sparql');
       var addItemQuery = SparqlResource.get('addMeasurementMoment.sparql');
       var editItemQuery = SparqlResource.get('editMeasurementMoment.sparql');
+      var deleteItemQuery = SparqlResource.get('deleteMeasurementMoment.sparql');
 
       function queryItems() {
         var measurementMoments, epochs;
@@ -56,6 +57,15 @@ define([],
         });
       }
 
+      function deleteItem(item) {
+        return deleteItemQuery.then(function(rawQuery) {
+          var query = rawQuery
+            .replace(/\$itemUri/g, item.uri);
+          return StudyService.doModifyingQuery(query);
+        });
+
+      }
+
       function generateLabel(measurementMoment) {
         if (!measurementMoment.epoch || !measurementMoment.offset || !measurementMoment.relativeToAnchor) {
           return '';
@@ -69,6 +79,7 @@ define([],
         queryItems: queryItems,
         addItem: addItem,
         editItem: editItem,
+        deleteItem: deleteItem,
         generateLabel: generateLabel
       };
     };

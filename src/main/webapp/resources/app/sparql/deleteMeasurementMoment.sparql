@@ -1,0 +1,20 @@
+PREFIX instance: <http://trials.drugis.org/instances/>
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+WITH <$graphUri>
+DELETE {
+  <$itemUri>
+    rdfs:label ?oldLabel ;
+    ontology:relative_to_epoch ?oldEpoch ;
+    ontology:relative_to_anchor ?oldAnchor ;
+    ontology:time_offset ?oldOffset.
+}
+WHERE {
+  <$itemUri>
+    rdfs:label ?oldLabel ;
+    ontology:relative_to_epoch ?oldEpoch ;
+    ontology:relative_to_anchor ?oldAnchor ;
+    ontology:time_offset ?oldOffset.
+};
