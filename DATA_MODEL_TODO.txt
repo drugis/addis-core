@@ -18,6 +18,27 @@ Importer TODO:
  - measurementType / has_outcome -> new outcome structure
  - define drugs / indications (conditions) at study as well as at dataset
 
+ - results now structured according to statistical analyses as follows:
+
+   :som a addis:DichotomousStudyVariable ;
+        rdfs:label "Nausea" ;
+        addis:is_measured_at :mm1, :mm2, :mm3 ;
+        addis:has_reported_analysis :a1 .
+
+   :a1 a StatisticalAnalysis ;
+       rdfs:label "Participant count" ;
+       rdfs:comment "Number of participants presenting with an event" ;
+       addis:has_property addis:count , addis:sample_size ;
+       addis:unit qudt:Person .
+
+   :m01 a Measurement ;
+        addis:of_moment :mm2 ;
+        addis:of_group :arm1 ;
+        addis:of_variable :som ;
+        has_results [ analysis :a1 ;
+                      addis:count 3 ;
+                      addis:sample_size 53 ] .
+
 Ontology TODO:
 
  - solution to has_epochs
@@ -40,7 +61,18 @@ Useful ontologies to import:
  - http://purl.org/ontology/bibo/
  - BRIDG?
  - OCRe?
- - QUDT
+ - QUDT or UO for units of measure
+
+ - RDF Data Cube? http://www.w3.org/TR/2014/REC-vocab-data-cube-20140116/
+
+ - What about BFO / OBI?
+
+Statistics ontologies:
+
+ - OBCS http://www.ontobee.org/browser/index.php?o=OBCS
+ - STATO http://stato-ontology.org/
+
+ - More from PhuSE http://www.phusewiki.org/wiki/index.php?title=Analysis_Results_Model
 
 
 ClinicalTrials.gov:

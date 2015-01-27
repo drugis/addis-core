@@ -78,5 +78,5 @@ reg:JMACCTCTR a ont:StudyRegistry ;
 reg:ClinicalTrials.gov a ont:StudyRegistry ;
   rdfs:label "ClinicalTrials.gov" ;
   foaf:homepage <https://clinicaltrials.gov/> ;
-  ont:entry_url_format "https://clinicaltrials.gov/show/%s" ;
+  ont:entry_url_format "https://clinicaltrials.gov/show/%25s" ;
   ont:id_pattern "NCT[0-9]{8}" .
