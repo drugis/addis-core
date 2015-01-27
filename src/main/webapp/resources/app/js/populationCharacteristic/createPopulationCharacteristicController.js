@@ -1,15 +1,15 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$modalInstance', 'PopulationCharacteristicService', 'successCallback'];
-    var CreatePopulationCharacteristicController = function($scope, $modalInstance, PopulationCharacteristicService, successCallback) {
+    var dependencies = ['$scope', '$modalInstance', 'PopulationCharacteristicService', 'callback'];
+    var CreatePopulationCharacteristicController = function($scope, $modalInstance, PopulationCharacteristicService, callback) {
 
       $scope.item = {};
 
       $scope.createPopulationCharacteristic = function() {
         PopulationCharacteristicService.addItem($scope.item)
           .then(function() {
-              successCallback();
+              callback();
               $modalInstance.close();
             },
             function() {

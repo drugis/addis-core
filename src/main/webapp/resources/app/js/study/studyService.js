@@ -66,7 +66,7 @@ define([], function() {
         '}}';
       return loadDefer.promise.then(function() {
         return RemoteRdfStoreService.executeQuery(scratchStudyUri, studyDataQuery).then(function(results) {
-          return results.data.results.bindings[0];
+          return results[0];
         });
       });
     }

@@ -50,13 +50,12 @@ define(['angular', 'angular-mocks'], function() {
 
     describe('on load', function() {
 
-      it('should place study and arms on the scope', function() {
+      it('should place study on the scope', function() {
         var
           studyQueryResult = 'studyQueryResult',
           armQueryResult = 'armQueryResult';
 
         expect(scope.study).toBeDefined();
-        expect(scope.arms).toBeDefined();
         httpBackend.flush();
         expect(mockStudyService.loadStore).toHaveBeenCalled();
         loadStoreDeferred.resolve(3);
@@ -80,7 +79,7 @@ define(['angular', 'angular-mocks'], function() {
         getStudyGraphDeferred.resolve({data: 'mock study data'});
         scope.$digest();
         httpBackend.flush();
-        
+
         expect(mockStudyService.studySaved).toHaveBeenCalled();
       }));
     });

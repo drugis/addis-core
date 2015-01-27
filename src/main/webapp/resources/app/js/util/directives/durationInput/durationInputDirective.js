@@ -5,7 +5,7 @@ define([], function() {
   var DurationInputDirective = function(DurationService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/navbar/durationInputDirective.html',
+      templateUrl: 'app/js/util/directives/durationInput/durationInputDirective.html',
       scope: {
         durationString: '='
       },
@@ -13,7 +13,13 @@ define([], function() {
         scope.parseDuration = DurationService.parseDuration;
         scope.generateDurationString = DurationService.generateDurationString;
         scope.periodTypeOptions = DurationService.getPeriodTypeOptions();
-        scope.durationCache = scope.parseDuration(durationString);
+        scope.$watch('durationString', function(){
+          scope.durationScratch = scope.parseDuration(scope.durationString);
+        });
+        if (typeof scope.durationString !== 'string') {
+          scope.durationString = 'PT1H';
+        }
+        scope.durationScratch = scope.parseDuration(scope.durationString);
       }
     };
   };

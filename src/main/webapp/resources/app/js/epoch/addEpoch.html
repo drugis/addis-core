@@ -18,26 +18,19 @@
       </label>
     </div>
   </div>
-  <div class="row" ng-class="{'form-input-group': (item.duration.durationType != 'period')}">
+  <div class="row" ng-class="{'form-input-group': (item.durationType != 'period')}">
     <div class="large-12 columns">
       <label>Duration</label>
-      <input ng-model="item.duration.durationType" type="radio" name="durationType"
+      <input ng-model="item.durationType" type="radio" name="durationType"
              value="instantaneous" id="instantaneousOption"><label for="instantaneousOption">instantaneous</label>
-      <input ng-model="item.duration.durationType" type="radio" name="durationType"
+      <input ng-model="item.durationType" type="radio" name="durationType"
              value="period" id="periodOption"><label
         for="periodOption">duration</label>
     </div>
   </div>
-  <div ng-show="item.duration.durationType == 'period'" class="row form-input-group">
-    <div class="large-offset-3 medium-offset-1 medium-6 large-3 columns">
-      <label>Amount</label>
-      <input type="number" name="input" ng-model="item.duration.numberOfPeriods" min="0">
-    </div>
-    <div class="large-4 medium-4 end columns">
-      <label>Unit</label>
-      <select ng-model="item.duration.periodType" placeholder="select unit"
-              ng-options="periodTypeOption.label for periodTypeOption in periodTypeOptions"></select>
-    </div>
+  <div ng-show="item.durationType == 'period'" class="row form-input-group">
+       <duration-input duration-string="item.duration">
+    </duration-input>
   </div>
   <div class="row form-input-group">
     <div class="large-9 medium-6 columns">
@@ -48,7 +41,7 @@
   <div class="row">
     <div class="large-9 columns">
       <button class="success" type="submit"
-              ng-disabled="(!item.label || !isValidDuration(item.duration, periodTypeOptions))">Add
+              ng-disabled="(!item.label || !isValidDuration(item.duration) || !item.durationType)">Add
       </button>
     </div>
   </div>

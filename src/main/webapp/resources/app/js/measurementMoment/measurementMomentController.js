@@ -4,47 +4,82 @@ define([],
     var dependencies = ['$scope',
       '$stateParams',
       '$modalInstance',
-      'successCallback',
+      'callback',
+      'actionType',
       'MeasurementMomentService',
-      'EpochService'
+      'EpochService',
+      'DurationService'
     ];
     var MeasurementMomentController = function($scope,
-      $stateParams, $modalInstance, successCallback,
-      MeasurementMomentService, EpochService) {
+      $stateParams, $modalInstance, callback, actionType,
+      MeasurementMomentService, EpochService, DurationService) {
 
-      $scope.periodTypeOptions = [{
-        value: 'H',
-        type: 'time',
-        label: 'hour(s)'
-      }, {
-        value: 'D',
-        type: 'day',
-        label: 'day(s)'
-      }, {
-        value: 'W',
-        type: 'day',
-        label: 'week(s)'
-      }];
-
-      $scope.itemCache = {
-        duration: {}
-      };
-
-     EpochService.queryItems($stateParams.studyUUID).then(function(queryResult) {
-        $scope.epochs = queryResult.data.results.bindings;
+      var epochsPromise = EpochService.queryItems($stateParams.studyUUID).then(function(queryResult) {
+        $scope.epochs = queryResult;
+        $scope.itemScratch.epoch = _.find($scope.epochs, function(epoch) {
+          return $scope.itemScratch.epochUri === epoch.uri;
+        });
       });
 
       $scope.addItem = function() {
-        MeasurementMomentService.addItem($scope.itemCache)
+        MeasurementMomentService.addItem($scope.itemScratch)
           .then(function() {
-              successCallback();
+              callback();
               $modalInstance.close();
             },
             function() {
-              console.error('failed to create epoch');
+              console.error('failed to create measurement moment');
               $modalInstance.dismiss('cancel');
             });
       };
+
+      $scope.editItem = function() {
+        MeasurementMomentService.editItem($scope.itemScratch)
+          .then(function() {
+              callback();
+              $modalInstance.close();
+            },
+            function() {
+              console.error('failed to edit measurement moment');
+              $modalInstance.dismiss('cancel');
+            });
+      };
+
+      $scope.actionType = actionType;
+
+      if (actionType === 'Add') {
+        $scope.hasOffset = 'false';
+        $scope.itemScratch = {
+          offset: 'PT0S'
+        };
+
+        $scope.commit = $scope.addItem;
+      } else {
+        $scope.itemScratch = angular.copy($scope.item);
+        $scope.hasOffset = $scope.itemScratch.offset === 'PT0S' ? 'false' : 'true';
+
+        $scope.commit = $scope.editItem;
+      }
+
+
+      $scope.isValidDuration = function(duration) {
+        return DurationService.isValidDuration(duration);
+      };
+
+      $scope.generateLabel = MeasurementMomentService.generateLabel;
+
+      $scope.$watch('itemScratch.offset', function() {
+        epochsPromise.then(function() {
+          $scope.itemScratch.label = MeasurementMomentService.generateLabel($scope.itemScratch);
+        });
+      });
+
+
+
+
+      $scope.cancel = function() {
+        $modalInstance.dismiss('cancel');
+      }
     };
     return dependencies.concat(MeasurementMomentController);
   });

@@ -4,7 +4,7 @@ define(['angular', 'angular-mocks'], function() {
 
     var scope, httpBackend,
       mockModal = jasmine.createSpyObj('$mock', ['open']),
-      mockDatasetService = jasmine.createSpyObj('DatasetService', ['loadStore', 'queryDatasetsOverview']),
+      mockDatasetService = jasmine.createSpyObj('DatasetService', ['loadStore', 'queryDatasetsOverview', 'reset']),
       mockLoadStoreDeferred,
       mockQueryDatasetsDeferred;
 
@@ -43,16 +43,9 @@ define(['angular', 'angular-mocks'], function() {
       mockLoadStoreDeferred.resolve(101);
       scope.$digest();
       expect(mockDatasetService.queryDatasetsOverview).toHaveBeenCalled();
-      var mockResults = {
-        data: {
-          results: {
-            bindings: "my result"
-          }
-        }
-      };
-      mockQueryDatasetsDeferred.resolve(mockResults);
+      mockQueryDatasetsDeferred.resolve('my results');
       scope.$digest();
-      expect(scope.datasets).toBe('my result');
+      expect(scope.datasets).toBe('my results');
     });
 
     describe('createDatasetDialog', function() {

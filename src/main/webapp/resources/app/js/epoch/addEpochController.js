@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$modalInstance', 'EpochService', 'successCallback'];
-    var addEpochController = function($scope, $stateParams, $modalInstance, EpochService, successCallback) {
+    var dependencies = ['$scope', '$stateParams', '$modalInstance', 'EpochService', 'callback', 'DurationService'];
+    var addEpochController = function($scope, $stateParams, $modalInstance, EpochService, callback, DurationService) {
 
       $scope.periodTypeOptions = [{
         value: 'H',
@@ -25,19 +25,12 @@ define([],
         }
       };
 
-      $scope.isValidEpoch = function() {
-        var valid = true;
-        valid = $scope.item.label && $scope.item.label.length > 0;
-        valid = valid && $scope.item.duration && isValidDuration(scope.item.duration);
-        return valid;
-      }
-
-      $scope.isValidDuration = EpochService.isValidDuration;
+      $scope.isValidDuration = DurationService.isValidDuration;
 
       $scope.addItem = function() {
         EpochService.addItem($scope.item, $stateParams.studyUUID)
           .then(function() {
-              successCallback();
+              callback();
               $modalInstance.close();
             },
             function() {

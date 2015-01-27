@@ -1,15 +1,15 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$modalInstance', 'AdverseEventService', 'successCallback'];
-    var addAdverseEventController = function($scope, $modalInstance, AdverseEventService, successCallback) {
+    var dependencies = ['$scope', '$modalInstance', 'AdverseEventService', 'callback'];
+    var addAdverseEventController = function($scope, $modalInstance, AdverseEventService, callback) {
 
       $scope.item = {};
 
       $scope.addItem = function() {
         AdverseEventService.addItem($scope.item)
           .then(function() {
-              successCallback();
+              callback();
               $modalInstance.close();
             },
             function() {

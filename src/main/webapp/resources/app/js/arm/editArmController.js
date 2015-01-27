@@ -1,11 +1,11 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$state', '$modalInstance', 'ArmService', 'callback'];
-    var EditArmController = function($scope, $state, $modalInstance, ArmService, callback) {
+    var dependencies = ['$scope', '$state', '$modalInstance', 'itemService', 'callback'];
+    var EditArmController = function($scope, $state, $modalInstance, itemService, callback) {
 
       $scope.editItem = function () {
-        ArmService.editItem($scope.item).then(function() {
+        itemService.editItem($scope.item).then(function() {
           callback();
           $modalInstance.close();
         },

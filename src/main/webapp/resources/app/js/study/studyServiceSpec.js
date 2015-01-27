@@ -73,13 +73,8 @@ define(['angular', 'angular-mocks'], function() {
 
       describe('queryStudyData', function() {
         it('should request data from the remote store', function() {
-          var data = {
-            data: {
-              results: {
-                bindings: ['foo']
-              }
-            }
-          };
+          var data = ['foo'];
+
           var expected = {
             $$state: {
               status: 1,

@@ -14,7 +14,7 @@ define([], function() {
 
         scope.reloadItems = function() {
           service.queryItems($stateParams.studyUUID).then(function(queryResult) {
-            scope.items = queryResult.data.results.bindings;
+            scope.items = queryResult;
             console.log('category items retrieved. ' + queryResult.length);
           });
         };
@@ -27,8 +27,11 @@ define([], function() {
             scope: scope,
             controller: scope.settings.addItemController,
             resolve: {
-              successCallback: function() {
+              callback: function() {
                 return scope.reloadItems;
+              },
+              actionType: function() {
+                return 'Add';
               }
             }
           });
