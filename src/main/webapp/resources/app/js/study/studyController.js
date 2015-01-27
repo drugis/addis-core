@@ -1,8 +1,9 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', 'StudyResource', '$location', '$anchorScroll', '$modal', 'StudyService', '$window'];
-    var StudyController = function($scope, $stateParams, StudyResource, $location, $anchorScroll, $modal, StudyService, $window) {
+    var dependencies = ['$scope', '$stateParams', '$window', 'StudyResource', '$location', '$anchorScroll', '$modal', 'StudyService', 'DatasetResource', 'DatasetService'];
+    var StudyController = function($scope, $stateParams, $window, StudyResource, $location, $anchorScroll, $modal, StudyService, DatasetResource, DatasetService) {
+
       StudyService.reset();
 
       $scope.study = {};
@@ -81,14 +82,9 @@ define([],
         }
       };
 
-      $scope.debug = {
-        numberOffScrollEvents: 0
-      };
-
       var navbar = document.getElementsByClassName("side-nav");
 
       angular.element($window).bind("scroll", function() {
-            $scope.debug.numberOffScrollEvents = this.pageYOffset;
             $(navbar[0]).css('margin-top', this.pageYOffset );
             $scope.$apply();
       });
@@ -107,8 +103,21 @@ define([],
         });
       }
 
+      function reloadDatasetModel() {
+        DatasetResource.get($stateParams, function(response) {
+          DatasetService.reset();
+          DatasetService.loadStore(response.data).then(function() {
+            DatasetService.queryDataset().then(function(queryResult) {
+              $scope.dataset = queryResult[0];
+              $scope.dataset.uuid = $stateParams.datasetUUID;
+            });
+          });
+        });
+      }
+
       // onload
       reloadStudyModel();
+      reloadDatasetModel();
 
       $scope.isStudyModified = function() {
         return StudyService.isStudyModified();

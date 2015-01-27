@@ -18,6 +18,7 @@ define(function (require) {
 
     //resources
     .factory('StudyResource', require('study/studyResource'))
+    .factory('DatasetResource', require('dataset/datasetResource'))
 
     //directives
     .directive('studyCategory', require('study/categoryDirective'))

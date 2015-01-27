@@ -13,29 +13,37 @@ define(['angular', 'angular-mocks'], function() {
       mockLocation = jasmine.createSpyObj('location', ['hash']),
       mockModal = jasmine.createSpyObj('modal', ['open']),
       mockStudyService = jasmine.createSpyObj('StudyService', ['reset','queryArmData', 'loadStore', 'queryStudyData', 'getStudyGraph', 'studySaved']),
+      mockDatasetService = jasmine.createSpyObj('DatasetService', ['reset', 'loadStore', 'queryDataset']),
       loadStoreDeferred,
+      loadDatasetStoreDeferred,
       queryStudyDataDeferred,
       queryArmDataDeferred,
       getStudyGraphDeferred;
 
     beforeEach(module('trialverse.study'));
 
-    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, StudyResource) {
+    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, StudyResource, DatasetResource) {
 
       scope = $rootScope;
       httpBackend = $httpBackend;
 
       httpBackend.expectGET('/datasets/' + datasetUUID + '/studies/' + studyUUID).respond('study');
+      httpBackend.expectGET('/datasets/datasetUUID?studyUUID=studyUUID').respond('dataset');
+
+
 
       loadStoreDeferred = $q.defer();
       queryStudyDataDeferred = $q.defer();
       queryArmDataDeferred = $q.defer();
       getStudyGraphDeferred = $q.defer();
+      loadDatasetStoreDeferred = $q.defer();
 
       mockStudyService.loadStore.and.returnValue(loadStoreDeferred.promise);
       mockStudyService.queryStudyData.and.returnValue(queryStudyDataDeferred.promise);
       mockStudyService.queryArmData.and.returnValue(queryArmDataDeferred.promise);
       mockStudyService.getStudyGraph.and.returnValue(getStudyGraphDeferred.promise);
+
+      mockDatasetService.loadStore.and.returnValue(loadDatasetStoreDeferred.promise);
 
       $controller('StudyController', {
         $scope: scope,
@@ -44,7 +52,10 @@ define(['angular', 'angular-mocks'], function() {
         $location: mockLocation,
         $anchorScroll: mockAnchorScroll,
         $modal: mockModal,
-        StudyService: mockStudyService
+        $window: {bind: 'mockBind'},
+        StudyService: mockStudyService,
+        DatasetResource: DatasetResource,
+        DatasetService: mockDatasetService
       });
     }));
 

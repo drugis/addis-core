@@ -1,11 +1,10 @@
 <navbar-directive>
     <ul class="left top-bar-content">
-        <li><h4 class="topbar-text">{{study.label}} <small class="topbar-text">/ {{study.comment}}</small> </h4></li>
-        <li style="color:white; padding: 4px 10px">{{debug.numberOffScrollEvents}}</li>
+        <li><h4 class="topbar-text">{{dataset.label}}<small class="topbar-text"> / {{study.label}}</small> </h4></li>
     </ul>
 </navbar-directive>
 <div class="row">
-    <div class="columns large-2 medium-2">
+    <div class="columns large-2 medium-3">
         <ul class="side-nav">
             <a ng-disabled="!isStudyModified()" ng-click="saveStudy()" class="button expand success">Save study</a>
             <div class="modified-warning info">
@@ -22,21 +21,22 @@
             <li><a ng-click="sideNavClick('measurementMoments')">Measurement Moments</a></li>
             <li class="divider"></li>
             <li class="heading">Results</li>
-            <li>To be filled in</li>
-<!--             <li><a ng-click="sideNavClick('populationCharacteristicsResults')">Population Characteristics</a></li>
-            <li><a ng-click="sideNavClick('endpointsResults')">Endpoints</a></li>
-            <li><a ng-click="sideNavClick('adverseEventsResults')">Adverse events</a></li>
- -->        </ul>
+            <!-- <li>To be filled in</li> -->
+            <!-- 
+              <li><a ng-click="sideNavClick('populationCharacteristicsResults')">Population Characteristics</a></li>
+              <li><a ng-click="sideNavClick('endpointsResults')">Endpoints</a></li>
+              <li><a ng-click="sideNavClick('adverseEventsResults')">Adverse events</a></li>
+            -->        
+        </ul>
     </div>
-    <div class="columns large-10 medium-10 nav-bar-spacer">
+    <div class="columns large-10 medium-9 nav-bar-spacer">
         <study-category settings="categorySettings['arms']" items="arms"></study-category>
         <study-category settings="categorySettings['populationCharacteristics']" items="populationCharacteristics"></study-category>
         <study-category settings="categorySettings['endpoints']" items="endpoints"></study-category>
         <study-category settings="categorySettings['adverseEvents']" items="adverseEvents"></study-category>
         <study-category settings="categorySettings['epochs']" items="epochs"></study-category>
         <study-category settings="categorySettings['measurementMoments']" items="measurementMoments"></study-category>
-
-<!--         <h3 style="color: #008CBA;
+        <!--         <h3 style="color: #008CBA;
         font-weight: bold;
         text-align: center;
         text-transform: uppercase;">Results</h3>
@@ -45,8 +45,8 @@
                 <hr>
             </div>
         </div>
- -->
-<!--         <h3>Population characteristics results</h3>
+        -->
+        <!--         <h3>Population characteristics results</h3>
         <table id="populationCharacteristicsResults">
             <h5>Age<h5>
             <tr>
@@ -57,20 +57,19 @@
                 <th>N</th>
             </tr>
             <tr>
-                <td class="y-head" rowspan="2" style="vertical-align:baseline">Start off study</td>
-                <td class="y-head">Keelsnoepjes</td>
+                <td class="y-head" rowspan="2" style="vertical-align:baseline">Main phase Start</td>
+                <td class="y-head">Paroxetine</td>
                 <td class="input-cell"><input type="number" value="55.5"/></td>
                 <td class="input-cell"><input type="number" value="2.49"/></td>
                 <td class="input-cell"><input type="number" value="320"/></td>
             </tr>
             <tr>
-                <td class="y-head">Neusspay</td>
+                <td class="y-head">Sertraline</td>
                 <td class="input-cell"><input type="number" value="52.5"/></td>
                 <td class="input-cell"><input type="number" value="3.49"/></td>
                 <td class="input-cell"><input type="number" value="350"/></td>
             </tr>
         </table>
-
         <table id="populationCharacteristicsResults">
             <h5>Gender<h5>
             <tr>
@@ -80,126 +79,126 @@
                 <th>(N) Female</th>
             </tr>
             <tr>
-                <td class="y-head" rowspan="2" style="vertical-align:baseline">Start off study (20)</td>
-                <td class="y-head">Keelsnoepjes</td>
+                <td class="y-head" rowspan="2" style="vertical-align:baseline">Main phase Start</td>
+                <td class="y-head">Paroxetine</td>
                 <td class="input-cell"><input type="number" value="10"/></td>
                 <td class="input-cell"><input type="number" value="10"/></td>
-
             </tr>
             <tr>
-                <td class="y-head">Neusspay</td>
+                <td class="y-head">Sertraline</td>
                 <td class="input-cell"><input type="number" value="10"/></td>
                 <td class="input-cell"><input type="number" value="10"/></td>
             </tr>
         </table>
-
         <h3>Adverse events results</h3>
         <table id="adverseEventsResults">
-            <h5>Nausia<h5>
+            <h5>Nausea<h5>
             <tr>
-                <th scope="column" colspan="">Arm</th>
                 <th scope="column" colspan="">Meansurement moment</th>
+                <th scope="column" colspan="">Arm</th>
                 <th scope="column" colspan="">number of occurrences</th>
                 <th scope="column" colspan="">number of paricipants</th>
             </tr>
             <tr>
-                <td class="y-head" rowspan="3" style="vertical-align:baseline">Keelsnoepjes (N = 320)</td>
-                <td class="y-head">Start off study</td>
+                <td class="y-head" rowspan="2" style="vertical-align:baseline">Main phase Start</td>
+                <td class="y-head">Paroxetine</td>
                 <td class="input-cell"><input type="number" value="20"/></td>
                 <td class="input-cell"><input type="number" value="317"/></td>
             </tr>
             <tr>
-                <td class="y-head">Main phase</td>
+                <td class="y-head">Sertraline</td>
                 <td class="input-cell"><input type="number" value="18"/></td>
                 <td class="input-cell"><input type="number" value="317"/></td>
             </tr>
             <tr>
-                <td class="y-head">3 hours before end of study</td>
+                <td class="y-head" rowspan="2" style="vertical-align:baseline">Main phase End</td>
+                <td class="y-head">Paroxetine</td>
                 <td class="input-cell"><input type="number" value="80"/></td>
                 <td class="input-cell"><input type="number" value="301"/></td>
             </tr>
             <tr>
-                <td class="y-head" rowspan="3" style="vertical-align:baseline">Neusspray (N = 180)</td>
-                <td class="y-head">Start off study</td>
+                <td class="y-head">Sertraline</td>
                 <td class="input-cell"><input type="number" value="25"/></td>
                 <td class="input-cell"><input type="number" value="180"/></td>
             </tr>
+            <<<<<<< HEAD
             <tr>
                 <td class="y-head">Main phase</td>
                 <td class="input-cell"><input type="number" value=""/></td>
                 <td class="input-cell"><input type="number" value="180"/></td>
-
             </tr>
             <tr>
                 <td class="y-head">3 hours before end of study</td>
                 <td class="input-cell"><input type="number" value="120"/></td>
                 <td class="input-cell"><input type="number" value="160"/></td>
-
             </tr>
+            =======
+            >>>>>>> feature/results
         </table>
-        <table id="adverseEventsResults4">
-            <h5>Misselijk results<h5>
+        <h3>Endpoint results</h3>
+        <table id="endPoinsResults4">
+            <h5>CGI Severity Change<h5>
             <tr>
-                <th scope="column" colspan="">Meansure moment</th>
+                <th scope="column" colspan="">Meansurement moment</th>
                 <th scope="column" colspan="">Arm</th>
                 <th scope="column" colspan="">mean</th>
                 <th scope="column" colspan="">± sd</th>
                 <th scope="column" colspan="">N</th>
             </tr>
             <tr>
-                <td class="y-head" rowspan="2" style="vertical-align:baseline">Start off study</td>
-                <td class="y-head">Keelsnoepjes</td>
+                <td class="y-head" rowspan="2" style="vertical-align:baseline">Run in</td>
+                <td class="y-head">Paroxetine</td>
                 <td class="input-cell"><input type="number" value="55.5"/></td>
                 <td class="input-cell"><input type="number" value="2.49"/></td>
                 <td class="input-cell"><input type="number" value="320"/></td>
             </tr>
             <tr>
-                <td class="y-head">Neusspray</td>
+                <td class="y-head">Sertraline</td>
                 <td class="input-cell"><input type="number" value="52.5"/></td>
                 <td class="input-cell"><input type="number" value="3.49"/></td>
                 <td class="input-cell"><input type="number" value="350"/></td>
             </tr>
             <tr>
-                <td class="y-head" rowspan="2" style="vertical-align:baseline">Run in</td>
-                <td class="y-head">Keelsnoepjes</td>
+                <td class="y-head" rowspan="2" style="vertical-align:baseline">Main phase Start</td>
+                <td class="y-head">Paroxetine</td>
                 <td class="input-cell"><input type="number" value="55.5"/></td>
                 <td class="input-cell"><input type="number" value="2.49"/></td>
                 <td class="input-cell"><input type="number" value="320"/></td>
             </tr>
             <tr>
-                <td class="y-head">Neusspray</td>
+                <td class="y-head">Sertraline</td>
                 <td class="input-cell"><input type="number" value="52.5"/></td>
                 <td class="input-cell"><input type="number" value="3.49"/></td>
                 <td class="input-cell"><input type="number" value="350"/></td>
             </tr>
             <tr>
                 <td class="y-head" rowspan="2" style="vertical-align:baseline">Main phase</td>
-                <td class="y-head">Keelsnoepjes</td>
+                <td class="y-head">Paroxetine</td>
                 <td class="input-cell"><input type="number" value="55.5"/></td>
                 <td class="input-cell"><input type="number" value="2.49"/></td>
                 <td class="input-cell"><input type="number" value="320"/></td>
             </tr>
             <tr>
-                <td class="y-head">Neusspray</td>
+                <td class="y-head">Sertraline</td>
                 <td class="input-cell"><input type="number" value="52.5"/></td>
                 <td class="input-cell"><input type="number" value="3.49"/></td>
                 <td class="input-cell"><input type="number" value="350"/></td>
             </tr>
             <tr>
-                <td class="y-head" rowspan="2" style="vertical-align:baseline">3 hours before end of study</td>
-                <td class="y-head">Keelsnoepjes</td>
+                <td class="y-head" rowspan="2" style="vertical-align:baseline">Main phase End</td>
+                <td class="y-head">Paroxetine</td>
                 <td class="input-cell"><input type="number" value="55.5"/></td>
                 <td class="input-cell"><input type="number" value="2.49"/></td>
                 <td class="input-cell"><input type="number" value="320"/></td>
             </tr>
             <tr>
-                <td class="y-head">Neusspray</td>
+                <td class="y-head">Sertraline</td>
                 <td class="input-cell"><input type="number" value="52.5"/></td>
                 <td class="input-cell"><input type="number" value="3.49"/></td>
                 <td class="input-cell"><input type="number" value="350"/></td>
             </tr>
         </table>
+        <<<<<<< HEAD
         <h3>Endpoint results</h3> -->
-
     </div>
 </div>
