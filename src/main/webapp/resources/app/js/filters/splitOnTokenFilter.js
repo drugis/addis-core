@@ -6,7 +6,7 @@ define([], function() {
       if(!inputString) {
         return inputString;
       }
-      // spit by token, comma is used a default split token
+      // spit by token, comma is used as default split token
       var items = inputString.split(splitToken || ',');
 
       // trim whitespace
