@@ -1,8 +1,8 @@
 'use strict';
 define([], function() {
-  var dependencies = [];
+  var dependencies = ['SubsetSelectService'];
 
-  var SubsetSelectDirective = function() {
+  var SubsetSelectDirective = function(SubsetSelectService) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/util/directives/subsetSelect/subsetSelectDirective.html',
@@ -11,9 +11,7 @@ define([], function() {
         source: '='
       },
       link: function(scope) {
-        scope.isSelected = _.map(scope.source, function() {
-          return false;
-        });
+        scope.isSelected = SubsetSelectService.createSelectionList(source, target);
 
         angular.forEach(scope.isSelected, function(selectedItem) {
           scope.$watch(
@@ -22,11 +20,7 @@ define([], function() {
             },
             function(newValue, oldValue) { // listener
               if (newValue !== oldValue) {
-                if (newValue) {
-                  scope.target = scope.target.concat(newValue);
-                } else {
-                  scope.target = _.without(scope.target, oldValue);
-                }
+                scope.target = SubsetSelectService.addOrRemoveValue(newValue, oldValue, target);
               }
             }
           );

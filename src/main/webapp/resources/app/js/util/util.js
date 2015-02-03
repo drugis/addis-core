@@ -10,6 +10,7 @@ define(function (require) {
     .factory('RdfStoreService', require('util/rdfstoreService'))
     .factory('RemoteRdfStoreService', require('util/remoteRdfStoreService'))
     .factory('DurationService', require('util/durationService'))
+    .factory('SubsetSelectService', require('util/directives/subsetSelect/subsetSelectService'))
 
     // resources
     .factory('SparqlResource', require('util/sparqlResource'))

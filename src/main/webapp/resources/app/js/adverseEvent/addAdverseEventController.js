@@ -1,10 +1,16 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$modalInstance', 'AdverseEventService', 'callback'];
-    var addAdverseEventController = function($scope, $modalInstance, AdverseEventService, callback) {
+    var dependencies = ['$scope', '$modalInstance', 'AdverseEventService', 'MeasurementMomentService', 'callback'];
+    var addAdverseEventController = function($scope, $modalInstance, AdverseEventService, MeasurementMomentService, callback) {
 
       $scope.item = {};
+
+      $scope.measurementMomentUris = MeasurementMomentService.queryItems().then(function(measurementMoments) {
+        return _.map(measurementMoments, function(measurementMoment) {
+          return measurementMoment.uri;
+        });
+      });
 
       $scope.addItem = function() {
         AdverseEventService.addItem($scope.item)
