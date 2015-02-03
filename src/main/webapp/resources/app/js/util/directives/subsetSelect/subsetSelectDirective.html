@@ -1,0 +1,8 @@
+<div>
+  <h2>Measurement moments</h2>
+  <ul>
+    <li ng-repeat="sourceItem in source">
+      <label><input type="checkbox" ng-model="isSelected[$index]" ng-true-value="sourceItem">{{sourceItem.label}}</label>
+    </li>
+  </ul>
+</div>
