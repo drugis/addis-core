@@ -11,10 +11,10 @@ module.exports = function(config) {
     plugins : [
       'karma-chrome-launcher',
       'karma-phantomjs-launcher',
-      'karma-junit-reporter',
+      //'karma-junit-reporter',
       'karma-jasmine',
       'karma-requirejs',
-      'karma-coverage'
+      //'karma-coverage'
     ],
 
 
@@ -48,16 +48,16 @@ module.exports = function(config) {
 
     // test results reporter to use
     // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
-    reporters: ['progress', 'junit', 'coverage'],
-    junitReporter :{
-      outputFile: '../../../test/karma-test-results.xml'
-    },
+    // reporters: ['progress', 'junit', 'coverage'],
+    // junitReporter :{
+    //   outputFile: '../../../test/karma-test-results.xml'
+    // },
 
-    coverageReporter: {
-      type : 'cobertura',
-      dir : '../../../target/site/cobertura/',
-      file : 'karma-coverage-result.xml'
-    },
+    // coverageReporter: {
+    //   type : 'cobertura',
+    //   dir : '../../../target/site/cobertura/',
+    //   file : 'karma-coverage-result.xml'
+    // },
 
 
     // web server port
