@@ -77,7 +77,7 @@ define([],
       }
 
       function editItem(item) {
-        var stringToInsert = buildInsertMeasuredAtBlock(item)
+        var stringToInsert = buildInsertMeasuredAtBlock(item);
         return editAdverseEventRaw.then(function(editQueryRaw) {
           var editQuery = editQueryRaw.replace(/\$URI/g, item.uri)
             .replace('$newLabel', item.label)

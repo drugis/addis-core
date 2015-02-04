@@ -1,56 +1,96 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'UUIDService', 'SparqlResource'];
-    var PopulationCharacteristicService = function($q, StudyService, UUIDService, SparqlResource) {
+    var dependencies = ['$q', 'StudyService', 'UUIDService', 'SparqlResource', 'MeasurementMomentService'];
+    var PopulationCharacteristicService = function($q, StudyService, UUIDService, SparqlResource, MeasurementMomentService) {
+
+      var addTemplateRaw = SparqlResource.get('addTemplate.sparql');
 
       var addPopulationCharacteristicQueryRaw = SparqlResource.get('addPopulationCharacteristic.sparql');
       var populationCharacteristicsQuery = SparqlResource.get('queryPopulationCharacteristic.sparql');
       var deletePopulationCharacteristicRaw = SparqlResource.get('deletePopulationCharacteristic.sparql');
       var editPopulationCharacteristicRaw = SparqlResource.get('editPopulationCharacteristic.sparql');
 
-      function queryItems() {
-        var defer = $q.defer();
+      var queryAdverseEventMeasuredAtRaw = SparqlResource.get('queryMeasuredAt.sparql');
 
-        populationCharacteristicsQuery.then(function(query) {
-          defer.resolve(StudyService.doNonModifyingQuery(query));
+      function queryItems() {
+        var items, measuredAtMoments, measurementMoments;
+
+        var queryItemsPromise = populationCharacteristicsQuery.then(function(query) {
+          return StudyService.doNonModifyingQuery(query).then(function(result){
+            items = result;
+          });
         });
-        return defer.promise;
+
+        var measuredAtQueryPromise = queryAdverseEventMeasuredAtRaw.then(function(query) {
+          return StudyService.doNonModifyingQuery(query).then(function(result) {
+            measuredAtMoments = result;
+          });
+        });
+
+        var measurementMomentsPromise = MeasurementMomentService.queryItems().then(function(result){
+          measurementMoments = result;
+        });
+
+        return $q.all([queryItemsPromise, measuredAtQueryPromise, measurementMomentsPromise]).then(function() {
+          return _.map(items, function(item) {
+            var filtered = _.filter(measuredAtMoments, function(measuredAtMoment) {
+              return item.uri === measuredAtMoment.itemUri;
+            });
+           
+            item.measuredAtMoments = _.map(_.pluck(filtered, 'measurementMoment'), function(measurementMomentUri) {
+              return _.find(measurementMoments, function(moment){
+                return measurementMomentUri === moment.uri;
+              }); 
+            });
+            return item;
+          });
+        });
       }
 
-      function addItem(populationCharacteristic) {
-        var defer = $q.defer();
+      function addItem(item) {
+        var newUUid = UUIDService.generate();
+        item.uri = 'http://trials.drugis.org/instances/' + newUUid;
+        var stringToInsert = buildInsertMeasuredAtBlock(item);
 
-        addPopulationCharacteristicQueryRaw.then(function(query) {
+        var addItemPromise = addPopulationCharacteristicQueryRaw.then(function(query) {
           var addPopulationCharacteristicQuery = query
-            .replace(/\$UUID/g, UUIDService.generate())
-            .replace('$label', populationCharacteristic.label)
-            .replace('$measurementType', populationCharacteristic.measurementType);
-          defer.resolve(StudyService.doModifyingQuery(addPopulationCharacteristicQuery));
+            .replace(/\$UUID/g, newUUid)
+            .replace('$label', item.label)
+            .replace('$measurementType', item.measurementType);
+          return StudyService.doModifyingQuery(addPopulationCharacteristicQuery);
         });
-        return defer.promise;
+
+        var addMeasuredAtPromise = addTemplateRaw.then(function(query) {
+          var addMeasuredAtQuery = query.replace('$insertBlock', stringToInsert);
+          return StudyService.doModifyingQuery(addMeasuredAtQuery);
+        });
+
+        return $q.all([addItemPromise, addMeasuredAtPromise]);
       }
 
       function deleteItem(item) {
-        var defer = $q.defer();
-
-        deletePopulationCharacteristicRaw.then(function(deleteQueryRaw) {
-          var deleteQuery = deleteQueryRaw.replace(/\$URI/g, item.uri);
-          defer.resolve(StudyService.doModifyingQuery(deleteQuery));
+        return deletePopulationCharacteristicRaw.then(function(deleteQueryRaw) {
+          return StudyService.doModifyingQuery(deleteQueryRaw.replace(/\$URI/g, item.uri));
         });
-        return defer.promise;
       }
 
       function editItem(item) {
-        var defer = $q.defer();
+        var stringToInsert = buildInsertMeasuredAtBlock(item);
 
-        editPopulationCharacteristicRaw.then(function(editQueryRaw) {
+        return editPopulationCharacteristicRaw.then(function(editQueryRaw) {
           var editQuery = editQueryRaw.replace(/\$URI/g, item.uri)
             .replace('$newLabel', item.label)
-            .replace('$newMeasurementType', item.measurementType);
-          defer.resolve(StudyService.doModifyingQuery(editQuery));
+            .replace('$newMeasurementType', item.measurementType)
+            .replace('$insertMeasurementMomentBlock', stringToInsert);
+          return StudyService.doModifyingQuery(editQuery);
         });
-        return defer.promise;
+      }
+
+      function buildInsertMeasuredAtBlock(item) {
+        return _.reduce(item.measuredAtMoments, function(accumulator, measuredAtMoment){
+          return accumulator + ' <' + item.uri + '> ontology:is_measured_at <' + measuredAtMoment.uri + '> .';
+        }, '');
       }
 
       return {
