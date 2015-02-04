@@ -11,20 +11,12 @@ define([], function() {
         source: '='
       },
       link: function(scope) {
-        scope.isSelected = SubsetSelectService.createSelectionList(source, target);
+        scope.isSelected = SubsetSelectService.createSelectionList(scope.source, scope.target);
 
-        angular.forEach(scope.isSelected, function(selectedItem) {
-          scope.$watch(
-            function() { // watchExpression
-              return selectedItem;
-            },
-            function(newValue, oldValue) { // listener
-              if (newValue !== oldValue) {
-                scope.target = SubsetSelectService.addOrRemoveValue(newValue, oldValue, target);
-              }
-            }
-          );
-        });
+        scope.updateSelection = function(isSelected, item) {
+          scope.target = SubsetSelectService.addOrRemoveItem(isSelected, item, scope.target);
+        };
+
       }
     };
   };

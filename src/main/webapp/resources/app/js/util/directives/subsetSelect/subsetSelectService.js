@@ -3,11 +3,11 @@ define([], function() {
   var dependencies = [];
 
   var SubsetSelectService = function() {
-    function addOrRemoveItem(newValue, oldValue, items) {
-      if (!newValue) {
-        return _.without(items, oldValue)
+    function addOrRemoveItem(isSelected, item, items) {
+      if (!isSelected) {
+        return _.without(items, item)
       } else {
-        return items.concat(newValue);
+        return items.concat(item);
       }
     }
 

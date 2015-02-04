@@ -24,7 +24,7 @@ define(['angular', 'angular-mocks'], function() {
         ];
       describe('when newValue is truthy', function() {
         it('should add newValue to the list of selected items', function() {
-          expect(subsetSelectService.addOrRemoveItem(item3, false, items)).toEqual(items.concat(item3));
+          expect(subsetSelectService.addOrRemoveItem(true, item3, items)).toEqual(items.concat(item3));
         });
       });
       describe('when newValue is falsy', function() {

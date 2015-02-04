@@ -5,11 +5,9 @@ define([],
     var addAdverseEventController = function($scope, $modalInstance, AdverseEventService, MeasurementMomentService, callback) {
 
       $scope.item = {};
-
-      $scope.measurementMomentUris = MeasurementMomentService.queryItems().then(function(measurementMoments) {
-        return _.map(measurementMoments, function(measurementMoment) {
-          return measurementMoment.uri;
-        });
+      $scope.measurementMoments = [];
+      MeasurementMomentService.queryItems().then(function(result){
+        $scope.measurementMoments = result;
       });
 
       $scope.addItem = function() {
