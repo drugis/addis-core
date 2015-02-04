@@ -4,9 +4,11 @@ define([],
     var dependencies = ['$scope', '$modalInstance', 'AdverseEventService', 'MeasurementMomentService', 'callback'];
     var addAdverseEventController = function($scope, $modalInstance, AdverseEventService, MeasurementMomentService, callback) {
 
-      $scope.item = {};
+      $scope.item = {
+        measuredAtMoments: []
+      };
       $scope.measurementMoments = [];
-      MeasurementMomentService.queryItems().then(function(result){
+      MeasurementMomentService.queryItems().then(function(result) {
         $scope.measurementMoments = result;
       });
 
