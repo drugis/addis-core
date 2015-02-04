@@ -207,7 +207,7 @@
   (let [epoch-name (vtd/attr xml :name)
         duration (vtd/text (vtd/at xml "./duration"))
         subj (if duration
-               (trig/spo instance-uri [(trig/iri :ontology "duration") (trig/lit duration)])
+               (trig/spo instance-uri [(trig/iri :ontology "duration") (trig/lit duration (trig/iri :xsd "duration"))])
                instance-uri)]
   (trig/spo subj 
             [(trig/iri :rdfs "label") (trig/lit epoch-name)]
