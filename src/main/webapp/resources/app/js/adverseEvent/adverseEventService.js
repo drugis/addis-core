@@ -51,9 +51,8 @@ define([],
 
       function addItem(adverseEvent) {
         var newUUid = UUIDService.generate();
-        var stringToInsert = _.reduce(adverseEvent.measuredAtMoments, function(accumulator, measuredAtMoment){
-          return accumulator + ' instance:' + newUUid + ' ontology:is_measured_at <' + measuredAtMoment.uri + '> .';
-        }, '');
+        adverseEvent.uri = 'http://trials.drugis.org/instances/' + newUUid;
+        var stringToInsert = buildInsertMeasuredAtBlock(adverseEvent);
 
         var addAdverseEventPromise = addAdverseEventQueryRaw.then(function(query) {
           var addAdverseEventQuery = query
@@ -72,25 +71,26 @@ define([],
       }
 
       function deleteItem(item) {
-        var defer = $q.defer();
-
-        deleteAdverseEventRaw.then(function(deleteQueryRaw) {
-          var deleteQuery = deleteQueryRaw.replace(/\$URI/g, item.uri);
-          defer.resolve(StudyService.doModifyingQuery(deleteQuery));
+        return deleteAdverseEventRaw.then(function(deleteQueryRaw) {
+          return StudyService.doModifyingQuery(deleteQueryRaw.replace(/\$URI/g, item.uri));
         });
-        return defer.promise;
       }
 
       function editItem(item) {
-        var defer = $q.defer();
-
-        editAdverseEventRaw.then(function(editQueryRaw) {
+        var stringToInsert = buildInsertMeasuredAtBlock(item)
+        return editAdverseEventRaw.then(function(editQueryRaw) {
           var editQuery = editQueryRaw.replace(/\$URI/g, item.uri)
             .replace('$newLabel', item.label)
-            .replace('$newMeasurementType', item.measurementType);
-          defer.resolve(StudyService.doModifyingQuery(editQuery));
+            .replace('$newMeasurementType', item.measurementType)
+            .replace('$insertMeasurementMomentBlock', stringToInsert);
+          return StudyService.doModifyingQuery(editQuery);
         });
-        return defer.promise;
+      }
+
+      function buildInsertMeasuredAtBlock(adverseEvent) {
+        return _.reduce(adverseEvent.measuredAtMoments, function(accumulator, measuredAtMoment){
+          return accumulator + ' <' + adverseEvent.uri + '> ontology:is_measured_at <' + measuredAtMoment.uri + '> .';
+        }, '');
       }
 
       return {

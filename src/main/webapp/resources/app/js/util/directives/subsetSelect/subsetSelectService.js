@@ -5,7 +5,9 @@ define([], function() {
   var SubsetSelectService = function() {
     function addOrRemoveItem(isSelected, item, items) {
       if (!isSelected) {
-        return _.without(items, item)
+       return _.filter(items, function(listItem){
+          return listItem.uri !== item.uri;
+       });
       } else {
         return items.concat(item);
       }
@@ -13,7 +15,9 @@ define([], function() {
 
     function createSelectionList(source, target) {
       return _.map(source, function(sourceItem) {
-        return _.contains(target, sourceItem) ? sourceItem : false;
+        return !!_.find(target, function(targetItem) {
+          return targetItem.uri === sourceItem.uri;
+        });
       });
     }
 
@@ -21,7 +25,7 @@ define([], function() {
       addOrRemoveItem: addOrRemoveItem,
       createSelectionList: createSelectionList
     };
-  }
+  };
 
   return dependencies.concat(SubsetSelectService);
 });

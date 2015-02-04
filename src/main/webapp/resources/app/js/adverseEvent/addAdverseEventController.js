@@ -7,10 +7,8 @@ define([],
       $scope.item = {
         measuredAtMoments: []
       };
-      $scope.measurementMoments = [];
-      MeasurementMomentService.queryItems().then(function(result) {
-        $scope.measurementMoments = result;
-      });
+
+      $scope.measurementMoments = MeasurementMomentService.queryItems();
 
       $scope.addItem = function() {
         AdverseEventService.addItem($scope.item)

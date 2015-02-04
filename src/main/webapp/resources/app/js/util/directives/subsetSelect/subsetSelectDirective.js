@@ -11,7 +11,11 @@ define([], function() {
         source: '='
       },
       link: function(scope) {
-        scope.isSelected = SubsetSelectService.createSelectionList(scope.source, scope.target);
+        scope.isSelected = [];
+        scope.source.then(function(source) {
+          scope.source = source;
+          scope.isSelected = SubsetSelectService.createSelectionList(source, scope.target);
+        });
 
         scope.updateSelection = function(isSelected, item) {
           scope.target = SubsetSelectService.addOrRemoveItem(isSelected, item, scope.target);

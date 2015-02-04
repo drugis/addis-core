@@ -11,13 +11,13 @@ define(['angular', 'angular-mocks'], function() {
 
     describe('addOrRemoveItem', function() {
       var item1 = {
-          label: 'item 1'
+          uri: 'item 1'
         },
         item2 = {
-          label: 'item 2'
+          uri: 'item 2'
         },
         item3 = {
-          label: 'item 3'
+          uri: 'item 3'
         },
         items = [
           item1, item2
@@ -41,8 +41,15 @@ define(['angular', 'angular-mocks'], function() {
         });
       });
       describe('for a non-empty target list', function() {
-        it('should return a list with false for items not in the target, and the item for items that are in the target', function() {
-          expect(subsetSelectService.createSelectionList(['item 1', 'item 2', 'item 3'], ['item 2'])).toEqual([false, 'item 2', false]);
+        it('should return a list with false for items not in the target, and true for items that are in the target', function() {
+          var source = [{
+            uri: 'item 1'
+          }, {
+            uri: 'item 2'
+          }, {
+            uri: 'item 3'
+          }];
+          expect(subsetSelectService.createSelectionList(source, [{uri: 'item 2'}])).toEqual([false, true, false]);
         });
       });
     });
