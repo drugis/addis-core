@@ -6,12 +6,14 @@ WITH <$graphUri>
 DELETE {
   <$URI>
    rdfs:label ?label ;
-   ontology:measurementType ?measurementType .
+   ontology:measurementType ?measurementType ;
+   ontology:is_measured_at ?measurementMoment .
 }
 INSERT {
   <$URI>
     rdfs:label "$newLabel" ;
     ontology:measurementType <$newMeasurementType> .
+  $insertMeasurementMomentBlock
 }
 WHERE {
   <$URI>

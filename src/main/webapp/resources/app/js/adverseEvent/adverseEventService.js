@@ -11,8 +11,6 @@ define([],
       var deleteAdverseEventRaw = SparqlResource.get('deleteAdverseEvent.sparql');
       var editAdverseEventRaw = SparqlResource.get('editAdverseEvent.sparql');
       var queryAdverseEventMeasuredAtRaw = SparqlResource.get('queryMeasuredAt.sparql');
-      // var addMeasuredAtRaw = SparqlResource.get('addMeasuredAt.sparql');
-      // var editMeasuredAtRaw = SparqlResource.get('addMeasuredAt.sparql');
 
       function queryItems() {
         var adverseEvents, measuredAtMoments, measurementMoments;
@@ -38,11 +36,11 @@ define([],
             var filtered = _.filter(measuredAtMoments, function(measuredAtMoment) {
               return adverseEvent.uri === measuredAtMoment.itemUri;
             });
-           
+
             adverseEvent.measuredAtMoments = _.map(_.pluck(filtered, 'measurementMoment'), function(measurementMomentUri) {
               return _.find(measurementMoments, function(moment){
                 return measurementMomentUri === moment.uri;
-              }); 
+              });
             });
             return adverseEvent;
           });
