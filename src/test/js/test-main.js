@@ -23,7 +23,8 @@ require.config({
     'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
     'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
     'rdfstore': 'bower_components/rdfstore-js/index',
-    'lodash': 'bower_components/lodash/dist/lodash.min'
+    'lodash': 'bower_components/lodash/dist/lodash.min',
+    'moment': 'bower_components/moment/min/moment.min'
   },
   baseUrl: '/base/app/js',
   shim: {

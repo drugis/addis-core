@@ -9,7 +9,12 @@ define(
     'dataset/dataset',
     'util/util',
     'study/study',
-    'rdfstoreWrap/rdfstoreWrap',
+    'arm/arm',
+    'populationCharacteristic/populationCharacteristic',
+    'endpoint/endpoint',
+    'adverseEvent/adverseEvent',
+    'epoch/epoch',
+    'measurementMoment/measurementMoment',
     'angular-resource',
     'rdfstore',
     'lodash'
@@ -19,9 +24,14 @@ define(
       'ui.router',
       'mm.foundation.modal',
       'trialverse.dataset',
-      'trialverse.rdfstoreWrap',
       'trialverse.util',
-      'trialverse.study'
+      'trialverse.study',
+      'trialverse.arm',
+      'trialverse.populationCharacteristic',
+      'trialverse.endpoint',
+      'trialverse.adverseEvent',
+      'trialverse.epoch',
+      'trialverse.measurementMoment'
     ];
 
     var app = angular.module('trialverse', dependencies);
@@ -37,6 +47,8 @@ define(
         });
       }
     ]);
+
+    app.constant('SCRATCH_RDF_STORE_URL', '/scratch');
 
     app.config(['$stateProvider', '$urlRouterProvider',
       function($stateProvider, $urlRouterProvider) {
@@ -55,6 +67,11 @@ define(
             url: '/dataset/:datasetUUID',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
+          })
+          .state('study', {
+            url: '/dataset/:datasetUUID/study/:studyUUID',
+            templateUrl: 'app/js/study/view/study.html',
+            controller: 'StudyController'
           });
 
         // Default route

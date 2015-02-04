@@ -13,6 +13,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -38,7 +40,7 @@ import java.security.Principal;
 public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetReadRepositoryImpl.class);
-  private final static String SINGLE_STUDY_MEASUREMENTS = loadResource("queryDatasetsConstruct.sparql");
+  private final static String QUERY_DATASETS = loadResource("queryDatasetsConstruct.sparql");
   private final static String STUDIES_WITH_DETAILS = loadResource("constructStudiesWithDetails.sparql");
   private final static String IS_OWNER_QUERY = loadResource("askIsOwner.sparql");
   private final static String CONTAINS_STUDY_WITH_SHORTNAME = loadResource("askContainsStudyWithLabel.sparql");
@@ -54,6 +56,19 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   @Inject
   private JenaFactory jenaFactory;
 
+  private enum FUSEKI_OUTPUT_TYPES {
+    TEXT, JSON;
+
+    @Override
+    public String toString() {
+      switch (this) {
+        case TEXT: return "text";
+        case JSON: return "json";
+        default:throw new EnumConstantNotPresentException(FUSEKI_OUTPUT_TYPES.class, "nonexistent enum constant");
+      }
+    }
+  }
+
   private static String loadResource(String filename) {
     try {
       Resource myData = new ClassPathResource(filename);
@@ -65,14 +80,27 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     throw new LoadResourceException("could not load resource " + filename);
   }
 
-  private HttpResponse doQuery(String query) {
+  private HttpResponse doConstructQuery(String query) {
+    return doRequest(query, FUSEKI_OUTPUT_TYPES.TEXT.toString(), RDFLanguages.TURTLE.getContentType().getContentType());
+  }
+
+  private HttpResponse doSelectQuery(String query) {
+    return doRequest(query, FUSEKI_OUTPUT_TYPES.JSON.toString(), RDFLanguages.JSONLD.getContentType().getContentType());
+  }
+
+  private HttpResponse doAskQuery(String query) {
+    return doRequest(query, FUSEKI_OUTPUT_TYPES.JSON.toString(), RDFLanguages.JSONLD.getContentType().getContentType());
+  }
+
+
+  private HttpResponse doRequest(String query, String outputType, String acceptType) {
     try {
       HttpClient client = httpClientFactory.build();
       URIBuilder builder = new URIBuilder(webConstants.getTriplestoreBaseUri() + QUERY_AFFIX);
       builder.setParameter("query", query);
-      builder.setParameter("output", "json");
+      builder.setParameter("output", outputType);
       HttpGet request = new HttpGet(builder.build());
-      request.setHeader("Accept", "application/json");
+      request.setHeader("Accept", acceptType);
       return client.execute(request);
     } catch (URISyntaxException | IOException e) {
       logger.error(e.toString());
@@ -82,8 +110,8 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   @Override
   public HttpResponse queryDatasets(Account currentUserAccount) {
-    String query = StringUtils.replace(SINGLE_STUDY_MEASUREMENTS, "$owner", "'" + currentUserAccount.getUsername() + "'");
-    return doQuery(query);
+    String query = StringUtils.replace(QUERY_DATASETS, "$owner", "'" + currentUserAccount.getUsername() + "'");
+    return doConstructQuery(query);
   }
 
   @Override
@@ -95,7 +123,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   @Override
   public HttpResponse queryDatasetsWithDetail(String datasetUUID) {
     String query = StringUtils.replace(STUDIES_WITH_DETAILS, "$datasetUUID", datasetUUID);
-    return doQuery(query);
+    return doSelectQuery(query);
   }
 
   @Override
@@ -103,7 +131,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     boolean isOwner = false;
     String query = StringUtils.replace(IS_OWNER_QUERY, "$owner", "'" + principal.getName() + "'");
     query = StringUtils.replace(query, "$dataset", datasetUUID);
-    HttpResponse response = doQuery(query);
+    HttpResponse response = doAskQuery(query);
 
     JSONParser jsonParser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
     try {
@@ -121,7 +149,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     Boolean containsStudyWithShortname = false;
     String query = StringUtils.replace(CONTAINS_STUDY_WITH_SHORTNAME, "$dataset", datasetUUID);
     query = StringUtils.replace(query, "$shortName", "'" + shortName + "'");
-    HttpResponse response = doQuery(query);
+    HttpResponse response = doAskQuery(query);
     try {
       containsStudyWithShortname = JsonPath.read(response.getEntity().getContent(), "$.boolean");
     } catch (IOException e) {

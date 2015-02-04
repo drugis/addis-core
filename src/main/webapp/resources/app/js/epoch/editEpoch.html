@@ -1,0 +1,49 @@
+<form novalidate ng-submit="editItem()">
+  <div class="row">
+    <div class="large-9 medium-12 columns">
+      <h3>Edit Epoch</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 medium-12 columns">
+      <label>Name
+        <input autofocus="true" type="text" ng-model="itemScratch.label">
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 medium-12 columns">
+      <label>Description
+        <textarea rows="8" ng-model="itemScratch.comment"></textarea>
+      </label>
+    </div>
+  </div>
+  <div class="row" ng-class="{'form-input-group': (durationType != 'period')}">
+    <div class="large-12 columns">
+      <label>Duration</label>
+      <input ng-model="durationType" type="radio" ng-change="changeToInstantaneous()" name="durationType"
+             value="instantaneous" id="instantaneousOption"><label for="instantaneousOption">instantaneous</label>
+      <input ng-model="durationType" type="radio" ng-change="changeToDuration()" name="durationType"
+             value="period" id="periodOption"><label
+        for="periodOption">duration</label>
+    </div>
+  </div>
+  <div ng-show="durationType == 'period'" class="row form-input-group">
+    <duration-input duration-string="itemScratch.duration">
+    </duration-input>
+  </div>
+  <div class="row form-input-group">
+    <div class="large-9 columns">
+      <label for="isPrimaryCheckBox">Is primary epoch</label>
+      <input id="isPrimaryCheckBox" ng-model="itemScratch.isPrimary" type="checkbox">
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <button class="success" type="submit"
+              ng-disabled="(!itemScratch.label || !isValidDuration(itemScratch.duration))">Edit
+      </button>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>

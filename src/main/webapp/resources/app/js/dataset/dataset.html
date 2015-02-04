@@ -1,7 +1,9 @@
-<div class="row">
+<navbar-directive></navbar-directive>
+<div class="row nav-bar-spacer">
     <div class="column large-10">
         <h2>{{dataset.label}}</h2>
-        <h5>{{dataset.comment}}<span ng-if="studiesWithDetail.length">, {{studiesWithDetail.length}} studies</span></h5>
+        <h5>{{dataset.comment}}<span
+                ng-if="studiesWithDetail.length">, {{studiesWithDetail.length}} studies</span></h5>
     </div>
     <div class="column large-2">
         <button class="button small secondary right" ng-click="showTableOptions()">
@@ -16,11 +18,11 @@
             <thead>
             <tr>
                 <th class="sortable"
-                    ng-click="tableOptions.orderByField = 'name'; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
+                    ng-click="tableOptions.orderByField = 'label'; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
                     Name
-                    <i ng-show="tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'name'"
+                    <i ng-show="tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'"
                        class="fa fa-caret-up"></i>
-                    <i ng-show="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'name'"
+                    <i ng-show="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'"
                        class="fa fa-caret-down"></i>
                 </th>
                 <th class="sortable" ng-show="column.visible" ng-repeat="column in tableOptions.columns"
@@ -34,17 +36,19 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-if="!studiesWithDetail.length"><td colspan="20">No studies in dataset</td></tr>
+            <tr ng-if="!studiesWithDetail.length">
+                <td colspan="20">No studies in dataset</td>
+            </tr>
             <tr ng-repeat="studyWithDetails in studiesWithDetail | orderBy:tableOptions.orderByField:tableOptions.reverseSortOrder ">
-                <td><a ui-sref="study({namespaceUid: namespace.uid, studyUid: studyWithDetails.studyUid})">{{studyWithDetails.label}}</a>
+                <td><a ui-sref="study({datasetUUID: dataset.uuid, studyUUID: studyWithDetails.uuid})">{{studyWithDetails.label}}</a>
                 </td>
                 <td ng-show="column.visible" ng-repeat="column in tableOptions.columns">
-                  <span ng-show="!column.type">{{studyWithDetails[column.id]}}</span>
+                    <span ng-show="!column.type">{{studyWithDetails[column.id]}}</span>
 
-                  <span ng-show="column.type === 'removePreamble'">{{studyWithDetails[column.id] | stripFrontFilter : column.frontStr}}</span>
-                  <span ng-show="column.type === 'dosing'">{{studyWithDetails[column.id] | dosingFilter}}</span>
+                    <span ng-show="column.type === 'removePreamble'">{{studyWithDetails[column.id] | stripFrontFilter : column.frontStr}}</span>
+                    <span ng-show="column.type === 'dosing'">{{studyWithDetails[column.id] | dosingFilter}}</span>
                   <span ng-show="column.type === 'urlList'"
-                      ng-repeat="uri in studyWithDetails.publications | splitOnTokenFilter">
+                        ng-repeat="uri in studyWithDetails.publications | splitOnTokenFilter">
                     <a target="_blank" ng-href={{uri}}>{{uri}}</a>
                     <span ng-show=!$last>, </span>
                   </span>
@@ -54,7 +58,7 @@
         </table>
     </div>
 </div>
-<div ng-show="!studiesWithDetail.$resolved" class="row">
+<div ng-show="!studiesWithDetail" class="row">
     <div class="column center large-12">
         <i class="fa fa-spinner fa-spin fa-3x"></i>
 

@@ -62,14 +62,9 @@ public class TrialverseIOUtilsServiceTest {
     when(model.getGraph()).thenReturn(graph);
     trialverseIOUtilsService.writeModelToServletResponse(model, httpServletResponse);
 
-    String expexted = "{\n" +
-            "  \"@id\" : \"http://test.com/asd\",\n" +
-            "  \"something\" : \"c\",\n" +
-            "  \"@context\" : {\n" +
-            "    \"something\" : \"http://something\"\n" +
-            "  }\n" +
-            "}\n";
+    String expected = "<http://test.com/asd>\n" +
+            "        <http://something>  \"c\" .";
 
-    assertEquals(expexted, httpServletResponse.getContentAsString());
+    assertEquals(expected.trim(), httpServletResponse.getContentAsString().trim());
   }
 }

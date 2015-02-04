@@ -2,119 +2,109 @@
 define(['angular', 'angular-mocks'], function() {
   describe('dataset service', function() {
 
-    var mockDatasetResource,
-      mockRdfstoreService,
-      mockStore,
-      mockDatasets = [{
-        datasetUri: {
-          value: 'a/uid1'
-        }
-      }, {
-        datasetUri: {
-          value: 'a/uid2'
-        }
-      }];
+    var remoteRdfStoreService,
+      loadDatasetStoreDefer,
+      createDefer,
+      executeQueryDefer,
+      queryResult = 'queryResult',
+      scratchUri = 'graphURI';
 
-    beforeEach(module('trialverse.dataset'));
+    var newStore = {
+      load: function(arg1, arg2, callback) {
+        callback(true, 'resultString');
+      },
+      execute: function(queryArg, callbackArg) {
+        callbackArg(true, queryResult);
+      }
+    };
 
-    beforeEach(function() {
-      mockDatasetResource = jasmine.createSpyObj('DatasetResource', ['query']);
-      mockRdfstoreService = jasmine.createSpyObj('RdfstoreService', ['load', 'execute']);
+    beforeEach(module('trialverse.dataset', function($provide) {
+      remoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', [
+        'create', 'load', 'executeUpdate', 'executeQuery', 'getGraph'
+      ]);
+      $provide.value('RemoteRdfStoreService', remoteRdfStoreService);
+    }));
 
-      module('trialverse', function($provide) {
-        $provide.value('DatasetResource', mockDatasetResource);
-        $provide.value('RdfstoreService', mockRdfstoreService);
-      });
-    });
 
-    describe('getDatasets', function() {
-      var resourceDeferred, storeDeferred, datasetsDeferred, result;
+    describe('loadStore', function() {
+
+      var datasetService;
 
       beforeEach(inject(function($q, DatasetService) {
-        resourceDeferred = $q.defer();
-        var resourceResult = {
-          $promise: resourceDeferred.promise
-        };
-        storeDeferred = $q.defer();
-        datasetsDeferred = $q.defer();
-        mockDatasetResource.query.and.returnValue(resourceResult);
-        mockRdfstoreService.load.and.returnValue(storeDeferred);
-        mockRdfstoreService.execute.and.returnValue(datasetsDeferred);
-        result = DatasetService.getDatasets();
+        datasetService = DatasetService;
+        createDefer = $q.defer();
+        loadDatasetStoreDefer = $q.defer();
+        remoteRdfStoreService.create.and.returnValue(createDefer.promise);
+        remoteRdfStoreService.load.and.returnValue(loadDatasetStoreDefer.promise);
       }));
 
-      it('should query the datasetResource', function() {
-        expect(mockDatasetResource.query).toHaveBeenCalled();
-        expect(result.promise).not.toBe(null);
-      });
+      it('should load data', inject(function($rootScope) {
+        var promise = datasetService.loadStore('any info');
+        createDefer.resolve('graphURI');
+        loadDatasetStoreDefer.resolve();
+        $rootScope.$digest();
+        expect(promise.$$state.status).toBe(1);
+      }));
 
-      describe('when all promises are resolved', function() {
+      describe('queryDatasetsOverview', function() {
 
-        it('should resolve to a list of datasets', inject(function($rootScope) {
-          resourceDeferred.resolve(resourceDeferred);
-          storeDeferred.resolve(mockStore);
-          datasetsDeferred.resolve(mockDatasets);
+        beforeEach(inject(function($q) {
+          datasetService.loadStore('any info');
+          executeQueryDefer = $q.defer();
+          remoteRdfStoreService.executeQuery.and.returnValue(executeQueryDefer.promise);
+        }));
 
-          var resolvedResult;
-          result.promise.then(function(result) {
-            resolvedResult = result;
-          });
-
+        it('should show a list of datasets', inject(function($rootScope) {
+          var expectedResult = 'list of dataset';
+          var promise = datasetService.queryDatasetsOverview();
+          executeQueryDefer.resolve(expectedResult);
+          loadDatasetStoreDefer.resolve();
+          createDefer.resolve('graphURI');
           $rootScope.$digest();
 
-          expect(resolvedResult.length).toBe(2);
-          expect(resolvedResult[0].uuid).toBe('uid1');
-          expect(resolvedResult).not.toBe(undefined);
-        }));
+          expect(promise.$$state.status).toBe(1);
+          expect(promise.$$state.value).toBe('list of dataset');
 
-      });
-
-    });
-
-    describe('addStudyToDatasetGraph', function() {
-
-      describe('when the graph does not contain any studies', function() {
-
-        it('should add context, and a single contains_study', inject(function(DatasetService) {
-          var emptyDatsetGraph = {
-            '@context' : {}
-          };
-          var newUUID = 'newuuid';
-          var result = DatasetService.addStudyToDatasetGraph(newUUID, emptyDatsetGraph);
-          expect(result['@context'].contains_study).toBeDefined();
-          expect(result.contains_study).toEqual('study:' + newUUID);
         }));
       });
 
+      describe('queryDataset', function() {
 
-      describe('when the graph contains precisely one study', function() {
-
-        it('should convert contains_study to an array and add the new study', inject(function(DatasetService) {
-          var emptyDatsetGraph = {
-            '@context' : {},
-            contains_study : 'pre-existing-uuid'
-          };
-          var newUUID = 'newuuid';
-          var result = DatasetService.addStudyToDatasetGraph(newUUID, emptyDatsetGraph);
-          expect(result['@context'].contains_study).toBeDefined();
-          expect(result.contains_study).toEqual(['study:' + newUUID, 'pre-existing-uuid']);
+        beforeEach(inject(function($q) {
+          datasetService.loadStore('any info');
+          executeQueryDefer = $q.defer();
+          remoteRdfStoreService.executeQuery.and.returnValue(executeQueryDefer.promise);
         }));
-      });
-      describe('when the graph contains more than one study', function() {
 
-        it('should add the new study', inject(function(DatasetService) {
-          var preExistingUuids  = ['pre-existing-uuid1', 'pre-existing-uuid2'], 
-          emptyDatsetGraph = {
-            '@context' : {},
-            contains_study : preExistingUuids
-          };
-          var newUUID = 'newuuid';
-          var result = DatasetService.addStudyToDatasetGraph(newUUID, emptyDatsetGraph);
-          expect(result['@context'].contains_study).toBeDefined();
-          expect(result.contains_study).toEqual(['study:' + newUUID].concat(preExistingUuids));
+        it('should not fail when a single result is returned', inject(function($rootScope) {
+          var promise = datasetService.queryDataset();
+          executeQueryDefer.resolve('single result');
+          loadDatasetStoreDefer.resolve();
+          createDefer.resolve('graphURI');
+          $rootScope.$digest();
+          expect(promise.$$state.value).toBe('single result');
         }));
       });
 
+      describe('executeUpdate', function() {
+        var executeUpdateDefer;
+
+        beforeEach(inject(function($q) {
+          datasetService.loadStore('any info');
+          executeUpdateDefer = $q.defer();
+          remoteRdfStoreService.executeUpdate.and.returnValue(executeUpdateDefer.promise);
+        }));
+
+        it('should execute the update', inject(function($rootScope) {
+          var promise = datasetService.addStudyToDatasetGraph('datasetUUID', 'studyUUID');
+          executeUpdateDefer.resolve(200);
+          loadDatasetStoreDefer.resolve();
+          createDefer.resolve('graphURI');
+          $rootScope.$digest();
+          expect(promise.$$state.value).toBe(200);
+          expect(remoteRdfStoreService.executeUpdate).toHaveBeenCalled();
+        }));
+      });
     });
 
   });

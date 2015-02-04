@@ -6,13 +6,14 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DC;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.jena.atlas.web.HttpException;
+import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 
 /**
@@ -57,21 +59,6 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     return "";
   }
 
-  private HttpResponse doRequest(String datasetContent, HttpEntityEnclosingRequestBase request) {
-    HttpClient client = httpClientFactory.build();
-    HttpResponse response = null;
-    try {
-      StringEntity entity = new StringEntity(datasetContent, "UTF-8");
-      entity.setContentType("application/ld+json");
-      request.setEntity(entity);
-      request.setHeader("Accept", "application/ld+json");
-      response = client.execute(request);
-    } catch (IOException e) {
-      logger.error(e.toString());
-    }
-    return response;
-  }
-
   private Model createDatasetModel(String datasetIdentifier, Account owner, String title, String description) {
     Model model = jenaFactory.createModel();
     model.setNsPrefix("ontology", "http://trials.drugis.org/ontology#");
@@ -97,15 +84,27 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
       dataSetAccessor.putModel(datasetIdentifier, model);
     } catch (HttpException e) {
       logger.error("Unable to create dataset, responceCode from jena: " + e.getResponseCode());
-      // todo thow new blocking exception to signal the front-end something has gone very wrong
+      throw e;
     }
     return datasetIdentifier;
   }
 
   @Override
-  public HttpResponse updateDataset(String datasetUUID, String datasetContent) {
+  public HttpResponse updateDataset(String datasetUUID, InputStream datasetContent) {
     HttpPost request = new HttpPost(createDatasetGraphUri(datasetUUID));
-    HttpResponse response = doRequest(datasetContent, request);
+    HttpClient client = httpClientFactory.build();
+    HttpResponse response = null;
+    try {
+      InputStreamEntity entity = new InputStreamEntity(datasetContent);
+      entity.setContentType(RDFLanguages.TURTLE.getContentType().getContentType());
+      request.setEntity(entity);
+      response = client.execute(request);
+      datasetContent.close();
+    } catch (IOException e) {
+      logger.error(e.toString());
+    } finally {
+      IOUtils.closeQuietly(datasetContent);
+    }
     return response;
   }
 

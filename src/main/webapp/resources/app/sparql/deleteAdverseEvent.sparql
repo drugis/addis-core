@@ -1,0 +1,7 @@
+WITH <$graphUri>
+DELETE {
+  <$URI> ?p ?o .
+}
+WHERE {
+  <$URI> ?p ?o .
+};

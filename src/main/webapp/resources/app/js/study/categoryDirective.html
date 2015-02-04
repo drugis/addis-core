@@ -1,0 +1,18 @@
+<div id="{{settings.anchorId}}" class="study-item">
+    <h3>{{settings.header}}<a> <i class="fa fa-info-circle fa-fw"></i></a></h3>
+
+    <div ng-if="items.length === 0">
+        <p class="panel">{{settings.categoryEmptyMessage}}</p>
+    </div>
+    <div ng-if="items">
+        <div class="panel clearfix" ng-repeat="item in items | orderBy:'pos'">
+
+            <category-item-directive itemIndex="{{$index}}" item="item" reload-items="reloadItems"
+             settings="settings"></category-item-directive>
+        </div>
+    </div>
+
+    <a ng-click="addItem()" class="button success"><i class="fa fa-plus"></i> Add {{settings.itemName}}</a>
+
+</div>
+

@@ -1,10 +1,12 @@
 package org.drugis.trialverse.dataset.controller;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
+import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
@@ -28,6 +30,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 import java.security.Principal;
 
 import static org.hamcrest.Matchers.is;
@@ -95,7 +98,7 @@ public class DatasetControllerTest {
   }
 
   @Test
-  public void testCreateProject() throws Exception {
+  public void testCreateDataset() throws Exception {
     String newDatasetUid = "http://some.thing.like/this/asd123";
     DatasetCommand datasetCommand = new DatasetCommand("dataset title");
     String jsonContent = TestUtils.createJson(datasetCommand);
@@ -122,7 +125,7 @@ public class DatasetControllerTest {
 
     mockMvc.perform(get("/datasets").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType("application/ld+json"));
+            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
     verify(accountRepository).findAccountByUsername(user.getName());
     verify(datasetReadRepository).queryDatasets(john);
@@ -153,7 +156,7 @@ public class DatasetControllerTest {
 
     mockMvc.perform((get("/datasets/" + uuid)).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType("application/ld+json"));
+            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
     verify(datasetReadRepository).getDataset(uuid);
     verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
@@ -162,11 +165,12 @@ public class DatasetControllerTest {
   @Test
   public void testUpdateDatasetAndCheckIfStatusIsPassedOn() throws Exception {
     String datasetContent = "content";
+    InputStream contentStream = IOUtils.toInputStream(datasetContent);
     String datasetUUID = "uid";
     BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.I_AM_A_TEAPOT.value(), "some good reason");
     HttpResponse httpResponse = new BasicHttpResponse(statusLine);
     when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(true);
-    when(datasetWriteRepository.updateDataset(datasetUUID, datasetContent)).thenReturn(httpResponse);
+    when(datasetWriteRepository.updateDataset(anyString(), Matchers.any(InputStream.class))).thenReturn(httpResponse);
 
     mockMvc.perform(post("/datasets/" + datasetUUID)
             .principal(user)
@@ -175,7 +179,8 @@ public class DatasetControllerTest {
     ;
 
     verify(datasetReadRepository).isOwner(datasetUUID, user);
-    verify(datasetWriteRepository).updateDataset(datasetUUID, datasetContent);
+    verify(datasetWriteRepository).updateDataset(anyString(), Matchers.any(InputStream.class));
+    contentStream.close();
   }
 
   @Test

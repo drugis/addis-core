@@ -1,4 +1,5 @@
-<div class="row" style="margin-top: 1rem;">
+<navbar-directive></navbar-directive>
+<div class="row nav-bar-spacer">
     <div class="columns large-4">
         <h1>Your datasets</h1>
     </div>
@@ -7,13 +8,23 @@
     </div>
 </div>
 
-<div class="row">
+<div ng-show="!datasetsLoaded" class="row">
+    <div class="column center large-12">
+        <i class="fa fa-spinner fa-spin fa-3x"></i>
+
+        <p>Loading datasets...
+
+        <p>
+    </div>
+</div>
+
+<div class="row" ng-show="datasetsLoaded">
     <div class="columns large-12">
         <ul>
             <li ng-cloak class="ng-cloak" ng-show="!datasets.length">No Datasets have been created yet</li>
             <li ng-repeat="dataset in datasets">
-                <a ui-sref="dataset({datasetUUID: dataset.uuid})">{{dataset.title.value}} <span
-                        ng-if="dataset.description.value"> - {{dataset.description.value}}</span></a>
+                <a ui-sref="dataset({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">{{dataset.label}} <span
+                        ng-if="dataset.comment"> - {{dataset.comment}}</span></a>
             </li>
         </ul>
     </div>

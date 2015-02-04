@@ -1,18 +1,23 @@
 package org.drugis.trialverse.study.controller;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
+import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.study.repository.StudyReadRepository;
 import org.drugis.trialverse.study.repository.StudyWriteRepository;
-import org.drugis.trialverse.study.service.StudyService;
 import org.drugis.trialverse.testutils.TestUtils;
+import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -23,12 +28,15 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 import java.security.Principal;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Configuration
@@ -44,10 +52,13 @@ public class StudyControllerTest {
   private StudyWriteRepository studyWriteRepository;
 
   @Mock
+  private StudyReadRepository studyReadRepository;
+
+  @Mock
   private DatasetReadRepository datasetReadRepository;
 
   @Mock
-  private StudyService studyService;
+  private TrialverseIOUtilsService trialverseIOUtilsService;
 
   @InjectMocks
   private StudyController studyController;
@@ -57,9 +68,9 @@ public class StudyControllerTest {
 
   @Before
   public void setUp() throws Exception {
+    studyReadRepository = mock(StudyReadRepository.class);
     studyWriteRepository = mock(StudyWriteRepository.class);
     datasetReadRepository = mock(DatasetReadRepository.class);
-    studyService = mock(StudyService.class);
     studyController = new StudyController();
 
     initMocks(this);
@@ -74,24 +85,19 @@ public class StudyControllerTest {
   }
 
   @Test
-  public void testCreateStudy() throws Exception {
-    String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
+  public void testGetStudy() throws Exception {
     String datasetUUID = "datasetUUID";
     String studyUUID = "studyUUID";
+    Model studyModel = mock(Model.class);
+    when(studyReadRepository.getStudy(studyUUID)).thenReturn(studyModel);
 
-    BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.CREATED.value(), "some good reason");
-    HttpResponse httpResponse = new BasicHttpResponse(statusLine);
-    when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(true);
-    when(studyService.createStudy(datasetUUID, studyUUID, jsonContent)).thenReturn(httpResponse);
 
-    mockMvc.perform(
-            put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
-                    .content(jsonContent)
-                    .principal(user))
-            .andExpect(status().isCreated());
+    mockMvc.perform(get("/datasets/" + datasetUUID + "/studies/" + studyUUID).principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
-    verify(datasetReadRepository).isOwner(datasetUUID, user);
-    verify(studyService).createStudy(datasetUUID, studyUUID, jsonContent);
+    verify(studyReadRepository).getStudy(studyUUID);
+    verify(trialverseIOUtilsService).writeModelToServletResponse(any(Model.class), any(HttpServletResponse.class));
   }
 
   @Test
@@ -112,23 +118,24 @@ public class StudyControllerTest {
 
   @Test
   public void testUpdateStudy() throws Exception {
-    String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
+    String updateContent = "updateContent";
+    InputStream contentStream = IOUtils.toInputStream(updateContent);
     MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
     String datasetUUID = "datasetUUID";
     String studyUUID = "studyUUID";
     BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
     HttpResponse httpResponse = new BasicHttpResponse(statusLine);
     when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(true);
-    when(studyWriteRepository.updateStudy(studyUUID, jsonContent)).thenReturn(httpResponse);
+    when(studyWriteRepository.updateStudy(anyString(), Matchers.any(InputStream.class))).thenReturn(httpResponse);
 
     mockMvc.perform(
-            post("/datasets/" + datasetUUID + "/studies/" + studyUUID)
-                    .content(jsonContent)
+            put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
+                    .content(updateContent)
                     .principal(user))
             .andExpect(status().isOk());
 
     verify(datasetReadRepository).isOwner(datasetUUID, user);
-    verify(studyWriteRepository).updateStudy(studyUUID, jsonContent);
+    verify(studyWriteRepository).updateStudy(anyString(), Matchers.any(InputStream.class));
   }
 
   @Test
@@ -139,7 +146,7 @@ public class StudyControllerTest {
     when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(false);
 
     mockMvc.perform(
-            post("/datasets/" + datasetUUID + "/studies/" + studyUUID)
+            put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
                     .content(jsonContent)
                     .principal(user)).andExpect(status().isForbidden());
 

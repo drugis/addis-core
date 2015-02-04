@@ -1,0 +1,12 @@
+<div>
+    <div class="large-offset-3 large-3 medium-6 columns">
+        <label>Amount</label>
+        <input type="number" name="input" ng-model="durationScratch.numberOfPeriods" min="0" ng-change="durationString = generateDurationString(durationScratch)">
+    </div>
+    <div class="large-4 medium-6 end columns">
+        <label>Unit</label>
+        <select ng-model="durationScratch.periodType" placeholder="select unit"
+                ng-options="periodTypeOption.label for periodTypeOption in periodTypeOptions track by periodTypeOption.code"
+                ng-change="durationString = generateDurationString(durationScratch)"></select>
+    </div>
+</div>
