@@ -68,7 +68,7 @@
   <section class="content">
     <div class="row">
       <div class="columns">
-        <p><a href="#">trialverse.drugis.org</a> is designed do stuff</p>
+        <p><a href="#">trialverse.drugis.org</a> is a place to enter and share clinical trials data</p>
         <form id="SignInForm" action="auth/google" method="GET">
         <input type="hidden" name="scope" value="profile email" />
           <div>
