@@ -50,7 +50,8 @@ define([],
       if (actionType === 'Add') {
         $scope.hasOffset = 'false';
         $scope.itemScratch = {
-          offset: 'PT0S'
+          offset: 'PT0S',
+          relativeToAnchor: 'http://trials.drugis.org/ontology#anchorEpochStart'
         };
 
         $scope.commit = $scope.addItem;
