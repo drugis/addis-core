@@ -23,7 +23,7 @@ define([],
         populationCharacteristics: {
           service: 'PopulationCharacteristicService',
           anchorId: 'populationCharacteristics',
-          header: 'Population Characteristics',
+          header: 'Population characteristics',
           addItemController: 'CreatePopulationCharacteristicController',
           categoryEmptyMessage: 'No population characteristics defined.',
           itemName: 'population characteristic',
