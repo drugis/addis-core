@@ -19,5 +19,5 @@ WHERE {
   <$URI>
    rdfs:label ?label ;
    ontology:measurementType ?measurementType ;
-   ontology:is_measured_at ?measurementMoment .
+  OPTIONAL { <$URI> ontology:is_measured_at ?measurementMoment }.
 }
