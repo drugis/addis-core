@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width" />
 <link rel="shortcut icon" href="<c:url value="/app/img/favicon.ico" />" type="image/x-icon" />
 
-<title>trialverse.drugis.org</title>
+<title>trialverse.org</title>
 <link rel="stylesheet" type="text/css" href="<c:url value="/app/css/trialverse-drugis.css" />">
 
 </head>
@@ -16,7 +16,7 @@
     <ul class="title-area">
       <li class="name">
         <h1>
-          <a href="#">trialverse.drugis.org</a>
+          <a href="#">trialverse.org</a>
         </h1>
       </li>
     </ul>

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width" />
 <link rel="shortcut icon" href="<c:url value="/app/img/favicon.ico" />" type="image/x-icon" />
 
-<title>trialverse.drugis.org</title>
+<title>trialverse.org</title>
 
 <link rel="stylesheet" type="text/css" href="<c:url value="/app/js/bower_components/font-awesome/css/font-awesome.min.css" />">
 
@@ -49,7 +49,7 @@
     <ul class="title-area">
       <li class="name">
         <h1>
-          <a href="#" tabindex="1001">trialverse.drugis.org</a>
+          <a href="#" tabindex="1001">trialverse.org</a>
         </h1>
       </li>
     </ul>
@@ -57,18 +57,20 @@
 
   <section id="hero">
     <div class="row">
-      <div class="large-12 columns">
-        <h1>trialverse.drugis.org <br/>
-          <small>updates the triplestore</small>
-        </h1>
-      </div>
+      <div class="columns large-offset-2 large-8 medium-12">
+        <h1>TrialVerse<small>.org</small></h1>
+        <h4>The portal to extract and share clinical trials data</h4>
+      </h1>
+    </div>
     </div>
   </section>
 
   <section class="content">
     <div class="row">
-      <div class="columns">
-        <p><a href="#">trialverse.drugis.org</a> is a place to enter and share clinical trials data</p>
+      <div class="columns large-offset-2 large-8 medium-12">
+        <p>TrialVerse aims to enable world-wide collaboration on extracting data and meta-data on existing clinical trials, and to eventually reduce the duplication of effort inherent in the current systematic review and evidence-based decision making processes.
+	It is part of <a href="https://drugis.org/software/addis2/">ADDIS 2</a>, a <a href="https://drugis.org/">drugis.org</a> project,
+	and is currently in early development.</p>
         <form id="SignInForm" action="auth/google" method="GET">
         <input type="hidden" name="scope" value="profile email" />
           <div>
@@ -76,7 +78,7 @@
           </div>
         </form>
 
-        <p>Right now, you need a Google account to sign in. The information we retrieve from Google is only used to ensure that you continue to have access to the projects you create.</p>
+        <p>You need a Google account to sign in. The information we retrieve from Google is only used to ensure that you continue to have access to the projects you create.</p>
 
         <form id="hiddenSignInForm" action="<c:url value='/signin/authenticate'/>" tabindex="1000" method="POST" style="display: none;">
           <input type="hidden" name="_csrf" value="<c:out value="${_csrf.token}" />" />
