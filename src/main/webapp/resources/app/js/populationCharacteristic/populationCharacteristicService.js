@@ -13,7 +13,7 @@ define([],
 
       var queryAdverseEventMeasuredAtRaw = SparqlResource.get('queryMeasuredAt.sparql');
 
-      function queryItems() {
+      function queryItems(studyUuid) {
         var items, measuredAtMoments, measurementMoments;
 
         var queryItemsPromise = populationCharacteristicsQuery.then(function(query) {
@@ -28,7 +28,7 @@ define([],
           });
         });
 
-        var measurementMomentsPromise = MeasurementMomentService.queryItems().then(function(result){
+        var measurementMomentsPromise = MeasurementMomentService.queryItems(studyUuid).then(function(result){
           measurementMoments = result;
         });
 

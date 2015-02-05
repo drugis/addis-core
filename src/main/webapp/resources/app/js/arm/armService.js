@@ -12,7 +12,7 @@ define([],
       var rawDeleteArmQuery = SparqlResource.get('deleteArm.sparql');
       var rawDeleteHasArmQuery = SparqlResource.get('deleteHasArm.sparql');
 
-      function queryItems(studyURI) {
+      function queryItems(studyUuid) {
         return armsQuery.then(function(query) {
           return StudyService.doNonModifyingQuery(query);
         });

@@ -12,7 +12,7 @@ define([],
       var editAdverseEventRaw = SparqlResource.get('editAdverseEvent.sparql');
       var queryAdverseEventMeasuredAtRaw = SparqlResource.get('queryMeasuredAt.sparql');
 
-      function queryItems() {
+      function queryItems(studyUuid) {
         var adverseEvents, measuredAtMoments, measurementMoments;
 
         var adverseEventsQueryPromise = adverseEventsQuery.then(function(query) {
@@ -27,7 +27,7 @@ define([],
           });
         });
 
-        var measurementMomentsPromise = MeasurementMomentService.queryItems().then(function(result){
+        var measurementMomentsPromise = MeasurementMomentService.queryItems(studyUuid).then(function(result){
           measurementMoments = result;
         });
 
