@@ -19,7 +19,7 @@ define([],
 
       $scope.changeToDuration = function() {
         if($scope.itemScratch.duration === 'PT0S') {
-          $scope.itemScratch.duration = 'PT1H';
+          $scope.itemScratch.duration = 'P1W';
         }
       };
 

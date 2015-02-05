@@ -17,7 +17,7 @@ define([], function() {
           scope.durationScratch = scope.parseDuration(scope.durationString);
         });
         if (typeof scope.durationString !== 'string') {
-          scope.durationString = 'PT1H';
+          scope.durationString = 'P1W';
         }
         scope.durationScratch = scope.parseDuration(scope.durationString);
       }
