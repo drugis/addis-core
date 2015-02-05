@@ -14,16 +14,16 @@
             <li class="divider"></li>
             <li class="heading">Design</li>
             <li><a ng-click="sideNavClick('arms')">Arms</a></li>
-            <li><a ng-click="sideNavClick('populationCharacteristics')">Population Characteristics</a></li>
+            <li><a ng-click="sideNavClick('epochs')">Epochs</a></li>
+            <li><a ng-click="sideNavClick('measurementMoments')">Measurement moments</a></li>
+            <li><a ng-click="sideNavClick('populationCharacteristics')">Population characteristics</a></li>
             <li><a ng-click="sideNavClick('endpoints')">Endpoints</a></li>
             <li><a ng-click="sideNavClick('adverseEvents')">Adverse events</a></li>
-            <li><a ng-click="sideNavClick('epochs')">Epochs</a></li>
-            <li><a ng-click="sideNavClick('measurementMoments')">Measurement Moments</a></li>
             <li class="divider"></li>
             <li class="heading">Results</li>
             <!-- <li>To be filled in</li> -->
             <!-- 
-              <li><a ng-click="sideNavClick('populationCharacteristicsResults')">Population Characteristics</a></li>
+              <li><a ng-click="sideNavClick('populationCharacteristicsResults')">Population characteristics</a></li>
               <li><a ng-click="sideNavClick('endpointsResults')">Endpoints</a></li>
               <li><a ng-click="sideNavClick('adverseEventsResults')">Adverse events</a></li>
             -->        
@@ -31,11 +31,11 @@
     </div>
     <div class="columns large-10 medium-9 nav-bar-spacer">
         <study-category settings="categorySettings['arms']" items="arms"></study-category>
+        <study-category settings="categorySettings['epochs']" items="epochs"></study-category>
+        <study-category settings="categorySettings['measurementMoments']" items="measurementMoments"></study-category>
         <study-category settings="categorySettings['populationCharacteristics']" items="populationCharacteristics"></study-category>
         <study-category settings="categorySettings['endpoints']" items="endpoints"></study-category>
         <study-category settings="categorySettings['adverseEvents']" items="adverseEvents"></study-category>
-        <study-category settings="categorySettings['epochs']" items="epochs"></study-category>
-        <study-category settings="categorySettings['measurementMoments']" items="measurementMoments"></study-category>
         <!--         <h3 style="color: #008CBA;
         font-weight: bold;
         text-align: center;
