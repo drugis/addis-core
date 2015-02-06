@@ -12,7 +12,7 @@ define([],
       var editEndpointRaw = SparqlResource.get('editEndpoint.sparql');
       var queryEndpointMeasuredAtRaw = SparqlResource.get('queryMeasuredAt.sparql');
 
-      function queryItems() {
+      function queryItems(studyUuid) {
         var endpoints, measuredAtMoments, measurementMoments;
 
         var endpointsQueryPromise = endpointQuery.then(function(query) {
@@ -27,7 +27,7 @@ define([],
           });
         });
 
-        var measurementMomentsPromise = MeasurementMomentService.queryItems().then(function(result) {
+        var measurementMomentsPromise = MeasurementMomentService.queryItems(studyUuid).then(function(result) {
           measurementMoments = result;
         });
 

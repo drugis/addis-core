@@ -15,7 +15,7 @@ define([],
       MeasurementMomentService, EpochService, DurationService) {
 
       var epochsPromise = EpochService.queryItems($stateParams.studyUUID).then(function(queryResult) {
-        $scope.epochs = queryResult;
+        $scope.epochs = _.sortBy(queryResult, 'pos');
         $scope.itemScratch.epoch = _.find($scope.epochs, function(epoch) {
           return $scope.itemScratch.epochUri === epoch.uri;
         });
@@ -50,7 +50,8 @@ define([],
       if (actionType === 'Add') {
         $scope.hasOffset = 'false';
         $scope.itemScratch = {
-          offset: 'PT0S'
+          offset: 'PT0S',
+          relativeToAnchor: 'http://trials.drugis.org/ontology#anchorEpochStart'
         };
 
         $scope.commit = $scope.addItem;
