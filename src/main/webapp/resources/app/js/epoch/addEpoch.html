@@ -22,7 +22,7 @@
     <div class="large-12 columns">
       <label>Duration</label>
       <input ng-model="item.durationType" type="radio" name="durationType"
-             value="instantaneous" id="instantaneousOption"><label for="instantaneousOption">instantaneous</label>
+             value="instantaneous" id="instantaneousOption" ng-change="changeToInstantaneous()"><label for="instantaneousOption">instantaneous</label>
       <input ng-model="item.durationType" type="radio" name="durationType"
              value="period" id="periodOption"><label
         for="periodOption">duration</label>
