@@ -1,7 +1,7 @@
-TrialVerse
+Trialverse
 ==========
 
-The TrialVerse repository is currently home to a number of prototyping efforts
+The Trialverse repository is currently home to a number of prototyping efforts
 for the ADDIS 2 project, all relating to how the structured database of
 clinical trials will be set up:
 

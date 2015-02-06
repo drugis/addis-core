@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Introduction 
+title: Introduction
 ---
 
 ### Status ###
@@ -118,10 +118,10 @@ Since the business model has not determined, we focus on concerns that are likel
 
 System development should be efficient, agile, and sustainable.
 
-  - D1 Analyses are often computationally intensive; they should run quickly and the system should scale to support many such computations in parallel if needed 
+  - D1 Analyses are often computationally intensive; they should run quickly and the system should scale to support many such computations in parallel if needed
   - D2 There should be flexibility in choosing the right technologies, platforms, and frameworks to implement specific functionality (e.g. statistical computing using R and user interfaces using HTML + JavaScript)
   - D3 The system should be maintainable and hence divided up in loosely coupled components with well-defined APIs
-  - D4 To ensure our public APIs are functioning in an optimal manner, our own software should use those APIs 
+  - D4 To ensure our public APIs are functioning in an optimal manner, our own software should use those APIs
   - D5 The integrity of data should be closely guarded and all data should have clear provenance and versioning information
 
 #### Research ####
@@ -131,7 +131,7 @@ The system should be an enabler for our own research and contribute to the succe
   - R1 Rapid prototyping of new analyses and user interfaces to support new research questions
   - R2 A large database to do research and meta-research
   - R4 Transparency of implementation (open source)
-  - R5 Publishable (high quality) graphics and tables 
+  - R5 Publishable (high quality) graphics and tables
 
 #### Ecosystem ####
 
@@ -171,37 +171,37 @@ Given that many of the requirements imply loosely coupled and flexibly reusable 
 
   - Web services that implement the different analyses (R1, D1, D2)
   - ADDIS-core, a 'business intelligence' system for drug benefit-risk analysis (V1, D3, L1) (basically a 'workflow engine' in which different ways of going from a database of trials to analyses can be implemented)
-  - TrialVerse, a portal/database where researchers share structured RCT data (V3, D3, D4, E1)
+  - Trialverse, a portal/database where researchers share structured RCT data (V3, D3, D4, E1)
   - TrialMine, a system for literature screening (E2)
   - ConceptMapper, a shared component where definitions (concepts) can be deposited, refined, and mapped (R2, E1, E2, E3)
   - A user management component underlying all systems (V4, D3, E5)
 
 ![ADDIS 2 architecture](architecture.svg)
 
-The user-facing systems have a back-end that exposes an API, and an HTML + JavaScript GUI that calls that API (D2, D4). It is intended that this will enable third parties to create additional 'business intelligence' systems based on TrialVerse (E7). Moreover, the API can be used to build, test, and use automated systems for the extraction of data (E4). While the two user-facing systems have clearly separated concerns, they will be tightly integrated (E5), for example using:
+The user-facing systems have a back-end that exposes an API, and an HTML + JavaScript GUI that calls that API (D2, D4). It is intended that this will enable third parties to create additional 'business intelligence' systems based on Trialverse (E7). Moreover, the API can be used to build, test, and use automated systems for the extraction of data (E4). While the two user-facing systems have clearly separated concerns, they will be tightly integrated (E5), for example using:
 
   - Single sign-on authentication
   - Shared user and organization profiles
   - Consistent visual identity
 
-We also want to support corporate deployments of the ADDIS system (V2). This is possible because TrialVerse exposes a well-defined API. We can then do the following:
+We also want to support corporate deployments of the ADDIS system (V2). This is possible because Trialverse exposes a well-defined API. We can then do the following:
 
-  1. Deploy an internal system exposing company data through the TrialVerse interface (V3)
-  2. Deploy an internal version of ADDIS that has access to both TrialVerse and the internal database
+  1. Deploy an internal system exposing company data through the Trialverse interface (V3)
+  2. Deploy an internal version of ADDIS that has access to both Trialverse and the internal database
 (V2)
   3. (Optional) internal deployment of the analysis web services (V2)
 
-To better support this scenario there should be clearly separated read-only (to be used by ADDIS) and read-write (to be used by the TrialVerse GUI) interfaces for TrialVerse.
+To better support this scenario there should be clearly separated read-only (to be used by ADDIS) and read-write (to be used by the Trialverse GUI) interfaces for Trialverse.
 
 ## Data management ##
 
-In the ADDIS 2 architecture, the responsibility for data management is shared by the TrialVerse and ConceptMapper components:
+In the ADDIS 2 architecture, the responsibility for data management is shared by the Trialverse and ConceptMapper components:
 
- - TrialVerse: where researchers share structured RCT data
+ - Trialverse: where researchers share structured RCT data
  - ConceptMapper: where definitions (concepts) can be deposited, refined, and mapped
 
 We now proceed to design these two components in tandem, to arrive at an optimal solution for RCT data management in ADDIS 2.
-However, in doing so we keep in mind that the ConceptMapper component is expected to collaborate with other components besides TrialVerse, e.g. components dealing with real world data.
+However, in doing so we keep in mind that the ConceptMapper component is expected to collaborate with other components besides Trialverse, e.g. components dealing with real world data.
 
 ### Requirements ###
 
@@ -375,23 +375,23 @@ Future work will aim to align the data model further with the BRIDG model and ot
 Because there are a number of interchange formats for RDF, any data stored in an RDF triple store can easily be transferred to other parties (F6.4).
 RDF can also be nested in XML documents, so could in principle also be used to enhance files in the current ADDIS 1 XML format.
 
-#### TrialVerse and ConceptMapper ####
+#### Trialverse and ConceptMapper ####
 
-TrialVerse and ConceptMapper are closely related components that must work together well for data management in ADDIS 2 to be successful.
+Trialverse and ConceptMapper are closely related components that must work together well for data management in ADDIS 2 to be successful.
 Therefore, most of this document does not make a clear distinction between the two, but rather looks at what both components must be able to achieve when used together.
 As defined in the architecture, the division between the components is as follows:
 
-  - TrialVerse: where researchers share structured RCT data
+  - Trialverse: where researchers share structured RCT data
   - ConceptMapper: where definitions (concepts) can be deposited, refined, and mapped
 
 We can now describe the responsibilities and characteristics of these components in more detail.
 
-##### TrialVerse #####
+##### Trialverse #####
 
-The TrialVerse component is responsible for all data that is specific to a single randomized controlled trial.
+The Trialverse component is responsible for all data that is specific to a single randomized controlled trial.
 Typically these data conform to a relatively well known data model that corresponds closely to the one developed for ADDIS 1.
 The constrained domain for this component allows us to develop a user-friendly data entry interface where expertise in knowledge representation will not be required (F4.1-2).
-TrialVerse will integrate ConceptMapper to provide the "Mappings" feature (F4.5-6), where more fine-grained descriptions of e.g. interventions and outcomes can be provided.
+Trialverse will integrate ConceptMapper to provide the "Mappings" feature (F4.5-6), where more fine-grained descriptions of e.g. interventions and outcomes can be provided.
 
 ##### ConceptMapper #####
 
@@ -400,13 +400,13 @@ It should allow access to existing vocabularies and ontologies (provided that an
 It is responsible for handling the less well defined structures in clinical trials, such as the semantics of interventions and outcomes.
 This is a complex domain, and for users with knowledge representation expertise there will be a low level interface that enables direct access to the underlying representation.
 In addition to this, we will enable less experienced users to define the most common types through predefined templates.
-That this component is separate from TrialVerse is key to our strategy for integrating other sources of data besides RCTs in the future (Section 2).
+That this component is separate from Trialverse is key to our strategy for integrating other sources of data besides RCTs in the future (Section 2).
 
 ConceptMapper is also responsible for providing functionality for the matching of intervention and outcome concepts to the ADDIS 2 analysis components, as well as the user interface components for defining matching rules.
 
 #### Versioning and Provenance ####
 
-It is important to keep an accurate audit trail and a user accessible log of changes made to any record in TrialVerse and ConceptMapper (F2.*).
+It is important to keep an accurate audit trail and a user accessible log of changes made to any record in Trialverse and ConceptMapper (F2.*).
 To this end, we will implement the [event sourcing](http://martinfowler.com/eaaDev/EventSourcing.html) design pattern on top of RDF named graphs.
 In event sourcing, a record of every change made to the database (event) is kept, and the state at any past point in time can be reconstructed from that event log.
 In simple terms, this is achieved as follows:
@@ -420,7 +420,7 @@ This implementation of the event sourcing pattern is also inspired by the [Datom
 
 By implementing the database in this way, all past versions of the data can be reconstructed as needed (F2.2) and provenance information including a full edit history is always accessible (F2.3, F2.4).
 Moreover, because the history of an entry by one user can be referred to from further edits by another user, it becomes trivial to let any user non-destructively edit any entry (F2.5), and it is trivial to detect when this has happened (F2.6).
-The stability of an event sourced database is also important from the perspective of integrating data from multiple deployments of TrialVerse and/or ConceptMapper: once a specific version of a graph is known, it will never change (F6.3).
+The stability of an event sourced database is also important from the perspective of integrating data from multiple deployments of Trialverse and/or ConceptMapper: once a specific version of a graph is known, it will never change (F6.3).
 The recorded provenance information is also a solid basis for assigning credit for contributions (F2.8).
 
 The above assumes the ability to calculate differences between RDF graphs, and to apply those differences to RDF graphs.
@@ -452,17 +452,17 @@ In addition, because OAuth is an open standard, it should also allow straightfor
 
 ### Prototypes ###
 
-To explore the design space for the TrialVerse and ConceptMapper components, several prototypes were constructed.
+To explore the design space for the Trialverse and ConceptMapper components, several prototypes were constructed.
 
 #### Vertical prototype ####
 
-A vertical prototype was constructed as a proof-of-concept of how the ConceptMapper, TrialVerse, and Core components would interact.
+A vertical prototype was constructed as a proof-of-concept of how the ConceptMapper, Trialverse, and Core components would interact.
 It was constructed in short bursts of activity during the design phase of the ADDIS 2 architecture (Jan 2013), during the specification of the IMI GetReal DoW (Apr 2013), and during the run up to the GetReal project (Aug & Sep 2013). It consisted of:
 
- - A relational database schema for RCTs ("TrialVerse")
+ - A relational database schema for RCTs ("Trialverse")
  - An RDF triplestore with semantic meta-data for between-studies information ("ConceptMapper")
- - An importer for .ADDIS files to TrialVerse/ConceptMapper format
- - A throw-away prototype that constructed network meta-analysis by querying TrialVerse/ConceptMapper ("Core")
+ - An importer for .ADDIS files to Trialverse/ConceptMapper format
+ - A throw-away prototype that constructed network meta-analysis by querying Trialverse/ConceptMapper ("Core")
  - A throw-away prototype network meta-analysis component based on the [gemtc](https://github.com/gertvv/gemtc) package for R and [Patavi](https://github.com/joelkuiper/patavi)
 
 In particular, the prototype defined [RESTful](http://en.wikipedia.org/wiki/Representational_state_transfer) web services to expose the RCT data and meta-data.
@@ -497,15 +497,15 @@ It enabled fully transparent SPARQL querying of the store at any point in time, 
 The initial vertical prototype used a relational database for the more well-defined parts of the data model (i.e. those describing the study design and measurements) and a triple store for the more open-ended parts (i.e. higher level concepts).
 However, this generates some tension at the interface between these components.
 In addition, an event sourcing implementation would have to work across this barrier, so would need to be implemented consistently for these two very different technology stacks.
-Therefore, another prototype was constructed to evaluate the possibility of using a triple store for both TrialVerse and ConceptMapper.
+Therefore, another prototype was constructed to evaluate the possibility of using a triple store for both Trialverse and ConceptMapper.
 This consists of a converter from ADDIS datafiles to RDF, and a set of SPARQL queries implementing the key used cases from the ADDIS point of view (i.e. matching studies to concept definitions and constructing datasets).
 This was successful and should allow for a full implementation of the "read-only API" envisaged in the ADDIS 2 architecture.
 
 #### ADDIS 2 R1 - R3 ####
 
-The relational database schema, triplestore, and importer were deemed to be of sufficient quality to serve as the basis of the initial releases of ADDIS 2, pending the further design of the TrialVerse and ConceptMapper components.
+The relational database schema, triplestore, and importer were deemed to be of sufficient quality to serve as the basis of the initial releases of ADDIS 2, pending the further design of the Trialverse and ConceptMapper components.
 Several design decisions of the prototype were also carried over, such as implementing the backend using Java and the Spring framework and the frontend using AngularJS.
-Although the Core component developed during Releases 1-3 is not considered a prototype, the TrialVerse and ConceptMapper components are, and are expected to undergo a full rewrite.
+Although the Core component developed during Releases 1-3 is not considered a prototype, the Trialverse and ConceptMapper components are, and are expected to undergo a full rewrite.
 The first two releases were based on the relational database model, and a transition to the RDF data model was made in Release 3.
 
 ### Mockups ###
@@ -587,19 +587,19 @@ The user has made changes to this extraction (indicated bottom left).
 <a name="mockup012">
 ![Mockup 012](images/mockup012.png)
 
-**Mockup 012** Defining a concept mapping based on a predefined template in TrialVerse.
+**Mockup 012** Defining a concept mapping based on a predefined template in Trialverse.
 </a>
 
 <a name="mockup013">
 ![Mockup 013](images/mockup013.png)
 
-**Mockup 013** A user profile page in TrialVerse.
+**Mockup 013** A user profile page in Trialverse.
 </a>
 
 <a name="mockup014">
 ![Mockup 014](images/mockup014.png)
 
-**Mockup 014** A dataset history overview in TrialVerse (showing only the latest entry).
+**Mockup 014** A dataset history overview in Trialverse (showing only the latest entry).
 </a>
 
 <a name="mockup015">
