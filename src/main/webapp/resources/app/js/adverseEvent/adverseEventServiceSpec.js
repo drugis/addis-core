@@ -11,7 +11,7 @@ define(['angular', 'angular-mocks'], function() {
     var adverseEventService;
     var studyService;
 
-    var addTemplateRaw
+    var addTemplateRaw;
     var addAdverseEventQueryRaw;
     var adverseEventsQuery;
     var deleteAdverseEventRaw;
@@ -22,7 +22,7 @@ define(['angular', 'angular-mocks'], function() {
 
     function queryTeststore(query) {
       var xmlHTTP = new XMLHttpRequest();
-      xmlHTTP.open("POST", scratchStudyUri + '/query?output=json', false);
+      xmlHTTP.open('POST', scratchStudyUri + '/query?output=json', false);
       xmlHTTP.setRequestHeader('Content-type', 'application/sparql-query');
       xmlHTTP.setRequestHeader('Accept', 'application/ld+json');
       xmlHTTP.send(query);
@@ -33,7 +33,7 @@ define(['angular', 'angular-mocks'], function() {
 
     function dropGraph(uri) {
       var xmlHTTP = new XMLHttpRequest();
-      xmlHTTP.open("POST", scratchStudyUri + '/update', false);
+      xmlHTTP.open('POST', scratchStudyUri + '/update', false);
       xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');
       xmlHTTP.send('DROP GRAPH <' + uri + '>');
       return true;
@@ -60,7 +60,7 @@ define(['angular', 'angular-mocks'], function() {
 
     function executeUpdateQuery(query) {
       var xmlHTTP = new XMLHttpRequest();
-      xmlHTTP.open("POST", scratchStudyUri + '/update', false);
+      xmlHTTP.open('POST', scratchStudyUri + '/update', false);
       xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');
       xmlHTTP.send(query);
       return xmlHTTP.responseText;
@@ -84,7 +84,6 @@ define(['angular', 'angular-mocks'], function() {
 
     beforeEach(function() {
       module('trialverse', function($provide) {
-
         measurementMomentServiceMock = jasmine.createSpyObj('MeasurementMomentService', [
           'queryItems',
           'addItem',
@@ -93,7 +92,6 @@ define(['angular', 'angular-mocks'], function() {
           'generateLabel'
         ]);
         $provide.value('MeasurementMomentService', measurementMomentServiceMock);
-
       });
     });
 
@@ -125,7 +123,7 @@ define(['angular', 'angular-mocks'], function() {
       var loadStorePromise = loadStoreDeferred.promise;
       remotestoreServiceStub.load.and.returnValue(loadStorePromise);
 
-      var loadStorePromise = studyService.loadStore();
+      studyService.loadStore();
       createStoreDeferred.resolve(scratchStudyUri);
       loadStoreDeferred.resolve();
       rootScope.$digest();
