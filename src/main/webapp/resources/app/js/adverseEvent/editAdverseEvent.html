@@ -4,6 +4,7 @@
       <h3>Edit adverse event</h3>
     </div>
   </div>
+  
   <div class="row">
     <div class="large-9 columns">
       <label>Name
@@ -11,6 +12,7 @@
       </label>
     </div>
   </div>
+
   <div class="row">
     <div class="large-6 columns">
       <label>Measurement type</label>
@@ -21,6 +23,13 @@
         for="continuousOption">continuous</label>
     </div>
   </div>
+
+  <div class="row">
+    <div class="large-9 columns">
+      <subset-select target="item.measuredAtMoments" source="measurementMoments"></subset-select>
+    </div>
+  </div>
+
   <div class="row">
     <div class="large-9 columns">
       <button class="success" type="submit" ng-disabled="!item.label || !item.measurementType">Edit

@@ -5,7 +5,7 @@
         <p class="panel">{{settings.categoryEmptyMessage}}</p>
     </div>
     <div ng-if="items">
-        <div class="panel clearfix" ng-repeat="item in items | orderBy:'pos.value'">
+        <div class="panel clearfix" ng-repeat="item in items | orderBy:'pos'">
 
             <category-item-directive itemIndex="{{$index}}" item="item" reload-items="reloadItems"
              settings="settings"></category-item-directive>

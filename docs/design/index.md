@@ -5,10 +5,9 @@ title: Introduction
 
 ### Status ###
 
-This is a DRAFT of the data management design document for the ADDIS 2 project.
+This is version 1.0 of the data management design document for the ADDIS 2 project, and is unchanged from the version circulated for review by GetReal WP4 members on 2014-09-26.
 It covers the design of the data management components of ADDIS 2, and is NOT a complete design of the ADDIS 2 system.
 
-This draft is intended to lead to an initial specification to be delivered September 2014.
 This initial specification will be revised based on stakeholder feedback, and expanded to include a number of topics that are considered out of scope for the initial specification (e.g. where further input from partners is needed first).
 
 ### Context ###

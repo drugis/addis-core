@@ -26,7 +26,7 @@ define([],
           templateUrl: 'app/js/dataset/createDataset.html',
           controller: 'CreateDatasetController',
           resolve: {
-            successCallback: function() {
+            callback: function() {
               return loadDatasets;
             }
           }

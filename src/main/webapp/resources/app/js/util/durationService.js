@@ -68,11 +68,32 @@ define([], function() {
       return firstChar === 'P' && optionFound && isPositiveInteger(rest);
     }
 
+    function durationStringToMills(durationString) {
+      if(!isValidDuration(durationString)) {
+        throw "not a valid duration string";
+      }
+      if (durationString === 'PT0S') {
+        return 0;
+      }
+      var durationObject = parseDuration(durationString);
+      var periodTypeCode = durationObject.periodType.code;
+      var numberOfPeriods = durationObject.numberOfPeriods;
+
+      if(periodTypeCode === 'H') {
+        return numberOfPeriods * 3600000;
+      } else if(periodTypeCode === 'D') {
+        return numberOfPeriods * 86400000;
+      } else if(periodTypeCode === 'W') {
+        return numberOfPeriods * 604800000;
+      }
+    }
+
     return {
       getPeriodTypeOptions: getPeriodTypeOptions,
       parseDuration: parseDuration,
       generateDurationString: generateDurationString,
-      isValidDuration: isValidDuration
+      isValidDuration: isValidDuration,
+      durationStringToMills: durationStringToMills
     };
   };
 

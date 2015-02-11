@@ -1,7 +1,7 @@
 <form novalidate ng-submit="editItem()">
   <div class="row">
     <div class="large-9 columns">
-      <h3>Edit Endpoint</h3>
+      <h3>Edit endpoint</h3>
     </div>
   </div>
   <div class="row">
@@ -21,6 +21,13 @@
         for="continuousOption">continuous</label>
     </div>
   </div>
+
+  <div class="row">
+    <div class="large-9 columns">
+      <subset-select target="item.measuredAtMoments" source="measurementMoments"></subset-select>
+    </div>
+  </div>
+
   <div class="row">
     <div class="large-9 columns">
       <button class="success" type="submit" ng-disabled="!item.label || !item.measurementType">Edit

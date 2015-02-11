@@ -1,14 +1,14 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX ontology: <http://trials.drugis.org/ontology#>
-PREFIX study: <http://trials.drugis.org/studies>
+PREFIX study: <http://trials.drugis.org/studies/>
 
 ## update is-primary
 WITH <$graphUri>
 DELETE {
-  study:$studyUuid  ontology:has_primary_epoch ?oldEpoch 
+  study:$studyUuid  ontology:has_primary_epoch ?oldEpoch .
 }
 INSERT {
-  study:$studyUuid ontology:has_primary_epoch <$URI> 
+  study:$studyUuid ontology:has_primary_epoch <$URI> .
 }
 WHERE {
   OPTIONAL { study:$studyUuid  ontology:has_primary_epoch ?oldEpoch } .

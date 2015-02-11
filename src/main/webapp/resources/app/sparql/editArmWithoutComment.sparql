@@ -11,5 +11,5 @@ INSERT {
 }
 WHERE {
   <$armURI> rdfs:label ?label .
-  <$armURI> rdfs:comment ?comment .
+  OPTIONAL { <$armURI> rdfs:comment ?comment . }
 }

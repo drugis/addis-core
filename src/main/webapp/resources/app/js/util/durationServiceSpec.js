@@ -121,5 +121,20 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
+    describe('durationStringToMills', function() {
+      it('should transform PT0S to 0', function(){
+        expect(durationService.durationStringToMills('PT0S')).toBe(0);
+      });
+      it('should transform a 3 hours to 10 800 000', function(){
+        expect(durationService.durationStringToMills('PT3H')).toBe(10800000);
+      });
+      it('should transform a 30 days to 2 592 000 000', function(){
+        expect(durationService.durationStringToMills('P30D')).toBe(2592000000);
+      });
+      it('should transform a 300 weeks to 181440000000', function(){
+        expect(durationService.durationStringToMills('P300W')).toBe(181440000000);
+      });
+    });
+
   });
 });

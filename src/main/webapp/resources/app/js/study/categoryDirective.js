@@ -27,8 +27,11 @@ define([], function() {
             scope: scope,
             controller: scope.settings.addItemController,
             resolve: {
-              successCallback: function() {
+              callback: function() {
                 return scope.reloadItems;
+              },
+              actionType: function() {
+                return 'Add';
               }
             }
           });

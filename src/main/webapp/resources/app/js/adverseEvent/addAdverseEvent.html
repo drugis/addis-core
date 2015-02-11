@@ -23,6 +23,11 @@
   </div>
   <div class="row">
     <div class="large-9 columns">
+      <subset-select target="item.measuredAtMoments" source="measurementMoments"></subset-select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
       <button class="success" type="submit" ng-disabled="!item.label || !item.measurementType">Add</button>
     </div>
   </div>
