@@ -1,5 +1,7 @@
 // Karma configuration
 // Generated on Sun Jan 12 2014 11:41:44 GMT+0100 (CET)
+var scratchUrl = process.env.TRIALVERSE_SCRATCH_URL;
+console.log('scratchUrl for test use = ' + scratchUrl);
 
 module.exports = function(config) {
   config.set({
@@ -97,7 +99,7 @@ module.exports = function(config) {
     singleRun: false,
 
     proxies: {
-      '/scratch': 'http://localhost:3031/ds'
+      '/scratch': scratchUrl + '/ds'
     }
   });
 };
