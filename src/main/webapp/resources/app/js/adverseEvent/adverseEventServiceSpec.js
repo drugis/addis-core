@@ -2,6 +2,9 @@
 define(['angular', 'angular-mocks'], function() {
   describe('the adverse event service', function() {
 
+    var graphUri = 'http://karma-test/';
+    var scratchStudyUri = 'http://localhost:9876/scratch';
+
     var rootScope, q, httpBackend;
     var remotestoreServiceStub;
     var measurementMomentServiceMock;
@@ -15,15 +18,7 @@ define(['angular', 'angular-mocks'], function() {
     var editAdverseEventRaw;
     var queryAdverseEventMeasuredAtRaw;
 
-    var createStoreDeferred;
-    var createStorePromise;
-    var loadStoreDeferred
-    var loadStorePromise
-
-    var graphAsText;
-    var graphUri = 'http://karma-test/';
-
-    var scratchStudyUri = 'http://localhost:9876/scratch';
+    // private helper methods
 
     function queryTeststore(query) {
       var xmlHTTP = new XMLHttpRequest();
@@ -38,13 +33,13 @@ define(['angular', 'angular-mocks'], function() {
 
     function dropGraph(uri) {
       var xmlHTTP = new XMLHttpRequest();
-          xmlHTTP.open("POST", scratchStudyUri + '/update', false);
-          xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');
-          xmlHTTP.send('DROP GRAPH <' + uri +'>');
+      xmlHTTP.open("POST", scratchStudyUri + '/update', false);
+      xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');
+      xmlHTTP.send('DROP GRAPH <' + uri + '>');
       return true;
     }
 
-   function deFusekify(data) {
+    function deFusekify(data) {
       var json = JSON.parse(data);
       var bindings = json.results.bindings;
       return _.map(bindings, function(binding) {
@@ -52,6 +47,23 @@ define(['angular', 'angular-mocks'], function() {
           return [obj[0], obj[1].value];
         }));
       });
+    }
+
+    function loadTemplate(templateName) {
+      var xmlHTTP = new XMLHttpRequest();
+      xmlHTTP.open('GET', 'base/app/sparql/' + templateName, false);
+      xmlHTTP.send(null);
+      var template = xmlHTTP.responseText;
+      httpBackend.expectGET('app/sparql/' + templateName).respond(template);
+      return template;
+    }
+
+    function executeUpdateQuery(query) {
+      var xmlHTTP = new XMLHttpRequest();
+      xmlHTTP.open("POST", scratchStudyUri + '/update', false);
+      xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');
+      xmlHTTP.send(query);
+      return xmlHTTP.responseText;
     }
 
     beforeEach(function() {
@@ -86,108 +98,96 @@ define(['angular', 'angular-mocks'], function() {
     });
 
     beforeEach(inject(function($q, $rootScope, $httpBackend, AdverseEventService, StudyService) {
-      var xmlHTTP = new XMLHttpRequest();
-
       q = $q;
       httpBackend = $httpBackend;
       rootScope = $rootScope;
       adverseEventService = AdverseEventService;
       studyService = StudyService;
 
-      // load queryTemplates from disk
-      xmlHTTP.open('GET', 'base/app/sparql/addTemplate.sparql', false);
-      xmlHTTP.send(null);
-      addTemplateRaw = xmlHTTP.responseText;
-      httpBackend.expectGET('app/sparql/addTemplate.sparql').respond(addTemplateRaw);
+      // reset the test graph
+      dropGraph(graphUri);
 
-      xmlHTTP.open('GET', 'base/app/sparql/addAdverseEvent.sparql', false);
-      xmlHTTP.send(null);
-      addAdverseEventQueryRaw = xmlHTTP.responseText;
-      httpBackend.expectGET('app/sparql/addAdverseEvent.sparql').respond(addAdverseEventQueryRaw);
-
-      xmlHTTP.open('GET', 'base/app/sparql/queryAdverseEvent.sparql', false);
-      xmlHTTP.send(null);
-      adverseEventsQuery = xmlHTTP.responseText;
-      httpBackend.expectGET('app/sparql/queryAdverseEvent.sparql').respond(adverseEventsQuery);
-
-      xmlHTTP.open('GET', 'base/app/sparql/deleteAdverseEvent.sparql', false);
-      xmlHTTP.send(null);
-      deleteAdverseEventRaw = xmlHTTP.responseText;
-      httpBackend.expectGET('app/sparql/deleteAdverseEvent.sparql').respond(deleteAdverseEventRaw);
-
-      xmlHTTP.open('GET', 'base/app/sparql/editAdverseEvent.sparql', false);
-      xmlHTTP.send(null);
-      editAdverseEventRaw = xmlHTTP.responseText;
-      httpBackend.expectGET('app/sparql/editAdverseEvent.sparql').respond(editAdverseEventRaw);
-
-      xmlHTTP.open('GET', 'base/app/sparql/queryMeasuredAt.sparql', false);
-      xmlHTTP.send(null);
-      queryAdverseEventMeasuredAtRaw = xmlHTTP.responseText;
-      httpBackend.expectGET('app/sparql/queryMeasuredAt.sparql').respond(queryAdverseEventMeasuredAtRaw);
-
-
-      xmlHTTP.open('GET', 'base/test_graphs/testStudyGraph.ttl', false);
-      xmlHTTP.send(null);
-      graphAsText = xmlHTTP.responseText;
-
+      // load service templates and flush httpBackend
+      addTemplateRaw = loadTemplate('addTemplate.sparql');
+      addAdverseEventQueryRaw = loadTemplate('addAdverseEvent.sparql');
+      adverseEventsQuery = loadTemplate('queryAdverseEvent.sparql');
+      deleteAdverseEventRaw = loadTemplate('deleteAdverseEvent.sparql');
+      editAdverseEventRaw = loadTemplate('editAdverseEvent.sparql');
+      queryAdverseEventMeasuredAtRaw = loadTemplate('queryMeasuredAt.sparql');
       httpBackend.flush();
 
-      dropGraph(graphUri); 
-
-      // setup mock dataset store
-      createStoreDeferred = $q.defer();
-      createStorePromise = createStoreDeferred.promise;
+      // create and load empty test store
+      var createStoreDeferred = $q.defer();
+      var createStorePromise = createStoreDeferred.promise;
       remotestoreServiceStub.create.and.returnValue(createStorePromise);
 
-      loadStoreDeferred = $q.defer();
-      loadStorePromise = loadStoreDeferred.promise;
+      var loadStoreDeferred = $q.defer();
+      var loadStorePromise = loadStoreDeferred.promise;
       remotestoreServiceStub.load.and.returnValue(loadStorePromise);
 
-      var loadStorePromise = studyService.loadStore(graphAsText);
+      var loadStorePromise = studyService.loadStore();
       createStoreDeferred.resolve(scratchStudyUri);
       loadStoreDeferred.resolve();
       rootScope.$digest();
+
+      // stub remotestoreServiceStub.executeUpdate method
+      remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
+        query = query.replace(/\$graphUri/g, graphUri);
+
+        console.log('graphUri = ' + uri);
+        console.log('query = ' + query);
+
+        executeUpdateQuery(query);
+
+        var executeUpdateDeferred = q.defer();
+        executeUpdateDeferred.resolve();
+        return executeUpdateDeferred.promise;
+      });
+
     }));
 
     describe('addItem', function() {
 
-      it('should add the adverseEvent', function(done) {
-        var executeUpdateAddAdverseEventDefferd = q.defer();
-        var executeUpdateAddAdverseEventPromise = executeUpdateAddAdverseEventDefferd.promise;
+      it('should add the adverseEvent triples and measuredAtMoments triples to the graph', function(done) {
 
+        // the test item to add 
         var adverseEvent = {
           label: 'adverse event label',
           measurementType: 'http://some-measurementType'
         };
 
-        remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
-          query = query.replace(/\$graphUri/g, graphUri);
+        // add some measured at moments 
+        var moment1 = {uri: 'http://moments/moment1'};
+        var moment2 = {uri: 'http://moments/moment2'};
+        var adverseEventWithMoments = angular.copy(adverseEvent);
+        adverseEventWithMoments.measuredAtMoments = [moment1, moment2];
 
-          console.log('graphUri = ' + uri);
-          console.log('query = ' + query);
+        // call the method to test
+        var resultPromise = adverseEventService.addItem(adverseEventWithMoments);
 
-          var xmlHTTP = new XMLHttpRequest();
-          xmlHTTP.open("POST", scratchStudyUri + '/update', false);
-          xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');
-          xmlHTTP.send(query);
-
-          return executeUpdateAddAdverseEventPromise;
-        });
-
-        var resultPromise = adverseEventService.addItem(adverseEvent);
-
+        // setup verification, ready for digest cycle to kickoff 
         resultPromise.then(function(result) {
+          // verify addAdverseEvent query
           var adverseEventsAsString = queryTeststore(adverseEventsQuery.replace(/\$graphUri/g, graphUri));
           var adverseEventsObject = deFusekify(adverseEventsAsString);
           expect(adverseEventsObject.length).toEqual(1);
-          expect(adverseEventsObject[0]).toEqual(adverseEvent);
+          expect(adverseEventsObject[0].label).toEqual(adverseEvent.label);
+          expect(adverseEventsObject[0].measurementType).toEqual(adverseEvent.measurementType);
+
+          // verify add measured at query
+          var measuredAtQuery = queryAdverseEventMeasuredAtRaw.replace(/\$graphUri/g, graphUri);
+          var adverseEventMeasuredAtAsString = queryTeststore(measuredAtQuery);
+          var measuredAtMoments = deFusekify(adverseEventMeasuredAtAsString);
+          expect(measuredAtMoments.length).toEqual(2);
+          expect(measuredAtMoments[0].measurementMoment).toEqual('http://moments/moment2');
+          expect(measuredAtMoments[1].measurementMoment).toEqual('http://moments/moment1');
+
+          // do not forget to signal async test is done !
           done();
         });
 
-        executeUpdateAddAdverseEventDefferd.resolve();
+        // fire in the hole !
         rootScope.$digest();
-
-
 
       });
     });

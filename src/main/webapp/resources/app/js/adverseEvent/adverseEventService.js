@@ -60,14 +60,13 @@ define([],
           return StudyService.doModifyingQuery(addAdverseEventQuery);
         });
 
-        // var addMeasuredAtPromise = addTemplateRaw.then(function(query) {
-        //   console.log('raw template result');
-        //   var addMeasuredAtQuery = query.replace('$insertBlock', stringToInsert);
-        //   return StudyService.doModifyingQuery(addMeasuredAtQuery);
-        // });
+        var addMeasuredAtPromise = addTemplateRaw.then(function(query) {
+          var addMeasuredAtQuery = query.replace('$insertBlock', stringToInsert);
+          console.log('addMeasuredAtQuery = ' + addMeasuredAtQuery );
+          return StudyService.doModifyingQuery(addMeasuredAtQuery);
+        });
 
-        //return $q.all([addAdverseEventPromise, addMeasuredAtPromise]);
-        return addAdverseEventPromise;
+        return $q.all([addAdverseEventPromise, addMeasuredAtPromise]);
       }
 
       function deleteItem(item) {
