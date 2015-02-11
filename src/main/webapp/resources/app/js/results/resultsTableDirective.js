@@ -16,60 +16,60 @@ define([], function() {
         });
         var measurementMomentsPromise = MeasurementMomentService.queryItems($stateParams.studyUUID).then(function(result) {
           measurementMoments = result;
-        });;
+        });
 
-        // $q.all([armsPromise, measurementMomentsPromise]).then(function() {
-        //   scope.inputRows = ResultsTableService.createInputRows(scope.variable, arms, measurementMoments);
-        // });
+        $q.all([armsPromise, measurementMomentsPromise]).then(function() {
+          scope.inputRows = ResultsTableService.createInputRows(scope.variable, arms, measurementMoments);
+        });
 
-        scope.variable= {
-          label: 'headache'
-        }
+  //       scope.variable= {
+  //         label: 'headache'
+  //       }
 
-        scope.inputRows = [
-          {
-            measurementMoment: {
-              label: 'start of mainphase'
-            },
-            arm: {
-              label: 'parox'
-            },
-            mean: 10,
-            sd: 3.5,
-            n: 30
-          },          {
-            measurementMoment: {
-              label: 'start of mainphase'
-            },
-            arm: {
-              label: 'sertra'
-            },
-            mean: 10,
-            sd: 3.5,
-            n: 30
-          },          {
-            measurementMoment: {
-              label: 'end of mainphase'
-            },
-            arm: {
-              label: 'parox'
-            },
-            mean: 10,
-            sd: 3.5,
-            n: 30
-          },
-          {
-            measurementMoment: {
-              label: 'end of mainphase'
-            },
-            arm: {
-              label: 'sertra'
-            },
-            mean: 10,
-            sd: 3.5,
-            n: 30
-          }];
-          scope.inputRows.nArms = 2;
+  //       scope.inputRows = [
+  //         {
+  //           measurementMoment: {
+  //             label: 'start of mainphase'
+  //           },
+  //           arm: {
+  //             label: 'parox'
+  //           },
+  //           mean: 10,
+  //           sd: 3.5,
+  //           n: 30
+  //         },          {
+  //           measurementMoment: {
+  //             label: 'start of mainphase'
+  //           },
+  //           arm: {
+  //             label: 'sertra'
+  //           },
+  //           mean: 10,
+  //           sd: 3.5,
+  //           n: 30
+  //         },          {
+  //           measurementMoment: {
+  //             label: 'end of mainphase'
+  //           },
+  //           arm: {
+  //             label: 'parox'
+  //           },
+  //           mean: 10,
+  //           sd: 3.5,
+  //           n: 30
+  //         },
+  //         {
+  //           measurementMoment: {
+  //             label: 'end of mainphase'
+  //           },
+  //           arm: {
+  //             label: 'sertra'
+  //           },
+  //           mean: 10,
+  //           sd: 3.5,
+  //           n: 30
+  //         }];
+  //         scope.inputRows.nArms = 2;
       }
     };
   };

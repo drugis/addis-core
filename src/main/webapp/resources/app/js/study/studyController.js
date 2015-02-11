@@ -1,8 +1,10 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$window', 'StudyResource', '$location', '$anchorScroll', '$modal', 'StudyService', 'DatasetResource', 'DatasetService'];
-    var StudyController = function($scope, $stateParams, $window, StudyResource, $location, $anchorScroll, $modal, StudyService, DatasetResource, DatasetService) {
+    var dependencies = ['$scope', '$stateParams', '$window', 'StudyResource', '$location', '$anchorScroll',
+    '$modal', 'StudyService', 'DatasetResource', 'DatasetService', 'PopulationCharacteristicService'];
+    var StudyController = function($scope, $stateParams, $window, StudyResource, $location, $anchorScroll,
+      $modal, StudyService, DatasetResource, DatasetService, PopulationCharacteristicService) {
 
       StudyService.reset();
 
@@ -118,6 +120,10 @@ define([],
       // onload
       reloadStudyModel();
       reloadDatasetModel();
+      $scope.populationCharacteristics = PopulationCharacteristicService.queryItems($stateParams.studyUUID).then(function(result) {
+        $scope.populationCharacteristics = result;
+      });
+
 
       $scope.isStudyModified = function() {
         return StudyService.isStudyModified();
