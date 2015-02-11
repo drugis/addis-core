@@ -48,29 +48,26 @@ define([],
       }
 
       function addItem(adverseEvent) {
-        console.log('enter addItem in adverseEvent');
         var newUUid = UUIDService.generate();
         adverseEvent.uri = 'http://trials.drugis.org/instances/' + newUUid;
         var stringToInsert = buildInsertMeasuredAtBlock(adverseEvent);
 
         var addAdverseEventPromise = addAdverseEventQueryRaw.then(function(query) {
-           console.log('raw addAdverseEventQuery result');
           var addAdverseEventQuery = query
             .replace(/\$UUID/g, newUUid)
             .replace('$label', adverseEvent.label)
             .replace('$measurementType', adverseEvent.measurementType);
-            console.log('after replace addAdverseEventQuery');
           return StudyService.doModifyingQuery(addAdverseEventQuery);
         });
 
-        var addMeasuredAtPromise = addTemplateRaw.then(function(query) {
-          console.log('raw template result');
-          var addMeasuredAtQuery = query.replace('$insertBlock', stringToInsert);
-          return StudyService.doModifyingQuery(addMeasuredAtQuery);
-        });
+        // var addMeasuredAtPromise = addTemplateRaw.then(function(query) {
+        //   console.log('raw template result');
+        //   var addMeasuredAtQuery = query.replace('$insertBlock', stringToInsert);
+        //   return StudyService.doModifyingQuery(addMeasuredAtQuery);
+        // });
 
-         console.log('before return addItem in adverseEvent');
-        return $q.all([addAdverseEventPromise, addMeasuredAtPromise]);
+        //return $q.all([addAdverseEventPromise, addMeasuredAtPromise]);
+        return addAdverseEventPromise;
       }
 
       function deleteItem(item) {

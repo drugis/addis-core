@@ -1,0 +1,50 @@
+17:04:30.596 INFO - Launching a standalone server
+17:04:30.621 INFO - Java: Oracle Corporation 24.75-b04
+17:04:30.621 INFO - OS: Linux 3.13.0-45-generic amd64
+17:04:30.631 INFO - v2.44.0, with Core v2.44.0. Built from revision 76d78cf
+17:04:30.682 INFO - Default driver org.openqa.selenium.ie.InternetExplorerDriver registration is skipped: registration capabilities Capabilities [{platform=WINDOWS, ensureCleanSession=true, browserName=internet explorer, version=}] does not match with current platform: LINUX
+17:04:30.716 INFO - RemoteWebDriver instances should connect to: http://127.0.0.1:4444/wd/hub
+17:04:30.717 INFO - Version Jetty/5.1.x
+17:04:30.717 INFO - Started HttpContext[/selenium-server/driver,/selenium-server/driver]
+17:04:30.718 INFO - Started HttpContext[/selenium-server,/selenium-server]
+17:04:30.718 INFO - Started HttpContext[/,/]
+17:04:30.736 INFO - Started org.openqa.jetty.jetty.servlet.ServletHandler@4928f524
+17:04:30.736 INFO - Started HttpContext[/wd,/wd]
+17:04:30.738 INFO - Started SocketListener on 0.0.0.0:4444
+17:04:30.738 INFO - Started org.openqa.jetty.jetty.Server@4c66f987
+17:04:31.933 INFO - Executing: [new session: Capabilities [{platform=ANY, acceptSslCerts=true, javascriptEnabled=true, browserName=firefox, name=Login Test}]])
+17:04:31.942 INFO - Creating a new session for Capabilities [{platform=ANY, acceptSslCerts=true, javascriptEnabled=true, browserName=firefox, name=Login Test}]
+17:04:35.463 INFO - Done: [new session: Capabilities [{platform=ANY, acceptSslCerts=true, javascriptEnabled=true, browserName=firefox, name=Login Test}]]
+17:04:35.471 INFO - Executing: [get: https://tv-test.drugis.org])
+17:04:36.182 INFO - Done: [get: https://tv-test.drugis.org]
+17:04:36.188 INFO - Executing: [find element: By.selector: body])
+17:04:36.241 INFO - Done: [find element: By.selector: body]
+17:04:36.248 INFO - Executing: [is displayed: 0 [[FirefoxDriver: firefox on LINUX (5daca70a-37b3-46ab-afb7-93524a004fe5)] -> css selector: body]])
+17:04:36.258 INFO - Done: [is displayed: 0 [[FirefoxDriver: firefox on LINUX (5daca70a-37b3-46ab-afb7-93524a004fe5)] -> css selector: body]]
+17:04:36.267 INFO - Executing: [find element: By.selector: button[type="submit"]])
+17:04:36.277 INFO - Done: [find element: By.selector: button[type="submit"]]
+17:04:36.281 INFO - Executing: [click: 1 [[FirefoxDriver: firefox on LINUX (5daca70a-37b3-46ab-afb7-93524a004fe5)] -> css selector: button[type="submit"]]])
+17:04:36.759 INFO - Done: [click: 1 [[FirefoxDriver: firefox on LINUX (5daca70a-37b3-46ab-afb7-93524a004fe5)] -> css selector: button[type="submit"]]]
+17:04:37.768 INFO - Executing: [find element: By.selector: input[type=email]])
+17:04:37.781 INFO - Done: [find element: By.selector: input[type=email]]
+17:04:37.785 INFO - Executing: [send keys: 2 [[FirefoxDriver: firefox on LINUX (5daca70a-37b3-46ab-afb7-93524a004fe5)] -> css selector: input[type=email]], [ , a, d, d, i, s, t, e, s, t, u, s, e, r, 1, @, g, m, a, i, l, ., c, o, m]])
+17:04:37.868 INFO - Done: [send keys: 2 [[FirefoxDriver: firefox on LINUX (5daca70a-37b3-46ab-afb7-93524a004fe5)] -> css selector: input[type=email]], [ , a, d, d, i, s, t, e, s, t, u, s, e, r, 1, @, g, m, a, i, l, ., c, o, m]]
+17:04:37.874 INFO - Executing: [find element: By.selector: input[type=password]])
+17:04:37.884 INFO - Done: [find element: By.selector: input[type=password]]
+17:04:37.891 INFO - Executing: [send keys: 3 [[FirefoxDriver: firefox on LINUX (5daca70a-37b3-46ab-afb7-93524a004fe5)] -> css selector: input[type=password]], [a, d, d, i, s, t, e, s, t, u, s, e, r, 1, 2, 3]])
+17:04:37.947 INFO - Done: [send keys: 3 [[FirefoxDriver: firefox on LINUX (5daca70a-37b3-46ab-afb7-93524a004fe5)] -> css selector: input[type=password]], [a, d, d, i, s, t, e, s, t, u, s, e, r, 1, 2, 3]]
+17:04:37.954 INFO - Executing: [find element: By.selector: input[type="submit"]])
+17:04:37.966 INFO - Done: [find element: By.selector: input[type="submit"]]
+17:04:37.972 INFO - Executing: [click: 4 [[FirefoxDriver: firefox on LINUX (5daca70a-37b3-46ab-afb7-93524a004fe5)] -> css selector: input[type="submit"]]])
+17:04:38.684 INFO - Done: [click: 4 [[FirefoxDriver: firefox on LINUX (5daca70a-37b3-46ab-afb7-93524a004fe5)] -> css selector: input[type="submit"]]]
+17:04:38.687 INFO - Executing: [find element: By.selector: body])
+17:04:40.321 INFO - Done: [find element: By.selector: body]
+17:04:40.326 INFO - Executing: [is displayed: 5 [[FirefoxDriver: firefox on LINUX (5daca70a-37b3-46ab-afb7-93524a004fe5)] -> css selector: body]])
+17:04:40.336 INFO - Done: [is displayed: 5 [[FirefoxDriver: firefox on LINUX (5daca70a-37b3-46ab-afb7-93524a004fe5)] -> css selector: body]]
+17:04:42.346 INFO - Executing: [find element: By.selector: h1])
+17:04:42.361 INFO - Done: [find element: By.selector: h1]
+17:04:42.365 INFO - Executing: [get text: 6 [[FirefoxDriver: firefox on LINUX (5daca70a-37b3-46ab-afb7-93524a004fe5)] -> css selector: h1]])
+17:04:42.385 INFO - Done: [get text: 6 [[FirefoxDriver: firefox on LINUX (5daca70a-37b3-46ab-afb7-93524a004fe5)] -> css selector: h1]]
+17:04:42.390 INFO - Executing: [delete session: 65fbb331-3641-4c22-b2d0-c4399f07800b])
+17:04:42.452 INFO - Done: [delete session: 65fbb331-3641-4c22-b2d0-c4399f07800b]
+17:04:43.491 INFO - Shutting down...

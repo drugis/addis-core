@@ -21,9 +21,9 @@ define(['angular', 'angular-mocks'], function() {
     var loadStorePromise
 
     var graphAsText;
-    var graphUri = 'my-test-graph-uri';
+    var graphUri = 'http://karma-test/';
 
-    var scratchStudyUri = 'http://localhost:3031/my-scratch';
+    var scratchStudyUri = 'http://localhost:9876/scratch';
 
     beforeEach(function() {
       module('trialverse.util', function($provide) {
@@ -112,15 +112,6 @@ define(['angular', 'angular-mocks'], function() {
       loadStorePromise = loadStoreDeferred.promise;
       remotestoreServiceStub.load.and.returnValue(loadStorePromise);
 
-      remotestoreServiceStub.executeUpdate.and.callFake(function(scratchStudyUri, query) {
-
-        query = query.replace(/\$graphUri/g, graphUri);
-
-        console.log('fake has been called');
-        console.log('scratchStudyUri = ' + scratchStudyUri);
-        console.log('query = ' + query);
-      });
-
       var loadStorePromise = studyService.loadStore(graphAsText);
       createStoreDeferred.resolve(scratchStudyUri);
       loadStoreDeferred.resolve();
@@ -130,19 +121,42 @@ define(['angular', 'angular-mocks'], function() {
     describe('addItem', function() {
 
       it('should add the adverseEvent', function(done) {
+        var executeUpdateAddAdverseEventDefferd = q.defer();
+        var executeUpdateAddAdverseEventPromise = executeUpdateAddAdverseEventDefferd.promise;
+
         var adverseEvent = {
           label: 'adverse event label',
           measurementType: 'http://some-measurementType'
         };
 
+        remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
+          query = query.replace(/\$graphUri/g, graphUri);
+
+          console.log('graphUri = ' + uri);
+          console.log('query = ' + query);
+
+          var xmlHTTP = new XMLHttpRequest();
+          xmlHTTP.open("POST", scratchStudyUri + '/update', false);
+          xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');
+          xmlHTTP.send(query);
+          
+          console.log('return scratch result');
+          return executeUpdateAddAdverseEventPromise;
+        });
+
         var resultPromise = adverseEventService.addItem(adverseEvent);
-        rootScope.$digest();
 
         resultPromise.then(function(result) {
           console.log('we have a result !!!!!!!!!!!');
-          expect(result).toBe(true);
           done();
         });
+
+        //rootScope.$digest();
+        
+        executeUpdateAddAdverseEventDefferd.resolve();
+        rootScope.$digest();
+
+
 
       });
     });
