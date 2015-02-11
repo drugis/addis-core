@@ -14,6 +14,7 @@ define(
     'endpoint/endpoint',
     'adverseEvent/adverseEvent',
     'epoch/epoch',
+    'results/results',
     'measurementMoment/measurementMoment',
     'angular-resource',
     'rdfstore',
@@ -31,7 +32,8 @@ define(
       'trialverse.endpoint',
       'trialverse.adverseEvent',
       'trialverse.epoch',
-      'trialverse.measurementMoment'
+      'trialverse.measurementMoment',
+      'trialverse.results'
     ];
 
     var app = angular.module('trialverse', dependencies);
