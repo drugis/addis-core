@@ -25,6 +25,35 @@ define(['angular', 'angular-mocks'], function() {
 
     var scratchStudyUri = 'http://localhost:9876/scratch';
 
+    function queryTeststore(query) {
+      var xmlHTTP = new XMLHttpRequest();
+      xmlHTTP.open("POST", scratchStudyUri + '/query?output=json', false);
+      xmlHTTP.setRequestHeader('Content-type', 'application/sparql-query');
+      xmlHTTP.setRequestHeader('Accept', 'application/ld+json');
+      xmlHTTP.send(query);
+      var result = xmlHTTP.responseText;
+      console.log('queryTeststore result = ' + result);
+      return result;
+    }
+
+    function dropGraph(uri) {
+      var xmlHTTP = new XMLHttpRequest();
+          xmlHTTP.open("POST", scratchStudyUri + '/update', false);
+          xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');
+          xmlHTTP.send('DROP GRAPH <' + uri +'>');
+      return true;
+    }
+
+   function deFusekify(data) {
+      var json = JSON.parse(data);
+      var bindings = json.results.bindings;
+      return _.map(bindings, function(binding) {
+        return _.object(_.map(_.pairs(binding), function(obj) {
+          return [obj[0], obj[1].value];
+        }));
+      });
+    }
+
     beforeEach(function() {
       module('trialverse.util', function($provide) {
         remotestoreServiceStub = jasmine.createSpyObj('RemoteRdfStoreService', [
@@ -103,6 +132,8 @@ define(['angular', 'angular-mocks'], function() {
 
       httpBackend.flush();
 
+      dropGraph(graphUri); 
+
       // setup mock dataset store
       createStoreDeferred = $q.defer();
       createStorePromise = createStoreDeferred.promise;
@@ -139,20 +170,20 @@ define(['angular', 'angular-mocks'], function() {
           xmlHTTP.open("POST", scratchStudyUri + '/update', false);
           xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');
           xmlHTTP.send(query);
-          
-          console.log('return scratch result');
+
           return executeUpdateAddAdverseEventPromise;
         });
 
         var resultPromise = adverseEventService.addItem(adverseEvent);
 
         resultPromise.then(function(result) {
-          console.log('we have a result !!!!!!!!!!!');
+          var adverseEventsAsString = queryTeststore(adverseEventsQuery.replace(/\$graphUri/g, graphUri));
+          var adverseEventsObject = deFusekify(adverseEventsAsString);
+          expect(adverseEventsObject.length).toEqual(1);
+          expect(adverseEventsObject[0]).toEqual(adverseEvent);
           done();
         });
 
-        //rootScope.$digest();
-        
         executeUpdateAddAdverseEventDefferd.resolve();
         rootScope.$digest();
 
