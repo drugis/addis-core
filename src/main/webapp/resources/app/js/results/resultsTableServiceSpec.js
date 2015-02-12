@@ -23,7 +23,11 @@ define(['angular', 'angular-mocks'], function() {
 
       beforeEach(function() {
         variable = {
-          measuredAtMoments: ['uri 1', 'uri 3']
+          measuredAtMoments: [{
+            uri: 'uri 1'
+          }, {
+            uri: 'uri 3'
+          }]
         };
         arms = ['arm 1', 'arm 2', 'arm 3'];
         measurementMoments = [{

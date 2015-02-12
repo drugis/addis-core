@@ -8,7 +8,7 @@
     <th>N</th>
   </tr>
   <tr ng-repeat="inputRow in inputRows">
-    <td class="y-head" rowspan="{{inputRows.nArms}}" ng-if="$index % inputRows.nArms === 0" style="vertical-align:baseline">{{inputRow.measurementMoment.label}}</td>
+    <td class="y-head" rowspan="{{inputRow.nArms}}" ng-if="$index % inputRow.nArms === 0" style="vertical-align:baseline">{{inputRow.measurementMoment.label}}</td>
     <td class="y-head">{{inputRow.arm.label}}</td>
     <td class="input-cell"><input type="number" ng-model="inputRow.mean"/></td>
     <td class="input-cell"><input type="number" ng-model="inputRow.sd"/></td>

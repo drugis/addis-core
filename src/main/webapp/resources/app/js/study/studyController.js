@@ -120,10 +120,6 @@ define([],
       // onload
       reloadStudyModel();
       reloadDatasetModel();
-      $scope.populationCharacteristics = PopulationCharacteristicService.queryItems($stateParams.studyUUID).then(function(result) {
-        $scope.populationCharacteristics = result;
-      });
-
 
       $scope.isStudyModified = function() {
         return StudyService.isStudyModified();

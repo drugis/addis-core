@@ -8,7 +8,7 @@ define([],
         return {
           arm: arm,
           measurementMoment: _.find(measurementMoments, function(measurementMoment) {
-            return measurementMoment.uri === measuredAtMoment;
+            return measurementMoment.uri === measuredAtMoment.uri;
           }),
           nArms: arms.length,
           n: null,

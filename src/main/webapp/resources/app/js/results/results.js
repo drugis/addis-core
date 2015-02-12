@@ -9,5 +9,6 @@ define(function (require) {
 
     //directives
     .directive('resultsTable', require('results/resultsTableDirective'))
+    .directive('resultsTableList', require('results/resultsTableListDirective'))
     ;
 });
