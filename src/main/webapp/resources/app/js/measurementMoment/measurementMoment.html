@@ -1,5 +1,5 @@
 <ul class="no-bullet">
   <li ><span><strong>Title: </strong> <span>{{item.label}}</span></li>
   <li ><span><strong>Epoch: </strong></span> <span>{{item.epochLabel}}</span></li>
-  <li><span><strong>Offset: </strong></span><span>{{ item.offset | durationFilter }}</span></li>
+  <li><span><strong>Offset: </strong></span><span>{{ item.offset | durationFilter }} {{ item.relativeToAnchor | anchorFilter:item.offset }}</span></li>
 </ul>
