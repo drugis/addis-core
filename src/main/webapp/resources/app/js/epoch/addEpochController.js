@@ -43,6 +43,10 @@ define([],
       $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
       };
+
+      $scope.changeToInstantaneous = function() {
+        $scope.item.duration = 'PT0S';
+      }
     };
     return dependencies.concat(addEpochController);
   });

@@ -7,7 +7,6 @@ define(function (require) {
     // services
     .factory('UUIDService', require('util/uuidService'))
     .factory('JsonLdService', require('util/jsonLdService'))
-    .factory('RdfStoreService', require('util/rdfstoreService'))
     .factory('RemoteRdfStoreService', require('util/remoteRdfStoreService'))
     .factory('DurationService', require('util/durationService'))
     .factory('SubsetSelectService', require('util/directives/subsetSelect/subsetSelectService'))
