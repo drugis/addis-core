@@ -188,6 +188,11 @@ Copying graphs from other datasets
 
 The meta-data associated with the graph (importantly, the `dcterms:subject`) is copied along with it.
 
+Comparing data to an existing graph
+-----------------------------------
+
+TODO: needed for commit pages.
+
 Authentication
 --------------
 
