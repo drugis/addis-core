@@ -1,0 +1,19 @@
+PREFIX instance: <http://trials.drugis.org/instances/>
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+
+WITH GRAPH <$studyUri> {
+DELETE {
+    instance:$resultUuid
+      ontology:$valueType ?value .
+}
+INSERT {
+    instance:$resultUuid
+      ontology:of_outcome <$outcomeUri> ;
+      ontology:of_arm <$armUri> ;
+      ontology:of_moment <$momentUri> ;
+      ontology:$valueType $value$ .
+  }
+}
+WHERE {
+    OPTIONAL { instance:$resultUuid ontology:$valueType ?value }.
+}
