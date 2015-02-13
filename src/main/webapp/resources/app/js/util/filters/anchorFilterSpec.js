@@ -2,27 +2,36 @@ define(['angular', 'angular-mocks'], function () {
   describe('The anchor filter', function () {
     var anchorFilter;
 
+beforeEach(module('trialverse'));
     beforeEach(module('trialverse.util'));
+    beforeEach(module('trialverse.measurementMoment'));
 
     beforeEach(inject(function($filter) {
       anchorFilter = $filter('anchorFilter');
     }));
 
-    it('should pass though undefined durations and anchors', function() {
+    it('should pass though undefined measuremoments', function() {
       expect(anchorFilter(undefined)).toEqual(undefined);
-      expect(anchorFilter(undefined, 'PT4H')).toEqual(undefined);
-      expect(anchorFilter('http://trials.drugis.org/ontology#anchorEpochStart',undefined)).toEqual(undefined);
-      expect(anchorFilter(undefined,undefined)).toEqual(undefined);
     });
 
     it('should use "at" as preposition when the off set is instantaneous', function() {
-      expect(anchorFilter('http://trials.drugis.org/ontology#anchorEpochStart', 'PT0S')).toEqual(' at epoch start');
-      expect(anchorFilter('http://trials.drugis.org/ontology#anchorEpochEnd', 'PT0S')).toEqual(' at epoch end');
+      var measurementmoment = {
+        // if (!measurementMoment.epoch || !measurementMoment.offset || !measurementMoment.relativeToAnchor) {
+        //   return '';
+        // }
+        // var offsetStr = (measurementMoment.offset === 'PT0S') ? 'At' : $filter('durationFilter')(measurementMoment.offset) + ' from';
+        // var anchorStr = measurementMoment.relativeToAnchor === 'http://trials.drugis.org/ontology#anchorEpochStart' ? 'start' : 'end';
+        // return offsetStr + ' ' + anchorStr + ' of ' + measurementMoment.epoch.label;
+        todo mock measurementmoment
+      };
+
+      expect(anchorFilter(measurementmoment)).toEqual(' at epoch start');
+      expect(anchorFilter(measurementmoment)).toEqual(' at epoch end');
     }); 
 
     it('should use "from" as preposition when the off set is instantaneous', function() {
-      expect(anchorFilter('http://trials.drugis.org/ontology#anchorEpochStart', 'PT4H')).toEqual(' from epoch start');
-      expect(anchorFilter('http://trials.drugis.org/ontology#anchorEpochEnd', 'PT4H')).toEqual(' from epoch end');
+      expect(anchorFilter(measurementmoment)).toEqual(' from epoch start');
+      expect(anchorFilter(measurementmoment)).toEqual(' from epoch end');
     }); 
 
   });
