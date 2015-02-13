@@ -1,0 +1,12 @@
+PREFIX instance: <http://trials.drugis.org/instances/>
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+
+SELECT * WHERE {
+  GRAPH <$graphUri> {
+    ?instance
+      ontology:of_outcome <$outcomeUri> ;
+      ontology:of_arm ?armUri ;
+      ontology:of_moment ?momentUri ;
+      ontology:value_name ?value ;
+  }
+}

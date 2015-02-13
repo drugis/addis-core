@@ -1,8 +1,8 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$injector', '$stateParams', 'ArmService', 'MeasurementMomentService'];
+  var dependencies = ['$q', '$injector', '$stateParams', 'ArmService', 'MeasurementMomentService'];
 
-  var resultsTableListDirective = function($injector, $stateParams, ArmService, MeasurementMomentService) {
+  var resultsTableListDirective = function($q, $injector, $stateParams, ArmService, MeasurementMomentService) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/results/resultsTableListDirective.html',
@@ -12,15 +12,25 @@ define([], function() {
       },
       link: function(scope) {
         var variableService = $injector.get(scope.variableType + 'Service');
+        var variablesPromise, armsPromise;
+        scope.showResults = false;
 
-        scope.arms = ArmService.queryItems($stateParams.studyUUID).then(function(result) {
+        armsPromise = ArmService.queryItems($stateParams.studyUUID).then(function(result) {
           scope.arms = result;
+          return result;
         });
         scope.measurementMoments = MeasurementMomentService.queryItems($stateParams.studyUUID).then(function(result) {
           scope.measurementMoments = result;
+          return result;
         });
-        scope.variables = variableService.queryItems($stateParams.studyUUID).then(function(result) {
+        variablesPromise = variableService.queryItems($stateParams.studyUUID).then(function(result) {
           scope.variables = result;
+        });
+        $q.all([armsPromise, variablesPromise]).then(function() {
+          var isAnyMeasuredVariable = _.find(scope.variables, function(variable) {
+            return variable.measuredAtMoments.length > 0;
+          });
+          scope.showResults = isAnyMeasuredVariable && scope.arms.length > 0;
         });
       }
     };

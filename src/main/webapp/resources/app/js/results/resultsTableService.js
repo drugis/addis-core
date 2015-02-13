@@ -5,14 +5,14 @@ define([],
     var ResultsTableService = function() {
 
       var CONTINUOUS_TYPE = 'http://trials.drugis.org/ontology#continuous',
-       DICHOTOMOUS_TYPE = 'http://trials.drugis.org/ontology#dichotomous';
+        DICHOTOMOUS_TYPE = 'http://trials.drugis.org/ontology#dichotomous';
 
       function createInputColumns(measurementType) {
-        var inputColumns = [];
         if (measurementType === CONTINUOUS_TYPE) {
-          inputColumns = [{},{},{}];
+          return [{}, {}, {}];
+        } else if (measurementType === DICHOTOMOUS_TYPE) {
+          return [{}, {}]
         }
-        return inputColumns;
       }
 
       function createHeaders(measurementType) {

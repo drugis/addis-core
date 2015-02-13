@@ -18,7 +18,7 @@ define(['angular', 'angular-mocks'], function() {
       resultsTableService = ResultsTableService;
     }));
 
-    describe('buildHeaders', function(){
+    describe('buildHeaders', function() {
       it('should return a list containting "Mean, ± sd and N " when the type is continuous', function() {
         var testType = resultsTableService.CONTINUOUS_TYPE;
         expect(resultsTableService.createHeaders(testType)).toEqual(['Mean', '± sd', 'N']);
@@ -29,7 +29,7 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    ddescribe('createInputRows for a continuous variable', function() {
+    describe('createInputRows', function() {
       var resultRows, variable, arms, measurementMoments;
 
       beforeEach(function() {
@@ -39,7 +39,7 @@ define(['angular', 'angular-mocks'], function() {
           }, {
             uri: 'uri 3'
           }],
-          measurementType: resultsTableService.CONTINUOUS_TYPE
+          measurementType: {}
         };
         arms = ['arm 1', 'arm 2', 'arm 3'];
         measurementMoments = [{
@@ -52,6 +52,7 @@ define(['angular', 'angular-mocks'], function() {
 
         resultRows = resultsTableService.createInputRows(variable, arms, measurementMoments);
       });
+
       it('should set the number of arms', function() {
         expect(resultRows[0].nArms).toEqual(3);
       });
@@ -72,11 +73,33 @@ define(['angular', 'angular-mocks'], function() {
         expect(resultRows[5].measurementMoment).toEqual(measurementMoments[2]);
         expect(resultRows[5].arm).toEqual(arms[2]);
       });
-      it('should create input columns', function() {
-        expect(resultRows[0].inputColumns).toBeDefined();
-        expect(resultRows[0].inputColumns.length).toBe(3);
-        // expect(resultRows[0].inputColumns[0].value).toBeDefined();
+
+      describe('for a continuous type', function() {
+        beforeEach(function() {
+          variable.measurementType = resultsTableService.CONTINUOUS_TYPE;
+          resultRows = resultsTableService.createInputRows(variable, arms, measurementMoments);
+        });
+
+        it('should create input columns', function() {
+          expect(resultRows[0].inputColumns).toBeDefined();
+          expect(resultRows[0].inputColumns.length).toBe(3);
+          // expect(resultRows[0].inputColumns[0].value).toBeDefined();
+        });
       });
+
+      describe('for a dichotomous type', function() {
+        beforeEach(function() {
+          variable.measurementType = resultsTableService.DICHOTOMOUS_TYPE;
+          resultRows = resultsTableService.createInputRows(variable, arms, measurementMoments);
+        });
+
+        it('should create input columns', function() {
+          expect(resultRows[0].inputColumns).toBeDefined();
+          expect(resultRows[0].inputColumns.length).toBe(2);
+          // expect(resultRows[0].inputColumns[0].value).toBeDefined();
+        });
+      });
+
     });
 
   });
