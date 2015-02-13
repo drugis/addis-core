@@ -2,9 +2,9 @@
 define([],
   function() {
     var dependencies = ['$scope', '$stateParams', '$window', 'StudyResource', '$location', '$anchorScroll',
-    '$modal', 'StudyService', 'DatasetResource', 'DatasetService', 'PopulationCharacteristicService'];
+    '$modal', 'StudyService', 'DatasetResource', 'DatasetService'];
     var StudyController = function($scope, $stateParams, $window, StudyResource, $location, $anchorScroll,
-      $modal, StudyService, DatasetResource, DatasetService, PopulationCharacteristicService) {
+      $modal, StudyService, DatasetResource, DatasetService) {
 
       StudyService.reset();
 

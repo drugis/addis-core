@@ -18,8 +18,19 @@ define(['angular', 'angular-mocks'], function() {
       resultsTableService = ResultsTableService;
     }));
 
-    describe('createInputRows', function() {
-      var result, variable, arms, measurementMoments;
+    describe('buildHeaders', function(){
+      it('should return a list containting "Mean, ± sd and N " when the type is continuous', function() {
+        var testType = resultsTableService.CONTINUOUS_TYPE;
+        expect(resultsTableService.createHeaders(testType)).toEqual(['Mean', '± sd', 'N']);
+      });
+      it('should return a list containting "Count and N" when the type is dichotomous', function() {
+        var testType = resultsTableService.DICHOTOMOUS_TYPE;
+        expect(resultsTableService.createHeaders(testType)).toEqual(['Count', 'N']);
+      });
+    });
+
+    ddescribe('createInputRows for a continuous variable', function() {
+      var resultRows, variable, arms, measurementMoments;
 
       beforeEach(function() {
         variable = {
@@ -27,7 +38,8 @@ define(['angular', 'angular-mocks'], function() {
             uri: 'uri 1'
           }, {
             uri: 'uri 3'
-          }]
+          }],
+          measurementType: resultsTableService.CONTINUOUS_TYPE
         };
         arms = ['arm 1', 'arm 2', 'arm 3'];
         measurementMoments = [{
@@ -38,32 +50,32 @@ define(['angular', 'angular-mocks'], function() {
           uri: 'uri 3'
         }];
 
-        result = resultsTableService.createInputRows(variable, arms, measurementMoments);
+        resultRows = resultsTableService.createInputRows(variable, arms, measurementMoments);
       });
       it('should set the number of arms', function() {
-        expect(result[0].nArms).toEqual(3);
+        expect(resultRows[0].nArms).toEqual(3);
       });
       it('should return one row for each combination of arm and measurement moment at which the variable is measured', function() {
-        expect(result.length).toEqual(6);
+        expect(resultRows.length).toEqual(6);
       });
       it('should place the appropriate measurement moment and arm on each row', function() {
-        expect(result[0].measurementMoment).toEqual(measurementMoments[0]);
-        expect(result[0].arm).toEqual(arms[0]);
-        expect(result[1].measurementMoment).toEqual(measurementMoments[0]);
-        expect(result[1].arm).toEqual(arms[1]);
-        expect(result[2].measurementMoment).toEqual(measurementMoments[0]);
-        expect(result[2].arm).toEqual(arms[2]);
-        expect(result[3].measurementMoment).toEqual(measurementMoments[2]);
-        expect(result[3].arm).toEqual(arms[0]);
-        expect(result[4].measurementMoment).toEqual(measurementMoments[2]);
-        expect(result[4].arm).toEqual(arms[1]);
-        expect(result[5].measurementMoment).toEqual(measurementMoments[2]);
-        expect(result[5].arm).toEqual(arms[2]);
+        expect(resultRows[0].measurementMoment).toEqual(measurementMoments[0]);
+        expect(resultRows[0].arm).toEqual(arms[0]);
+        expect(resultRows[1].measurementMoment).toEqual(measurementMoments[0]);
+        expect(resultRows[1].arm).toEqual(arms[1]);
+        expect(resultRows[2].measurementMoment).toEqual(measurementMoments[0]);
+        expect(resultRows[2].arm).toEqual(arms[2]);
+        expect(resultRows[3].measurementMoment).toEqual(measurementMoments[2]);
+        expect(resultRows[3].arm).toEqual(arms[0]);
+        expect(resultRows[4].measurementMoment).toEqual(measurementMoments[2]);
+        expect(resultRows[4].arm).toEqual(arms[1]);
+        expect(resultRows[5].measurementMoment).toEqual(measurementMoments[2]);
+        expect(resultRows[5].arm).toEqual(arms[2]);
       });
-      it('should create properties for the inputs to bind to', function() {
-        expect(result[0].mean).toBeDefined();
-        expect(result[0].sd).toBeDefined();
-        expect(result[0].n).toBeDefined();
+      it('should create input columns', function() {
+        expect(resultRows[0].inputColumns).toBeDefined();
+        expect(resultRows[0].inputColumns.length).toBe(3);
+        // expect(resultRows[0].inputColumns[0].value).toBeDefined();
       });
     });
 

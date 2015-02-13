@@ -3,15 +3,11 @@
   <tr>
     <th>Measurement moment</th>
     <th>Arm</th>
-    <th>mean</th>
-    <th>± sd</th>
-    <th>N</th>
+    <th ng-repeat="inputHeader in inputHeaders">{{inputHeader}}</th>
   </tr>
   <tr ng-repeat="inputRow in inputRows">
     <td class="y-head" rowspan="{{inputRow.nArms}}" ng-if="$index % inputRow.nArms === 0" style="vertical-align:baseline">{{inputRow.measurementMoment.label}}</td>
     <td class="y-head">{{inputRow.arm.label}}</td>
-    <td class="input-cell"><input type="number" ng-model="inputRow.mean"/></td>
-    <td class="input-cell"><input type="number" ng-if="row.isContinuous" ng-model="inputRow.standard_deviation"/></td>
-    <td class="input-cell"><input type="number" ng-if="row.isContinuous" ng-model="inputRow.sample_size"/></td>
+    <td class="input-cell" ng-repeat="inputColumn in inputRow.inputColumns"><input type="number" ng-model="inputColumn.value"/></td>
   </tr>
 </table>

@@ -14,6 +14,7 @@ define([], function() {
       link: function(scope) {
         $q.all([scope.arms, scope.measurementMoments]).then(function() {
           scope.inputRows = ResultsTableService.createInputRows(scope.variable, scope.arms, scope.measurementMoments);
+          scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.measurementType);
         });
 
       }
