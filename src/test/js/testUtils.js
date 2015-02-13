@@ -10,7 +10,7 @@ define('testUtils', ['lodash'],
                 xmlHTTP.setRequestHeader('Accept', 'application/ld+json');
                 xmlHTTP.send(query);
                 var result = xmlHTTP.responseText;
-                console.log('queryTeststore result = ' + result);
+                //console.log('queryTeststore result = ' + result);
                 return result;
             },
             dropGraph: function(uri) {

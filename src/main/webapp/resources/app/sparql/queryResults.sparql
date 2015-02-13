@@ -7,6 +7,6 @@ SELECT * WHERE {
       ontology:of_outcome <$outcomeUri> ;
       ontology:of_arm ?armUri ;
       ontology:of_moment ?momentUri ;
-      ontology:value_name ?value ;
+      ontology:$valueName ?value ;
   }
 }

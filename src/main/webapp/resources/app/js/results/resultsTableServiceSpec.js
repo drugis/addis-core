@@ -83,7 +83,9 @@ define(['angular', 'angular-mocks'], function() {
         it('should create input columns', function() {
           expect(resultRows[0].inputColumns).toBeDefined();
           expect(resultRows[0].inputColumns.length).toBe(3);
-          // expect(resultRows[0].inputColumns[0].value).toBeDefined();
+          expect(resultRows[0].inputColumns[0].valueName).toEqual('mean');
+          expect(resultRows[0].inputColumns[1].valueName).toEqual('standard_deviation');
+          expect(resultRows[0].inputColumns[2].valueName).toEqual('sample_size');
         });
       });
 
@@ -96,7 +98,8 @@ define(['angular', 'angular-mocks'], function() {
         it('should create input columns', function() {
           expect(resultRows[0].inputColumns).toBeDefined();
           expect(resultRows[0].inputColumns.length).toBe(2);
-          // expect(resultRows[0].inputColumns[0].value).toBeDefined();
+          expect(resultRows[0].inputColumns[0].valueName).toEqual('count');
+          expect(resultRows[0].inputColumns[1].valueName).toEqual('sample_size');
         });
       });
 

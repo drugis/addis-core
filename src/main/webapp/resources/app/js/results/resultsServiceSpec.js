@@ -64,11 +64,11 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
         query = query.replace(/\$graphUri/g, graphUri);
 
-        console.log('graphUri = ' + uri);
-        console.log('query = ' + query);
+        //console.log('graphUri = ' + uri);
+        //console.log('query = ' + query);
 
         var updateResponce = testUtils.executeUpdateQuery(query);
-        console.log('updateResponce ' + updateResponce);
+        //console.log('updateResponce ' + updateResponce);
 
         var executeUpdateDeferred = q.defer();
         executeUpdateDeferred.resolve();
@@ -77,78 +77,133 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     }));
 
-    ddescribe('addResultValue', function() {
-      it('should add the value to the graph', function(done) {
-        var row = {
-          variable: {
-            uri: 'http://uri.com/var'
-          },
-          arm: {
-            uri: 'http://uri.com/arm'
-          },
-          measurementMoment: {
-            uri: 'http://uri.com/mm'
-          }
-        };
-        var valueName = 'value_name';
-        var inputColumn = {
-          value: 123.4
-        };
-        // call the method to test
-        var resultPromise = resultsService.updateResultValue(row, valueName, inputColumn);
+    describe('updateResultValue', function() {
+      describe('when there is not yet data in the graph', function() {
 
-        resultPromise.then(function(result) {
-          var query = queryResultsRaw.replace(/\$graphUri/g, graphUri)
-            .replace(/\$outcomeUri/g, row.variable.uri);
-          var resultAsString = testUtils.queryTeststore(query);
-          var results = testUtils.deFusekify(resultAsString);
-          expect(results.length).toBe(1);
-          expect(results[0].value).toEqual(inputColumn.value.toString());
-          done();
-        });
+        it('should add the value to the graph', function(done) {
+          var row = {
+            variable: {
+              uri: 'http://uri.com/var'
+            },
+            arm: {
+              uri: 'http://uri.com/arm'
+            },
+            measurementMoment: {
+              uri: 'http://uri.com/mm'
+            }
+          };
+          var inputColumn = {
+            valueName: 'value_name',
+            value: 123.4
+          };
+          // call the method to test
+          var resultPromise = resultsService.updateResultValue(row, inputColumn);
 
-        // fire in the hole !
-        rootScope.$digest();
-      });
-    });
-
-
-    ddescribe('updateResultValue', function() {
-      it('should save the value to the graph', function(done) {
-
-        var row = {
-          variable: {
-            uri: 'http://uri.com/var'
-          },
-          arm: {
-            uri: 'http://uri.com/arm'
-          },
-          measurementMoment: {
-            uri: 'http://uri.com/mm'
-          }
-        };
-        var valueName = 'value_name';
-        var inputColumn = {
-          value: 200.30
-        };
-        // call the method to test
-        var resultPromise = resultsService.updateResultValue(row, valueName, inputColumn).then(function() {
-          var query = queryResultsRaw.replace(/\$graphUri/g, graphUri)
-            .replace(/\$outcomeUri/g, row.variable.uri);
-          var resultAsString = testUtils.queryTeststore(query);
-          var results = testUtils.deFusekify(resultAsString);
-          row.uuid = results[0].instance;
-          resultsService.updateResultValue(row, valueName, inputColumn).then(function(result) {
+          resultPromise.then(function() {
+            var query = queryResultsRaw.replace(/\$graphUri/g, graphUri)
+              .replace(/\$outcomeUri/g, row.variable.uri);
+            var resultAsString = testUtils.queryTeststore(query);
+            var results = testUtils.deFusekify(resultAsString);
             expect(results.length).toBe(1);
             expect(results[0].value).toEqual(inputColumn.value.toString());
             done();
           });
+          // fire in the hole !
+          rootScope.$digest();
+        });
+      });
+
+      describe('when there is data in the graph', function() {
+        var inputColumn = {
+          valueName: 'value_name',
+          value: 123.30
+        };
+        var results;
+
+        beforeEach(function(done) {
+          var row = {
+            variable: {
+              uri: 'http://uri.com/var'
+            },
+            arm: {
+              uri: 'http://uri.com/arm'
+            },
+            measurementMoment: {
+              uri: 'http://uri.com/mm'
+            }
+          };
+
+          resultsService.updateResultValue(row, inputColumn).then(function() {
+            var query = queryResultsRaw.replace(/\$graphUri/g, graphUri)
+              .replace(/\$outcomeUri/g, row.variable.uri);
+            var resultAsString = testUtils.queryTeststore(query);
+            results = testUtils.deFusekify(resultAsString);
+            done();
+          });
+          rootScope.$digest();
+        });
+
+        ddescribe('if the new value is a value', function() {
+
+          it('should save the value to the graph', function(done) {
+            var row = {
+              variable: {
+                uri: 'http://uri.com/var'
+              },
+              arm: {
+                uri: 'http://uri.com/arm'
+              },
+              measurementMoment: {
+                uri: 'http://uri.com/mm'
+              },
+              uri: results[0].instance
+            };
+
+            inputColumn.value = 347856;
+            resultsService.updateResultValue(row, inputColumn).then(function() {
+              var query = queryResultsRaw.replace(/\$graphUri/g, graphUri)
+                .replace(/\$outcomeUri/g, row.variable.uri);
+              var updatedResults = testUtils.deFusekify(testUtils.queryTeststore(query));
+              expect(updatedResults.length).toBe(1);
+              expect(updatedResults[0].value).toEqual(inputColumn.value.toString());
+              console.log('res = ' + JSON.stringify(updatedResults));
+              done();
+            });
+          });
 
         });
 
-        // fire in the hole !
-        rootScope.$digest();
-      })
+        ddescribe('if the new value is null', function() {
+
+          it('should delete the value from the graph', function(done) {
+
+            var row = {
+              variable: {
+                uri: 'http://uri.com/var'
+              },
+              arm: {
+                uri: 'http://uri.com/arm'
+              },
+              measurementMoment: {
+                uri: 'http://uri.com/mm'
+              },
+              uri: results[0].instance
+            };
+            inputColumn.value = null;
+            resultsService.updateResultValue(row, inputColumn).then(function() {
+              var query = queryResultsRaw.replace(/\$graphUri/g, graphUri)
+                .replace(/\$outcomeUri/g, row.variable.uri);
+              var updatedResults = testUtils.deFusekify(testUtils.queryTeststore(query));
+              expect(updatedResults.length).toBe(0);
+              done();
+            });
+          });
+
+        });
+
+      });
     });
+
+
   });
 });

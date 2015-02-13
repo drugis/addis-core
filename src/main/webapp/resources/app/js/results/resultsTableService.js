@@ -9,9 +9,9 @@ define([],
 
       function createInputColumns(measurementType) {
         if (measurementType === CONTINUOUS_TYPE) {
-          return [{}, {}, {}];
+          return [{valueName: 'mean'}, {valueName: 'standard_deviation'}, {valueName: 'sample_size'}];
         } else if (measurementType === DICHOTOMOUS_TYPE) {
-          return [{}, {}]
+          return [{valueName: 'count'}, {valueName: 'sample_size'}];
         }
       }
 
