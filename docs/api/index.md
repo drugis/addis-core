@@ -188,10 +188,10 @@ Copying graphs from other datasets
 
 The meta-data associated with the graph (importantly, the `dcterms:subject`) is copied along with it.
 
-Comparing data to an existing graph
------------------------------------
+Staging changes
+---------------
 
-TODO: needed for commit pages.
+TODO: needed for commit pages. Start by creating a "working copy" of a graph, make changes to it, and retrieve those changes in PATCH fromat (see versioning).
 
 Authentication
 --------------
