@@ -10,6 +10,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     var measurementMomentServiceMock;
     var adverseEventService;
     var studyService;
+    var outcomeService;
 
     var addTemplateRaw;
     var addAdverseEventQueryRaw;
@@ -32,6 +33,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
     });
 
+    beforeEach(module('trialverse.outcome'));
     beforeEach(module('trialverse.adverseEvent'));
 
     beforeEach(function() {
@@ -47,23 +49,28 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
     });
 
-    beforeEach(inject(function($q, $rootScope, $httpBackend, AdverseEventService, StudyService) {
+    beforeEach(inject(function($q, $rootScope, $httpBackend, AdverseEventService, StudyService, OutcomeService) {
       q = $q;
       httpBackend = $httpBackend;
       rootScope = $rootScope;
       adverseEventService = AdverseEventService;
       studyService = StudyService;
 
+      outcomeService = OutcomeService;
+      spyOn(outcomeService, 'setOutcomeProperty');
+
       // reset the test graph
       testUtils.dropGraph(graphUri);
 
       // load service templates and flush httpBackend
+      testUtils.loadTemplate('setOutcomeResultProperty.sparql', httpBackend);
       addTemplateRaw = testUtils.loadTemplate('addTemplate.sparql', httpBackend);
       addAdverseEventQueryRaw = testUtils.loadTemplate('addAdverseEvent.sparql', httpBackend);
       adverseEventsQuery = testUtils.loadTemplate('queryAdverseEvent.sparql', httpBackend);
       deleteAdverseEventRaw = testUtils.loadTemplate('deleteAdverseEvent.sparql', httpBackend);
       editAdverseEventRaw = testUtils.loadTemplate('editAdverseEvent.sparql', httpBackend);
       queryAdverseEventMeasuredAtRaw = testUtils.loadTemplate('queryMeasuredAt.sparql', httpBackend);
+
       httpBackend.flush();
 
       // create and load empty test store
@@ -123,6 +130,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           expect(adverseEventsObject.length).toEqual(1);
           expect(adverseEventsObject[0].label).toEqual(adverseEvent.label);
           expect(adverseEventsObject[0].measurementType).toEqual(adverseEvent.measurementType);
+
+          // verify outcome properties are added
+          expect(outcomeService.setOutcomeProperty).toHaveBeenCalledWith(adverseEventWithMoments);
 
           // verify add measured at query
           var measuredAtQuery = queryAdverseEventMeasuredAtRaw.replace(/\$graphUri/g, graphUri);

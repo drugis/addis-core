@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'UUIDService', 'MeasurementMomentService', 'SparqlResource'];
-    var EndpointService = function($q, StudyService, UUIDService, MeasurementMomentService, SparqlResource) {
+    var dependencies = ['$q', 'StudyService', 'UUIDService', 'MeasurementMomentService', 'SparqlResource', 'OutcomeService'];
+    var EndpointService = function($q, StudyService, UUIDService, MeasurementMomentService, SparqlResource, OutcomeService) {
 
       var addTemplateRaw = SparqlResource.get('addTemplate.sparql');
 
@@ -57,7 +57,9 @@ define([],
             .replace(/\$UUID/g, newUUid)
             .replace('$label', endpoint.label)
             .replace('$measurementType', endpoint.measurementType);
-          return StudyService.doModifyingQuery(addEndpointQuery);
+          return StudyService.doModifyingQuery(addEndpointQuery).then(function(){
+            return OutcomeService.setOutcomeProperty(endpoint);
+          });
         });
 
         var addMeasuredAtPromise = addTemplateRaw.then(function(query) {
@@ -81,7 +83,9 @@ define([],
             .replace('$newLabel', item.label)
             .replace('$newMeasurementType', item.measurementType)
             .replace('$insertMeasurementMomentBlock', stringToInsert);
-          return StudyService.doModifyingQuery(editQuery);
+          return StudyService.doModifyingQuery(editQuery).then(function(){
+            return OutcomeService.setOutcomeProperty(endpoint);
+          });
         });
       }
 
