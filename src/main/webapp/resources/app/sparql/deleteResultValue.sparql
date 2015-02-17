@@ -1,9 +1,13 @@
 PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX instance: <http://trials.drugis.org/instances/>
 
 WITH <$graphUri>
 DELETE {
-  <$valueUri> ontology:$valueName ?value ;
+  <$resultUri> ?result_property ?value ;
 }
 WHERE{
-  <$valueUri> ontology:$valueName ?value ;
+  ?outcomeUri ontology:has_result_property ?result_property .
+  <$resultUri> ontology:of_outcome ?outcomeUri ;
+  	ontology:of_outcome ?outcomeUri ;
+    ?result_property ?value .
 }

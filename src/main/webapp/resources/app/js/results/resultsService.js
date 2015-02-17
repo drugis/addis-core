@@ -28,7 +28,7 @@ define([],
       }
 
       function performQueryWhenLoaded(queryPromise, row, inputColumn) {
-        queryPromise.then(function(query) {
+        return queryPromise.then(function(query) {
           var substituted = fillTemplate(query, row, inputColumn);
           return StudyService.doModifyingQuery(substituted);
         });

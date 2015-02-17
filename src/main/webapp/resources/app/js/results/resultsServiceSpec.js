@@ -9,11 +9,13 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     var remotestoreServiceStub;
     var studyService;
     var resultsService;
+    var outcomeVariableUri;
 
     var updateResultValueQueryRaw;
     var queryResultsRaw;
     var addResultValueRaw;
     var deleteResultsRaw;
+    var setOutcomeResultPropertyTemplate;
 
     beforeEach(function() {
       module('trialverse.util', function($provide) {
@@ -31,7 +33,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     beforeEach(module('trialverse.results'));
 
-    beforeEach(inject(function($q, $rootScope, $httpBackend, ResultsService, StudyService) {
+    beforeEach(inject(function($q, $rootScope, $httpBackend, ResultsService, StudyService, SparqlResource) {
       q = $q;
       httpBackend = $httpBackend;
       rootScope = $rootScope;
@@ -46,6 +48,10 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       updateResultValueQueryRaw = testUtils.loadTemplate('updateResultValue.sparql', httpBackend);
       queryResultsRaw = testUtils.loadTemplate('queryResults.sparql', httpBackend);
       deleteResultsRaw = testUtils.loadTemplate('deleteResultValue.sparql', httpBackend);
+
+      SparqlResource.get('setOutcomeResultProperty.sparql');
+      setOutcomeResultPropertyTemplate = testUtils.loadTemplate('setOutcomeResultProperty.sparql', httpBackend);
+
       httpBackend.flush();
 
       // create and load empty test store
@@ -60,6 +66,28 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       studyService.loadStore();
       createStoreDeferred.resolve(scratchStudyUri);
       loadStoreDeferred.resolve();
+
+      outcomeVariableUri = 'http://uri.com/var';
+
+      // add a outcome
+      var addOutcomeQuery = 'PREFIX instance: <http://trials.drugis.org/instances/>' +
+      ' PREFIX ontology: <http://trials.drugis.org/ontology#>' +
+      ' PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
+      ' ' + 
+      ' INSERT DATA {' +
+      '  graph <' + graphUri + '> {' +
+      '    <' + outcomeVariableUri+ '> '  +
+      '    rdfs:label "my outcome" ;' +
+      '    ontology:measurementType <http://trials.drugis.org/ontology#dichotomous> ;' +
+      '    rdfs:subClassOf ontology:Endpoint ; ' +
+      '    ontology:has_result_property ontology:count ;' + 
+      '    ontology:has_result_property ontology:sample_size . ' +
+      '  } ' + 
+      ' } ' ;
+
+      testUtils.executeUpdateQuery(addOutcomeQuery);
+
+
       rootScope.$digest();
 
       // stub remotestoreServiceStub.executeUpdate method
@@ -83,9 +111,10 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       describe('when there is not yet data in the graph', function() {
 
         it('should add the value to the graph', function(done) {
+
           var row = {
             variable: {
-              uri: 'http://uri.com/var'
+              uri: outcomeVariableUri
             },
             arm: {
               uri: 'http://uri.com/arm'
@@ -95,8 +124,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             }
           };
           var inputColumn = {
-            valueName: 'value_name',
-            value: 123.4
+            valueName: 'count',
+            value: 123
           };
           // call the method to test
           var resultPromise = resultsService.updateResultValue(row, inputColumn);
@@ -117,15 +146,15 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       describe('when there is data in the graph', function() {
         var inputColumn = {
-          valueName: 'value_name',
-          value: 123.30
+          valueName: 'sample_size',
+          value: 456
         };
         var results;
 
         beforeEach(function(done) {
           var row = {
             variable: {
-              uri: 'http://uri.com/var'
+              uri: outcomeVariableUri
             },
             arm: {
               uri: 'http://uri.com/arm'
@@ -150,7 +179,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           it('should save the value to the graph', function(done) {
             var row = {
               variable: {
-                uri: 'http://uri.com/var'
+                uri: outcomeVariableUri
               },
               arm: {
                 uri: 'http://uri.com/arm'
@@ -181,7 +210,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
             var row = {
               variable: {
-                uri: 'http://uri.com/var'
+                uri: outcomeVariableUri
               },
               arm: {
                 uri: 'http://uri.com/arm'
@@ -196,7 +225,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               var query = queryResultsRaw.replace(/\$graphUri/g, graphUri)
                 .replace(/\$outcomeUri/g, row.variable.uri);
               var updatedResults = testUtils.deFusekify(testUtils.queryTeststore(query));
-              expect(updatedResults.length).toBe(0);
+              expect(updatedResults[0].value).toBe(undefined);
               done();
             });
           });

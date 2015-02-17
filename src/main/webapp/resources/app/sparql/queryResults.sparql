@@ -6,7 +6,11 @@ SELECT * WHERE {
     ?instance
       ontology:of_outcome <$outcomeUri> ;
       ontology:of_arm ?armUri ;
-      ontology:of_moment ?momentUri ;
-      ontology:$valueName ?value ;
+      ontology:of_moment ?momentUri .
+    OPTIONAL {
+      ?instance ?result_property ?value .
+      <$outcomeUri> ontology:has_result_property ?result_property .
+    }
   }
 }
+
