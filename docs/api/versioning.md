@@ -8,6 +8,8 @@ This serves as a back-end to the datasets offered through the Trialverse API.
 It is less specific and constrained in a number of ways.
 Specifically, it is not concerned with authentication or authorization and will execute any request given to it, as long as it is a valid request.
 
+FIXME: THIS IS BROKEN - because no new version is created to correspond to a copy or merge, it is impossible to reliably reconstruct a version at a specific date/time. Fixing this would also allow merges to have a title/description.
+
 Data model
 ----------
 
@@ -36,7 +38,7 @@ The `?version` is further defined as:
   es:dataset ?dataset .
 ```
 
-Here, the `es:dataset` predicate identifies the dataset for which this version was originally created. If datasets are copied, this could become ambiguous. Most versions will also point to their predecessor using
+Here, the `es:dataset` predicate identifies the dataset for which this version was originally created. Most versions will also point to their predecessor using
 
 ```turtle
 ?version es:previous ?previousVersion .
@@ -118,6 +120,7 @@ The X-EventSource-Author header can be used to specify a URI identifying the aut
 POST /datasets HTTP/1.1
 Host: example.com
 X-EventSource-Author: http://example.com/GreenGoblin
+X-EventSource-Title: Initial version
 ```
 
 This will result in a `201 Created` response indicating both the location of the new dataset and the initial version ID.
@@ -134,9 +137,10 @@ A special route is available for copying (cloning) datasets:
 POST /datasets?copyOf=http://example.com/versions/7wi4xglx1c HTTP/1.1
 Host: example.com
 X-EventSource-Author: http://example.com/PeterParker
+X-EventSource-Title: Copy GreenGoblin/WhoIsSpiderman
 ```
 
-The response contract is identical.
+The response contract is identical, but in this case special meta-data will be attached to the initial version of this dataset to indicate it is a copy of another dataset.
 
 Updating and querying datasets
 ------------------------------
@@ -225,8 +229,12 @@ Merges will not be supported directly by the event sourcing store, but can be in
 How these meta-data are defined is to be determined.
 Essentially, they will add secondary parent states to a version or revision, for example using an `es:merged` predicate.
 
+TODO: describe basic merging model for datasets (taking "theirs").
+
 Example
 -------
+
+TODO: change the copy event to match actual model.
 
 Say the Green Goblin creates a dataset to state that, in fact, Peter Parker goes by the names "Peter Parker" and "Spiderman".
 
