@@ -14,5 +14,8 @@ define(function (require) {
 
     //services
     .factory('MeasurementMomentService', require('measurementMoment/measurementMomentService'))
+
+    //filter
+    .filter('anchorFilter', require('util/filters/anchorFilter'))
     ;
 });
