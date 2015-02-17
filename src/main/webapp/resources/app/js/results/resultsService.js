@@ -47,6 +47,13 @@ define([],
         }
       }
 
+      function queryResults(variableUri) {
+        return queryResultsRaw.then(function(template){
+          var query = template.replace(/\$outcomeUri/g, variableUri);
+            return StudyService.doNonModifyingQuery(query);
+        });
+      }
+
       function fillTemplate(template, row, inputColumn) {
         return template
           .replace(/\$resultUri/g, row.uri)
@@ -58,7 +65,8 @@ define([],
       }
 
       return {
-        updateResultValue: updateResultValue
+        updateResultValue: updateResultValue,
+        queryResults: queryResults
       };
     };
     return dependencies.concat(ResultsService);

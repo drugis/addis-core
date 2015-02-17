@@ -36,14 +36,14 @@ define([],
         return row;
       }
 
-      function createInputRows(variable, arms, measurementMoments) {
-        var result = [];
+      function createInputRows(variable, arms, measurementMoments, resultValues) {
+        var rows = [];
         _.forEach(variable.measuredAtMoments, function(measuredAtMoments) {
           _.forEach(arms, function(arm) {
-            result = result.concat(createRow(variable, arm, arms, measuredAtMoments, measurementMoments));
+            rows = rows.concat(createRow(variable, arm, arms, measuredAtMoments, measurementMoments));
           });
         });
-        return result;
+        return rows;
       }
 
       return {
