@@ -1,17 +1,13 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$filter'];
-  var AnchorFilter = function($filter) {
-    return function(anchorUri, offset) {
+  var dependencies = ['$filter', 'MeasurementMomentService'];
+  var AnchorFilter = function($filter, MeasurementMomentService) {
+    return function(measurementMoment) {
 
-      if (!anchorUri || !offset) {
+      if (!measurementMoment) {
         return undefined;
       } else {
-          var durationPart = $filter('durationFilter')(offset);
-          var prepositionPart =  durationPart === 'instantaneous' ? 'at' : 'from';
-          var anchorPart =  anchorUri === 'http://trials.drugis.org/ontology#anchorEpochStart' ? 'start' : 'end';
-         
-          return ' ' + prepositionPart + ' epoch ' + anchorPart;
+        return MeasurementMomentService.generateLabel(measurementMoment);
       }
     };
   };
