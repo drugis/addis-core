@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'UUIDService', 'SparqlResource', 'MeasurementMomentService'];
-    var PopulationCharacteristicService = function($q, StudyService, UUIDService, SparqlResource, MeasurementMomentService) {
+    var dependencies = ['$q', 'StudyService', 'UUIDService', 'SparqlResource', 'MeasurementMomentService', 'OutcomeService'];
+    var PopulationCharacteristicService = function($q, StudyService, UUIDService, SparqlResource, MeasurementMomentService, OutcomeService) {
 
       var addTemplateRaw = SparqlResource.get('addTemplate.sparql');
 
@@ -10,7 +10,6 @@ define([],
       var populationCharacteristicsQuery = SparqlResource.get('queryPopulationCharacteristic.sparql');
       var deletePopulationCharacteristicRaw = SparqlResource.get('deletePopulationCharacteristic.sparql');
       var editPopulationCharacteristicRaw = SparqlResource.get('editPopulationCharacteristic.sparql');
-      var setOutcomeResultPropertyTemplate = SparqlResource.get('setOutcomeResultProperty.sparql');
 
       var queryAdverseEventMeasuredAtRaw = SparqlResource.get('queryMeasuredAt.sparql');
 
@@ -59,7 +58,9 @@ define([],
             .replace(/\$UUID/g, newUUid)
             .replace('$label', item.label)
             .replace('$measurementType', item.measurementType);
-          return StudyService.doModifyingQuery(addPopulationCharacteristicQuery);
+          return StudyService.doModifyingQuery(addPopulationCharacteristicQuery).then(function(){
+            return OutcomeService.setOutcomeProperty(item);
+          });
         });
 
         var addMeasuredAtPromise = addTemplateRaw.then(function(query) {
@@ -67,12 +68,7 @@ define([],
           return StudyService.doModifyingQuery(addMeasuredAtQuery);
         });
 
-        var setOutcomeResultPropertyPromise = setOutcomeResultPropertyTemplate.then(function(template){
-          var query = template.replace('')
-          return StudyService.doModifyingQuery(query);
-        });
-
-        return $q.all([addItemPromise, addMeasuredAtPromise, setOutcomeResultPropertyPromise]);
+        return $q.all([addItemPromise, addMeasuredAtPromise]);
       }
 
       function deleteItem(item) {
@@ -89,7 +85,9 @@ define([],
             .replace('$newLabel', item.label)
             .replace('$newMeasurementType', item.measurementType)
             .replace('$insertMeasurementMomentBlock', stringToInsert);
-          return StudyService.doModifyingQuery(editQuery);
+          return StudyService.doModifyingQuery(editQuery).then(function(){
+            return OutcomeService.setOutcomeProperty(item);
+          });
         });
       }
 
