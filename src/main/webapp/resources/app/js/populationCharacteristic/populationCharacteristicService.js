@@ -10,6 +10,7 @@ define([],
       var populationCharacteristicsQuery = SparqlResource.get('queryPopulationCharacteristic.sparql');
       var deletePopulationCharacteristicRaw = SparqlResource.get('deletePopulationCharacteristic.sparql');
       var editPopulationCharacteristicRaw = SparqlResource.get('editPopulationCharacteristic.sparql');
+      var setOutcomeResultPropertyTemplate = SparqlResource.get('setOutcomeResultProperty.sparql');
 
       var queryAdverseEventMeasuredAtRaw = SparqlResource.get('queryMeasuredAt.sparql');
 
@@ -66,7 +67,12 @@ define([],
           return StudyService.doModifyingQuery(addMeasuredAtQuery);
         });
 
-        return $q.all([addItemPromise, addMeasuredAtPromise]);
+        var setOutcomeResultPropertyPromise = setOutcomeResultPropertyTemplate.then(function(template){
+          var query = template.replace('')
+          return StudyService.doModifyingQuery(query);
+        });
+
+        return $q.all([addItemPromise, addMeasuredAtPromise, setOutcomeResultPropertyPromise]);
       }
 
       function deleteItem(item) {

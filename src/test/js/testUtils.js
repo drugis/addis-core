@@ -4,13 +4,14 @@ define('testUtils', ['lodash'],
         var testFusekiUri = 'http://localhost:9876/scratch';
         return {
             queryTeststore: function(query) {
+                console.log('queryTeststore query = ' + query);
                 var xmlHTTP = new XMLHttpRequest();
                 xmlHTTP.open('POST', testFusekiUri + '/query?output=json', false);
                 xmlHTTP.setRequestHeader('Content-type', 'application/sparql-query');
                 xmlHTTP.setRequestHeader('Accept', 'application/ld+json');
                 xmlHTTP.send(query);
                 var result = xmlHTTP.responseText;
-                //console.log('queryTeststore result = ' + result);
+                console.log('queryTeststore result = ' + result);
                 return result;
             },
             dropGraph: function(uri) {
@@ -36,6 +37,7 @@ define('testUtils', ['lodash'],
                 return xmlHTTP.responseText;
             },
             deFusekify: function(data) {
+                console.log('deFusekify on : ' + data);
                 var json = JSON.parse(data);
                 var bindings = json.results.bindings;
                 return _.map(bindings, function(binding) {

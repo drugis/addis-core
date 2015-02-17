@@ -13,6 +13,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     var updateResultValueQueryRaw;
     var queryResultsRaw;
     var addResultValueRaw;
+    var deleteResultsRaw;
 
     beforeEach(function() {
       module('trialverse.util', function($provide) {
@@ -44,6 +45,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       addResultValueRaw = testUtils.loadTemplate('addResultValue.sparql', httpBackend);
       updateResultValueQueryRaw = testUtils.loadTemplate('updateResultValue.sparql', httpBackend);
       queryResultsRaw = testUtils.loadTemplate('queryResults.sparql', httpBackend);
+      deleteResultsRaw = testUtils.loadTemplate('deleteResultValue.sparql', httpBackend);
       httpBackend.flush();
 
       // create and load empty test store
@@ -143,7 +145,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           rootScope.$digest();
         });
 
-        ddescribe('if the new value is a value', function() {
+        describe('if the new value is a value', function() {
 
           it('should save the value to the graph', function(done) {
             var row = {
@@ -173,7 +175,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
         });
 
-        ddescribe('if the new value is null', function() {
+        describe('if the new value is null', function() {
 
           it('should delete the value from the graph', function(done) {
 
