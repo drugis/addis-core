@@ -15,14 +15,10 @@ define([], function() {
       },
       link: function(scope) {
 
-        var queryResultsDefer = $q.defer();
-        ResultsService.queryResults(scope.variable.uri).then(function(result) {
-          scope.results = results;
-          queryResultsDefer.resolve();
-        });
+        scope.results = ResultsService.queryResults(scope.variable.uri);
 
-        $q.all([scope.arms, scope.measurementMoments, queryResultsDefer.promise]).then(function() {
-          scope.inputRows = ResultsTableService.createInputRows(scope.variable, scope.arms, scope.measurementMoments, scope.results);
+        $q.all([scope.arms, scope.measurementMoments, scope.results]).then(function() {
+          scope.inputRows = ResultsTableService.createInputRows(scope.variable, scope.arms, scope.measurementMoments, scope.results.$$state.value);
           scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.measurementType);
         });
 

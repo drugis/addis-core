@@ -54,7 +54,7 @@ define(['angular', 'angular-mocks'], function() {
       });
 
       it('should set the number of arms', function() {
-        expect(resultRows[0].nArms).toEqual(3);
+        expect(resultRows[0].numberOfArms).toEqual(3);
       });
       it('should return one row for each combination of arm and measurement moment at which the variable is measured', function() {
         expect(resultRows.length).toEqual(6);
