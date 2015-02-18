@@ -58,7 +58,7 @@ define([],
         return template
           .replace(/\$resultUri/g, row.uri)
           .replace(/\$outcomeUri/g, row.variable.uri)
-          .replace(/\$armUri/g, row.arm.uri)
+          .replace(/\$armUri/g, row.arm.armURI)
           .replace(/\$momentUri/g, row.measurementMoment.uri)
           .replace(/\$valueType/g, inputColumn.valueName)
           .replace(/\$actualValue/g, inputColumn.value);
