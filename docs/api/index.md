@@ -11,8 +11,6 @@ This document draws on a number of standards and specifications, see
  - [SPARQL 1.1 Service Description](http://www.w3.org/TR/sparql11-service-description/)
  - [Describing Linked Datasets with the VoID Vocabulary](http://www.w3.org/TR/void/)
 
-TODO: use case of making corrections to single study.
-
 Base URI
 --------
 
@@ -103,7 +101,8 @@ SPARQL protocol query endpoint (read only) for the latest version of this datase
 
 SPARQL protocol update endpoint for the latest version of this dataset.
 Expects the request headers `X-EventSource-Title` (required) and `X-EventSource-Description` (optional) containing a human-readable short- and long-form description of the change (see [Versioning](versioning.html)).
-The server returns a response header `X-Trialverse-Revision` containing the URI of the created version (TODO: could also be a `Link:`) - note that this URI will be different from the one specified under [Versioning](versioning.html), as the Trialverse API exposes versions through a different endpoint.
+The server returns a response header `X-Trialverse-Version` containing the URI of the created version.
+Note that this URI will be different from the one specified under [Versioning](versioning.html), as the Trialverse API exposes versions through a different endpoint.
 
 ```
 /users/:user-id/datasets/:dataset-id/graphs/:graph-id
@@ -131,6 +130,7 @@ When creating a graph using the SPARQL graph store API, an initial value for the
  - The topic URI is inferred from the RDF content, as the unique root of the RDF graph
 
 It is likely that the latter is a good default, and the former will be needed for more advanced use cases.
+If the `X-TrialVerse-Subject` header is not present, and the graph has no unique root, the server responds with `400 Bad Request`.
 
 Versions of datasets
 --------------------
@@ -192,7 +192,7 @@ The meta-data associated with the graph (importantly, the `dcterms:subject`) is 
 Staging changes
 ---------------
 
-TODO: needed for commit pages. Start by creating a "working copy" of a graph, make changes to it, and retrieve those changes in PATCH fromat (see versioning).
+TODO: needed for commit pages. Start by creating a "working copy" of a graph, then make changes to it, and retrieve those changes as a set of additions and retractions. Note that these do not need to be portable, and so can make reference to blank nodes. As such, the format need not be TurtlePatch, and the graph need not be skolemized (see [Versioning](versioning.html)).
 
 Authentication
 --------------
