@@ -85,7 +85,6 @@ define([],
       };
 
       var navbar = document.getElementsByClassName("side-nav");
-
       angular.element($window).bind("scroll", function() {
             $(navbar[0]).css('margin-top', this.pageYOffset );
             $scope.$apply();
@@ -120,6 +119,11 @@ define([],
       // onload
       reloadStudyModel();
       reloadDatasetModel();
+
+      $scope.$on('updateStudyDesign', function(event, args){
+        console.log('update design');
+        $scope.$broadcast('refreshResults', event);
+      });
 
       $scope.isStudyModified = function() {
         return StudyService.isStudyModified();

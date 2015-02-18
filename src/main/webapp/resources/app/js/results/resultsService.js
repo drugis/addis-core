@@ -35,6 +35,7 @@ define([],
       }
 
       function updateResultValue(row, inputColumn) {
+        console.log('update');
         if (!row.uri) {
           row.uri = 'http://trials.drugis.org/instances/' + UUIDService.generate();
           return addNewResultValue(row, inputColumn);

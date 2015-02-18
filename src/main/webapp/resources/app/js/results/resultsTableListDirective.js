@@ -13,25 +13,40 @@ define([], function() {
       link: function(scope) {
         var variableService = $injector.get(scope.variableType + 'Service');
         var variablesPromise, armsPromise;
+
         scope.showResults = false;
 
-        armsPromise = ArmService.queryItems($stateParams.studyUUID).then(function(result) {
-          scope.arms = result;
-          return result;
+        scope.$on('refreshResults', function(event, args){
+          console.log('now update the results');
+          reloadResultTables();
         });
-        scope.measurementMoments = MeasurementMomentService.queryItems($stateParams.studyUUID).then(function(result) {
-          scope.measurementMoments = result;
-          return result;
-        });
-        variablesPromise = variableService.queryItems($stateParams.studyUUID).then(function(result) {
-          scope.variables = result;
-        });
-        $q.all([armsPromise, variablesPromise]).then(function() {
-          var isAnyMeasuredVariable = _.find(scope.variables, function(variable) {
-            return variable.measuredAtMoments.length > 0;
+
+        function reloadResultTables() {
+
+          armsPromise = ArmService.queryItems($stateParams.studyUUID).then(function(result) {
+            scope.arms = result;
+            return result;
           });
-          scope.showResults = isAnyMeasuredVariable && scope.arms.length > 0;
-        });
+
+          scope.measurementMoments = MeasurementMomentService.queryItems($stateParams.studyUUID).then(function(result) {
+            scope.measurementMoments = result;
+            return result;
+          });
+
+          variablesPromise = variableService.queryItems($stateParams.studyUUID).then(function(result) {
+            scope.variables = result;
+          });
+
+          $q.all([armsPromise, variablesPromise]).then(function() {
+            var isAnyMeasuredVariable = _.find(scope.variables, function(variable) {
+              return variable.measuredAtMoments.length > 0;
+            });
+            scope.showResults = isAnyMeasuredVariable && scope.arms.length > 0;
+          });
+        }
+
+         reloadResultTables();
+
       }
     };
   };
