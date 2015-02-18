@@ -62,6 +62,12 @@ define([],
           numberOfArms: numberOfArms,
           inputColumns: createInputColumns(variable, rowValueObjects)
         };
+
+        // if this row has any values set we need to save the instance uri on the row to use for update or delete
+        if(rowValueObjects && rowValueObjects.length > 0){
+          row.uri = rowValueObjects[0].instance;
+        }
+        
         return row;
       }
 
