@@ -1,8 +1,8 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$q', '$injector', '$stateParams', 'ArmService', 'MeasurementMomentService'];
+  var dependencies = ['$q', '$injector', '$stateParams', 'ArmService', 'MeasurementMomentService', 'ResultsService'];
 
-  var resultsTableListDirective = function($q, $injector, $stateParams, ArmService, MeasurementMomentService) {
+  var resultsTableListDirective = function($q, $injector, $stateParams, ArmService, MeasurementMomentService, ResultsService) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/results/resultsTableListDirective.html',
@@ -13,12 +13,11 @@ define([], function() {
       link: function(scope) {
         var variableService = $injector.get(scope.variableType + 'Service');
         var variablesPromise, armsPromise;
-
         scope.showResults = false;
 
         scope.$on('refreshResults', function(event, args){
-          console.log('now update the results');
-          reloadResultTables();
+          console.log('now cleanUpMeasurements and reload tha tables');
+          ResultsService.cleanUpMeasurements().then(reloadResultTables);
         });
 
         function reloadResultTables() {
@@ -45,7 +44,7 @@ define([], function() {
           });
         }
 
-         reloadResultTables();
+        reloadResultTables();
 
       }
     };

@@ -8,6 +8,7 @@ define([],
       var updateResultValueQueryRaw = SparqlResource.get('updateResultValue.sparql');
       var queryResultsRaw = SparqlResource.get('queryResults.sparql');
       var deleteResultValueRaw = SparqlResource.get('deleteResultValue.sparql');
+      var cleanUpMeasurementsTemplate = SparqlResource.get('cleanUpMeasurements.sparql');
 
       function addNewResultValue(row, inputColumn) {
         return addResultValueRaw.then(function(query) {
@@ -55,6 +56,12 @@ define([],
         });
       }
 
+      function cleanUpMeasurements() {
+        return cleanUpMeasurementsTemplate.then(function(template) {
+          return StudyService.doModifyingQuery(template);
+        });
+      }
+
       function fillTemplate(template, row, inputColumn) {
         return template
           .replace(/\$resultUri/g, row.uri)
@@ -67,7 +74,8 @@ define([],
 
       return {
         updateResultValue: updateResultValue,
-        queryResults: queryResults
+        queryResults: queryResults,
+        cleanUpMeasurements: cleanUpMeasurements
       };
     };
     return dependencies.concat(ResultsService);

@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
-  describe('the adverse event service', function() {
+  describe('the resultService service', function() {
 
     var graphUri = 'http://karma-test/';
     var scratchStudyUri = 'http://localhost:9876/scratch';
@@ -16,6 +16,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     var addResultValueRaw;
     var deleteResultsRaw;
     var setOutcomeResultPropertyTemplate;
+    var cleanUpMeasurementsTemplate;
 
     beforeEach(function() {
       module('trialverse.util', function($provide) {
@@ -48,6 +49,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       updateResultValueQueryRaw = testUtils.loadTemplate('updateResultValue.sparql', httpBackend);
       queryResultsRaw = testUtils.loadTemplate('queryResults.sparql', httpBackend);
       deleteResultsRaw = testUtils.loadTemplate('deleteResultValue.sparql', httpBackend);
+      cleanUpMeasurementsTemplate = testUtils.loadTemplate('cleanUpMeasurements.sparql', httpBackend);
 
       SparqlResource.get('setOutcomeResultProperty.sparql');
       setOutcomeResultPropertyTemplate = testUtils.loadTemplate('setOutcomeResultProperty.sparql', httpBackend);
@@ -86,7 +88,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       ' } ' ;
 
       testUtils.executeUpdateQuery(addOutcomeQuery);
-
 
       rootScope.$digest();
 
@@ -234,6 +235,30 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         });
 
       });
+    });
+    // end describe updateResultValue
+
+
+    describe('cleanUpMeasurements', function() {
+      beforeEach(function(done) {
+        // load some mock graph with orphan results 
+        
+        // call cleanup
+        resultsService.cleanUpMeasurements().then(done);
+        rootScope.$digest();
+      });
+
+      it('should have removed the orphan items', function(done){
+        // query graph
+        var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o . } } '; 
+        var results = testUtils.deFusekify(testUtils.queryTeststore(query));
+
+        // verify orphan triples are missing
+        expect(true).toBe(false); // TODO implement test
+        done();
+      })
+
+
     });
 
 

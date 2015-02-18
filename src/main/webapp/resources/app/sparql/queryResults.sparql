@@ -11,4 +11,3 @@ SELECT * WHERE {
       <$outcomeUri> ontology:has_result_property ?result_property .
   }
 }
-
