@@ -41,7 +41,16 @@ define(['angular', 'angular-mocks'], function() {
           }],
           measurementType: {}
         };
-        arms = ['arm 1', 'arm 2', 'arm 3'];
+        arms = [{
+          label: 'arm 1',
+          armURI: 'http://arms/arm1'
+        },{
+          label: 'arm 2',
+          armURI: 'http://arms/arm2'
+        },{
+          label: 'arm 3',
+          armURI: 'http://arms/arm3'
+        }];
         measurementMoments = [{
           uri: 'uri 1',
         }, {
@@ -76,14 +85,24 @@ define(['angular', 'angular-mocks'], function() {
 
       describe('for a continuous type', function() {
         beforeEach(function() {
+          var results = [
+            {
+              armUri: arms[0].armURI,
+              instance: 'http://instance/1',
+              momentUri: measurementMoments[0].uri,
+              result_property: 'http://trials.drugis.org/ontology#mean',
+              value: '2'
+            }
+          ];
           variable.measurementType = resultsTableService.CONTINUOUS_TYPE;
-          resultRows = resultsTableService.createInputRows(variable, arms, measurementMoments);
+          resultRows = resultsTableService.createInputRows(variable, arms, measurementMoments, results);
         });
 
         it('should create input columns', function() {
           expect(resultRows[0].inputColumns).toBeDefined();
           expect(resultRows[0].inputColumns.length).toBe(3);
           expect(resultRows[0].inputColumns[0].valueName).toEqual('mean');
+          expect(resultRows[0].inputColumns[0].value).toEqual(2);
           expect(resultRows[0].inputColumns[1].valueName).toEqual('standard_deviation');
           expect(resultRows[0].inputColumns[2].valueName).toEqual('sample_size');
         });
@@ -91,14 +110,24 @@ define(['angular', 'angular-mocks'], function() {
 
       describe('for a dichotomous type', function() {
         beforeEach(function() {
+          var results = [
+            {
+              armUri: arms[0].armURI,
+              instance: 'http://instance/2',
+              momentUri: measurementMoments[0].uri,
+              result_property: 'http://trials.drugis.org/ontology#count',
+              value: '66'
+            }
+          ];
           variable.measurementType = resultsTableService.DICHOTOMOUS_TYPE;
-          resultRows = resultsTableService.createInputRows(variable, arms, measurementMoments);
+          resultRows = resultsTableService.createInputRows(variable, arms, measurementMoments, results);
         });
 
         it('should create input columns', function() {
           expect(resultRows[0].inputColumns).toBeDefined();
           expect(resultRows[0].inputColumns.length).toBe(2);
           expect(resultRows[0].inputColumns[0].valueName).toEqual('count');
+          expect(resultRows[0].inputColumns[0].value).toEqual(66);
           expect(resultRows[0].inputColumns[1].valueName).toEqual('sample_size');
         });
       });
