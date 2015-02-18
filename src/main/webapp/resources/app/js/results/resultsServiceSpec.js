@@ -135,9 +135,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               .replace(/\$outcomeUri/g, row.variable.uri);
             var resultAsString = testUtils.queryTeststore(query);
             var results = testUtils.deFusekify(resultAsString);
-            expect(results.length).toBe(2);
-            expect(results[0].value).toEqual(undefined);
-            expect(results[1].value).toEqual(inputColumn.value.toString());
+            expect(results.length).toBe(1);
+            expect(results[0].value).toEqual(inputColumn.value.toString());
             done();
           });
           // fire in the hole !
@@ -196,9 +195,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               var query = queryResultsRaw.replace(/\$graphUri/g, graphUri)
                 .replace(/\$outcomeUri/g, row.variable.uri);
               var updatedResults = testUtils.deFusekify(testUtils.queryTeststore(query));
-              expect(updatedResults.length).toBe(2);
+              expect(updatedResults.length).toBe(1);
               expect(updatedResults[0].value).toEqual(inputColumn.value.toString());
-              expect(updatedResults[1].value).toEqual(undefined);
               console.log('res = ' + JSON.stringify(updatedResults));
               done();
             });
@@ -228,7 +226,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               var query = queryResultsRaw.replace(/\$graphUri/g, graphUri)
                 .replace(/\$outcomeUri/g, row.variable.uri);
               var updatedResults = testUtils.deFusekify(testUtils.queryTeststore(query));
-              expect(updatedResults[0].value).toBe(undefined);
+              expect(updatedResults.length).toBe(0);
               done();
             });
           });
