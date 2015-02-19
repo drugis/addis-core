@@ -2,6 +2,9 @@
 define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
   describe('the resultService service', function() {
 
+    var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
+    var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
+
     var graphUri = 'http://karma-test/';
     var scratchStudyUri = 'http://localhost:9876/scratch';
 
@@ -83,6 +86,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         '    ontology:measurementType <http://trials.drugis.org/ontology#dichotomous> ;' +
         '    rdfs:subClassOf ontology:Endpoint ; ' +
         '    ontology:has_result_property ontology:count ;' +
+        '    ontology:has_result_property ontology:mean ; ' +
         '    ontology:has_result_property ontology:sample_size . ' +
         '  } ' +
         ' } ';
@@ -126,7 +130,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           };
           var inputColumn = {
             valueName: 'count',
-            value: 123
+            value: 123,
+            dataType: INTEGER_TYPE
           };
           // call the method to test
           var resultPromise = resultsService.updateResultValue(row, inputColumn);
@@ -135,6 +140,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             var query = queryResultsRaw.replace(/\$graphUri/g, graphUri)
               .replace(/\$outcomeUri/g, row.variable.uri);
             var resultAsString = testUtils.queryTeststore(query);
+            var resultAsObject = JSON.parse(resultAsString);
+            expect('<' + resultAsObject.results.bindings[0].value.datatype + '>').toEqual(INTEGER_TYPE);
             var results = testUtils.deFusekify(resultAsString);
             expect(results.length).toBe(1);
             expect(results[0].value).toEqual(inputColumn.value.toString());
@@ -147,8 +154,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       describe('when there is data in the graph', function() {
         var inputColumn = {
-          valueName: 'sample_size',
-          value: 456
+          valueName: 'mean',
+          value: 456,
+          dataType: DOUBLE_TYPE
         };
         var results;
 
@@ -195,7 +203,10 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             resultsService.updateResultValue(row, inputColumn).then(function() {
               var query = queryResultsRaw.replace(/\$graphUri/g, graphUri)
                 .replace(/\$outcomeUri/g, row.variable.uri);
-              var updatedResults = testUtils.deFusekify(testUtils.queryTeststore(query));
+              var resultAsString = testUtils.queryTeststore(query);
+              var updatedResults = testUtils.deFusekify(resultAsString);
+              var resultAsObject = JSON.parse(resultAsString);
+              expect('<' + resultAsObject.results.bindings[0].value.datatype + '>').toEqual(DOUBLE_TYPE);
               expect(updatedResults.length).toBe(1);
               expect(updatedResults[0].value).toEqual(inputColumn.value.toString());
               console.log('res = ' + JSON.stringify(updatedResults));
@@ -222,7 +233,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               uri: results[0].instance
             };
             inputColumn.value = null;
-            inputColumn.valueName = 'sample_size';
+            inputColumn.valueName = 'mean';
             resultsService.updateResultValue(row, inputColumn).then(function() {
               var query = queryResultsRaw.replace(/\$graphUri/g, graphUri)
                 .replace(/\$outcomeUri/g, row.variable.uri);
@@ -309,7 +320,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           '} ';
 
         var updatedResults = testUtils.deFusekify(testUtils.queryTeststore(query));
-        
+
         // verify orphan triples are missing
         expect(updatedResults[0].mean).toBe(undefined);
         expect(updatedResults[0].standard_deviation).toBe(undefined);

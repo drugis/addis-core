@@ -35,24 +35,33 @@ define([],
         });
       }
 
+      function createTypedInputColumn(inputColumn) {
+        var result = angular.copy(inputColumn);
+        if (inputColumn.value) {
+          result.value = '"' + inputColumn.value + '"' + '^^' + inputColumn.dataType;
+        }
+        return result;
+      }
+
       function updateResultValue(row, inputColumn) {
         console.log('update');
+        var typedInputColumn = createTypedInputColumn(inputColumn);
         if (!row.uri) {
           row.uri = 'http://trials.drugis.org/instances/' + UUIDService.generate();
-          return addNewResultValue(row, inputColumn);
+          return addNewResultValue(row, typedInputColumn);
         } else {
-          if (inputColumn.value === null) {
-            return deleteExistingValue(row, inputColumn);
+          if (typedInputColumn.value === null) {
+            return deleteExistingValue(row, typedInputColumn);
           } else {
-            return updateExistingResultValue(row, inputColumn);
+            return updateExistingResultValue(row, typedInputColumn);
           }
         }
       }
 
       function queryResults(variableUri) {
-        return queryResultsRaw.then(function(template){
+        return queryResultsRaw.then(function(template) {
           var query = template.replace(/\$outcomeUri/g, variableUri);
-            return StudyService.doNonModifyingQuery(query);
+          return StudyService.doNonModifyingQuery(query);
         });
       }
 

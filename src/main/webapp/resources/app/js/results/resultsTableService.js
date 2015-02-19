@@ -7,6 +7,9 @@ define([],
       var CONTINUOUS_TYPE = 'http://trials.drugis.org/ontology#continuous';
       var DICHOTOMOUS_TYPE = 'http://trials.drugis.org/ontology#dichotomous';
 
+      var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
+      var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
+
       var MEAN_TYPE = 'http://trials.drugis.org/ontology#mean';
       var STANDARD_DEVIATION_TYPE = 'http://trials.drugis.org/ontology#standard_deviation';
       var SAMPLE_SIZE_TYPE = 'http://trials.drugis.org/ontology#sample_size';
