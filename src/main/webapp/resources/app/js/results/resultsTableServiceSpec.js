@@ -138,5 +138,55 @@ define(['angular', 'angular-mocks'], function() {
 
     });
 
+    fdescribe('isValidValue', function() {
+      it('should return true for null', function() {
+        var column = {
+          value: null
+        };
+        expect(resultsTableService.isValidValue(column)).toBe(true);
+      });
+      it('should return false for undefined', function() {
+        var column = {
+          value: undefined
+        };
+        expect(resultsTableService.isValidValue(column)).toBe(false);
+      });
+      it('should return true for a float value in a float column', function() {
+        var column1 = {
+          value: 3.2,
+          dataType: DOUBLE_TYPE
+        }
+        var column2 = {
+          value: 3,
+          dataType: DOUBLE_TYPE
+        }
+        expect(resultsTableService.isValidValue(column1)).toBe(true);
+        expect(resultsTableService.isValidValue(column2)).toBe(true);
+      });
+      it('should return false for a float value in an integer column', function() {
+        var column = {
+          value: 3.2,
+          dataType: INTEGER_TYPE
+        }
+        expect(resultsTableService.isValidValue(column)).toBe(false);
+      });
+      it('should return false for a non-numeric value', function() {
+        var column1 = {
+          value: 'test',
+          dataType: INTEGER_TYPE
+        }
+        var column2 = {
+          value: 'test',
+          dataType: DOUBLE_TYPE
+        }
+        var column3 = {
+          value: '1.23abc',
+          dataType: DOUBLE_TYPE
+        }
+        expect(resultsTableService.isValidValue(column1)).toBe(false);
+        expect(resultsTableService.isValidValue(column2)).toBe(false);
+        expect(resultsTableService.isValidValue(column3)).toBe(false);
+      });
+    });
   });
 });

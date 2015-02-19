@@ -23,8 +23,11 @@ define([], function() {
         });
 
         scope.updateValue = function(row, column) {
-          ResultsService.updateResultValue(row, column);
+          if(ResultsTableService.isValidValue(column)) {
+            ResultsService.updateResultValue(row, column);
+          }
         }
+        
       }
     };
   };

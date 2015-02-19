@@ -97,9 +97,32 @@ define([],
         return rows;
       }
 
-      return {
+      function isValidValue(inputColumn) {
+        if (inputColumn.value === undefined) {
+          return false;
+        }
+        if (inputColumn.value) {
+          if(inputColumn.dataType === INTEGER_TYPE) {
+            return Number.isInteger(inputColumn.value);
+          } else if (inputColumn.dataType === DOUBLE_TYPE) {
+            return !isNaN(filterFloat(inputColumn.value));
+          }
+        } else {
+          return true;
+        }
+      }
+
+      var filterFloat = function (value) {
+        if(/^(\-|\+)?([0-9]+(\.[0-9]+)?|Infinity)$/.test(value)) {
+          return Number(value);
+        }
+      return NaN;
+    }
+
+    return {
         createInputRows: createInputRows,
         createHeaders: createHeaders,
+        isValidValue: isValidValue,
         CONTINUOUS_TYPE: CONTINUOUS_TYPE,
         DICHOTOMOUS_TYPE: DICHOTOMOUS_TYPE
       };

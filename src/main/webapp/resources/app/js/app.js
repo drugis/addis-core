@@ -38,6 +38,13 @@ define(
       'trialverse.results'
     ];
 
+
+    Number.isInteger = Number.isInteger || function(value) {
+    return typeof value === "number" && 
+           isFinite(value) && 
+           Math.floor(value) === value;
+    };
+
     var app = angular.module('trialverse', dependencies);
 
     app.run(['$rootScope', '$window', '$http',
