@@ -16,7 +16,6 @@ define([], function() {
         scope.showResults = false;
 
         scope.$on('refreshResults', function(event, args){
-          console.log('now cleanUpMeasurements and reload tha tables');
           ResultsService.cleanUpMeasurements().then(reloadResultTables);
         });
 

@@ -73,19 +73,19 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       // add a outcome
       var addOutcomeQuery = 'PREFIX instance: <http://trials.drugis.org/instances/>' +
-      ' PREFIX ontology: <http://trials.drugis.org/ontology#>' +
-      ' PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
-      ' ' + 
-      ' INSERT DATA {' +
-      '  graph <' + graphUri + '> {' +
-      '    <' + outcomeVariableUri+ '> '  +
-      '    rdfs:label "my outcome" ;' +
-      '    ontology:measurementType <http://trials.drugis.org/ontology#dichotomous> ;' +
-      '    rdfs:subClassOf ontology:Endpoint ; ' +
-      '    ontology:has_result_property ontology:count ;' + 
-      '    ontology:has_result_property ontology:sample_size . ' +
-      '  } ' + 
-      ' } ' ;
+        ' PREFIX ontology: <http://trials.drugis.org/ontology#>' +
+        ' PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
+        ' ' +
+        ' INSERT DATA {' +
+        '  graph <' + graphUri + '> {' +
+        '    <' + outcomeVariableUri + '> ' +
+        '    rdfs:label "my outcome" ;' +
+        '    ontology:measurementType <http://trials.drugis.org/ontology#dichotomous> ;' +
+        '    rdfs:subClassOf ontology:Endpoint ; ' +
+        '    ontology:has_result_property ontology:count ;' +
+        '    ontology:has_result_property ontology:sample_size . ' +
+        '  } ' +
+        ' } ';
 
       testUtils.executeUpdateQuery(addOutcomeQuery);
 
@@ -239,26 +239,25 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     // end describe updateResultValue
 
 
-    describe('cleanUpMeasurements', function() {
+    describe('cleanUpMeasurements when deleting an arm', function() {
 
       beforeEach(function(done) {
         // load some mock graph with orphan results 
         var xmlHTTP = new XMLHttpRequest();
-        xmlHTTP.open('GET', 'base/test_graphs/cleanUpTestDirtyGraph.ttl', false);
+        xmlHTTP.open('GET', 'base/test_graphs/cleanUpTestArmDeletedDirtyGraph.ttl', false);
         xmlHTTP.send(null);
         var dirtyGraph = xmlHTTP.responseText;
 
-        xmlHTTP.open('PUT', scratchStudyUri + '/data?graph='+graphUri, false);
+        xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
         xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
         xmlHTTP.send(dirtyGraph);
-        
+
         // call cleanup
         resultsService.cleanUpMeasurements().then(done);
         rootScope.$digest();
-      done();
       });
 
-      it('should have removed the orphan items', function(done){
+      it('should have removed the orphan items', function(done) {
 
         var variableToBeCleaned = 'http://trials.drugis.org/instances/69310a30-308f-4ee4-b70d-d29166acb9f3';
 
@@ -267,13 +266,103 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           .replace(/\$outcomeUri/g, variableToBeCleaned);
 
         var updatedResults = testUtils.deFusekify(testUtils.queryTeststore(query));
-         expect(updatedResults.length).toBe(3);      
+        expect(updatedResults.length).toBe(3);
 
         // verify orphan triples are missing
         done();
       });
+    });
+
+    describe('cleanUpMeasurements when changing the type of a variable', function() {
+
+      beforeEach(function(done) {
+        // load some mock graph with orphan results 
+        var xmlHTTP = new XMLHttpRequest();
+        xmlHTTP.open('GET', 'base/test_graphs/cleanupTestVariableTypeChangeDirtyGraph.ttl', false);
+        xmlHTTP.send(null);
+        var dirtyGraph = xmlHTTP.responseText;
+
+        xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
+        xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
+        xmlHTTP.send(dirtyGraph);
+
+        // call cleanup
+        resultsService.cleanUpMeasurements().then(done);
+        rootScope.$digest();
+      });
+
+      it('should have removed the orphan items', function(done) {
+
+        var query = 'PREFIX instance: <http://trials.drugis.org/instances/> ' +
+          ' PREFIX ontology: <http://trials.drugis.org/ontology#> ' +
+          '' +
+          ' SELECT * WHERE { ' +
+          '   GRAPH <' + graphUri + '> { ' +
+          '  ?instance ' +
+          '     ontology:of_outcome <http://trials.drugis.org/instances/69310a30-308f-4ee4-b70d-d29166acb9f3> ;' +
+          '     ontology:of_arm ?armUri ; ' +
+          '     ontology:of_moment ?momentUri . ' +
+          '     OPTIONAL { ?instance <http://trials.drugis.org/ontology#mean> ?mean . } . ' +
+          '     OPTIONAL { ?instance <http://trials.drugis.org/ontology#sample_size> ?sample_size . } . ' +
+          '     OPTIONAL { ?instance <http://trials.drugis.org/ontology#standard_deviation> ?standard_deviation . } . ' +
+          '    } ' +
+          '} ';
+
+        var updatedResults = testUtils.deFusekify(testUtils.queryTeststore(query));
+        
+        // verify orphan triples are missing
+        expect(updatedResults[0].mean).toBe(undefined);
+        expect(updatedResults[0].standard_deviation).toBe(undefined);
+        expect(updatedResults[0].sample_size).toBe('3');
+        done();
+      });
+    });
+
+    describe('cleanUpMeasurements when changing measuredAt', function() {
+
+      beforeEach(function(done) {
+        // load some mock graph with orphan results 
+        var xmlHTTP = new XMLHttpRequest();
+        xmlHTTP.open('GET', 'base/test_graphs/cleanupTestMeasuredAtDirtyGraph.ttl', false);
+        xmlHTTP.send(null);
+        var dirtyGraph = xmlHTTP.responseText;
+
+        xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
+        xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
+        xmlHTTP.send(dirtyGraph);
+
+        // call cleanup
+        resultsService.cleanUpMeasurements().then(done);
+        rootScope.$digest();
+      });
+
+      it('should have removed the orphan items', function(done) {
+
+        var query = 'PREFIX instance: <http://trials.drugis.org/instances/> ' +
+          ' PREFIX ontology: <http://trials.drugis.org/ontology#> ' +
+          '' +
+          ' SELECT * WHERE { ' +
+          '   GRAPH <' + graphUri + '> { ' +
+          '  ?instance ' +
+          '     ontology:of_outcome <http://trials.drugis.org/instances/69310a30-308f-4ee4-b70d-d29166acb9f3> ;' +
+          '     ontology:of_arm ?armUri ; ' +
+          '     ontology:of_moment ?momentUri . ' +
+          '     OPTIONAL { ?instance <http://trials.drugis.org/ontology#mean> ?mean . } . ' +
+          '     OPTIONAL { ?instance <http://trials.drugis.org/ontology#sample_size> ?sample_size . } . ' +
+          '     OPTIONAL { ?instance <http://trials.drugis.org/ontology#standard_deviation> ?standard_deviation . } . ' +
+          '    } ' +
+          '} ';
 
 
+        var updatedResults = testUtils.deFusekify(testUtils.queryTeststore(query));
+
+        // verify orphan triples are missing
+        expect(updatedResults.length).toBe(1);
+        expect(updatedResults[0].mean).toBe('4');
+        expect(updatedResults[0].standard_deviation).toBe('5');
+        expect(updatedResults[0].sample_size).toBe('6');
+        done();
+      });
     });
 
 
