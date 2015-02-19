@@ -138,7 +138,7 @@ define(['angular', 'angular-mocks'], function() {
 
     });
 
-    fdescribe('isValidValue', function() {
+    describe('isValidValue', function() {
       it('should return true for null', function() {
         var column = {
           value: null
