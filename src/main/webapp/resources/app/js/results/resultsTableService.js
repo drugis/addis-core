@@ -13,11 +13,11 @@ define([],
       var COUNT_TYPE = 'http://trials.drugis.org/ontology#count';
 
       function findResultValueByType(resultValueObjects, type) {
-        var resultValueObjectFound = _.find(resultValueObjects, function(resultValueObject){
-          return resultValueObject.result_property === type 
+        var resultValueObjectFound = _.find(resultValueObjects, function(resultValueObject) {
+          return resultValueObject.result_property === type
         });
 
-        if(resultValueObjectFound){
+        if (resultValueObjectFound) {
           return Number(resultValueObjectFound.value);
         }
       }
@@ -25,16 +25,15 @@ define([],
       function createInputColumns(variable, rowValueObjects) {
         if (variable.measurementType === CONTINUOUS_TYPE) {
           return [{
-              valueName: 'mean',
-              value: findResultValueByType(rowValueObjects, MEAN_TYPE)
-            }, {
-              valueName: 'standard_deviation',
-              value: findResultValueByType(rowValueObjects, STANDARD_DEVIATION_TYPE)
-            },
-            {
-              valueName: 'sample_size',
-              value: findResultValueByType(rowValueObjects, SAMPLE_SIZE_TYPE)
-           }];
+            valueName: 'mean',
+            value: findResultValueByType(rowValueObjects, MEAN_TYPE)
+          }, {
+            valueName: 'standard_deviation',
+            value: findResultValueByType(rowValueObjects, STANDARD_DEVIATION_TYPE)
+          }, {
+            valueName: 'sample_size',
+            value: findResultValueByType(rowValueObjects, SAMPLE_SIZE_TYPE)
+          }];
         } else if (variable.measurementType === DICHOTOMOUS_TYPE) {
           return [{
             valueName: 'count',
@@ -64,10 +63,10 @@ define([],
         };
 
         // if this row has any values set we need to save the instance uri on the row to use for update or delete
-        if(rowValueObjects && rowValueObjects.length > 0){
+        if (rowValueObjects && rowValueObjects.length > 0) {
           row.uri = rowValueObjects[0].instance;
         }
-        
+
         return row;
       }
 

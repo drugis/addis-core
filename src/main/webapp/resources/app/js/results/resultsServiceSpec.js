@@ -240,23 +240,38 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
 
     describe('cleanUpMeasurements', function() {
+
       beforeEach(function(done) {
         // load some mock graph with orphan results 
+        var xmlHTTP = new XMLHttpRequest();
+        xmlHTTP.open('GET', 'base/test_graphs/cleanUpTestDirtyGraph.ttl', false);
+        xmlHTTP.send(null);
+        var dirtyGraph = xmlHTTP.responseText;
+
+        xmlHTTP.open('PUT', scratchStudyUri + '/data?graph='+graphUri, false);
+        xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
+        xmlHTTP.send(dirtyGraph);
         
         // call cleanup
         resultsService.cleanUpMeasurements().then(done);
         rootScope.$digest();
+      done();
       });
 
       it('should have removed the orphan items', function(done){
-        // query graph
-        var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o . } } '; 
-        var results = testUtils.deFusekify(testUtils.queryTeststore(query));
+
+        var variableToBeCleaned = 'http://trials.drugis.org/instances/69310a30-308f-4ee4-b70d-d29166acb9f3';
+
+        var query = queryResultsRaw
+          .replace(/\$graphUri/g, graphUri)
+          .replace(/\$outcomeUri/g, variableToBeCleaned);
+
+        var updatedResults = testUtils.deFusekify(testUtils.queryTeststore(query));
+         expect(updatedResults.length).toBe(3);      
 
         // verify orphan triples are missing
-        expect(true).toBe(false); // TODO implement test
         done();
-      })
+      });
 
 
     });
