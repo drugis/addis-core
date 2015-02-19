@@ -11,11 +11,28 @@ This document draws on a number of standards and specifications, see
  - [SPARQL 1.1 Service Description](http://www.w3.org/TR/sparql11-service-description/)
  - [Describing Linked Datasets with the VoID Vocabulary](http://www.w3.org/TR/void/)
 
+This document defines the Trialverse HTTP API. It is aligned as much as possible with existing standards, especially [SPARQL 1.1 graph store](http://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/) and [SPARQL 1.1 protocol](http://www.w3.org/TR/2013/REC-sparql11-protocol-20130321/).
+In addition, we try to adhere to [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) principles, although exceptions may be made to statelessness (for browser sessions) and to HATEOAS (especially where it is unclear how RDF could be used to specify the actions that are available on a resource).
+
+Even though this main specification is sufficient to enable clients to query and manipulate data in Trialverse, the versioning mechanism is centrally important to the correct implementation of this API.
+Therefore, a versioning is discussed in an accompanying document.
+This should help verify that the Trialverse API can indeed be implemented using the proposed versioning mechanism and service.
+The layered architecture looks like:
+
+```
+Client  <-->  Trialverse  <-->  Versioning
+```
+
 Base URI
 --------
 
 All URLs in the document are relative to a base URI. By default, this is `https://trialverse.org`.
 Turtle snippets, in particular, should be read as if `@base https://trialverse.org` is present.
+
+ID pattern
+----------
+
+In some cases, the API allows user specified IDs. Such IDs may only contain lowercase ASCII characters, digits, and dashes ('-').
 
 Personal workspace
 ------------------
@@ -58,11 +75,13 @@ GET /users/:user-id/datasets/:dataset-id
 
 Returns a dataset description using the [VoID](http://www.w3.org/TR/2011/NOTE-void-20110303/) vocabulary:
 
-```
+```turtle
 </users/:user-id/datasets/:dataset-id> a void:Dataset ;
   dcterms:title "My dataset" ;
   dcterms:description "It contains a bunch of studies" ;
   dcterms:creator </users/:user-id> ;
+  dcterms:date "2015-02-05T15:02:22+0100"^^xsd:dateTime ;
+  dcterms:modified "2015-02-19T14:55:28+0100"^^xsd:dateTime ;
   void:sparqlEndpoint </users/:user-id/datasets/:dataset-id/query> ,
                       </users/:user-id/datasets/:dataset-id/update> ;
   void:subset </users/:user-id/datasets/:dataset-id/graphs/:graph-id> .
@@ -74,7 +93,7 @@ Returns a dataset description using the [VoID](http://www.w3.org/TR/2011/NOTE-vo
 The query endpoints referenced in the dataset description must conform to the [SPARQL Service Description](http://www.w3.org/TR/sparql11-service-description/) requirements (that is, they respond to a GET request without query parameters by returning a service description in RDF).
 The graph above is derived from the versioning meta-data, combined with triples from a meta-data graph, in this case containing:
 
-```
+```turtle
 </users/:user-id/datasets/:dataset-id>
   dcterms:title "My dataset" ;
   dcterms:description "It contains a bunch of studies" ;
@@ -83,11 +102,14 @@ The graph above is derived from the versioning meta-data, combined with triples 
   dcterms:subject <some-study-uri> .
 ```
 
-TODO: expand it with time stamps and author information.
+The `rdf:type`, `dcterms:creator`, `dcterms:date`, `dcterms:modified`, `void:sparqlEndpoint` and `void:subset` properties of the dataset are maintained by Trialverse and can not be changed by the client.
+Trying to do so will result in a `400 Bad Request` response (TODO: or `403 Forbidden`?).
+Similarly, the `rdf:type` of any `void:subset` of the dataset may not be changed by the client.
 
-TODO: add bibliographic references.
-
-TODO: specify where it can be accessed and updated, and what kind of restrictions apply.
+Creating a dataset can be done through a `POST` to its intended new location.
+For this to succeed, the new location must match `/users/:user-id/datasets/:dataset-id`, where `:user-id` is the current user (or the user that authorized API access in case of API key authentication), and `:dataset-id` matches the allowed ID pattern.
+The former results in a `403 Forbidden` response, and the latter in a `400 Bad Request` response.
+Because the dataset URI is known at the time the request is made, dataset meta-data in an RDF format can be specified in the request body (see [conventions](conventions.html)).
 
 ```
 /users/:user-id/datasets/:dataset-id/query
@@ -103,17 +125,22 @@ SPARQL protocol update endpoint for the latest version of this dataset.
 Expects the request headers `X-EventSource-Title` (required) and `X-EventSource-Description` (optional) containing a human-readable short- and long-form description of the change (see [Versioning](versioning.html)).
 The server returns a response header `X-Trialverse-Version` containing the URI of the created version.
 Note that this URI will be different from the one specified under [Versioning](versioning.html), as the Trialverse API exposes versions through a different endpoint.
+In general, SPARQL update queries should not be used to create or delete graphs, and the store's behaviour is not defined in that case.
+
+Both the `./query` and `./update` endpoint define `/users/:user-id/datasets/:dataset-id/graphs/` as their base URI, and hence graphs can be referred to using only their ID in SPARQL: `<:graph-id>`.
 
 ```
 /users/:user-id/datasets/:dataset-id/graphs/:graph-id
 ```
 
-SPARQL graph store API for the latest version of this dataset.
+SPARQL graph store API for the latest version of this dataset, using the direct graph identification pattern (i.e. the graph URI resolves to an RDF document of the graph).
 POST, PUT, and DELETE requests must specify the `X-EventSource-Title` header and may specify the `X-EventSource-Description` header.
-
+The response to all successful requests contains an `X-Trialverse-Version` header indicating the version returned or the newly created version.
 
 Creating graphs
 ---------------
+
+Graphs can be created using a POST request to the graph's desired URI.
 
 When creating or replacing graphs in a dataset, it is necessary to know the core subject of a graph (e.g. we want to know which study is described in the graph).
 This could be done by giving the subject the same URI as the graph, but this has two problems:
@@ -121,8 +148,15 @@ This could be done by giving the subject the same URI as the graph, but this has
  - It becomes impossible to say something about the graph itself, without confusing it with the subject.
  - When copying the graph to a graph with a new URI, one would have to replace all occurences of the old URI in the copy with the URI of the new graph. This would interfere with the goal of having a clear audit trail.
 
-Therefore, the subject of the graph is associated with the graph using the `dcterms:subject` predicate in the dataset meta-data graph.
-The topic URI is also returned using the `Link:` HTTP header, again using the `dcterms:subject` predicate.
+Therefore, we choose not to assign the same URI to the graph and its subject.
+Instead, the subject of the graph is associated with the graph using the `dcterms:subject` predicate in the dataset meta-data graph.
+The topic URI is also returned using the `Link:` HTTP header, again using the `dcterms:subject` predicate:
+
+```http
+HTTP/1.1 200 Ok
+Link: <some-study-uri>;rel=http://purl.org/dc/terms/subject
+...
+```
 
 When creating a graph using the SPARQL graph store API, an initial value for the topic URI must be determined. There are two possible mechanisms:
 
@@ -131,6 +165,10 @@ When creating a graph using the SPARQL graph store API, an initial value for the
 
 It is likely that the latter is a good default, and the former will be needed for more advanced use cases.
 If the `X-TrialVerse-Subject` header is not present, and the graph has no unique root, the server responds with `400 Bad Request`.
+
+In the future, not all Trialverse graphs may describe studies. The type of resource described in the graph is determined from the content of the graph itself.
+In particular, a graph describing a study will have a `dcterms:subject ?subject`, where `?subject` has an `rdf:type` that indicates it is a study.
+For the precise class to be used we defer to the Trialverse data model specification.
 
 Versions of datasets
 --------------------
@@ -178,7 +216,7 @@ This is a memento for the original resource at `/users/:user-id/datasets/:datase
 ```
 
 TODO: should this be a timemap for `/users/:user-id/datasets/:dataset-id/graph/:graph-id`?
-The mementos should just be the ones at `/users/:user-id/datasets/:dataset-id/rev/:version-id/graph/:graph-id`.
+The mementos should just be the ones at `/users/:user-id/datasets/:dataset-id/versions/:version-id/graph/:graph-id`.
 
 Copying graphs from other datasets
 ----------------------------------
