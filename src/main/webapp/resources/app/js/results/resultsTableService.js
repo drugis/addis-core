@@ -29,21 +29,26 @@ define([],
         if (variable.measurementType === CONTINUOUS_TYPE) {
           return [{
             valueName: 'mean',
-            value: findResultValueByType(rowValueObjects, MEAN_TYPE)
+            value: findResultValueByType(rowValueObjects, MEAN_TYPE),
+            dataType: DOUBLE_TYPE
           }, {
             valueName: 'standard_deviation',
-            value: findResultValueByType(rowValueObjects, STANDARD_DEVIATION_TYPE)
+            value: findResultValueByType(rowValueObjects, STANDARD_DEVIATION_TYPE),
+            dataType: DOUBLE_TYPE
           }, {
             valueName: 'sample_size',
-            value: findResultValueByType(rowValueObjects, SAMPLE_SIZE_TYPE)
+            value: findResultValueByType(rowValueObjects, SAMPLE_SIZE_TYPE),
+            dataType: INTEGER_TYPE
           }];
         } else if (variable.measurementType === DICHOTOMOUS_TYPE) {
           return [{
             valueName: 'count',
-            value: findResultValueByType(rowValueObjects, COUNT_TYPE)
+            value: findResultValueByType(rowValueObjects, COUNT_TYPE),
+            dataType: INTEGER_TYPE
           }, {
             valueName: 'sample_size',
-            value: findResultValueByType(rowValueObjects, SAMPLE_SIZE_TYPE)
+            value: findResultValueByType(rowValueObjects, SAMPLE_SIZE_TYPE),
+            dataType: INTEGER_TYPE
           }];
         }
       }

@@ -2,6 +2,9 @@
 define(['angular', 'angular-mocks'], function() {
   describe('the results table service', function() {
 
+    var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
+    var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
+
     var resultsTableService,
       armService = jasmine.createSpyObj('ArmService', ['queryItems']),
       measurementMomentService = jasmine.createSpyObj('MeasurementMomentService', ['queryItems']);
@@ -44,10 +47,10 @@ define(['angular', 'angular-mocks'], function() {
         arms = [{
           label: 'arm 1',
           armURI: 'http://arms/arm1'
-        },{
+        }, {
           label: 'arm 2',
           armURI: 'http://arms/arm2'
-        },{
+        }, {
           label: 'arm 3',
           armURI: 'http://arms/arm3'
         }];
@@ -85,15 +88,13 @@ define(['angular', 'angular-mocks'], function() {
 
       describe('for a continuous type', function() {
         beforeEach(function() {
-          var results = [
-            {
-              armUri: arms[0].armURI,
-              instance: 'http://instance/1',
-              momentUri: measurementMoments[0].uri,
-              result_property: 'http://trials.drugis.org/ontology#mean',
-              value: '2'
-            }
-          ];
+          var results = [{
+            armUri: arms[0].armURI,
+            instance: 'http://instance/1',
+            momentUri: measurementMoments[0].uri,
+            result_property: 'http://trials.drugis.org/ontology#mean',
+            value: '2'
+          }];
           variable.measurementType = resultsTableService.CONTINUOUS_TYPE;
           resultRows = resultsTableService.createInputRows(variable, arms, measurementMoments, results);
         });
@@ -102,23 +103,24 @@ define(['angular', 'angular-mocks'], function() {
           expect(resultRows[0].inputColumns).toBeDefined();
           expect(resultRows[0].inputColumns.length).toBe(3);
           expect(resultRows[0].inputColumns[0].valueName).toEqual('mean');
+          expect(resultRows[0].inputColumns[0].dataType).toEqual(DOUBLE_TYPE);
           expect(resultRows[0].inputColumns[0].value).toEqual(2);
           expect(resultRows[0].inputColumns[1].valueName).toEqual('standard_deviation');
+          expect(resultRows[0].inputColumns[1].dataType).toEqual(DOUBLE_TYPE);
           expect(resultRows[0].inputColumns[2].valueName).toEqual('sample_size');
+          expect(resultRows[0].inputColumns[2].dataType).toEqual(INTEGER_TYPE);
         });
       });
 
       describe('for a dichotomous type', function() {
         beforeEach(function() {
-          var results = [
-            {
-              armUri: arms[0].armURI,
-              instance: 'http://instance/2',
-              momentUri: measurementMoments[0].uri,
-              result_property: 'http://trials.drugis.org/ontology#count',
-              value: '66'
-            }
-          ];
+          var results = [{
+            armUri: arms[0].armURI,
+            instance: 'http://instance/2',
+            momentUri: measurementMoments[0].uri,
+            result_property: 'http://trials.drugis.org/ontology#count',
+            value: '66'
+          }];
           variable.measurementType = resultsTableService.DICHOTOMOUS_TYPE;
           resultRows = resultsTableService.createInputRows(variable, arms, measurementMoments, results);
         });
@@ -127,8 +129,10 @@ define(['angular', 'angular-mocks'], function() {
           expect(resultRows[0].inputColumns).toBeDefined();
           expect(resultRows[0].inputColumns.length).toBe(2);
           expect(resultRows[0].inputColumns[0].valueName).toEqual('count');
+          expect(resultRows[0].inputColumns[0].dataType).toEqual(INTEGER_TYPE);
           expect(resultRows[0].inputColumns[0].value).toEqual(66);
           expect(resultRows[0].inputColumns[1].valueName).toEqual('sample_size');
+          expect(resultRows[0].inputColumns[1].dataType).toEqual(INTEGER_TYPE);
         });
       });
 
