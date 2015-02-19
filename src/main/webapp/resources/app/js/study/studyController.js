@@ -2,9 +2,10 @@
 define([],
   function() {
     var dependencies = ['$scope', '$stateParams', '$window', 'StudyResource', '$location', '$anchorScroll',
-    '$modal', 'StudyService', 'DatasetResource', 'DatasetService'];
+      '$modal', 'StudyService', 'DatasetResource', 'DatasetService', 'ResultsService'
+    ];
     var StudyController = function($scope, $stateParams, $window, StudyResource, $location, $anchorScroll,
-      $modal, StudyService, DatasetResource, DatasetService) {
+      $modal, StudyService, DatasetResource, DatasetService, ResultsService) {
 
       StudyService.reset();
 
@@ -86,8 +87,8 @@ define([],
 
       var navbar = document.getElementsByClassName("side-nav");
       angular.element($window).bind("scroll", function() {
-            $(navbar[0]).css('margin-top', this.pageYOffset );
-            $scope.$apply();
+        $(navbar[0]).css('margin-top', this.pageYOffset);
+        $scope.$apply();
       });
 
       function reloadStudyModel() {
@@ -120,9 +121,11 @@ define([],
       reloadStudyModel();
       reloadDatasetModel();
 
-      $scope.$on('updateStudyDesign', function(event, args){
+      $scope.$on('updateStudyDesign', function(event, args) {
         console.log('update design');
-        $scope.$broadcast('refreshResults', event);
+        ResultsService.cleanUpMeasurements().then(function() {
+          $scope.$broadcast('refreshResults', event);
+        });
       });
 
       $scope.isStudyModified = function() {
