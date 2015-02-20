@@ -304,27 +304,18 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should have removed the orphan items', function(done) {
 
-        var query = 'PREFIX instance: <http://trials.drugis.org/instances/> ' +
-          ' PREFIX ontology: <http://trials.drugis.org/ontology#> ' +
-          '' +
-          ' SELECT * WHERE { ' +
-          '   GRAPH <' + graphUri + '> { ' +
-          '  ?instance ' +
-          '     ontology:of_outcome <http://trials.drugis.org/instances/69310a30-308f-4ee4-b70d-d29166acb9f3> ;' +
-          '     ontology:of_arm ?armUri ; ' +
-          '     ontology:of_moment ?momentUri . ' +
-          '     OPTIONAL { ?instance <http://trials.drugis.org/ontology#mean> ?mean . } . ' +
-          '     OPTIONAL { ?instance <http://trials.drugis.org/ontology#sample_size> ?sample_size . } . ' +
-          '     OPTIONAL { ?instance <http://trials.drugis.org/ontology#standard_deviation> ?standard_deviation . } . ' +
-          '    } ' +
-          '} ';
+        var variableToBeCleaned = 'http://trials.drugis.org/instances/69310a30-308f-4ee4-b70d-d29166acb9f3';
+
+        var query = queryResultsRaw
+          .replace(/\$graphUri/g, graphUri)
+          .replace(/\$outcomeUri/g, variableToBeCleaned);
 
         var updatedResults = testUtils.deFusekify(testUtils.queryTeststore(query));
-
+        console.log(JSON.stringify(updatedResults[0]))
         // verify orphan triples are missing
-        expect(updatedResults[0].mean).toBe(undefined);
-        expect(updatedResults[0].standard_deviation).toBe(undefined);
-        expect(updatedResults[0].sample_size).toBe('3');
+        expect(updatedResults.length).toBe(1);
+        expect(updatedResults[0].result_property).toBe('http://trials.drugis.org/ontology#sample_size');
+        expect(updatedResults[0].value).toBe('3');
         done();
       });
     });

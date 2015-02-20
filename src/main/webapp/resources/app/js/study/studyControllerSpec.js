@@ -9,11 +9,11 @@ define(['angular', 'angular-mocks'], function() {
         datasetUUID: datasetUUID,
         studyUUID: studyUUID
       },
-      mockAnchorScroll = jasmine.createSpy('anchorScroll'),
-      mockLocation = jasmine.createSpyObj('location', ['hash']),
-      mockModal = jasmine.createSpyObj('modal', ['open']),
-      mockStudyService = jasmine.createSpyObj('StudyService', ['reset','queryArmData', 'loadStore', 'queryStudyData', 'getStudyGraph', 'studySaved']),
-      mockDatasetService = jasmine.createSpyObj('DatasetService', ['reset', 'loadStore', 'queryDataset']),
+      anchorScrollMock = jasmine.createSpy('anchorScroll'),
+      locationMock = jasmine.createSpyObj('location', ['hash']),
+      modalMock = jasmine.createSpyObj('modal', ['open']),
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['reset','queryArmData', 'loadStore', 'queryStudyData', 'getStudyGraph', 'studySaved']),
+      datasetServiceMock = jasmine.createSpyObj('DatasetService', ['reset', 'loadStore', 'queryDataset']),
       resultsServiceMock = jasmine.createSpyObj('ResultsService', ['cleanUpMeasurements']),
       loadStoreDeferred,
       loadDatasetStoreDeferred,
@@ -40,24 +40,24 @@ define(['angular', 'angular-mocks'], function() {
       getStudyGraphDeferred = $q.defer();
       loadDatasetStoreDeferred = $q.defer();
 
-      mockStudyService.loadStore.and.returnValue(loadStoreDeferred.promise);
-      mockStudyService.queryStudyData.and.returnValue(queryStudyDataDeferred.promise);
-      mockStudyService.queryArmData.and.returnValue(queryArmDataDeferred.promise);
-      mockStudyService.getStudyGraph.and.returnValue(getStudyGraphDeferred.promise);
+      studyServiceMock.loadStore.and.returnValue(loadStoreDeferred.promise);
+      studyServiceMock.queryStudyData.and.returnValue(queryStudyDataDeferred.promise);
+      studyServiceMock.queryArmData.and.returnValue(queryArmDataDeferred.promise);
+      studyServiceMock.getStudyGraph.and.returnValue(getStudyGraphDeferred.promise);
 
-      mockDatasetService.loadStore.and.returnValue(loadDatasetStoreDeferred.promise);
+      datasetServiceMock.loadStore.and.returnValue(loadDatasetStoreDeferred.promise);
 
       $controller('StudyController', {
         $scope: scope,
         $stateParams: mockStateParams,
         StudyResource: StudyResource,
-        $location: mockLocation,
-        $anchorScroll: mockAnchorScroll,
-        $modal: mockModal,
+        $location: locationMock,
+        $anchorScroll: anchorScrollMock,
+        $modal: modalMock,
         $window: {bind: 'mockBind'},
-        StudyService: mockStudyService,
+        StudyService: studyServiceMock,
         DatasetResource: DatasetResource,
-        DatasetService: mockDatasetService,
+        DatasetService: datasetServiceMock,
         ResultsService: resultsServiceMock
       });
     }));
@@ -71,10 +71,10 @@ define(['angular', 'angular-mocks'], function() {
 
         expect(scope.study).toBeDefined();
         httpBackend.flush();
-        expect(mockStudyService.loadStore).toHaveBeenCalled();
+        expect(studyServiceMock.loadStore).toHaveBeenCalled();
         loadStoreDeferred.resolve(3);
         scope.$digest();
-        expect(mockStudyService.queryStudyData).toHaveBeenCalled();
+        expect(studyServiceMock.queryStudyData).toHaveBeenCalled();
         queryStudyDataDeferred.resolve(studyQueryResult);
         scope.$digest();
         expect(scope.study).toBe(studyQueryResult);
@@ -88,13 +88,13 @@ define(['angular', 'angular-mocks'], function() {
         httpBackend.expectPUT('/datasets/datasetUUID/studies/studyUUID').respond(200,'');
 
         scope.saveStudy();
-        expect(mockStudyService.getStudyGraph).toHaveBeenCalled();
+        expect(studyServiceMock.getStudyGraph).toHaveBeenCalled();
 
         getStudyGraphDeferred.resolve({data: 'mock study data'});
         scope.$digest();
         httpBackend.flush();
 
-        expect(mockStudyService.studySaved).toHaveBeenCalled();
+        expect(studyServiceMock.studySaved).toHaveBeenCalled();
       }));
     });
   });
