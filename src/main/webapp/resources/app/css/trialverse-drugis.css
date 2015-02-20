@@ -9824,32 +9824,37 @@ table tr td.input-cell {
   padding: 0;
 }
 /* line 137, ../../sass/trialverse-drugis.scss */
+table tr td.input-cell select,
 table tr td.input-cell input[type="number"] {
   margin: 0;
   border: 0;
   text-align: center;
   line-height: 1.1rem;
 }
-/* line 143, ../../sass/trialverse-drugis.scss */
+/* line 144, ../../sass/trialverse-drugis.scss */
+table tr td.input-cell select {
+  padding-right: 1rem;
+}
+/* line 147, ../../sass/trialverse-drugis.scss */
 table tr td.input-cell input[type="number"].ng-invalid,
 table tr td.input-cell input[type="number"].ng-invalid-number,
 table tr td.input-cell input[type="number"].invalid-trialverse-number {
   background-color: #ed9090;
 }
 
-/* line 151, ../../sass/trialverse-drugis.scss */
+/* line 155, ../../sass/trialverse-drugis.scss */
 td.empty-cell {
   background-color: gainsboro;
 }
 
-/* line 155, ../../sass/trialverse-drugis.scss */
+/* line 159, ../../sass/trialverse-drugis.scss */
 tr.on-hover:hover {
   background: #e6e6e6;
   cursor: pointer;
   text-decoration: none;
 }
 
-/* line 161, ../../sass/trialverse-drugis.scss */
+/* line 165, ../../sass/trialverse-drugis.scss */
 tr.clickable td {
   color: #452F8C;
 }

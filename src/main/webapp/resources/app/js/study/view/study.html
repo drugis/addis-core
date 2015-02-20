@@ -15,6 +15,7 @@
       <li class="heading">Design</li>
       <li><a ng-click="sideNavClick('arms')">Arms</a></li>
       <li><a ng-click="sideNavClick('epochs')">Epochs</a></li>
+      <li><a ng-click="sideNavClick('activities')">Activities</a></li>
       <li><a ng-click="sideNavClick('measurementMoments')">Measurement moments</a></li>
       <li><a ng-click="sideNavClick('populationCharacteristics')">Population characteristics</a></li>
       <li><a ng-click="sideNavClick('endpoints')">Endpoints</a></li>
@@ -39,6 +40,96 @@
 
     <study-category settings="categorySettings['arms']"></study-category>
     <study-category settings="categorySettings['epochs']"></study-category>
+
+    <div id="activities" class="study-item">
+        <h3>Activities<a> <i class="fa fa-info-circle fa-fw"></i></a></h3>
+        <h5>Activities coordinate table</h5>
+
+        <table>
+            <tbody>
+                <tr>
+                    <th></th>
+                    <th>Run in</th>
+                    <th>Main Phase</th>
+                        <th>End of study</th>
+                </tr>
+                <tr>
+                    <td class="y-head ">Neusspray</td>
+                    <td class="input-cell"><select><option>koffie drinken</option><option>actie 2</option><option>koffie drinken</option></select></td>
+                    <td class="input-cell"><select><option>actie 1</option><option>long lonng action name actie 2</option><option>actie 3</option></select></td>
+                    <td class="input-cell"><select><option>actie 1</option><option>actie 2</option><option>actie 3</option></select></td>
+                </tr>
+                <tr>
+                    <td class="y-head ">Keelsnoepjes</td>
+                    <td class="input-cell"><select><option></option><option>actie 2</option><option>actie 3</option></select></td>
+                    <td class="input-cell"><select><option>koffie drinken</option><option>actie 2</option><option>actie 3</option></select></td>
+                    <td class="input-cell"><select><option>koffie drinken</option><option>actie 2</option><option>actie 3</option></select></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+    </div>
+
+
+    <div class="panel clearfix">
+        <div class="edit-item-controls right">
+            <a ng-click="editItem()"> <i class="fa fa-edit fa-2x fa-fw"></i> </a>
+            <a ng-click="deleteItem()"><i class="fa fa-trash-o fa-2x fa-fw"></i></a>
+        </div>
+        <div>
+            <ul class="no-bullet">
+                <li>
+                    <span><strong>Activity: </strong></span>
+                    <span>koffie drinken</span>
+                </li>
+                <li>
+                    <span><strong>Description: </strong></span>
+                    <span>Je kunt er melk of suiker in doen</span>
+                </li>
+                <li>
+                    <span><strong>Activity type: </strong></span>
+                    <span>Wash-out</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="panel clearfix">
+        <div class="edit-item-controls right">
+            <a ng-click="editItem()"> <i class="fa fa-edit fa-2x fa-fw"></i> </a>
+            <a ng-click="deleteItem()"><i class="fa fa-trash-o fa-2x fa-fw"></i></a>
+        </div>
+        <div>
+            <ul class="no-bullet">
+                <li>
+                    <span><strong>Activity: </strong></span>
+                    <span>Take a hit</span>
+                </li>
+                <li>
+                    <span><strong>Description: </strong></span>
+                    <span>none</span>
+                </li>
+                <li>
+                    <span><strong>Activity type: </strong></span>
+                    <span>Treatment</span>
+                    <ul>
+                     <li>
+                       <span>snoepje</span> <span> 1 stuks </span>
+                      </li>
+                                           <li>
+                       <span>slokje water</span> <span> half glas </span>
+                      </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    <a ng-click="addActivity()" class="button success"><i class="fa fa-plus"></i> Add Activity</a>
+
+
     <study-category settings="categorySettings['measurementMoments']"></study-category>
     <study-category settings="categorySettings['populationCharacteristics']"></study-category>
     <study-category settings="categorySettings['endpoints']"></study-category>

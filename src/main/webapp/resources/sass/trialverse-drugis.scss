@@ -132,13 +132,17 @@ table {
         text-decoration: underline;
       }
     }
-    td.input-cell{
+    td.input-cell {
       padding: 0;
+      select, 
       input[type="number"] {
        margin: 0;
        border:0;
        text-align: center;
        line-height: 1.1rem; // needed to show part below descender line 
+      }
+      select {
+        padding-right: 1rem;
       }
       input[type="number"].ng-invalid,
       input[type="number"].ng-invalid-number,
