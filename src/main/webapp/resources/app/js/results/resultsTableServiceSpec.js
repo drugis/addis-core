@@ -105,10 +105,13 @@ define(['angular', 'angular-mocks'], function() {
           expect(resultRows[0].inputColumns[0].valueName).toEqual('mean');
           expect(resultRows[0].inputColumns[0].dataType).toEqual(DOUBLE_TYPE);
           expect(resultRows[0].inputColumns[0].value).toEqual(2);
+          expect(resultRows[0].inputColumns[0].isInValidValue).toEqual(false);
           expect(resultRows[0].inputColumns[1].valueName).toEqual('standard_deviation');
           expect(resultRows[0].inputColumns[1].dataType).toEqual(DOUBLE_TYPE);
+          expect(resultRows[0].inputColumns[0].isInValidValue).toEqual(false);
           expect(resultRows[0].inputColumns[2].valueName).toEqual('sample_size');
           expect(resultRows[0].inputColumns[2].dataType).toEqual(INTEGER_TYPE);
+          expect(resultRows[0].inputColumns[0].isInValidValue).toEqual(false);
         });
       });
 
@@ -130,15 +133,17 @@ define(['angular', 'angular-mocks'], function() {
           expect(resultRows[0].inputColumns.length).toBe(2);
           expect(resultRows[0].inputColumns[0].valueName).toEqual('count');
           expect(resultRows[0].inputColumns[0].dataType).toEqual(INTEGER_TYPE);
+          expect(resultRows[0].inputColumns[0].isInValidValue).toEqual(false);
           expect(resultRows[0].inputColumns[0].value).toEqual(66);
           expect(resultRows[0].inputColumns[1].valueName).toEqual('sample_size');
           expect(resultRows[0].inputColumns[1].dataType).toEqual(INTEGER_TYPE);
+          expect(resultRows[0].inputColumns[1].isInValidValue).toEqual(false);
         });
       });
 
     });
 
-    fdescribe('isValidValue', function() {
+    describe('isValidValue', function() {
       it('should return true for null', function() {
         var column = {
           value: null

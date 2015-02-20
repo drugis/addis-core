@@ -30,25 +30,30 @@ define([],
           return [{
             valueName: 'mean',
             value: findResultValueByType(rowValueObjects, MEAN_TYPE),
-            dataType: DOUBLE_TYPE
+            dataType: DOUBLE_TYPE,
+            isInValidValue : false
           }, {
             valueName: 'standard_deviation',
             value: findResultValueByType(rowValueObjects, STANDARD_DEVIATION_TYPE),
-            dataType: DOUBLE_TYPE
+            dataType: DOUBLE_TYPE,
+            isInValidValue : false
           }, {
             valueName: 'sample_size',
             value: findResultValueByType(rowValueObjects, SAMPLE_SIZE_TYPE),
-            dataType: INTEGER_TYPE
+            dataType: INTEGER_TYPE,
+            isInValidValue : false
           }];
         } else if (variable.measurementType === DICHOTOMOUS_TYPE) {
           return [{
             valueName: 'count',
             value: findResultValueByType(rowValueObjects, COUNT_TYPE),
-            dataType: INTEGER_TYPE
+            dataType: INTEGER_TYPE,
+            isInValidValue : false
           }, {
             valueName: 'sample_size',
             value: findResultValueByType(rowValueObjects, SAMPLE_SIZE_TYPE),
-            dataType: INTEGER_TYPE
+            dataType: INTEGER_TYPE,
+            isInValidValue : false
           }];
         }
       }

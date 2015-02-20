@@ -24,7 +24,10 @@ define([], function() {
 
         scope.updateValue = function(row, column) {
           if(ResultsTableService.isValidValue(column)) {
+            column.isInValidValue = false;
             ResultsService.updateResultValue(row, column);
+          } else{
+            column.isInValidValue = true;
           }
         }
         
