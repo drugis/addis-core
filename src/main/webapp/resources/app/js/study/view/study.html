@@ -130,6 +130,64 @@
     <a ng-click="addActivity()" class="button success"><i class="fa fa-plus"></i> Add Activity</a>
 
 
+
+  <!-- activity modal mockup -->
+
+<div tabindex="-1" class="reveal-modal fade in" style="display: block; position: fixed; visibility: visible;display: block; position: fixed; visibility: visible" modal-window="" index="0" animate="animate">
+
+        <form novalidate=""  class="ng-pristine ng-valid ng-scope ng-valid-min">
+            <div class="row">
+                <div class="large-9 medium-12 columns">
+                    <h3>Add a new activity</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-9 medium-12 columns">
+                    <label>Name
+                        <input autofocus="true" type="text" class="ng-pristine ng-untouched ng-valid">
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-9 medium-12 columns">
+                    <label>Description
+                        <textarea rows="4" ng-model="item.comment" class="ng-pristine ng-untouched ng-valid"></textarea>
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-9 medium-12 columns">
+                    <label>Type
+                        <select>
+                          <option>-- select a activity type --</option>
+                          <option>Screening</option>
+                          <option>Wash-out</option>
+                          <option>Randomisation</option>
+                          <option>drug treatment</option>
+                          <option>Follow-up</option>
+                          <option>Other</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            
+
+            <div class="row">
+                <div class="large-9 columns">
+                    <button class="success" type="submit">Add</button>
+                </div>
+            </div>
+            <a class="close-reveal-modal" ng-click="cancel()">×</a>
+        </form>
+
+</div>
+
+
+
+  <!-- end acticity modal mockup -->
+
+
     <study-category settings="categorySettings['measurementMoments']"></study-category>
     <study-category settings="categorySettings['populationCharacteristics']"></study-category>
     <study-category settings="categorySettings['endpoints']"></study-category>
