@@ -84,7 +84,7 @@ define([],
             .replace('$newMeasurementType', item.measurementType)
             .replace('$insertMeasurementMomentBlock', stringToInsert);
           return StudyService.doModifyingQuery(editQuery).then(function(){
-            return OutcomeService.setOutcomeProperty(endpoint);
+            return OutcomeService.setOutcomeProperty(item);
           });
         });
       }
