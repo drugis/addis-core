@@ -9,7 +9,8 @@ define(function (require) {
     'trialverse.populationCharacteristic',
     'trialverse.endpoint',
     'trialverse.adverseEvent',
-    'trialverse.measurementMoment'])
+    'trialverse.measurementMoment',
+    'trialverse.results'])
     // controllers
     .controller('StudyController', require('study/studyController'))
 

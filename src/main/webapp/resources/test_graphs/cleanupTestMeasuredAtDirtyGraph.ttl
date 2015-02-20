@@ -1,0 +1,82 @@
+<http://trials.drugis.org/instances/d3438ac9-bdbd-474b-948f-159032c2d1b4>
+        <http://trials.drugis.org/ontology#mean>
+                1 ;
+        <http://trials.drugis.org/ontology#of_arm>
+                <http://trials.drugis.org/instances/81b1862b-185f-4804-9c1d-785b9a10d67a> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/809d3ea1-f4da-450c-82be-d7ad308a70ab> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/69310a30-308f-4ee4-b70d-d29166acb9f3> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                3 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                2 .
+
+<http://trials.drugis.org/studies/19da34ef-4ef2-428b-b8b6-f9cf9d9b947e>
+        a       <http://trials.drugis.org/ontology#Study> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "a test study" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "study 1" ;
+        <http://trials.drugis.org/ontology#has_arm>
+                <http://trials.drugis.org/instances/81b1862b-185f-4804-9c1d-785b9a10d67a> ;
+        <http://trials.drugis.org/ontology#has_epochs>
+                ( <http://trials.drugis.org/instances/88cff0c9-0623-4a91-8cb7-e811b35344da> ) .
+
+<http://trials.drugis.org/instances/69310a30-308f-4ee4-b70d-d29166acb9f3>
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Age" ;
+        <http://www.w3.org/2000/01/rdf-schema#subClassOf>
+                <http://trials.drugis.org/ontology#PopulationCharacteristic> ;
+        <http://trials.drugis.org/ontology#has_result_property>
+                <http://trials.drugis.org/ontology#sample_size> , <http://trials.drugis.org/ontology#standard_deviation> , <http://trials.drugis.org/ontology#mean> ;
+        <http://trials.drugis.org/ontology#is_measured_at>
+                <http://trials.drugis.org/instances/08385f69-1413-49f6-a2ad-a3c2d3a9cb49> ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/instances/81b1862b-185f-4804-9c1d-785b9a10d67a>
+        a       <http://trials.drugis.org/ontology#Arm> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Arm 1" .
+
+<http://trials.drugis.org/instances/809d3ea1-f4da-450c-82be-d7ad308a70ab>
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "At end of Epoch 1" ;
+        <http://trials.drugis.org/ontology#relative_to_anchor>
+                <http://trials.drugis.org/ontology#anchorEpochEnd> ;
+        <http://trials.drugis.org/ontology#relative_to_epoch>
+                <http://trials.drugis.org/instances/88cff0c9-0623-4a91-8cb7-e811b35344da> ;
+        <http://trials.drugis.org/ontology#time_offset>
+                "PT0S"^^<http://www.w3.org/2001/XMLSchema#duration> .
+
+<http://trials.drugis.org/instances/08385f69-1413-49f6-a2ad-a3c2d3a9cb49>
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "At start of Epoch 1" ;
+        <http://trials.drugis.org/ontology#relative_to_anchor>
+                <http://trials.drugis.org/ontology#anchorEpochStart> ;
+        <http://trials.drugis.org/ontology#relative_to_epoch>
+                <http://trials.drugis.org/instances/88cff0c9-0623-4a91-8cb7-e811b35344da> ;
+        <http://trials.drugis.org/ontology#time_offset>
+                "PT0S"^^<http://www.w3.org/2001/XMLSchema#duration> .
+
+<http://trials.drugis.org/instances/88cff0c9-0623-4a91-8cb7-e811b35344da>
+        a       <http://trials.drugis.org/ontology#Epoch> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Epoch 1" ;
+        <http://trials.drugis.org/ontology#duration>
+                "PT0S"^^<http://www.w3.org/2001/XMLSchema#duration> .
+
+<http://trials.drugis.org/instances/9c3df57c-663b-40c7-892f-49c744bad6bb>
+        <http://trials.drugis.org/ontology#mean>
+                4 ;
+        <http://trials.drugis.org/ontology#of_arm>
+                <http://trials.drugis.org/instances/81b1862b-185f-4804-9c1d-785b9a10d67a> ;
+        <http://trials.drugis.org/ontology#of_moment>
+                <http://trials.drugis.org/instances/08385f69-1413-49f6-a2ad-a3c2d3a9cb49> ;
+        <http://trials.drugis.org/ontology#of_outcome>
+                <http://trials.drugis.org/instances/69310a30-308f-4ee4-b70d-d29166acb9f3> ;
+        <http://trials.drugis.org/ontology#sample_size>
+                6 ;
+        <http://trials.drugis.org/ontology#standard_deviation>
+                5 .

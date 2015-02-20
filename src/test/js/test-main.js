@@ -24,7 +24,8 @@ require.config({
     'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
     'rdfstore': 'bower_components/rdfstore-js/index',
     'lodash': 'bower_components/lodash/dist/lodash.min',
-    'moment': 'bower_components/moment/min/moment.min'
+    'moment': 'bower_components/moment/min/moment.min',
+    'testUtils': '../../../src/test/js/testUtils',
   },
   baseUrl: '/base/app/js',
   shim: {
@@ -75,6 +76,10 @@ require.config({
     },
     'rdfstore': {
       exports: 'rdfstore'
+    },
+    'testUtils': {
+      exports: 'testUtils',
+      deps: ['lodash'],
     }
 
   },

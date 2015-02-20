@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
   describe('the adverse event service', function() {
 
     var graphUri = 'http://karma-test/';
@@ -10,6 +10,7 @@ define(['angular', 'angular-mocks'], function() {
     var measurementMomentServiceMock;
     var adverseEventService;
     var studyService;
+    var outcomeService;
 
     var addTemplateRaw;
     var addAdverseEventQueryRaw;
@@ -17,54 +18,6 @@ define(['angular', 'angular-mocks'], function() {
     var deleteAdverseEventRaw;
     var editAdverseEventRaw;
     var queryAdverseEventMeasuredAtRaw;
-
-    // private helper methods
-
-    function queryTeststore(query) {
-      var xmlHTTP = new XMLHttpRequest();
-      xmlHTTP.open('POST', scratchStudyUri + '/query?output=json', false);
-      xmlHTTP.setRequestHeader('Content-type', 'application/sparql-query');
-      xmlHTTP.setRequestHeader('Accept', 'application/ld+json');
-      xmlHTTP.send(query);
-      var result = xmlHTTP.responseText;
-      console.log('queryTeststore result = ' + result);
-      return result;
-    }
-
-    function dropGraph(uri) {
-      var xmlHTTP = new XMLHttpRequest();
-      xmlHTTP.open('POST', scratchStudyUri + '/update', false);
-      xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');
-      xmlHTTP.send('DROP GRAPH <' + uri + '>');
-      return true;
-    }
-
-    function deFusekify(data) {
-      var json = JSON.parse(data);
-      var bindings = json.results.bindings;
-      return _.map(bindings, function(binding) {
-        return _.object(_.map(_.pairs(binding), function(obj) {
-          return [obj[0], obj[1].value];
-        }));
-      });
-    }
-
-    function loadTemplate(templateName) {
-      var xmlHTTP = new XMLHttpRequest();
-      xmlHTTP.open('GET', 'base/app/sparql/' + templateName, false);
-      xmlHTTP.send(null);
-      var template = xmlHTTP.responseText;
-      httpBackend.expectGET('app/sparql/' + templateName).respond(template);
-      return template;
-    }
-
-    function executeUpdateQuery(query) {
-      var xmlHTTP = new XMLHttpRequest();
-      xmlHTTP.open('POST', scratchStudyUri + '/update', false);
-      xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');
-      xmlHTTP.send(query);
-      return xmlHTTP.responseText;
-    }
 
     beforeEach(function() {
       module('trialverse.util', function($provide) {
@@ -80,6 +33,7 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
+    beforeEach(module('trialverse.outcome'));
     beforeEach(module('trialverse.adverseEvent'));
 
     beforeEach(function() {
@@ -95,23 +49,28 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    beforeEach(inject(function($q, $rootScope, $httpBackend, AdverseEventService, StudyService) {
+    beforeEach(inject(function($q, $rootScope, $httpBackend, AdverseEventService, StudyService, OutcomeService) {
       q = $q;
       httpBackend = $httpBackend;
       rootScope = $rootScope;
       adverseEventService = AdverseEventService;
       studyService = StudyService;
 
+      outcomeService = OutcomeService;
+      spyOn(outcomeService, 'setOutcomeProperty');
+
       // reset the test graph
-      dropGraph(graphUri);
+      testUtils.dropGraph(graphUri);
 
       // load service templates and flush httpBackend
-      addTemplateRaw = loadTemplate('addTemplate.sparql');
-      addAdverseEventQueryRaw = loadTemplate('addAdverseEvent.sparql');
-      adverseEventsQuery = loadTemplate('queryAdverseEvent.sparql');
-      deleteAdverseEventRaw = loadTemplate('deleteAdverseEvent.sparql');
-      editAdverseEventRaw = loadTemplate('editAdverseEvent.sparql');
-      queryAdverseEventMeasuredAtRaw = loadTemplate('queryMeasuredAt.sparql');
+      testUtils.loadTemplate('setOutcomeResultProperty.sparql', httpBackend);
+      addTemplateRaw = testUtils.loadTemplate('addTemplate.sparql', httpBackend);
+      addAdverseEventQueryRaw = testUtils.loadTemplate('addAdverseEvent.sparql', httpBackend);
+      adverseEventsQuery = testUtils.loadTemplate('queryAdverseEvent.sparql', httpBackend);
+      deleteAdverseEventRaw = testUtils.loadTemplate('deleteAdverseEvent.sparql', httpBackend);
+      editAdverseEventRaw = testUtils.loadTemplate('editAdverseEvent.sparql', httpBackend);
+      queryAdverseEventMeasuredAtRaw = testUtils.loadTemplate('queryMeasuredAt.sparql', httpBackend);
+
       httpBackend.flush();
 
       // create and load empty test store
@@ -135,7 +94,7 @@ define(['angular', 'angular-mocks'], function() {
         console.log('graphUri = ' + uri);
         console.log('query = ' + query);
 
-        executeUpdateQuery(query);
+        testUtils.executeUpdateQuery(query);
 
         var executeUpdateDeferred = q.defer();
         executeUpdateDeferred.resolve();
@@ -166,16 +125,19 @@ define(['angular', 'angular-mocks'], function() {
         // setup verification, ready for digest cycle to kickoff 
         resultPromise.then(function(result) {
           // verify addAdverseEvent query
-          var adverseEventsAsString = queryTeststore(adverseEventsQuery.replace(/\$graphUri/g, graphUri));
-          var adverseEventsObject = deFusekify(adverseEventsAsString);
+          var adverseEventsAsString = testUtils.queryTeststore(adverseEventsQuery.replace(/\$graphUri/g, graphUri));
+          var adverseEventsObject = testUtils.deFusekify(adverseEventsAsString);
           expect(adverseEventsObject.length).toEqual(1);
           expect(adverseEventsObject[0].label).toEqual(adverseEvent.label);
           expect(adverseEventsObject[0].measurementType).toEqual(adverseEvent.measurementType);
 
+          // verify outcome properties are added
+          expect(outcomeService.setOutcomeProperty).toHaveBeenCalledWith(adverseEventWithMoments);
+
           // verify add measured at query
           var measuredAtQuery = queryAdverseEventMeasuredAtRaw.replace(/\$graphUri/g, graphUri);
-          var adverseEventMeasuredAtAsString = queryTeststore(measuredAtQuery);
-          var measuredAtMoments = deFusekify(adverseEventMeasuredAtAsString);
+          var adverseEventMeasuredAtAsString = testUtils.queryTeststore(measuredAtQuery);
+          var measuredAtMoments = testUtils.deFusekify(adverseEventMeasuredAtAsString);
           expect(measuredAtMoments.length).toEqual(2);
           expect(measuredAtMoments[0].measurementMoment).toEqual('http://moments/moment2');
           expect(measuredAtMoments[1].measurementMoment).toEqual('http://moments/moment1');

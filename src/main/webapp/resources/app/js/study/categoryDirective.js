@@ -15,11 +15,16 @@ define([], function() {
         scope.reloadItems = function() {
           service.queryItems($stateParams.studyUUID).then(function(queryResult) {
             scope.items = queryResult;
-            console.log('category items retrieved. ' + queryResult.length);
+            // console.log('category items retrieved. ' + queryResult.length);
           });
         };
 
         scope.reloadItems();
+
+        function onAdd() {
+          scope.$emit('updateStudyDesign');
+          scope.reloadItems();
+        }
 
         scope.addItem = function() {
           $modal.open({
@@ -28,7 +33,7 @@ define([], function() {
             controller: scope.settings.addItemController,
             resolve: {
               callback: function() {
-                return scope.reloadItems;
+                return onAdd;
               },
               actionType: function() {
                 return 'Add';

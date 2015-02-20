@@ -15,14 +15,19 @@ define([], function() {
 
         var service = $injector.get(scope.settings.service);
 
+        function onEdit() {
+          scope.$emit('updateStudyDesign');
+          scope.reloadItems();
+        }
+
         scope.editItem = function() {
           $modal.open({
             templateUrl: scope.settings.editItemTemplateUrl,
             scope: scope,
             controller: scope.settings.editItemController,
             resolve: {
-              callback: function() {
-                return scope.reloadItems;
+              callback: function () {
+                return onEdit;
               },
               itemService: function() {
                 return service;
@@ -35,8 +40,10 @@ define([], function() {
         };
 
         scope.deleteItem = function() {
-          service.deleteItem(scope.item)
-            .then(scope.reloadItems);
+          service.deleteItem(scope.item).then(function() {
+            scope.$emit('updateStudyDesign');
+            scope.reloadItems();
+          });
         };
       }
 

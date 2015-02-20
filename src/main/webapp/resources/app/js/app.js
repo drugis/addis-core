@@ -10,10 +10,12 @@ define(
     'util/util',
     'study/study',
     'arm/arm',
+    'outcome/outcome',
     'populationCharacteristic/populationCharacteristic',
     'endpoint/endpoint',
     'adverseEvent/adverseEvent',
     'epoch/epoch',
+    'results/results',
     'measurementMoment/measurementMoment',
     'angular-resource',
     'rdfstore',
@@ -27,12 +29,21 @@ define(
       'trialverse.util',
       'trialverse.study',
       'trialverse.arm',
+      'trialverse.outcome',
       'trialverse.populationCharacteristic',
       'trialverse.endpoint',
       'trialverse.adverseEvent',
       'trialverse.epoch',
-      'trialverse.measurementMoment'
+      'trialverse.measurementMoment',
+      'trialverse.results'
     ];
+
+
+    Number.isInteger = Number.isInteger || function(value) {
+    return typeof value === "number" && 
+           isFinite(value) && 
+           Math.floor(value) === value;
+    };
 
     var app = angular.module('trialverse', dependencies);
 

@@ -120,6 +120,7 @@ table {
   tr {
     height: 1rem;
     th, .y-head {
+      text-align: center;
       background-color:#F5F5F5;
     }
     th.sortable {
@@ -137,6 +138,12 @@ table {
        margin: 0;
        border:0;
        text-align: center;
+       line-height: 1.1rem; // needed to show part below descender line 
+      }
+      input[type="number"].ng-invalid,
+      input[type="number"].ng-invalid-number,
+      input[type="number"].invalid-trialverse-number  {
+        background-color: lighten($alert-color, 10%);
       }
     } 
   }
@@ -144,7 +151,7 @@ table {
 td.empty-cell {
   background-color: $addis-grey-border;
 }
-// lighten the darken on hover
+
 tr.on-hover:hover {
   background: darken($secondary-color, 0.5%);
   cursor: pointer;
