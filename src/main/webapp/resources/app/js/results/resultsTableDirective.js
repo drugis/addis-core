@@ -21,15 +21,6 @@ define([], function() {
           scope.inputRows = ResultsTableService.createInputRows(scope.variable, scope.arms, scope.measurementMoments, scope.results.$$state.value);
           scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.measurementType);
         });
-
-        scope.updateValue = function(row, column) {
-          if(ResultsTableService.isValidValue(column)) {
-            column.isInValidValue = false;
-            ResultsService.updateResultValue(row, column);
-          } else{
-            column.isInValidValue = true;
-          }
-        }
         
       }
     };
