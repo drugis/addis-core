@@ -82,6 +82,18 @@ define([],
           addItemTemplateUrl: 'app/js/measurementMoment/editMeasurementMoment.html',
           editItemTemplateUrl: 'app/js/measurementMoment/editMeasurementMoment.html',
           editItemController: 'MeasurementMomentController',
+        },
+        activities: {
+          service: 'ActivityService',
+          anchorId: 'activities',
+          header: 'Activities',
+          addItemController: 'ActivityController',
+          categoryEmptyMessage: 'No activities defined.',
+          itemName: 'activity',
+          itemTemplateUrl: 'app/js/activity/activity.html',
+          addItemTemplateUrl: 'app/js/activity/editActivity.html',
+          editItemTemplateUrl: 'app/js/activity/editActivity.html',
+          editItemController: 'ActivityController',
         }
       };
 

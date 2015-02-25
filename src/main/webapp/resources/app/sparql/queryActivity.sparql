@@ -1,0 +1,19 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX study: <http://trials.drugis.org/studies/>
+
+SELECT * WHERE {
+  GRAPH <$graphUri> {
+    study:$studyUuid 
+      ontology:has_activity ?activityUri .
+    ?activityUri
+      rdfs:label ?label ;
+      rdf:type ?activityType .
+    OPTIONAL {
+      ?activityUri rdfs:comment ?activityDescription .
+    }
+  }
+}
+
+## todo in case of treatment query treatment type, drugs and dose, note: write out types in query we dont have to use optional  

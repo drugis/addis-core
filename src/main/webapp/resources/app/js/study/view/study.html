@@ -40,8 +40,9 @@
 
     <study-category settings="categorySettings['arms']"></study-category>
     <study-category settings="categorySettings['epochs']"></study-category>
+    <study-category settings="categorySettings['activities']"></study-category>
 
-    <div id="activities" class="study-item">
+<!--     <div id="activities" class="study-item">
         <h3>Activities<a> <i class="fa fa-info-circle fa-fw"></i></a></h3>
         <h5>Activities coordinate table</h5>
 
@@ -70,123 +71,7 @@
 
 
     </div>
-
-
-    <div class="panel clearfix">
-        <div class="edit-item-controls right">
-            <a ng-click="editItem()"> <i class="fa fa-edit fa-2x fa-fw"></i> </a>
-            <a ng-click="deleteItem()"><i class="fa fa-trash-o fa-2x fa-fw"></i></a>
-        </div>
-        <div>
-            <ul class="no-bullet">
-                <li>
-                    <span><strong>Activity: </strong></span>
-                    <span>koffie drinken</span>
-                </li>
-                <li>
-                    <span><strong>Description: </strong></span>
-                    <span>Je kunt er melk of suiker in doen</span>
-                </li>
-                <li>
-                    <span><strong>Activity type: </strong></span>
-                    <span>Wash-out</span>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="panel clearfix">
-        <div class="edit-item-controls right">
-            <a ng-click="editItem()"> <i class="fa fa-edit fa-2x fa-fw"></i> </a>
-            <a ng-click="deleteItem()"><i class="fa fa-trash-o fa-2x fa-fw"></i></a>
-        </div>
-        <div>
-            <ul class="no-bullet">
-                <li>
-                    <span><strong>Activity: </strong></span>
-                    <span>Take a hit</span>
-                </li>
-                <li>
-                    <span><strong>Description: </strong></span>
-                    <span>none</span>
-                </li>
-                <li>
-                    <span><strong>Activity type: </strong></span>
-                    <span>Treatment</span>
-                    <ul>
-                     <li>
-                       <span>snoepje</span> <span> 1 stuks </span>
-                      </li>
-                                           <li>
-                       <span>slokje water</span> <span> half glas </span>
-                      </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-
-    <a ng-click="addActivity()" class="button success"><i class="fa fa-plus"></i> Add Activity</a>
-
-
-
-  <!-- activity modal mockup -->
-
-<div tabindex="-1" class="reveal-modal fade in" style="display: block; position: fixed; visibility: visible;display: block; position: fixed; visibility: visible" modal-window="" index="0" animate="animate">
-
-        <form novalidate=""  class="ng-pristine ng-valid ng-scope ng-valid-min">
-            <div class="row">
-                <div class="large-9 medium-12 columns">
-                    <h3>Add a new activity</h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="large-9 medium-12 columns">
-                    <label>Name
-                        <input autofocus="true" type="text" class="ng-pristine ng-untouched ng-valid">
-                    </label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="large-9 medium-12 columns">
-                    <label>Description
-                        <textarea rows="4" ng-model="item.comment" class="ng-pristine ng-untouched ng-valid"></textarea>
-                    </label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="large-9 medium-12 columns">
-                    <label>Type
-                        <select>
-                          <option>-- select a activity type --</option>
-                          <option>Screening</option>
-                          <option>Wash-out</option>
-                          <option>Randomisation</option>
-                          <option>drug treatment</option>
-                          <option>Follow-up</option>
-                          <option>Other</option>
-                        </select>
-                    </label>
-                </div>
-            </div>
-
-            
-
-            <div class="row">
-                <div class="large-9 columns">
-                    <button class="success" type="submit">Add</button>
-                </div>
-            </div>
-            <a class="close-reveal-modal" ng-click="cancel()">×</a>
-        </form>
-
-</div>
-
-
-
-  <!-- end acticity modal mockup -->
-
+ -->
 
     <study-category settings="categorySettings['measurementMoments']"></study-category>
     <study-category settings="categorySettings['populationCharacteristics']"></study-category>

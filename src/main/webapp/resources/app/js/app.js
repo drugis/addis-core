@@ -17,6 +17,7 @@ define(
     'epoch/epoch',
     'results/results',
     'measurementMoment/measurementMoment',
+    'activity/activity',
     'angular-resource',
     'rdfstore',
     'lodash'
@@ -35,6 +36,7 @@ define(
       'trialverse.adverseEvent',
       'trialverse.epoch',
       'trialverse.measurementMoment',
+      'trialverse.activity',
       'trialverse.results'
     ];
 
