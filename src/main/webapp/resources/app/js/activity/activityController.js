@@ -12,21 +12,10 @@ define([],
     var ActivityController = function($scope, $stateParams, $modalInstance, callback, actionType, ActivityService) {
 
       $scope.actionType = actionType;
-
-      if ($scope.actionType === 'Add') {
-        $scope.itemScratch = {};
-        $scope.commit = $scope.addItem;
-      } else {
-        $scope.itemScratch = angular.copy($scope.item);
-        $scope.commit = $scope.editItem;
-      }
-
-      var activitiesQueryPromise = ActivityService.queryItems($stateParams.studyUUID).then(function(result) {
-        $scope.activities = result;
-      });
+      $scope.activityTypeOptions = _.values(ActivityService.ACTIVITY_TYPE_OPTIONS);
 
       $scope.addItem = function() {
-        ActivityService.addItem($scope.itemScratch)
+        ActivityService.addItem($stateParams.studyUUID, $scope.itemScratch)
           .then(function() {
               callback();
               $modalInstance.close();
@@ -51,6 +40,14 @@ define([],
 
       $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
+      }
+
+      if ($scope.actionType === 'Add') {
+        $scope.itemScratch = {};
+        $scope.commit = $scope.addItem; // set the function to be called when the form is submitted
+      } else {
+        $scope.itemScratch = angular.copy($scope.item);
+        $scope.commit = $scope.editItem;
       }
 
     };

@@ -4,7 +4,7 @@ define('testUtils', ['lodash'],
         var testFusekiUri = 'http://localhost:9876/scratch';
         return {
             queryTeststore: function(query) {
-                console.log('queryTeststore query = ' + query);
+                //console.log('queryTeststore query = ' + query);
                 var xmlHTTP = new XMLHttpRequest();
                 xmlHTTP.open('POST', testFusekiUri + '/query?output=json', false);
                 xmlHTTP.setRequestHeader('Content-type', 'application/sparql-query');
@@ -30,6 +30,7 @@ define('testUtils', ['lodash'],
                 return template;
             },
             executeUpdateQuery: function(query) {
+                console.log('executeUpdateQuery: ' + query);
                 var xmlHTTP = new XMLHttpRequest();
                 xmlHTTP.open('POST', testFusekiUri + '/update', false);
                 xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');
@@ -37,7 +38,7 @@ define('testUtils', ['lodash'],
                 return xmlHTTP.responseText;
             },
             deFusekify: function(data) {
-                console.log('deFusekify on : ' + data);
+                //console.log('deFusekify on : ' + data);
                 var json = JSON.parse(data);
                 var bindings = json.results.bindings;
                 return _.map(bindings, function(binding) {

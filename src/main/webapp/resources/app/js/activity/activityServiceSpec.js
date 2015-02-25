@@ -13,6 +13,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     var activityService;
     var queryActivityTemplate;
+    var addActivityTemplate;
 
 
     beforeEach(function() {
@@ -44,6 +45,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       // load service templates and flush httpBackend
       queryActivityTemplate = testUtils.loadTemplate('queryActivity.sparql', httpBackend);
+      addActivityTemplate =  testUtils.loadTemplate('addActivity.sparql', httpBackend);
 
       httpBackend.flush();
 
@@ -106,17 +108,77 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           expect(activities.length).toBe(2);
           expect(activities[0].label).toEqual('activity 1');
           expect(activities[1].label).toEqual('activity 2');
-          expect(activities[0].activityType).toEqual('http://trials.drugis.org/ontology#RandomizationActivity');
-          expect(activities[1].activityType).toEqual('http://trials.drugis.org/ontology#WashOutActivity');
+          expect(activities[0].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['http://trials.drugis.org/ontology#RandomizationActivity']);
+          expect(activities[1].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['http://trials.drugis.org/ontology#WashOutActivity']);
           expect(activities[1].activityDescription).toEqual('activity description');
           done();
         });
         rootScope.$digest();
-
-
-
       });
     });
+
+    describe('add activity', function() {
+
+          beforeEach(function(done) {
+            remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
+              query = query.replace(/\$graphUri/g, graphUri);
+
+              var result = testUtils.executeUpdateQuery(query);
+              console.log('queryResponce ' + result);
+
+              var executeUpdateDeferred = q.defer();
+              executeUpdateDeferred.resolve(result);
+              return executeUpdateDeferred.promise;
+            });
+
+            var newActivity = {
+              uuid: 'newActivityUuid',
+              label: 'newActivityLabel',
+              activityType: {
+                uri: 'http://mockActivityUri'
+              }
+            };
+
+            activityService.addItem(mockStudyUuid, newActivity).then(function(result){
+               done();
+            });
+
+            rootScope.$digest();
+          });
+
+          it('should add the new activity to the graph', function(done) {
+
+            // call function under test
+            var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o }}';
+            var result = testUtils.queryTeststore(query);
+            var resultTriples = testUtils.deFusekify(result);
+
+            // verify results
+            expect(resultTriples.length).toBe(3);
+            var hasActivityTriple = _.find(resultTriples, function(item){
+              return item.s === 'http://trials.drugis.org/studies/mockStudyUuid';
+            });
+            expect(hasActivityTriple.s).toBeDefined();
+            expect(hasActivityTriple.p).toEqual('http://trials.drugis.org/ontology#has_activity');
+            expect(hasActivityTriple.o).toBeDefined();
+
+            var activityLabelTriple = _.find(resultTriples, function(item){
+              return item.p ===  'http://www.w3.org/2000/01/rdf-schema#label';
+            });
+            expect(activityLabelTriple.s).toBeDefined();
+            expect(activityLabelTriple.p).toBeDefined();
+            expect(activityLabelTriple.o).toEqual('newActivityLabel');
+
+            var activityTypeTriple = _.find(resultTriples, function(item){
+              return item.p ===  'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
+            });
+            expect(activityTypeTriple.s).toBeDefined();
+            expect(activityTypeTriple.p).toBeDefined();
+            expect(activityTypeTriple.o).toEqual('http://mockActivityUri');
+
+            done();
+          });
+        });
 
 
   });

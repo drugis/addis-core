@@ -1,22 +1,14 @@
 <ul class="no-bullet">
     <li>
         <span><strong>Activity: </strong></span>
-        <span>Take a hit</span>
+        <span>{{item.label}}</span>
     </li>
     <li>
         <span><strong>Description: </strong></span>
-        <span>none</span>
+        <span>{{item.description|| "none"}}</span>
     </li>
     <li>
         <span><strong>Activity type: </strong></span>
-        <span>Treatment</span>
-        <ul>
-            <li>
-                <span>snoepje</span> <span> 1 stuks </span>
-            </li>
-            <li>
-                <span>slokje water</span> <span> half glas </span>
-            </li>
-        </ul>
+        <span>{{item.activityType.label}}</span>
     </li>
 </ul>
