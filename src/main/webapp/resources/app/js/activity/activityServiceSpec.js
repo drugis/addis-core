@@ -9,6 +9,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     var rootScope, q, httpBackend;
     var remotestoreServiceStub;
+    var commentServiceStub;
     var studyService;
 
     var activityService;
@@ -26,7 +27,11 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           'getGraph',
           'deFusekify'
         ]);
+        commentServiceStub = jasmine.createSpyObj('CommentService', [
+          'addComment'
+        ]);
         $provide.value('RemoteRdfStoreService', remotestoreServiceStub);
+        $provide.value('CommentService', commentServiceStub);
       });
     });
 
@@ -136,7 +141,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               label: 'newActivityLabel',
               activityType: {
                 uri: 'http://mockActivityUri'
-              }
+              },
+              description: 'some description'
             };
 
             activityService.addItem(mockStudyUuid, newActivity).then(function(result){
@@ -152,6 +158,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o }}';
             var result = testUtils.queryTeststore(query);
             var resultTriples = testUtils.deFusekify(result);
+
+            expect(commentServiceStub.addComment).toHaveBeenCalled();
 
             // verify results
             expect(resultTriples.length).toBe(3);

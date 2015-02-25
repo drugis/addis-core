@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', '$filter', 'StudyService', 'SparqlResource', 'UUIDService'];
-    var ActivityService = function($q, $filter, StudyService, SparqlResource, UUIDService) {
+    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService', 'CommentService'];
+    var ActivityService = function($q, StudyService, SparqlResource, UUIDService, CommentService) {
 
       // private
       var ONTOLOGY = 'http://trials.drugis.org/ontology#';
@@ -49,10 +49,17 @@ define([],
       function addItem(studyUuid, item) {
         var newActivity = angular.copy(item);
         newActivity.uuid = UUIDService.generate();
-        return addActivityTemplate.then(function(template) {
+        var addOptionalDescriptionPromise; 
+        var addActivityPromise = addActivityTemplate.then(function(template) {
           var query = applyToTemplate(template, studyUuid, newActivity);
           return StudyService.doModifyingQuery(query);
         });
+
+        if(item.description) {
+          addOptionalDescriptionPromise = CommentService.addComment(newActivity.uuid, item.description);
+        }
+
+        return $q.all([addActivityPromise, addOptionalDescriptionPromise]);
       }
 
       function editItem(studyUuid, item) {

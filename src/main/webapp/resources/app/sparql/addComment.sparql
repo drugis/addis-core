@@ -1,0 +1,8 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX instance: <http://trials.drugis.org/instances/>
+INSERT DATA
+{
+  graph <$graphUri> {
+    instance:$instanceUuid rdfs:comment "$comment" ;
+  }
+}
