@@ -23,6 +23,15 @@ $addis-grey-border : $crumb-border-color;
   color: $drugis-color;
 }
 
+// needed to show part below descender line 
+input[type="number"],
+input[type="text"],
+select,
+select option {
+  line-height: 1.1rem; 
+}
+ 
+
 .main-content {
   padding-top: 56px; // clear fixed navbar
 }
@@ -139,7 +148,6 @@ table {
        margin: 0;
        border:0;
        text-align: center;
-       line-height: 1.1rem; // needed to show part below descender line 
       }
       select {
         padding-right: 1rem;
