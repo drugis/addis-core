@@ -1,0 +1,12 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX study: <http://trials.drugis.org/studies/>
+
+WITH <$graphUri>
+DELETE {
+  study:$studyUuid ontology:has_activity <$activityUri> .
+  <$activityUri> ?p ?o .
+}
+WHERE {
+  study:$studyUuid ontology:has_activity <$activityUri> .
+  <$activityUri> ?p ?o .
+};

@@ -17,7 +17,7 @@ define([],
       var queryActivityTemplate = SparqlResource.get('queryActivity.sparql');
       var addActivityTemplate = SparqlResource.get('addActivity.sparql');
       var editActivityTemplate = SparqlResource.get('editActivity.sparql');
-      // var deleteActivityTemplate = SparqlResource.get('deleteActivity.sparql');
+      var deleteActivityTemplate = SparqlResource.get('deleteActivity.sparql');
 
       // public
       var ACTIVITY_TYPE_OPTIONS = {};
@@ -74,13 +74,11 @@ define([],
         });
       }
 
-      function deleteItem(studyUuid, item) {
-        // return deleteItemQuery.then(function(rawQuery) {
-        //   var query = rawQuery
-        //     .replace(/\$itemUri/g, item.uri);
-        //   return StudyService.doModifyingQuery(query);
-        // });
-
+      function deleteItem(activity, studyUuid) {
+        return deleteActivityTemplate.then(function(template) {
+          var query = applyToTemplate(template, studyUuid, activity)
+          return StudyService.doModifyingQuery(query);
+        });
       }
 
       function applyToTemplate(template, studyUuid, activity) {

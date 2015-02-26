@@ -16,6 +16,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     var queryActivityTemplate;
     var addActivityTemplate;
     var editActivityTemplate;
+    var deleteActivityTemplate;
 
 
     beforeEach(function() {
@@ -53,6 +54,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       queryActivityTemplate = testUtils.loadTemplate('queryActivity.sparql', httpBackend);
       addActivityTemplate =  testUtils.loadTemplate('addActivity.sparql', httpBackend);
       editActivityTemplate =  testUtils.loadTemplate('editActivity.sparql', httpBackend);
+      deleteActivityTemplate =  testUtils.loadTemplate('deleteActivity.sparql', httpBackend);
+
 
       httpBackend.flush();
 
@@ -88,19 +91,19 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
         // stub remotestoreServiceStub.executeQuery method
         remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
-        query = query.replace(/\$graphUri/g, graphUri);
+          query = query.replace(/\$graphUri/g, graphUri);
 
-        //console.log('graphUri = ' + uri);
-        //console.log('query = ' + query);
+          //console.log('graphUri = ' + uri);
+          //console.log('query = ' + query);
 
-        var result = testUtils.queryTeststore(query);
-        console.log('queryResponce ' + result);
-        var resultObject = testUtils.deFusekify(result)
+          var result = testUtils.queryTeststore(query);
+          console.log('queryResponce ' + result);
+          var resultObject = testUtils.deFusekify(result)
 
-        var executeUpdateDeferred = q.defer();
-        executeUpdateDeferred.resolve(resultObject);
-        return executeUpdateDeferred.promise;
-      });
+          var executeUpdateDeferred = q.defer();
+          executeUpdateDeferred.resolve(resultObject);
+          return executeUpdateDeferred.promise;
+        });
 
         done();
       });
@@ -248,10 +251,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should edit the activity', function(done) {
 
-        // call function under test
-        activityService.queryItems(mockStudyUuid).then(function(result){
-          var activities = result;
-
+        activityService.queryItems(mockStudyUuid).then(function(activities){
           // verify query result
           expect(activities.length).toBe(1);
           expect(activities[0].label).toEqual('edit label');
@@ -260,6 +260,58 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           expect(commentServiceStub.addComment).not.toHaveBeenCalled();
           done();
         });
+      });
+    });
+
+    describe('delete activity', function() {
+
+      beforeEach(function(done) {
+        // load some mock graph with activities
+        var xmlHTTP = new XMLHttpRequest();
+        xmlHTTP.open('GET', 'base/test_graphs/activitiesQueryMockGraph.ttl', false);
+        xmlHTTP.send(null);
+        var activitiesQueryMockGraph = xmlHTTP.responseText;
+
+        xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
+        xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
+        xmlHTTP.send(activitiesQueryMockGraph);
+
+        remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
+          query = query.replace(/\$graphUri/g, graphUri);
+          var resultObject = testUtils.deFusekify(testUtils.queryTeststore(query))
+          var executeUpdateDeferred = q.defer();
+          executeUpdateDeferred.resolve(resultObject);
+          return executeUpdateDeferred.promise;
+        });
+
+        remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
+          var result = testUtils.executeUpdateQuery(query.replace(/\$graphUri/g, graphUri));
+          var executeUpdateDeferred = q.defer();
+          executeUpdateDeferred.resolve(result);
+          return executeUpdateDeferred.promise;
+        });
+
+        var deleteActivity = {
+          activityUri: 'http://trials.drugis.org/instances/activity1Uuid',
+          activityType: {uri: 'some uri'}
+        };
+
+        activityService.deleteItem(deleteActivity, mockStudyUuid).then(function(result){
+           done();
+        });
+        rootScope.$digest();
+
+      });
+
+      it('should remove the activity', function(done) {
+
+        var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o }}';
+        var result = testUtils.queryTeststore(query);
+        var resultTriples = testUtils.deFusekify(result);
+
+        // verify results
+        expect(resultTriples.length).toBe(6);
+        done();
       });
     });
 

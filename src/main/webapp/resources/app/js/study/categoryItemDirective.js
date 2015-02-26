@@ -1,15 +1,16 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$modal', '$injector'];
+  var dependencies = ['$stateParams', '$modal', '$injector'];
 
-  var CategoryItemDirective = function($modal, $injector) {
+  var CategoryItemDirective = function($stateParams, $modal, $injector) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/study/categoryItemDirective.html',
       scope: {
         item: '=',
         reloadItems: '=',
-        settings: '='
+        settings: '=',
+        studyUuid: '='
       },
       link: function(scope) {
 
@@ -40,7 +41,7 @@ define([], function() {
         };
 
         scope.deleteItem = function() {
-          service.deleteItem(scope.item).then(function() {
+          service.deleteItem(scope.item, $stateParams.studyUUID).then(function() {
             scope.$emit('updateStudyDesign');
             scope.reloadItems();
           });
