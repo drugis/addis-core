@@ -1,25 +1,25 @@
 <form novalidate ng-submit="commit()">
     <div class="row">
-        <div class="large-9 medium-12 columns">
+        <div class="large-12 medium-12 columns">
             <h3>{{actionType}} a new activity</h3>
         </div>
     </div>
     <div class="row">
-        <div class="large-9 medium-12 columns">
+        <div class="large-12 medium-12 columns">
             <label>Name
                 <input autofocus="true" type="text" ng-model="itemScratch.label">
             </label>
         </div>
     </div>
     <div class="row">
-        <div class="large-9 medium-12 columns">
+        <div class="large-12 medium-12 columns">
             <label>Description
                 <textarea rows="4" ng-model="itemScratch.activityDescription"></textarea>
             </label>
         </div>
     </div>
     <div class="row">
-        <div class="large-9 medium-12 columns">
+        <div class="large-12 medium-12 columns">
             <label>Type
                 <select ng-model="itemScratch.activityType" placeholder="select type" ng-options="activityType.label for activityType in activityTypeOptions">
                 </select>
@@ -27,10 +27,94 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="large-9 columns">
-            <button class="success" type="submit" ng-disabled="!itemScratch.label || !itemScratch.activityType">{{actionType}}</button>
+    <div ng-show="itemScratch.activityType.uri === 'http://trials.drugis.org/ontology#TreatmentActivity' ">
+
+        <div class="row">
+            <div class="large-9 medium-12 columns">
+                <label>Treatment drugs</label>
+                <ul class="form-list">
+                    <li>Bupropion, 12 milligram 2 per week</li>
+                    <li>Fluoxetine, 0.012 liter once per day</li>
+                </ul>
+                <a class="button small" ng-click="addDrugClicked()" ng-show="!isAddDrugMode"><i class="fa fa-plus"></i>Add drug</a>
+            </div>
+        </div>
+
+        <div ng-show="isAddDrugMode" class="row">
+
+            <div class="large-11 medium-11 columns panel">
+
+                <div class="row">
+                    <div class="large-12 medium-12 columns">
+                        <label>Drug name
+                            <input type="text" ng-model="itemScratch.drug" typeahead="drug as drug.label for drug in drugs | filter:$viewValue" class="form-control">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="large-9 medium-12 columns">
+                        <label>Dose type</label>
+                        <input ng-model="itemScratch.doseType" type="radio" value="FixedDoseDrugTreatment" id="fixedOption">
+                        <label for="fixedOption">fixed</label>
+                        <input ng-model="itemScratch.doseType" type="radio" value="TitratedDoseDrugTreatment" id="titratedOption">
+                        <label for="titratedOption">titrated</label>
+                    </div>
+                </div>
+
+                <div class="row" ng-show="itemScratch.doseType === 'FixedDoseDrugTreatment' ">
+                    <div class="large-2 medium-3 columns">
+                        <label>Dose amount</label>
+                        <input ng-model="itemScratch.treatmentDose" type="number">
+                    </div>
+                    <div class="large-2 medium-3 columns end">
+                        <label>Dose unit
+                            <input type="text" ng-model="itemScratch.doseUnit" typeahead="doseUnit as doseUnit.label for doseUnit in doseUnits | filter:$viewValue" class="form-control">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="row" ng-show="itemScratch.doseType === 'TitratedDoseDrugTreatment' ">
+                    <div class="large-2 medium-3 columns">
+                        <label>Minimun dose</label>
+                        <input ng-model="itemScratch.treatmentMinDose" type="number">
+                    </div>
+                    <div class="large-2 medium-3 columns">
+                        <label>Maximum dose</label>
+                        <input ng-model="itemScratch.treatmentMaxDose" type="number">
+                    </div>
+                    <div class="large-3 medium-3 columns end">
+                        <label>Dose unit
+                            <input type="text" ng-model="itemScratch.doseUnit" typeahead="doseUnit as doseUnit.label for doseUnit in doseUnits | filter:$viewValue" class="form-control">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    todo fix duration component so as styles can be injected, offer defaults
+                    <duration-input duration-string="itemScratch.dosingPeriodicity"></duration-input>
+                </div>
+
+                <ul class="button-group">
+                    <li>
+                        <a class="button small secondary" ng-click="addDrugToTreatmentDrugList()">Cancel</a>
+                    </li>
+                    <li>
+                        <a class="button small" ng-click="addDrugToTreatmentDrugList()">Add drug</a>
+                    </li>
+                </ul>
+
+                <!-- <pre>Model: {{itemScratch.drug | json}}</pre> -->
+            </div>
+
         </div>
     </div>
-    <a class="close-reveal-modal" ng-click="cancel()">×</a>
+
+
+        <div class="row">
+            <div class="large-12 columns">
+                <button  class="success" type="submit" ng-disabled="!itemScratch.label || !itemScratch.activityType || isAddDrugMode">{{actionType}}</button>
+            </div>
+        </div>
+        <a class="close-reveal-modal" ng-click="cancel()">×</a>
 </form>

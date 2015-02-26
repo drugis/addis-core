@@ -26,6 +26,7 @@ define(
     var dependencies = [
       'ui.router',
       'mm.foundation.modal',
+      'mm.foundation.typeahead',
       'trialverse.dataset',
       'trialverse.util',
       'trialverse.study',

@@ -14,6 +14,20 @@ define([],
       $scope.actionType = actionType;
       $scope.activityTypeOptions = _.values(ActivityService.ACTIVITY_TYPE_OPTIONS);
 
+      $scope.drugs = [{id: '1', label:'Bupropion'}, {id: '2', label:'Duloxetine'}, {id: '3', label:'Fluoxetine'}];
+
+      $scope.doseUnits = [{id: '1', label:'milligram'}, {id: '2', label:'gram'}, {id: '3', label:'milliliter'}];
+
+      $scope.isAddDrugMode = false;
+
+      $scope.addDrugClicked = function() {
+        $scope.isAddDrugMode = true;
+      }
+
+      $scope.addDrugToTreatmentDrugList = function() {
+        $scope.isAddDrugMode = false;
+      }
+
       $scope.addItem = function() {
         ActivityService.addItem($stateParams.studyUUID, $scope.itemScratch)
           .then(function() {
@@ -44,6 +58,7 @@ define([],
 
       if ($scope.actionType === 'Add') {
         $scope.itemScratch = {};
+        $scope.itemScratch.doseType = 'FixedDoseDrugTreatment';
         $scope.commit = $scope.addItem; // set the function to be called when the form is submitted
       } else {
         $scope.itemScratch = angular.copy($scope.item);
