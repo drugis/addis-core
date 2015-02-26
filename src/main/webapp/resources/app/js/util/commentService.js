@@ -6,9 +6,9 @@ define([],
 
       var addCommentTemplate = SparqlResource.get('addComment.sparql');
 
-      function addComment(instanceUuid, comment) {
+      function addComment(itemUri, comment) {
         return addCommentTemplate.then(function(template) {
-          var query = template.replace(/\$instanceUuid/g, instanceUuid)
+          var query = template.replace(/\$itemUri/g, itemUri)
             .replace(/\$comment/g, comment);
           return StudyService.doModifyingQuery(query);
         });

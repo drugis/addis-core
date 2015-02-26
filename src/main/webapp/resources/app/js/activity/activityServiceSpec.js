@@ -15,6 +15,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     var activityService;
     var queryActivityTemplate;
     var addActivityTemplate;
+    var editActivityTemplate;
 
 
     beforeEach(function() {
@@ -51,6 +52,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       // load service templates and flush httpBackend
       queryActivityTemplate = testUtils.loadTemplate('queryActivity.sparql', httpBackend);
       addActivityTemplate =  testUtils.loadTemplate('addActivity.sparql', httpBackend);
+      editActivityTemplate =  testUtils.loadTemplate('editActivity.sparql', httpBackend);
 
       httpBackend.flush();
 
@@ -129,7 +131,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               query = query.replace(/\$graphUri/g, graphUri);
 
               var result = testUtils.executeUpdateQuery(query);
-              console.log('queryResponce ' + result);
+              //console.log('queryResponce ' + result);
 
               var executeUpdateDeferred = q.defer();
               executeUpdateDeferred.resolve(result);
@@ -137,12 +139,12 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             });
 
             var newActivity = {
-              uuid: 'newActivityUuid',
+              activityUri: 'http://trials.drugis.org/instances/newActivityUuid',
               label: 'newActivityLabel',
               activityType: {
                 uri: 'http://mockActivityUri'
               },
-              description: 'some description'
+              activityDescription: 'some description'
             };
 
             activityService.addItem(mockStudyUuid, newActivity).then(function(result){
@@ -187,6 +189,79 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             done();
           });
         });
+
+    describe('edit activities', function() {
+
+      beforeEach(function(done) {
+        // load some mock graph with activities
+        var xmlHTTP = new XMLHttpRequest();
+        xmlHTTP.open('GET', 'base/test_graphs/activitiesEditMockGraph.ttl', false);
+        xmlHTTP.send(null);
+        var activitiesEditMockGraph = xmlHTTP.responseText;
+
+        xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
+        xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
+        xmlHTTP.send(activitiesEditMockGraph);
+
+        // stub remotestoreServiceStub.executeQuery method
+        remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
+          query = query.replace(/\$graphUri/g, graphUri);
+
+          //console.log('graphUri = ' + uri);
+          //console.log('query = ' + query);
+
+          var result = testUtils.queryTeststore(query);
+          //console.log('queryResponce ' + result);
+          var resultObject = testUtils.deFusekify(result)
+
+          var executeUpdateDeferred = q.defer();
+          executeUpdateDeferred.resolve(resultObject);
+          return executeUpdateDeferred.promise;
+        });
+
+        remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
+          query = query.replace(/\$graphUri/g, graphUri);
+
+          var result = testUtils.executeUpdateQuery(query);
+          //console.log('queryResponce ' + result);
+
+          var executeUpdateDeferred = q.defer();
+          executeUpdateDeferred.resolve(result);
+          return executeUpdateDeferred.promise;
+        });
+
+        var editActivity = {
+          activityUri: 'http://trials.drugis.org/instances/activity1Uuid',
+          label: 'edit label',
+          activityType: {
+            uri: 'http://trials.drugis.org/ontology#FollowUpActivity'
+          },
+          activityDescription: undefined
+        };
+
+        activityService.editItem(mockStudyUuid, editActivity).then(function(result){
+           done();
+        });
+
+        rootScope.$digest();
+      });
+
+      it('should edit the activity', function(done) {
+
+        // call function under test
+        activityService.queryItems(mockStudyUuid).then(function(result){
+          var activities = result;
+
+          // verify query result
+          expect(activities.length).toBe(1);
+          expect(activities[0].label).toEqual('edit label');
+          expect(activities[0].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['http://trials.drugis.org/ontology#FollowUpActivity']);
+          expect(activities[0].activityDescription).not.toBeDefined();
+          expect(commentServiceStub.addComment).not.toHaveBeenCalled();
+          done();
+        });
+      });
+    });
 
 
   });

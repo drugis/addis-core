@@ -1,0 +1,27 @@
+PREFIX instance: <http://trials.drugis.org/instances/>
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX study: <http://trials.drugis.org/studies/>
+
+WITH <$graphUri>
+DELETE {
+  <$activityUri>
+    rdfs:label ?oldLabel ;
+    rdf:type ?oldActivityType .
+  <$activityUri> rdfs:comment ?oldComment .
+}
+INSERT {
+  <$activityUri>
+    rdfs:label "$label" ;
+    rdf:type <$activityTypeUri> .
+}
+WHERE {
+  study:$studyUuid ontology:has_activity <$activityUri> .
+  <$activityUri>
+    rdfs:label ?oldLabel ;
+    rdf:type ?oldActivityType .
+    OPTIONAL {
+      <$activityUri> rdfs:comment ?oldComment .
+    } 
+};

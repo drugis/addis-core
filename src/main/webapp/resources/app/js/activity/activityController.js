@@ -27,7 +27,7 @@ define([],
       };
 
       $scope.editItem = function() {
-        ActivityService.editItem($scope.itemScratch)
+        ActivityService.editItem($stateParams.studyUUID, $scope.itemScratch)
           .then(function() {
               callback();
               $modalInstance.close();
@@ -47,6 +47,8 @@ define([],
         $scope.commit = $scope.addItem; // set the function to be called when the form is submitted
       } else {
         $scope.itemScratch = angular.copy($scope.item);
+        // select from the options map as ng-select works by reference
+        $scope.itemScratch.activityType = ActivityService.ACTIVITY_TYPE_OPTIONS[$scope.itemScratch.activityType.uri];
         $scope.commit = $scope.editItem;
       }
 

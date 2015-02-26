@@ -6,8 +6,8 @@ PREFIX study: <http://trials.drugis.org/studies/>
 
 INSERT DATA {
   GRAPH <$graphUri> {
-    study:$studyUuid ontology:has_activity instance:$newActivityUuid .
-    instance:$newActivityUuid
+    study:$studyUuid ontology:has_activity <$activityUri> .
+    <$activityUri>
       rdfs:label "$label" ;
       rdf:type <$activityTypeUri> .
   }

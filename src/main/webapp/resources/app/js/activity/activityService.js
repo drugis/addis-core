@@ -5,6 +5,7 @@ define([],
     var ActivityService = function($q, StudyService, SparqlResource, UUIDService, CommentService) {
 
       // private
+      var INSTANCE_PREFIX = 'http://trials.drugis.org/instances/';
       var ONTOLOGY = 'http://trials.drugis.org/ontology#';
       var SCREENING_ACTIVITY = ONTOLOGY + 'ScreeningActivity';
       var WASH_OUT_ACTIVITY = ONTOLOGY + 'WashOutActivity';
@@ -15,7 +16,7 @@ define([],
 
       var queryActivityTemplate = SparqlResource.get('queryActivity.sparql');
       var addActivityTemplate = SparqlResource.get('addActivity.sparql');
-      // var editActivityTemplate = SparqlResource.get('editActivity.sparql');
+      var editActivityTemplate = SparqlResource.get('editActivity.sparql');
       // var deleteActivityTemplate = SparqlResource.get('deleteActivity.sparql');
 
       // public
@@ -32,46 +33,45 @@ define([],
           var query = applyToTemplate(template, studyUuid);
           return StudyService.doNonModifyingQuery(query).then(function(activities) {
             // make object {label, uri} from uri's to use as options in select
-            var ressult = mapTypeUrisToObjects(activities);
-            return ressult;
+            return mapTypeUrisToObjects(activities);
           });
         })
       }
 
       function mapTypeUrisToObjects(activities) {
-        var result =  _.map(activities, function(activity) {
+        return _.map(activities, function(activity) {
           activity.activityType = ACTIVITY_TYPE_OPTIONS[activity.activityType];
           return activity;
         });
-        return result;
       }
 
       function addItem(studyUuid, item) {
         var newActivity = angular.copy(item);
-        newActivity.uuid = UUIDService.generate();
+        newActivity.activityUri = INSTANCE_PREFIX + UUIDService.generate();
         var addOptionalDescriptionPromise; 
         var addActivityPromise = addActivityTemplate.then(function(template) {
           var query = applyToTemplate(template, studyUuid, newActivity);
           return StudyService.doModifyingQuery(query);
         });
 
-        if(item.description) {
-          addOptionalDescriptionPromise = CommentService.addComment(newActivity.uuid, item.description);
+        if(newActivity.activityDescription) {
+          addOptionalDescriptionPromise = CommentService.addComment(newActivity.activityUri, item.activityDescription);
         }
 
         return $q.all([addActivityPromise, addOptionalDescriptionPromise]);
       }
 
-      function editItem(studyUuid, item) {
-        // return editItemQuery.then(function(rawQuery) {
-        //   var query = rawQuery
-        //     .replace(/\$itemUri/g, item.uri)
-        //     .replace('$newLabel', item.label)
-        //     .replace('$epochUri', item.epoch.uri)
-        //     .replace('$anchorMoment', item.relativeToAnchor)
-        //     .replace('$timeOffset', item.offset);
-        //   return StudyService.doModifyingQuery(query);
-        // });
+      function editItem(studyUuid, activity) {
+        return editActivityTemplate.then(function(template) {
+          var query = applyToTemplate(template, studyUuid, activity)
+          return StudyService.doModifyingQuery(query).then(function(){
+            // no need to use edit as remove is done in the edit activity
+            // therefore wait for edit activity to return
+            if(activity.activityDescription) {
+              return CommentService.addComment(activity.activityUri, activity.activityDescription);
+            }
+          });
+        });
       }
 
       function deleteItem(studyUuid, item) {
@@ -83,14 +83,14 @@ define([],
 
       }
 
-      function applyToTemplate(template, studyUuid, item) {
+      function applyToTemplate(template, studyUuid, activity) {
         var query = template.replace(/\$studyUuid/g, studyUuid);
-        if(item) {
+        if(activity) {
           query = query
-          .replace(/\$newActivityUuid/g, item.uuid)
-          .replace(/\$label/g, item.label)
-          .replace(/\$comment/g, item.description)
-          .replace(/\$activityTypeUri/g, item.activityType.uri);
+          .replace(/\$activityUri/g, activity.activityUri)
+          .replace(/\$label/g, activity.label)
+          .replace(/\$comment/g, activity.activityDescription)
+          .replace(/\$activityTypeUri/g, activity.activityType.uri);
         }
         return query;
       }

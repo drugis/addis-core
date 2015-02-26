@@ -1,0 +1,10 @@
+<http://trials.drugis.org/studies/mockStudyUuid>
+        a       <http://trials.drugis.org/ontology#Study> ;
+        <http://www.w3.org/2000/01/rdf-schema#label> "study 1" ;
+        <http://trials.drugis.org/ontology#has_activity>
+        		<http://trials.drugis.org/instances/activity1Uuid> .
+
+<http://trials.drugis.org/instances/activity1Uuid>
+    a <http://trials.drugis.org/ontology#WashOutActivity>;
+    <http://www.w3.org/2000/01/rdf-schema#label> "activity 1";
+    <http://www.w3.org/2000/01/rdf-schema#comment> "activity description".
