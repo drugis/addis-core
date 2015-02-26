@@ -15,5 +15,3 @@ SELECT * WHERE {
     }
   }
 }
-
-## todo in case of treatment query treatment type, drugs and dose, note: write out types in query we dont have to use optional  

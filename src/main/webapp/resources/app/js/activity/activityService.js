@@ -19,6 +19,8 @@ define([],
       var editActivityTemplate = SparqlResource.get('editActivity.sparql');
       var deleteActivityTemplate = SparqlResource.get('deleteActivity.sparql');
 
+      //var queryActivityTreatmentTemplate = SparqlResource.get('queryActivityTreatment.sparql');
+
       // public
       var ACTIVITY_TYPE_OPTIONS = {};
       ACTIVITY_TYPE_OPTIONS[SCREENING_ACTIVITY] = {label: 'screening', uri: SCREENING_ACTIVITY };
@@ -29,13 +31,31 @@ define([],
       ACTIVITY_TYPE_OPTIONS[OTHER_ACTIVITY] = {label: 'other', uri: OTHER_ACTIVITY };
 
       function queryItems(studyUuid) {
-        return queryActivityTemplate.then(function(template){
+
+        var activities, treatmentsMap;
+
+        var activitiesPromise = queryActivityTemplate.then(function(template){
           var query = applyToTemplate(template, studyUuid);
-          return StudyService.doNonModifyingQuery(query).then(function(activities) {
+          return StudyService.doNonModifyingQuery(query).then(function(result) {
             // make object {label, uri} from uri's to use as options in select
-            return mapTypeUrisToObjects(activities);
+            activities = mapTypeUrisToObjects(result);
+            return;
           });
         })
+
+        // var treatmentsPromise = queryActivityTreatmentTemplate.then(function(template){
+        //     var query = template.applyToTemplate(template, studyUuid);
+        //     return StudyService.doNonModifyingQuery(query).then(function(result) {
+        //       treatmentsMap = _.indexBy(result, 'activityUri');
+        //       return;
+        //     });
+        // });
+
+        // return $q.all([activitiesPromise, treatmentsPromise]).then(function(){
+        return $q.all([activitiesPromise]).then(function(){
+            // combine activities and treatments
+            return _.values(activitiesMap);
+        });
       }
 
       function mapTypeUrisToObjects(activities) {
