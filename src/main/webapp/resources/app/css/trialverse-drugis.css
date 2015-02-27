@@ -9802,75 +9802,80 @@ ul.form-list li {
   margin-bottom: 0;
 }
 
-/* line 126, ../../sass/trialverse-drugis.scss */
+/* line 123, ../../sass/trialverse-drugis.scss */
+.modal-bottom-button-bar {
+  margin-top: 2rem;
+}
+
+/* line 130, ../../sass/trialverse-drugis.scss */
 .y-head {
   font-weight: bold;
 }
 
-/* line 131, ../../sass/trialverse-drugis.scss */
+/* line 135, ../../sass/trialverse-drugis.scss */
 table {
   border-collapse: collapse;
 }
-/* line 134, ../../sass/trialverse-drugis.scss */
+/* line 138, ../../sass/trialverse-drugis.scss */
 table tr:nth-of-type(even) {
   background-color: transparent;
 }
-/* line 137, ../../sass/trialverse-drugis.scss */
+/* line 141, ../../sass/trialverse-drugis.scss */
 table tr {
   height: 1rem;
 }
-/* line 139, ../../sass/trialverse-drugis.scss */
+/* line 143, ../../sass/trialverse-drugis.scss */
 table tr th, table tr .y-head {
   text-align: center;
   background-color: #F5F5F5;
 }
-/* line 143, ../../sass/trialverse-drugis.scss */
+/* line 147, ../../sass/trialverse-drugis.scss */
 table tr th.sortable {
   cursor: pointer;
 }
-/* line 146, ../../sass/trialverse-drugis.scss */
+/* line 150, ../../sass/trialverse-drugis.scss */
 table tr th, table tr td {
   border: solid 1px gainsboro;
 }
-/* line 148, ../../sass/trialverse-drugis.scss */
+/* line 152, ../../sass/trialverse-drugis.scss */
 table tr th a:hover, table tr td a:hover {
   text-decoration: underline;
 }
-/* line 152, ../../sass/trialverse-drugis.scss */
+/* line 156, ../../sass/trialverse-drugis.scss */
 table tr td.input-cell {
   padding: 0;
 }
-/* line 154, ../../sass/trialverse-drugis.scss */
+/* line 158, ../../sass/trialverse-drugis.scss */
 table tr td.input-cell select,
 table tr td.input-cell input[type="number"] {
   margin: 0;
   border: 0;
   text-align: center;
 }
-/* line 160, ../../sass/trialverse-drugis.scss */
+/* line 164, ../../sass/trialverse-drugis.scss */
 table tr td.input-cell select {
   padding-right: 1rem;
 }
-/* line 163, ../../sass/trialverse-drugis.scss */
+/* line 167, ../../sass/trialverse-drugis.scss */
 table tr td.input-cell input[type="number"].ng-invalid,
 table tr td.input-cell input[type="number"].ng-invalid-number,
 table tr td.input-cell input[type="number"].invalid-trialverse-number {
   background-color: #ed9090;
 }
 
-/* line 171, ../../sass/trialverse-drugis.scss */
+/* line 175, ../../sass/trialverse-drugis.scss */
 td.empty-cell {
   background-color: gainsboro;
 }
 
-/* line 175, ../../sass/trialverse-drugis.scss */
+/* line 179, ../../sass/trialverse-drugis.scss */
 tr.on-hover:hover {
   background: #e6e6e6;
   cursor: pointer;
   text-decoration: none;
 }
 
-/* line 181, ../../sass/trialverse-drugis.scss */
+/* line 185, ../../sass/trialverse-drugis.scss */
 tr.clickable td {
   color: #452F8C;
 }

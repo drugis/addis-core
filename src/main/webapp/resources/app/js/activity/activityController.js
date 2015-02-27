@@ -7,31 +7,24 @@ define([],
       '$modalInstance',
       'callback',
       'actionType',
-      'ActivityService',
-      'DrugService',
-      'UnitService'
+      'ActivityService'
     ];
     var ActivityController = function($scope, $stateParams, $modalInstance, callback, actionType, ActivityService, DrugService, UnitService) {
 
       $scope.actionType = actionType;
       $scope.activityTypeOptions = _.values(ActivityService.ACTIVITY_TYPE_OPTIONS);
 
-      DrugService.queryItems($stateParams.studyUUID).then(function(result){
-        $scope.drugs = result;
-      });
-
-      UnitService.queryItems($stateParams.studyUUID).then(function(result){
-         $scope.doseUnits = result;
-      });
-
-      $scope.isAddTreatmentMode = false;
+      $scope.treatmentDirective = {
+        isVisible : false
+      };
 
       $scope.addDrugClicked = function() {
-        $scope.isAddTreatmentMode = true;
+        $scope.treatmentDirective.isVisible = true;
       }
 
-      $scope.addDrugToTreatmentDrugList = function() {
-        $scope.isAddTreatmentMode = false;
+      $scope.addTreatment = function(treatment) {
+        // TODO refresh treatments list
+        $scope.treatmentDirective.isVisible = false;
       }
 
       $scope.addItem = function() {
@@ -64,6 +57,7 @@ define([],
 
       if ($scope.actionType === 'Add') {
         $scope.itemScratch = {};
+        $scope.itemScratch.treatment = {};
         $scope.itemScratch.doseType = 'FixedDoseDrugTreatment';
         $scope.commit = $scope.addItem; // set the function to be called when the form is submitted
       } else {
