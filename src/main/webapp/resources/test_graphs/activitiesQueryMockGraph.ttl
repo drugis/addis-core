@@ -48,5 +48,10 @@
     a <http://trials.drugis.org/ontology#Drug> ;
     <http://www.w3.org/2000/01/rdf-schema#label> "Bupropion" .
 
-<http://trials.drugis.org/instances/unit1Uuid> <http://www.w3.org/2000/01/rdf-schema#label> "milligram" .
-<http://trials.drugis.org/instances/unit2Uuid> <http://www.w3.org/2000/01/rdf-schema#label> "liter" .
+<http://trials.drugis.org/instances/unit1Uuid>
+    a <http://trials.drugis.org/ontology#Unit> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "milligram" .
+
+<http://trials.drugis.org/instances/unit2Uuid>
+   a <http://trials.drugis.org/ontology#Unit> ;
+   <http://www.w3.org/2000/01/rdf-schema#label> "liter" .

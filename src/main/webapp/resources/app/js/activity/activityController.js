@@ -7,16 +7,22 @@ define([],
       '$modalInstance',
       'callback',
       'actionType',
-      'ActivityService'
+      'ActivityService',
+      'DrugService',
+      'UnitService'
     ];
-    var ActivityController = function($scope, $stateParams, $modalInstance, callback, actionType, ActivityService) {
+    var ActivityController = function($scope, $stateParams, $modalInstance, callback, actionType, ActivityService, DrugService, UnitService) {
 
       $scope.actionType = actionType;
       $scope.activityTypeOptions = _.values(ActivityService.ACTIVITY_TYPE_OPTIONS);
 
-      $scope.drugs = [{id: '1', label:'Bupropion'}, {id: '2', label:'Duloxetine'}, {id: '3', label:'Fluoxetine'}];
+      DrugService.queryItems($stateParams.studyUUID).then(function(result){
+        $scope.drugs = result;
+      });
 
-      $scope.doseUnits = [{id: '1', label:'milligram'}, {id: '2', label:'gram'}, {id: '3', label:'milliliter'}];
+      UnitService.queryItems($stateParams.studyUUID).then(function(result){
+         $scope.doseUnits = result;
+      });
 
       $scope.isAddTreatmentMode = false;
 

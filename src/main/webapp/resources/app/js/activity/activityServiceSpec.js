@@ -332,7 +332,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         var resultTriples = testUtils.deFusekify(result);
 
         // verify results
-        expect(resultTriples.length).toBe(30);  // todo needs to be six the delete does cleanup of treamtmentStuff
+        expect(resultTriples.length).toBe(32);  // todo needs to be six the delete does cleanup of treamtmentStuff
         done();
       });
     });
