@@ -1,0 +1,7 @@
+<http://trials.drugis.org/instances/drug1Uuid>
+    a <http://trials.drugis.org/ontology#Drug> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "Sertraline" .
+
+<http://trials.drugis.org/instances/drug2Uuid>
+    a <http://trials.drugis.org/ontology#Drug> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "Bupropion" .

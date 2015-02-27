@@ -18,14 +18,14 @@ define([],
 
       $scope.doseUnits = [{id: '1', label:'milligram'}, {id: '2', label:'gram'}, {id: '3', label:'milliliter'}];
 
-      $scope.isAddDrugMode = false;
+      $scope.isAddTreatmentMode = false;
 
       $scope.addDrugClicked = function() {
-        $scope.isAddDrugMode = true;
+        $scope.isAddTreatmentMode = true;
       }
 
       $scope.addDrugToTreatmentDrugList = function() {
-        $scope.isAddDrugMode = false;
+        $scope.isAddTreatmentMode = false;
       }
 
       $scope.addItem = function() {

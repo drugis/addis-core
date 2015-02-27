@@ -12,5 +12,6 @@ define(function (require) {
 
     //services
     .factory('ActivityService', require('activity/activityService'))
+    .factory('DrugService', require('drug/drugService'))
     ;
 });
