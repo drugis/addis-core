@@ -15,11 +15,10 @@ define([],
       var OTHER_ACTIVITY = ONTOLOGY + 'StudyActivity';
 
       var queryActivityTemplate = SparqlResource.get('queryActivity.sparql');
+      var queryActivityTreatmentTemplate = SparqlResource.get('queryActivityTreatment.sparql');
       var addActivityTemplate = SparqlResource.get('addActivity.sparql');
       var editActivityTemplate = SparqlResource.get('editActivity.sparql');
       var deleteActivityTemplate = SparqlResource.get('deleteActivity.sparql');
-
-      //var queryActivityTreatmentTemplate = SparqlResource.get('queryActivityTreatment.sparql');
 
       // public
       var ACTIVITY_TYPE_OPTIONS = {};
@@ -32,33 +31,45 @@ define([],
 
       function queryItems(studyUuid) {
 
-        var activities, treatmentsMap;
+        var activities, treatments;
 
         var activitiesPromise = queryActivityTemplate.then(function(template){
-          var query = applyToTemplate(template, studyUuid);
+          var query = fillInTemplate(template, studyUuid);
           return StudyService.doNonModifyingQuery(query).then(function(result) {
             // make object {label, uri} from uri's to use as options in select
-            activities = mapTypeUrisToObjects(result);
+            activities = convertTypeUrisToTypeOptions(result);
             return;
           });
         })
 
-        // var treatmentsPromise = queryActivityTreatmentTemplate.then(function(template){
-        //     var query = template.applyToTemplate(template, studyUuid);
-        //     return StudyService.doNonModifyingQuery(query).then(function(result) {
-        //       treatmentsMap = _.indexBy(result, 'activityUri');
-        //       return;
-        //     });
-        // });
+        var treatmentsPromise = queryActivityTreatmentTemplate.then(function(template){
+            var query = fillInTemplate(template, studyUuid);
+            return StudyService.doNonModifyingQuery(query).then(function(result) {
+              treatments = result;
+              return;
+            });
+        });
 
-        // return $q.all([activitiesPromise, treatmentsPromise]).then(function(){
-        return $q.all([activitiesPromise]).then(function(){
+        return $q.all([activitiesPromise, treatmentsPromise]).then(function(){
             // combine activities and treatments
+
+            // use a map to avoid double loop
+            var activitiesMap = _.indexBy(activities, 'activityUri')
+
+            _.each(treatments, function(treatment){
+                // make sure the activity has a array of treatments
+                if(!activitiesMap[treatment.activityUri].treatments) {
+                  activitiesMap[treatment.activityUri].treatments = [];
+                }
+                // assign each treatment to appopriate activity
+                activitiesMap[treatment.activityUri].treatments.push(treatment);
+            });
+            // return list of activities with treatments added
             return _.values(activitiesMap);
         });
       }
 
-      function mapTypeUrisToObjects(activities) {
+      function convertTypeUrisToTypeOptions(activities) {
         return _.map(activities, function(activity) {
           activity.activityType = ACTIVITY_TYPE_OPTIONS[activity.activityType];
           return activity;
@@ -70,7 +81,7 @@ define([],
         newActivity.activityUri = INSTANCE_PREFIX + UUIDService.generate();
         var addOptionalDescriptionPromise; 
         var addActivityPromise = addActivityTemplate.then(function(template) {
-          var query = applyToTemplate(template, studyUuid, newActivity);
+          var query = fillInTemplate(template, studyUuid, newActivity);
           return StudyService.doModifyingQuery(query);
         });
 
@@ -83,7 +94,7 @@ define([],
 
       function editItem(studyUuid, activity) {
         return editActivityTemplate.then(function(template) {
-          var query = applyToTemplate(template, studyUuid, activity)
+          var query = fillInTemplate(template, studyUuid, activity)
           return StudyService.doModifyingQuery(query).then(function(){
             // no need to use edit as remove is done in the edit activity
             // therefore wait for edit activity to return
@@ -96,12 +107,12 @@ define([],
 
       function deleteItem(activity, studyUuid) {
         return deleteActivityTemplate.then(function(template) {
-          var query = applyToTemplate(template, studyUuid, activity)
+          var query = fillInTemplate(template, studyUuid, activity)
           return StudyService.doModifyingQuery(query);
         });
       }
 
-      function applyToTemplate(template, studyUuid, activity) {
+      function fillInTemplate(template, studyUuid, activity) {
         var query = template.replace(/\$studyUuid/g, studyUuid);
         if(activity) {
           query = query
