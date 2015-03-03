@@ -44,7 +44,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       unitService = UnitService;
 
       testUtils.dropGraph(graphUri);
-      
+
       queryUnitTemplate = testUtils.loadTemplate('queryUnit.sparql', httpBackend);
 
       httpBackend.flush();
@@ -105,8 +105,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
           // verify query result
           expect(units.length).toBe(2);
-          expect(units[1].unitLabel).toEqual('milligram');
-          expect(units[0].unitLabel).toEqual('liter');
+          expect(units[1].label).toEqual('milligram');
+          expect(units[0].label).toEqual('liter');
 
           done();
         });

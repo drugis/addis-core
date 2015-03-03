@@ -7,7 +7,9 @@ define([],
       '$modalInstance',
       'callback',
       'actionType',
-      'ActivityService'
+      'ActivityService',
+      'DrugService',
+      'UnitService'
     ];
     var ActivityController = function($scope, $stateParams, $modalInstance, callback, actionType, ActivityService, DrugService, UnitService) {
 
@@ -22,8 +24,8 @@ define([],
         $scope.treatmentDirective.isVisible = true;
       }
 
-      $scope.addTreatment = function(treatment) {
-        // TODO refresh treatments list
+      $scope.treatmentAdded = function(treatment) {
+        $scope.itemScratch.treatments.push(treatment);
         $scope.treatmentDirective.isVisible = false;
       }
 

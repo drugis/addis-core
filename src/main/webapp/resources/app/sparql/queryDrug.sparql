@@ -6,8 +6,8 @@ PREFIX study: <http://trials.drugis.org/studies/>
 
 SELECT * WHERE {
   GRAPH <$graphUri> {
-    ?drugUri 
+    ?uri
       a ontology:Drug ;
-      rdfs:label ?drugLabel .
+      rdfs:label ?label .
   }
 }

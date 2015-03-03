@@ -20,6 +20,9 @@ define([], function() {
     }
 
     function parseDuration(durationString) {
+      if(durationString === undefined) {
+        return undefined;
+      }
       var duration = durationString.slice(1);
       if (duration[0] === 'T') {
         duration = duration.slice(1);

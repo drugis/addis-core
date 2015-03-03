@@ -44,7 +44,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       drugService = DrugService;
 
       testUtils.dropGraph(graphUri);
-      
+
       queryDrugTemplate = testUtils.loadTemplate('queryDrug.sparql', httpBackend);
 
       httpBackend.flush();
@@ -105,8 +105,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
           // verify query result
           expect(drugs.length).toBe(2);
-          expect(drugs[0].drugLabel).toEqual('Sertraline');
-          expect(drugs[1].drugLabel).toEqual('Bupropion');
+          expect(drugs[0].label).toEqual('Sertraline');
+          expect(drugs[1].label).toEqual('Bupropion');
 
           done();
         });

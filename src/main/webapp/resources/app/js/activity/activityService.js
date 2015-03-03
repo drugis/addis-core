@@ -14,9 +14,14 @@ define([],
       var FOLLOW_UP_ACTIVITY = ONTOLOGY + 'FollowUpActivity';
       var OTHER_ACTIVITY = ONTOLOGY + 'StudyActivity';
 
+      var FIXED_DOSE_TYPE = 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment';
+      var TITRATED_DOSE_TYPE = 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment';
+
       var queryActivityTemplate = SparqlResource.get('queryActivity.sparql');
       var queryActivityTreatmentTemplate = SparqlResource.get('queryActivityTreatment.sparql');
       var addActivityTemplate = SparqlResource.get('addActivity.sparql');
+      var addTitratedTreatmentTemplate = SparqlResource.get('addTitratedTreatment.sparql');
+      var addFixedDoseTreatmentTemplate = SparqlResource.get('addFixedDoseTreatment.sparql');
       var editActivityTemplate = SparqlResource.get('editActivity.sparql');
       var deleteActivityTemplate = SparqlResource.get('deleteActivity.sparql');
 
@@ -31,7 +36,7 @@ define([],
 
       function queryItems(studyUuid) {
 
-        var activities, treatments;
+        var activities, treatmentsRows;
 
         var activitiesPromise = queryActivityTemplate.then(function(template){
           var query = fillInTemplate(template, studyUuid);
@@ -40,33 +45,59 @@ define([],
             activities = convertTypeUrisToTypeOptions(result);
             return;
           });
-        })
+        });
 
         var treatmentsPromise = queryActivityTreatmentTemplate.then(function(template){
             var query = fillInTemplate(template, studyUuid);
             return StudyService.doNonModifyingQuery(query).then(function(result) {
-              treatments = result;
+              treatmentsRows = result;
               return;
             });
         });
 
         return $q.all([activitiesPromise, treatmentsPromise]).then(function(){
-            // combine activities and treatments
-
             // use a map to avoid double loop
-            var activitiesMap = _.indexBy(activities, 'activityUri')
+            var activitiesMap = _.indexBy(activities, 'activityUri');
 
-            _.each(treatments, function(treatment){
+            var treatments = _.map(treatmentsRows, createTreatmentObject);
+
+            _.each(treatments, function(treatment) {
                 // make sure the activity has a array of treatments
                 if(!activitiesMap[treatment.activityUri].treatments) {
                   activitiesMap[treatment.activityUri].treatments = [];
                 }
-                // assign each treatment to appopriate activity
+                // assign each treatment to appropriate activity
                 activitiesMap[treatment.activityUri].treatments.push(treatment);
             });
             // return list of activities with treatments added
             return _.values(activitiesMap);
         });
+      }
+
+      function createTreatmentObject(treatmentRow) {
+        var treatment = {
+          activityUri: treatmentRow.activityUri,
+          treatmentUri: treatmentRow.treatmentUri,
+          doseUnit: {
+            uri: treatmentRow.treatmentUnitUri,
+            label: treatmentRow.treatmentUnitLabel
+          },
+          drug: {
+            uri: treatmentRow.treatmentDrugUri,
+            label: treatmentRow.treatmentDrugLabel
+          },
+          treatmentDoseType: treatmentRow.treatmentDoseType,
+          dosingPeriodicity: treatmentRow.treatmentDosingPeriodicity
+        }
+
+        if(treatment.treatmentDoseType === FIXED_DOSE_TYPE) {
+          treatment.fixedValue = treatmentRow.treatmentFixedValue;
+        } else {
+          treatment.minValue = treatmentRow.treatmentMinValue;
+          treatment.maxValue =  treatmentRow.treatmentMaxValue;
+        }
+
+        return treatment;
       }
 
       function convertTypeUrisToTypeOptions(activities) {
@@ -76,27 +107,46 @@ define([],
         });
       }
 
+      function addTreatment(activityUri, treatment) {
+        if (treatment.treatmentDoseType === FIXED_DOSE_TYPE) {
+          return addFixedDoseTreatmentTemplate.then(function(template) {
+            var query = fillInTreatmentTemplate(template, activityUri, treatment);
+            return StudyService.doModifyingQuery(query);
+          });
+        } else if (treatment.treatmentDoseType === TITRATED_DOSE_TYPE) {
+          return addTitratedTreatmentTemplate.then(function(template) {
+            var query = fillInTreatmentTemplate(template, activityUri, treatment);
+            return StudyService.doModifyingQuery(query);
+          });
+        }
+      }
+
       function addItem(studyUuid, item) {
         var newActivity = angular.copy(item);
         newActivity.activityUri = INSTANCE_PREFIX + UUIDService.generate();
-        var addOptionalDescriptionPromise; 
+        var addOptionalDescriptionPromise;
         var addActivityPromise = addActivityTemplate.then(function(template) {
           var query = fillInTemplate(template, studyUuid, newActivity);
           return StudyService.doModifyingQuery(query);
+        });
+
+        var treatmentPromises = [];
+        _.each(item.treatments, function(treatment) {
+          treatmentPromises.push(addTreatment(newActivity.activityUri, treatment));
         });
 
         if(newActivity.activityDescription) {
           addOptionalDescriptionPromise = CommentService.addComment(newActivity.activityUri, item.activityDescription);
         }
 
-        return $q.all([addActivityPromise, addOptionalDescriptionPromise]);
+        return $q.all([addActivityPromise, addOptionalDescriptionPromise].concat(treatmentPromises));
       }
 
       function editItem(studyUuid, activity) {
         return editActivityTemplate.then(function(template) {
-          var query = fillInTemplate(template, studyUuid, activity)
+          var query = fillInTemplate(template, studyUuid, activity);
           return StudyService.doModifyingQuery(query).then(function(){
-            // no need to use edit as remove is done in the edit activity
+            // no need to use edit as remove is dbone in the edit activity
             // therefore wait for edit activity to return
             if(activity.activityDescription) {
               return CommentService.addComment(activity.activityUri, activity.activityDescription);
@@ -107,19 +157,33 @@ define([],
 
       function deleteItem(activity, studyUuid) {
         return deleteActivityTemplate.then(function(template) {
-          var query = fillInTemplate(template, studyUuid, activity)
+          var query = fillInTemplate(template, studyUuid, activity);
           return StudyService.doModifyingQuery(query);
         });
+      }
+
+      function fillInTreatmentTemplate(template, activityUri, treatment) {
+        return template.replace(/\$activityUri/g, activityUri)
+          .replace(/\$treatmentUuid/g, UUIDService.generate())
+          .replace(/\$treatmentUnitUri/g, treatment.doseUnit.uri)
+          .replace(/\$treatmentUnitLabel/g, treatment.doseUnit.label)
+          .replace(/\$treatmentDrugUri/g, treatment.drug.uri)
+          .replace(/\$treatmentDrugLabel/g, treatment.drug.label)
+          .replace(/\$treatmentDoseType/g, treatment.treatmentDoseType)
+          .replace(/\$treatmentFixedValue/g, treatment.fixedValue)
+          .replace(/\$treatmentMinValue/g, treatment.minValue)
+          .replace(/\$treatmentMaxValue/g, treatment.maxValue)
+          .replace(/\$treatmentDosingPeriodicity/g, treatment.dosingPeriodicity)
+          ;
       }
 
       function fillInTemplate(template, studyUuid, activity) {
         var query = template.replace(/\$studyUuid/g, studyUuid);
         if(activity) {
-          query = query
-          .replace(/\$activityUri/g, activity.activityUri)
-          .replace(/\$label/g, activity.label)
-          .replace(/\$comment/g, activity.activityDescription)
-          .replace(/\$activityTypeUri/g, activity.activityType.uri);
+          query = query.replace(/\$activityUri/g, activity.activityUri)
+            .replace(/\$label/g, activity.label)
+            .replace(/\$comment/g, activity.activityDescription)
+            .replace(/\$activityTypeUri/g, activity.activityType.uri);
         }
         return query;
       }
@@ -129,7 +193,7 @@ define([],
         addItem: addItem,
         editItem: editItem,
         deleteItem: deleteItem,
-        ACTIVITY_TYPE_OPTIONS: ACTIVITY_TYPE_OPTIONS 
+        ACTIVITY_TYPE_OPTIONS: ACTIVITY_TYPE_OPTIONS
       };
     };
     return dependencies.concat(ActivityService);

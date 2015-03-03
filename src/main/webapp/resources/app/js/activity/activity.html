@@ -11,4 +11,12 @@
         <span><strong>Activity type: </strong></span>
         <span>{{item.activityType.label}}</span>
     </li>
+    <li>
+        <span><strong>Treatmens: </strong></span>
+        <ul>
+            <li ng-repeat="treatment in item.treatments">
+                {{treatment.drug.label}}, {{treatment.fixedValue}} {{treatment.minValue}} {{treatment.maxValue}} {{treatment.doseUnit.label}} {{treatment.dosingPeriodicity | durationFilter }}
+            </li>
+        </ul>
+    </li>
 </ul>

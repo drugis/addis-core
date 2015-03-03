@@ -38,7 +38,7 @@ define('testUtils', ['lodash'],
                 return xmlHTTP.responseText;
             },
             deFusekify: function(data) {
-                //console.log('deFusekify on : ' + data);
+                console.log('deFusekify on : ' + data);
                 var json = JSON.parse(data);
                 var bindings = json.results.bindings;
                 return _.map(bindings, function(binding) {

@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
-  describe('the activity service service', function() {
+  describe('the activity service', function() {
 
     var graphUri = 'http://karma-test/';
     var scratchStudyUri = 'http://localhost:9876/scratch';
@@ -16,6 +16,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     var queryActivityTemplate;
     var queryActivityTreatmentTemplate;
     var addActivityTemplate;
+    var addTitratedTreatmentTemplate;
+    var addFixedDoseTreatmentTemplate;
     var editActivityTemplate;
     var deleteActivityTemplate;
 
@@ -55,9 +57,10 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       queryActivityTemplate = testUtils.loadTemplate('queryActivity.sparql', httpBackend);
       queryActivityTreatmentTemplate = testUtils.loadTemplate('queryActivityTreatment.sparql', httpBackend);
       addActivityTemplate =  testUtils.loadTemplate('addActivity.sparql', httpBackend);
+      addTitratedTreatmentTemplate = testUtils.loadTemplate('addTitratedTreatment.sparql', httpBackend);
+      addFixedDoseTreatmentTemplate = testUtils.loadTemplate('addFixedDoseTreatment.sparql', httpBackend);
       editActivityTemplate =  testUtils.loadTemplate('editActivity.sparql', httpBackend);
       deleteActivityTemplate =  testUtils.loadTemplate('deleteActivity.sparql', httpBackend);
-
 
       httpBackend.flush();
 
@@ -127,21 +130,20 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           expect(activities[0].treatments).not.toBeDefined();
           expect(activities[1].treatments.length).toBe(2);
           expect(activities[1].treatments[0].treatmentDoseType).toEqual('http://trials.drugis.org/ontology#TitratedDoseDrugTreatment');
-          expect(activities[1].treatments[0].treatmentDrugUri).toEqual('http://trials.drugis.org/instances/drug1Uuid');
-          expect(activities[1].treatments[0].treatmentDrugLabel).toEqual('Sertraline');
-          expect(activities[1].treatments[0].treatmentUnitUri).toEqual('http://trials.drugis.org/instances/unit1Uuid');
-          expect(activities[1].treatments[0].treatmentUnitLabel).toEqual('milligram');
-          expect(activities[1].treatments[0].treatmentDosingPeriodicity).toEqual('P1D');
-          expect(activities[1].treatments[0].treatmentMaxValue).toEqual('1.500000e+02');
-          expect(activities[1].treatments[0].treatmentMinValue).toEqual('5.000000e+01');
+          expect(activities[1].treatments[0].drug.uri).toEqual('http://trials.drugis.org/instances/drug1Uuid');
+          expect(activities[1].treatments[0].drug.label).toEqual('Sertraline');
+          expect(activities[1].treatments[0].doseUnit.uri).toEqual('http://trials.drugis.org/instances/unit1Uuid');
+          expect(activities[1].treatments[0].doseUnit.label).toEqual('milligram');
+          expect(activities[1].treatments[0].dosingPeriodicity).toEqual('P1D');
+          expect(activities[1].treatments[0].maxValue).toEqual('1.500000e+02');
+          expect(activities[1].treatments[0].minValue).toEqual('5.000000e+01');
           expect(activities[1].treatments[0].treatmentUri).toEqual('http://trials.drugis.org/instances/treatment1Uuid');
 
           expect(activities[1].treatments[1].treatmentDoseType).toEqual('http://trials.drugis.org/ontology#FixedDoseDrugTreatment');
-          expect(activities[1].treatments[1].treatmentDrugLabel).toEqual('Bupropion');
-          expect(activities[1].treatments[1].treatmentUnitLabel).toEqual('liter');
-          expect(activities[1].treatments[1].treatmentDosingPeriodicity).toEqual('P1D');
-          expect(activities[1].treatments[1].treatmentFixedValue).toEqual('0.000000e+00');
-
+          expect(activities[1].treatments[1].drug.label).toEqual('Bupropion');
+          expect(activities[1].treatments[1].doseUnit.label).toEqual('liter');
+          expect(activities[1].treatments[1].dosingPeriodicity).toEqual('P1D');
+          expect(activities[1].treatments[1].fixedValue).toEqual('0.000000e+00');
 
           done();
         });
@@ -149,71 +151,170 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
     });
 
-    describe('add activity', function() {
+    describe('add non-treatment activity', function() {
 
-          beforeEach(function(done) {
-            remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
-              query = query.replace(/\$graphUri/g, graphUri);
+      beforeEach(function(done) {
+        remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
+          query = query.replace(/\$graphUri/g, graphUri);
 
-              var result = testUtils.executeUpdateQuery(query);
-              //console.log('queryResponce ' + result);
+          var result = testUtils.executeUpdateQuery(query);
+          //console.log('queryResponce ' + result);
 
-              var executeUpdateDeferred = q.defer();
-              executeUpdateDeferred.resolve(result);
-              return executeUpdateDeferred.promise;
-            });
-
-            var newActivity = {
-              activityUri: 'http://trials.drugis.org/instances/newActivityUuid',
-              label: 'newActivityLabel',
-              activityType: {
-                uri: 'http://mockActivityUri'
-              },
-              activityDescription: 'some description'
-            };
-
-            activityService.addItem(mockStudyUuid, newActivity).then(function(result){
-               done();
-            });
-
-            rootScope.$digest();
-          });
-
-          it('should add the new activity to the graph', function(done) {
-
-            // call function under test
-            var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o }}';
-            var result = testUtils.queryTeststore(query);
-            var resultTriples = testUtils.deFusekify(result);
-
-            expect(commentServiceStub.addComment).toHaveBeenCalled();
-
-            // verify results
-            expect(resultTriples.length).toBe(3);
-            var hasActivityTriple = _.find(resultTriples, function(item){
-              return item.s === 'http://trials.drugis.org/studies/mockStudyUuid';
-            });
-            expect(hasActivityTriple.s).toBeDefined();
-            expect(hasActivityTriple.p).toEqual('http://trials.drugis.org/ontology#has_activity');
-            expect(hasActivityTriple.o).toBeDefined();
-
-            var activityLabelTriple = _.find(resultTriples, function(item){
-              return item.p ===  'http://www.w3.org/2000/01/rdf-schema#label';
-            });
-            expect(activityLabelTriple.s).toBeDefined();
-            expect(activityLabelTriple.p).toBeDefined();
-            expect(activityLabelTriple.o).toEqual('newActivityLabel');
-
-            var activityTypeTriple = _.find(resultTriples, function(item){
-              return item.p ===  'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
-            });
-            expect(activityTypeTriple.s).toBeDefined();
-            expect(activityTypeTriple.p).toBeDefined();
-            expect(activityTypeTriple.o).toEqual('http://mockActivityUri');
-
-            done();
-          });
+          var executeUpdateDeferred = q.defer();
+          executeUpdateDeferred.resolve(result);
+          return executeUpdateDeferred.promise;
         });
+
+        var newActivity = {
+          activityUri: 'http://trials.drugis.org/instances/newActivityUuid',
+          label: 'newActivityLabel',
+          activityType: {
+            uri: 'http://mockActivityUri'
+          },
+          activityDescription: 'some description'
+        };
+
+        activityService.addItem(mockStudyUuid, newActivity).then(function(result){
+           done();
+        });
+
+        rootScope.$digest();
+      });
+
+      it('should add the new activity to the graph', function(done) {
+
+        // call function under test
+        var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o }}';
+        var result = testUtils.queryTeststore(query);
+        var resultTriples = testUtils.deFusekify(result);
+
+        expect(commentServiceStub.addComment).toHaveBeenCalled();
+
+        // verify results
+        expect(resultTriples.length).toBe(3);
+        var hasActivityTriple = _.find(resultTriples, function(item){
+          return item.s === 'http://trials.drugis.org/studies/mockStudyUuid';
+        });
+        expect(hasActivityTriple.s).toBeDefined();
+        expect(hasActivityTriple.p).toEqual('http://trials.drugis.org/ontology#has_activity');
+        expect(hasActivityTriple.o).toBeDefined();
+
+        var activityLabelTriple = _.find(resultTriples, function(item){
+          return item.p ===  'http://www.w3.org/2000/01/rdf-schema#label';
+        });
+        expect(activityLabelTriple.s).toBeDefined();
+        expect(activityLabelTriple.p).toBeDefined();
+        expect(activityLabelTriple.o).toEqual('newActivityLabel');
+
+        var activityTypeTriple = _.find(resultTriples, function(item){
+          return item.p ===  'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
+        });
+        expect(activityTypeTriple.s).toBeDefined();
+        expect(activityTypeTriple.p).toBeDefined();
+        expect(activityTypeTriple.o).toEqual('http://mockActivityUri');
+
+        done();
+      });
+    });
+
+    describe('add treatment activity', function() {
+
+      beforeEach(function(done) {
+
+        remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
+          query = query.replace(/\$graphUri/g, graphUri);
+          var result = testUtils.executeUpdateQuery(query);
+          console.log('queryResponce ' + result);
+          var executeUpdateDeferred = q.defer();
+          executeUpdateDeferred.resolve(result);
+          return executeUpdateDeferred.promise;
+        });
+
+        remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
+          query = query.replace(/\$graphUri/g, graphUri);
+          //console.log('graphUri = ' + uri);
+          //console.log('query = ' + query);
+          var result = testUtils.queryTeststore(query);
+          //console.log('queryResponce ' + result);
+          var resultObject = testUtils.deFusekify(result)
+          var executeUpdateDeferred = q.defer();
+          executeUpdateDeferred.resolve(resultObject);
+          return executeUpdateDeferred.promise;
+        });
+
+        var fixedTreatment = {
+          treatmentUri: 'http://treatment/newUuid',
+          treatmentDoseType: 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment',
+          drug: {
+            uri: 'http://drug/newDrugUuid',
+            label: 'new drug'
+          },
+          doseUnit: {
+            uri: 'http://unit/newUnit',
+            label: 'new unit label'
+          },
+          fixedValue: '1.5e+02',
+          dosingPeriodicity: 'P3W'
+        };
+
+        var titRatedTreatment = {
+          treatmentUri: 'http://treatment/oldUuid',
+          treatmentDoseType: 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment',
+          drug: {
+            uri: 'http://drug/oldDrugUuid',
+            label: 'old drug'
+          },
+          doseUnit: {
+            uri: 'http://unit/oldUnit',
+            label: 'old unit label'
+          },
+          minValue: '1.2e+02',
+          maxValue: '1.3e+03',
+          dosingPeriodicity: 'P2W'
+        };
+
+        var newActivity = {
+          activityUri: 'http://trials.drugis.org/instances/newActivityUuid',
+          label: 'newActivityLabel',
+          activityType: {
+            uri: 'http://trials.drugis.org/ontology#TreatmentActivity'
+          },
+          treatments: [fixedTreatment, titRatedTreatment]
+        };
+
+        activityService.addItem(mockStudyUuid, newActivity).then(function(result){
+          done();
+        });
+
+        rootScope.$digest();
+      });
+
+      it('should add the new activity to the graph', function(done) {
+
+        activityService.queryItems(mockStudyUuid).then(function(resultActivities){
+          expect(resultActivities.length).toBe(1);
+          var activity = resultActivities[0];
+          expect(activity.treatments.length).toBe(2);
+
+          expect(activity.treatments[0].treatmentDoseType).toEqual('http://trials.drugis.org/ontology#TitratedDoseDrugTreatment');
+          expect(activity.treatments[0].drug.label).toEqual('old drug');
+          expect(activity.treatments[0].doseUnit.label).toEqual('old unit label');
+          expect(activity.treatments[0].dosingPeriodicity).toEqual('P2W');
+          expect(activity.treatments[0].minValue).toEqual('1.2e+02');
+          expect(activity.treatments[0].maxValue).toEqual('1.3e+03');
+
+          expect(activity.treatments[1].treatmentDoseType).toEqual('http://trials.drugis.org/ontology#FixedDoseDrugTreatment');
+          expect(activity.treatments[1].drug.label).toEqual('new drug');
+          expect(activity.treatments[1].doseUnit.label).toEqual('new unit label');
+          expect(activity.treatments[1].dosingPeriodicity).toEqual('P3W');
+          expect(activity.treatments[1].fixedValue).toEqual('1.5e+02');
+
+          done();
+        });
+
+
+      });
+    });
 
     describe('edit activities', function() {
 

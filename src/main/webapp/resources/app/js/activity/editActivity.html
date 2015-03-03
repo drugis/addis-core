@@ -33,7 +33,9 @@
             <div class="large-9 medium-12 columns">
                 <label>Treatment drugs</label>
                 <ul class="form-list">
-                    <li ng-repeat="treatments in itemScratch.treatments"></li>
+                    <li ng-repeat="treatment in itemScratch.treatments">
+                        {{treatment.drug.label}} , {{treatment.fixedValue}} {{treatment.doseUnit.label}} {{treatment.dosingPeriodicity | durationFilter }}
+                    </li>
                     <li ng-show="!itemScratch.treatments">no treatment drugs defined</li>
                 </ul>
                 <a class="button tiny" ng-click="addDrugClicked()" ng-show="!treatmentDirective.isVisible  "><i class="fa fa-plus"></i> Add treatment drug</a>
