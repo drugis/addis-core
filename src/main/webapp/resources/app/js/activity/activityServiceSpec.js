@@ -93,7 +93,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       beforeEach(function(done) {
         // load some mock graph with activities
         var xmlHTTP = new XMLHttpRequest();
-        xmlHTTP.open('GET', 'base/test_graphs/activitiesQueryMockGraph.ttl', false);
+        xmlHTTP.open('GET', 'base/test_graphs/activitiesMockGraph.ttl', false);
         xmlHTTP.send(null);
         var activitiesQueryMockGraph = xmlHTTP.responseText;
 
@@ -250,7 +250,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         });
 
         var fixedTreatment = {
-          treatmentUri: 'http://treatment/newUuid',
           treatmentDoseType: 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment',
           drug: {
             uri: 'http://drug/newDrugUuid',
@@ -265,7 +264,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         };
 
         var titRatedTreatment = {
-          treatmentUri: 'http://treatment/oldUuid',
           treatmentDoseType: 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment',
           drug: {
             uri: 'http://drug/oldDrugUuid',
@@ -296,9 +294,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         rootScope.$digest();
       });
 
-      iit('should add the new activity to the graph', function(done) {
-
-
+      it('should add the new activity to the graph', function(done) {
         activityService.queryItems(mockStudyUuid).then(function(resultActivities){
           expect(resultActivities.length).toBe(1);
           var activity = resultActivities[0];
@@ -335,7 +331,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       beforeEach(function(done) {
         // load some mock graph with activities
         var xmlHTTP = new XMLHttpRequest();
-        xmlHTTP.open('GET', 'base/test_graphs/activitiesEditMockGraph.ttl', false);
+        xmlHTTP.open('GET', 'base/test_graphs/activitiesMockGraph.ttl', false);
         xmlHTTP.send(null);
         var activitiesEditMockGraph = xmlHTTP.responseText;
 
@@ -370,30 +366,61 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           return executeUpdateDeferred.promise;
         });
 
+        var oldTreatment = {
+          treatmentUri: 'http://trials.drugis.org/instances/treatment2Uuid',
+          treatmentDoseType: 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment',
+          drug: {
+            uri: 'http://trials.drugis.org/instances/drug1Uuid',
+            label: 'Sertraline'
+          },
+          doseUnit: {
+            uri: 'http://trials.drugis.org/instances/unit1Uuid',
+            label: 'milligram'
+          },
+          fixedValue: '1.5e+02',
+          dosingPeriodicity: 'P3W'
+        };
+        var newTreatment = {
+          treatmentDoseType: 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment',
+          drug: {
+            uri: 'http://drug/newDrugUuid2',
+            label: 'new drug 2'
+          },
+          doseUnit: {
+            uri: 'http://trials.drugis.org/instances/unit1Uuid',
+            label: 'milligram'
+          },
+          fixedValue: '1.5e+02',
+          dosingPeriodicity: 'P3W'
+        };
+
         var editActivity = {
-          activityUri: 'http://trials.drugis.org/instances/activity1Uuid',
+          activityUri: 'http://trials.drugis.org/instances/activity2Uuid',
           label: 'edit label',
           activityType: {
-            uri: 'http://trials.drugis.org/ontology#FollowUpActivity'
+            uri: 'http://trials.drugis.org/ontology#TreatmentActivity'
           },
+          treatments: [oldTreatment, newTreatment],
           activityDescription: undefined
         };
 
         activityService.editItem(mockStudyUuid, editActivity).then(function(result){
-           done();
+          done();
         });
 
         rootScope.$digest();
       });
 
-      it('should edit the activity', function(done) {
+      iit('should edit the activity', function(done) {
 
         activityService.queryItems(mockStudyUuid).then(function(activities){
           // verify query result
-          expect(activities.length).toBe(1);
-          expect(activities[0].label).toEqual('edit label');
-          expect(activities[0].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['http://trials.drugis.org/ontology#FollowUpActivity']);
-          expect(activities[0].activityDescription).not.toBeDefined();
+          expect(activities.length).toBe(2);
+          expect(activities[1].label).toEqual('edit label');
+          expect(activities[1].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['http://trials.drugis.org/ontology#TreatmentActivity']);
+          expect(activities[1].activityDescription).not.toBeDefined();
+          expect(activities[1].treatments.length).toBe(3);
+          expect(activities[1].treatments[0].drug.label).toEqual('new drug 2');
           expect(commentServiceStub.addComment).not.toHaveBeenCalled();
           done();
         });
@@ -405,7 +432,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       beforeEach(function(done) {
         // load some mock graph with activities
         var xmlHTTP = new XMLHttpRequest();
-        xmlHTTP.open('GET', 'base/test_graphs/activitiesQueryMockGraph.ttl', false);
+        xmlHTTP.open('GET', 'base/test_graphs/activitiesMockGraph.ttl', false);
         xmlHTTP.send(null);
         var activitiesQueryMockGraph = xmlHTTP.responseText;
 

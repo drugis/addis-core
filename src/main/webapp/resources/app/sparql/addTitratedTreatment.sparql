@@ -2,18 +2,17 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX instance: <http://trials.drugis.org/instances/>
 
 INSERT DATA {
   GRAPH <$graphUri> {
-    <$activityUri> ontology:has_drug_treatment instance:$treatmentUuid .
+    <$activityUri> ontology:has_drug_treatment <$treatmentUri> .
     <$treatmentUnitUri>
       rdfs:label '$treatmentUnitLabel' ;
       a ontology:Unit .
     <$treatmentDrugUri>
       rdfs:label '$treatmentDrugLabel' ;
       a ontology:Drug .
-    instance:$treatmentUuid
+    <$treatmentUri>
       rdf:type <$treatmentDoseType> ;
       ontology:treatment_has_drug <$treatmentDrugUri> ;
       rdf:type ontology:TitratedDoseDrugTreatment ;
