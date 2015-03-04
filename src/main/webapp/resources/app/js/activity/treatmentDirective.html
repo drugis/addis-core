@@ -8,7 +8,6 @@
           <label>Drug
             <input type="text" ng-model="treatment.drug" typeahead="drug as drug.label for drug in drugs | filter:{label:$viewValue}" class="form-control">
           </label>
-          <div>{{treatment.drug | json}}</div>
         </div>
       </div>
 
