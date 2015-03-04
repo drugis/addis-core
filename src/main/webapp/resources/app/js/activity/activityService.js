@@ -121,6 +121,16 @@ define([],
         }
       }
 
+      function addTreatments(treatments, activityUri) {
+        var treatmentPromises = [];
+        _.each(treatments, function(treatment) {
+          if(!treatment.treatmentUri) {
+            treatmentPromises.push(addTreatment(activityUri, treatment));
+          }
+        });
+        return treatmentPromises;
+      }
+
       function addItem(studyUuid, item) {
         var newActivity = angular.copy(item);
         newActivity.activityUri = INSTANCE_PREFIX + UUIDService.generate();
@@ -130,10 +140,7 @@ define([],
           return StudyService.doModifyingQuery(query);
         });
 
-        var treatmentPromises = [];
-        _.each(item.treatments, function(treatment) {
-          treatmentPromises.push(addTreatment(newActivity.activityUri, treatment));
-        });
+        var treatmentPromises = addTreatments(item.treatments, newActivity.activityUri);
 
         if(newActivity.activityDescription) {
           addOptionalDescriptionPromise = CommentService.addComment(newActivity.activityUri, item.activityDescription);
@@ -143,9 +150,9 @@ define([],
       }
 
       function editItem(studyUuid, activity) {
-        return editActivityTemplate.then(function(template) {
+        var editActivityPromise = editActivityTemplate.then(function(template) {
           var query = fillInTemplate(template, studyUuid, activity);
-          return StudyService.doModifyingQuery(query).then(function(){
+          return StudyService.doModifyingQuery(query).then(function() {
             // no need to use edit as remove is dbone in the edit activity
             // therefore wait for edit activity to return
             if(activity.activityDescription) {
@@ -153,6 +160,8 @@ define([],
             }
           });
         });
+        var treatmentPromises = addTreatments(activity.treatments, activity.activityUri);
+        return $q.all(treatmentPromises.concat(editActivityPromise));
       }
 
       function deleteItem(activity, studyUuid) {
@@ -162,9 +171,13 @@ define([],
         });
       }
 
+      function getUuid(uri) {
+        return uri.split('/')[uri.split('/').length - 1];
+      }
+
       function fillInTreatmentTemplate(template, activityUri, treatment) {
         return template.replace(/\$activityUri/g, activityUri)
-          .replace(/\$treatmentUuid/g, UUIDService.generate())
+          .replace(/\$treatmentUri/g, 'http://trials.drugis.org/instances/' + UUIDService.generate())
           .replace(/\$treatmentUnitUri/g, treatment.doseUnit.uri)
           .replace(/\$treatmentUnitLabel/g, treatment.doseUnit.label)
           .replace(/\$treatmentDrugUri/g, treatment.drug.uri)
