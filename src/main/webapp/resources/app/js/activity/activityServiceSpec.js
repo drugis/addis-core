@@ -326,7 +326,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
     });
 
-    describe('edit activities', function() {
+    fdescribe('edit activities', function() {
 
       beforeEach(function(done) {
         // load some mock graph with activities
