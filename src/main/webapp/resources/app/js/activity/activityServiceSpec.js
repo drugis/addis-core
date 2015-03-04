@@ -411,7 +411,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         rootScope.$digest();
       });
 
-      iit('should edit the activity', function(done) {
+      it('should edit the activity', function(done) {
 
         activityService.queryItems(mockStudyUuid).then(function(activities){
           // verify query result
