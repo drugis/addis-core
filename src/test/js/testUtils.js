@@ -11,7 +11,7 @@ define('testUtils', ['lodash'],
                 xmlHTTP.setRequestHeader('Accept', 'application/ld+json');
                 xmlHTTP.send(query);
                 var result = xmlHTTP.responseText;
-                console.log('queryTeststore result = ' + result);
+                // console.log('queryTeststore result = ' + result);
                 return result;
             },
             dropGraph: function(uri) {
@@ -38,7 +38,7 @@ define('testUtils', ['lodash'],
                 return xmlHTTP.responseText;
             },
             deFusekify: function(data) {
-                console.log('deFusekify on : ' + data);
+                // console.log('deFusekify on : ' + data);
                 var json = JSON.parse(data);
                 var bindings = json.results.bindings;
                 return _.map(bindings, function(binding) {
