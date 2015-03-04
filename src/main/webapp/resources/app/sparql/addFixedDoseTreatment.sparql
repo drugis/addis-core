@@ -7,8 +7,12 @@ PREFIX instance: <http://trials.drugis.org/instances/>
 INSERT DATA {
   GRAPH <$graphUri> {
     <$activityUri> ontology:has_drug_treatment instance:$treatmentUuid .
-    <$treatmentUnitUri> rdfs:label '$treatmentUnitLabel' .
-    <$treatmentDrugUri> rdfs:label '$treatmentDrugLabel' .
+    <$treatmentUnitUri>
+      rdfs:label '$treatmentUnitLabel' ;
+      a ontology:Unit .
+    <$treatmentDrugUri>
+      rdfs:label '$treatmentDrugLabel' ;
+      a ontology:Drug .
     instance:$treatmentUuid
       rdf:type <$treatmentDoseType> ;
       ontology:treatment_has_drug <$treatmentDrugUri> ;

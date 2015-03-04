@@ -23,8 +23,6 @@ define([], function() {
 
         function reset() {
           scope.treatment = {
-            drug:{},
-            doseUnit:{},
             dosingPeriodicity: 'P1D',
             treatmentDoseType: 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment'
           };
@@ -39,9 +37,15 @@ define([], function() {
           return typeof number === 'number';
         }
 
+        function isCompleteTypeaheadValue(obj) {
+          // the typeahead input can either be a string (if new value) or an object (if one is picked from existing options)
+          return (typeof obj === 'string' && obj.length > 0)
+            || (obj && obj.label)
+        }
+
         scope.isValidTreatment = function() {
-          var baseValid = scope.treatment.drug && scope.treatment.drug.label &&
-            scope.treatment.doseUnit && scope.treatment.doseUnit.label && scope.treatment.dosingPeriodicity &&
+          var baseValid = isCompleteTypeaheadValue(scope.treatment.drug) &&
+            isCompleteTypeaheadValue(scope.treatment.doseUnit) && scope.treatment.dosingPeriodicity &&
             scope.treatment.dosingPeriodicity !== 'PnullD';
           if(scope.treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment') {
             return baseValid && isDefinedNumber(scope.treatment.fixedValue);
@@ -59,15 +63,22 @@ define([], function() {
             scope.itemScratch.treatments = [];
           }
 
-          if(!newTreatment.drug.uri) {
-              newTreatment.drug.uri = INSTANCE_PREFIX + UUIDService.generate();
-              scope.drugs.push(newTreatment.drug);
+          if(angular.isString(newTreatment.drug)) {
+            newTreatment.drug = {
+              uri: INSTANCE_PREFIX + UUIDService.generate(),
+              label: treatment.drug
+            };
+            scope.drugs.push(newTreatment.drug);
           }
 
-          if(!newTreatment.doseUnit.uri) {
-            newTreatment.doseUnit.uri = INSTANCE_PREFIX + UUIDService.generate();
+          if(angular.isString(newTreatment.doseUnit)) {
+            newTreatment.doseUnit = {
+              uri: INSTANCE_PREFIX + UUIDService.generate(),
+              label: newTreatment.doseUnit
+            };
             scope.doseUnits.push(newTreatment.doseUnit);
           }
+
 
           reset();
           scope.treatmentAdded(newTreatment);

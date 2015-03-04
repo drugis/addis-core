@@ -13,6 +13,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     var studyService;
 
     var activityService;
+    var drugService;
+    var unitService;
+    var queryDrugTemplate;
     var queryActivityTemplate;
     var queryActivityTreatmentTemplate;
     var addActivityTemplate;
@@ -42,18 +45,22 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     beforeEach(module('trialverse.activity'));
 
-    beforeEach(inject(function($q, $rootScope, $httpBackend, ActivityService, StudyService, SparqlResource) {
+    beforeEach(inject(function($q, $rootScope, $httpBackend, DrugService, UnitService, ActivityService, StudyService, SparqlResource) {
       q = $q;
       httpBackend = $httpBackend;
       rootScope = $rootScope;
       studyService = StudyService;
 
+      drugService = DrugService;
+      unitService = UnitService;
       activityService = ActivityService;
 
       // reset the test graph
       testUtils.dropGraph(graphUri);
 
       // load service templates and flush httpBackend
+      testUtils.loadTemplate('queryDrug.sparql', httpBackend);
+      testUtils.loadTemplate('queryUnit.sparql', httpBackend);
       queryActivityTemplate = testUtils.loadTemplate('queryActivity.sparql', httpBackend);
       queryActivityTreatmentTemplate = testUtils.loadTemplate('queryActivityTreatment.sparql', httpBackend);
       addActivityTemplate =  testUtils.loadTemplate('addActivity.sparql', httpBackend);
@@ -250,8 +257,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             label: 'new drug'
           },
           doseUnit: {
-            uri: 'http://unit/newUnit',
-            label: 'new unit label'
+            uri: 'http://unit/oldUnit',
+            label: 'old unit label'
           },
           fixedValue: '1.5e+02',
           dosingPeriodicity: 'P3W'
@@ -289,7 +296,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         rootScope.$digest();
       });
 
-      it('should add the new activity to the graph', function(done) {
+      iit('should add the new activity to the graph', function(done) {
+
 
         activityService.queryItems(mockStudyUuid).then(function(resultActivities){
           expect(resultActivities.length).toBe(1);
@@ -305,14 +313,20 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
           expect(activity.treatments[1].treatmentDoseType).toEqual('http://trials.drugis.org/ontology#FixedDoseDrugTreatment');
           expect(activity.treatments[1].drug.label).toEqual('new drug');
-          expect(activity.treatments[1].doseUnit.label).toEqual('new unit label');
+          expect(activity.treatments[1].doseUnit.label).toEqual('old unit label');
           expect(activity.treatments[1].dosingPeriodicity).toEqual('P3W');
           expect(activity.treatments[1].fixedValue).toEqual('1.5e+02');
-
-          done();
+          drugService.queryItems(mockStudyUuid).then(function(drugResults) {
+            expect(drugResults.length).toBe(2);
+            expect(drugResults[0].label).toEqual('old drug');
+            expect(drugResults[1].label).toEqual('new drug');
+            unitService.queryItems(mockStudyUuid).then(function(unitResults) {
+              expect(unitResults.length).toBe(1);
+              expect(unitResults[0].label).toEqual('old unit label');
+              done();
+            })
+          });
         });
-
-
       });
     });
 
