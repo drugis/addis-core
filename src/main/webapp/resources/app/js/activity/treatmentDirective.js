@@ -23,6 +23,8 @@ define([], function() {
 
         function reset() {
           scope.treatment = {
+            drug:{},
+            doseUnit:{},
             dosingPeriodicity: 'P1D',
             treatmentDoseType: 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment'
           };
@@ -34,11 +36,12 @@ define([], function() {
         }
 
         scope.isValidTreatment = function() {
-          var baseValid = scope.treatment.drug.label && scope.treatment.doseUnit.label && scope.treatment.dosingPeriodicity;
-          if(scope.treatment.dinges === 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment') {
-            return baseValid && scope.treatment.fixedValue !== undefined;
-          } else if (scope.treatment.dinges === 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment') {
-            return baseValid && scope.treatment.minValue !== undefined && scope.treatment.maxValue !== undefined;
+          var baseValid = scope.treatment.drug && scope.treatment.drug.label
+            scope.treatment.doseUnit && scope.treatment.doseUnit.label && scope.treatment.dosingPeriodicity;
+          if(scope.treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment') {
+            return baseValid && scope.treatment.fixedValue !== null;
+          } else if (scope.treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment') {
+            return baseValid && scope.treatment.minValue !== null && scope.treatment.maxValue !== null;
           }
           return false;
         }
@@ -51,19 +54,13 @@ define([], function() {
             scope.itemScratch.treatments = [];
           }
 
-          if(angular.isString(newTreatment.drug)) {
-              newTreatment.drug = {
-                uri: INSTANCE_PREFIX + UUIDService.generate(),
-                label: treatment.drug
-              };
+          if(!newTreatment.drug.uri) {
+              newTreatment.drug.uri = INSTANCE_PREFIX + UUIDService.generate();
               scope.drugs.push(newTreatment.drug);
           }
 
-          if(angular.isString(newTreatment.doseUnit)) {
-            newTreatment.doseUnit = {
-              uri: INSTANCE_PREFIX + UUIDService.generate(),
-              label: newTreatment.doseUnit
-            };
+          if(!newTreatment.doseUnit.uri) {
+            newTreatment.doseUnit.uri = INSTANCE_PREFIX + UUIDService.generate();
             scope.doseUnits.push(newTreatment.doseUnit);
           }
 
