@@ -33,18 +33,23 @@ define([], function() {
         scope.cancelAddDrug = function() {
           scope.treatment = {};
           scope.treatmentDirective.isVisible = false;
+        };
+
+        function isDefinedNumber(number) {
+          return typeof number === 'number';
         }
 
         scope.isValidTreatment = function() {
-          var baseValid = scope.treatment.drug && scope.treatment.drug.label
-            scope.treatment.doseUnit && scope.treatment.doseUnit.label && scope.treatment.dosingPeriodicity;
+          var baseValid = scope.treatment.drug && scope.treatment.drug.label &&
+            scope.treatment.doseUnit && scope.treatment.doseUnit.label && scope.treatment.dosingPeriodicity &&
+            scope.treatment.dosingPeriodicity !== 'PnullD';
           if(scope.treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment') {
-            return baseValid && scope.treatment.fixedValue !== null;
+            return baseValid && isDefinedNumber(scope.treatment.fixedValue);
           } else if (scope.treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment') {
-            return baseValid && scope.treatment.minValue !== null && scope.treatment.maxValue !== null;
+            return baseValid && isDefinedNumber(scope.treatment.minValue) && isDefinedNumber(scope.treatment.maxValue);
           }
           return false;
-        }
+        };
 
 
         scope.addTreatment = function(treatment) {
@@ -66,7 +71,7 @@ define([], function() {
 
           reset();
           scope.treatmentAdded(newTreatment);
-        }
+        };
 
       }
 

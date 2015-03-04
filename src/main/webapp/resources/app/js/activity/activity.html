@@ -11,8 +11,8 @@
         <span><strong>Activity type: </strong></span>
         <span>{{item.activityType.label}}</span>
     </li>
-    <li>
-        <span><strong>Treatmens: </strong></span>
+    <li ng-show="item.activityType.uri === 'http://trials.drugis.org/ontology#TreatmentActivity'">
+        <span><strong>Treatments: </strong></span>
         <ul>
             <li ng-repeat="treatment in item.treatments">
                 {{treatment.drug.label}}, {{treatment.fixedValue}} {{treatment.minValue}} {{treatment.maxValue}} {{treatment.doseUnit.label}} {{treatment.dosingPeriodicity | durationFilter }}
