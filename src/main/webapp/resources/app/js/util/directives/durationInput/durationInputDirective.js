@@ -5,7 +5,8 @@ define([], function() {
   var DurationInputDirective = function(DurationService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/util/directives/durationInput/durationInputDirective.html',
+      templateUrl: function(element, attr) { return attr.templateUrl ? attr.templateUrl : 'app/js/util/directives/durationInput/durationInputDirective.html' },
+      //templateUrl: 'app/js/util/directives/durationInput/durationInputDirective.html',
       scope: {
         durationString: '='
       },
