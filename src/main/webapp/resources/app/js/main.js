@@ -22,6 +22,7 @@ require.config({
       exports: 'jQuery'
     },
     'angular': {
+      deps: ['jQuery'],
       exports: 'angular'
     },
     'mmfoundation': {

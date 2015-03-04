@@ -9879,3 +9879,9 @@ tr.on-hover:hover {
 tr.clickable td {
   color: #452F8C;
 }
+
+/* line 191, ../../sass/trialverse-drugis.scss */
+.scrollable-wrapper {
+  overflow-y: auto;
+  margin-top: 1.5rem;
+}

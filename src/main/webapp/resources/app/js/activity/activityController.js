@@ -69,6 +69,31 @@ define([],
         $scope.commit = $scope.editItem;
       }
 
+      $scope.$watch('treatmentDirective.isVisible', function(oldValue, newValue){
+          $scope.showScrolbarIfNessesary();
+      });
+
+      $scope.$watch('itemScratch.activityType.uri', function(oldValue, newValue){
+          $scope.showScrolbarIfNessesary();
+      });
+
+      $scope.showScrolbarIfNessesary = function() {
+        var offsetString = angular.element('.reveal-modal').css('top'); 
+        var offset = parseInt(offsetString , 10); // remove px part
+        var viewPortHeight = angular.element('html').height();
+        var scrollableWrapperElement = angular.element('.scrollable-wrapper');
+        var wrapperHeight = scrollableWrapperElement.parent().parent().height();
+        var maxWrapperHeight = viewPortHeight - (offset * 2);
+
+        if(wrapperHeight > maxWrapperHeight) {
+          scrollableWrapperElement.css('max-height', viewPortHeight - (offset * 2));
+        } else {
+          scrollableWrapperElement.css('max-height', viewPortHeight + (offset * 2));
+        }
+      }
+
+      $scope.showScrolbarIfNessesary();
+
     };
     return dependencies.concat(ActivityController);
   });

@@ -1,4 +1,4 @@
-<form novalidate ng-submit="commit()">
+<form novalidate ng-submit="commit()" class="scrollable-wrapper">
     <div class="row">
         <div class="large-12 medium-12 columns">
             <h3>{{actionType}} a new activity</h3>
@@ -21,7 +21,7 @@
     <div class="row">
         <div class="large-12 medium-12 columns">
             <label>Type
-                <select ng-disabled="treatmentDirective.isVisible" ng-model="itemScratch.activityType" placeholder="select type" ng-options="activityType.label for activityType in activityTypeOptions">
+                <select ng-disabled="treatmentDirective.isVisible" ng-model="itemScratch.activityType" placeholder="select type" ng-options="activityType.label for activityType in activityTypeOptions" ng-change="showScrolbarIfNessesary()">
                 </select>
             </label>
         </div>
@@ -46,10 +46,10 @@
     </div>
 
 
-        <div class="row modal-bottom-button-bar">
-            <div class="large-12 columns">
-                <button  class="success" type="submit" ng-disabled="!itemScratch.label || !itemScratch.activityType || isAddTreatmentMode || treatmentDirective.isVisible ">{{actionType}}</button>
-            </div>
+    <div class="row modal-bottom-button-bar">
+        <div class="large-12 columns">
+            <button class="success" type="submit" ng-disabled="!itemScratch.label || !itemScratch.activityType || isAddTreatmentMode || treatmentDirective.isVisible ">{{actionType}}</button>
         </div>
-        <a class="close-reveal-modal" ng-click="cancel()">×</a>
+    </div>
+    <a class="close-reveal-modal" ng-click="cancel()">×</a>
 </form>

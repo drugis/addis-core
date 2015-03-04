@@ -188,3 +188,7 @@ tr.clickable td {
 //////////////////////// end study results //
 
 
+.scrollable-wrapper {
+  overflow-y: auto;
+  margin-top: 1.5rem; // leave some space for the scrollbar
+}
