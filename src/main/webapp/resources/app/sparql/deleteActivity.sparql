@@ -13,9 +13,11 @@ WHERE {
   GRAPH <$graphUri> {
     ?study ontology:has_activity <$activityUri> . 
     <$activityUri> ?activityProperty ?activityObject .
-    <$activityUri> ontology:has_drug_treatment ?treatmentUri . 
-    ?treatmentUri ?treatmentProperty ?treatmenObject .
-    ?treatmentUri ontology:treatment_min_dose|ontology:treatment_max_dose|ontology:treatment_dose ?dose .
-    ?dose ?doseProperty ?doseValue .
+    OPTIONAL {
+    	<$activityUri> ontology:has_drug_treatment ?treatmentUri . 
+    	?treatmentUri ?treatmentProperty ?treatmenObject .
+    	?treatmentUri ontology:treatment_min_dose|ontology:treatment_max_dose|ontology:treatment_dose ?dose .
+    	?dose ?doseProperty ?doseValue .
+    }
   }
 }
