@@ -69,11 +69,10 @@ define([],
         $scope.commit = $scope.editItem;
       }
 
-      $scope.$watch('treatmentDirective.isVisible', function(oldValue, newValue){
-          $scope.showScrolbarIfNessesary();
-      });
-
-      $scope.$watch('itemScratch.activityType.uri', function(oldValue, newValue){
+      $scope.$watch(function() {
+        return angular.element('.scrollable-wrapper').parent().parent().height();
+      }, function(oldValue, newValue){
+        console.log('recalculate , old = ' + oldValue, ' new = ' + newValue);
           $scope.showScrolbarIfNessesary();
       });
 
@@ -83,16 +82,14 @@ define([],
         var viewPortHeight = angular.element('html').height();
         var scrollableWrapperElement = angular.element('.scrollable-wrapper');
         var wrapperHeight = scrollableWrapperElement.parent().parent().height();
-        var maxWrapperHeight = viewPortHeight - (offset * 2);
+        var maxWrapperHeight = viewPortHeight - offset;
 
         if(wrapperHeight > maxWrapperHeight) {
-          scrollableWrapperElement.css('max-height', viewPortHeight - (offset * 2));
+          scrollableWrapperElement.css('max-height', viewPortHeight - offset);
         } else {
-          scrollableWrapperElement.css('max-height', viewPortHeight + (offset * 2));
+          scrollableWrapperElement.css('max-height', viewPortHeight + offset);
         }
       }
-
-      $scope.showScrolbarIfNessesary();
 
     };
     return dependencies.concat(ActivityController);
