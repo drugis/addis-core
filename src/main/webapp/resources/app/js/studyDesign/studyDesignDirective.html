@@ -1,0 +1,18 @@
+<div id="study-design" class="study-item">
+    <h3>Study design<a> <i class="fa fa-info-circle fa-fw"></i></a></h3>
+
+    <table>
+        <tbody>
+            <tr>
+                <th></th>
+                <th ng-repeat="epoch in epochs">{{epoch.label}}</th>
+            </tr>
+            <tr ng-repeat="arm in arms">
+                <td class="y-head ">{{arm.label}}</td>
+                <td ng-repeat="epoch in epochs" class="input-cell">
+                    <select ng-model="studyDesign[epoch.uri][arm.armURI]" placeholder="select coordinate" ng-options="activity.label for activity in activities" ng-change="doShit()">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

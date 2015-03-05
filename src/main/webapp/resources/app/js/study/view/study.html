@@ -15,6 +15,7 @@
       <li class="heading">Design</li>
       <li><a ng-click="sideNavClick('arms')">Arms</a></li>
       <li><a ng-click="sideNavClick('epochs')">Epochs</a></li>
+      <li><a ng-click="sideNavClick('study-design')">Study design</a></li>
       <li><a ng-click="sideNavClick('activities')">Activities</a></li>
       <li><a ng-click="sideNavClick('measurementMoments')">Measurement moments</a></li>
       <li><a ng-click="sideNavClick('populationCharacteristics')">Population characteristics</a></li>
@@ -40,38 +41,10 @@
 
     <study-category settings="categorySettings['arms']"></study-category>
     <study-category settings="categorySettings['epochs']"></study-category>
+    <study-design></study-design>
     <study-category settings="categorySettings['activities']"></study-category>
 
-<!--     <div id="activities" class="study-item">
-        <h3>Activities<a> <i class="fa fa-info-circle fa-fw"></i></a></h3>
-        <h5>Activities coordinate table</h5>
 
-        <table>
-            <tbody>
-                <tr>
-                    <th></th>
-                    <th>Run in</th>
-                    <th>Main Phase</th>
-                        <th>End of study</th>
-                </tr>
-                <tr>
-                    <td class="y-head ">Neusspray</td>
-                    <td class="input-cell"><select><option>koffie drinken</option><option>actie 2</option><option>koffie drinken</option></select></td>
-                    <td class="input-cell"><select><option>actie 1</option><option>long lonng action name actie 2</option><option>actie 3</option></select></td>
-                    <td class="input-cell"><select><option>actie 1</option><option>actie 2</option><option>actie 3</option></select></td>
-                </tr>
-                <tr>
-                    <td class="y-head ">Keelsnoepjes</td>
-                    <td class="input-cell"><select><option></option><option>actie 2</option><option>actie 3</option></select></td>
-                    <td class="input-cell"><select><option>koffie drinken</option><option>actie 2</option><option>actie 3</option></select></td>
-                    <td class="input-cell"><select><option>koffie drinken</option><option>actie 2</option><option>actie 3</option></select></td>
-                </tr>
-            </tbody>
-        </table>
-
-
-    </div>
- -->
 
     <study-category settings="categorySettings['measurementMoments']"></study-category>
     <study-category settings="categorySettings['populationCharacteristics']"></study-category>
