@@ -6,6 +6,7 @@ define([],
 
       var queryActivityCoordinatesTemplate = SparqlResource.get('queryActivityCoordinates.sparql');
       var setActivityCoordinatesTemplate = SparqlResource.get('setActivityCoordinates.sparql');
+      var cleanupCoordinatesTemplate = SparqlResource.get('cleanupCoordinates.sparql');
 
       function queryItems(studyUuid) {
         return queryActivityCoordinatesTemplate.then(function(template){
@@ -21,6 +22,13 @@ define([],
         });
       }
 
+      function cleanupCoordinates(studyUuid) {
+        return cleanupCoordinatesTemplate.then(function(template) {
+          var query = fillInTemplate(template, studyUuid, {});
+          return StudyService.doModifyingQuery(query);
+        });
+      }
+
       function fillInTemplate(template, studyUuid, coordinates) {
         return template
             .replace(/\$studyUuid/g, studyUuid)
@@ -31,7 +39,8 @@ define([],
 
       return {
         queryItems: queryItems,
-        setActivityCoordinates: setActivityCoordinates
+        setActivityCoordinates: setActivityCoordinates,
+        cleanupCoordinates: cleanupCoordinates
       };
     };
     return dependencies.concat(StudyDesignService);

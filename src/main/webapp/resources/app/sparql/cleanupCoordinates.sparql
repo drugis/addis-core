@@ -1,0 +1,36 @@
+PREFIX study: <http://trials.drugis.org/studies/>
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+
+DELETE {
+  GRAPH <$graphUri> {
+    ?activityUri ontology:activity_application ?application .
+    ?application ontology:applied_to_arm ?armUri .
+    ?application ontology:applied_in_epoch ?epochUri .
+  }
+} WHERE {
+  GRAPH <$graphUri> {
+    ?activityUri ontology:activity_application ?application .
+    ?application ontology:applied_to_arm ?armUri .
+    ?application ontology:applied_in_epoch ?epochUri .
+    FILTER NOT EXISTS  {
+      study:$studyUuid ontology:has_arm ?armUri
+    }
+  }
+};
+
+DELETE {
+  GRAPH <$graphUri> {
+    ?activityUri ontology:activity_application ?application .
+    ?application ontology:applied_to_arm ?armUri .
+    ?application ontology:applied_in_epoch ?epochUri .
+  }
+} WHERE {
+  GRAPH <$graphUri> {
+    ?activityUri ontology:activity_application ?application .
+    ?application ontology:applied_to_arm ?armUri .
+    ?application ontology:applied_in_epoch ?epochUri .
+    FILTER NOT EXISTS  {
+      ?epochUri a ontology:Epoch
+    }
+  }
+};

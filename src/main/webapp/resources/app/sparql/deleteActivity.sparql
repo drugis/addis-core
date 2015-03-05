@@ -7,6 +7,10 @@ DELETE {
     <$activityUri> ?activityProperty ?activityObject . 
     ?treatmentUri ?treatmentProperty ?treatmenObject . 
     ?dose ?doseProperty ?doseValue .
+    <$activityUri> ontology:activity_application ?application .
+    ?application 
+      ontology:applied_to_arm ?armUri ;
+      ontology:applied_in_epoch ?epochUri .
   }
 }
 WHERE {
@@ -18,6 +22,12 @@ WHERE {
     	?treatmentUri ?treatmentProperty ?treatmenObject .
     	?treatmentUri ontology:treatment_min_dose|ontology:treatment_max_dose|ontology:treatment_dose ?dose .
     	?dose ?doseProperty ?doseValue .
+    }
+    OPTIONAL {
+      <$activityUri> ontology:activity_application ?application .
+      ?application 
+        ontology:applied_to_arm ?armUri ;
+        ontology:applied_in_epoch ?epochUri .
     }
   }
 }

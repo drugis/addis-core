@@ -2,10 +2,10 @@
 define([],
   function() {
     var dependencies = ['$scope', '$stateParams', '$window', 'StudyResource', '$location', '$anchorScroll',
-      '$modal', 'StudyService', 'DatasetResource', 'DatasetService', 'ResultsService'
+      '$modal', 'StudyService', 'DatasetResource', 'DatasetService', 'ResultsService', 'StudyDesignService'
     ];
     var StudyController = function($scope, $stateParams, $window, StudyResource, $location, $anchorScroll,
-      $modal, StudyService, DatasetResource, DatasetService, ResultsService) {
+      $modal, StudyService, DatasetResource, DatasetService, ResultsService, StudyDesignService) {
 
       StudyService.reset();
 
@@ -97,8 +97,8 @@ define([],
         }
       };
 
-      var navbar = document.getElementsByClassName("side-nav");
-      angular.element($window).bind("scroll", function() {
+      var navbar = document.getElementsByClassName('side-nav');
+      angular.element($window).bind('scroll', function() {
         $(navbar[0]).css('margin-top', this.pageYOffset);
         $scope.$apply();
       });
@@ -133,10 +133,13 @@ define([],
       reloadStudyModel();
       reloadDatasetModel();
 
-      $scope.$on('updateStudyDesign', function(event, args) {
+      $scope.$on('updateStudyDesign', function() {
         console.log('update design');
         ResultsService.cleanUpMeasurements().then(function() {
-          $scope.$broadcast('refreshResults', event);
+          $scope.$broadcast('refreshResults');
+        });
+        StudyDesignService.cleanupCoordinates().then(function() {
+          $scope.$broadcast('refreshStudyDesign');
         });
       });
 

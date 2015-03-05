@@ -47,6 +47,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       // load service templates and flush httpBackend
       testUtils.loadTemplate('queryActivityCoordinates.sparql', httpBackend);
       setActivityCoordinatesTemplate = testUtils.loadTemplate('setActivityCoordinates.sparql', httpBackend);
+      testUtils.loadTemplate('cleanupCoordinates.sparql', httpBackend);
 
       httpBackend.flush();
 
@@ -109,15 +110,32 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     describe('set activity coordinates', function() {
 
       beforeEach(function(done) {
-        // stub remotestoreServiceStub.executeQuery method
+
+        var xmlHTTP = new XMLHttpRequest();
+        xmlHTTP.open('GET', 'base/test_graphs/activitiesCoordinatesSetActivityMockGraph.ttl', false);
+        xmlHTTP.send(null);
+        var activitiesCoordinatesSetActivityMockGraph = xmlHTTP.responseText;
+
+        xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
+        xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
+        xmlHTTP.send(activitiesCoordinatesSetActivityMockGraph);
+
         remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
           query = query.replace(/\$graphUri/g, graphUri);
-
           var result = testUtils.executeUpdateQuery(query);
-          //console.log('queryResponce ' + result);
-
+          console.log('queryResponce ' + result);
           var executeUpdateDeferred = q.defer();
           executeUpdateDeferred.resolve(result);
+          return executeUpdateDeferred.promise;
+        });
+
+        remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
+          query = query.replace(/\$graphUri/g, graphUri);
+          var result = testUtils.queryTeststore(query);
+          //console.log('queryResponce ' + result);
+          var resultObject = testUtils.deFusekify(result)
+          var executeUpdateDeferred = q.defer();
+          executeUpdateDeferred.resolve(resultObject);
           return executeUpdateDeferred.promise;
         });
 
@@ -127,22 +145,71 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       it('should return the activities contained in the study', function(done) {
 
         var coordinates = {
-          epochUri: 'http://epochs/uri1',
-          armUri: 'http://arms/uri1',
-          activityUri: 'http://instances/uri1'
+          epochUri: 'http://trials.drugis.org/instances/epoch1Uuid',
+          armUri: 'http://trials.drugis.org/instances/arm1Uuid',
+          activityUri: 'http://trials.drugis.org/instances/activity1Uuid'
         };
 
         studyDesignService.setActivityCoordinates(mockStudyUuid, coordinates).then(function() {
-          var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?subject ?p ?o } }';
-          var result = testUtils.deFusekify(testUtils.queryTeststore(query));
-
-          expect(result.length).toEqual(3);
-          done();
+          studyDesignService.queryItems(mockStudyUuid).then(function(result) {
+            expect(result.length).toEqual(2);
+            done();
+          });
         });
+
         rootScope.$digest();
       });
     });
+
+    fdescribe('cleanup', function() {
+
+      beforeEach(function(done) {
+
+        var xmlHTTP = new XMLHttpRequest();
+        xmlHTTP.open('GET', 'base/test_graphs/activitiesCoordinatesCleanUpMockGraph.ttl', false);
+        xmlHTTP.send(null);
+        var activitiesCoordinatesCleanUpMockGraph = xmlHTTP.responseText;
+
+        xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
+        xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
+        xmlHTTP.send(activitiesCoordinatesCleanUpMockGraph);
+
+        remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
+          query = query.replace(/\$graphUri/g, graphUri);
+          var result = testUtils.executeUpdateQuery(query);
+          console.log('queryResponce ' + result);
+          var executeUpdateDeferred = q.defer();
+          executeUpdateDeferred.resolve(result);
+          return executeUpdateDeferred.promise;
+        });
+
+        remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
+          query = query.replace(/\$graphUri/g, graphUri);
+          var result = testUtils.queryTeststore(query);
+          //console.log('queryResponce ' + result);
+          var resultObject = testUtils.deFusekify(result)
+          var executeUpdateDeferred = q.defer();
+          executeUpdateDeferred.resolve(resultObject);
+          return executeUpdateDeferred.promise;
+        });
+
+        done();
+      });
+
+      it('should remove coordinates that refer to missing arms, epochs of activities', function(done) {
+
+        studyDesignService.cleanupCoordinates(mockStudyUuid).then(function() {
+          studyDesignService.queryItems(mockStudyUuid).then(function(result) {
+            expect(result.length).toEqual(1);
+            done();
+          });
+        });
+
+        rootScope.$digest();
+      });
+    });
+
+
+
   });
-
-
 });
