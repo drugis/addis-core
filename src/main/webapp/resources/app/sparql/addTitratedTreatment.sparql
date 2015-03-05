@@ -18,12 +18,12 @@ INSERT DATA {
       rdf:type ontology:TitratedDoseDrugTreatment ;
       ontology:treatment_min_dose [
         rdf:value $treatmentMinValue ;
-        ontology:units <$treatmentUnitUri> ;
+        ontology:unit <$treatmentUnitUri> ;
         ontology:dosingPeriodicity "$treatmentDosingPeriodicity"^^xsd:duration
       ] ;
       ontology:treatment_max_dose [
         rdf:value $treatmentMaxValue ;
-        ontology:units <$treatmentUnitUri> ;
+        ontology:unit <$treatmentUnitUri> ;
         ontology:dosingPeriodicity "$treatmentDosingPeriodicity"^^xsd:duration
       ] .
   }

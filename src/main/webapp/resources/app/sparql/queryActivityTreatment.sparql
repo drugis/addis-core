@@ -19,12 +19,12 @@ SELECT * WHERE {
           rdf:type ontology:TitratedDoseDrugTreatment ;
           ontology:treatment_min_dose [
             rdf:value ?treatmentMinValue ;
-            ontology:units ?treatmentUnitUri ;
+            ontology:unit ?treatmentUnitUri ;
             ontology:dosingPeriodicity ?treatmentDosingPeriodicity
           ] ;
           ontology:treatment_max_dose [
             rdf:value ?treatmentMaxValue ; ;
-            ontology:units ?treatmentUnitUri ;
+            ontology:unit ?treatmentUnitUri ;
             ontology:dosingPeriodicity ?treatmentDosingPeriodicity
           ].
       }
@@ -34,7 +34,7 @@ SELECT * WHERE {
           rdf:type ontology:FixedDoseDrugTreatment ;
           ontology:treatment_dose [
           rdf:value ?treatmentFixedValue ;
-          ontology:units ?treatmentUnitUri ;
+          ontology:unit ?treatmentUnitUri ;
           ontology:dosingPeriodicity ?treatmentDosingPeriodicity
         ]
       }

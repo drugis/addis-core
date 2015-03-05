@@ -18,7 +18,7 @@ INSERT DATA {
       rdf:type ontology:FixedDoseDrugTreatment ;
       ontology:treatment_dose [
         rdf:value $treatmentFixedValue ;
-        ontology:units <$treatmentUnitUri> ;
+        ontology:unit <$treatmentUnitUri> ;
         ontology:dosingPeriodicity "$treatmentDosingPeriodicity"^^xsd:duration
       ]
   }

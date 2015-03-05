@@ -22,12 +22,12 @@
     a <http://trials.drugis.org/ontology#TitratedDoseDrugTreatment> ;
     <http://trials.drugis.org/ontology#treatment_min_dose> [
       <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> 5.000000e+01 ;
-      <http://trials.drugis.org/ontology#units> <http://trials.drugis.org/instances/unit1Uuid> ;
+      <http://trials.drugis.org/ontology#unit> <http://trials.drugis.org/instances/unit1Uuid> ;
       <http://trials.drugis.org/ontology#dosingPeriodicity> "P1D"^^<http://www.w3.org/2001/XMLSchema#duration>
     ] ;
     <http://trials.drugis.org/ontology#treatment_max_dose> [
       <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> 1.500000e+02 ;
-      <http://trials.drugis.org/ontology#units> <http://trials.drugis.org/instances/unit1Uuid> ;
+      <http://trials.drugis.org/ontology#unit> <http://trials.drugis.org/instances/unit1Uuid> ;
       <http://trials.drugis.org/ontology#dosingPeriodicity> "P1D"^^<http://www.w3.org/2001/XMLSchema#duration>
     ].
 
@@ -36,7 +36,7 @@
     a <http://trials.drugis.org/ontology#FixedDoseDrugTreatment> ;
     <http://trials.drugis.org/ontology#treatment_dose> [
       <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> 0.000000e+00 ;
-      <http://trials.drugis.org/ontology#units> <http://trials.drugis.org/instances/unit2Uuid> ;
+      <http://trials.drugis.org/ontology#unit> <http://trials.drugis.org/instances/unit2Uuid> ;
       <http://trials.drugis.org/ontology#dosingPeriodicity> "P1D"^^<http://www.w3.org/2001/XMLSchema#duration>
     ] .
 
