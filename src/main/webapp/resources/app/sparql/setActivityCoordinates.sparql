@@ -1,0 +1,22 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX study: <http://trials.drugis.org/studies/>
+
+WITH <$graphUri>
+DELETE {
+  <$activityUri> ontology:activity_application ?application .
+  ?application ?anyProperty ?anyObject
+}
+WHERE {
+  study:$studyUuid ontology:has_activity <$activityUri> .
+  <$activityUri> ontology:activity_application ?application .
+  ?application ?anyProperty ?anyObject
+};
+
+INSERT DATA {
+  GRAPH <$graphUri> {
+    <$activityUri> ontology:activity_application [
+      ontology:applied_to_arm <$armUri> ;
+      ontology:applied_in_epoch <$epochUri>
+    ] ;
+  }
+} 
