@@ -45,6 +45,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       testUtils.dropGraph(graphUri);
 
       // load service templates and flush httpBackend
+      testUtils.loadTemplate('queryActivityCoordinates.sparql', httpBackend);
       setActivityCoordinatesTemplate = testUtils.loadTemplate('setActivityCoordinates.sparql', httpBackend);
 
       httpBackend.flush();
@@ -64,6 +65,45 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       rootScope.$digest();
     }));
+
+    describe('query activity coordinates', function() {
+
+      beforeEach(function(done) {
+        var xmlHTTP = new XMLHttpRequest();
+        xmlHTTP.open('GET', 'base/test_graphs/activitiesCoordinatesMockGraph.ttl', false);
+        xmlHTTP.send(null);
+        var activitiesCoordinatesMockGraph = xmlHTTP.responseText;
+
+        xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
+        xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
+        xmlHTTP.send(activitiesCoordinatesMockGraph);
+
+        remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
+          query = query.replace(/\$graphUri/g, graphUri);
+
+          var result = testUtils.queryTeststore(query);
+          console.log('queryResponce ' + result);
+          var resultObject = testUtils.deFusekify(result)
+          var executeUpdateDeferred = q.defer();
+          executeUpdateDeferred.resolve(resultObject);
+          return executeUpdateDeferred.promise;
+        });
+
+        done();
+      });
+
+      it('should return the activity coordinates contained in the study', function(done) {
+
+        studyDesignService.queryItems(mockStudyUuid).then(function(results) {
+          expect(results.length).toBe(3);
+          expect(results[0].activityUri).toBe('http://trials.drugis.org/instances/activity1Uuid');
+          expect(results[0].epochUri).toBe('http://trials.drugis.org/instances/epoch1Uuid');
+          expect(results[0].armUri).toBe('http://trials.drugis.org/instances/arm1Uuid');
+          done();
+        });
+        rootScope.$digest();
+      });
+    });
 
 
     describe('set activity coordinates', function() {
@@ -93,7 +133,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         };
 
         studyDesignService.setActivityCoordinates(mockStudyUuid, coordinates).then(function() {
-          var query = 'SELECT * WHERE { GRAPH <' + graphUri+ '> { ?subject ?p ?o } }';
+          var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?subject ?p ?o } }';
           var result = testUtils.deFusekify(testUtils.queryTeststore(query));
 
           expect(result.length).toEqual(3);
@@ -102,6 +142,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         rootScope.$digest();
       });
     });
-
   });
+
+
 });

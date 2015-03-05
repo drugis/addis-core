@@ -1,0 +1,28 @@
+<http://trials.drugis.org/studies/mockStudyUuid>
+        a       <http://trials.drugis.org/ontology#Study> ;
+        <http://www.w3.org/2000/01/rdf-schema#label> "study 1" ;
+        <http://trials.drugis.org/ontology#has_activity>
+        		<http://trials.drugis.org/instances/activity1Uuid> ;
+        <http://trials.drugis.org/ontology#has_activity>
+        		<http://trials.drugis.org/instances/activity2Uuid> .
+
+<http://trials.drugis.org/instances/activity1Uuid>
+    a <http://trials.drugis.org/ontology#RandomizationActivity>;
+    <http://trials.drugis.org/ontology#activity_application> [
+      <http://trials.drugis.org/ontology#applied_to_arm> <http://trials.drugis.org/instances/arm1Uuid> ;
+      <http://trials.drugis.org/ontology#applied_in_epoch> <http://trials.drugis.org/instances/epoch1Uuid>
+    ] ;
+    <http://trials.drugis.org/ontology#activity_application> [
+      <http://trials.drugis.org/ontology#applied_to_arm> <http://trials.drugis.org/instances/arm1Uuid> ;
+      <http://trials.drugis.org/ontology#applied_in_epoch> <http://trials.drugis.org/instances/epoch2Uuid>
+    ] ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "activity 1" .
+
+<http://trials.drugis.org/instances/activity2Uuid>
+    a <http://trials.drugis.org/ontology#TreatmentActivity>;
+    <http://trials.drugis.org/ontology#activity_application> [
+      <http://trials.drugis.org/ontology#applied_to_arm> <http://trials.drugis.org/instances/arm2Uuid> ;
+      <http://trials.drugis.org/ontology#applied_in_epoch> <http://trials.drugis.org/instances/epoch1Uuid>
+    ] ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "activity 2".
+

@@ -4,9 +4,14 @@ define([],
     var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService'];
     var StudyDesignService = function($q, StudyService, SparqlResource, UUIDService) {
 
+      var queryActivityCoordinatesTemplate = SparqlResource.get('queryActivityCoordinates.sparql');
       var setActivityCoordinatesTemplate = SparqlResource.get('setActivityCoordinates.sparql');
 
       function queryItems(studyUuid) {
+        return queryActivityCoordinatesTemplate.then(function(template){
+          var query = fillInTemplate(template, studyUuid, {}); 
+          return StudyService.doNonModifyingQuery(query);
+        });
       }
 
       function setActivityCoordinates(studyUuid, coordinates) {
