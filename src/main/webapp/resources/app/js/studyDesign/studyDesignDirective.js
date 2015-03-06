@@ -13,7 +13,9 @@ define([], function() {
 
         var reloadData = function() {
           var armsPromise = ArmService.queryItems($stateParams.studyUUID).then(function(result) {
-            scope.arms = result;
+            scope.arms = result.sort(function(a, b) {
+              return a.label.localeCompare(b.label);
+            });
           });
 
           var epochsPromise = EpochService.queryItems($stateParams.studyUUID).then(function(result) {
@@ -23,7 +25,9 @@ define([], function() {
           });
 
           var activitiesPromise = ActivityService.queryItems($stateParams.studyUUID).then(function(result) {
-            scope.activities = result;
+            scope.activities = result.sort(function(a, b) {
+              return a.label.localeCompare(b.label);
+            });
           });
 
           $q.all([armsPromise, epochsPromise, activitiesPromise]).then(function() {
