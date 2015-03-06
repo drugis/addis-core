@@ -17,7 +17,9 @@ define([], function() {
           });
 
           var epochsPromise = EpochService.queryItems($stateParams.studyUUID).then(function(result) {
-            scope.epochs = result;
+            scope.epochs = result.sort(function(a, b) {
+              return a.pos - b.pos;
+            });
           });
 
           var activitiesPromise = ActivityService.queryItems($stateParams.studyUUID).then(function(result) {
