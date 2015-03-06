@@ -15,6 +15,7 @@ define(['angular', 'angular-mocks'], function() {
       studyServiceMock = jasmine.createSpyObj('StudyService', ['reset','queryArmData', 'loadStore', 'queryStudyData', 'getStudyGraph', 'studySaved']),
       datasetServiceMock = jasmine.createSpyObj('DatasetService', ['reset', 'loadStore', 'queryDataset']),
       resultsServiceMock = jasmine.createSpyObj('ResultsService', ['cleanUpMeasurements']),
+      studyDesignServiceMock = jasmine.createSpyObj('StudyDesignService', ['cleanupCoordinates']),
       loadStoreDeferred,
       loadDatasetStoreDeferred,
       queryStudyDataDeferred,
@@ -24,7 +25,7 @@ define(['angular', 'angular-mocks'], function() {
 
     beforeEach(module('trialverse.study'));
 
-    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, StudyResource, DatasetResource ) {
+    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, StudyResource, DatasetResource) {
 
       scope = $rootScope;
       httpBackend = $httpBackend;
@@ -58,7 +59,8 @@ define(['angular', 'angular-mocks'], function() {
         StudyService: studyServiceMock,
         DatasetResource: DatasetResource,
         DatasetService: datasetServiceMock,
-        ResultsService: resultsServiceMock
+        ResultsService: resultsServiceMock,
+        StudyDesignService: studyDesignServiceMock
       });
     }));
 

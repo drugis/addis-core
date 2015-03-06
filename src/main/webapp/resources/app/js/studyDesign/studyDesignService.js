@@ -10,7 +10,7 @@ define([],
 
       function queryItems(studyUuid) {
         return queryActivityCoordinatesTemplate.then(function(template){
-          var query = fillInTemplate(template, studyUuid, {}); 
+          var query = fillInTemplate(template, studyUuid, {});
           return StudyService.doNonModifyingQuery(query);
         });
       }
@@ -23,6 +23,9 @@ define([],
       }
 
       function cleanupCoordinates(studyUuid) {
+        if(!studyUuid) {
+          throw 'cleanup study design with undefined studyUuid';
+        }
         return cleanupCoordinatesTemplate.then(function(template) {
           var query = fillInTemplate(template, studyUuid, {});
           return StudyService.doModifyingQuery(query);

@@ -139,6 +139,7 @@ define([],
           $scope.$broadcast('refreshResults');
         });
         StudyDesignService.cleanupCoordinates().then(function() {
+          console.log('after cleanup coord');
           $scope.$broadcast('refreshStudyDesign');
         });
       });

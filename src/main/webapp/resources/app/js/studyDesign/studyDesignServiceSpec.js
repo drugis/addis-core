@@ -161,7 +161,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
     });
 
-    fdescribe('cleanup', function() {
+    describe('cleanup simple graph', function() {
 
       beforeEach(function(done) {
 
@@ -209,6 +209,53 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
     });
 
+    describe('cleanup complex graph', function() {
+
+      beforeEach(function(done) {
+
+        var xmlHTTP = new XMLHttpRequest();
+        xmlHTTP.open('GET', 'base/test_graphs/realLifeMockCleanupGraph.ttl', false);
+        xmlHTTP.send(null);
+        var activitiesCoordinatesCleanUpMockGraph = xmlHTTP.responseText;
+
+        xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
+        xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
+        xmlHTTP.send(activitiesCoordinatesCleanUpMockGraph);
+
+        remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
+          query = query.replace(/\$graphUri/g, graphUri);
+          var result = testUtils.executeUpdateQuery(query);
+          console.log('queryResponce ' + result);
+          var executeUpdateDeferred = q.defer();
+          executeUpdateDeferred.resolve(result);
+          return executeUpdateDeferred.promise;
+        });
+
+        remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
+          query = query.replace(/\$graphUri/g, graphUri);
+          var result = testUtils.queryTeststore(query);
+          //console.log('queryResponce ' + result);
+          var resultObject = testUtils.deFusekify(result)
+          var executeUpdateDeferred = q.defer();
+          executeUpdateDeferred.resolve(resultObject);
+          return executeUpdateDeferred.promise;
+        });
+
+        done();
+      });
+
+      it('should remove coordinates that refer to missing arms, epochs of activities', function(done) {
+
+        studyDesignService.cleanupCoordinates('c8354a59-04c6-42a8-a818-a9618bd00ba5').then(function() {
+          studyDesignService.queryItems('c8354a59-04c6-42a8-a818-a9618bd00ba5').then(function(result) {
+            expect(result.length).toEqual(4);
+            done();
+          });
+        });
+
+        rootScope.$digest();
+      });
+    });
 
 
   });
