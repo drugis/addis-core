@@ -119,15 +119,27 @@ Other solutions to blank nodes in changesets are possible, but complicate the wa
 Creating datasets
 -----------------
 
-A new dataset is created though a POST request to /datasets.
-The request body should be empty.
-The X-EventSource-Creator header can be used to specify a URI identifying the author.
+A new dataset is created though a POST request to `/datasets`.
+The X-EventSource-Creator header can be used to specify a URI identifying the author, and the X-EventSource-Title and X-EventSource-Description headers can be used to specify a commit message for the initial version.
+The request body may be empty, and in that case no Content-Type should be declared:
 
 ```http
 POST /datasets HTTP/1.1
 Host: example.com
 X-EventSource-Creator: http://example.com/GreenGoblin
 X-EventSource-Title: SW5pdGlhbCB2ZXJzaW9u
+```
+
+Alternatively, an RDF payload may be sent in the request body, and in that case the appropriate Content-Type header needs to be set. This will be the initial content of the default graph of the dataset:
+
+```http
+POST /datasets HTTP/1.1
+Host: example.com
+X-EventSource-Creator: http://example.com/GreenGoblin
+X-EventSource-Title: SW5pdGlhbCB2ZXJzaW9u
+Content-Type: text/turtle
+
+<http://example.com/GreenGoblin> a <http://example.com/GreatGuy> .
 ```
 
 This will result in a `201 Created` response indicating both the location of the new dataset and the initial version ID.
