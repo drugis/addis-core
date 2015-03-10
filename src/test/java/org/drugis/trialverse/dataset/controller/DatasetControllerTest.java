@@ -31,6 +31,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
+import java.net.URI;
 import java.security.Principal;
 
 import static org.hamcrest.Matchers.is;
@@ -100,9 +101,10 @@ public class DatasetControllerTest {
   @Test
   public void testCreateDataset() throws Exception {
     String newDatasetUid = "http://some.thing.like/this/asd123";
+      URI uri = new URI(newDatasetUid);
     DatasetCommand datasetCommand = new DatasetCommand("dataset title");
     String jsonContent = TestUtils.createJson(datasetCommand);
-    when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john)).thenReturn(newDatasetUid);
+    when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john)).thenReturn(uri);
     mockMvc
             .perform(post("/datasets")
                             .principal(user)

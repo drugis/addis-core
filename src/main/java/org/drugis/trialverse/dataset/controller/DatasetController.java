@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URI;
 import java.security.Principal;
 
 /**
@@ -44,10 +45,10 @@ public class DatasetController extends AbstractTrialverseController {
   @ResponseBody
   public Dataset createDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody DatasetCommand datasetCommand) {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-    String uid = datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), currentUserAccount);
+    URI newDatasetLocation = datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), currentUserAccount);
     response.setStatus(HttpServletResponse.SC_CREATED);
-    response.setHeader("Location", request.getRequestURL() + "/" + uid);
-    return new Dataset(uid, currentUserAccount, datasetCommand.getTitle(), datasetCommand.getDescription());
+    response.setHeader("Location", newDatasetLocation.toString());
+    return new Dataset(newDatasetLocation.toString(), currentUserAccount, datasetCommand.getTitle(), datasetCommand.getDescription());
   }
 
   @RequestMapping(method = RequestMethod.GET)
