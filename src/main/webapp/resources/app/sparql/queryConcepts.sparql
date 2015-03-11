@@ -1,0 +1,7 @@
+SELECT ?uri ?type ?label WHERE {
+  GRAPH <$conceptGraphUri> {
+    ?uri 
+      a ?type ;
+      rdf:label ?label .
+  }
+}

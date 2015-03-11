@@ -19,6 +19,7 @@ define(
     'measurementMoment/measurementMoment',
     'activity/activity',
     'studyDesign/studyDesign',
+    'concept/concept'
     'angular-resource',
     'rdfstore',
     'lodash'
@@ -40,7 +41,8 @@ define(
       'trialverse.measurementMoment',
       'trialverse.studyDesign',
       'trialverse.activity',
-      'trialverse.results'
+      'trialverse.results',
+      'trialverse.concept'
     ];
 
 
@@ -83,6 +85,11 @@ define(
             url: '/dataset/:datasetUUID',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
+          })
+          .state('concepts', {
+            url: 'dataset/:datasetUUID/concepts',
+            templateUrl: 'app/js/concept/concepts.html',
+            controller: 'ConceptController'
           })
           .state('study', {
             url: '/dataset/:datasetUUID/study/:studyUUID',
