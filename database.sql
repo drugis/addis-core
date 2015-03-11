@@ -27,3 +27,11 @@ CREATE TABLE AccountRoles (
     role VARCHAR NOT NULL,
     FOREIGN KEY (accountId) REFERENCES Account(id)
 );
+
+-- changeset stroombergc:2
+
+CREATE TABLE VersionMapping (id SERIAL NOT NULL,
+    datasetUuid VARCHAR NOT NULL,
+    ownerUuid VARCHAR NOT NULL,
+    versionKey VARCHAR NOT NULL,
+    PRIMARY KEY (id));

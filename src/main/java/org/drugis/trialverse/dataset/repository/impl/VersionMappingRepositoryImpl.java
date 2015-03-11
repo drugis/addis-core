@@ -24,7 +24,6 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository{
 
     private final static Logger logger = LoggerFactory.getLogger(DatasetWriteRepositoryImpl.class);
 
-
     private RowMapper<VersionMapping> rowMapper = new RowMapper<VersionMapping>() {
         public VersionMapping mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new VersionMapping(rs.getInt("id"), rs.getString("datasetUuid"), rs.getString("ownerUuid"), rs.getString("versionKey"));
