@@ -19,7 +19,7 @@ define(
     'measurementMoment/measurementMoment',
     'activity/activity',
     'studyDesign/studyDesign',
-    'concept/concept'
+    'concept/concept',
     'angular-resource',
     'rdfstore',
     'lodash'
