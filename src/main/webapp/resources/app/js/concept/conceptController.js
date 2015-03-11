@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies=['$scope', 'ConceptService'];
-    var ConceptController = function($scope, ConceptService) {
+    var dependencies=['$scope', '$stateParams', 'ConceptService'];
+    var ConceptController = function($scope, $stateParams, ConceptService) {
       $scope.concepts = {};
       ConceptService.queryItems($stateParams.datasetUUID).then(function(results) {
         $scope.concepts = results;

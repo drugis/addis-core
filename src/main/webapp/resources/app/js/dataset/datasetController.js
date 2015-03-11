@@ -1,10 +1,10 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$modal', 'DatasetService', 'DatasetResource',
+    var dependencies = ['$scope', '$stateParams', '$modal', '$filter', 'DatasetService', 'DatasetResource',
       'StudiesWithDetailResource', 'JsonLdService'
     ];
-    var DatasetController = function($scope, $stateParams, $modal, DatasetService, DatasetResource,
+    var DatasetController = function($scope, $stateParams, $modal, $filter, DatasetService, DatasetResource,
       StudiesWithDetailResource, JsonLdService) {
 
       DatasetResource.get($stateParams, function(response) {
@@ -48,6 +48,8 @@ define([],
       };
 
       $scope.loadStudiesWithDetail();
+
+      $scope.stripFrontFilter = $filter('stripFrontFilter');
 
       $scope.tableOptions = {
         columns: [{

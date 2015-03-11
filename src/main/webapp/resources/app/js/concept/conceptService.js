@@ -41,6 +41,11 @@ define([], function() {
       });
     }
 
+    function fillInTemplate(template, datasetUri) {
+      var conceptGraphUri = datasetUri + '/concepts';
+      return template.replace(/\$conceptGraphUri/g, conceptGraphUri);
+    }
+
     return {
       queryItems: queryItems,
       loadStore: loadStore

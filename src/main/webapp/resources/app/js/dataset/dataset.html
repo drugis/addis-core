@@ -12,6 +12,11 @@
     </div>
 </div>
 <div class="row">
+    <div class="columns large-12">
+        <a ui-sref="concepts({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concepts</a>
+    </div>
+</div>
+<div class="row">
     <div class="column large-12">
         <button ng-click="showStudyDialog()"><i class="fa fa-plus"></i> Add study</button>
         <table>
