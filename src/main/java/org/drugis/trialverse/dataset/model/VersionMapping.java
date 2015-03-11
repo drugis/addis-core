@@ -13,21 +13,21 @@ public class VersionMapping {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String datasetUuid;
+    private String datasetLocation;
     private String ownerUuid;
-    private String versionKey;
+    private String trialverseDataset;
 
-    public VersionMapping(Integer id, String datasetUuid, String ownerUuid, String versionKey) {
+    public VersionMapping(Integer id, String datasetLocation, String ownerUuid, String trialverseDataset) {
         this.id = id;
-        this.datasetUuid = datasetUuid;
+        this.datasetLocation = datasetLocation;
         this.ownerUuid = ownerUuid;
-        this.versionKey = versionKey;
+        this.trialverseDataset = trialverseDataset;
     }
 
-    public VersionMapping(String datasetUuid, String ownerUuid, String versionKey) {
-        this.datasetUuid = datasetUuid;
+    public VersionMapping(String datasetLocation, String ownerUuid, String trialverseDataset) {
+        this.datasetLocation = datasetLocation;
         this.ownerUuid = ownerUuid;
-        this.versionKey = versionKey;
+        this.trialverseDataset = trialverseDataset;
     }
 
     public Integer getId() {
@@ -38,12 +38,12 @@ public class VersionMapping {
         this.id = id;
     }
 
-    public String getDatasetUuid() {
-        return datasetUuid;
+    public String getDatasetLocation() {
+        return datasetLocation;
     }
 
-    public void setDatasetUuid(String datasetUuid) {
-        this.datasetUuid = datasetUuid;
+    public void setDatasetLocation(String datasetLocation) {
+        this.datasetLocation = datasetLocation;
     }
 
     public String getOwnerUuid() {
@@ -54,12 +54,12 @@ public class VersionMapping {
         this.ownerUuid = ownerUuid;
     }
 
-    public String getVersionKey() {
-        return versionKey;
+    public String getTrialverseDataset() {
+        return trialverseDataset;
     }
 
-    public void setVersionKey(String versionKey) {
-        this.versionKey = versionKey;
+    public void setTrialverseDataset(String trialverseDataset) {
+        this.trialverseDataset = trialverseDataset;
     }
 
     @Override
@@ -69,10 +69,10 @@ public class VersionMapping {
 
         VersionMapping that = (VersionMapping) o;
 
-        if (!datasetUuid.equals(that.datasetUuid)) return false;
+        if (!datasetLocation.equals(that.datasetLocation)) return false;
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (!ownerUuid.equals(that.ownerUuid)) return false;
-        if (!versionKey.equals(that.versionKey)) return false;
+        if (!trialverseDataset.equals(that.trialverseDataset)) return false;
 
         return true;
     }
@@ -80,9 +80,9 @@ public class VersionMapping {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + datasetUuid.hashCode();
+        result = 31 * result + datasetLocation.hashCode();
         result = 31 * result + ownerUuid.hashCode();
-        result = 31 * result + versionKey.hashCode();
+        result = 31 * result + trialverseDataset.hashCode();
         return result;
     }
 }

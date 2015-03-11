@@ -8,8 +8,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
 
 /**
  * Created by connor on 11-3-15.
@@ -35,13 +43,25 @@ public class VersionMappingRepositoryTest {
 
         String datasetUuid = "datasetUuid";
         String ownerUuid = "ownerUuid";
-        String versionKey = "versionKey";
+        String trialverseDataset = "versionKey";
 
-        VersionMapping versionMapping = new VersionMapping(datasetUuid, ownerUuid, versionKey);
+        VersionMapping versionMapping = new VersionMapping(datasetUuid, ownerUuid, trialverseDataset);
 
-        versionMappingRepository.createMapping(versionMapping);
+        versionMappingRepository.save(versionMapping);
 
-        verify(jdbcTemplate).update("insert into VersionMapping (datasetUuid, ownerUuid, versionKey) values (?, ?, ?)",
-                datasetUuid, ownerUuid, versionKey);
+        verify(jdbcTemplate).update("insert into VersionMapping (datasetUuid, ownerUuid, trialverseDataset) values (?, ?, ?)",
+                datasetUuid, ownerUuid, trialverseDataset);
+    }
+
+    @Test
+    public void testFindMappingsByUserName() {
+        String userName = "userName";
+
+        List<VersionMapping> mockResult = Arrays.asList(new VersionMapping(1, "datasetUui1", userName, "trialverseDataset"));
+        when(jdbcTemplate.query(anyString(), any(Object[].class), any(RowMapper.class))).thenReturn(mockResult);
+
+        List<VersionMapping> mappings = versionMappingRepository.findMappingsByUsername(userName);
+
+        assertEquals(mockResult, mappings);
     }
 }

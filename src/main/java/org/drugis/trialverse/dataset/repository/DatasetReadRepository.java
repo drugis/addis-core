@@ -1,5 +1,6 @@
 package org.drugis.trialverse.dataset.repository;
 
+import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpResponse;
 import org.drugis.trialverse.security.Account;
@@ -11,7 +12,7 @@ import java.security.Principal;
  */
 public interface DatasetReadRepository {
 
-  public HttpResponse queryDatasets(Account currentUserAccount);
+  public Model queryDatasets(Account currentUserAccount);
 
   public Model getDataset(String datasetUUID);
 

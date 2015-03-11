@@ -1,17 +1,21 @@
 package org.drugis.trialverse.dataset.controller;
 
+import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
+import org.drugis.trialverse.exception.CreateDatasetException;
 import org.drugis.trialverse.exception.MethodNotAllowedException;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
 
 /**
@@ -43,12 +48,12 @@ public class DatasetController extends AbstractTrialverseController {
 
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
-  public Dataset createDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody DatasetCommand datasetCommand) {
+  public Dataset createDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody DatasetCommand datasetCommand) throws URISyntaxException, CreateDatasetException, HttpException {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-    URI newDatasetLocation = datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), currentUserAccount);
+    URI datasetUri = datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), currentUserAccount);
     response.setStatus(HttpServletResponse.SC_CREATED);
-    response.setHeader("Location", newDatasetLocation.toString());
-    return new Dataset(newDatasetLocation.toString(), currentUserAccount, datasetCommand.getTitle(), datasetCommand.getDescription());
+    response.setHeader("Location", datasetUri.toString());
+    return new Dataset(datasetUri.toString(), currentUserAccount, datasetCommand.getTitle(), datasetCommand.getDescription());
   }
 
   @RequestMapping(method = RequestMethod.GET)
@@ -56,10 +61,13 @@ public class DatasetController extends AbstractTrialverseController {
   public void queryDatasets(HttpServletResponse httpServletResponse, Principal currentUser) {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
-    HttpResponse response = datasetReadRepository.queryDatasets(currentUserAccount);
-    httpServletResponse.setStatus(response.getStatusLine().getStatusCode());
-    trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
-
+    Model model = datasetReadRepository.queryDatasets(currentUserAccount);
+    if(model != null) {
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+    } else {
+        httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+    trialverseIOUtilsService.writeModelToServletResponse(model, httpServletResponse);
   }
 
   @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.GET)

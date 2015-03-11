@@ -48,156 +48,154 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableWebMvc
 public class DatasetControllerTest {
 
-  private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-  @Mock
-  private AccountRepository accountRepository;
+    @Mock
+    private AccountRepository accountRepository;
 
-  @Mock
-  private DatasetWriteRepository datasetWriteRepository;
+    @Mock
+    private DatasetWriteRepository datasetWriteRepository;
 
-  @Mock
-  private DatasetReadRepository datasetReadRepository;
+    @Mock
+    private DatasetReadRepository datasetReadRepository;
 
-  @Mock
-  private TrialverseIOUtilsService trialverseIOUtilsService;
+    @Mock
+    private TrialverseIOUtilsService trialverseIOUtilsService;
 
-  @Inject
-  private WebApplicationContext webApplicationContext;
+    @Inject
+    private WebApplicationContext webApplicationContext;
 
-  @Inject
-  private WebConstants webConstants;
+    @Inject
+    private WebConstants webConstants;
 
-  @InjectMocks
-  private DatasetController datasetController;
-
-
-  private Principal user;
-
-  private Account john = new Account(1, "john@apple.co.uk", "John", "Lennon"),
-          paul = new Account(2, "paul@apple.co.uk", "Paul", "MC Cartney"),
-          george = new Account(3, "george@apple.co.uk", "George", "Harrison");
+    @InjectMocks
+    private DatasetController datasetController;
 
 
-  @Before
-  public void setUp() {
-    accountRepository = mock(AccountRepository.class);
-    datasetWriteRepository = mock(DatasetWriteRepository.class);
-    datasetController = new DatasetController();
+    private Principal user;
 
-    initMocks(this);
-    mockMvc = MockMvcBuilders.standaloneSetup(datasetController).build();
-    user = mock(Principal.class);
-    when(user.getName()).thenReturn(john.getUsername());
-    when(accountRepository.findAccountByUsername("john@apple.co.uk")).thenReturn(john);
-  }
+    private Account john = new Account(1, "john@apple.co.uk", "John", "Lennon"),
+            paul = new Account(2, "paul@apple.co.uk", "Paul", "MC Cartney"),
+            george = new Account(3, "george@apple.co.uk", "George", "Harrison");
 
 
-  @After
-  public void tearDown() {
-    verifyNoMoreInteractions(accountRepository, datasetWriteRepository);
-  }
+    @Before
+    public void setUp() {
+        accountRepository = mock(AccountRepository.class);
+        datasetWriteRepository = mock(DatasetWriteRepository.class);
+        datasetController = new DatasetController();
 
-  @Test
-  public void testCreateDataset() throws Exception {
-    String newDatasetUid = "http://some.thing.like/this/asd123";
-      URI uri = new URI(newDatasetUid);
-    DatasetCommand datasetCommand = new DatasetCommand("dataset title");
-    String jsonContent = TestUtils.createJson(datasetCommand);
-    when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john)).thenReturn(uri);
-    mockMvc
-            .perform(post("/datasets")
-                            .principal(user)
-                            .content(jsonContent)
-                            .contentType(webConstants.getApplicationJsonUtf8())
-            )
-            .andExpect(status().isCreated())
-            .andExpect(content().contentType(webConstants.getApplicationJsonUtf8()))
-            .andExpect(jsonPath("$.uri", is(newDatasetUid)));
-    verify(accountRepository).findAccountByUsername(john.getUsername());
-    verify(datasetWriteRepository).createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john);
-  }
+        initMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(datasetController).build();
+        user = mock(Principal.class);
+        when(user.getName()).thenReturn(john.getUsername());
+        when(accountRepository.findAccountByUsername("john@apple.co.uk")).thenReturn(john);
+    }
 
-  @Test
-  public void queryDatasetsRequestPath() throws Exception {
-    HttpResponse mockResponse = mock(HttpResponse.class, RETURNS_DEEP_STUBS);
-    when(mockResponse.getStatusLine().getStatusCode()).thenReturn(200);
-    when(datasetReadRepository.queryDatasets(john)).thenReturn(mockResponse);
-    when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
-    mockMvc.perform(get("/datasets").principal(user))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
+    @After
+    public void tearDown() {
+        verifyNoMoreInteractions(accountRepository, datasetWriteRepository);
+    }
 
-    verify(accountRepository).findAccountByUsername(user.getName());
-    verify(datasetReadRepository).queryDatasets(john);
-    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(Matchers.any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
-  }
+    @Test
+    public void testCreateDataset() throws Exception {
+        String newDatasetUid = "http://some.thing.like/this/asd123";
+        URI uri = new URI(newDatasetUid);
+        DatasetCommand datasetCommand = new DatasetCommand("dataset title");
+        String jsonContent = TestUtils.createJson(datasetCommand);
+        when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john)).thenReturn(uri);
+        mockMvc
+                .perform(post("/datasets")
+                                .principal(user)
+                                .content(jsonContent)
+                                .contentType(webConstants.getApplicationJsonUtf8())
+                )
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(webConstants.getApplicationJsonUtf8()))
+                .andExpect(jsonPath("$.uri", is(newDatasetUid)));
+        verify(accountRepository).findAccountByUsername(john.getUsername());
+        verify(datasetWriteRepository).createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john);
+    }
 
-  @Test
-  public void queryDatasets() throws Exception {
-    HttpResponse mockResponse = mock(HttpResponse.class, RETURNS_DEEP_STUBS);
-    when(mockResponse.getStatusLine().getStatusCode()).thenReturn(200);
-    HttpServletResponse mockServletResponse = mock(HttpServletResponse.class);
-    when(datasetReadRepository.queryDatasets(john)).thenReturn(mockResponse);
-    when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
+    @Test
+    public void queryDatasetsRequestPath() throws Exception {
+        Model model = mock(Model.class);
+        when(datasetReadRepository.queryDatasets(john)).thenReturn(model);
+        when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
-    datasetController.queryDatasets(mockServletResponse, user);
+        mockMvc.perform(get("/datasets").principal(user))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
-    verify(accountRepository).findAccountByUsername(user.getName());
-    verify(datasetReadRepository).queryDatasets(john);
-    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(mockResponse, mockServletResponse);
-  }
+        verify(accountRepository).findAccountByUsername(user.getName());
+        verify(datasetReadRepository).queryDatasets(john);
+        verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
+    }
 
-  @Test
-  public void testGetDatasetRequestPath() throws Exception {
-    String uuid = "uuuuiiid-yeswecan";
-    Model model = mock(Model.class);
-    when(datasetReadRepository.getDataset(uuid)).thenReturn(model);
-    when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
+    @Test
+    public void queryDatasets() throws Exception {
+        Model model = mock(Model.class);
+        HttpServletResponse mockServletResponse = mock(HttpServletResponse.class);
+        when(datasetReadRepository.queryDatasets(john)).thenReturn(model);
+        when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
-    mockMvc.perform((get("/datasets/" + uuid)).principal(user))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
+        datasetController.queryDatasets(mockServletResponse, user);
 
-    verify(datasetReadRepository).getDataset(uuid);
-    verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
-  }
+        verify(accountRepository).findAccountByUsername(user.getName());
+        verify(datasetReadRepository).queryDatasets(john);
+        verify(trialverseIOUtilsService).writeModelToServletResponse(model, mockServletResponse);
+    }
 
-  @Test
-  public void testUpdateDatasetAndCheckIfStatusIsPassedOn() throws Exception {
-    String datasetContent = "content";
-    InputStream contentStream = IOUtils.toInputStream(datasetContent);
-    String datasetUUID = "uid";
-    BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.I_AM_A_TEAPOT.value(), "some good reason");
-    HttpResponse httpResponse = new BasicHttpResponse(statusLine);
-    when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(true);
-    when(datasetWriteRepository.updateDataset(anyString(), Matchers.any(InputStream.class))).thenReturn(httpResponse);
+    @Test
+    public void testGetDatasetRequestPath() throws Exception {
+        String uuid = "uuuuiiid-yeswecan";
+        Model model = mock(Model.class);
+        when(datasetReadRepository.getDataset(uuid)).thenReturn(model);
+        when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
-    mockMvc.perform(post("/datasets/" + datasetUUID)
-            .principal(user)
-            .content(datasetContent))
-            .andExpect(status().isIAmATeapot())
-    ;
+        mockMvc.perform((get("/datasets/" + uuid)).principal(user))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
-    verify(datasetReadRepository).isOwner(datasetUUID, user);
-    verify(datasetWriteRepository).updateDataset(anyString(), Matchers.any(InputStream.class));
-    contentStream.close();
-  }
+        verify(datasetReadRepository).getDataset(uuid);
+        verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
+    }
 
-  @Test
-  public void testUpdateDatasetWithNonOwnerUser() throws Exception {
-    String datasetContent = "content";
-    String datasetUUID = "uid";
+    @Test
+    public void testUpdateDatasetAndCheckIfStatusIsPassedOn() throws Exception {
+        String datasetContent = "content";
+        InputStream contentStream = IOUtils.toInputStream(datasetContent);
+        String datasetUUID = "uid";
+        BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.I_AM_A_TEAPOT.value(), "some good reason");
+        HttpResponse httpResponse = new BasicHttpResponse(statusLine);
+        when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(true);
+        when(datasetWriteRepository.updateDataset(anyString(), Matchers.any(InputStream.class))).thenReturn(httpResponse);
 
-    when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(false);
+        mockMvc.perform(post("/datasets/" + datasetUUID)
+                .principal(user)
+                .content(datasetContent))
+                .andExpect(status().isIAmATeapot())
+        ;
 
-    mockMvc.perform(post("/datasets/" + datasetUUID)
-            .principal(user)
-            .content(datasetContent)).andExpect(status().isForbidden());
+        verify(datasetReadRepository).isOwner(datasetUUID, user);
+        verify(datasetWriteRepository).updateDataset(anyString(), Matchers.any(InputStream.class));
+        contentStream.close();
+    }
 
-    verify(datasetReadRepository).isOwner(datasetUUID, user);
-    verifyZeroInteractions(datasetWriteRepository);
-  }
+    @Test
+    public void testUpdateDatasetWithNonOwnerUser() throws Exception {
+        String datasetContent = "content";
+        String datasetUUID = "uid";
+
+        when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(false);
+
+        mockMvc.perform(post("/datasets/" + datasetUUID)
+                .principal(user)
+                .content(datasetContent)).andExpect(status().isForbidden());
+
+        verify(datasetReadRepository).isOwner(datasetUUID, user);
+        verifyZeroInteractions(datasetWriteRepository);
+    }
 
 }

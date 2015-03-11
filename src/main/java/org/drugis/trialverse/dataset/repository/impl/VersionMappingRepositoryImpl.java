@@ -2,7 +2,6 @@ package org.drugis.trialverse.dataset.repository.impl;
 
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.security.Account;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by connor on 10-3-15.
@@ -26,7 +28,7 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository{
 
     private RowMapper<VersionMapping> rowMapper = new RowMapper<VersionMapping>() {
         public VersionMapping mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new VersionMapping(rs.getInt("id"), rs.getString("datasetUuid"), rs.getString("ownerUuid"), rs.getString("versionKey"));
+            return new VersionMapping(rs.getInt("id"), rs.getString("datasetLocation"), rs.getString("ownerUuid"), rs.getString("trialverseDataset"));
         }
     };
 
@@ -36,10 +38,10 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository{
 
     @Override
     @Transactional()
-    public void createMapping(VersionMapping versionMapping) {
+    public void save(VersionMapping versionMapping) {
         try{
-            jdbcTemplate.update("insert into VersionMapping (datasetUuid, ownerUuid, versionKey) values (?, ?, ?)",
-                    versionMapping.getDatasetUuid(), versionMapping.getOwnerUuid(), versionMapping.getVersionKey());
+            jdbcTemplate.update("insert into VersionMapping (datasetLocation, ownerUuid, trialverseDataset) values (?, ?, ?)",
+                    versionMapping.getDatasetLocation(), versionMapping.getOwnerUuid(), versionMapping.getTrialverseDataset());
         } catch (DuplicateKeyException e) {
             logger.error("duplicate mapping key");
             throw new RuntimeException("duplicate mapping key");
@@ -47,8 +49,13 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository{
     }
 
     @Override
-    public VersionMapping findMappingByUsername(String username) {
-        return null;
+    public List<VersionMapping> findMappingsByUsername(String username) {
+        String sql = "SELECT * FROM VersionMapping WHERE ownerUuid = ?";
+        List<VersionMapping> queryResult =  jdbcTemplate.query(sql, Arrays.asList(username).toArray(), rowMapper);
+        if(queryResult == null){
+            queryResult = new ArrayList<VersionMapping>();
+        }
+        return queryResult;
     }
 
     @Override
