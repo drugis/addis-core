@@ -1,6 +1,5 @@
 package org.drugis.trialverse.dataset.repository.impl;
 
-import com.hp.hpl.jena.Jena;
 import com.hp.hpl.jena.graph.*;
 import com.hp.hpl.jena.query.DatasetAccessor;
 import com.hp.hpl.jena.query.QueryException;
@@ -17,9 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.protocol.HTTP;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
@@ -27,6 +24,7 @@ import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.util.JenaGraphMessageConverter;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.slf4j.Logger;

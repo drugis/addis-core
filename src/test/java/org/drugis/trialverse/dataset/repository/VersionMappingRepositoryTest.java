@@ -41,16 +41,16 @@ public class VersionMappingRepositoryTest {
     @Test
     public void testCreateMapping() {
 
-        String datasetUuid = "datasetUuid";
+        String datasetLocation = "datasetLocation";
         String ownerUuid = "ownerUuid";
         String trialverseDataset = "versionKey";
 
-        VersionMapping versionMapping = new VersionMapping(datasetUuid, ownerUuid, trialverseDataset);
+        VersionMapping versionMapping = new VersionMapping(datasetLocation, ownerUuid, trialverseDataset);
 
         versionMappingRepository.save(versionMapping);
 
-        verify(jdbcTemplate).update("insert into VersionMapping (datasetUuid, ownerUuid, trialverseDataset) values (?, ?, ?)",
-                datasetUuid, ownerUuid, trialverseDataset);
+        verify(jdbcTemplate).update("insert into VersionMapping (datasetLocation, ownerUuid, trialverseDataset) values (?, ?, ?)",
+                datasetLocation, ownerUuid, trialverseDataset);
     }
 
     @Test

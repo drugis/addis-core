@@ -15,6 +15,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 
@@ -24,7 +26,7 @@ import static org.mockito.Mockito.*;
 
 public class DatasetWriteRepositoryTest {
 
-    private static final java.lang.String DATASET_URI = "http://localhost:8080";
+    private static final java.lang.String DATASET_URI = "http://mockserver";
 
     @Mock
     private WebConstants webConstants;
@@ -32,17 +34,27 @@ public class DatasetWriteRepositoryTest {
     @Mock
     private VersionMappingRepository versionMappingRepository;
 
+    @Mock
+    private JenaFactory jenaFactory;
+
+    @Mock
+    private RestTemplate restTemplate;
+
     @InjectMocks
     DatasetWriteRepository datasetWriteRepository;
+
+    private Responce
 
 
     @Before
     public void setUp() {
         datasetWriteRepository = new DatasetWriteRepositoryImpl();
+
         MockitoAnnotations.initMocks(this);
 
         when(webConstants.getTriplestoreBaseUri()).thenReturn(DATASET_URI);
-
+        when(jenaFactory.createDatasetURI()).thenReturn(DATASET_URI + "/someMockUuid");
+        when(restTemplate.postForEntity(anyString(), anyObject(), any(Class.class))).thenReturn()
     }
 
     @After

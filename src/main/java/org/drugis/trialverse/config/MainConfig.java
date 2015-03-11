@@ -23,6 +23,7 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jndi.JndiTemplate;
@@ -31,6 +32,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
@@ -47,6 +49,11 @@ public class MainConfig {
   // load environment variables on deploy
   @Inject
   WebConstants webConstants;
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+    }
 
   @Bean(name = "dsTrialverse")
   public DataSource dataSource() {

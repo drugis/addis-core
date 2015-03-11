@@ -55,6 +55,9 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     private WebConstants webConstants;
 
     @Inject
+    private RestTemplate restTemplate;
+
+    @Inject
     private JenaFactory jenaFactory;
 
     @Inject
@@ -78,7 +81,6 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     @Override
     public URI createDataset(String title, String description, Account owner) throws URISyntaxException, CreateDatasetException {
 
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(X_EVENT_SOURCE_CREATOR, "mailto:" + owner.getUsername());
         httpHeaders.add(X_EVENT_SOURCE_TITLE, Base64.encodeBase64String(INITIAL_COMMIT_MESSAGE.getBytes()));

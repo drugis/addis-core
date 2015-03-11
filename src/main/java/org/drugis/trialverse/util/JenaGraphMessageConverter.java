@@ -1,4 +1,4 @@
-package org.drugis.trialverse.dataset.repository.impl;
+package org.drugis.trialverse.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
