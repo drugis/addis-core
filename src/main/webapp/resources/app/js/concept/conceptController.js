@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies=['$scope', '$stateParams', 'ConceptService', 'ConceptResource'];
-    var ConceptController = function($scope, $stateParams, ConceptService, ConceptResource) {
+    var dependencies=['$scope', '$stateParams', 'DatasetService', 'DatasetResource', 'ConceptService', 'ConceptResource'];
+    var ConceptController = function($scope, $stateParams, DatasetService, DatasetResource, ConceptService, ConceptResource) {
       var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUUID;
       $scope.concepts = {};
 
@@ -31,7 +31,7 @@ define([],
       // onload
       reloadDatasetModel();
       reloadConceptsModel();
-      
+
     };
     return dependencies.concat(ConceptController);
   });

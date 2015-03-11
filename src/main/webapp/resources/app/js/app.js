@@ -87,7 +87,7 @@ define(
             controller: 'DatasetController'
           })
           .state('concepts', {
-            url: 'dataset/:datasetUUID/concepts',
+            url: '/dataset/:datasetUUID/concepts',
             templateUrl: 'app/js/concept/concepts.html',
             controller: 'ConceptController'
           })
