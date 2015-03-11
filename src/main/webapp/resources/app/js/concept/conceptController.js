@@ -1,11 +1,16 @@
 'use strict';
 define([],
   function() {
-    var dependencies=['$scope', '$stateParams', 'ConceptService'];
-    var ConceptController = function($scope, $stateParams, ConceptService) {
+    var dependencies=['$scope', '$stateParams', 'ConceptService', 'ConceptResource'];
+    var ConceptController = function($scope, $stateParams, ConceptService, ConceptResource) {
+      var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUUID;
       $scope.concepts = {};
-      ConceptService.queryItems($stateParams.datasetUUID).then(function(results) {
-        $scope.concepts = results;
+      ConceptResource.get($stateParams).$promise.then(function(conceptsTurtle) {
+        ConceptService.loadStore(conceptsTurtle.data).then(function() {
+          ConceptService.queryItems(datasetUri).then(function(conceptsJson) {
+            $scope.concepts = conceptsJson;
+          });
+        });
       });
 
     };

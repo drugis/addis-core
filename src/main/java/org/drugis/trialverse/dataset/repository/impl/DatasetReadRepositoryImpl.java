@@ -40,6 +40,7 @@ import java.security.Principal;
 public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetReadRepositoryImpl.class);
+  private final static String QUERY_CONCEPTS = loadResource("queryConceptsConstruct.sparql");
   private final static String QUERY_DATASETS = loadResource("queryDatasetsConstruct.sparql");
   private final static String STUDIES_WITH_DETAILS = loadResource("constructStudiesWithDetails.sparql");
   private final static String IS_OWNER_QUERY = loadResource("askIsOwner.sparql");
@@ -157,6 +158,12 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     }
 
     return containsStudyWithShortname;
+  }
+
+  @Override
+  public HttpResponse queryConcepts(String datasetUUID) {
+    String query = StringUtils.replace(QUERY_CONCEPTS, "$datasetUUID", datasetUUID);
+    return doConstructQuery(query);
   }
 
   private static class LoadResourceException extends RuntimeException {

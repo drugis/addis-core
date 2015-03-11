@@ -5,16 +5,17 @@ define([], function() {
 
     var loadDefer = $q.defer();
     var 
-      scratchConceptUri,
+      conceptsGraphUriBase = 'http://trials.drugis.org/concepts/',
+      scratchConceptsGraphUri,
       modified = false;
 
     var queryConceptsTemplate = SparqlResource.get('queryConcepts.sparql');
 
     function loadStore(data) {
       console.log('concept loadStore start');
-      return RemoteRdfStoreService.create(studyPrefix).then(function(graphUri) {
-        scratchStudyUri = graphUri;
-        return RemoteRdfStoreService.load(scratchStudyUri, data).then(function() {
+      return RemoteRdfStoreService.create(conceptsGraphUriBase).then(function(graphUri) {
+        scratchConceptsGraphUri = graphUri;
+        return RemoteRdfStoreService.load(scratchConceptsGraphUri, data).then(function() {
           loadDefer.resolve();
         });
       });
@@ -22,7 +23,7 @@ define([], function() {
 
     function doModifyingQuery(query) {
       return loadDefer.promise.then(function() {
-        return RemoteRdfStoreService.executeUpdate(scratchStudyUri, query).then(function() {
+        return RemoteRdfStoreService.executeUpdate(scratchConceptsGraphUri, query).then(function() {
           modified = true;
         });
       });
@@ -30,13 +31,13 @@ define([], function() {
 
     function doNonModifyingQuery(query) {
       return loadDefer.promise.then(function() {
-        return RemoteRdfStoreService.executeQuery(scratchStudyUri, query);
+        return RemoteRdfStoreService.executeQuery(scratchConceptsGraphUri, query);
       });
     }
 
-    function queryItems() {
+    function queryItems(datasetUri) {
       return queryConceptsTemplate.then(function(template) {
-        var query = fillInTemplate(template);
+        var query = fillInTemplate(template, datasetUri);
         return doNonModifyingQuery(query);
       });
     }

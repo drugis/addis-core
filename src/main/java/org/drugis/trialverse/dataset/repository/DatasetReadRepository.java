@@ -21,4 +21,5 @@ public interface DatasetReadRepository {
 
   public boolean containsStudyWithShortname(String datasetUUID, String shortName);
 
+  public HttpResponse queryConcepts(String datasetUUID);
 }

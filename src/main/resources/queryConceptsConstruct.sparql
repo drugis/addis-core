@@ -1,0 +1,19 @@
+prefix void: <http://rdfs.org/ns/void#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix dataset: <http://trials.drugis.org/datasets/>
+
+CONSTRUCT {
+  ?concept
+    a ?type ;
+    rdfs:label ?label .
+}
+WHERE {
+  GRAPH <http://trials.drugis.org/datasets/$datasetUUID/concepts> {
+    <http://trials.drugis.org/datasets/$datasetUUID/concepts> void:subset dataset:$datasetUUID .
+  ?concept
+    a ?type ;
+    rdfs:label ?label .
+
+  }
+}
+
