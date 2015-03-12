@@ -33,7 +33,7 @@ CREATE TABLE AccountRoles (
 -- changeset stroombergc:2
 
 CREATE TABLE VersionMapping (id SERIAL NOT NULL,
-    datasetLocation VARCHAR NOT NULL,
+    versionedDatasetUrl VARCHAR NOT NULL,
     ownerUuid VARCHAR NOT NULL,
-    trialverseDataset VARCHAR NOT NULL,
+    trialverseDatasetUrl VARCHAR NOT NULL,
     PRIMARY KEY (id));

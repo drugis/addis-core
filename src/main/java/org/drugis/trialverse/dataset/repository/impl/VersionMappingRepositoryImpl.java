@@ -22,44 +22,45 @@ import java.util.List;
  * Created by connor on 10-3-15.
  */
 @Repository
-public class VersionMappingRepositoryImpl implements VersionMappingRepository{
+public class VersionMappingRepositoryImpl implements VersionMappingRepository {
 
-    private final static Logger logger = LoggerFactory.getLogger(DatasetWriteRepositoryImpl.class);
+  private final static Logger logger = LoggerFactory.getLogger(DatasetWriteRepositoryImpl.class);
 
-    private RowMapper<VersionMapping> rowMapper = new RowMapper<VersionMapping>() {
-        public VersionMapping mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new VersionMapping(rs.getInt("id"), rs.getString("datasetLocation"), rs.getString("ownerUuid"), rs.getString("trialverseDataset"));
-        }
-    };
-
-    @Inject
-    @Qualifier("jtTrialverse")
-    private JdbcTemplate jdbcTemplate;
-
-    @Override
-    @Transactional()
-    public void save(VersionMapping versionMapping) {
-        try{
-            jdbcTemplate.update("insert into VersionMapping (datasetLocation, ownerUuid, trialverseDataset) values (?, ?, ?)",
-                    versionMapping.getDatasetLocation(), versionMapping.getOwnerUuid(), versionMapping.getTrialverseDataset());
-        } catch (DuplicateKeyException e) {
-            logger.error("duplicate mapping key");
-            throw new RuntimeException("duplicate mapping key");
-        }
+  private RowMapper<VersionMapping> rowMapper = new RowMapper<VersionMapping>() {
+    public VersionMapping mapRow(ResultSet rs, int rowNum) throws SQLException {
+      return new VersionMapping(rs.getInt("id"), rs.getString("versionedDatasetUrl"), rs.getString("ownerUuid"), rs.getString("trialverseDatasetUrl"));
     }
+  };
 
-    @Override
-    public List<VersionMapping> findMappingsByUsername(String username) {
-        String sql = "SELECT * FROM VersionMapping WHERE ownerUuid = ?";
-        List<VersionMapping> queryResult =  jdbcTemplate.query(sql, Arrays.asList(username).toArray(), rowMapper);
-        if(queryResult == null){
-            queryResult = new ArrayList<VersionMapping>();
-        }
-        return queryResult;
-    }
+  @Inject
+  @Qualifier("jtTrialverse")
+  private JdbcTemplate jdbcTemplate;
 
-    @Override
-    public VersionMapping findMappingByVersionKey(String key) {
-        return null;
+  @Override
+  @Transactional()
+  public void save(VersionMapping versionMapping) {
+    try {
+      jdbcTemplate.update("insert into VersionMapping (versionedDatasetUrl, ownerUuid, trialverseDatasetUrl) values (?, ?, ?)",
+              versionMapping.getVersionedDatasetUrl(), versionMapping.getOwnerUuid(), versionMapping.getTrialverseDatasetUrl());
+    } catch (DuplicateKeyException e) {
+      logger.error("duplicate mapping key");
+      throw new RuntimeException("duplicate mapping key");
     }
+  }
+
+  @Override
+  public List<VersionMapping> findMappingsByUsername(String username) {
+    String sql = "SELECT * FROM VersionMapping WHERE ownerUuid = ?";
+    List<VersionMapping> queryResult = jdbcTemplate.query(sql, Arrays.asList(username).toArray(), rowMapper);
+    if (queryResult == null) {
+      queryResult = new ArrayList<VersionMapping>();
+    }
+    return queryResult;
+  }
+
+  @Override
+  public VersionMapping getVersionMappingByDatasetUrl(String trialverseDatsetUrl) {
+    String sql = "Select * FROM VersionMapping WHERE trialverseDatasetUrl = ?";
+    return jdbcTemplate.queryForObject(sql, rowMapper, trialverseDatsetUrl);
+  }
 }

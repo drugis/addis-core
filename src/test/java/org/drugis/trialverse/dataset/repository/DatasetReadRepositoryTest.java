@@ -2,7 +2,6 @@ package org.drugis.trialverse.dataset.repository;
 
 
 import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.query.DatasetAccessor;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 import net.minidev.json.JSONObject;
@@ -11,6 +10,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
@@ -25,18 +25,15 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+import sun.security.acl.PrincipalImpl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,7 +99,6 @@ public class DatasetReadRepositoryTest {
     List<HttpMessageConverter<?>> convertorList = new ArrayList<>();
     convertorList.add(new JenaGraphMessageConverter());
     when(restTemplate.getMessageConverters()).thenReturn(convertorList);
-
     when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), any(Class.class))).thenReturn(responseEntity);
 
 
@@ -114,15 +110,18 @@ public class DatasetReadRepositoryTest {
   @Test
   public void testGetDataset() {
     String datasetUUID = "uuid";
-    DatasetAccessor accessor = mock(DatasetAccessor.class);
-    Model mockModel = mock(Model.class);
-    when(accessor.getModel(Namespaces.DATASET_NAMESPACE + datasetUUID)).thenReturn(mockModel);
-    when(jenaFactory.getDatasetAccessor()).thenReturn(accessor);
 
+    VersionMapping mapping = new VersionMapping("versioneduri", "itsame", Namespaces.DATASET_NAMESPACE + datasetUUID);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(Namespaces.DATASET_NAMESPACE + datasetUUID)).thenReturn(mapping);
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
+    HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
+    ResponseEntity<Graph> responseEntity = new ResponseEntity<Graph>(GraphFactory.createGraphMem(), HttpStatus.OK);
+    when(restTemplate.exchange("versioneduri/data?default", HttpMethod.GET, requestEntity, Graph.class)).thenReturn(responseEntity);
     Model model = datasetReadRepository.getDataset(datasetUUID);
 
-    assertEquals(mockModel, model);
-    verify(jenaFactory).getDatasetAccessor();
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    assertNotNull(model);
   }
 
   @Test
@@ -134,33 +133,31 @@ public class DatasetReadRepositoryTest {
   }
 
   @Test
-  public void testIsOwnerWhenQuerySaysTrue() throws IOException {
-    String datasetUUID = "datasetUUID";
-    Principal principal = mock(Principal.class);
-    HttpResponse mockResponse = mock(HttpResponse.class, RETURNS_DEEP_STUBS);
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put("boolean", true);
-    when(mockResponse.getEntity().getContent()).thenReturn(IOUtils.toInputStream(jsonObject.toJSONString()));
-    when(mockHttpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
-
-    Boolean result = datasetReadRepository.isOwner(datasetUUID, principal);
-
-    assertTrue(result);
-  }
-
-  @Test
   public void testIsOwnerWhenQuerySaysFalse() throws IOException {
     String datasetUUID = "datasetUUID";
-    Principal principal = mock(Principal.class);
-    HttpResponse mockResponse = mock(HttpResponse.class, RETURNS_DEEP_STUBS);
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put("boolean", false);
-    when(mockResponse.getEntity().getContent()).thenReturn(IOUtils.toInputStream(jsonObject.toJSONString()));
-    when(mockHttpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
+    String user1 = "other user";
+    Principal principal = new PrincipalImpl("user");
+    String datasetUrl = Namespaces.DATASET_NAMESPACE + datasetUUID;
+    VersionMapping versionMapping = new VersionMapping(1, "whatever", user1, datasetUrl);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
     Boolean result = datasetReadRepository.isOwner(datasetUUID, principal);
 
     assertFalse(result);
+  }
+
+  @Test
+  public void testIsOwnerWhenQuerySaysTrue() throws IOException {
+    String datasetUUID = "datasetUUID";
+    String user1 = "user1";
+    Principal principal = new PrincipalImpl(user1);
+    String datasetUrl = Namespaces.DATASET_NAMESPACE + datasetUUID;
+    VersionMapping versionMapping = new VersionMapping(1, "whatever", user1, datasetUrl);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
+
+    Boolean result = datasetReadRepository.isOwner(datasetUUID, principal);
+
+    assertTrue(result);
   }
 
   @Test

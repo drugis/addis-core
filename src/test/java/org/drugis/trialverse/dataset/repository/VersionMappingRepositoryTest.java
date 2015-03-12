@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,44 +25,56 @@ import static org.junit.Assert.*;
  */
 public class VersionMappingRepositoryTest {
 
-    @Mock
-    private JdbcTemplate jdbcTemplate;
+  @Mock
+  private JdbcTemplate jdbcTemplate;
 
 
-    @InjectMocks
-    VersionMappingRepository versionMappingRepository;
+  @InjectMocks
+  VersionMappingRepository versionMappingRepository;
+
+  String userName = "userName";
+
+  @Before
+  public void setUp() {
+    versionMappingRepository = new VersionMappingRepositoryImpl();
+    MockitoAnnotations.initMocks(this);
+  }
 
 
-    @Before
-    public void setUp() {
-        versionMappingRepository = new VersionMappingRepositoryImpl();
-        MockitoAnnotations.initMocks(this);
-    }
+  @Test
+  public void testCreateMapping() {
 
-    @Test
-    public void testCreateMapping() {
+    String datasetLocation = "datasetLocation";
+    String ownerUuid = "ownerUuid";
+    String trialverseDataset = "versionKey";
 
-        String datasetLocation = "datasetLocation";
-        String ownerUuid = "ownerUuid";
-        String trialverseDataset = "versionKey";
+    VersionMapping versionMapping = new VersionMapping(datasetLocation, ownerUuid, trialverseDataset);
 
-        VersionMapping versionMapping = new VersionMapping(datasetLocation, ownerUuid, trialverseDataset);
+    versionMappingRepository.save(versionMapping);
 
-        versionMappingRepository.save(versionMapping);
+    verify(jdbcTemplate).update("insert into VersionMapping (versionedDatasetUrl, ownerUuid, trialverseDatasetUrl) values (?, ?, ?)",
+            datasetLocation, ownerUuid, trialverseDataset);
+  }
 
-        verify(jdbcTemplate).update("insert into VersionMapping (datasetLocation, ownerUuid, trialverseDataset) values (?, ?, ?)",
-                datasetLocation, ownerUuid, trialverseDataset);
-    }
+  @Test
+  public void testFindMappingsByUserName() {
 
-    @Test
-    public void testFindMappingsByUserName() {
-        String userName = "userName";
 
-        List<VersionMapping> mockResult = Arrays.asList(new VersionMapping(1, "datasetUui1", userName, "trialverseDataset"));
-        when(jdbcTemplate.query(anyString(), any(Object[].class), any(RowMapper.class))).thenReturn(mockResult);
+    List<VersionMapping> mockResult = Arrays.asList(new VersionMapping(1, "datasetUui1", userName, "trialverseDataset"));
+    when(jdbcTemplate.query(anyString(), any(Object[].class), any(RowMapper.class))).thenReturn(mockResult);
 
-        List<VersionMapping> mappings = versionMappingRepository.findMappingsByUsername(userName);
+    List<VersionMapping> mappings = versionMappingRepository.findMappingsByUsername(userName);
 
-        assertEquals(mockResult, mappings);
-    }
+    assertEquals(mockResult, mappings);
+  }
+
+  @Test
+  public void getVersionUrlByDatasetUrl() {
+    String datasetUrl = "datasetUrl";
+    VersionMapping mockResult = new VersionMapping(1, "datasetUui1", userName, "trialverseDataset");
+    when(jdbcTemplate.queryForObject(anyString(), any(RowMapper.class), anyObject())).thenReturn(mockResult);
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl);
+
+    assertEquals(mockResult, versionMapping);
+  }
 }

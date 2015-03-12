@@ -43,77 +43,77 @@ import java.net.URISyntaxException;
 @Repository
 public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
-    public static final String HOST = "Host";
-    public static final String PATH = "/datasets";
-    public static final String X_EVENT_SOURCE_CREATOR = "X-EventSource-Creator";
-    public static final String INITIAL_COMMIT_MESSAGE = "Dataset created through Trialverse";
-    public static final String X_EVENT_SOURCE_TITLE = "X-EventSource-Title";
+  public static final String HOST = "Host";
+  public static final String PATH = "/datasets";
+  public static final String X_EVENT_SOURCE_CREATOR = "X-EventSource-Creator";
+  public static final String INITIAL_COMMIT_MESSAGE = "Dataset created through Trialverse";
+  public static final String X_EVENT_SOURCE_TITLE = "X-EventSource-Title";
 
-    @Inject
-    private WebConstants webConstants;
+  @Inject
+  private WebConstants webConstants;
 
-    @Inject
-    private RestTemplate restTemplate;
+  @Inject
+  private RestTemplate restTemplate;
 
-    @Inject
-    private JenaFactory jenaFactory;
+  @Inject
+  private JenaFactory jenaFactory;
 
-    @Inject
-    private VersionMappingRepository versionMappingRepository;
+  @Inject
+  private VersionMappingRepository versionMappingRepository;
 
 
-    private final static Logger logger = LoggerFactory.getLogger(DatasetWriteRepositoryImpl.class);
+  private final static Logger logger = LoggerFactory.getLogger(DatasetWriteRepositoryImpl.class);
 
-    private String createDatasetGraphUri(String datasetUUID) {
-        URIBuilder builder = null;
-        try {
-            builder = new URIBuilder(webConstants.getTriplestoreDataUri() + "/data");
-            builder.addParameter("graph", Namespaces.DATASET_NAMESPACE + datasetUUID);
-            return builder.build().toString();
-        } catch (URISyntaxException e) {
-            logger.error(e.toString());
-        }
-        return "";
+  private String createDatasetGraphUri(String datasetUUID) {
+    URIBuilder builder = null;
+    try {
+      builder = new URIBuilder(webConstants.getTriplestoreDataUri() + "/data");
+      builder.addParameter("graph", Namespaces.DATASET_NAMESPACE + datasetUUID);
+      return builder.build().toString();
+    } catch (URISyntaxException e) {
+      logger.error(e.toString());
+    }
+    return "";
+  }
+
+  @Override
+  public URI createDataset(String title, String description, Account owner) throws URISyntaxException, CreateDatasetException {
+
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(X_EVENT_SOURCE_CREATOR, "mailto:" + owner.getUsername());
+    httpHeaders.add(X_EVENT_SOURCE_TITLE, Base64.encodeBase64String(INITIAL_COMMIT_MESSAGE.getBytes()));
+    httpHeaders.add(HTTP.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
+
+    String datasetUri = jenaFactory.createDatasetURI();
+
+    Model baseDatasetModel = buildDatasetBaseModel(title, description, datasetUri);
+    String triples = modelToString(baseDatasetModel);
+    HttpEntity<String> requestEntity = new HttpEntity<>(triples, httpHeaders);
+    ResponseEntity<String> response = null;
+    try {
+      response = restTemplate.postForEntity(webConstants.getTriplestoreBaseUri() + PATH, requestEntity, String.class);
+    } catch (RestClientException e) {
+      logger.error(e.toString());
+      throw new CreateDatasetException();
     }
 
-    @Override
-    public URI createDataset(String title, String description, Account owner) throws URISyntaxException, CreateDatasetException {
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(X_EVENT_SOURCE_CREATOR, "mailto:" + owner.getUsername());
-        httpHeaders.add(X_EVENT_SOURCE_TITLE, Base64.encodeBase64String(INITIAL_COMMIT_MESSAGE.getBytes()));
-        httpHeaders.add(HTTP.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
-
-        String datasetUri =  jenaFactory.createDatasetURI();
-
-        Model baseDatasetModel = buildDatasetBaseModel(title, description, datasetUri);
-        String triples = modelToString(baseDatasetModel);
-        HttpEntity<String> requestEntity = new HttpEntity<>(triples, httpHeaders);
-        ResponseEntity<String> response = null;
-        try {
-            response = restTemplate.postForEntity(webConstants.getTriplestoreBaseUri() + PATH, requestEntity, String.class);
-        }catch (RestClientException e){
-            logger.error(e.toString());
-            throw new CreateDatasetException();
-        }
-
-        if(!HttpStatus.CREATED.equals(response.getStatusCode())) {
-            logger.error("error , could not create dataset, tripleStore responce = " + response.getStatusCode().getReasonPhrase());
-            throw new CreateDatasetException();
-        }
-
-        URI location = response.getHeaders().getLocation();
-        //store link from uri to location
-        versionMappingRepository.save(new VersionMapping(location.toString(), owner.getUsername(), datasetUri));
-
-        return new URI(datasetUri);
+    if (!HttpStatus.CREATED.equals(response.getStatusCode())) {
+      logger.error("error , could not create dataset, tripleStore responce = " + response.getStatusCode().getReasonPhrase());
+      throw new CreateDatasetException();
     }
 
-    @Override
-    public HttpResponse updateDataset(String datasetUUID, InputStream datasetContent) {
-        HttpPost request = new HttpPost(createDatasetGraphUri(datasetUUID));
+    URI location = response.getHeaders().getLocation();
+    //store link from uri to location
+    versionMappingRepository.save(new VersionMapping(location.toString(), owner.getUsername(), datasetUri));
+
+    return new URI(datasetUri);
+  }
+
+  @Override
+  public HttpResponse updateDataset(String datasetUUID, InputStream datasetContent) {
+    HttpPost request = new HttpPost(createDatasetGraphUri(datasetUUID));
 //        HttpClient client = httpClientFactory.build();
-        HttpResponse response = null;
+    HttpResponse response = null;
 //        try {
 //            InputStreamEntity entity = new InputStreamEntity(datasetContent);
 //            entity.setContentType(RDFLanguages.TURTLE.getContentType().getContentType());
@@ -125,25 +125,25 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 //        } finally {
 //            IOUtils.closeQuietly(datasetContent);
 //        }
-        return response;
-    }
+    return response;
+  }
 
-    private String modelToString(Model model) {
-        StringWriter outputWriter = new StringWriter();
-        model.write(outputWriter, "Turtle");
-        return outputWriter.toString();
-    }
+  private String modelToString(Model model) {
+    StringWriter outputWriter = new StringWriter();
+    model.write(outputWriter, "Turtle");
+    return outputWriter.toString();
+  }
 
-    private Model buildDatasetBaseModel(String title, String description, String datasetUri) {
+  private Model buildDatasetBaseModel(String title, String description, String datasetUri) {
 
-        Model model = ModelFactory.createDefaultModel();
+    Model model = ModelFactory.createDefaultModel();
 
-        model.createResource(datasetUri)
-                .addProperty(DCTerms.title, title)
-                .addProperty(DCTerms.description, description);
+    model.createResource(datasetUri)
+            .addProperty(DCTerms.title, title)
+            .addProperty(DCTerms.description, description);
 
-        return model;
-    }
+    return model;
+  }
 
 
 }

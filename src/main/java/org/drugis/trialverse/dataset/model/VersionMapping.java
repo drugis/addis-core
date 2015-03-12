@@ -13,21 +13,21 @@ public class VersionMapping {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String datasetLocation;
+    private String versionedDatasetUrl;
     private String ownerUuid;
-    private String trialverseDataset;
+    private String trialverseDatasetUrl;
 
-    public VersionMapping(Integer id, String datasetLocation, String ownerUuid, String trialverseDataset) {
+    public VersionMapping(Integer id, String versionedDatasetUrl, String ownerUuid, String trialverseDatasetUrl) {
         this.id = id;
-        this.datasetLocation = datasetLocation;
+        this.versionedDatasetUrl = versionedDatasetUrl;
         this.ownerUuid = ownerUuid;
-        this.trialverseDataset = trialverseDataset;
+        this.trialverseDatasetUrl = trialverseDatasetUrl;
     }
 
-    public VersionMapping(String datasetLocation, String ownerUuid, String trialverseDataset) {
-        this.datasetLocation = datasetLocation;
+    public VersionMapping(String versionedDatasetUrl, String ownerUuid, String trialverseDatasetUrl) {
+        this.versionedDatasetUrl = versionedDatasetUrl;
         this.ownerUuid = ownerUuid;
-        this.trialverseDataset = trialverseDataset;
+        this.trialverseDatasetUrl = trialverseDatasetUrl;
     }
 
     public Integer getId() {
@@ -38,16 +38,16 @@ public class VersionMapping {
         this.id = id;
     }
 
-    public String getDatasetLocation() {
-        return datasetLocation;
+    public String getVersionedDatasetUrl() {
+        return versionedDatasetUrl;
     }
 
     public String getOwnerUuid() {
         return ownerUuid;
     }
 
-    public String getTrialverseDataset() {
-        return trialverseDataset;
+    public String getTrialverseDatasetUrl() {
+        return trialverseDatasetUrl;
     }
 
     @Override
@@ -57,10 +57,10 @@ public class VersionMapping {
 
         VersionMapping that = (VersionMapping) o;
 
-        if (!datasetLocation.equals(that.datasetLocation)) return false;
+        if (!versionedDatasetUrl.equals(that.versionedDatasetUrl)) return false;
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (!ownerUuid.equals(that.ownerUuid)) return false;
-        if (!trialverseDataset.equals(that.trialverseDataset)) return false;
+        if (!trialverseDatasetUrl.equals(that.trialverseDatasetUrl)) return false;
 
         return true;
     }
@@ -68,9 +68,9 @@ public class VersionMapping {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + datasetLocation.hashCode();
+        result = 31 * result + versionedDatasetUrl.hashCode();
         result = 31 * result + ownerUuid.hashCode();
-        result = 31 * result + trialverseDataset.hashCode();
+        result = 31 * result + trialverseDatasetUrl.hashCode();
         return result;
     }
 }

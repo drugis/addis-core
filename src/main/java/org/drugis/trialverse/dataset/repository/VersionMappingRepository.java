@@ -15,5 +15,5 @@ public interface VersionMappingRepository {
 
     List<VersionMapping> findMappingsByUsername(String username);
 
-    VersionMapping findMappingByVersionKey(String key);
+    VersionMapping getVersionMappingByDatasetUrl(String key);
 }
