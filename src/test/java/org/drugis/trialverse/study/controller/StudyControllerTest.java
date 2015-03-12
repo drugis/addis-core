@@ -126,7 +126,6 @@ public class StudyControllerTest {
     BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
     HttpResponse httpResponse = new BasicHttpResponse(statusLine);
     when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(true);
-    when(studyWriteRepository.updateStudy(anyString(), Matchers.any(InputStream.class))).thenReturn(httpResponse);
 
     mockMvc.perform(
             put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
@@ -135,7 +134,7 @@ public class StudyControllerTest {
             .andExpect(status().isOk());
 
     verify(datasetReadRepository).isOwner(datasetUUID, user);
-    verify(studyWriteRepository).updateStudy(anyString(), Matchers.any(InputStream.class));
+    verify(studyWriteRepository).updateStudy(anyString(), anyString(), Matchers.any(InputStream.class));
   }
 
   @Test

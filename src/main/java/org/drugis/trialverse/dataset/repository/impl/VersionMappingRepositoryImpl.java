@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -59,8 +60,8 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository {
   }
 
   @Override
-  public VersionMapping getVersionMappingByDatasetUrl(String trialverseDatsetUrl) {
+  public VersionMapping getVersionMappingByDatasetUrl(URI trialverseDatsetUrl) {
     String sql = "Select * FROM VersionMapping WHERE trialverseDatasetUrl = ?";
-    return jdbcTemplate.queryForObject(sql, rowMapper, trialverseDatsetUrl);
+    return jdbcTemplate.queryForObject(sql, rowMapper, trialverseDatsetUrl.toString());
   }
 }

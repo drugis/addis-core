@@ -10,5 +10,5 @@ import java.io.InputStream;
 public interface StudyWriteRepository {
 
 
-  public HttpResponse updateStudy(String studyUUID, InputStream content);
+  public void updateStudy(String datasetUuid, String studyUUID, InputStream content);
 }

@@ -19,28 +19,16 @@ define([], function() {
       $scope.isCreatingStudy = true;
       StudyService.createEmptyStudy(study).then(function() {
         StudyService.getStudyGraph().then(function(queryResult) {
-        var uuid = StudyService.getStudyUUID();
+          var uuid = StudyService.getStudyUUID();
 
           StudyResource.put({
             datasetUUID: $stateParams.datasetUUID,
             studyUUID: uuid
           }, queryResult.data, function() {
+            $scope.loadStudiesWithDetail();
+            $scope.isCreatingStudy = true;
+            $modalInstance.close();
 
-            DatasetService.addStudyToDatasetGraph($stateParams.datasetUUID, uuid).then(function() {
-
-              DatasetService.getDatasetGraph().then(function(graph) {
-
-                DatasetResource.save({
-                  datasetUUID: $stateParams.datasetUUID
-                }, graph.data, function() {
-
-                  $scope.loadStudiesWithDetail();
-                  $scope.isCreatingStudy = true;
-                  $modalInstance.close();
-                });
-              });
-
-            });
           });
         });
       });

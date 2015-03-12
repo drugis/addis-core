@@ -4,6 +4,7 @@ import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.UsernameAlreadyInUseException;
 
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -15,5 +16,5 @@ public interface VersionMappingRepository {
 
     List<VersionMapping> findMappingsByUsername(String username);
 
-    VersionMapping getVersionMappingByDatasetUrl(String key);
+    VersionMapping getVersionMappingByDatasetUrl(URI trialverseDatasetUrl);
 }

@@ -1,21 +1,25 @@
 package org.drugis.trialverse.study.repository.impl;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
+import org.drugis.trialverse.dataset.model.VersionMapping;
+import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.study.repository.StudyWriteRepository;
+import org.drugis.trialverse.util.InputStreamMessageConverter;
+import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpOutputMessage;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
-import java.io.IOException;
+import javax.servlet.ServletInputStream;
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 
@@ -25,11 +29,20 @@ import java.net.URISyntaxException;
 @Repository
 public class StudyWriteRepositoryImpl implements StudyWriteRepository {
 
+  public static final String GRAPH_QUERY_STRING = "?graph={graphUri}";
   @Inject
   private WebConstants webConstants;
 
   @Inject
   private HttpClientFactory httpClientFactory;
+
+  @Inject
+  private VersionMappingRepository versionMappingRepository;
+
+  @Inject
+  private RestTemplate restTemplate;
+
+  public static final String DATA_ENDPOINT = "/data";
 
   private final static Logger logger = LoggerFactory.getLogger(StudyWriteRepositoryImpl.class);
 
@@ -46,20 +59,14 @@ public class StudyWriteRepositoryImpl implements StudyWriteRepository {
   }
 
   @Override
-  public HttpResponse updateStudy(String studyUUID, InputStream content) {
-    HttpPut request = new HttpPut(createStudyGraphUri(studyUUID));
-    HttpClient client = httpClientFactory.build();
-    HttpResponse response = null;
-    try {
-      InputStreamEntity entity = new InputStreamEntity(content);
-      entity.setContentType(RDFLanguages.TURTLE.getContentType().getContentType());
-      request.setEntity(entity);
-      response = client.execute(request);
-    } catch (IOException e) {
-      logger.error(e.toString());
-    } finally {
-      IOUtils.closeQuietly(content);
-    }
-    return response;
+  public void updateStudy(String datasetUuid, String studyUuid, InputStream content) {
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    String uri = versionMapping.getVersionedDatasetUrl() + DATA_ENDPOINT + GRAPH_QUERY_STRING;
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
+    HttpEntity<InputStream> requestEntity = new HttpEntity<>(content, httpHeaders);
+    restTemplate.getMessageConverters().add(new InputStreamMessageConverter());
+    restTemplate.put(uri, requestEntity, Namespaces.STUDY_NAMESPACE + studyUuid);
+
   }
 }
