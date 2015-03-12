@@ -74,6 +74,9 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     @Inject
     private VersionMappingRepository versionMappingRepository;
 
+    @Inject
+    private RestTemplate restTemplate;
+
     private enum FUSEKI_OUTPUT_TYPES {
         TEXT, JSON;
 
@@ -133,9 +136,9 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     public Model queryDatasets(Account currentUserAccount) {
         List<VersionMapping> mappings = versionMappingRepository.findMappingsByUsername(currentUserAccount.getUsername());
         Graph graph = GraphFactory.createGraphMem();
+
         for(VersionMapping mapping : mappings) {
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.getMessageConverters().add(new JenaGraphMessageConverter());
+
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
             HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);

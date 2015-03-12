@@ -42,24 +42,12 @@ public class VersionMapping {
         return datasetLocation;
     }
 
-    public void setDatasetLocation(String datasetLocation) {
-        this.datasetLocation = datasetLocation;
-    }
-
     public String getOwnerUuid() {
         return ownerUuid;
     }
 
-    public void setOwnerUuid(String ownerUuid) {
-        this.ownerUuid = ownerUuid;
-    }
-
     public String getTrialverseDataset() {
         return trialverseDataset;
-    }
-
-    public void setTrialverseDataset(String trialverseDataset) {
-        this.trialverseDataset = trialverseDataset;
     }
 
     @Override

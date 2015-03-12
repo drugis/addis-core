@@ -48,8 +48,6 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     public static final String X_EVENT_SOURCE_CREATOR = "X-EventSource-Creator";
     public static final String INITIAL_COMMIT_MESSAGE = "Dataset created through Trialverse";
     public static final String X_EVENT_SOURCE_TITLE = "X-EventSource-Title";
-    public static final String DATASET_PREFIX = "http://trials.drugis.org/datasets/";
-    public static final String VERSION_HEADER = "X-EventSource-Version";
 
     @Inject
     private WebConstants webConstants;
