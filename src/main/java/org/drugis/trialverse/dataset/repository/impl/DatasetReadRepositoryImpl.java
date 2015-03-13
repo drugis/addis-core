@@ -11,6 +11,7 @@ import java.net.URI;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
+import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
@@ -96,10 +97,6 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     throw new LoadResourceException("could not load resource " + filename);
   }
 
-  private ResponseEntity doSelectQuery(URI trialverseDatasetUri, String query) {
-    ResponseEntity<InputStream> objectResponseEntity = doRequest(trialverseDatasetUri, query, "application/sparql-results+json", InputStream.class);
-    return objectResponseEntity;
-  }
 
   private Boolean doAskQuery(URI trialverseDatasetUri, String query) {
     ResponseEntity<JsonObject> responseEntity = doRequest(trialverseDatasetUri, query, RDFLanguages.JSONLD.getContentType().getContentType(), JsonObject.class);
@@ -124,7 +121,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
             .queryParam(QUERY_PARAM_QUERY, query)
             .build();
 
-    ResponseEntity<T> result  = restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity);
+    ResponseEntity<T> result  = restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, responseType);
     return result;
   }
 
@@ -170,8 +167,22 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public ResponseEntity queryStudiesWithDetail(URI trialverseDatasetUri) {
-    return doSelectQuery(trialverseDatasetUri, STUDIES_WITH_DETAILS);
+  public ResponseEntity<JSON> queryStudiesWithDetail(URI trialverseDatasetUri) {
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
+
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
+    httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, org.apache.jena.riot.WebContent.contentTypeResultsJSON);
+
+    HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
+            .path(QUERY_ENDPOINT)
+            .queryParam(QUERY_PARAM_QUERY, STUDIES_WITH_DETAILS)
+            .build();
+
+    ResponseEntity<JSON> result  = restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, JSON.class);
+    return result;
+
   }
 
   @Override

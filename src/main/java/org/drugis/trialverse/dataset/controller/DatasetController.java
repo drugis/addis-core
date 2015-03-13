@@ -1,8 +1,10 @@
 package org.drugis.trialverse.dataset.controller;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
+import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
@@ -88,12 +90,13 @@ public class DatasetController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/{datasetUUID}/studiesWithDetail", method = RequestMethod.GET)
   @ResponseBody
-  public void queryStudiesWithDetail(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException {
+  public void queryStudiesWithDetail(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    ResponseEntity<InputStream> responseEntity = datasetReadRepository.queryStudiesWithDetail(trialverseDatasetUri);
+    ResponseEntity<JSON> responseEntity = datasetReadRepository.queryStudiesWithDetail(trialverseDatasetUri);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", JSON_TYPE);
-    trialverseIOUtilsService.writeStreamToServletResponse(responseEntity.getBody(), httpServletResponse);
+    InputStream inputStream = IOUtils.toInputStream(responseEntity.getBody().toString());
+    trialverseIOUtilsService.writeStreamToServletResponse(inputStream, httpServletResponse);
   }
 
 

@@ -3,6 +3,7 @@ package org.drugis.trialverse.dataset.repository;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpResponse;
+import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.drugis.trialverse.security.Account;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public interface DatasetReadRepository {
 
   public Model getDataset(URI trialverseDatasetUri);
 
-  public ResponseEntity queryStudiesWithDetail(URI trialverseDatasetUri);
+  public ResponseEntity<JSON> queryStudiesWithDetail(URI trialverseDatasetUri);
 
   public Boolean isOwner(URI trialverseDatasetUri, Principal principal);
 
