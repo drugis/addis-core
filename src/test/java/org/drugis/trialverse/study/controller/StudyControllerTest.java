@@ -12,6 +12,7 @@ import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.study.repository.StudyReadRepository;
 import org.drugis.trialverse.study.repository.StudyWriteRepository;
 import org.drugis.trialverse.testutils.TestUtils;
+import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.junit.After;
 import org.junit.Before;
@@ -30,6 +31,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
+import java.net.URI;
 import java.security.Principal;
 
 import static org.mockito.Mockito.*;
@@ -104,15 +106,16 @@ public class StudyControllerTest {
   public void testCreateStudyUserIsNotDatasetOwner() throws Exception {
     String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
     String datasetUUID = "datasetUUID";
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     String studyUUID = "studyUUID";
-    when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(false);
+    when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(false);
 
     mockMvc.perform(
             put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
                     .content(jsonContent)
                     .principal(user)).andExpect(status().isForbidden());
 
-    verify(datasetReadRepository).isOwner(datasetUUID, user);
+    verify(datasetReadRepository).isOwner(datasetUri, user);
     verifyZeroInteractions(studyWriteRepository);
   }
 
@@ -122,10 +125,11 @@ public class StudyControllerTest {
     InputStream contentStream = IOUtils.toInputStream(updateContent);
     MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
     String datasetUUID = "datasetUUID";
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     String studyUUID = "studyUUID";
     BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
     HttpResponse httpResponse = new BasicHttpResponse(statusLine);
-    when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(true);
+    when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
 
     mockMvc.perform(
             put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
@@ -133,22 +137,23 @@ public class StudyControllerTest {
                     .principal(user))
             .andExpect(status().isOk());
 
-    verify(datasetReadRepository).isOwner(datasetUUID, user);
-    verify(studyWriteRepository).updateStudy(anyString(), anyString(), Matchers.any(InputStream.class));
+    verify(datasetReadRepository).isOwner(datasetUrl, user);
+    verify(studyWriteRepository).updateStudy(Matchers.<URI>anyObject(), anyString(), Matchers.any(InputStream.class));
   }
 
   @Test
   public void testUpdateStudyUserNotDatasetOwner() throws Exception {
     String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
     String datasetUUID = "datasetUUID";
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     String studyUUID = "studyUUID";
-    when(datasetReadRepository.isOwner(datasetUUID, user)).thenReturn(false);
+    when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(false);
 
     mockMvc.perform(
             put("/datasets/" + datasetUUID + "/studies/" + studyUUID)
                     .content(jsonContent)
                     .principal(user)).andExpect(status().isForbidden());
 
-    verify(datasetReadRepository).isOwner(datasetUUID, user);
+    verify(datasetReadRepository).isOwner(datasetUrl, user);
   }
 }

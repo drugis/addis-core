@@ -13,14 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpOutputMessage;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
-import javax.servlet.ServletInputStream;
-import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
@@ -59,8 +57,8 @@ public class StudyWriteRepositoryImpl implements StudyWriteRepository {
   }
 
   @Override
-  public void updateStudy(String datasetUuid, String studyUuid, InputStream content) {
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(Namespaces.DATASET_NAMESPACE + datasetUuid);
+  public void updateStudy(URI datasetUri, String studyUuid, InputStream content) {
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
     String uri = versionMapping.getVersionedDatasetUrl() + DATA_ENDPOINT + GRAPH_QUERY_STRING;
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());

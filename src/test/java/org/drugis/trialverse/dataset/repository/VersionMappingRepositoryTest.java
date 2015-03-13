@@ -10,6 +10,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -69,8 +71,8 @@ public class VersionMappingRepositoryTest {
   }
 
   @Test
-  public void getVersionUrlByDatasetUrl() {
-    String datasetUrl = "datasetUrl";
+  public void getVersionUrlByDatasetUrl() throws URISyntaxException {
+    URI datasetUrl = new URI("datasetUrl");
     VersionMapping mockResult = new VersionMapping(1, "datasetUui1", userName, "trialverseDataset");
     when(jdbcTemplate.queryForObject(anyString(), any(RowMapper.class), anyObject())).thenReturn(mockResult);
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl);

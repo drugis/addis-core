@@ -1,10 +1,8 @@
 package org.drugis.trialverse.dataset.repository.impl;
 
 import com.hp.hpl.jena.graph.*;
-import com.hp.hpl.jena.query.QueryException;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.sparql.ARQConstants;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.jayway.jsonpath.JsonPath;
@@ -14,9 +12,7 @@ import java.net.URI;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.*;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
@@ -24,7 +20,6 @@ import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.security.Account;
-import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +36,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.List;
 
@@ -60,6 +54,8 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   private static final Node CLASS_VOID_DATASET = NodeFactory.createURI("http://rdfs.org/ns/void#Dataset");
   public static final String QUERY_ENDPOINT = "/query";
+  public static final String QUERY_PARAM_OUTPUT_TYPE = "output";
+  public static final String QUERY_PARAM_QUERY = "query";
 
 
   @Inject
@@ -101,16 +97,18 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     throw new LoadResourceException("could not load resource " + filename);
   }
 
-  private HttpResponse doSelectQuery(String query) {
-    return doRequest(query, FUSEKI_OUTPUT_TYPES.JSON.toString(), RDFLanguages.JSONLD.getContentType().getContentType());
+  private ResponseEntity doSelectQuery(URI trialverseDatasetUri, String query) {
+    return doRequest(trialverseDatasetUri, query, FUSEKI_OUTPUT_TYPES.JSON.toString(), RDFLanguages.JSONLD.getContentType().getContentType());
   }
 
-  private HttpResponse doAskQuery(String query) {
-    return doRequest(query, FUSEKI_OUTPUT_TYPES.JSON.toString(), RDFLanguages.JSONLD.getContentType().getContentType());
+  private Boolean doAskQuery(URI trialverseDatasetUri, String query) {
+    ResponseEntity<JsonObject> responseEntity = doRequest(trialverseDatasetUri, query, FUSEKI_OUTPUT_TYPES.JSON.toString(), RDFLanguages.JSONLD.getContentType().getContentType());
+    JsonObject jsonObject = responseEntity.getBody();
+    return Boolean.TRUE.equals(new Boolean(jsonObject.get("boolean").toString()));
   }
 
 
-  private HttpResponse doRequest(URI trialverseDatasetUri, String query, String outputType, String acceptType) {
+  private ResponseEntity<JsonObject> doRequest(URI trialverseDatasetUri, String query, String outputType, String acceptType) {
 //    try {
 //      HttpClient client = httpClientFactory.build();
 //      URIBuilder builder = new URIBuilder(webConstants.getTriplestoreBaseUri() + QUERY_AFFIX);
@@ -125,12 +123,18 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 //    throw new QueryException("Could not execute query " + query);
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, );
-    WebContent.contentTypeSPARQLUpdate
-    HttpEntity<String> requestEntity = new HttpEntity<>(query, httpHeaders);
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl()).path(QUERY_ENDPOINT).build();
+    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLUpdate);
+    httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, acceptType);
 
-    restTemplate.getForEntity(uriComponents.toUri(), HttpResponse.class);
+    HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
+            .path(QUERY_ENDPOINT)
+            .queryParam(QUERY_PARAM_QUERY, query)
+            .queryParam(QUERY_PARAM_OUTPUT_TYPE, outputType)
+            .build();
+
+    ResponseEntity<JsonObject> httpResponseResponseEntity = restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, JsonObject.class);
+    return  httpResponseResponseEntity;
   }
 
   private Graph addDatasetType(String trialverseDatasetUrl, Graph datasetGraph) {
@@ -162,8 +166,8 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public Model getDataset(String datasetUUID) {
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(Namespaces.DATASET_NAMESPACE + datasetUUID);
+  public Model getDataset(URI trialverseDatasetUri) {
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
@@ -175,30 +179,30 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public HttpResponse queryDatasetsWithDetail(String datasetUUID) {
-    String query = StringUtils.replace(STUDIES_WITH_DETAILS, "$datasetUUID", datasetUUID);
-    return doSelectQuery(query);
+  public HttpResponse queryStudiesWithDetail(URI trialverseDatasetUri) {
+  //  return doSelectQuery(trialverseDatasetUri, STUDIES_WITH_DETAILS).getBody();
+    return null;
   }
 
   @Override
-  public boolean isOwner(String datasetUUID, Principal principal) {
-    VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(Namespaces.DATASET_NAMESPACE + datasetUUID);
+  public boolean isOwner(URI trialverseDatasetUri, Principal principal) {
+    VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     return principal.getName().equals(mapping.getOwnerUuid());
   }
 
   @Override
-  public boolean containsStudyWithShortname(String datasetUUID, String shortName) {
+  public boolean containsStudyWithShortname(URI trialverseDatasetUri, String shortName) {
     Boolean containsStudyWithShortname = false;
-    String query = StringUtils.replace(CONTAINS_STUDY_WITH_SHORTNAME, "$dataset", datasetUUID);
-    query = StringUtils.replace(query, "$shortName", "'" + shortName + "'");
-    HttpResponse response = doAskQuery(query);
-    try {
-      containsStudyWithShortname = JsonPath.read(response.getEntity().getContent(), "$.boolean");
-    } catch (IOException e) {
-      logger.error(e.toString());
-    }
-
-    return containsStudyWithShortname;
+    String query = StringUtils.replace(CONTAINS_STUDY_WITH_SHORTNAME, "$shortName", "'" + shortName + "'");
+    return  doAskQuery(trialverseDatasetUri, query);
+//    HttpResponse response = doAskQuery(trialverseDatasetUri, query);
+//    try {
+//      containsStudyWithShortname = JsonPath.read(response.getEntity().getContent(), "$.boolean");
+//    } catch (IOException e) {
+//      logger.error(e.toString());
+//    }
+//
+//    return containsStudyWithShortname;
   }
 
   private static class LoadResourceException extends RuntimeException {

@@ -7,6 +7,7 @@ import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.exception.MethodNotAllowedException;
 import org.drugis.trialverse.study.repository.StudyReadRepository;
 import org.drugis.trialverse.study.repository.StudyWriteRepository;
+import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,8 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
 
 /**
@@ -56,10 +59,10 @@ public class StudyController extends AbstractTrialverseController {
   @RequestMapping(value = "/{studyUUID}", method = RequestMethod.PUT)
   public void create(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
                      @PathVariable String datasetUUID, @PathVariable String studyUUID)
-          throws IOException, MethodNotAllowedException {
-
-    if (datasetReadRepository.isOwner(datasetUUID, currentUser)) {
-      studyWriteRepository.updateStudy(datasetUUID, studyUUID, request.getInputStream());
+          throws IOException, MethodNotAllowedException, URISyntaxException {
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
+      studyWriteRepository.updateStudy(new URI(Namespaces.DATASET_NAMESPACE + datasetUUID), studyUUID, request.getInputStream());
       response.setStatus(HttpStatus.OK.value());
     } else {
       throw new MethodNotAllowedException();

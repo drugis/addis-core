@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -67,23 +68,23 @@ public class StudyWriteRepositoryTest {
   }
 
   @Test
-  public void testUpdateStudy() throws IOException {
+  public void testUpdateStudy() throws IOException, URISyntaxException {
     String datasetUuid = "datasetuuid";
     String studyUuid = "studyUuid";
     HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
     InputStream inputStream = IOUtils.toInputStream("content");
     DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
     when(mockHttpServletRequest.getInputStream()).thenReturn(delegatingServletInputStream);
-    String datasetUrl = Namespaces.DATASET_NAMESPACE + datasetUuid;
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     String versionStoreDatasetUri = "versionStoreDatasetUri";
-    VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl);
+    VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl.toString());
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
-    studyWriteRepository.updateStudy(datasetUuid, studyUuid, delegatingServletInputStream);
+    studyWriteRepository.updateStudy(datasetUrl, studyUuid, delegatingServletInputStream);
 
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
-    HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
+    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
+    HttpEntity<DelegatingServletInputStream> requestEntity = new HttpEntity<>(delegatingServletInputStream, httpHeaders);
     String uri = versionMapping.getVersionedDatasetUrl() + "/data?graph={graphUri}";
     verify(restTemplate).put(uri, requestEntity, Namespaces.STUDY_NAMESPACE + studyUuid);
   }

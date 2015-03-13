@@ -15,5 +15,5 @@ import java.net.URISyntaxException;
 public interface DatasetWriteRepository {
   URI createDataset(String title, String description, Account owner) throws URISyntaxException, HttpException, CreateDatasetException;
 
-  HttpResponse updateDataset(String datasetUUID, InputStream datasetContent);
+  HttpResponse updateDataset(URI datasetUri, InputStream datasetContent);
 }

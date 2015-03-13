@@ -5,6 +5,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpResponse;
 import org.drugis.trialverse.security.Account;
 
+import java.net.URI;
 import java.security.Principal;
 
 /**
@@ -14,12 +15,12 @@ public interface DatasetReadRepository {
 
   public Model queryDatasets(Account currentUserAccount);
 
-  public Model getDataset(String datasetUUID);
+  public Model getDataset(URI trialverseDatasetUri);
 
-  public HttpResponse queryDatasetsWithDetail(String datasetUUID);
+  public HttpResponse queryStudiesWithDetail(URI trialverseDatasetUri);
 
-  public boolean isOwner(String datasetUUID, Principal principal);
+  public boolean isOwner(URI trialverseDatasetUri, Principal principal);
 
-  public boolean containsStudyWithShortname(String datasetUUID, String shortName);
+  public boolean containsStudyWithShortname(URI trialverseDatasetUri, String shortName);
 
 }

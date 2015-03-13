@@ -1,6 +1,5 @@
 package org.drugis.trialverse.dataset.controller;
 
-import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
@@ -13,6 +12,7 @@ import org.drugis.trialverse.exception.CreateDatasetException;
 import org.drugis.trialverse.exception.MethodNotAllowedException;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
+import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.springframework.http.HttpStatus;
@@ -72,8 +72,9 @@ public class DatasetController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.GET)
   @ResponseBody
-  public void getDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws IOException {
-    Model datasetModel = datasetReadRepository.getDataset(datasetUUID);
+  public void getDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws IOException, URISyntaxException {
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    Model datasetModel = datasetReadRepository.getDataset(trialverseDatasetUri);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     trialverseIOUtilsService.writeModelToServletResponse(datasetModel, httpServletResponse);
@@ -81,10 +82,10 @@ public class DatasetController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/{datasetUUID}/studiesWithDetail", method = RequestMethod.GET)
   @ResponseBody
-  public void queryStudiesWithDetail(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) {
+  public void queryStudiesWithDetail(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException {
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.JSONLD.getContentType().getContentType());
-
-    HttpResponse response = datasetReadRepository.queryDatasetsWithDetail(datasetUUID);
+    HttpResponse response = datasetReadRepository.queryStudiesWithDetail(trialverseDatasetUri);
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
     httpServletResponse.setStatus(response.getStatusLine().getStatusCode());
   }
@@ -92,10 +93,11 @@ public class DatasetController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.POST)
   public void updateDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
-                            @PathVariable String datasetUUID) throws IOException, MethodNotAllowedException {
-    if (datasetReadRepository.isOwner(datasetUUID, currentUser)) {
-      HttpResponse jenaResponce = datasetWriteRepository.updateDataset(datasetUUID, request.getInputStream());
-      response.setStatus(jenaResponce.getStatusLine().getStatusCode());
+                            @PathVariable String datasetUUID) throws IOException, MethodNotAllowedException, URISyntaxException {
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
+      HttpResponse jenaResponse = datasetWriteRepository.updateDataset(trialverseDatasetUri, request.getInputStream());
+      response.setStatus(jenaResponse.getStatusLine().getStatusCode());
     } else {
       throw new MethodNotAllowedException();
     }

@@ -1,9 +1,5 @@
 package org.drugis.trialverse.dataset.repository;
 
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.query.DatasetAccessor;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.impl.DatasetWriteRepositoryImpl;
 import org.drugis.trialverse.security.Account;
@@ -15,7 +11,6 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +18,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class DatasetWriteRepositoryTest {
@@ -80,17 +75,19 @@ public class DatasetWriteRepositoryTest {
     verify(webConstants).getTriplestoreBaseUri();
   }
 
-  @Ignore
   @Test
   public void testCreateDatasetWithNullDescription() throws Exception {
     Account owner = new Account("my-owner", "fn", "ln");
     String title = "my-title";
     String description = null;
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add("Location", "http://location");
+    ResponseEntity responseEntity = new ResponseEntity(httpHeaders, HttpStatus.CREATED);
+    when(restTemplate.postForEntity(anyString(), anyObject(), any(Class.class))).thenReturn(responseEntity);
     URI result = datasetWriteRepository.createDataset(title, description, owner);
 
-    assertEquals(DATASET_URI, result);
-
-    verify(webConstants).getTriplestoreDataUri();
+    assertTrue(result.toString().startsWith(DATASET_URI + "/someMockUuid"));
+    verify(webConstants).getTriplestoreBaseUri();
 
 
   }

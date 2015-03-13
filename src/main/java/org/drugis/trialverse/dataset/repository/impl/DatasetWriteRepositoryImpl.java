@@ -3,10 +3,10 @@ package org.drugis.trialverse.dataset.repository.impl;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DCTerms;
-import com.hp.hpl.jena.vocabulary.RDF;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.HttpException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
@@ -110,8 +110,8 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   }
 
   @Override
-  public HttpResponse updateDataset(String datasetUUID, InputStream datasetContent) {
-    HttpPost request = new HttpPost(createDatasetGraphUri(datasetUUID));
+  public HttpResponse updateDataset(URI datasetUri, InputStream datasetContent) {
+    HttpPost request = new HttpPost(datasetUri);
 //        HttpClient client = httpClientFactory.build();
     HttpResponse response = null;
 //        try {
@@ -138,9 +138,11 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
     Model model = ModelFactory.createDefaultModel();
 
-    model.createResource(datasetUri)
-            .addProperty(DCTerms.title, title)
-            .addProperty(DCTerms.description, description);
+    Resource resource = model.createResource(datasetUri);
+    resource.addProperty(DCTerms.title, title);
+    if (StringUtils.isNotEmpty(description)) {
+      resource.addProperty(DCTerms.description, description);
+    }
 
     return model;
   }
