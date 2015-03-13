@@ -33,6 +33,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -138,10 +139,28 @@ public class DatasetReadRepositoryTest {
   }
 
   @Test
-  public void testQueryDatasetWithDetails() {
-    Account account = mock(Account.class);
-    when(account.getUsername()).thenReturn("pietje@precies.gov");
-    Model model = datasetReadRepository.queryDatasets(account);
+  public void testQueryDatasetWithDetails() throws URISyntaxException, IOException {
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + "datasetUUID");
+    VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
+    HttpHeaders httpHeaders = new HttpHeaders();
+
+    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
+    httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, "application/sparql-results+json");
+    HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
+
+    String queryStudiesWithDetails = IOUtils.toString(new ClassPathResource("queryStudiesWithDetails.sparql").getInputStream(), "UTF-8");
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
+            .path("/query")
+            .queryParam("query", queryStudiesWithDetails)
+            .build();
+    ResponseEntity responseEntity = new ResponseEntity<>(new DelegatingServletInputStream(IOUtils.toInputStream("{'foo':'bar'}")), HttpStatus.OK);
+
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
+    when(restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, InputStream.class)).thenReturn(responseEntity);
+
+    ResponseEntity<InputStream> httpResponse = datasetReadRepository.queryStudiesWithDetail(datasetUrl);
+
+    verify(restTemplate).exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, InputStream.class);
 
   }
 
@@ -181,7 +200,7 @@ public class DatasetReadRepositoryTest {
     VersionMapping versionMapping = new VersionMapping(1, versionedDatasetUrl, user1, datasetUrl.toString());
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLUpdate);
+    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
     httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, acceptType);
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     ResponseEntity responseEntity = new ResponseEntity<>(JSON.parse("{\"boolean\":true}"), HttpStatus.OK);
@@ -190,7 +209,6 @@ public class DatasetReadRepositoryTest {
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path("/query")
             .queryParam("query", query)
-            .queryParam("output", "json")
             .build();
     when(restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, JsonObject.class)).thenReturn(responseEntity);
 

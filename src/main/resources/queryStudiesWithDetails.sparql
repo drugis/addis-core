@@ -6,52 +6,47 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 PREFIX study: <http://trials.drugis.org/studies/>
 
-SELECT ?datasetTitle ?datasetDescription ?owner ?study ?title ?label ?studySize ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria
+SELECT
+  ?studyUri ?title ?label ?studySize ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria
  ?publications ?status ?numberOfCenters ?indication ?startDate ?endDate ?numberOfArms ?doseType WHERE {
-  GRAPH dataset:$datasetUUID {
-    ?dataset ontology:contains_study ?study ;
-       rdfs:label ?datasetTitle ;
-       rdfs:comment ?datasetDescription .
-       OPTIONAL { ?dataset dc:creator ?owner .}
-  }
-GRAPH ?study {
-    ?study 
+GRAPH ?studyUri {
+    ?studyUri 
       rdfs:label ?label ;
       rdfs:comment ?title .
     OPTIONAL {
-      ?study ontology:has_allocation ?allocation .
+      ?studyUri ontology:has_allocation ?allocation .
     }
     OPTIONAL {
-      ?study ontology:has_blinding ?blinding .
+      ?studyUri ontology:has_blinding ?blinding .
     }
     OPTIONAL {
-      ?study ontology:has_objective [
+      ?studyUri ontology:has_objective [
         rdfs:comment ?objective
       ] .
     }
     OPTIONAL {
-      ?study ontology:has_eligibility_criteria [
+      ?studyUri ontology:has_eligibility_criteria [
         rdfs:comment ?inclusionCriteria
       ] .
     }
     OPTIONAL {
-      ?study ontology:status ?status .
+      ?studyUri ontology:status ?status .
     }
     OPTIONAL {
-      ?study ontology:has_number_of_centers ?numberOfCenters .
+      ?studyUri ontology:has_number_of_centers ?numberOfCenters .
     }
     OPTIONAL {
-      ?study ontology:has_indication ?indication_instance .
+      ?studyUri ontology:has_indication ?indication_instance .
       ?indication_instance rdfs:label ?indication .
     }
     OPTIONAL {
-      ?study ontology:has_start_date ?startDate .
+      ?studyUri ontology:has_start_date ?startDate .
     }
     OPTIONAL {
-      ?study ontology:has_end_date ?endDate .
+      ?studyUri ontology:has_end_date ?endDate .
     }
   OPTIONAL {
-     SELECT ?study ?doseType
+     SELECT ?studyUri ?doseType
        WHERE {
         BIND ('Flexible' as ?doseType)
          ?activity a ontology:TreatmentActivity ;
@@ -59,46 +54,46 @@ GRAPH ?study {
              ontology:applied_to_arm ?arm
            ] ;
            ontology:administered_drugs/rdf:rest*/rdf:first [ a ontology:TitratedDoseDrugTreatment ] .
-           ?study ontology:has_arm ?arm .
-        } GROUP BY ?study ?doseType
+           ?studyUri ontology:has_arm ?arm .
+        } GROUP BY ?studyUri ?doseType
           HAVING (COUNT(*) > 0)
   }
     OPTIONAL
     {
-      SELECT ?study (group_concat(?drugName; separator = ', ') as ?drugNames)
+      SELECT ?studyUri (group_concat(?drugName; separator = ', ') as ?drugNames)
       WHERE {
         GRAPH ?dataset {
           ?drug rdfs:subClassOf ontology:Drug .
-          ?dataset ontology:contains_study ?study 
+          ?dataset ontology:contains_study ?studyUri 
         }
-        GRAPH ?study {
+        GRAPH ?studyUri {
           ?instance a ?drug .
           ?instance rdfs:label ?drugName.
         }
-      } GROUP BY ?study
+      } GROUP BY ?studyUri
     }
     OPTIONAL
     {
-      SELECT ?study (group_concat(?publication; separator = ', ') as ?publications)
+      SELECT ?studyUri (group_concat(?publication; separator = ', ') as ?publications)
       WHERE {
-        GRAPH ?study {
+        GRAPH ?studyUri {
           OPTIONAL {
-            ?study ontology:has_publication [
+            ?studyUri ontology:has_publication [
               ontology:has_id ?publication
             ] .
           }
         }
-      } GROUP BY ?study
+      } GROUP BY ?studyUri
     }
     OPTIONAL {
-      SELECT ?study (COUNT(?arm) as ?numberOfArms) (SUM(?numberOfParticipantsStarting) as ?studySize)
+      SELECT ?studyUri (COUNT(?arm) as ?numberOfArms) (SUM(?numberOfParticipantsStarting) as ?studySize)
         WHERE {
-          GRAPH ?study {
+          GRAPH ?studyUri {
             ?arm a ontology:Arm .
             ?participantsStarting ontology:of_arm ?arm .
             ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .
           }
-        } GROUP BY ?study
+        } GROUP BY ?studyUri
     }
   }
 }

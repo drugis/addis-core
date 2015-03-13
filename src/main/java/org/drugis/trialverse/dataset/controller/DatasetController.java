@@ -3,6 +3,7 @@ package org.drugis.trialverse.dataset.controller;
 import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
+import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
@@ -13,9 +14,11 @@ import org.drugis.trialverse.exception.MethodNotAllowedException;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.Namespaces;
+import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +26,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -45,6 +49,8 @@ public class DatasetController extends AbstractTrialverseController {
 
   @Inject
   private AccountRepository accountRepository;
+
+  private final static String JSON_TYPE =  "application/json; charset=UTF-8";
 
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
@@ -84,10 +90,10 @@ public class DatasetController extends AbstractTrialverseController {
   @ResponseBody
   public void queryStudiesWithDetail(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    httpServletResponse.setHeader("Content-Type", RDFLanguages.JSONLD.getContentType().getContentType());
-    HttpResponse response = datasetReadRepository.queryStudiesWithDetail(trialverseDatasetUri);
-    trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
-    httpServletResponse.setStatus(response.getStatusLine().getStatusCode());
+    ResponseEntity<InputStream> responseEntity = datasetReadRepository.queryStudiesWithDetail(trialverseDatasetUri);
+    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+    httpServletResponse.setHeader("Content-Type", JSON_TYPE);
+    trialverseIOUtilsService.writeStreamToServletResponse(responseEntity.getBody(), httpServletResponse);
   }
 
 
@@ -101,7 +107,6 @@ public class DatasetController extends AbstractTrialverseController {
     } else {
       throw new MethodNotAllowedException();
     }
-
   }
 
 }
