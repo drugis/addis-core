@@ -15,14 +15,10 @@
       <li><a ng-click="sideNavClick('adverseEvents')">Adverse Events</a></li>
     </ul>
   </div>
-<div class="row nav-bar-spacer">
-    <div class="column large-10">
-        <h2>{{dataset.label}}</h2>
-        <h5>{{dataset.comment}}</h5>
-    </div>
-</div>
-<div class="row">
-  <div class="columns large-12">
+
+  <div class="columns large-10 medium-9">
+    <h2>{{dataset.label}}</h2>
+    <h5>{{dataset.comment}}</h5>
     <h3>Concepts</h3>
     <h5>Drugs</h5>
     <ul id="drugs">
@@ -30,15 +26,15 @@
     </ul>
     <h5>Population Characteristics</h5>
     <ul id="popchars">
-      <li ng-repeat="concept in concepts | filter:'ontology#drug'">{{concept.label}}</li>
+    <li ng-repeat="concept in concepts | filter:'ontology#PopulationCharacteristic'">{{concept.label}}</li>
     </ul>
     <h5>Endpoints</h5>
     <ul id="endpoints">
-      <li ng-repeat="concept in concepts | filter:'ontology#drug'">{{concept.label}}</li>
+      <li ng-repeat="concept in concepts | filter:'ontology#Endpoint'">{{concept.label}}</li>
     </ul>
     <h5>Adverse Events</h5>
     <ul id="adverseEvents">
-      <li ng-repeat="concept in concepts | filter:'ontology#drug'">{{concept.label}}</li>
+      <li ng-repeat="concept in concepts | filter:'ontology#AdverseEvent'">{{concept.label}}</li>
     </ul>
   </div>
 </div>
