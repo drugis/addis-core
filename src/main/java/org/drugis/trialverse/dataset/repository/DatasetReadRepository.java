@@ -8,6 +8,7 @@ import org.apache.jena.atlas.json.JsonObject;
 import org.drugis.trialverse.security.Account;
 import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
 
@@ -20,7 +21,7 @@ public interface DatasetReadRepository {
 
   public Model getDataset(URI trialverseDatasetUri);
 
-  public ResponseEntity<JSON> queryStudiesWithDetail(URI trialverseDatasetUri);
+  public HttpResponse queryStudiesWithDetail(URI trialverseDatasetUri) throws IOException;
 
   public Boolean isOwner(URI trialverseDatasetUri, Principal principal);
 

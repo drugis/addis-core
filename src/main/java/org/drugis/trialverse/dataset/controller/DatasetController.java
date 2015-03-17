@@ -56,12 +56,11 @@ public class DatasetController extends AbstractTrialverseController {
 
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
-  public Dataset createDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody DatasetCommand datasetCommand) throws URISyntaxException, CreateDatasetException, HttpException {
+  public void createDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody DatasetCommand datasetCommand) throws URISyntaxException, CreateDatasetException, HttpException {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
     URI datasetUri = datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), currentUserAccount);
     response.setStatus(HttpServletResponse.SC_CREATED);
     response.setHeader("Location", datasetUri.toString());
-    return new Dataset(datasetUri.toString(), currentUserAccount, datasetCommand.getTitle(), datasetCommand.getDescription());
   }
 
   @RequestMapping(method = RequestMethod.GET)
@@ -92,11 +91,10 @@ public class DatasetController extends AbstractTrialverseController {
   @ResponseBody
   public void queryStudiesWithDetail(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    ResponseEntity<JSON> responseEntity = datasetReadRepository.queryStudiesWithDetail(trialverseDatasetUri);
+    HttpResponse response = datasetReadRepository.queryStudiesWithDetail(trialverseDatasetUri);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", JSON_TYPE);
-    InputStream inputStream = IOUtils.toInputStream(responseEntity.getBody().toString());
-    trialverseIOUtilsService.writeStreamToServletResponse(inputStream, httpServletResponse);
+    trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
   }
 
 

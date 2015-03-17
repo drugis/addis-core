@@ -15,6 +15,9 @@
  */
 package org.drugis.trialverse.config;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.drugis.trialverse.util.JenaGraphMessageConverter;
 import org.drugis.trialverse.util.WebConstants;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -56,6 +59,11 @@ public class MainConfig {
     RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
     restTemplate.getMessageConverters().add(new JenaGraphMessageConverter());
     return restTemplate;
+  }
+
+  @Bean
+  public HttpClient httpClient() {
+    return HttpClientBuilder.create().build();
   }
 
   @Bean(name = "dsTrialverse")

@@ -44,18 +44,6 @@ public class StudyWriteRepositoryImpl implements StudyWriteRepository {
 
   private final static Logger logger = LoggerFactory.getLogger(StudyWriteRepositoryImpl.class);
 
-  private String createStudyGraphUri(String studyUUID) {
-    URIBuilder builder = null;
-    try {
-      builder = new URIBuilder(webConstants.getTriplestoreDataUri() + "/data");
-      builder.addParameter("graph", "http://trials.drugis.org/studies/" + studyUUID);
-      return builder.build().toString();
-    } catch (URISyntaxException e) {
-      logger.error(e.toString());
-    }
-    return "";
-  }
-
   @Override
   public void updateStudy(URI datasetUri, String studyUuid, InputStream content) {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);

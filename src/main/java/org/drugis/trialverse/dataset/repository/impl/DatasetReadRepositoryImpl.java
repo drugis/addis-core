@@ -11,6 +11,9 @@ import java.net.URI;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.riot.RDFLanguages;
@@ -69,6 +72,9 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   @Inject
   private RestTemplate restTemplate;
+
+  @Inject
+  private HttpClient httpClient;
 
   private enum FUSEKI_OUTPUT_TYPES {
     TEXT, JSON;
@@ -167,22 +173,19 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public ResponseEntity<JSON> queryStudiesWithDetail(URI trialverseDatasetUri) {
+  public HttpResponse queryStudiesWithDetail(URI trialverseDatasetUri) throws IOException {
+
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
 
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
-    httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, org.apache.jena.riot.WebContent.contentTypeResultsJSON);
-
-    HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(QUERY_ENDPOINT)
             .queryParam(QUERY_PARAM_QUERY, STUDIES_WITH_DETAILS)
             .build();
+    HttpGet request = new HttpGet(uriComponents.toUri());
+    request.addHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
+    request.addHeader(org.apache.http.HttpHeaders.ACCEPT, org.apache.jena.riot.WebContent.contentTypeResultsJSON);
 
-    ResponseEntity<JSON> result  = restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, JSON.class);
-    return result;
-
+    return httpClient.execute(request);
   }
 
   @Override

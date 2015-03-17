@@ -35,7 +35,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
 
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -101,8 +100,8 @@ public class DatasetControllerTest {
 
   @Test
   public void testCreateDataset() throws Exception {
-    String newDatasetUid = "http://some.thing.like/this/asd123";
-    URI uri = new URI(newDatasetUid);
+    String newDatasetUri = "http://some.thing.like/this/asd123";
+    URI uri = new URI(newDatasetUri);
     DatasetCommand datasetCommand = new DatasetCommand("dataset title");
     String jsonContent = TestUtils.createJson(datasetCommand);
     when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john)).thenReturn(uri);
@@ -113,8 +112,8 @@ public class DatasetControllerTest {
                             .contentType(webConstants.getApplicationJsonUtf8())
             )
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(webConstants.getApplicationJsonUtf8()))
-            .andExpect(jsonPath("$.uri", is(newDatasetUid)));
+            .andExpect(header().string("Location", newDatasetUri));
+
     verify(accountRepository).findAccountByUsername(john.getUsername());
     verify(datasetWriteRepository).createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john);
   }

@@ -47,12 +47,11 @@ public class StudyController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/{studyUUID}", method = RequestMethod.GET)
   @ResponseBody
-  public void getStudy(HttpServletResponse response, @PathVariable String studyUUID) {
-    // todo maybe check coordinates ?
-    Model studyModel = studyReadRepository.getStudy(studyUUID);
-    response.setStatus(HttpServletResponse.SC_OK);
-    response.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
-    trialverseIOUtilsService.writeModelToServletResponse(studyModel, response);
+  public void getStudy(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID , @PathVariable String studyUUID) throws URISyntaxException, IOException {
+    HttpResponse response = studyReadRepository.getStudy(new URI(Namespaces.DATASET_NAMESPACE + datasetUUID), studyUUID);
+    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+    httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
+    trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
   }
 
 

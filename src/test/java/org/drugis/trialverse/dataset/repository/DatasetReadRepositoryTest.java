@@ -158,7 +158,7 @@ public class DatasetReadRepositoryTest {
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
     when(restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, InputStream.class)).thenReturn(responseEntity);
 
-    ResponseEntity<InputStream> httpResponse = datasetReadRepository.queryStudiesWithDetail(datasetUrl);
+   // ResponseEntity<InputStream> httpResponse = datasetReadRepository.queryStudiesWithDetail(datasetUrl);
 
     verify(restTemplate).exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, InputStream.class);
 
