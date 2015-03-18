@@ -182,6 +182,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
             .queryParam(QUERY_PARAM_QUERY, STUDIES_WITH_DETAILS)
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
+
     request.addHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
     request.addHeader(org.apache.http.HttpHeaders.ACCEPT, org.apache.jena.riot.WebContent.contentTypeResultsJSON);
 

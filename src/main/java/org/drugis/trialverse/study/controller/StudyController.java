@@ -56,7 +56,7 @@ public class StudyController extends AbstractTrialverseController {
 
 
   @RequestMapping(value = "/{studyUUID}", method = RequestMethod.PUT)
-  public void create(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
+  public void setStudy(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
                      @PathVariable String datasetUUID, @PathVariable String studyUUID)
           throws IOException, MethodNotAllowedException, URISyntaxException {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);

@@ -90,16 +90,18 @@ public class StudyControllerTest {
   public void testGetStudy() throws Exception {
     String datasetUUID = "datasetUUID";
     String studyUUID = "studyUUID";
-    Model studyModel = mock(Model.class);
-    when(studyReadRepository.getStudy(studyUUID)).thenReturn(studyModel);
+    BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
+    HttpResponse httpResponse = new BasicHttpResponse(statusLine);
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    when(studyReadRepository.getStudy(trialverseDatasetUri, studyUUID)).thenReturn(httpResponse);
 
 
     mockMvc.perform(get("/datasets/" + datasetUUID + "/studies/" + studyUUID).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
-    verify(studyReadRepository).getStudy(studyUUID);
-    verify(trialverseIOUtilsService).writeModelToServletResponse(any(Model.class), any(HttpServletResponse.class));
+    verify(studyReadRepository).getStudy(trialverseDatasetUri, studyUUID);
+    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(HttpResponse.class), any(HttpServletResponse.class));
   }
 
   @Test
@@ -122,13 +124,10 @@ public class StudyControllerTest {
   @Test
   public void testUpdateStudy() throws Exception {
     String updateContent = "updateContent";
-    InputStream contentStream = IOUtils.toInputStream(updateContent);
-    MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
     String datasetUUID = "datasetUUID";
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     String studyUUID = "studyUUID";
-    BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
-    HttpResponse httpResponse = new BasicHttpResponse(statusLine);
+
     when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
 
     mockMvc.perform(

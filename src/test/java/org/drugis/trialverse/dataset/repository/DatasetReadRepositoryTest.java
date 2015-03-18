@@ -59,8 +59,6 @@ import static org.mockito.Mockito.*;
 
 public class DatasetReadRepositoryTest {
 
-  @Mock
-  HttpClientFactory httpClientFactory;
 
   @Mock
   WebConstants webConstants;
@@ -74,16 +72,14 @@ public class DatasetReadRepositoryTest {
   @Mock
   RestTemplate restTemplate;
 
+  @Mock
+  HttpClient httpClient;
+
   @InjectMocks
   DatasetReadRepository datasetReadRepository;
 
-  HttpClient mockHttpClient;
-  HttpResponse mockResponse;
-
   @Before
   public void init() throws IOException {
-    mockHttpClient = mock(HttpClient.class);
-    mockResponse = mock(HttpResponse.class, RETURNS_DEEP_STUBS);
 
     webConstants = mock(WebConstants.class);
     jenaFactory = mock(JenaFactory.class);
@@ -92,8 +88,7 @@ public class DatasetReadRepositoryTest {
     MockitoAnnotations.initMocks(this);
 
     when(webConstants.getTriplestoreBaseUri()).thenReturn("baseUri");
-    when(mockHttpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
-    when(httpClientFactory.build()).thenReturn(mockHttpClient);
+
   }
 
   @Test
@@ -142,25 +137,11 @@ public class DatasetReadRepositoryTest {
   public void testQueryDatasetWithDetails() throws URISyntaxException, IOException {
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + "datasetUUID");
     VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
-    HttpHeaders httpHeaders = new HttpHeaders();
-
-    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
-    httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, "application/sparql-results+json");
-    HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-
-    String queryStudiesWithDetails = IOUtils.toString(new ClassPathResource("queryStudiesWithDetails.sparql").getInputStream(), "UTF-8");
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
-            .path("/query")
-            .queryParam("query", queryStudiesWithDetails)
-            .build();
-    ResponseEntity responseEntity = new ResponseEntity<>(new DelegatingServletInputStream(IOUtils.toInputStream("{'foo':'bar'}")), HttpStatus.OK);
-
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
-    when(restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, InputStream.class)).thenReturn(responseEntity);
 
-   // ResponseEntity<InputStream> httpResponse = datasetReadRepository.queryStudiesWithDetail(datasetUrl);
+    datasetReadRepository.queryStudiesWithDetail(datasetUrl);
 
-    verify(restTemplate).exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, InputStream.class);
+    verify(httpClient).execute(any(HttpGet.class));
 
   }
 
