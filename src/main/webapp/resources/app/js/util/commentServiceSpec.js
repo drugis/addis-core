@@ -69,7 +69,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               query = query.replace(/\$graphUri/g, graphUri);
 
               var result = testUtils.executeUpdateQuery(query);
-              console.log('queryResponce ' + result);
+              // console.log('queryResponce ' + result);
 
               var executeUpdateDeferred = q.defer();
               executeUpdateDeferred.resolve(result);

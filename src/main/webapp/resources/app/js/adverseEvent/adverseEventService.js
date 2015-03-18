@@ -64,7 +64,6 @@ define([],
 
         var addMeasuredAtPromise = addTemplateRaw.then(function(query) {
           var addMeasuredAtQuery = query.replace('$insertBlock', stringToInsert);
-          console.log('addMeasuredAtQuery = ' + addMeasuredAtQuery );
           return StudyService.doModifyingQuery(addMeasuredAtQuery);
         });
 

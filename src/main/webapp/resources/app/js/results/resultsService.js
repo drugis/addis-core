@@ -44,7 +44,6 @@ define([],
       }
 
       function updateResultValue(row, inputColumn) {
-        console.log('update');
         var typedInputColumn = createTypedInputColumn(inputColumn);
         if (!row.uri) {
           row.uri = 'http://trials.drugis.org/instances/' + UUIDService.generate();

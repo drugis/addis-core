@@ -72,7 +72,6 @@ define([], function() {
     }
 
     function loadStore(data) {
-      console.log('loadStore start');
       return RemoteRdfStoreService.create(studyPrefix).then(function(graphUri) {
         //console.log('RemoteRdfStoreService.create result, = ' + graphUri);
         scratchStudyUri = graphUri;
