@@ -21,7 +21,7 @@ function createDataset(callback) {
     .set('X-CSRF-TOKEN', csrfToken)
     .send(newDataset)
     .end(function(err, res) {
-     // console.log(JSON.stringify(res));
+      // console.log(JSON.stringify(res));
       var datasetUrl = res.headers.location;
       callback(datasetUrl);
     });
@@ -61,11 +61,10 @@ describe('create dataset ', function() {
           console.log('err =  ' + err);
           throw err;
         }
-       // console.log('res = ' + JSON.stringify(res));
+        // console.log('res = ' + JSON.stringify(res));
         res.should.have.property('status', 201);
         done();
       });
-
   });
 });
 
@@ -109,6 +108,39 @@ describe('get dataset', function() {
   });
 });
 
+describe('query datasets', function() {
+
+  var _datasetUuid;
+
+  before(function(done) {
+
+    createDataset(function(){
+      createDataset(function(){
+        createDataset(function(){
+          done();
+        });
+      });
+    });
+  });
+
+  it('should query the data sets', function(done) {
+    var expectedTtl = 'bool shit';
+
+    request(trialverseUrl)
+      .get('/datasets')
+      .set('Cookie', 'JSESSIONID=' + sessionId)
+      .set('X-CSRF-TOKEN', csrfToken)
+      .set('Accept', 'text/turtle')
+      .end(function(err, res) {
+        res.should.have.property('status', 200);
+        res.headers['content-type'].should.equal('text/turtle;charset=UTF-8');
+        res.text.length.should.be.above(0);
+        done();
+      });
+  });
+
+});
+
 describe('get study', function() {
 
   var _datasetUuid;
@@ -145,7 +177,6 @@ describe('get study', function() {
         done();
       });
   });
-
 });
 
 
@@ -160,7 +191,6 @@ describe('query studies with details', function() {
     });
   });
 
-
   it('should return query result', function(done) {
     console.log("start the test");
     request(trialverseUrl)
@@ -169,7 +199,7 @@ describe('query studies with details', function() {
       .set('Accept', 'application/json;charset=UTF-8')
       .end(function(err, res) {
         res.should.have.property('status', 200);
-        //console.log('+++++++++++++++++' + JSON.stringify(res));
+        // console.log('+++++++++++++++++' + JSON.stringify(res));
         JSON.parse(res.text).results.bindings[0].label.value.should.equal('mystudy');
         JSON.parse(res.text).results.bindings[0].title.value.should.equal('myComment');
         done();
@@ -179,5 +209,5 @@ describe('query studies with details', function() {
 
 
 //
-//   node-debug -p 8030 _mocha jena-api-test.js 
+// node-debug -p 8030 _mocha jena-api-test.js 
 //
