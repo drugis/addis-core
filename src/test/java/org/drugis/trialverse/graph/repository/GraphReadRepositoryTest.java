@@ -1,10 +1,10 @@
-package org.drugis.trialverse.study.repository;
+package org.drugis.trialverse.graph.repository;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.study.repository.impl.GraphReadRepositoryImpl;
+import org.drugis.trialverse.graph.repository.impl.GraphReadRepositoryImpl;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.junit.Before;

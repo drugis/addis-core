@@ -1,4 +1,4 @@
-package org.drugis.trialverse.study.repository.impl;
+package org.drugis.trialverse.graph.repository.impl;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -6,7 +6,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.study.repository.GraphReadRepository;
+import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.util.Namespaces;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.util.UriComponents;

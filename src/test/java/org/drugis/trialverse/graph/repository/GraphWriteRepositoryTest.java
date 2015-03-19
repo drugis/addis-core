@@ -1,14 +1,13 @@
-package org.drugis.trialverse.study.repository;
+package org.drugis.trialverse.graph.repository;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.study.repository.impl.StudyWriteRepositoryImpl;
+import org.drugis.trialverse.graph.repository.impl.GraphWriteRepositoryImpl;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.junit.After;
@@ -27,11 +26,10 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class StudyWriteRepositoryTest {
+public class GraphWriteRepositoryTest {
 
   HttpClient mockHttpClient = mock(HttpClient.class);
   HttpResponse mockResponse = mock(HttpResponse.class);
@@ -49,12 +47,12 @@ public class StudyWriteRepositoryTest {
   private RestTemplate restTemplate;
 
   @InjectMocks
-  StudyWriteRepository studyWriteRepository;
+  GraphWriteRepository graphWriteRepository;
 
   @Before
   public void setUp() throws IOException {
     webConstants = mock(WebConstants.class);
-    studyWriteRepository = new StudyWriteRepositoryImpl();
+    graphWriteRepository = new GraphWriteRepositoryImpl();
     initMocks(this);
     reset(httpClientFactory, mockHttpClient);
     when(webConstants.getTriplestoreDataUri()).thenReturn("BaseUri/current");
@@ -80,7 +78,7 @@ public class StudyWriteRepositoryTest {
     VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl.toString());
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
-    studyWriteRepository.updateStudy(datasetUrl, studyUuid, delegatingServletInputStream);
+    graphWriteRepository.updateStudy(datasetUrl, studyUuid, delegatingServletInputStream);
 
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());

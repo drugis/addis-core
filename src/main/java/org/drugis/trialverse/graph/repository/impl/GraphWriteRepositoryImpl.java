@@ -1,11 +1,10 @@
-package org.drugis.trialverse.study.repository.impl;
+package org.drugis.trialverse.graph.repository.impl;
 
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.study.repository.StudyWriteRepository;
+import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.util.InputStreamMessageConverter;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
@@ -19,13 +18,12 @@ import org.springframework.web.client.RestTemplate;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Created by daan on 20-11-14.
  */
 @Repository
-public class StudyWriteRepositoryImpl implements StudyWriteRepository {
+public class GraphWriteRepositoryImpl implements GraphWriteRepository {
 
   public static final String GRAPH_QUERY_STRING = "?graph={graphUri}";
   @Inject
@@ -42,7 +40,7 @@ public class StudyWriteRepositoryImpl implements StudyWriteRepository {
 
   public static final String DATA_ENDPOINT = "/data";
 
-  private final static Logger logger = LoggerFactory.getLogger(StudyWriteRepositoryImpl.class);
+  private final static Logger logger = LoggerFactory.getLogger(GraphWriteRepositoryImpl.class);
 
   @Override
   public void updateStudy(URI datasetUri, String studyUuid, InputStream content) {

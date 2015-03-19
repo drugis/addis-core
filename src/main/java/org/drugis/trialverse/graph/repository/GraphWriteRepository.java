@@ -1,4 +1,4 @@
-package org.drugis.trialverse.study.repository;
+package org.drugis.trialverse.graph.repository;
 
 import org.apache.http.HttpResponse;
 
@@ -8,7 +8,7 @@ import java.net.URI;
 /**
  * Created by daan on 20-11-14.
  */
-public interface StudyWriteRepository {
+public interface GraphWriteRepository {
 
 
   public void updateStudy(URI datasetUri, String studyUUID, InputStream content);

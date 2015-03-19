@@ -1,6 +1,5 @@
-package org.drugis.trialverse.study.repository;
+package org.drugis.trialverse.graph.repository;
 
-import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpResponse;
 
 import java.io.IOException;

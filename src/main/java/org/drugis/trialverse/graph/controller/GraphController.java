@@ -1,12 +1,11 @@
-package org.drugis.trialverse.study.controller;
+package org.drugis.trialverse.graph.controller;
 
-import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpResponse;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.exception.MethodNotAllowedException;
-import org.drugis.trialverse.study.repository.StudyReadRepository;
-import org.drugis.trialverse.study.repository.StudyWriteRepository;
+import org.drugis.trialverse.graph.repository.GraphReadRepository;
+import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
@@ -29,14 +28,14 @@ import java.security.Principal;
  * Created by daan on 19-11-14.
  */
 @Controller
-@RequestMapping(value = "/datasets/{datasetUUID}/studies")
-public class StudyController extends AbstractTrialverseController {
+@RequestMapping(value = "/datasets/{datasetUuid}/graphs")
+public class GraphController extends AbstractTrialverseController {
 
   @Inject
-  private StudyReadRepository studyReadRepository;
+  private GraphReadRepository graphReadRepository;
 
   @Inject
-  private StudyWriteRepository studyWriteRepository;
+  private GraphWriteRepository graphWriteRepository;
 
   @Inject
   private DatasetReadRepository datasetReadRepository;
@@ -45,23 +44,23 @@ public class StudyController extends AbstractTrialverseController {
   private TrialverseIOUtilsService trialverseIOUtilsService;
 
 
-  @RequestMapping(value = "/{studyUUID}", method = RequestMethod.GET)
+  @RequestMapping(value = "/{graphUuid}", method = RequestMethod.GET)
   @ResponseBody
-  public void getStudy(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID , @PathVariable String studyUUID) throws URISyntaxException, IOException {
-    HttpResponse response = studyReadRepository.getStudy(new URI(Namespaces.DATASET_NAMESPACE + datasetUUID), studyUUID);
+  public void getStudy(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid , @PathVariable String graphUuid) throws URISyntaxException, IOException {
+    HttpResponse response = graphReadRepository.getStudy(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
   }
 
 
-  @RequestMapping(value = "/{studyUUID}", method = RequestMethod.PUT)
+  @RequestMapping(value = "/{graphUuid}", method = RequestMethod.PUT)
   public void setStudy(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
-                     @PathVariable String datasetUUID, @PathVariable String studyUUID)
+                     @PathVariable String datasetUuid, @PathVariable String graphUuid)
           throws IOException, MethodNotAllowedException, URISyntaxException {
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      studyWriteRepository.updateStudy(new URI(Namespaces.DATASET_NAMESPACE + datasetUUID), studyUUID, request.getInputStream());
+      graphWriteRepository.updateStudy(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, request.getInputStream());
       response.setStatus(HttpStatus.OK.value());
     } else {
       throw new MethodNotAllowedException();
