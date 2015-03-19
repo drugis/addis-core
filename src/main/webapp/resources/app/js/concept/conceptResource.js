@@ -10,7 +10,7 @@ define([], function() {
         method: 'get',
         headers: {
           'Accept': 'text/turtle',
-          'Content-Type': 'text/n3'
+          'Content-Type': 'text/turtle'
         },
         transformResponse: function(data) {
           return {

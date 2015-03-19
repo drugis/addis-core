@@ -4,7 +4,7 @@ define([], function() {
   var dependencies = ['$resource'];
   var StudyResource = function($resource) {
     return $resource(
-      '/datasets/:datasetUUID/studies/:studyUUID', {
+      '/datasets/:datasetUUID/graphs/:studyUUID', {
         datasetUUID: '@datasetUUID',
         studyUUID: '@studyUUID'
       }, {

@@ -97,16 +97,6 @@ public class DatasetController extends AbstractTrialverseController {
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
   }
 
-  @RequestMapping(value="/{datasetUUID}/concepts", method = RequestMethod.GET)
-  @ResponseBody
-  public void queryConcepts(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) {
-    httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
-
-    HttpResponse response = datasetReadRepository.queryConcepts(datasetUUID);
-    trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
-    httpServletResponse.setStatus(response.getStatusLine().getStatusCode());
-  }
-
   @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.POST)
   public void updateDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
                             @PathVariable String datasetUUID) throws IOException, MethodNotAllowedException, URISyntaxException {

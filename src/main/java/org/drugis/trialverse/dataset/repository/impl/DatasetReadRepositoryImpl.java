@@ -197,19 +197,6 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     return  doAskQuery(trialverseDatasetUri, query);
   }
 
-  @Override
-  public Model queryConcepts(URI trialverseDatasetUri) {
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
-    HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-    String uri = versionMapping.getVersionedDatasetUrl() + DATA_ENDPOINT + QUERY_STRING_DEFAULT_GRAPH;
-
-    ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
-    Graph graph = addDatasetType(versionMapping.getTrialverseDatasetUrl(), responseEntity.getBody());
-    return ModelFactory.createModelForGraph(graph);
-  }
-
   private static class LoadResourceException extends RuntimeException {
     public LoadResourceException(String s) {
       super(s);
