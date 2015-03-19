@@ -43,14 +43,13 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
   private final static Logger logger = LoggerFactory.getLogger(GraphWriteRepositoryImpl.class);
 
   @Override
-  public void updateStudy(URI datasetUri, String studyUuid, InputStream content) {
+  public void updateGraph(URI datasetUri, String graphUuid, InputStream content) {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
     String uri = versionMapping.getVersionedDatasetUrl() + DATA_ENDPOINT + GRAPH_QUERY_STRING;
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
     HttpEntity<InputStream> requestEntity = new HttpEntity<>(content, httpHeaders);
     restTemplate.getMessageConverters().add(new InputStreamMessageConverter());
-    restTemplate.put(uri, requestEntity, Namespaces.STUDY_NAMESPACE + studyUuid);
-
+    restTemplate.put(uri, requestEntity, Namespaces.GRAPH_NAMESPACE + graphUuid);
   }
 }

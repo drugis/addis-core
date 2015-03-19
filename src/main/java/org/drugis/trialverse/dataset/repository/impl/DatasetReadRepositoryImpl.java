@@ -46,7 +46,6 @@ import java.util.List;
 public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   private static final Logger logger = LoggerFactory.getLogger(DatasetReadRepositoryImpl.class);
-  private final static String QUERY_CONCEPTS = loadResource("queryConceptsConstruct.sparql");
   private static final String STUDIES_WITH_DETAILS = loadResource("queryStudiesWithDetails.sparql");
   private static final String CONTAINS_STUDY_WITH_SHORTNAME = loadResource("askContainsStudyWithLabel.sparql");
   public static final String QUERY_ENDPOINT = "/query";

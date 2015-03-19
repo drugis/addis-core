@@ -46,8 +46,8 @@ public class GraphController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/{graphUuid}", method = RequestMethod.GET)
   @ResponseBody
-  public void getStudy(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid , @PathVariable String graphUuid) throws URISyntaxException, IOException {
-    HttpResponse response = graphReadRepository.getStudy(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid);
+  public void getGraph(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid , @PathVariable String graphUuid) throws URISyntaxException, IOException {
+    HttpResponse response = graphReadRepository.getGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
@@ -55,12 +55,12 @@ public class GraphController extends AbstractTrialverseController {
 
 
   @RequestMapping(value = "/{graphUuid}", method = RequestMethod.PUT)
-  public void setStudy(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
+  public void setGraph(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
                      @PathVariable String datasetUuid, @PathVariable String graphUuid)
           throws IOException, MethodNotAllowedException, URISyntaxException {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      graphWriteRepository.updateStudy(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, request.getInputStream());
+      graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, request.getInputStream());
       response.setStatus(HttpStatus.OK.value());
     } else {
       throw new MethodNotAllowedException();

@@ -1,7 +1,5 @@
 package org.drugis.trialverse.graph.repository;
 
-import org.apache.http.HttpResponse;
-
 import java.io.InputStream;
 import java.net.URI;
 
@@ -11,5 +9,5 @@ import java.net.URI;
 public interface GraphWriteRepository {
 
 
-  public void updateStudy(URI datasetUri, String studyUUID, InputStream content);
+  public void updateGraph(URI datasetUri, String graphUuid, InputStream content);
 }

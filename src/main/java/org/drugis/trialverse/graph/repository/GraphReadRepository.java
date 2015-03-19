@@ -10,5 +10,5 @@ import java.net.URI;
  */
 public interface GraphReadRepository {
 
-  public HttpResponse getStudy(URI trialverseDatasetUri, String studyUUID) throws IOException;
+  public HttpResponse getGraph(URI trialverseDatasetUri, String graphUuid) throws IOException;
 }

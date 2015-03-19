@@ -31,12 +31,12 @@ public class GraphReadRepositoryImpl implements GraphReadRepository {
   private VersionMappingRepository versionMappingRepository;
 
   @Override
-  public HttpResponse getStudy(URI trialverseDatasetUri, String studyUUID) throws IOException {
+  public HttpResponse getGraph(URI trialverseDatasetUri, String graphUUID) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(DATA_ENDPOINT)
-            .queryParam(GRAPH, Namespaces.STUDY_NAMESPACE + studyUUID)
+            .queryParam(GRAPH, Namespaces.GRAPH_NAMESPACE + graphUUID)
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
     request.addHeader(org.apache.http.HttpHeaders.ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());

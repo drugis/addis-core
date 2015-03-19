@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by connor on 28-11-14.
@@ -49,19 +49,19 @@ public class GraphReadRepositoryTest {
   }
 
   @Test
-  public void testGetStudy() throws IOException, URISyntaxException {
+  public void testGetGraph() throws IOException, URISyntaxException {
     String datasetUUID = "datasetUUID";
-    String studyUUID = "uuid";
+    String graphUUID = "uuid";
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
 
     VersionMapping mapping = new VersionMapping("http://versionedDatsetUrl", "ownerUuid", trialverseDatasetUri.toString());
     when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri)).thenReturn(mapping);
 
-    graphReadRepository.getStudy(trialverseDatasetUri, studyUUID);
+    graphReadRepository.getGraph(trialverseDatasetUri, graphUUID);
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(mapping.getVersionedDatasetUrl())
             .path("/data")
-            .queryParam("graph", Namespaces.STUDY_NAMESPACE + studyUUID)
+            .queryParam("graph", Namespaces.GRAPH_NAMESPACE + graphUUID)
             .build();
 
     HttpGet request = new HttpGet(uriComponents.toUri());

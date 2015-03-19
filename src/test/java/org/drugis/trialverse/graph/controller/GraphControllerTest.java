@@ -86,18 +86,18 @@ public class GraphControllerTest {
   @Test
   public void testGetGraph() throws Exception {
     String datasetUUID = "datasetUUID";
-    String studyUUID = "studyUUID";
+    String graphUUID = "graphUUID";
     BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
     HttpResponse httpResponse = new BasicHttpResponse(statusLine);
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    when(graphReadRepository.getStudy(trialverseDatasetUri, studyUUID)).thenReturn(httpResponse);
+    when(graphReadRepository.getGraph(trialverseDatasetUri, graphUUID)).thenReturn(httpResponse);
 
 
-    mockMvc.perform(get("/datasets/" + datasetUUID + "/graphs/" + studyUUID).principal(user))
+    mockMvc.perform(get("/datasets/" + datasetUUID + "/graphs/" + graphUUID).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
-    verify(graphReadRepository).getStudy(trialverseDatasetUri, studyUUID);
+    verify(graphReadRepository).getGraph(trialverseDatasetUri, graphUUID);
     verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(HttpResponse.class), any(HttpServletResponse.class));
   }
 
@@ -106,11 +106,11 @@ public class GraphControllerTest {
     String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
     String datasetUUID = "datasetUUID";
     URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    String studyUUID = "studyUUID";
+    String graphUUID = "graphUUID";
     when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(false);
 
     mockMvc.perform(
-            put("/datasets/" + datasetUUID + "/graphs/" + studyUUID)
+            put("/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(jsonContent)
                     .principal(user)).andExpect(status().isForbidden());
 
@@ -119,34 +119,34 @@ public class GraphControllerTest {
   }
 
   @Test
-  public void testUpdateStudy() throws Exception {
+  public void testUpdateGraph() throws Exception {
     String updateContent = "updateContent";
     String datasetUUID = "datasetUUID";
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    String studyUUID = "studyUUID";
+    String graphUUID = "graphUUID";
 
     when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
 
     mockMvc.perform(
-            put("/datasets/" + datasetUUID + "/graphs/" + studyUUID)
+            put("/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(updateContent)
                     .principal(user))
             .andExpect(status().isOk());
 
     verify(datasetReadRepository).isOwner(datasetUrl, user);
-    verify(graphWriteRepository).updateStudy(Matchers.<URI>anyObject(), anyString(), Matchers.any(InputStream.class));
+    verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(InputStream.class));
   }
 
   @Test
-  public void testUpdateStudyUserNotDatasetOwner() throws Exception {
+  public void testUpdateGraphUserNotDatasetOwner() throws Exception {
     String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
     String datasetUUID = "datasetUUID";
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    String studyUUID = "studyUUID";
+    String graphUUID = "graphUUID";
     when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(false);
 
     mockMvc.perform(
-            put("/datasets/" + datasetUUID + "/graphs/" + studyUUID)
+            put("/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(jsonContent)
                     .principal(user)).andExpect(status().isForbidden());
 

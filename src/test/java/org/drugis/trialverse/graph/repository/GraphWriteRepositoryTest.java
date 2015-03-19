@@ -66,9 +66,9 @@ public class GraphWriteRepositoryTest {
   }
 
   @Test
-  public void testUpdateStudy() throws IOException, URISyntaxException {
+  public void testUpdateGraph() throws IOException, URISyntaxException {
     String datasetUuid = "datasetuuid";
-    String studyUuid = "studyUuid";
+    String graphUuid = "graphUuid";
     HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
     InputStream inputStream = IOUtils.toInputStream("content");
     DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
@@ -78,13 +78,13 @@ public class GraphWriteRepositoryTest {
     VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl.toString());
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
-    graphWriteRepository.updateStudy(datasetUrl, studyUuid, delegatingServletInputStream);
+    graphWriteRepository.updateGraph(datasetUrl, graphUuid, delegatingServletInputStream);
 
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
     HttpEntity<DelegatingServletInputStream> requestEntity = new HttpEntity<>(delegatingServletInputStream, httpHeaders);
     String uri = versionMapping.getVersionedDatasetUrl() + "/data?graph={graphUri}";
-    verify(restTemplate).put(uri, requestEntity, Namespaces.STUDY_NAMESPACE + studyUuid);
+    verify(restTemplate).put(uri, requestEntity, Namespaces.GRAPH_NAMESPACE + graphUuid);
   }
 
 }
