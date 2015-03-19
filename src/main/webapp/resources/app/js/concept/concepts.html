@@ -20,7 +20,7 @@
     <h2>{{dataset.label}}</h2>
     <h5>{{dataset.comment}}</h5>
     <h3>Concepts</h3>
-    <h5>Drugs</h5>
+    <h5>Drugs</h5> <button class="small" ng-click="openAddConceptDialog()"><i class="fa fa-plus"></i></button>
     <ul id="drugs">
       <li ng-repeat="concept in concepts | filter:'ontology#drug'">{{concept.label}}</li>
     </ul>

@@ -11,6 +11,7 @@ define(function (require) {
 
     //controllers
     .controller('ConceptController', require('concept/conceptController'))
+    .controller('CreateConceptController', require('concept/createConceptController'))
 
      //resources
     .factory('DatasetResource', require('dataset/datasetResource')) // only need resource, not entire module

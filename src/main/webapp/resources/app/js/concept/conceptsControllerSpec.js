@@ -12,6 +12,7 @@ define(['angular', 'angular-mocks'], function() {
       queryItemsDefer,
       loadDatasetStoreDefer,
       datasetQueryDefer,
+      modalMock = jasmine.createSpyObj('$modal', ['open']),
       datasetServiceMock = jasmine.createSpyObj('DatasetService', ['loadStore', 'queryDataset', 'reset']),
       datasetResourceMock = jasmine.createSpyObj('DatasetResource', ['get']),
       conceptServiceMock = jasmine.createSpyObj('ConceptService', ['loadStore', 'queryItems']);
@@ -38,6 +39,7 @@ define(['angular', 'angular-mocks'], function() {
 
       $controller('ConceptController', {
         $scope: scope,
+        $modal: modalMock,
         $stateParams: stateParamsMock,
         DatasetService: datasetServiceMock,
         DatasetResource: DatasetResource,

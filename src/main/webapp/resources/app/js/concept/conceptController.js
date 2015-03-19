@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', 'DatasetService', 'DatasetResource', 'ConceptService', 'GraphResource'];
-    var ConceptController = function($scope, $stateParams, DatasetService, DatasetResource, ConceptService, GraphResource) {
+    var dependencies = ['$scope', '$modal', '$stateParams', 'DatasetService', 'DatasetResource', 'ConceptService', 'GraphResource'];
+    var ConceptController = function($scope, $modal, $stateParams, DatasetService, DatasetResource, ConceptService, GraphResource) {
       var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUUID;
       $scope.concepts = {};
 
@@ -11,11 +11,7 @@ define([],
           datasetUUID: $stateParams.datasetUUID,
           graphUuid: 'concepts'
         }).$promise.then(function(conceptsTurtle) {
-          ConceptService.loadStore(conceptsTurtle.data).then(function() {
-            ConceptService.queryItems(datasetUri).then(function(conceptsJson) {
-              $scope.concepts = conceptsJson;
-            });
-          });
+          ConceptService.loadStore(conceptsTurtle.data).then(reloadConcepts);
         });
       }
 
@@ -31,9 +27,31 @@ define([],
         });
       }
 
+      function reloadConcepts() {
+        return ConceptService.queryItems(datasetUri).then(function(conceptsJson) {
+          $scope.concepts = conceptsJson;
+        });
+      }
+
       // onload
       reloadDatasetModel();
       reloadConceptsModel();
+
+      $scope.openAddConceptDialog = function() {
+        $modal.open({
+          templateUrl: 'app/js/concept/createConcept.html',
+          controller: 'CreateConceptController',
+          resolve: {
+            callback: function() {
+              return reloadConcepts;
+            }
+          }
+        });
+      };
+
+      $scope.areConceptsModified = function() {
+        return ConceptService.areConceptsModified();
+      }
 
     };
     return dependencies.concat(ConceptController);

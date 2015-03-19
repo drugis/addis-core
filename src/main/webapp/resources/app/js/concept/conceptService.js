@@ -1,7 +1,7 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$q', 'SparqlResource', 'RemoteRdfStoreService'];
-  var ConceptService = function($q, SparqlResource, RemoteRdfStoreService) {
+  var dependencies = ['$q', 'SparqlResource', 'RemoteRdfStoreService', 'UUIDService'];
+  var ConceptService = function($q, SparqlResource, RemoteRdfStoreService, UUIDService) {
 
     var loadDefer = $q.defer();
     var
@@ -10,6 +10,7 @@ define([], function() {
       modified = false;
 
     var queryConceptsTemplate = SparqlResource.get('queryConcepts.sparql');
+    var addConceptTemplate = SparqlResource.get('addConcept.sparql');
 
     function loadStore(data) {
       console.log('concept loadStore start');
@@ -19,6 +20,24 @@ define([], function() {
           loadDefer.resolve();
         });
       });
+    }
+
+    function queryItems(datasetUri) {
+      return queryConceptsTemplate.then(function(template) {
+        var query = fillInTemplate(template, datasetUri);
+        return doNonModifyingQuery(query);
+      });
+    }
+
+    function addItem(datasetUri, concept) {
+      return addConceptTemplate.then(function(template) {
+        var query = fillInConceptTemplate(template, datasetUri, concept);
+        return doModifyingQuery(query);
+      });
+    }
+
+    function areConceptsModified() {
+      return modified;
     }
 
     function doModifyingQuery(query) {
@@ -35,21 +54,26 @@ define([], function() {
       });
     }
 
-    function queryItems(datasetUri) {
-      return queryConceptsTemplate.then(function(template) {
-        var query = fillInTemplate(template, datasetUri);
-        return doNonModifyingQuery(query);
-      });
-    }
 
     function fillInTemplate(template, datasetUri) {
       var conceptGraphUri = datasetUri + '/concepts';
       return template.replace(/\$conceptGraphUri/g, conceptGraphUri);
     }
 
+    function fillInConceptTemplate(template, datasetUri, concept) {
+      var conceptGraphUri = datasetUri + '/concepts';
+      return template.replace(/\$conceptGraphUri/g, conceptGraphUri)
+        .replace(/\$conceptUri/g, 'http://trials.drugis.org/concepts/' + UUIDService.generate())
+        .replace(/\$conceptType/g, concept.type.uri)
+        .replace(/\$conceptTitle/g, concept.title)
+        ;
+    }
+
     return {
       queryItems: queryItems,
-      loadStore: loadStore
+      loadStore: loadStore,
+      addItem: addItem,
+      areConceptsModified: areConceptsModified
     };
 
   };
