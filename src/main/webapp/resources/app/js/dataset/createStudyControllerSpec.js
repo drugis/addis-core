@@ -3,12 +3,12 @@ define(['angular', 'angular-mocks'], function() {
   describe('create study controller', function() {
 
     var scope,
-      mockModal = jasmine.createSpyObj('$mock', ['dismiss', 'close']),
-      datasetService = jasmine.createSpyObj('DatasetService', ['addStudyToDatasetGraph']),
-      datasetResource = jasmine.createSpyObj('DatasetResource', ['save']),
-      uUIDService = jasmine.createSpyObj('UUIDService', ['generate']),
-      studyService = jasmine.createSpyObj('StudyService', ['createEmptyStudyJsonLD']),
-      studyResource = jasmine.createSpyObj('StudyResource', ['put']),
+      modalMock = jasmine.createSpyObj('$mock', ['dismiss', 'close']),
+      datasetServiceMock = jasmine.createSpyObj('DatasetService', ['addStudyToDatasetGraph']),
+      datasetResourceMock = jasmine.createSpyObj('DatasetResource', ['save']),
+      uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']),
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['createEmptyStudyJsonLD']),
+      graphResourceMock = jasmine.createSpyObj('GraphResource', ['put']),
       mockDatasetsResult,
       mockDatasetsDeferred;
 
@@ -25,12 +25,12 @@ define(['angular', 'angular-mocks'], function() {
       $controller('CreateStudyController', {
         $scope: scope,
         $stateParams: {},
-        $modalInstance: mockModal,
-        DatasetService: datasetService,
-        DatasetResource: datasetResource,
-        UUIDService: uUIDService,
-        StudyService: studyService,
-        StudyResource: studyResource
+        $modalInstance: modalMock,
+        DatasetService: datasetServiceMock,
+        DatasetResource: datasetResourceMock,
+        UUIDService: uuidServiceMock,
+        StudyService: studyServiceMock,
+        GraphResource: graphResourceMock
       });
     }));
 

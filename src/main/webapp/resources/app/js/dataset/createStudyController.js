@@ -1,10 +1,10 @@
 'use strict';
 define([], function() {
   var dependencies = ['$scope', '$stateParams', '$modalInstance', 'DatasetService', 'DatasetResource',
-    'UUIDService', 'StudyService', 'StudyResource'
+    'UUIDService', 'StudyService', 'GraphResource'
   ];
   var CreateStudyController = function($scope, $stateParams, $modalInstance, DatasetService, DatasetResource,
-    UUIDService, StudyService, StudyResource) {
+    UUIDService, StudyService, GraphResource) {
 
     $scope.isCreatingStudy = false;
 
@@ -21,9 +21,9 @@ define([], function() {
         StudyService.getStudyGraph().then(function(queryResult) {
           var uuid = StudyService.getStudyUUID();
 
-          StudyResource.put({
+          GraphResource.put({
             datasetUUID: $stateParams.datasetUUID,
-            studyUUID: uuid
+            graphUuid: uuid
           }, queryResult.data, function() {
             $scope.loadStudiesWithDetail();
             $scope.isCreatingStudy = true;

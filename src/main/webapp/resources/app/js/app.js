@@ -9,6 +9,7 @@ define(
     'dataset/dataset',
     'util/util',
     'study/study',
+    'graph/graph',
     'arm/arm',
     'outcome/outcome',
     'populationCharacteristic/populationCharacteristic',
@@ -31,6 +32,7 @@ define(
       'mm.foundation.typeahead',
       'trialverse.dataset',
       'trialverse.util',
+      'trialverse.graph',
       'trialverse.study',
       'trialverse.arm',
       'trialverse.outcome',
@@ -47,8 +49,8 @@ define(
 
 
     Number.isInteger = Number.isInteger || function(value) {
-    return typeof value === "number" && 
-           isFinite(value) && 
+    return typeof value === "number" &&
+           isFinite(value) &&
            Math.floor(value) === value;
     };
 

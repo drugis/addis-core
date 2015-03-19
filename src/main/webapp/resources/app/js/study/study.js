@@ -10,7 +10,8 @@ define(function (require) {
     'trialverse.endpoint',
     'trialverse.adverseEvent',
     'trialverse.measurementMoment',
-    'trialverse.results'])
+    'trialverse.results',
+    'trialverse.graph'])
     // controllers
     .controller('StudyController', require('study/studyController'))
 
@@ -18,7 +19,6 @@ define(function (require) {
     .factory('StudyService', require('study/studyService'))
 
     //resources
-    .factory('StudyResource', require('study/studyResource'))
     .factory('DatasetResource', require('dataset/datasetResource'))
 
     //directives

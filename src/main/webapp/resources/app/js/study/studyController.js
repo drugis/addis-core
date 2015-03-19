@@ -1,10 +1,10 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$window', 'StudyResource', '$location', '$anchorScroll',
+    var dependencies = ['$scope', '$stateParams', '$window', 'GraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'DatasetResource', 'DatasetService', 'ResultsService', 'StudyDesignService'
     ];
-    var StudyController = function($scope, $stateParams, $window, StudyResource, $location, $anchorScroll,
+    var StudyController = function($scope, $stateParams, $window, GraphResource, $location, $anchorScroll,
       $modal, StudyService, DatasetResource, DatasetService, ResultsService, StudyDesignService) {
 
       StudyService.reset();
@@ -104,7 +104,10 @@ define([],
       });
 
       function reloadStudyModel() {
-        StudyResource.get($stateParams, function(response) {
+        GraphResource.get({
+            datasetUUID: $stateParams.datasetUUID,
+            graphUuid: $stateParams.studyUUID
+          }, function(response) {
           StudyService.loadStore(response.data)
             .then(function() {
               console.log('loading study-store success');
@@ -160,9 +163,9 @@ define([],
 
       $scope.saveStudy = function() {
         StudyService.getStudyGraph().then(function(graph) {
-          StudyResource.put({
+          GraphResource.put({
             datasetUUID: $stateParams.datasetUUID,
-            studyUUID: $stateParams.studyUUID
+            graphUuid: $stateParams.studyUUID
           }, graph.data, function() {
             console.log('graph saved');
             StudyService.studySaved();

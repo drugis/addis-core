@@ -25,15 +25,13 @@ define(['angular', 'angular-mocks'], function() {
 
     beforeEach(module('trialverse.study'));
 
-    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, StudyResource, DatasetResource) {
+    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, GraphResource, DatasetResource) {
 
       scope = $rootScope;
       httpBackend = $httpBackend;
 
-      httpBackend.expectGET('/datasets/' + datasetUUID + '/studies/' + studyUUID).respond('study');
+      httpBackend.expectGET('/datasets/' + datasetUUID + '/graphs/' + studyUUID).respond('study');
       httpBackend.expectGET('/datasets/datasetUUID?studyUUID=studyUUID').respond('dataset');
-
-
 
       loadStoreDeferred = $q.defer();
       queryStudyDataDeferred = $q.defer();
@@ -51,7 +49,7 @@ define(['angular', 'angular-mocks'], function() {
       $controller('StudyController', {
         $scope: scope,
         $stateParams: mockStateParams,
-        StudyResource: StudyResource,
+        GraphResource: GraphResource,
         $location: locationMock,
         $anchorScroll: anchorScrollMock,
         $modal: modalMock,
@@ -85,9 +83,9 @@ define(['angular', 'angular-mocks'], function() {
     });
 
     describe('saveStudy', function() {
-      it('should export the graph and PUT it to the resource', inject(function(StudyResource, $q) {
+      it('should export the graph and PUT it to the resource', inject(function(GraphResource, $q) {
 
-        httpBackend.expectPUT('/datasets/datasetUUID/studies/studyUUID').respond(200,'');
+        httpBackend.expectPUT('/datasets/datasetUUID/graphs/studyUUID').respond(200,'');
 
         scope.saveStudy();
         expect(studyServiceMock.getStudyGraph).toHaveBeenCalled();
