@@ -4,7 +4,7 @@ PREFIX study: <http://trials.drugis.org/studies/>
 SELECT * WHERE {
   GRAPH <$graphUri> {
     study:$studyUuid ontology:has_activity ?activityUri .
-    ?activityUri ontology:activity_application [
+    ?activityUri ontology:has_activity_application [
       ontology:applied_to_arm ?armUri ;
       ontology:applied_in_epoch ?epochUri
     ] .
