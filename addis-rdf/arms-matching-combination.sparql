@@ -31,7 +31,7 @@ SELECT ?studyLabel ?armLabel ?epochLabel WHERE {
     ?study ontology:has_arm ?arm .
     ?study ontology:has_primary_epoch ?epoch .
     ?activity a ontology:TreatmentActivity ;
-      ontology:activity_application [
+      ontology:has_activity_application [
         ontology:applied_to_arm ?arm ;
         ontology:applied_in_epoch ?epoch
       ] ;

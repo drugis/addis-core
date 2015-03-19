@@ -7,7 +7,7 @@ DELETE {
     <$activityUri> ?activityProperty ?activityObject . 
     ?treatmentUri ?treatmentProperty ?treatmenObject . 
     ?dose ?doseProperty ?doseValue .
-    <$activityUri> ontology:activity_application ?application .
+    <$activityUri> ontology:has_activity_application ?application .
     ?application 
       ontology:applied_to_arm ?armUri ;
       ontology:applied_in_epoch ?epochUri .
@@ -24,7 +24,7 @@ WHERE {
     	?dose ?doseProperty ?doseValue .
     }
     OPTIONAL {
-      <$activityUri> ontology:activity_application ?application .
+      <$activityUri> ontology:has_activity_application ?application .
       ?application 
         ontology:applied_to_arm ?armUri ;
         ontology:applied_in_epoch ?epochUri .

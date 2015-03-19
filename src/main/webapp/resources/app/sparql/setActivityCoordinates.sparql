@@ -3,14 +3,14 @@ PREFIX study: <http://trials.drugis.org/studies/>
 
 WITH <$graphUri>
 DELETE {
-  <$activityUri> ontology:activity_application ?application .
+  <$activityUri> ontology:has_activity_application ?application .
   ?application 
     ontology:applied_in_epoch <$epochUri> ;
     ontology:applied_to_arm <$armUri> .
 }
 WHERE {
   study:$studyUuid ontology:has_activity <$activityUri> .
-  <$activityUri> ontology:activity_application ?application .
+  <$activityUri> ontology:has_activity_application ?application .
   ?application 
     ontology:applied_in_epoch <$epochUri> ;
     ontology:applied_to_arm <$armUri> .
@@ -18,7 +18,7 @@ WHERE {
 
 INSERT DATA {
   GRAPH <$graphUri> {
-    <$activityUri> ontology:activity_application [
+    <$activityUri> ontology:has_activity_application [
       ontology:applied_in_epoch <$epochUri> ;
       ontology:applied_to_arm <$armUri> ;
     ] ;

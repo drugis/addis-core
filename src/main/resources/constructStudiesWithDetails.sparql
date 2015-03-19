@@ -58,7 +58,7 @@ CONSTRUCT {
          WHERE {
           BIND ('Flexible' as ?doseType)
            ?activity a ontology:TreatmentActivity ;
-             ontology:activity_application [
+             ontology:has_activity_application [
                ontology:applied_to_arm ?arm 
              ] ;
              ontology:administered_drugs/rdf:rest*/rdf:first [ a ontology:TitratedDoseDrugTreatment ] .
