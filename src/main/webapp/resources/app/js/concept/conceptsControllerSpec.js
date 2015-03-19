@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  fdescribe('the concepts controller', function() {
+  describe('the concepts controller', function() {
 
     var
       scope, httpBackend,
