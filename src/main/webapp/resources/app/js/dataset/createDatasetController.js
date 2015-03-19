@@ -5,9 +5,8 @@ define([],
     var CreateDatasetController = function($scope, $state, $modalInstance, DatasetResource, callback) {
       $scope.dataset = {};
       $scope.createDataset = function() {
-        DatasetResource.save($scope.dataset).$promise.then(function(dataset) {
-          console.log('dataset ' + dataset + 'created');
-          callback(dataset);
+        DatasetResource.save($scope.dataset).$promise.then(function() {
+          callback();
         });
         $modalInstance.close();
       };

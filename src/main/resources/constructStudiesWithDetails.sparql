@@ -24,11 +24,9 @@ CONSTRUCT {
     ontology:numberOfArms ?numberOfArms .
 
 } WHERE {
-  GRAPH dataset:$datasetUUID {
-    dataset:$datasetUUID ontology:contains_study ?study .
-  }
   GRAPH ?study {
-  ?study 
+  ?study
+    a ontology:Study ;
     rdfs:label ?label .
     OPTIONAL {
       ?study rdfs:comment ?title .

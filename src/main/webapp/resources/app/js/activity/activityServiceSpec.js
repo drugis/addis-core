@@ -105,11 +105,11 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
           query = query.replace(/\$graphUri/g, graphUri);
 
-          console.log('graphUri = ' + uri);
-          console.log('query = ' + query);
+          // console.log('graphUri = ' + uri);
+          // console.log('query = ' + query);
 
           var result = testUtils.queryTeststore(query);
-          console.log('queryResponce ' + result);
+          // console.log('queryResponce ' + result);
           var resultObject = testUtils.deFusekify(result)
 
           var executeUpdateDeferred = q.defer();
@@ -165,7 +165,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           query = query.replace(/\$graphUri/g, graphUri);
 
           var result = testUtils.executeUpdateQuery(query);
-          //console.log('queryResponce ' + result);
+          //// console.log('queryResponce ' + result);
 
           var executeUpdateDeferred = q.defer();
           executeUpdateDeferred.resolve(result);
@@ -231,7 +231,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
           query = query.replace(/\$graphUri/g, graphUri);
           var result = testUtils.executeUpdateQuery(query);
-          console.log('queryResponce ' + result);
+          // console.log('queryResponce ' + result);
           var executeUpdateDeferred = q.defer();
           executeUpdateDeferred.resolve(result);
           return executeUpdateDeferred.promise;
@@ -239,10 +239,10 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
         remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
           query = query.replace(/\$graphUri/g, graphUri);
-          //console.log('graphUri = ' + uri);
-          //console.log('query = ' + query);
+          //// console.log('graphUri = ' + uri);
+          //// console.log('query = ' + query);
           var result = testUtils.queryTeststore(query);
-          //console.log('queryResponce ' + result);
+          //// console.log('queryResponce ' + result);
           var resultObject = testUtils.deFusekify(result)
           var executeUpdateDeferred = q.defer();
           executeUpdateDeferred.resolve(resultObject);
@@ -343,11 +343,11 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
           query = query.replace(/\$graphUri/g, graphUri);
 
-          //console.log('graphUri = ' + uri);
-          //console.log('query = ' + query);
+          //// console.log('graphUri = ' + uri);
+          //// console.log('query = ' + query);
 
           var result = testUtils.queryTeststore(query);
-          //console.log('queryResponce ' + result);
+          //// console.log('queryResponce ' + result);
           var resultObject = testUtils.deFusekify(result)
 
           var executeUpdateDeferred = q.defer();
@@ -359,7 +359,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           query = query.replace(/\$graphUri/g, graphUri);
 
           var result = testUtils.executeUpdateQuery(query);
-          //console.log('queryResponce ' + result);
+          //// console.log('queryResponce ' + result);
 
           var executeUpdateDeferred = q.defer();
           executeUpdateDeferred.resolve(result);

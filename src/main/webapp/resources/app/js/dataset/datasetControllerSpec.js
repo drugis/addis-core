@@ -6,6 +6,7 @@ define(['angular', 'angular-mocks'], function() {
       mockModal = jasmine.createSpyObj('$mock', ['open']),
       mockDatasetService = jasmine.createSpyObj('DatasetService', ['loadStore', 'queryDataset', 'reset']),
       mockJsonLDService = jasmine.createSpyObj('JsonLdService', ['rewriteAtIds']),
+      mockRemoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['deFusekify']),
       mockLoadStoreDeferred,
       mockQueryDatasetDeferred,
       mockStudiesWithDetail = {
@@ -26,8 +27,8 @@ define(['angular', 'angular-mocks'], function() {
 
       mockDatasetService.loadStore.and.returnValue(mockLoadStoreDeferred.promise);
       mockDatasetService.queryDataset.and.returnValue(mockQueryDatasetDeferred.promise);
-
-      mockJsonLDService.rewriteAtIds.and.returnValue(mockStudiesWithDetail);
+      
+      mockRemoteRdfStoreService.deFusekify.and.returnValue(mockStudiesWithDetail);
 
       mockModal.open.calls.reset();
 
@@ -41,7 +42,8 @@ define(['angular', 'angular-mocks'], function() {
         DatasetService: mockDatasetService,
         DatasetResource: DatasetResource,
         StudiesWithDetailResource: StudiesWithDetailResource,
-        JsonLdService: mockJsonLDService
+        JsonLdService: mockJsonLDService,
+        RemoteRdfStoreService: mockRemoteRdfStoreService
       });
 
     }));

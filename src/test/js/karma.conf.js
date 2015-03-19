@@ -38,7 +38,7 @@ module.exports = function(config) {
     exclude: [
       'app/js/main.js',
       'app/js/bower_components/**/*Spec.js',
-      '../../../../src/test/protractor/**/*',
+      '../../../../src/test/js/rest/**/*',
     ],
 
     preprocessors: {

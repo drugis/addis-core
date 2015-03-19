@@ -138,7 +138,7 @@ define([],
         ResultsService.cleanUpMeasurements().then(function() {
           $scope.$broadcast('refreshResults');
         });
-        StudyDesignService.cleanupCoordinates().then(function() {
+        StudyDesignService.cleanupCoordinates($stateParams.studyUUID).then(function() {
           console.log('after cleanup coord');
           $scope.$broadcast('refreshStudyDesign');
         });

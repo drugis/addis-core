@@ -30,7 +30,7 @@ define('testUtils', ['lodash'],
                 return template;
             },
             executeUpdateQuery: function(query) {
-                console.log('executeUpdateQuery: ' + query);
+                //console.log('executeUpdateQuery: ' + query);
                 var xmlHTTP = new XMLHttpRequest();
                 xmlHTTP.open('POST', testFusekiUri + '/update', false);
                 xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');

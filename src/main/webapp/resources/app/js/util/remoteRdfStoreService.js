@@ -13,7 +13,7 @@ define([], function() {
 
     function load(graphUri, data) {
       return $http.post(SCRATCH_RDF_STORE_URL + '/data',
-        data, {
+        (data || ''), {
           params: {
             'graph': graphUri
           },

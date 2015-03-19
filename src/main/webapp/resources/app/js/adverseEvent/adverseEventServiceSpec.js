@@ -91,8 +91,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
         query = query.replace(/\$graphUri/g, graphUri);
 
-        console.log('graphUri = ' + uri);
-        console.log('query = ' + query);
+        // console.log('graphUri = ' + uri);
+        // console.log('query = ' + query);
 
         testUtils.executeUpdateQuery(query);
 

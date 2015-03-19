@@ -1,12 +1,6 @@
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix study: <http://trials.drugis.org/studies/>
-prefix ontology: <http://trials.drugis.org/ontology#>
-prefix dataset: <http://trials.drugis.org/datasets/>
 
 ASK {
-  GRAPH dataset:$dataset {
-    dataset:$dataset ontology:contains_study ?study .
-  }
   GRAPH ?study {
     ?study rdfs:label $shortName .
   }

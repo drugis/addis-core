@@ -99,11 +99,11 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
         query = query.replace(/\$graphUri/g, graphUri);
 
-        //console.log('graphUri = ' + uri);
-        //console.log('query = ' + query);
+        //// console.log('graphUri = ' + uri);
+        //// console.log('query = ' + query);
 
         var updateResponce = testUtils.executeUpdateQuery(query);
-        //console.log('updateResponce ' + updateResponce);
+        //// console.log('updateResponce ' + updateResponce);
 
         var executeUpdateDeferred = q.defer();
         executeUpdateDeferred.resolve();
@@ -209,7 +209,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               expect('<' + resultAsObject.results.bindings[0].value.datatype + '>').toEqual(DOUBLE_TYPE);
               expect(updatedResults.length).toBe(1);
               expect(updatedResults[0].value).toEqual(inputColumn.value.toString());
-              console.log('res = ' + JSON.stringify(updatedResults));
+              // console.log('res = ' + JSON.stringify(updatedResults));
               done();
             });
           });
@@ -311,7 +311,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           .replace(/\$outcomeUri/g, variableToBeCleaned);
 
         var updatedResults = testUtils.deFusekify(testUtils.queryTeststore(query));
-        console.log(JSON.stringify(updatedResults[0]))
+        // console.log(JSON.stringify(updatedResults[0]))
         // verify orphan triples are missing
         expect(updatedResults.length).toBe(1);
         expect(updatedResults[0].result_property).toBe('http://trials.drugis.org/ontology#sample_size');

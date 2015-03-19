@@ -2,10 +2,10 @@
 define([],
   function() {
     var dependencies = ['$scope', '$stateParams', '$modal', '$filter', 'DatasetService', 'DatasetResource',
-      'StudiesWithDetailResource', 'JsonLdService'
+      'StudiesWithDetailResource', 'JsonLdService', 'RemoteRdfStoreService'
     ];
-    var DatasetController = function($scope, $stateParams, $modal, $filter, DatasetService, DatasetResource,
-      StudiesWithDetailResource, JsonLdService) {
+    var DatasetController = function($scope, $stateParams, $modal, DatasetService, DatasetResource,
+      StudiesWithDetailResource, JsonLdService, RemoteRdfStoreService) {
 
       DatasetResource.get($stateParams, function(response) {
         DatasetService.reset();
@@ -19,11 +19,7 @@ define([],
 
       $scope.loadStudiesWithDetail = function() {
         StudiesWithDetailResource.get($stateParams, function(result) {
-          $scope.studiesWithDetail = result['@graph'];
-          $scope.studiesWithDetail = JsonLdService.rewriteAtIds($scope.studiesWithDetail);
-          if (!$scope.studiesWithDetail) {
-            $scope.studiesWithDetail = {};
-          }
+          $scope.studiesWithDetail = RemoteRdfStoreService.deFusekify(JSON.stringify(result));
         });
       };
 
@@ -53,7 +49,7 @@ define([],
 
       $scope.tableOptions = {
         columns: [{
-          id: 'comment',
+          id: 'title',
           label: 'Title',
           visible: true
         }, {

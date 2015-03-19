@@ -15,6 +15,10 @@
  */
 package org.drugis.trialverse.config;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.drugis.trialverse.util.JenaGraphMessageConverter;
 import org.drugis.trialverse.util.WebConstants;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +27,7 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jndi.JndiTemplate;
@@ -31,6 +36,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
@@ -47,6 +53,18 @@ public class MainConfig {
   // load environment variables on deploy
   @Inject
   WebConstants webConstants;
+
+  @Bean
+  public RestTemplate restTemplate() {
+    RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+    restTemplate.getMessageConverters().add(new JenaGraphMessageConverter());
+    return restTemplate;
+  }
+
+  @Bean
+  public HttpClient httpClient() {
+    return HttpClientBuilder.create().build();
+  }
 
   @Bean(name = "dsTrialverse")
   public DataSource dataSource() {
