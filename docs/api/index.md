@@ -15,7 +15,7 @@ This document defines the Trialverse HTTP API. It is aligned as much as possible
 In addition, we try to adhere to [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) principles, although exceptions may be made to statelessness (for browser sessions) and to HATEOAS (especially where it is unclear how RDF could be used to specify the actions that are available on a resource).
 
 Even though this main specification is sufficient to enable clients to query and manipulate data in Trialverse, the versioning mechanism is centrally important to the correct implementation of this API.
-Therefore, a versioning is discussed in an accompanying document.
+Therefore, versioning is discussed in [an accompanying document](versioning.html).
 This should help verify that the Trialverse API can indeed be implemented using the proposed versioning mechanism and service.
 The layered architecture looks like:
 
@@ -27,7 +27,7 @@ Base URI
 --------
 
 All URLs in the document are relative to a base URI. By default, this is `https://trialverse.org`.
-Turtle snippets, in particular, should be read as if `@base https://trialverse.org` is present.
+Turtle snippets, in particular, should be read as if `@base <https://trialverse.org/> .` is present.
 
 ID pattern
 ----------
