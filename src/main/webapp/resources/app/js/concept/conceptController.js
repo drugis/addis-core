@@ -53,6 +53,18 @@ define([],
         return ConceptService.areConceptsModified();
       }
 
+      $scope.saveConcepts = function() {
+        ConceptService.getGraph().then(function(graph) {
+          GraphResource.put({
+            datasetUUID: $stateParams.datasetUUID,
+            graphUuid: 'concepts'
+          }, graph.data, function() {
+            console.log('graph saved');
+            ConceptService.conceptsSaved();
+          });
+        });
+      }
+
     };
     return dependencies.concat(ConceptController);
   });

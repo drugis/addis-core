@@ -20,8 +20,7 @@ define([], function() {
     }];
 
     $scope.createConcept = function() {
-      var datasetUri = 'http://trials.drugis.org/datasets/' + $stateParams.datasetUUID;
-      return ConceptService.addItem(datasetUri, $scope.concept).then(function() {
+      return ConceptService.addItem($scope.concept).then(function() {
         callback();
         $modalInstance.close();
       });

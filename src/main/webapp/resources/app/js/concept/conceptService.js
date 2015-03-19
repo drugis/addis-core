@@ -22,22 +22,31 @@ define([], function() {
       });
     }
 
-    function queryItems(datasetUri) {
+    function queryItems() {
       return queryConceptsTemplate.then(function(template) {
-        var query = fillInTemplate(template, datasetUri);
-        return doNonModifyingQuery(query);
+        return doNonModifyingQuery(template);
       });
     }
 
-    function addItem(datasetUri, concept) {
+    function addItem(concept) {
       return addConceptTemplate.then(function(template) {
-        var query = fillInConceptTemplate(template, datasetUri, concept);
+        var query = fillInConceptTemplate(template, concept);
         return doModifyingQuery(query);
       });
     }
 
     function areConceptsModified() {
       return modified;
+    }
+
+    function conceptsSaved() {
+      modified = false;
+    }
+
+    function getGraph() {
+      return loadDefer.promise.then(function() {
+        return RemoteRdfStoreService.getGraph(scratchConceptsGraphUri);
+      });
     }
 
     function doModifyingQuery(query) {
@@ -55,14 +64,12 @@ define([], function() {
     }
 
 
-    function fillInTemplate(template, datasetUri) {
-      var conceptGraphUri = datasetUri + '/concepts';
-      return template.replace(/\$conceptGraphUri/g, conceptGraphUri);
+    function fillInTemplate(template) {
+      return template;
     }
 
-    function fillInConceptTemplate(template, datasetUri, concept) {
-      var conceptGraphUri = datasetUri + '/concepts';
-      return template.replace(/\$conceptGraphUri/g, conceptGraphUri)
+    function fillInConceptTemplate(template, concept) {
+      return template
         .replace(/\$conceptUri/g, 'http://trials.drugis.org/concepts/' + UUIDService.generate())
         .replace(/\$conceptType/g, concept.type.uri)
         .replace(/\$conceptTitle/g, concept.title)
@@ -73,7 +80,9 @@ define([], function() {
       queryItems: queryItems,
       loadStore: loadStore,
       addItem: addItem,
-      areConceptsModified: areConceptsModified
+      areConceptsModified: areConceptsModified,
+      getGraph: getGraph,
+      conceptsSaved: conceptsSaved
     };
 
   };
