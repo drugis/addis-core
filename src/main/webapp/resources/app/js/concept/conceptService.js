@@ -4,7 +4,7 @@ define([], function() {
   var ConceptService = function($q, SparqlResource, RemoteRdfStoreService) {
 
     var loadDefer = $q.defer();
-    var 
+    var
       conceptsGraphUriBase = 'http://trials.drugis.org/concepts/',
       scratchConceptsGraphUri,
       modified = false;

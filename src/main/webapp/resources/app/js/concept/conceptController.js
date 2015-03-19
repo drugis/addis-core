@@ -1,13 +1,16 @@
 'use strict';
 define([],
   function() {
-    var dependencies=['$scope', '$stateParams', 'DatasetService', 'DatasetResource', 'ConceptService', 'ConceptResource'];
-    var ConceptController = function($scope, $stateParams, DatasetService, DatasetResource, ConceptService, ConceptResource) {
+    var dependencies = ['$scope', '$stateParams', 'DatasetService', 'DatasetResource', 'ConceptService', 'GraphResource'];
+    var ConceptController = function($scope, $stateParams, DatasetService, DatasetResource, ConceptService, GraphResource) {
       var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUUID;
       $scope.concepts = {};
 
       function reloadConceptsModel() {
-        ConceptResource.get($stateParams).$promise.then(function(conceptsTurtle) {
+        GraphResource.get({
+          datasetUUID: $stateParams.datasetUUID,
+          graphUuid: 'concepts'
+        }).$promise.then(function(conceptsTurtle) {
           ConceptService.loadStore(conceptsTurtle.data).then(function() {
             ConceptService.queryItems(datasetUri).then(function(conceptsJson) {
               $scope.concepts = conceptsJson;
