@@ -1,0 +1,1404 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://trials.drugis.org/ontology#"
+     xml:base="http://trials.drugis.org/ontology"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about="http://trials.drugis.org/ontology#">
+        <owl:imports rdf:resource="http://trials.drugis.org/registries"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2004/10/xpath-datatypes#dayTimeDuration -->
+
+    <rdfs:Datatype rdf:about="http://www.w3.org/2004/10/xpath-datatypes#dayTimeDuration"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/dc/terms/source -->
+
+    <owl:ObjectProperty rdf:about="http://purl.org/dc/terms/source"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#applied_in_epoch -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#applied_in_epoch">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#Epoch"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#StudyActivityApplication"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#applied_to_arm -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#applied_to_arm">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#Arm"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#StudyActivityApplication"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#dose_specification -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#dose_specification">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#DoseSpecification"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_activity_application -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_activity_application">
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#StudyActivity"/>
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#StudyActivityApplication"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_adverse_event -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_adverse_event">
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#has_study_variable"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_allocation_type -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_allocation_type">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#AllocationScheme"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Study"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_analysis -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_analysis">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#StatisticalAnalysis"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Study"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_arm -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_arm">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#Arm"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Study"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_blinding_type -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_blinding_type">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#Blinding"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Study"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_drug -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_drug">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#Drug"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_drug_treatment -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_drug_treatment">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#DrugTreatment"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#TreatmentActivity"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_eligibility_criteria -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_eligibility_criteria">
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Study"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_epochs -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_epochs">
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Study"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_health_condition_studied -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_health_condition_studied">
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Study"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_included_population -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_included_population"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_measurement_moment -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_measurement_moment">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#MeasurementMoment"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Study"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_objective -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_objective">
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Study"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_outcome -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_outcome">
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#has_study_variable"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_overall_status -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_overall_status">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#OverallStudyStatus"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Study"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_population_characteristic -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_population_characteristic">
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#has_study_variable"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_primary_epoch -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_primary_epoch">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#Epoch"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Study"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_primary_outcome -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_primary_outcome">
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#has_outcome"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_publication -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_publication">
+        <rdfs:range rdf:resource="http://purl.org/ontology/bibo/Document"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_result_property -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_result_property">
+        <rdfs:comment>Ideally we need a different solution to this, but we need some way of attaching results on specific statistics (e.g. mean, standard deviation).
+
+The range is the set of data properties under &quot;statistic&quot;.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#StatisticalAnalysis"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_study_variable -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#has_study_variable">
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Study"/>
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#StudyVariable"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#is_measured_at -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#is_measured_at">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#MeasurementMoment"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#StudyVariable"/>
+        <owl:propertyChainAxiom rdf:parseType="Collection">
+            <rdf:Description>
+                <owl:inverseOf rdf:resource="http://trials.drugis.org/ontology#of_variable"/>
+            </rdf:Description>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#of_moment"/>
+        </owl:propertyChainAxiom>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#is_subdivision_of -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#is_subdivision_of"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#is_subgroup_of_arm -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#is_subgroup_of_arm">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#Arm"/>
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#is_subdivision_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#is_subgroup_of_stratum -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#is_subgroup_of_stratum">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#Stratum"/>
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#is_subdivision_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#measures_concept -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#measures_concept">
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#StudyVariable"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#of_analysis -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#of_analysis">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#StatisticalAnalysis"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#StatisticalAnalysisResult"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#of_group -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#of_group">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#Group"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Measurement"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#of_moment -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#of_moment">
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Measurement"/>
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#MeasurementMoment"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#of_variable -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#of_variable">
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#Measurement"/>
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#StudyVariable"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#registry -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#registry">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#StudyRegistration"/>
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#StudyRegistry"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#relative_to_anchor -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#relative_to_anchor">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#MeasurementMomentAnchor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#relative_to_epoch -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#relative_to_epoch">
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#Epoch"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#MeasurementMoment"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#treatment_dose -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#treatment_dose">
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#FixedDoseDrugTreatment"/>
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#dose_specification"/>
+        <owl:propertyDisjointWith rdf:resource="http://trials.drugis.org/ontology#treatment_max_dose"/>
+        <owl:propertyDisjointWith rdf:resource="http://trials.drugis.org/ontology#treatment_min_dose"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#treatment_max_dose -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#treatment_max_dose">
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#TitratedDoseDrugTreatment"/>
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#dose_specification"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#treatment_min_dose -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#treatment_min_dose">
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#TitratedDoseDrugTreatment"/>
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#dose_specification"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#unit -->
+
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#unit">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="http://trials.drugis.org/ontology#Unit"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://trials.drugis.org/ontology#count -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#count">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#statistic"/>
+        <rdfs:range rdf:resource="&xsd;integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#duration -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#duration">
+        <rdfs:range rdf:resource="http://www.w3.org/2004/10/xpath-datatypes#dayTimeDuration"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#first_quartile -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#first_quartile">
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#quantile"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_end_date -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#has_end_date">
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#has_start_date -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#has_start_date">
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#interquartile_range -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#interquartile_range">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#measure_of_dispersion"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#mean -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#mean">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#measure_of_central_tendency"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#measure_of_central_tendency -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#measure_of_central_tendency">
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#statistic"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#measure_of_dispersion -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#measure_of_dispersion">
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#statistic"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#median -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#median">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#measure_of_central_tendency"/>
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#quantile"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#percentage -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#percentage">
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#statistic"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#periodicity -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#periodicity">
+        <rdfs:range rdf:resource="http://www.w3.org/2004/10/xpath-datatypes#dayTimeDuration"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#quantile -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#quantile">
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#statistic"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#registration_id -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#registration_id">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://trials.drugis.org/ontology#StudyRegistration"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#sample_size -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#sample_size">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#statistic"/>
+        <rdfs:range rdf:resource="&xsd;integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#standard_deviation -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#standard_deviation">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#measure_of_dispersion"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#standard_error -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#standard_error">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#measure_of_dispersion"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#statistic -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#statistic"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#third_quartile -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#third_quartile">
+        <rdfs:subPropertyOf rdf:resource="http://trials.drugis.org/ontology#quantile"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#time_offset -->
+
+    <owl:DatatypeProperty rdf:about="http://trials.drugis.org/ontology#time_offset">
+        <rdfs:range rdf:resource="http://www.w3.org/2004/10/xpath-datatypes#dayTimeDuration"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.w3.org/1999/02/22-rdf-syntax-ns#value -->
+
+    <owl:DatatypeProperty rdf:about="&rdf;value"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/dc/terms/BibliographicResource -->
+
+    <owl:Class rdf:about="http://purl.org/dc/terms/BibliographicResource">
+        <owl:equivalentClass rdf:resource="http://purl.org/ontology/bibo/Document"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/net/OCRe/OCRe_ext.owl#OCRE229000 -->
+
+    <owl:Class rdf:about="http://purl.org/net/OCRe/OCRe_ext.owl#OCRE229000">
+        <owl:equivalentClass rdf:resource="http://trials.drugis.org/ontology#DoubleBlind"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/net/OCRe/OCRe_ext.owl#OCRE494000 -->
+
+    <owl:Class rdf:about="http://purl.org/net/OCRe/OCRe_ext.owl#OCRE494000">
+        <owl:equivalentClass rdf:resource="http://trials.drugis.org/ontology#SingleBlind"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/net/OCRe/study_design.owl#OCRE100008 -->
+
+    <owl:Class rdf:about="http://purl.org/net/OCRe/study_design.owl#OCRE100008">
+        <owl:equivalentClass rdf:resource="http://trials.drugis.org/ontology#OpenLabel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/net/OCRe/study_design.owl#OCRE100021 -->
+
+    <owl:Class rdf:about="http://purl.org/net/OCRe/study_design.owl#OCRE100021">
+        <owl:equivalentClass rdf:resource="http://trials.drugis.org/ontology#AllocationScheme"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/net/OCRe/study_design.owl#OCRE100033 -->
+
+    <owl:Class rdf:about="http://purl.org/net/OCRe/study_design.owl#OCRE100033">
+        <owl:equivalentClass rdf:resource="http://trials.drugis.org/ontology#RandomAllocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/net/OCRe/study_design.owl#OCRE100045 -->
+
+    <owl:Class rdf:about="http://purl.org/net/OCRe/study_design.owl#OCRE100045">
+        <owl:equivalentClass rdf:resource="http://trials.drugis.org/ontology#Blinding"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/net/OCRe/study_design.owl#OCRE100077 -->
+
+    <owl:Class rdf:about="http://purl.org/net/OCRe/study_design.owl#OCRE100077">
+        <owl:equivalentClass rdf:resource="http://trials.drugis.org/ontology#NonRandomAllocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/net/OCRe/study_protocol.owl#OCRE300001 -->
+
+    <owl:Class rdf:about="http://purl.org/net/OCRe/study_protocol.owl#OCRE300001"/>
+    
+
+
+    <!-- http://purl.org/ontology/bibo/Document -->
+
+    <owl:Class rdf:about="http://purl.org/ontology/bibo/Document"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#ActiveNotRecruiting -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#ActiveNotRecruiting">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#OverallStudyStatus"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#AllocationScheme -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#AllocationScheme"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Arm -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Arm">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#Group"/>
+        <rdfs:comment>A group defined by randomization of a population.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#ArmSubGroup -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#ArmSubGroup">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#is_subgroup_of_arm"/>
+                        <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#Arm"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#is_subgroup_of_stratum"/>
+                        <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#Stratum"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#Group"/>
+        <rdfs:comment>A subgroup of an arm defined as the intersection of the arm with one or more strata.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Blinding -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Blinding"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Completed -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Completed">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#OverallStudyStatus"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Continuous -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Continuous"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#ContinuousStudyVariable -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#ContinuousStudyVariable">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#StudyVariable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#CountingAnalysis -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#CountingAnalysis">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#StatisticalAnalysis"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#CountingResult -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#CountingResult">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#of_analysis"/>
+                <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#CountingAnalysis"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#StatisticalAnalysisResult"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#count"/>
+                        <owl:someValuesFrom rdf:resource="&xsd;integer"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#sample_size"/>
+                        <owl:someValuesFrom rdf:resource="&xsd;integer"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Dataset -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Dataset">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.org/dc/terms/source"/>
+                <owl:allValuesFrom rdf:resource="http://purl.org/ontology/bibo/Document"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Dichotomous -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Dichotomous"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#DichotomousStudyVariable -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#DichotomousStudyVariable">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#StudyVariable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#DoseSpecification -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#DoseSpecification">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#unit"/>
+                        <owl:onClass rdf:resource="http://trials.drugis.org/ontology#Unit"/>
+                        <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#periodicity"/>
+                        <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                        <owl:onDataRange rdf:resource="http://www.w3.org/2004/10/xpath-datatypes#dayTimeDuration"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&rdf;value"/>
+                        <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                        <owl:onDataRange rdf:resource="&xsd;double"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#DoubleBlind -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#DoubleBlind">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#Blinding"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Drug -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Drug"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#DrugTreatment -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#DrugTreatment">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#has_drug"/>
+                <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#Drug"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Enrolling -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Enrolling">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#OverallStudyStatus"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Epoch -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Epoch">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#duration"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2004/10/xpath-datatypes#dayTimeDuration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#FixedDoseDrugTreatment -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#FixedDoseDrugTreatment">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#DrugTreatment"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#treatment_dose"/>
+                <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#DoseSpecification"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#FollowUpActivity -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#FollowUpActivity">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#StudyActivity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Group -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Group"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Measurement -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Measurement">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#of_group"/>
+                        <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#Group"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#of_moment"/>
+                        <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#MeasurementMoment"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#of_variable"/>
+                        <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#StudyVariable"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#MeasurementMoment -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#MeasurementMoment">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#relative_to_anchor"/>
+                        <owl:onClass rdf:resource="http://trials.drugis.org/ontology#MeasurementMomentAnchor"/>
+                        <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#relative_to_epoch"/>
+                        <owl:onClass rdf:resource="http://trials.drugis.org/ontology#Epoch"/>
+                        <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#time_offset"/>
+                        <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                        <owl:onDataRange rdf:resource="http://www.w3.org/2004/10/xpath-datatypes#dayTimeDuration"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#MeasurementMomentAnchor -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#MeasurementMomentAnchor"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#NonRandomAllocation -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#NonRandomAllocation">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#AllocationScheme"/>
+        <owl:disjointWith rdf:resource="http://trials.drugis.org/ontology#RandomAllocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#NotYetRecruiting -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#NotYetRecruiting">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#OverallStudyStatus"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#OpenLabel -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#OpenLabel">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#Blinding"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#OverallStudyStatus -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#OverallStudyStatus">
+        <rdfs:comment>Based on ClinicalTrials.gov &quot;overall status&quot; field</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://purl.org/net/OCRe/OCRe.owl#OCRE400003"/>
+        <rdfs:seeAlso rdf:resource="http://purl.org/net/OCRe/OCRe.owl#OCRE400074"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#RandomAllocation -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#RandomAllocation">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#AllocationScheme"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#RandomizationActivity -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#RandomizationActivity">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#StudyActivity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Recruiting -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Recruiting">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#OverallStudyStatus"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#ScreeningActivity -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#ScreeningActivity">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#StudyActivity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#SingleBlind -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#SingleBlind">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#Blinding"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#StatisticalAnalysis -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#StatisticalAnalysis">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#unit"/>
+                <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#Unit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#StatisticalAnalysisResult -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#StatisticalAnalysisResult">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#of_analysis"/>
+                <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#StatisticalAnalysis"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Stratum -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Stratum">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#Group"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#is_subdivision_of"/>
+                <owl:onClass rdf:resource="http://trials.drugis.org/ontology#StudyPopulation"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A group defined as individuals matching certain criteria.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Study -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Study"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#StudyActivity -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#StudyActivity"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#StudyActivityApplication -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#StudyActivityApplication">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#applied_in_epoch"/>
+                        <owl:onClass rdf:resource="http://trials.drugis.org/ontology#Epoch"/>
+                        <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#applied_to_arm"/>
+                        <owl:onClass rdf:resource="http://trials.drugis.org/ontology#Arm"/>
+                        <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#StudyPopulation -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#StudyPopulation">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty>
+                    <rdf:Description>
+                        <owl:inverseOf rdf:resource="http://trials.drugis.org/ontology#has_included_population"/>
+                    </rdf:Description>
+                </owl:onProperty>
+                <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#Study"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#Group"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#StudyRegistration -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#StudyRegistration">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#registry"/>
+                        <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#StudyRegistry"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#registration_id"/>
+                        <owl:someValuesFrom rdf:resource="&xsd;string"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://purl.org/ontology/bibo/Document"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#StudyRegistry -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#StudyRegistry"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#StudyVariable -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#StudyVariable">
+        <rdfs:comment>Describes data that was collected on individuals participating in the study. This does not take aggregation into account, e.g. a variable would be described as &quot;dichotomous&quot; if a yes/no value is collected for each participant, even if this is reported in an aggregated fashion e.g. as event counts.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Suspended -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Suspended">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#OverallStudyStatus"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Terminated -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Terminated">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#OverallStudyStatus"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#TitratedDoseDrugTreatment -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#TitratedDoseDrugTreatment">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#DrugTreatment"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#treatment_max_dose"/>
+                        <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#DoseSpecification"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#treatment_min_dose"/>
+                        <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#DoseSpecification"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#TreatmentActivity -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#TreatmentActivity">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#StudyActivity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#TripleBlind -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#TripleBlind">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#DoubleBlind"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Unit -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Unit"/>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#WashOutActivity -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#WashOutActivity">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#StudyActivity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#Withdrawn -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#Withdrawn">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#OverallStudyStatus"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#gram -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#gram">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#Unit"/>
+    </owl:Class>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#liter -->
+
+    <owl:Class rdf:about="http://trials.drugis.org/ontology#liter">
+        <rdfs:subClassOf rdf:resource="http://trials.drugis.org/ontology#Unit"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://trials.drugis.org/ontology#TestMeasurement -->
+
+    <owl:NamedIndividual rdf:about="http://trials.drugis.org/ontology#TestMeasurement">
+        <rdf:type rdf:resource="http://trials.drugis.org/ontology#Measurement"/>
+        <of_moment rdf:resource="http://trials.drugis.org/ontology#TestMeasurementMoment"/>
+        <of_variable rdf:resource="http://trials.drugis.org/ontology#TestVariable"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#TestMeasurementMoment -->
+
+    <owl:NamedIndividual rdf:about="http://trials.drugis.org/ontology#TestMeasurementMoment">
+        <rdf:type rdf:resource="http://trials.drugis.org/ontology#MeasurementMoment"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#TestVariable -->
+
+    <owl:NamedIndividual rdf:about="http://trials.drugis.org/ontology#TestVariable">
+        <rdf:type rdf:resource="http://trials.drugis.org/ontology#StudyVariable"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#anchorEpochEnd -->
+
+    <owl:NamedIndividual rdf:about="http://trials.drugis.org/ontology#anchorEpochEnd">
+        <rdf:type rdf:resource="http://trials.drugis.org/ontology#MeasurementMomentAnchor"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://trials.drugis.org/ontology#anchorEpochStart -->
+
+    <owl:NamedIndividual rdf:about="http://trials.drugis.org/ontology#anchorEpochStart">
+        <rdf:type rdf:resource="http://trials.drugis.org/ontology#MeasurementMomentAnchor"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointProperties"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#has_adverse_event"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#has_outcome"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#has_population_characteristic"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#Arm"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#ArmSubGroup"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#Stratum"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#StudyPopulation"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://purl.org/ontology/bibo/Document"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#Dataset"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#DoseSpecification"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#Drug"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#DrugTreatment"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#Epoch"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#Group"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#Measurement"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#MeasurementMoment"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#MeasurementMomentAnchor"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#Study"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#StudyActivity"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#StudyActivityApplication"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#StudyRegistry"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#StudyVariable"/>
+            <rdf:Description rdf:about="http://trials.drugis.org/ontology#Unit"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net -->
+
