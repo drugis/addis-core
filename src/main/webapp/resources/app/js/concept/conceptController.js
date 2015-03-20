@@ -1,8 +1,10 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$modal', '$stateParams', 'DatasetService', 'DatasetResource', 'ConceptService', 'GraphResource'];
-    var ConceptController = function($scope, $modal, $stateParams, DatasetService, DatasetResource, ConceptService, GraphResource) {
+    var dependencies = ['$scope', '$modal', '$stateParams', '$anchorScroll', '$location',
+      'DatasetService', 'DatasetResource', 'ConceptService', 'GraphResource'];
+    var ConceptController = function($scope, $modal, $stateParams, $anchorScroll, $location,
+       DatasetService, DatasetResource, ConceptService, GraphResource) {
       var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUUID;
       $scope.concepts = {};
 
@@ -51,7 +53,7 @@ define([],
 
       $scope.areConceptsModified = function() {
         return ConceptService.areConceptsModified();
-      }
+      };
 
       $scope.saveConcepts = function() {
         ConceptService.getGraph().then(function(graph) {
@@ -63,6 +65,16 @@ define([],
             ConceptService.conceptsSaved();
           });
         });
+      };
+
+      $scope.sideNavClick = function(anchor) {
+        var newHash = anchor;
+        $anchorScroll.yOffset = 73;
+        if ($location.hash() !== newHash) {
+          $location.hash(anchor);
+        } else {
+          $anchorScroll();
+        }
       }
 
     };
