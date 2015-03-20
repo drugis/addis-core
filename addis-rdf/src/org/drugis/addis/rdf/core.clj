@@ -5,6 +5,8 @@
             [riveted.core :as vtd]
             [org.drugis.addis.rdf.trig :as trig]))
 
+(defn map-vals [f m] (into {} (for [[k v] m] [k (f v)])))
+
 (defn uuid [] (str (java.util.UUID/randomUUID)))
 
 (defn unit-rdf [xml uri]
@@ -263,12 +265,12 @@
                           [(trig/iri :ontology "applied_in_epoch") (epoch-uris (vtd/attr xml "epoch"))])]
     (trig/spo subj [(trig/iri :ontology "has_activity_application") used-by])))
 
-(defn study-activity-rdf [xml activity-uri entity-uris arm-uris epoch-uris study-drug-uris unit-uris]
+(defn study-activity-rdf [xml activity-uri entity-uris arm-uris epoch-uris study-drugs unit-uris]
   (let [activity (vtd/first-child (vtd/at xml "./activity"))
         activity-type (vtd/tag activity)
         used-by (fn [subj xml] (activity-used-by-rdf subj xml arm-uris epoch-uris))
         name (vtd/attr xml :name)
-        activity-rdf ((activity-rdf activity-type) activity-uri activity study-drug-uris unit-uris)
+        activity-rdf ((activity-rdf activity-type) activity-uri activity study-drugs unit-uris)
         subj (trig/spo activity-rdf [(trig/iri :rdfs "label") (trig/lit name)])]
     (reduce used-by subj (vtd/search xml "./usedBy"))))
 
@@ -317,9 +319,9 @@
    :epochName (vtd/attr (vtd/at xml "./epoch") :name)})
 
 (defn study-measurement-rdf
-  [xml subj study-outcome-uris arm-uris mm-uris]
+  [xml subj study-outcomes arm-uris mm-uris]
   (let [som-id (vtd/attr (vtd/at xml "./studyOutcomeMeasure") :id)
-        som-uri (study-outcome-uris som-id)
+        som-uri (:uri (study-outcomes som-id))
         arm-name (vtd/attr (vtd/at xml "./arm") :name)
         arm-uri (arm-uris arm-name)
         when-taken-key (when-taken-key (vtd/at xml "./whenTaken"))
@@ -356,19 +358,34 @@
               [(trig/iri :ontology "in_epoch") epoch-uri])))
 
 (defn arm-size
-  [xml arm-name]
-  (let [size (vtd/attr (vtd/at xml (str "./arms/arm[@name='" arm-name "']")) :size)]
+  [arm-xml]
+  (let [size (vtd/attr arm-xml :size)]
     (if size (Integer. size) nil)))
+
+(defn println* [x] (println x) x)
+
+(defn entities-by-key
+  ([xmls key-fn] (entities-by-key xmls key-fn (fn [_] (trig/iri :instance (uuid)))))
+  ([xmls key-fn uri-fn]
+   (into {} (map (fn [el] [(key-fn el) { :xml el :uri (uri-fn el) }]) xmls))))
+
 
 (defn study-rdf [xml uri entity-uris]
   (let [indication-uri (trig/iri :instance (uuid))
-        study-outcome-uris (apply merge (map (fn [el] {(vtd/attr el :id) (trig/iri :instance (uuid))}) (vtd/search xml "./studyOutcomeMeasures/studyOutcomeMeasure")))
-        arm-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :instance (uuid))}) (vtd/search xml "./arms/arm")))
-        epochs (map #(vtd/attr % :name) (vtd/search xml "./epochs/epoch"))
-        epoch-xmls (apply merge (map (fn [xml] {(vtd/attr xml :name) xml}) (vtd/search xml "./epochs/epoch")))
-        epoch-uris (apply merge (map (fn [epoch] {epoch (trig/iri :instance (uuid))}) epochs))
+        study-outcomes (entities-by-key
+                         (vtd/search xml "./studyOutcomeMeasures/studyOutcomeMeasure")
+                         #(vtd/attr % :id))
+        arms (entities-by-key
+               (vtd/search xml "./arms/arm")
+               #(vtd/attr % :name))
+        epochs-order (map #(vtd/attr % :name) (vtd/search xml "./epochs/epoch"))
+        epochs (entities-by-key
+                 (vtd/search xml "./epochs/epoch")
+                 #(vtd/attr % :name))
         primary-epoch (find-first-treatment-epoch xml)
-        study-drug-uris (apply merge (map (fn [el] {(vtd/attr el :name) (trig/iri :instance (uuid))}) (vtd/search xml "./activities/studyActivity/activity/treatment/drugTreatment/drug")))
+        study-drugs (entities-by-key
+                      (vtd/search xml "./activities/studyActivity/activity/treatment/drugTreatment/drug")
+                      #(vtd/attr % :name))
         measurement-moment-uris (apply merge (map (fn [el] {(when-taken-key el) (trig/iri :instance (uuid))}) (vtd/search xml "./studyOutcomeMeasures/studyOutcomeMeasure/whenTaken")))
         study-unit-uris (apply merge (map (fn [el] {(dose-unit-key el) (trig/iri :instance (uuid))}) (vtd/search xml "./activities/studyActivity/activity/treatment/drugTreatment/*[self::flexibleDose|self::fixedDose]/doseUnit")))
         study-activity-uris (into {} (map (fn [el] [(vtd/attr el :name) (trig/iri :instance (uuid))]) (vtd/search xml "./activities/studyActivity")))]
@@ -387,22 +404,22 @@
            (date-end-rdf xml)
            (status-rdf xml)
            (trig/spo [(trig/iri :ontology "has_indication") indication-uri])
-           (spo-each (trig/iri :ontology "has_outcome") (vals study-outcome-uris))
-           (spo-each (trig/iri :ontology "has_arm") (vals arm-uris))
+           (spo-each (trig/iri :ontology "has_outcome") (map :uri (vals study-outcomes)))
+           (spo-each (trig/iri :ontology "has_arm") (map :uri (vals arms)))
            (spo-each (trig/iri :ontology "has_activity") (vals study-activity-uris))
-           (trig/spo [(trig/iri :ontology "has_epochs") (trig/coll (map epoch-uris epochs))])
-           (primary-epoch-rdf (epoch-uris primary-epoch))
+           (trig/spo [(trig/iri :ontology "has_epochs") (trig/coll (map #(:uri (epochs %)) epochs-order))])
+           (primary-epoch-rdf (:uri (epochs primary-epoch)))
            )]
       [(study-indication-rdf xml entity-uris indication-uri)]
-      (map #(study-arm-rdf % (arm-uris %)) (keys arm-uris))
-      (filter (comp not nil?) (map #(participant-flow-rdf (trig/iri :instance (uuid)) (arm-uris %) (epoch-uris primary-epoch) (arm-size xml %)) (keys arm-uris)))
-      (map #(study-epoch-rdf (epoch-xmls %) (epoch-uris %)) epochs)
-      (map #(study-outcome-rdf (vtd/at xml (str "./studyOutcomeMeasures/studyOutcomeMeasure[@id='" % "']")) entity-uris (study-outcome-uris %)) (keys study-outcome-uris))
-      (map #(study-drug-rdf % entity-uris (study-drug-uris %)) (keys study-drug-uris))
+      (map #(study-arm-rdf (first %) (:uri (second %))) arms)
+      (filter (comp not nil?) (map #(participant-flow-rdf (trig/iri :instance (uuid)) (:uri %) (:uri (epochs primary-epoch)) (arm-size (:xml %))) (vals arms)))
+      (map #(study-epoch-rdf (:xml %) (:uri %)) (vals epochs))
+      (map #(study-outcome-rdf (:xml %) entity-uris (:uri %)) (vals study-outcomes))
+      (map #(study-drug-rdf (first %) entity-uris (:uri (second %))) study-drugs)
       (map #(study-unit-rdf % entity-uris (study-unit-uris %)) (keys study-unit-uris))
-      (map #(study-activity-rdf % (study-activity-uris (vtd/attr % :name)) entity-uris arm-uris epoch-uris study-drug-uris study-unit-uris) (vtd/search xml "./activities/studyActivity"))
-      (map #(study-measurement-moment-rdf (measurement-moment-uris %) % epoch-uris) (keys measurement-moment-uris))
-      (map #(study-measurement-rdf % (trig/iri :instance (uuid)) study-outcome-uris arm-uris measurement-moment-uris) (vtd/search xml "./measurements/measurement")))))
+      (map #(study-activity-rdf % (study-activity-uris (vtd/attr % :name)) entity-uris (map-vals :uri arms) (map-vals :uri epochs) (map-vals :uri study-drugs) study-unit-uris) (vtd/search xml "./activities/studyActivity"))
+      (map #(study-measurement-moment-rdf (measurement-moment-uris %) % (map-vals :uri epochs)) (keys measurement-moment-uris))
+      (map #(study-measurement-rdf % (trig/iri :instance (uuid)) study-outcomes (map-vals :uri arms) measurement-moment-uris) (vtd/search xml "./measurements/measurement")))))
 
 
 (defn import-study [xml entity-uris]
