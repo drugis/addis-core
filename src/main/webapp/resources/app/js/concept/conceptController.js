@@ -75,7 +75,7 @@ define([],
         } else {
           $anchorScroll();
         }
-      }
+      };
 
     };
     return dependencies.concat(ConceptController);
