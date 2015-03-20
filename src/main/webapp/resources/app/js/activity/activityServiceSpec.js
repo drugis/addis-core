@@ -3,7 +3,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
   describe('the activity service', function() {
 
     var graphUri = 'http://karma-test/';
-    var scratchStudyUri = 'http://localhost:9876/scratch';
+    var scratchStudyUri = 'http://localhost:9876/scratch'; // NB proxied by karma to actual fuseki instance
 
     var mockStudyUuid = 'mockStudyUuid';
 
@@ -15,26 +15,10 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     var activityService;
     var drugService;
     var unitService;
-    var queryDrugTemplate;
-    var queryActivityTemplate;
-    var queryActivityTreatmentTemplate;
-    var addActivityTemplate;
-    var addTitratedTreatmentTemplate;
-    var addFixedDoseTreatmentTemplate;
-    var editActivityTemplate;
-    var deleteActivityTemplate;
-
 
     beforeEach(function() {
       module('trialverse.util', function($provide) {
-        remotestoreServiceStub = jasmine.createSpyObj('RemoteRdfStoreService', [
-          'create',
-          'load',
-          'executeUpdate',
-          'executeQuery',
-          'getGraph',
-          'deFusekify'
-        ]);
+        remotestoreServiceStub = testUtils.createRemoteStoreStub();
         commentServiceStub = jasmine.createSpyObj('CommentService', [
           'addComment'
         ]);
@@ -45,7 +29,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     beforeEach(module('trialverse.activity'));
 
-    beforeEach(inject(function($q, $rootScope, $httpBackend, DrugService, UnitService, ActivityService, StudyService, SparqlResource) {
+    beforeEach(inject(function($q, $rootScope, $httpBackend, DrugService, UnitService, ActivityService, StudyService) {
       q = $q;
       httpBackend = $httpBackend;
       rootScope = $rootScope;
@@ -61,13 +45,13 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       // load service templates and flush httpBackend
       testUtils.loadTemplate('queryDrug.sparql', httpBackend);
       testUtils.loadTemplate('queryUnit.sparql', httpBackend);
-      queryActivityTemplate = testUtils.loadTemplate('queryActivity.sparql', httpBackend);
-      queryActivityTreatmentTemplate = testUtils.loadTemplate('queryActivityTreatment.sparql', httpBackend);
-      addActivityTemplate =  testUtils.loadTemplate('addActivity.sparql', httpBackend);
-      addTitratedTreatmentTemplate = testUtils.loadTemplate('addTitratedTreatment.sparql', httpBackend);
-      addFixedDoseTreatmentTemplate = testUtils.loadTemplate('addFixedDoseTreatment.sparql', httpBackend);
-      editActivityTemplate =  testUtils.loadTemplate('editActivity.sparql', httpBackend);
-      deleteActivityTemplate =  testUtils.loadTemplate('deleteActivity.sparql', httpBackend);
+      testUtils.loadTemplate('queryActivity.sparql', httpBackend);
+      testUtils.loadTemplate('queryActivityTreatment.sparql', httpBackend);
+      testUtils.loadTemplate('addActivity.sparql', httpBackend);
+      testUtils.loadTemplate('addTitratedTreatment.sparql', httpBackend);
+      testUtils.loadTemplate('addFixedDoseTreatment.sparql', httpBackend);
+      testUtils.loadTemplate('editActivity.sparql', httpBackend);
+      testUtils.loadTemplate('deleteActivity.sparql', httpBackend);
 
       httpBackend.flush();
 
@@ -77,8 +61,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       remotestoreServiceStub.create.and.returnValue(createStorePromise);
 
       var loadStoreDeferred = $q.defer();
-      var loadStorePromise = loadStoreDeferred.promise;
-      remotestoreServiceStub.load.and.returnValue(loadStorePromise);
+      remotestoreServiceStub.load.and.returnValue(loadStoreDeferred.promise);
 
       studyService.loadStore();
       createStoreDeferred.resolve(scratchStudyUri);
@@ -110,7 +93,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
           var result = testUtils.queryTeststore(query);
           // console.log('queryResponce ' + result);
-          var resultObject = testUtils.deFusekify(result)
+          var resultObject = testUtils.deFusekify(result);
 
           var executeUpdateDeferred = q.defer();
           executeUpdateDeferred.resolve(resultObject);
@@ -123,7 +106,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       it('should return the activities contained in the study', function(done) {
 
         // call function under test
-        activityService.queryItems(mockStudyUuid).then(function(result){
+        activityService.queryItems(mockStudyUuid).then(function(result) {
           var activities = result;
 
           // verify query result
@@ -181,8 +164,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           activityDescription: 'some description'
         };
 
-        activityService.addItem(mockStudyUuid, newActivity).then(function(result){
-           done();
+        activityService.addItem(mockStudyUuid, newActivity).then(function() {
+          done();
         });
 
         rootScope.$digest();
@@ -199,22 +182,22 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
         // verify results
         expect(resultTriples.length).toBe(3);
-        var hasActivityTriple = _.find(resultTriples, function(item){
+        var hasActivityTriple = _.find(resultTriples, function(item) {
           return item.s === 'http://trials.drugis.org/studies/mockStudyUuid';
         });
         expect(hasActivityTriple.s).toBeDefined();
         expect(hasActivityTriple.p).toEqual('http://trials.drugis.org/ontology#has_activity');
         expect(hasActivityTriple.o).toBeDefined();
 
-        var activityLabelTriple = _.find(resultTriples, function(item){
-          return item.p ===  'http://www.w3.org/2000/01/rdf-schema#label';
+        var activityLabelTriple = _.find(resultTriples, function(item) {
+          return item.p === 'http://www.w3.org/2000/01/rdf-schema#label';
         });
         expect(activityLabelTriple.s).toBeDefined();
         expect(activityLabelTriple.p).toBeDefined();
         expect(activityLabelTriple.o).toEqual('newActivityLabel');
 
-        var activityTypeTriple = _.find(resultTriples, function(item){
-          return item.p ===  'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
+        var activityTypeTriple = _.find(resultTriples, function(item) {
+          return item.p === 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
         });
         expect(activityTypeTriple.s).toBeDefined();
         expect(activityTypeTriple.p).toBeDefined();
@@ -243,7 +226,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           //// console.log('query = ' + query);
           var result = testUtils.queryTeststore(query);
           //// console.log('queryResponce ' + result);
-          var resultObject = testUtils.deFusekify(result)
+          var resultObject = testUtils.deFusekify(result);
           var executeUpdateDeferred = q.defer();
           executeUpdateDeferred.resolve(resultObject);
           return executeUpdateDeferred.promise;
@@ -287,7 +270,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           treatments: [fixedTreatment, titRatedTreatment]
         };
 
-        activityService.addItem(mockStudyUuid, newActivity).then(function(result){
+        activityService.addItem(mockStudyUuid, newActivity).then(function() {
           done();
         });
 
@@ -295,7 +278,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
 
       it('should add the new activity to the graph', function(done) {
-        activityService.queryItems(mockStudyUuid).then(function(resultActivities){
+        activityService.queryItems(mockStudyUuid).then(function(resultActivities) {
           expect(resultActivities.length).toBe(1);
           var activity = resultActivities[0];
           expect(activity.treatments.length).toBe(2);
@@ -320,7 +303,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               expect(unitResults.length).toBe(1);
               expect(unitResults[0].label).toEqual('old unit label');
               done();
-            })
+            });
           });
         });
       });
@@ -348,7 +331,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
           var result = testUtils.queryTeststore(query);
           //// console.log('queryResponce ' + result);
-          var resultObject = testUtils.deFusekify(result)
+          var resultObject = testUtils.deFusekify(result);
 
           var executeUpdateDeferred = q.defer();
           executeUpdateDeferred.resolve(resultObject);
@@ -404,7 +387,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           activityDescription: undefined
         };
 
-        activityService.editItem(mockStudyUuid, editActivity).then(function(result){
+        activityService.editItem(mockStudyUuid, editActivity).then(function() {
           done();
         });
 
@@ -413,7 +396,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should edit the activity', function(done) {
 
-        activityService.queryItems(mockStudyUuid).then(function(activities){
+        activityService.queryItems(mockStudyUuid).then(function(activities) {
           // verify query result
           expect(activities.length).toBe(2);
           expect(activities[1].label).toEqual('edit label');
@@ -442,7 +425,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
         remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
           query = query.replace(/\$graphUri/g, graphUri);
-          var resultObject = testUtils.deFusekify(testUtils.queryTeststore(query))
+          var resultObject = testUtils.deFusekify(testUtils.queryTeststore(query));
           var executeUpdateDeferred = q.defer();
           executeUpdateDeferred.resolve(resultObject);
           return executeUpdateDeferred.promise;
@@ -457,11 +440,13 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
         var deleteActivity = {
           activityUri: 'http://trials.drugis.org/instances/activity2Uuid',
-          activityType: {uri: 'some uri'}
+          activityType: {
+            uri: 'some uri'
+          }
         };
 
-        activityService.deleteItem(deleteActivity, mockStudyUuid).then(function(result){
-           done();
+        activityService.deleteItem(deleteActivity, mockStudyUuid).then(function() {
+          done();
         });
         rootScope.$digest();
 
@@ -474,7 +459,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         var resultTriples = testUtils.deFusekify(result);
 
         // verify results
-        expect(resultTriples.length).toBe(13);  // todo needs to be six the delete does cleanup of treamtmentStuff
+        expect(resultTriples.length).toBe(13); // todo needs to be six the delete does cleanup of treamtmentStuff
         done();
       });
     });
