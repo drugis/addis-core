@@ -57,8 +57,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       // create and load empty test store
       var createStoreDeferred = $q.defer();
-      var createStorePromise = createStoreDeferred.promise;
-      remotestoreServiceStub.create.and.returnValue(createStorePromise);
+      remotestoreServiceStub.create.and.returnValue(createStoreDeferred.promise);
 
       var loadStoreDeferred = $q.defer();
       remotestoreServiceStub.load.and.returnValue(loadStoreDeferred.promise);
@@ -85,20 +84,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         xmlHTTP.send(activitiesQueryMockGraph);
 
         // stub remotestoreServiceStub.executeQuery method
-        remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
-          query = query.replace(/\$graphUri/g, graphUri);
-
-          // console.log('graphUri = ' + uri);
-          // console.log('query = ' + query);
-
-          var result = testUtils.queryTeststore(query);
-          // console.log('queryResponce ' + result);
-          var resultObject = testUtils.deFusekify(result);
-
-          var executeUpdateDeferred = q.defer();
-          executeUpdateDeferred.resolve(resultObject);
-          return executeUpdateDeferred.promise;
-        });
+        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
 
         done();
       });
@@ -144,16 +130,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     describe('add non-treatment activity', function() {
 
       beforeEach(function(done) {
-        remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
-          query = query.replace(/\$graphUri/g, graphUri);
 
-          var result = testUtils.executeUpdateQuery(query);
-          //// console.log('queryResponce ' + result);
-
-          var executeUpdateDeferred = q.defer();
-          executeUpdateDeferred.resolve(result);
-          return executeUpdateDeferred.promise;
-        });
+        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
 
         var newActivity = {
           activityUri: 'http://trials.drugis.org/instances/newActivityUuid',
@@ -211,26 +189,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       beforeEach(function(done) {
 
-        remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
-          query = query.replace(/\$graphUri/g, graphUri);
-          var result = testUtils.executeUpdateQuery(query);
-          // console.log('queryResponce ' + result);
-          var executeUpdateDeferred = q.defer();
-          executeUpdateDeferred.resolve(result);
-          return executeUpdateDeferred.promise;
-        });
-
-        remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
-          query = query.replace(/\$graphUri/g, graphUri);
-          //// console.log('graphUri = ' + uri);
-          //// console.log('query = ' + query);
-          var result = testUtils.queryTeststore(query);
-          //// console.log('queryResponce ' + result);
-          var resultObject = testUtils.deFusekify(result);
-          var executeUpdateDeferred = q.defer();
-          executeUpdateDeferred.resolve(resultObject);
-          return executeUpdateDeferred.promise;
-        });
+        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
+        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
 
         var fixedTreatment = {
           treatmentDoseType: 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment',
@@ -323,31 +283,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         xmlHTTP.send(activitiesEditMockGraph);
 
         // stub remotestoreServiceStub.executeQuery method
-        remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
-          query = query.replace(/\$graphUri/g, graphUri);
-
-          //// console.log('graphUri = ' + uri);
-          //// console.log('query = ' + query);
-
-          var result = testUtils.queryTeststore(query);
-          //// console.log('queryResponce ' + result);
-          var resultObject = testUtils.deFusekify(result);
-
-          var executeUpdateDeferred = q.defer();
-          executeUpdateDeferred.resolve(resultObject);
-          return executeUpdateDeferred.promise;
-        });
-
-        remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
-          query = query.replace(/\$graphUri/g, graphUri);
-
-          var result = testUtils.executeUpdateQuery(query);
-          //// console.log('queryResponce ' + result);
-
-          var executeUpdateDeferred = q.defer();
-          executeUpdateDeferred.resolve(result);
-          return executeUpdateDeferred.promise;
-        });
+        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
+        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
 
         var oldTreatment = {
           treatmentUri: 'http://trials.drugis.org/instances/treatment2Uuid',
@@ -423,20 +360,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
         xmlHTTP.send(activitiesQueryMockGraph);
 
-        remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
-          query = query.replace(/\$graphUri/g, graphUri);
-          var resultObject = testUtils.deFusekify(testUtils.queryTeststore(query));
-          var executeUpdateDeferred = q.defer();
-          executeUpdateDeferred.resolve(resultObject);
-          return executeUpdateDeferred.promise;
-        });
-
-        remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
-          var result = testUtils.executeUpdateQuery(query.replace(/\$graphUri/g, graphUri));
-          var executeUpdateDeferred = q.defer();
-          executeUpdateDeferred.resolve(result);
-          return executeUpdateDeferred.promise;
-        });
+        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
+        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
 
         var deleteActivity = {
           activityUri: 'http://trials.drugis.org/instances/activity2Uuid',

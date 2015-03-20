@@ -63,13 +63,47 @@ define('testUtils', ['lodash'],
       ]);
     }
 
+    function remoteStoreStubQuery(remotestoreServiceStub, graphUri, q) {
+      // stub remotestoreServiceStub.executeQuery method
+      remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
+        query = query.replace(/\$graphUri/g, graphUri);
+
+        // console.log('graphUri = ' + uri);
+        // console.log('query = ' + query);
+
+        var result = queryTeststore(query);
+        // console.log('queryResponce ' + result);
+        var resultObject = deFusekify(result);
+
+        var executeUpdateDeferred = q.defer();
+        executeUpdateDeferred.resolve(resultObject);
+        return executeUpdateDeferred.promise;
+      });
+    }
+
+    function remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q) {
+      remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
+        query = query.replace(/\$graphUri/g, graphUri);
+
+        var result = executeUpdateQuery(query);
+        //// console.log('queryResponce ' + result);
+
+        var executeUpdateDeferred = q.defer();
+        executeUpdateDeferred.resolve(result);
+        return executeUpdateDeferred.promise;
+      });
+
+    }
+
     return {
       queryTeststore: queryTeststore,
       dropGraph: dropGraph,
       loadTemplate: loadTemplate,
       executeUpdateQuery: executeUpdateQuery,
       deFusekify: deFusekify,
-      createRemoteStoreStub: createRemoteStoreStub
+      createRemoteStoreStub: createRemoteStoreStub,
+      remoteStoreStubQuery: remoteStoreStubQuery,
+      remoteStoreStubUpdate: remoteStoreStubUpdate
     };
   }
 );
