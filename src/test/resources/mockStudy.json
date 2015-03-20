@@ -105,7 +105,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/1a33ecf3-c6e1-4b5f-a252-02e7aa6081eb",
                  "@type" : "ontology:WashOutActivity",
-                 "activity_application" : [ "_:b18", "_:b0" ]
+                 "has_activity_application" : [ "_:b18", "_:b0" ]
                }, {
                  "@id" : "http://trials.drugis.org/instances/1a949b32-23c0-4c0d-bc33-c549ca8f5a32",
                  "@type" : "entity:dfeb2417-a37f-460a-b4c5-c4a1e4fbe7d7",
@@ -114,7 +114,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/1f7e1fc9-b22b-42b5-a264-ed47a84312cb",
                  "@type" : "ontology:TreatmentActivity",
-                 "activity_application" : "_:b21",
+                 "has_activity_application" : "_:b21",
                  "administered_drugs" : {
                    "@list" : [ "_:b15" ]
                  }
@@ -243,7 +243,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/691d5d91-5a9c-4e6b-a7e6-1bd6b0f6b09f",
                  "@type" : "ontology:TreatmentActivity",
-                 "activity_application" : "_:b5",
+                 "has_activity_application" : "_:b5",
                  "administered_drugs" : {
                    "@list" : [ "_:b16" ]
                  }
@@ -582,7 +582,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/ff56eac7-0bee-4f59-96a7-df1f7c55fe40",
                  "@type" : "ontology:RandomizationActivity",
-                 "activity_application" : [ "_:b6", "_:b7" ]
+                 "has_activity_application" : [ "_:b6", "_:b7" ]
                }, {
                  "@id" : "study:test",
                  "@type" : "ontology:Study",
@@ -654,8 +654,8 @@
       "@id" : "http://trials.drugis.org/ontology#category_count",
       "@type" : "@id"
     },
-    "activity_application" : {
-      "@id" : "http://trials.drugis.org/ontology#activity_application",
+    "has_activity_application" : {
+      "@id" : "http://trials.drugis.org/ontology#has_activity_application",
       "@type" : "@id"
     },
     "administered_drugs" : {

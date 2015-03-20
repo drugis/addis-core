@@ -32,19 +32,19 @@
         a       <http://trials.drugis.org/ontology#TreatmentActivity> ;
         <http://www.w3.org/2000/01/rdf-schema#label>
                 "treatment" ;
-        <http://trials.drugis.org/ontology#activity_application>
+        <http://trials.drugis.org/ontology#has_activity_application>
                 [ <http://trials.drugis.org/ontology#applied_in_epoch>
                           <http://trials.drugis.org/instances/457d19c5-c902-48e7-b814-95578d5caa8b> ;
                   <http://trials.drugis.org/ontology#applied_to_arm>
                           <http://trials.drugis.org/instances/27280b17-043a-4d60-bc88-511b3449b918>
                 ] ;
-        <http://trials.drugis.org/ontology#activity_application>
+        <http://trials.drugis.org/ontology#has_activity_application>
                 [ <http://trials.drugis.org/ontology#applied_in_epoch>
                           <http://trials.drugis.org/instances/457d19c5-c902-48e7-b814-95578d5caa8b> ;
                   <http://trials.drugis.org/ontology#applied_to_arm>
                           <http://trials.drugis.org/instances/13e86306-f028-4e59-9937-d6f030878ea2>
                 ] ;
-        <http://trials.drugis.org/ontology#activity_application>
+        <http://trials.drugis.org/ontology#has_activity_application>
                 [ <http://trials.drugis.org/ontology#applied_in_epoch>
                           <http://trials.drugis.org/instances/457d19c5-c902-48e7-b814-95578d5caa8b> ;
                   <http://trials.drugis.org/ontology#applied_to_arm>
@@ -75,19 +75,19 @@
         a       <http://trials.drugis.org/ontology#FollowUpActivity> ;
         <http://www.w3.org/2000/01/rdf-schema#label>
                 "followup" ;
-        <http://trials.drugis.org/ontology#activity_application>
+        <http://trials.drugis.org/ontology#has_activity_application>
                 [ <http://trials.drugis.org/ontology#applied_in_epoch>
                           <http://trials.drugis.org/instances/40e9932c-ac21-4562-9e57-7ea0b8732814> ;
                   <http://trials.drugis.org/ontology#applied_to_arm>
                           <http://trials.drugis.org/instances/27280b17-043a-4d60-bc88-511b3449b918>
                 ] ;
-        <http://trials.drugis.org/ontology#activity_application>
+        <http://trials.drugis.org/ontology#has_activity_application>
                 [ <http://trials.drugis.org/ontology#applied_in_epoch>
                           <http://trials.drugis.org/instances/40e9932c-ac21-4562-9e57-7ea0b8732814> ;
                   <http://trials.drugis.org/ontology#applied_to_arm>
                           <http://trials.drugis.org/instances/13e86306-f028-4e59-9937-d6f030878ea2>
                 ] ;
-        <http://trials.drugis.org/ontology#activity_application>
+        <http://trials.drugis.org/ontology#has_activity_application>
                 [ <http://trials.drugis.org/ontology#applied_in_epoch>
                           <http://trials.drugis.org/instances/40e9932c-ac21-4562-9e57-7ea0b8732814> ;
                   <http://trials.drugis.org/ontology#applied_to_arm>
@@ -103,19 +103,19 @@
         a       <http://trials.drugis.org/ontology#RandomizationActivity> ;
         <http://www.w3.org/2000/01/rdf-schema#label>
                 "randomisation" ;
-        <http://trials.drugis.org/ontology#activity_application>
+        <http://trials.drugis.org/ontology#has_activity_application>
                 [ <http://trials.drugis.org/ontology#applied_in_epoch>
                           <http://trials.drugis.org/instances/8d647362-fc9c-4b74-9415-d27e7f6786f7> ;
                   <http://trials.drugis.org/ontology#applied_to_arm>
                           <http://trials.drugis.org/instances/881b130f-70cf-4e3a-adee-d776cc8616b7>
                 ] ;
-        <http://trials.drugis.org/ontology#activity_application>
+        <http://trials.drugis.org/ontology#has_activity_application>
                 [ <http://trials.drugis.org/ontology#applied_in_epoch>
                           <http://trials.drugis.org/instances/8d647362-fc9c-4b74-9415-d27e7f6786f7> ;
                   <http://trials.drugis.org/ontology#applied_to_arm>
                           <http://trials.drugis.org/instances/13e86306-f028-4e59-9937-d6f030878ea2>
                 ] ;
-        <http://trials.drugis.org/ontology#activity_application>
+        <http://trials.drugis.org/ontology#has_activity_application>
                 [ <http://trials.drugis.org/ontology#applied_in_epoch>
                           <http://trials.drugis.org/instances/8d647362-fc9c-4b74-9415-d27e7f6786f7> ;
                   <http://trials.drugis.org/ontology#applied_to_arm>

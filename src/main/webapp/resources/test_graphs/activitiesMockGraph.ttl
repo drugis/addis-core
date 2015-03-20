@@ -14,7 +14,7 @@
     a <http://trials.drugis.org/ontology#TreatmentActivity>;
     <http://www.w3.org/2000/01/rdf-schema#label> "activity 2";
     <http://www.w3.org/2000/01/rdf-schema#comment> "activity description";
-    <http://trials.drugis.org/ontology#activity_application> [
+    <http://trials.drugis.org/ontology#has_activity_application> [
       <http://trials.drugis.org/ontology#applied_to_arm> <http://trials.drugis.org/instances/arm1Uuid> ;
       <http://trials.drugis.org/ontology#applied_in_epoch> <http://trials.drugis.org/instances/epoch1Uuid>
     ] ;

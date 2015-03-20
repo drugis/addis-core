@@ -259,7 +259,7 @@
   [subj xml arm-uris epoch-uris]
   (let [used-by (trig/_po [(trig/iri :ontology "applied_to_arm") (arm-uris (vtd/attr xml "arm"))]
                           [(trig/iri :ontology "applied_in_epoch") (epoch-uris (vtd/attr xml "epoch"))])]
-    (trig/spo subj [(trig/iri :ontology "activity_application") used-by])))
+    (trig/spo subj [(trig/iri :ontology "has_activity_application") used-by])))
 
 (defn study-activity-rdf [xml activity-uri entity-uris arm-uris epoch-uris study-drug-uris unit-uris]
   (let [activity (vtd/first-child (vtd/at xml "./activity"))
