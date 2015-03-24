@@ -71,6 +71,7 @@ define(
     ]);
 
     app.constant('SCRATCH_RDF_STORE_URL', '/scratch');
+    app.constant('CONCEPT_GRAPH_UUID', 'concepts');
 
     app.config(['$stateProvider', '$urlRouterProvider',
       function($stateProvider, $urlRouterProvider) {
@@ -95,20 +96,10 @@ define(
             templateUrl: 'app/js/concept/concepts.html',
             controller: 'ConceptController'
           })
-          .state('commitConcepts', {
-            url: '/dataset/:datasetUUID/concepts/commit',
-            templateUrl: 'app/js/commit/commit.html',
-            controller: 'CommitController'
-          })
           .state('study', {
             url: '/dataset/:datasetUUID/study/:studyUUID',
             templateUrl: 'app/js/study/view/study.html',
             controller: 'StudyController'
-          })
-          .state('commitStudy', {
-            url: '/dataset/:datasetUUID/study/:studyUUID/commit',
-            templateUrl: 'app/js/commit/commit.html',
-            controller: 'CommitController'
           });
 
         // Default route

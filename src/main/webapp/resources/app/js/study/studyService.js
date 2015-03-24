@@ -81,7 +81,7 @@ define([], function() {
       });
     }
 
-    function getStudyGraph() {
+    function getGraph() {
       return loadDefer.promise.then(function() {
         return RemoteRdfStoreService.getGraph(scratchStudyUri);
       });
@@ -108,7 +108,7 @@ define([], function() {
       loadStore: loadStore,
       queryStudyData: queryStudyData,
       createEmptyStudy: createEmptyStudy,
-      getStudyGraph: getStudyGraph,
+      getGraph: getGraph,
       doModifyingQuery: doModifyingQuery,
       doNonModifyingQuery: doNonModifyingQuery,
       isStudyModified: isStudyModified,

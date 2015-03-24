@@ -18,7 +18,7 @@ define([], function() {
     $scope.createStudy = function(study) {
       $scope.isCreatingStudy = true;
       StudyService.createEmptyStudy(study).then(function() {
-        StudyService.getStudyGraph().then(function(queryResult) {
+        StudyService.getGraph().then(function(queryResult) {
           var uuid = StudyService.getStudyUUID();
 
           GraphResource.put({

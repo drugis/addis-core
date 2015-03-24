@@ -162,7 +162,7 @@ define([],
       };
 
       $scope.saveStudy = function() {
-        StudyService.getStudyGraph().then(function(graph) {
+        StudyService.getGraph().then(function(graph) {
           GraphResource.put({
             datasetUUID: $stateParams.datasetUUID,
             graphUuid: $stateParams.studyUUID

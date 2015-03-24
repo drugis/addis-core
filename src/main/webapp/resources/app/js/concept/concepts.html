@@ -2,10 +2,10 @@
 <div class="row">
   <div class="columns large-2 medium-3">
     <ul class="side-nav">
-      <a ng-disabled="!areConceptsModified()" ng-click="saveConcepts()" class="button expand success">Save concepts</a>
+      <button ng-disabled="!areConceptsModified()" ng-click="saveConcepts()" class="button expand success">Commit changes</button>
       <div class="modified-warning info">
-        <div ng-show="isStudyModified()">Unsaved changes</div>
-        <div ng-show="!isStudyModified()">No unsaved changes</div>
+        <div ng-show="areConceptsModified()"><a ng-click="resetConcepts()" style="text-decoration: underline;">undo changes</a></div>
+        <div ng-show="!areConceptsModified()">No unsaved changes</div>
       </div>
       <li class="divider"></li>
       <li class="heading">Concepts</li>
