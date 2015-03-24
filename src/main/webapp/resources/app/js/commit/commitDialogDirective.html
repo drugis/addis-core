@@ -1,0 +1,10 @@
+<h3>Commit your changes</h3>
+<label>Title
+  <input type="text" ng-model="commitTitle">
+</label>
+<label>Description
+  <textarea ng-model="commitDescription"></textarea>
+</label>
+<button class="success" ng-click="commitChanges()" ng-disabled="!commitTitle">Commit changes</button>
+<button class="error" ng-click="resetGraph()">Revert changes</button>
+<button class="cancel" ng-click="cancelCommit()">Go back</button>

@@ -21,6 +21,7 @@ define(
     'activity/activity',
     'studyDesign/studyDesign',
     'concept/concept',
+    'commit/commit',
     'angular-resource',
     'rdfstore',
     'lodash'
@@ -44,7 +45,8 @@ define(
       'trialverse.studyDesign',
       'trialverse.activity',
       'trialverse.results',
-      'trialverse.concept'
+      'trialverse.concept',
+      'trialverse.commit'
     ];
 
 
@@ -93,10 +95,20 @@ define(
             templateUrl: 'app/js/concept/concepts.html',
             controller: 'ConceptController'
           })
+          .state('commitConcepts', {
+            url: '/dataset/:datasetUUID/concepts/commit',
+            templateUrl: 'app/js/commit/commit.html',
+            controller: 'CommitController'
+          })
           .state('study', {
             url: '/dataset/:datasetUUID/study/:studyUUID',
             templateUrl: 'app/js/study/view/study.html',
             controller: 'StudyController'
+          })
+          .state('commitStudy', {
+            url: '/dataset/:datasetUUID/study/:studyUUID/commit',
+            templateUrl: 'app/js/commit/commit.html',
+            controller: 'CommitController'
           });
 
         // Default route
