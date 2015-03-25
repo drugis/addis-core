@@ -1,6 +1,5 @@
 package org.drugis.trialverse.graph.controller;
 
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicHttpResponse;
@@ -10,6 +9,7 @@ import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
+import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.testutils.TestUtils;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
@@ -30,7 +30,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
 
@@ -61,6 +60,9 @@ public class GraphControllerTest {
 
   @Mock
   private TrialverseIOUtilsService trialverseIOUtilsService;
+
+  @Mock
+  private AccountRepository accountRepository;
 
   @InjectMocks
   private GraphController graphController;

@@ -45,9 +45,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
   public static final String HOST = "Host";
   public static final String PATH = "/datasets";
-  public static final String X_EVENT_SOURCE_CREATOR = "X-EventSource-Creator";
   public static final String INITIAL_COMMIT_MESSAGE = "Dataset created through Trialverse";
-  public static final String X_EVENT_SOURCE_TITLE = "X-EventSource-Title";
 
   @Inject
   private WebConstants webConstants;
@@ -80,8 +78,8 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   public URI createDataset(String title, String description, Account owner) throws URISyntaxException, CreateDatasetException {
 
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(X_EVENT_SOURCE_CREATOR, "mailto:" + owner.getUsername());
-    httpHeaders.add(X_EVENT_SOURCE_TITLE, Base64.encodeBase64String(INITIAL_COMMIT_MESSAGE.getBytes()));
+    httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + owner.getUsername());
+    httpHeaders.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(INITIAL_COMMIT_MESSAGE.getBytes()));
     httpHeaders.add(HTTP.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
 
     String datasetUri = jenaFactory.createDatasetURI();

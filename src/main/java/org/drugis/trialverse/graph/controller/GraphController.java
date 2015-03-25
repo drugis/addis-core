@@ -6,6 +6,8 @@ import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.exception.MethodNotAllowedException;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
+import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
@@ -37,6 +39,9 @@ public class GraphController extends AbstractTrialverseController {
 
   @Inject
   private DatasetReadRepository datasetReadRepository;
+
+  @Inject
+  private AccountRepository accountRepository;
 
   @Inject
   private TrialverseIOUtilsService trialverseIOUtilsService;

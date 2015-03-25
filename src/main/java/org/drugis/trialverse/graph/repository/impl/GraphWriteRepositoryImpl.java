@@ -6,6 +6,8 @@ import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
+import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.security.AuthenticationService;
 import org.drugis.trialverse.util.InputStreamMessageConverter;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
@@ -13,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.security.Principal;
 
 /**
  * Created by daan on 20-11-14.
@@ -36,6 +41,9 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
   @Inject
   private RestTemplate restTemplate;
 
+  @Inject
+  private AuthenticationService authenticationService;
+
   public static final String DATA_ENDPOINT = "/data";
 
   private final static Logger logger = LoggerFactory.getLogger(GraphWriteRepositoryImpl.class);
@@ -48,6 +56,7 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
     httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
     String title = request.getParameter(WebConstants.COMMIT_TITLE_PARAM);
     httpHeaders.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(title.getBytes()));
+    httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + authenticationService.getAuthentication().getName());
     String commitDescription = request.getParameter(WebConstants.COMMIT_DESCRIPTION_PARAM);
     if(StringUtils.isNotEmpty(commitDescription)) {
       httpHeaders.add(WebConstants.EVENT_SOURCE_DESCRIPTION_HEADER, Base64.encodeBase64String(commitDescription.getBytes()));
