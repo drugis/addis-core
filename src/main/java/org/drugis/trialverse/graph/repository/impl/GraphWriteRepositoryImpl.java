@@ -26,11 +26,6 @@ import java.net.URI;
 public class GraphWriteRepositoryImpl implements GraphWriteRepository {
 
   public static final String GRAPH_QUERY_STRING = "?graph={graphUri}";
-  @Inject
-  private WebConstants webConstants;
-
-  @Inject
-  private HttpClientFactory httpClientFactory;
 
   @Inject
   private VersionMappingRepository versionMappingRepository;

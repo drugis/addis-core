@@ -109,25 +109,6 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
     return new URI(datasetUri);
   }
 
-  @Override
-  public HttpResponse updateDataset(URI datasetUri, InputStream datasetContent) {
-    HttpPost request = new HttpPost(datasetUri);
-//        HttpClient client = httpClientFactory.build();
-    HttpResponse response = null;
-//        try {
-//            InputStreamEntity entity = new InputStreamEntity(datasetContent);
-//            entity.setContentType(RDFLanguages.TURTLE.getContentType().getContentType());
-//            request.setEntity(entity);
-//            response = client.execute(request);
-//            datasetContent.close();
-//        } catch (IOException e) {
-//            logger.error(e.toString());
-//        } finally {
-//            IOUtils.closeQuietly(datasetContent);
-//        }
-    return response;
-  }
-
   private String modelToString(Model model) {
     StringWriter outputWriter = new StringWriter();
     model.write(outputWriter, "Turtle");

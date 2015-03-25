@@ -97,16 +97,4 @@ public class DatasetController extends AbstractTrialverseController {
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
   }
 
-  @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.POST)
-  public void updateDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
-                            @PathVariable String datasetUUID) throws IOException, MethodNotAllowedException, URISyntaxException {
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      HttpResponse jenaResponse = datasetWriteRepository.updateDataset(trialverseDatasetUri, request.getInputStream());
-      response.setStatus(jenaResponse.getStatusLine().getStatusCode());
-    } else {
-      throw new MethodNotAllowedException();
-    }
-  }
-
 }
