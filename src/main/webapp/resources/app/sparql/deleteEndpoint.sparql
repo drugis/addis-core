@@ -1,7 +1,10 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+
 WITH <$graphUri>
 DELETE {
-  <$URI> ?p ?o .
+  ?s ?p ?o .
 }
 WHERE {
-  <$URI> ?p ?o .
+  <$URI> ontology:of_variable? ?s.
+  ?s ?p ?o .
 };
