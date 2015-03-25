@@ -45,12 +45,15 @@
          [(trig/iri :rdfs "subClassOf") (trig/iri :ontology "Indication")])))
 
 (defn variable-rdf [xml uri]
-  (let [m-type (vtd/first-child xml)
+  (let [m-type-map { "rate" "dichotomous"
+                     "continuous" "continuous"
+                     "categorical" "categorical" }
+        m-type (vtd/first-child xml)
         subj (trig/spo uri 
                        [(trig/iri :rdf "type") (trig/iri :ontology "Variable")]
                        [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
                        [(trig/iri :rdfs "comment") (trig/lit (vtd/attr xml :description))]
-                       [(trig/iri :ontology "measurementType") (trig/iri :ontology (vtd/tag m-type))])]
+                       [(trig/iri :ontology "measurementType") (trig/iri :ontology (m-type-map (vtd/tag m-type)))])]
     (case (vtd/tag m-type)
       "rate" subj
       "continuous" (trig/spo subj [(trig/iri :rdfs "comment") (trig/lit (vtd/attr m-type :unitOfMeasurement))])
