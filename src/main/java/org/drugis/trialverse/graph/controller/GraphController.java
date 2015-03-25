@@ -7,14 +7,12 @@ import org.drugis.trialverse.exception.MethodNotAllowedException;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.util.Namespaces;
+import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +44,7 @@ public class GraphController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/{graphUuid}", method = RequestMethod.GET)
   @ResponseBody
-  public void getGraph(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid , @PathVariable String graphUuid) throws URISyntaxException, IOException {
+  public void getGraph(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException {
     HttpResponse response = graphReadRepository.getGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
@@ -56,11 +54,12 @@ public class GraphController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/{graphUuid}", method = RequestMethod.PUT)
   public void setGraph(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
-                     @PathVariable String datasetUuid, @PathVariable String graphUuid)
+                       @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
+                       @PathVariable String datasetUuid, @PathVariable String graphUuid)
           throws IOException, MethodNotAllowedException, URISyntaxException {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, request.getInputStream());
+      graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, request);
       response.setStatus(HttpStatus.OK.value());
     } else {
       throw new MethodNotAllowedException();
@@ -68,7 +67,6 @@ public class GraphController extends AbstractTrialverseController {
 
 
   }
-
 
 
 }

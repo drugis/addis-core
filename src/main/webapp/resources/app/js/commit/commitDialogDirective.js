@@ -15,11 +15,13 @@ define([], function() {
       link: function(scope) {
         var ItemService = $injector.get(scope.itemServiceName);
 
-        scope.commitChanges = function() {
+        scope.commitChanges = function(commitTitle, commitDescription) {
           ItemService.getGraph().then(function(graph) {
             GraphResource.put({
               datasetUUID: scope.datasetUuid,
-              graphUuid: scope.graphUuid
+              graphUuid: scope.graphUuid,
+              commitTitle: commitTitle,
+              commitDescription: commitDescription
             }, graph.data, function() {
               scope.changesCommited();
             });

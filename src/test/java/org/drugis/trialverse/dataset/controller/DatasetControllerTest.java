@@ -62,11 +62,11 @@ public class DatasetControllerTest {
   @Mock
   private TrialverseIOUtilsService trialverseIOUtilsService;
 
-  @Inject
-  private WebApplicationContext webApplicationContext;
+  @Mock
+  private WebConstants webConstants;
 
   @Inject
-  private WebConstants webConstants;
+  private WebApplicationContext webApplicationContext;
 
   @InjectMocks
   private DatasetController datasetController;
@@ -84,6 +84,7 @@ public class DatasetControllerTest {
     accountRepository = mock(AccountRepository.class);
     datasetWriteRepository = mock(DatasetWriteRepository.class);
     datasetController = new DatasetController();
+    webConstants = mock(WebConstants.class);
 
     initMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(datasetController).build();

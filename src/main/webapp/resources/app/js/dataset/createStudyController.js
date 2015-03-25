@@ -23,12 +23,12 @@ define([], function() {
 
           GraphResource.put({
             datasetUUID: $stateParams.datasetUUID,
-            graphUuid: uuid
+            graphUuid: uuid,
+            commitTitle: 'Initial study creation: ' + study.label
           }, queryResult.data, function() {
             $scope.loadStudiesWithDetail();
             $scope.isCreatingStudy = true;
             $modalInstance.close();
-
           });
         });
       });

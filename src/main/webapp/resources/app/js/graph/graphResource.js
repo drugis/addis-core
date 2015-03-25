@@ -6,7 +6,9 @@ define([], function() {
     return $resource(
       '/datasets/:datasetUUID/graphs/:graphUuid', {
         datasetUUID: '@datasetUUID',
-        graphUuid: '@graphUuid'
+        graphUuid: '@graphUuid',
+        commitTitle: '@commitTitle',
+        commitDescription: '@commitDescription'
       }, {
         'get': {
           method: 'get',

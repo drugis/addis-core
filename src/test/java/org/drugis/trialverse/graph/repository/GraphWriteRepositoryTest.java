@@ -66,22 +66,53 @@ public class GraphWriteRepositoryTest {
   }
 
   @Test
-  public void testUpdateGraph() throws IOException, URISyntaxException {
+  public void testUpdateGraphWithoutDescription() throws IOException, URISyntaxException {
     String datasetUuid = "datasetuuid";
     String graphUuid = "graphUuid";
     HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
     InputStream inputStream = IOUtils.toInputStream("content");
     DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
     when(mockHttpServletRequest.getInputStream()).thenReturn(delegatingServletInputStream);
+    String headerValue = "test title header";
+    when(mockHttpServletRequest.getParameter(webConstants.COMMIT_TITLE_PARAM)).thenReturn(headerValue);
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     String versionStoreDatasetUri = "versionStoreDatasetUri";
     VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl.toString());
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
-    graphWriteRepository.updateGraph(datasetUrl, graphUuid, delegatingServletInputStream);
+    graphWriteRepository.updateGraph(datasetUrl, graphUuid, mockHttpServletRequest);
 
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
+    httpHeaders.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, headerValue);
+    HttpEntity<DelegatingServletInputStream> requestEntity = new HttpEntity<>(delegatingServletInputStream, httpHeaders);
+    String uri = versionMapping.getVersionedDatasetUrl() + "/data?graph={graphUri}";
+    verify(restTemplate).put(uri, requestEntity, Namespaces.GRAPH_NAMESPACE + graphUuid);
+  }
+
+  @Test
+  public void testUpdateGraphWithDescription() throws IOException, URISyntaxException {
+    String datasetUuid = "datasetuuid";
+    String graphUuid = "graphUuid";
+    HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
+    InputStream inputStream = IOUtils.toInputStream("content");
+    DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
+    when(mockHttpServletRequest.getInputStream()).thenReturn(delegatingServletInputStream);
+    String titleValue = "test title header";
+    when(mockHttpServletRequest.getParameter(webConstants.COMMIT_TITLE_PARAM)).thenReturn(titleValue);
+    String descriptionValue = "test description";
+    when(mockHttpServletRequest.getParameter(webConstants.COMMIT_DESCRIPTION_PARAM)).thenReturn(descriptionValue);
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    String versionStoreDatasetUri = "versionStoreDatasetUri";
+    VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl.toString());
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
+
+    graphWriteRepository.updateGraph(datasetUrl, graphUuid, mockHttpServletRequest);
+
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
+    httpHeaders.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, titleValue);
+    httpHeaders.add(WebConstants.EVENT_SOURCE_DESCRIPTION_HEADER, descriptionValue);
     HttpEntity<DelegatingServletInputStream> requestEntity = new HttpEntity<>(delegatingServletInputStream, httpHeaders);
     String uri = versionMapping.getVersionedDatasetUrl() + "/data?graph={graphUri}";
     verify(restTemplate).put(uri, requestEntity, Namespaces.GRAPH_NAMESPACE + graphUuid);

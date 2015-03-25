@@ -61,8 +61,6 @@ define([],
         return ConceptService.areConceptsModified();
       };
 
-
-
       $scope.saveConcepts = function() {
         $modal.open({
           templateUrl: 'app/js/commit/commit.html',

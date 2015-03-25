@@ -82,20 +82,5 @@ define(['angular', 'angular-mocks'], function() {
 
     });
 
-    describe('saveStudy', function() {
-      it('should export the graph and PUT it to the resource', inject(function(GraphResource, $q) {
-
-        httpBackend.expectPUT('/datasets/datasetUUID/graphs/studyUUID').respond(200,'');
-
-        scope.saveStudy();
-        expect(studyServiceMock.getGraph).toHaveBeenCalled();
-
-        getGraphDeferred.resolve({data: 'mock study data'});
-        scope.$digest();
-        httpBackend.flush();
-
-        expect(studyServiceMock.studySaved).toHaveBeenCalled();
-      }));
-    });
   });
 });

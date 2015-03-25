@@ -19,6 +19,11 @@ public class WebConstants {
   private final static String TRIPLESTORE_BASE_URI = loadSystemEnvTripleStoreBaseURI();
   private final static String TRIPLESTORE_DATA_URI = TRIPLESTORE_BASE_URI + "/current";
 
+  public static final String EVENT_SOURCE_TITLE_HEADER = "X-EventSource-Title";
+  public final static String EVENT_SOURCE_DESCRIPTION_HEADER = "X-EventSource-Description";
+  public static final String COMMIT_TITLE_PARAM = "commitTitle";
+  public final static String COMMIT_DESCRIPTION_PARAM = "commitDescription";
+
   private static String loadSystemEnvTripleStoreBaseURI() {
     String tripleStoreBaseURI = System.getenv("TRIPLESTORE_BASE_URI");
     if (tripleStoreBaseURI == null || tripleStoreBaseURI.isEmpty()) {

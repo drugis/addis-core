@@ -1,5 +1,6 @@
 package org.drugis.trialverse.graph.controller;
 
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicHttpResponse;
@@ -11,6 +12,7 @@ import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.testutils.TestUtils;
 import org.drugis.trialverse.util.Namespaces;
+import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.junit.After;
 import org.junit.Before;
@@ -26,6 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.net.URI;
@@ -112,6 +115,7 @@ public class GraphControllerTest {
     mockMvc.perform(
             put("/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(jsonContent)
+                    .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
                     .principal(user)).andExpect(status().isForbidden());
 
     verify(datasetReadRepository).isOwner(datasetUri, user);
@@ -130,11 +134,12 @@ public class GraphControllerTest {
     mockMvc.perform(
             put("/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(updateContent)
+                    .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
                     .principal(user))
             .andExpect(status().isOk());
 
     verify(datasetReadRepository).isOwner(datasetUrl, user);
-    verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(InputStream.class));
+    verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(HttpServletRequest.class));
   }
 
   @Test
@@ -148,6 +153,7 @@ public class GraphControllerTest {
     mockMvc.perform(
             put("/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(jsonContent)
+                    .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
                     .principal(user)).andExpect(status().isForbidden());
 
     verify(datasetReadRepository).isOwner(datasetUrl, user);
