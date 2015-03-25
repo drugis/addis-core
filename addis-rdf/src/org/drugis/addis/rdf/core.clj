@@ -44,28 +44,17 @@
          [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
          [(trig/iri :rdfs "subClassOf") (trig/iri :ontology "Indication")])))
 
-; TODO: direction?
-(defn variable-rdf [xml uri superClass]
+(defn variable-rdf [xml uri]
   (let [m-type (vtd/first-child xml)
         subj (trig/spo uri 
-                       [(trig/iri :rdf "type") (trig/iri :owl "Class")]
+                       [(trig/iri :rdf "type") (trig/iri :ontology "Variable")]
                        [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
                        [(trig/iri :rdfs "comment") (trig/lit (vtd/attr xml :description))]
-                       [(trig/iri :rdfs "subClassOf") (trig/iri :ontology superClass)]
                        [(trig/iri :ontology "measurementType") (trig/iri :ontology (vtd/tag m-type))])]
     (case (vtd/tag m-type)
       "rate" subj
       "continuous" (trig/spo subj [(trig/iri :rdfs "comment") (trig/lit (vtd/attr m-type :unitOfMeasurement))])
       "categorical" (trig/spo subj [(trig/iri :ontology "categoryList") (trig/coll (map #(trig/lit (vtd/text %)) (vtd/search m-type "./category")))]))))
-
-(defn endpoint-rdf [xml uri]
-  (variable-rdf xml uri "Endpoint"))
-
-(defn adverseEvent-rdf [xml uri]
-  (variable-rdf xml uri "AdverseEvent"))
-
-(defn populationCharacteristic-rdf [xml uri]
-  (variable-rdf xml uri "PopulationCharacteristic"))
 
 (defn import-entity [xml rdf-fn]
   (let [uri (trig/iri :entity (uuid))]
@@ -175,17 +164,32 @@
    :relativeTo (vtd/attr xml :relativeTo)
    :epochName (vtd/attr (vtd/at xml "./epoch") :name)})
 
+(defn result-properties [xml]
+  (case (vtd/tag (vtd/first-child xml))
+    "rate" [(trig/iri :ontology "count") (trig/iri :ontology "sample_size")]
+    "continuous" [(trig/iri :ontology "mean") (trig/iri :ontology "standard_deviation") (trig/iri :ontology "sample_size")]
+    "categorical" []))
+
+; clojure.string.capitalize lowercases the remainder of the string, hence workaround
+(defn capitalize [s]
+  (if (> (count s) 0)
+    (str (Character/toUpperCase (.charAt s 0))
+         (subs s 1))
+    s))
+
 (defn study-outcome-rdf [xml instance-uri entity-uris measurement-moment-uris]
   (let [entity-name (vtd/attr (vtd/first-child xml) :name)
         entity-type (vtd/tag (vtd/first-child xml))
         entity-uri ((entity-uris (keyword entity-type)) entity-name)
-        description (vtd/attr (vtd/at xml (str "//addis-data/" entity-type "s/*[@name='" entity-name "']")) :description)
+        entity-xml (vtd/at xml (str "//addis-data/" entity-type "s/*[@name='" entity-name "']"))
         mms (map #(measurement-moment-uris (when-taken-key %)) (vtd/search xml "./whenTaken"))]
     (-> 
       (trig/spo instance-uri
-                [(trig/iri :rdf "type") entity-uri]
+                [(trig/iri :rdf "type") (trig/iri :ontology (capitalize entity-type))]
                 [(trig/iri :rdfs "label") entity-name]
-                [(trig/iri :rdfs "comment") (trig/lit description)])
+                [(trig/iri :rdfs "comment") (trig/lit (vtd/attr entity-xml :description))]
+                [(trig/iri :ontology "of_variable") (variable-rdf entity-xml (trig/_po [(trig/iri :owl "sameAs") entity-uri]))])
+      (spo-each (trig/iri :ontology "has_result_property") (result-properties entity-xml))
       (spo-each (trig/iri :ontology "is_measured_at") mms))))
 
 (defn study-drug-rdf [xml instance-uri entity-uris]
@@ -465,9 +469,9 @@
         [unit-uri-map units-rdf] (import-entities xml "/addis-data/units/unit" unit-rdf)
         [indication-uri-map indications-rdf] (import-entities xml "/addis-data/indications/indication" indication-rdf)
         [drug-uri-map drugs-rdf] (import-entities xml "/addis-data/drugs/drug" drug-rdf)
-        [endpoint-uri-map endpoints-rdf] (import-entities xml "/addis-data/endpoints/endpoint" endpoint-rdf)
-        [adverseEvent-uri-map adverseEvents-rdf] (import-entities xml "/addis-data/adverseEvents/adverseEvent" adverseEvent-rdf)
-        [populationCharacteristic-uri-map populationCharacteristics-rdf] (import-entities xml "/addis-data/populationCharacteristics/populationCharacteristic" populationCharacteristic-rdf)
+        [endpoint-uri-map endpoints-rdf] (import-entities xml "/addis-data/endpoints/endpoint" variable-rdf)
+        [adverseEvent-uri-map adverseEvents-rdf] (import-entities xml "/addis-data/adverseEvents/adverseEvent" variable-rdf)
+        [populationCharacteristic-uri-map populationCharacteristics-rdf] (import-entities xml "/addis-data/populationCharacteristics/populationCharacteristic" variable-rdf)
         entity-uris {:indication indication-uri-map
                      :drug drug-uri-map
                      :endpoint endpoint-uri-map
