@@ -125,6 +125,11 @@ SPARQL protocol update endpoint for the latest version of this dataset.
 Expects the request headers `X-EventSource-Title` (required) and `X-EventSource-Description` (optional) containing a human-readable short- and long-form description of the change (see [Versioning](versioning.html)).
 The server returns a response header `X-Trialverse-Version` containing the URI of the created version.
 Note that this URI will be different from the one specified under [Versioning](versioning.html), as the Trialverse API exposes versions through a different endpoint.
+
+Graphs
+------
+
+
 In general, SPARQL update queries should not be used to create or delete graphs, and the store's behaviour is not defined in that case.
 
 Both the `./query` and `./update` endpoint define `/users/:user-id/datasets/:dataset-id/graphs/` as their base URI, and hence graphs can be referred to using only their ID in SPARQL: `<:graph-id>`.
@@ -134,11 +139,8 @@ Both the `./query` and `./update` endpoint define `/users/:user-id/datasets/:dat
 ```
 
 SPARQL graph store API for the latest version of this dataset, using the direct graph identification pattern (i.e. the graph URI resolves to an RDF document of the graph).
-POST, PUT, and DELETE requests must specify the `X-EventSource-Title` header and may specify the `X-EventSource-Description` header.
+POST, PUT, and DELETE requests must specify the `commitTitle` query parameter and may specify the `commitDescription` query parameter.
 The response to all successful requests contains an `X-Trialverse-Version` header indicating the version returned or the newly created version.
-
-Creating graphs
----------------
 
 Graphs can be created using a POST request to the graph's desired URI.
 
