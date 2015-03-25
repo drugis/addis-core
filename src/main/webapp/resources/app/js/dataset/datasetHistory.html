@@ -1,0 +1,15 @@
+<navbar-directive>
+<ul class="left top-bar-content">
+  <li><h4 class="topbar-text">{{dataset.label}}</h4></li>
+</ul>
+</navbar-directive>
+<div class="row">
+  <div class="columns large-12">
+    <h1>Dataset history</h1>
+    <ul class="no-bullet">
+      <li ng-repeat="historyItem in historyItems | orderBy : idx ">
+        <history-item item="historyItem"></history-item>
+      </li>
+    </ul>
+  </div>
+</div>

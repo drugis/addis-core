@@ -39,6 +39,8 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 
+import static org.apache.http.HttpHeaders.*;
+
 /**
  * Created by daan on 7-11-14.
  */
@@ -49,6 +51,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   private static final String STUDIES_WITH_DETAILS = loadResource("queryStudiesWithDetails.sparql");
   private static final String CONTAINS_STUDY_WITH_SHORTNAME = loadResource("askContainsStudyWithLabel.sparql");
   public static final String QUERY_ENDPOINT = "/query";
+  public static final String HISTORY_ENDPOINT = "/history";
   private static final String DATA_ENDPOINT = "/data";
 
   public static final String QUERY_PARAM_QUERY = "query";
@@ -113,8 +116,8 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   private <T> ResponseEntity<T> doRequest(URI trialverseDatasetUri, String query, String acceptType, Class responseType) {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
-    httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, acceptType);
+    httpHeaders.add(CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
+    httpHeaders.add(ACCEPT, acceptType);
 
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
@@ -141,7 +144,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     for (VersionMapping mapping : mappings) {
 
       HttpHeaders httpHeaders = new HttpHeaders();
-      httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
+      httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
       HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
       String uri = mapping.getVersionedDatasetUrl() + DATA_ENDPOINT + QUERY_STRING_DEFAULT_GRAPH;
 
@@ -158,7 +161,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   public Model getDataset(URI trialverseDatasetUri) {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
+    httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     String uri = versionMapping.getVersionedDatasetUrl() + DATA_ENDPOINT + QUERY_STRING_DEFAULT_GRAPH;
 
@@ -178,8 +181,8 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
 
-    request.addHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
-    request.addHeader(org.apache.http.HttpHeaders.ACCEPT, org.apache.jena.riot.WebContent.contentTypeResultsJSON);
+    request.addHeader(CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
+    request.addHeader(ACCEPT, WebContent.contentTypeResultsJSON);
 
     return httpClient.execute(request);
   }
@@ -194,6 +197,17 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   public Boolean containsStudyWithShortname(URI trialverseDatasetUri, String shortName) {
     String query = StringUtils.replace(CONTAINS_STUDY_WITH_SHORTNAME, "$shortName", "'" + shortName + "'");
     return  doAskQuery(trialverseDatasetUri, query);
+  }
+
+  @Override
+  public HttpResponse getHistory(URI trialverseDatasetUri) throws IOException {
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
+            .path(HISTORY_ENDPOINT)
+            .build();
+    HttpGet request = new HttpGet(uriComponents.toUri());
+    request.addHeader(ACCEPT, WebContent.contentTypeJSONLD);
+    return httpClient.execute(request);
   }
 
   private static class LoadResourceException extends RuntimeException {

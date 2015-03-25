@@ -97,4 +97,15 @@ public class DatasetController extends AbstractTrialverseController {
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
   }
 
+  @RequestMapping(value = "/{datasetUUID}/versions", method = RequestMethod.GET)
+  @ResponseBody
+  public void getHistory(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException {
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    HttpResponse response = datasetReadRepository.getHistory(trialverseDatasetUri);
+    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+    httpServletResponse.setHeader("Content-Type", RDFLanguages.JSONLD.getContentType().getContentType());
+    trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
+  }
+
+
 }

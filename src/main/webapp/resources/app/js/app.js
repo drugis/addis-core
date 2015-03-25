@@ -51,9 +51,9 @@ define(
 
 
     Number.isInteger = Number.isInteger || function(value) {
-    return typeof value === "number" &&
-           isFinite(value) &&
-           Math.floor(value) === value;
+      return typeof value === "number" &&
+        isFinite(value) &&
+        Math.floor(value) === value;
     };
 
     var app = angular.module('trialverse', dependencies);
@@ -90,6 +90,11 @@ define(
             url: '/dataset/:datasetUUID',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
+          })
+          .state('datasetHistory', {
+            url: '/dataset/:datasetUUID/history',
+            templateUrl: 'app/js/dataset/datasetHistory.html',
+            controller: 'DatasetHistoryController'
           })
           .state('concepts', {
             url: '/dataset/:datasetUUID/concepts',

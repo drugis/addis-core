@@ -4,7 +4,6 @@ package org.drugis.trialverse.dataset.repository;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
-import net.minidev.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -14,12 +13,10 @@ import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
-import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.impl.DatasetReadRepositoryImpl;
 import org.drugis.trialverse.security.Account;
-import org.drugis.trialverse.testutils.TestUtils;
 import org.drugis.trialverse.util.JenaGraphMessageConverter;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
@@ -30,10 +27,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -41,18 +36,15 @@ import sun.security.acl.PrincipalImpl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import static org.drugis.trialverse.testutils.TestUtils.loadResource;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -197,6 +189,22 @@ public class DatasetReadRepositoryTest {
 
     verify(restTemplate).exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, JsonObject.class);
     assertTrue(result);
+  }
+
+  @Test
+  public void testGetHistory() throws URISyntaxException, IOException {
+    String user1 = "user1";
+    URI datasetUrl = new URI("uuid-1");
+    String versionedDatasetUrl = "http://whatever";
+    HttpResponse mockResponse = mock(HttpResponse.class);
+    VersionMapping versionMapping = new VersionMapping(1, versionedDatasetUrl, user1, datasetUrl.toString());
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
+    when(httpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
+    HttpResponse actualHttpResponse = datasetReadRepository.getHistory(datasetUrl);
+
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
+    verify(httpClient).execute(any(HttpGet.class));
+    assertEquals(mockResponse, actualHttpResponse);
   }
 
   @After

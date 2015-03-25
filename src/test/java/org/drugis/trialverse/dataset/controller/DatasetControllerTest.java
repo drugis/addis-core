@@ -3,7 +3,9 @@ package org.drugis.trialverse.dataset.controller;
 import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
 import org.apache.http.ProtocolVersion;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.riot.RDFLanguages;
@@ -33,6 +35,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
 
 import static org.mockito.Mockito.*;
@@ -162,6 +165,22 @@ public class DatasetControllerTest {
 
     verify(datasetReadRepository).getDataset(datasetUri);
     verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
+  }
+
+  @Test
+  public void testGetHistory() throws Exception {
+    String uuid = "uuuuiiid-yeswecan";
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
+    HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1,1), HttpStatus.OK.value(), "reason"));
+    httpResponse.setEntity(new StringEntity("test"));
+    when(datasetReadRepository.getHistory(datasetUri)).thenReturn(httpResponse);
+
+    mockMvc.perform((get("/datasets/" + uuid + "/versions")).principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType() ));
+
+    verify(datasetReadRepository).getHistory(datasetUri);
+    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
   }
 
 }
