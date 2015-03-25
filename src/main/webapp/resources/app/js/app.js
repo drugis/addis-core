@@ -9,6 +9,7 @@ define(
     'dataset/dataset',
     'util/util',
     'study/study',
+    'graph/graph',
     'arm/arm',
     'outcome/outcome',
     'populationCharacteristic/populationCharacteristic',
@@ -19,6 +20,8 @@ define(
     'measurementMoment/measurementMoment',
     'activity/activity',
     'studyDesign/studyDesign',
+    'concept/concept',
+    'commit/commit',
     'angular-resource',
     'rdfstore',
     'lodash'
@@ -30,6 +33,7 @@ define(
       'mm.foundation.typeahead',
       'trialverse.dataset',
       'trialverse.util',
+      'trialverse.graph',
       'trialverse.study',
       'trialverse.arm',
       'trialverse.outcome',
@@ -40,13 +44,15 @@ define(
       'trialverse.measurementMoment',
       'trialverse.studyDesign',
       'trialverse.activity',
-      'trialverse.results'
+      'trialverse.results',
+      'trialverse.concept',
+      'trialverse.commit'
     ];
 
 
     Number.isInteger = Number.isInteger || function(value) {
-    return typeof value === "number" && 
-           isFinite(value) && 
+    return typeof value === "number" &&
+           isFinite(value) &&
            Math.floor(value) === value;
     };
 
@@ -65,6 +71,7 @@ define(
     ]);
 
     app.constant('SCRATCH_RDF_STORE_URL', '/scratch');
+    app.constant('CONCEPT_GRAPH_UUID', 'concepts');
 
     app.config(['$stateProvider', '$urlRouterProvider',
       function($stateProvider, $urlRouterProvider) {
@@ -83,6 +90,11 @@ define(
             url: '/dataset/:datasetUUID',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
+          })
+          .state('concepts', {
+            url: '/dataset/:datasetUUID/concepts',
+            templateUrl: 'app/js/concept/concepts.html',
+            controller: 'ConceptController'
           })
           .state('study', {
             url: '/dataset/:datasetUUID/study/:studyUUID',

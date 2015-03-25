@@ -1,19 +1,19 @@
 <navbar-directive></navbar-directive>
 <div class="row nav-bar-spacer">
     <div class="column large-10">
-        <h2>{{dataset.label}}</h2>
-        <h5>{{dataset.comment}}<span
-                ng-if="studiesWithDetail.length">, {{studiesWithDetail.length}} studies</span></h5>
-    </div>
-    <div class="column large-2">
-        <button class="button small secondary right" ng-click="showTableOptions()">
-            <i class="fa fa-cog"></i>&nbsp; Show/Hide Columns
-        </button>
+        <h1>{{dataset.label}}</h1>
+        <p>{{dataset.comment}}</p>
+        <a style="display: block; margin-bottom: 2rem; text-decoration: underline;" ui-sref="concepts({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concepts</a>
+        <button ng-click="showStudyDialog()"><i class="fa fa-plus"></i> Add study</button>
+        <hr>
     </div>
 </div>
 <div class="row">
     <div class="column large-12">
-        <button ng-click="showStudyDialog()"><i class="fa fa-plus"></i> Add study</button>
+        <h3>Studies</h3>
+        <button class="button small secondary" ng-click="showTableOptions()">
+            <i class="fa fa-cog"></i>&nbsp; Show/Hide Columns
+        </button>
         <table>
             <thead>
             <tr>

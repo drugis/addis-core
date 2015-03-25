@@ -25,5 +25,8 @@
     "karma-jasmine": "~0.3.5",
     "requirejs": "~2.1.15",
     "karma-requirejs": "~0.2.2"
+  },
+  "dependencies": {
+    "log4js": "^0.6.22"
   }
 }

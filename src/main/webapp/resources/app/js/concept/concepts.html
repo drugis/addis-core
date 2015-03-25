@@ -1,0 +1,41 @@
+<navbar-directive></navbar-directive>
+<div class="row">
+  <div class="columns large-2 medium-3">
+    <ul class="side-nav">
+      <button ng-disabled="!areConceptsModified()" ng-click="saveConcepts()" class="button expand success">Commit changes</button>
+      <div class="modified-warning info">
+        <div ng-show="areConceptsModified()"><a ng-click="resetConcepts()" style="text-decoration: underline;">undo changes</a></div>
+        <div ng-show="!areConceptsModified()">No unsaved changes</div>
+      </div>
+      <li class="divider"></li>
+      <li class="heading">Concepts</li>
+      <li><a ng-click="sideNavClick('drugs')">Drugs</a></li>
+      <li><a ng-click="sideNavClick('popchars')">Population Characteristics</a></li>
+      <li><a ng-click="sideNavClick('endpoints')">Endpoints</a></li>
+      <li><a ng-click="sideNavClick('adverseEvents')">Adverse Events</a></li>
+    </ul>
+  </div>
+
+  <div class="columns large-10 medium-9">
+    <h2>{{dataset.label}}</h2>
+    <h5>{{dataset.comment}}</h5>
+    <h3>Concepts</h3>
+    <button class="small" ng-click="openAddConceptDialog()"><i class="fa fa-plus"> Add Concept</i></button>
+    <h5>Drugs</h5>
+    <ul id="drugs">
+      <li ng-repeat="concept in concepts | filter:'ontology#drug'">{{concept.label}}</li>
+    </ul>
+    <h5>Population Characteristics</h5>
+    <ul id="popchars">
+    <li ng-repeat="concept in concepts | filter:'ontology#PopulationCharacteristic'">{{concept.label}}</li>
+    </ul>
+    <h5>Endpoints</h5>
+    <ul id="endpoints">
+      <li ng-repeat="concept in concepts | filter:'ontology#Endpoint'">{{concept.label}}</li>
+    </ul>
+    <h5>Adverse Events</h5>
+    <ul id="adverseEvents">
+      <li ng-repeat="concept in concepts | filter:'ontology#AdverseEvent'">{{concept.label}}</li>
+    </ul>
+  </div>
+</div>

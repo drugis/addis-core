@@ -1,10 +1,10 @@
 'use strict';
 define([], function() {
   var dependencies = ['$scope', '$stateParams', '$modalInstance', 'DatasetService', 'DatasetResource',
-    'UUIDService', 'StudyService', 'StudyResource'
+    'UUIDService', 'StudyService', 'GraphResource'
   ];
   var CreateStudyController = function($scope, $stateParams, $modalInstance, DatasetService, DatasetResource,
-    UUIDService, StudyService, StudyResource) {
+    UUIDService, StudyService, GraphResource) {
 
     $scope.isCreatingStudy = false;
 
@@ -18,17 +18,17 @@ define([], function() {
     $scope.createStudy = function(study) {
       $scope.isCreatingStudy = true;
       StudyService.createEmptyStudy(study).then(function() {
-        StudyService.getStudyGraph().then(function(queryResult) {
+        StudyService.getGraph().then(function(queryResult) {
           var uuid = StudyService.getStudyUUID();
 
-          StudyResource.put({
+          GraphResource.put({
             datasetUUID: $stateParams.datasetUUID,
-            studyUUID: uuid
+            graphUuid: uuid,
+            commitTitle: 'Initial study creation: ' + study.label
           }, queryResult.data, function() {
             $scope.loadStudiesWithDetail();
             $scope.isCreatingStudy = true;
             $modalInstance.close();
-
           });
         });
       });

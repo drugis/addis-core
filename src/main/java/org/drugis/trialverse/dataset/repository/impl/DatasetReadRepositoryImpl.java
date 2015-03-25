@@ -5,16 +5,11 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 import com.hp.hpl.jena.vocabulary.RDF;
-
-import java.net.URI;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
@@ -28,9 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.*;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
@@ -39,6 +35,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 
@@ -51,14 +48,12 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   private static final Logger logger = LoggerFactory.getLogger(DatasetReadRepositoryImpl.class);
   private static final String STUDIES_WITH_DETAILS = loadResource("queryStudiesWithDetails.sparql");
   private static final String CONTAINS_STUDY_WITH_SHORTNAME = loadResource("askContainsStudyWithLabel.sparql");
-  private static final String QUERY_AFFIX = "/current/query";
-  private static final String DATA_ENDPOINT = "/data";
-  private static final String QUERY_STRING_DEFAULT_GRAPH = "?default";
-
-  private static final Node CLASS_VOID_DATASET = NodeFactory.createURI("http://rdfs.org/ns/void#Dataset");
   public static final String QUERY_ENDPOINT = "/query";
-  public static final String QUERY_PARAM_OUTPUT_TYPE = "output";
+  private static final String DATA_ENDPOINT = "/data";
+
   public static final String QUERY_PARAM_QUERY = "query";
+  private static final String QUERY_STRING_DEFAULT_GRAPH = "?default";
+  private static final Node CLASS_VOID_DATASET = NodeFactory.createURI("http://rdfs.org/ns/void#Dataset");
 
 
   @Inject

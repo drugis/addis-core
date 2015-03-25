@@ -1,0 +1,16 @@
+<div class="row">
+  <div class="columns large-8 medium-12">
+    <h3>Commit changes</h3>
+    <form>
+      <label>Title
+        <input type="text" ng-model="commitTitle">
+      </label>
+      <label>Description
+        <textarea ng-model="commitDescription"></textarea>
+      </label>
+      <button type="submit" class="success" ng-click="commitChanges(commitTitle, commitDescription)" ng-disabled="!commitTitle">Commit changes</button>
+      <button type="button" class="secondary" ng-click="commitCancelled()">Cancel</button>
+    </form>
+  </div>
+</div>
+<a class="close-reveal-modal" ng-click="commitCancelled()">&#215;</a>

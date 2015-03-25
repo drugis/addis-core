@@ -9,9 +9,10 @@ PREFIX study: <http://trials.drugis.org/studies/>
 SELECT
   ?studyUri ?title ?label ?studySize ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria
  ?publications ?status ?numberOfCenters ?indication ?startDate ?endDate ?numberOfArms ?doseType WHERE {
-GRAPH ?studyUri {
+GRAPH ?graphUri {
     ?studyUri 
       rdfs:label ?label ;
+      a ontology:Study ;
       rdfs:comment ?title .
     OPTIONAL {
       ?studyUri ontology:has_allocation ?allocation .

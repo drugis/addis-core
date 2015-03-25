@@ -5,5 +5,5 @@ package org.drugis.trialverse.util;
  */
 public class Namespaces {
   public final static String DATASET_NAMESPACE = "http://trials.drugis.org/datasets/";
-  public final static String STUDY_NAMESPACE = "http://trials.drugis.org/studies/";
+  public final static String GRAPH_NAMESPACE = "http://trials.drugis.org/graphs/";
 }

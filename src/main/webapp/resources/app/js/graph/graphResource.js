@@ -2,13 +2,13 @@
 define([], function() {
 
   var dependencies = ['$resource'];
-
-  var StudyResource = function($resource) {
-
+  var GraphResource = function($resource) {
     return $resource(
-      '/datasets/:datasetUUID/studies/:studyUUID', {
+      '/datasets/:datasetUUID/graphs/:graphUuid', {
         datasetUUID: '@datasetUUID',
-        studyUUID: '@studyUUID'
+        graphUuid: '@graphUuid',
+        commitTitle: '@commitTitle',
+        commitDescription: '@commitDescription'
       }, {
         'get': {
           method: 'get',
@@ -26,5 +26,5 @@ define([], function() {
         }
       });
   };
-  return dependencies.concat(StudyResource);
+  return dependencies.concat(GraphResource);
 });

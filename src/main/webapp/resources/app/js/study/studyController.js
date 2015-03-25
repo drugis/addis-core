@@ -1,10 +1,10 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$window', 'StudyResource', '$location', '$anchorScroll',
+    var dependencies = ['$scope', '$stateParams', '$window', 'GraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'DatasetResource', 'DatasetService', 'ResultsService', 'StudyDesignService'
     ];
-    var StudyController = function($scope, $stateParams, $window, StudyResource, $location, $anchorScroll,
+    var StudyController = function($scope, $stateParams, $window, GraphResource, $location, $anchorScroll,
       $modal, StudyService, DatasetResource, DatasetService, ResultsService, StudyDesignService) {
 
       StudyService.reset();
@@ -104,12 +104,17 @@ define([],
       });
 
       function reloadStudyModel() {
-        StudyResource.get($stateParams, function(response) {
+        GraphResource.get({
+          datasetUUID: $stateParams.datasetUUID,
+          graphUuid: $stateParams.studyUUID
+        }, function(response) {
           StudyService.loadStore(response.data)
             .then(function() {
               console.log('loading study-store success');
               StudyService.queryStudyData().then(function(queryResult) {
                 $scope.study = queryResult;
+                $scope.$broadcast('refreshStudyDesign');
+                StudyService.studySaved();
               });
             }, function() {
               console.error('failed loading study-store');
@@ -129,9 +134,13 @@ define([],
         });
       }
 
+      $scope.resetStudy = function() {
+        reloadStudyModel();
+        reloadDatasetModel();
+      }
+
       // onload
-      reloadStudyModel();
-      reloadDatasetModel();
+      $scope.resetStudy();
 
       $scope.$on('updateStudyDesign', function() {
         console.log('update design');
@@ -159,16 +168,26 @@ define([],
       };
 
       $scope.saveStudy = function() {
-        StudyService.getStudyGraph().then(function(graph) {
-          StudyResource.put({
-            datasetUUID: $stateParams.datasetUUID,
-            studyUUID: $stateParams.studyUUID
-          }, graph.data, function() {
-            console.log('graph saved');
-            StudyService.studySaved();
-          });
+        $modal.open({
+          templateUrl: 'app/js/commit/commit.html',
+          controller: 'CommitController',
+          resolve: {
+            callback: function() {
+              return StudyService.studySaved;
+            },
+            datasetUuid: function() {
+              return $stateParams.datasetUUID;
+            },
+            graphUuid: function() {
+              return $stateParams.studyUUID;
+            },
+            itemServiceName: function() {
+              return 'StudyService';
+            }
+          }
         });
       };
+
     };
     return dependencies.concat(StudyController);
   });
