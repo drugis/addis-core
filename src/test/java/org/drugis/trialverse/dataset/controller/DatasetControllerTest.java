@@ -62,11 +62,11 @@ public class DatasetControllerTest {
   @Mock
   private TrialverseIOUtilsService trialverseIOUtilsService;
 
-  @Inject
-  private WebApplicationContext webApplicationContext;
+  @Mock
+  private WebConstants webConstants;
 
   @Inject
-  private WebConstants webConstants;
+  private WebApplicationContext webApplicationContext;
 
   @InjectMocks
   private DatasetController datasetController;
@@ -84,6 +84,7 @@ public class DatasetControllerTest {
     accountRepository = mock(AccountRepository.class);
     datasetWriteRepository = mock(DatasetWriteRepository.class);
     datasetController = new DatasetController();
+    webConstants = mock(WebConstants.class);
 
     initMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(datasetController).build();
@@ -161,44 +162,6 @@ public class DatasetControllerTest {
 
     verify(datasetReadRepository).getDataset(datasetUri);
     verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
-  }
-
-  @Test
-  public void testUpdateDatasetAndCheckIfStatusIsPassedOn() throws Exception {
-    String datasetContent = "content";
-    InputStream contentStream = IOUtils.toInputStream(datasetContent);
-    String datasetUUID = "uid";
-    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.I_AM_A_TEAPOT.value(), "some good reason");
-    HttpResponse httpResponse = new BasicHttpResponse(statusLine);
-    when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(true);
-    when(datasetWriteRepository.updateDataset(Matchers.<URI>anyObject(), Matchers.any(InputStream.class))).thenReturn(httpResponse);
-
-    mockMvc.perform(post("/datasets/" + datasetUUID)
-            .principal(user)
-            .content(datasetContent))
-            .andExpect(status().isIAmATeapot())
-    ;
-
-    verify(datasetReadRepository).isOwner(datasetUri, user);
-    verify(datasetWriteRepository).updateDataset(Matchers.<URI>anyObject(), Matchers.any(InputStream.class));
-    contentStream.close();
-  }
-
-  @Test
-  public void testUpdateDatasetWithNonOwnerUser() throws Exception {
-    String datasetContent = "content";
-    String datasetUUID = "uid";
-    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-
-    when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(false);
-
-    mockMvc.perform(post("/datasets/" + datasetUUID)
-            .principal(user)
-            .content(datasetContent)).andExpect(status().isForbidden());
-
-    verify(datasetReadRepository).isOwner(datasetUri, user);
-    verifyZeroInteractions(datasetWriteRepository);
   }
 
 }

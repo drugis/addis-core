@@ -21,6 +21,7 @@ define(
     'activity/activity',
     'studyDesign/studyDesign',
     'concept/concept',
+    'commit/commit',
     'angular-resource',
     'rdfstore',
     'lodash'
@@ -44,7 +45,8 @@ define(
       'trialverse.studyDesign',
       'trialverse.activity',
       'trialverse.results',
-      'trialverse.concept'
+      'trialverse.concept',
+      'trialverse.commit'
     ];
 
 
@@ -69,6 +71,7 @@ define(
     ]);
 
     app.constant('SCRATCH_RDF_STORE_URL', '/scratch');
+    app.constant('CONCEPT_GRAPH_UUID', 'concepts');
 
     app.config(['$stateProvider', '$urlRouterProvider',
       function($stateProvider, $urlRouterProvider) {

@@ -44,7 +44,8 @@ define(['angular', 'angular-mocks'], function() {
         DatasetService: datasetServiceMock,
         DatasetResource: DatasetResource,
         ConceptService: conceptServiceMock,
-        GraphResource: GraphResource
+        GraphResource: GraphResource,
+        CONCEPT_GRAPH_UUID: 'CONCEPT_GRAPH_UUID'
       });
     }));
 
