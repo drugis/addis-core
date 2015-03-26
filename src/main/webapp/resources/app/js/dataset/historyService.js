@@ -6,10 +6,10 @@ define([], function() {
     function addOrderIndex(historyData) {
 
       // find head
-      var previousMap = _.indexBy(historyData.data, 'previous');
-      var indexMap = _.indexBy(historyData.data, '@id');
+      var previousMap = _.indexBy(historyData, 'previous');
+      var indexMap = _.indexBy(historyData, '@id');
 
-      var head = _.find(historyData.data, function(item) {
+      var head = _.find(historyData, function(item) {
         return !previousMap[item['@id']];
       });
 
