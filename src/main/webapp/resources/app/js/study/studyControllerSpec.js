@@ -12,7 +12,7 @@ define(['angular', 'angular-mocks'], function() {
       anchorScrollMock = jasmine.createSpy('anchorScroll'),
       locationMock = jasmine.createSpyObj('location', ['hash']),
       modalMock = jasmine.createSpyObj('modal', ['open']),
-      studyServiceMock = jasmine.createSpyObj('StudyService', ['reset','queryArmData', 'loadStore', 'queryStudyData', 'getStudyGraph', 'studySaved']),
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['reset','queryArmData', 'loadStore', 'queryStudyData', 'getGraph', 'studySaved']),
       datasetServiceMock = jasmine.createSpyObj('DatasetService', ['reset', 'loadStore', 'queryDataset']),
       resultsServiceMock = jasmine.createSpyObj('ResultsService', ['cleanUpMeasurements']),
       studyDesignServiceMock = jasmine.createSpyObj('StudyDesignService', ['cleanupCoordinates']),
@@ -20,7 +20,7 @@ define(['angular', 'angular-mocks'], function() {
       loadDatasetStoreDeferred,
       queryStudyDataDeferred,
       queryArmDataDeferred,
-      getStudyGraphDeferred;
+      getGraphDeferred;
 
 
     beforeEach(module('trialverse.study'));
@@ -36,13 +36,13 @@ define(['angular', 'angular-mocks'], function() {
       loadStoreDeferred = $q.defer();
       queryStudyDataDeferred = $q.defer();
       queryArmDataDeferred = $q.defer();
-      getStudyGraphDeferred = $q.defer();
+      getGraphDeferred = $q.defer();
       loadDatasetStoreDeferred = $q.defer();
 
       studyServiceMock.loadStore.and.returnValue(loadStoreDeferred.promise);
       studyServiceMock.queryStudyData.and.returnValue(queryStudyDataDeferred.promise);
       studyServiceMock.queryArmData.and.returnValue(queryArmDataDeferred.promise);
-      studyServiceMock.getStudyGraph.and.returnValue(getStudyGraphDeferred.promise);
+      studyServiceMock.getGraph.and.returnValue(getGraphDeferred.promise);
 
       datasetServiceMock.loadStore.and.returnValue(loadDatasetStoreDeferred.promise);
 
@@ -82,20 +82,5 @@ define(['angular', 'angular-mocks'], function() {
 
     });
 
-    describe('saveStudy', function() {
-      it('should export the graph and PUT it to the resource', inject(function(GraphResource, $q) {
-
-        httpBackend.expectPUT('/datasets/datasetUUID/graphs/studyUUID').respond(200,'');
-
-        scope.saveStudy();
-        expect(studyServiceMock.getStudyGraph).toHaveBeenCalled();
-
-        getStudyGraphDeferred.resolve({data: 'mock study data'});
-        scope.$digest();
-        httpBackend.flush();
-
-        expect(studyServiceMock.studySaved).toHaveBeenCalled();
-      }));
-    });
   });
 });

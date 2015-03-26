@@ -2,9 +2,10 @@
 define([],
   function() {
     var dependencies = ['$scope', '$modal', '$stateParams', '$anchorScroll', '$location',
-      'DatasetService', 'DatasetResource', 'ConceptService', 'GraphResource'];
+      'DatasetService', 'DatasetResource', 'ConceptService', 'GraphResource', 'CONCEPT_GRAPH_UUID'
+    ];
     var ConceptController = function($scope, $modal, $stateParams, $anchorScroll, $location,
-       DatasetService, DatasetResource, ConceptService, GraphResource) {
+      DatasetService, DatasetResource, ConceptService, GraphResource, CONCEPT_GRAPH_UUID) {
       var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUUID;
       $scope.concepts = {};
 
@@ -35,6 +36,11 @@ define([],
         });
       }
 
+      $scope.resetConcepts = function() {
+        reloadDatasetModel();
+        reloadConceptsModel();
+      };
+
       // onload
       reloadDatasetModel();
       reloadConceptsModel();
@@ -56,14 +62,23 @@ define([],
       };
 
       $scope.saveConcepts = function() {
-        ConceptService.getGraph().then(function(graph) {
-          GraphResource.put({
-            datasetUUID: $stateParams.datasetUUID,
-            graphUuid: 'concepts'
-          }, graph.data, function() {
-            console.log('graph saved');
-            ConceptService.conceptsSaved();
-          });
+        $modal.open({
+          templateUrl: 'app/js/commit/commit.html',
+          controller: 'CommitController',
+          resolve: {
+            callback: function() {
+              return ConceptService.conceptsSaved;
+            },
+            datasetUuid: function() {
+              return $stateParams.datasetUUID;
+            },
+            graphUuid: function() {
+              return CONCEPT_GRAPH_UUID;
+            },
+            itemServiceName: function() {
+              return 'ConceptService';
+            }
+          }
         });
       };
 

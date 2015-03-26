@@ -12,6 +12,10 @@ define([], function() {
 
         var service = $injector.get(scope.settings.service);
 
+        scope.$on('refreshStudyDesign', function() {
+          scope.reloadItems();
+        });
+
         scope.reloadItems = function() {
           service.queryItems($stateParams.studyUUID).then(function(queryResult) {
             scope.items = queryResult;
