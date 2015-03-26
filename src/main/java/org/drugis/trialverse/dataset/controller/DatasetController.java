@@ -80,11 +80,7 @@ public class DatasetController extends AbstractTrialverseController {
   @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.GET)
   @ResponseBody
   public void getDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws IOException, URISyntaxException {
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    Model datasetModel = datasetReadRepository.getDataset(trialverseDatasetUri);
-    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-    httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
-    trialverseIOUtilsService.writeModelToServletResponse(datasetModel, httpServletResponse);
+    getVersionedDataset(httpServletResponse, datasetUUID, null);
   }
 
   @RequestMapping(value = "/{datasetUUID}/studiesWithDetail", method = RequestMethod.GET)
@@ -99,7 +95,7 @@ public class DatasetController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/{datasetUUID}/versions", method = RequestMethod.GET)
   @ResponseBody
-  public void getHistory(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException {
+  public void queryHistory(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     HttpResponse response = datasetReadRepository.getHistory(trialverseDatasetUri);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
@@ -107,5 +103,13 @@ public class DatasetController extends AbstractTrialverseController {
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
   }
 
-
+  @RequestMapping(value = "/{datasetUUID}/versions/{versionUuid}", method = RequestMethod.GET)
+  @ResponseBody
+  public void getVersionedDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID, @PathVariable String versionUuid) throws URISyntaxException {
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    Model datasetModel = datasetReadRepository.getVersionedDataset(trialverseDatasetUri, versionUuid);
+    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+    httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
+    trialverseIOUtilsService.writeModelToServletResponse(datasetModel, httpServletResponse);
+  }
 }

@@ -33,6 +33,47 @@ describe('create dataset ', function() {
 
 describe('get dataset', function() {
 
+  var versionedDatasetUrl;
+
+  var expectedTtl =
+    '<http://mockserver/someMockUuid>\n' +
+    '        <http://purl.org/dc/terms/description>\n' +
+    '                "description" ;\n' +
+    '        <http://purl.org/dc/terms/title>\n' +
+    '                "my-title" .\n';
+
+  before(function(done) {
+    request(versionStoreServerUrl)
+      .post('datasets')
+      .set('Content-Type', 'text/turtle')
+      .send(newGraph)
+      .end(function(err, res) {
+        versionedDatasetUrl = res.headers.location;
+        done();
+      });
+  });
+
+  it('should return the dataset', function(done) {
+    request(versionedDatasetUrl)
+      .get('/data?default')
+      .set('Accept', 'text/turtle')
+      .end(function(err, res) {
+        if (err) {
+          console.log('err =  ' + err);
+          throw err;
+        }
+        console.log('res = ' + JSON.stringify(res));
+        res.should.have.property('status', 200);
+        res.headers['content-type'].should.equal('text/turtle;charset=UTF-8');
+        res.text.should.equal(expectedTtl);
+        done();
+      });
+  });
+});
+
+describe('get versioned dataset', function() {
+
+  var versionedDatasetUrl;
   var versionUrl;
 
   var expectedTtl =
@@ -48,15 +89,17 @@ describe('get dataset', function() {
       .set('Content-Type', 'text/turtle')
       .send(newGraph)
       .end(function(err, res) {
-        versionUrl = res.headers.location;
+        versionedDatasetUrl = res.headers.location;
+        versionUrl = res.headers['x-eventsource-version'];
         done();
       });
   });
 
-  it('should return the dataset', function(done) {
-    request(versionUrl)
+  it('should return the versioned dataset', function(done) {
+    request(versionedDatasetUrl)
       .get('/data?default')
       .set('Accept', 'text/turtle')
+      .set('X-Accept-EventSource-Version', versionUrl)
       .end(function(err, res) {
         if (err) {
           console.log('err =  ' + err);
@@ -74,7 +117,7 @@ describe('get dataset', function() {
 
 describe('create study', function() {
 
-  var versionUrl;
+  var versionedDatasetUrl;
   var study = '<http://trials.drugis.org/studies/studyUuid>  <http://www.w3.org/2000/01/rdf-schema#label> "mystudy" ;' +
     ' a  <http://trials.drugis.org/ontology#Study> ; ' +
     ' <http://trials.drugis.org/ontology#has_epochs> () . ';
@@ -86,7 +129,7 @@ describe('create study', function() {
       .set('Content-Type', 'text/turtle')
       .send(newGraph)
       .end(function(err, res) {
-        versionUrl = res.headers.location;
+        versionedDatasetUrl = res.headers.location;
         done();
       });
   });
@@ -95,7 +138,7 @@ describe('create study', function() {
   it('should return a 201', function(done) {
     var studyUri = 'http://trials.drugis.org/studies/studyUuid';
 
-    request(versionUrl)
+    request(versionedDatasetUrl)
       .put('/data?graph=' + studyUri)
       .set('Content-Type', 'text/turtle')
       .send(study)
@@ -113,7 +156,7 @@ describe('create study', function() {
 
 describe('when the study is created, query the details', function() {
 
-  var versionUrl;
+  var versionedDatasetUrl;
   var studyUri = 'http://trials.drugis.org/studies/studyUuid';
   var study = '<http://trials.drugis.org/studies/studyUuid>  <http://www.w3.org/2000/01/rdf-schema#label> "mystudy" ;' +
     ' <http://www.w3.org/2000/01/rdf-schema#comment> "myComment" ;' +
@@ -126,8 +169,8 @@ describe('when the study is created, query the details', function() {
       .set('Content-Type', 'text/turtle')
       .send(newGraph)
       .end(function(err, res) {
-        versionUrl = res.headers.location;
-        request(versionUrl)
+        versionedDatasetUrl = res.headers.location;
+        request(versionedDatasetUrl)
           .put('/data?graph=' + studyUri)
           .set('Content-Type', 'text/turtle')
           .send(study)
@@ -149,7 +192,7 @@ describe('when the study is created, query the details', function() {
     var query = fs.readFileSync(path.join(__dirname, '../../../main/resources/queryStudiesWithDetails.sparql'), 'utf8');
     console.log(query);
 
-    request(versionUrl)
+    request(versionedDatasetUrl)
       .get('/query?query=' + encodeURIComponent(query))
       .set('Content-Type', 'application/sparql-query')
       .set('Accept', 'application/sparql-results+json')

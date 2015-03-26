@@ -56,7 +56,6 @@ public class GraphController extends AbstractTrialverseController {
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
   }
 
-
   @RequestMapping(value = "/{graphUuid}", method = RequestMethod.PUT)
   public void setGraph(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
                        @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,

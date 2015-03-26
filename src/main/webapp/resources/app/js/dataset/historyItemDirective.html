@@ -1,5 +1,5 @@
 <div class="panel clearfix">
   <h5>{{item.creator | stripFrontFilter:'mailto:'}} <span>({{item.date | date:'medium'}})</span></h5>
-  <p><a ui-sref="dataset({datasetUUID: $stateParams.datasetUUID, version: item.versionUri})">{{item.title}}</a></p>
+  <p><a ui-sref="versionedDataset({datasetUUID: datasetUUID, versionUuid: versionUuid})">{{item.title}}</a></p>
   <p>{{item.description}}</p>
 </div>

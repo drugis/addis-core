@@ -15,6 +15,7 @@ define(function (require) {
 
     //resources
     .factory('DatasetResource', require('dataset/datasetResource'))
+    .factory('DatasetOverviewResource', require('dataset/datasetOverviewResource'))
     .factory('HistoryResource', require('dataset/historyResource'))
     .factory('StudiesWithDetailResource', require('dataset/studiesWithDetailResource'))
 

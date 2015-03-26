@@ -3,6 +3,7 @@ package org.drugis.trialverse.dataset.repository.impl;
 import com.hp.hpl.jena.graph.*;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 import com.hp.hpl.jena.vocabulary.RDF;
 import org.apache.commons.io.IOUtils;
@@ -57,6 +58,8 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   public static final String QUERY_PARAM_QUERY = "query";
   private static final String QUERY_STRING_DEFAULT_GRAPH = "?default";
   private static final Node CLASS_VOID_DATASET = NodeFactory.createURI("http://rdfs.org/ns/void#Dataset");
+  private static final String VERSION_PATH = "versions/";
+  public static final String HTTP_DRUGIS_ORG_EVENT_SOURCING_ES = "http://drugis.org/eventSourcing/es#";
 
 
   @Inject
@@ -73,6 +76,8 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   @Inject
   private HttpClient httpClient;
+
+  private final Node headProperty = ResourceFactory.createProperty(HTTP_DRUGIS_ORG_EVENT_SOURCING_ES, "head").asNode();
 
   private enum FUSEKI_OUTPUT_TYPES {
     TEXT, JSON;
@@ -149,8 +154,11 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
       String uri = mapping.getVersionedDatasetUrl() + DATA_ENDPOINT + QUERY_STRING_DEFAULT_GRAPH;
 
       ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
-
-      GraphUtil.addInto(graph, responseEntity.getBody());
+      final String version  = responseEntity.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION).get(0);
+      Graph datasetGraph = responseEntity.getBody();
+      graph.getPrefixMapping().setNsPrefix("es", HTTP_DRUGIS_ORG_EVENT_SOURCING_ES);
+      datasetGraph.add(new Triple(NodeFactory.createURI(mapping.getTrialverseDatasetUrl()), headProperty, NodeFactory.createURI(version)));
+      GraphUtil.addInto(graph, datasetGraph);
       graph = addDatasetType(mapping.getTrialverseDatasetUrl(), graph);
     }
 
@@ -158,10 +166,16 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public Model getDataset(URI trialverseDatasetUri) {
+  public Model getVersionedDataset(URI trialverseDatasetUri, String versionUuid) {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
+    if(StringUtils.isNotEmpty(versionUuid)) {
+      String headerValue = webConstants.getTriplestoreBaseUri() + VERSION_PATH + versionUuid;
+      logger.error("ASDLKFGJH~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~SPARKLE MOTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + headerValue);
+      httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, headerValue);
+    }
+
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     String uri = versionMapping.getVersionedDatasetUrl() + DATA_ENDPOINT + QUERY_STRING_DEFAULT_GRAPH;
 

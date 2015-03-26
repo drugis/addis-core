@@ -152,18 +152,36 @@ public class DatasetControllerTest {
   }
 
   @Test
-  public void testGetDatasetRequestPath() throws Exception {
+  public void testGetDataset() throws Exception {
     String uuid = "uuuuiiid-yeswecan";
     URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
     Model model = mock(Model.class);
-    when(datasetReadRepository.getDataset(datasetUri)).thenReturn(model);
+    when(datasetReadRepository.getVersionedDataset(datasetUri, null)).thenReturn(model);
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
     mockMvc.perform((get("/datasets/" + uuid)).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
-    verify(datasetReadRepository).getDataset(datasetUri);
+    verify(datasetReadRepository).getVersionedDataset(datasetUri, null);
+    verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
+  }
+
+  @Test
+  public void testGetDatasetVersion() throws Exception {
+    String uuid = "uuuuiiid-yeswecan";
+    String versionUuid = "versionUuid";
+
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
+    Model model = mock(Model.class);
+    when(datasetReadRepository.getVersionedDataset(datasetUri, versionUuid)).thenReturn(model);
+    when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
+
+    mockMvc.perform((get("/datasets/" + uuid + "/versions/" + versionUuid)).principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
+
+    verify(datasetReadRepository).getVersionedDataset(datasetUri, versionUuid);
     verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
   }
 

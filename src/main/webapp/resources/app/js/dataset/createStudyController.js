@@ -1,9 +1,9 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$scope', '$stateParams', '$modalInstance', 'DatasetService', 'DatasetResource',
+  var dependencies = ['$scope', '$stateParams', '$modalInstance',
     'UUIDService', 'StudyService', 'GraphResource'
   ];
-  var CreateStudyController = function($scope, $stateParams, $modalInstance, DatasetService, DatasetResource,
+  var CreateStudyController = function($scope, $stateParams, $modalInstance, 
     UUIDService, StudyService, GraphResource) {
 
     $scope.isCreatingStudy = false;

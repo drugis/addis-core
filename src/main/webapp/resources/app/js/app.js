@@ -91,6 +91,11 @@ define(
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
           })
+          .state('versionedDataset', {
+            url: '/dataset/:datasetUUID/versions/:versionUuid',
+            templateUrl: 'app/js/dataset/dataset.html',
+            controller: 'DatasetController'
+          })
           .state('datasetHistory', {
             url: '/dataset/:datasetUUID/history',
             templateUrl: 'app/js/dataset/datasetHistory.html',

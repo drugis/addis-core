@@ -95,7 +95,9 @@ public class DatasetReadRepositoryTest {
     List<VersionMapping> mockResult = Arrays.asList(versionMapping, versionMapping2);
     when(versionMappingRepository.findMappingsByUsername(account.getUsername())).thenReturn(mockResult);
     when(webConstants.getTriplestoreBaseUri()).thenReturn("http://mockserver/");
-    ResponseEntity<Graph> responseEntity = new ResponseEntity<Graph>(GraphFactory.createGraphMem(), HttpStatus.OK);
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(WebConstants.X_EVENT_SOURCE_VERSION, "http://myhost/myversion");
+    ResponseEntity<Graph> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), httpHeaders, HttpStatus.OK);
     List<HttpMessageConverter<?>> convertorList = new ArrayList<>();
     convertorList.add(new JenaGraphMessageConverter());
     when(restTemplate.getMessageConverters()).thenReturn(convertorList);
@@ -108,18 +110,21 @@ public class DatasetReadRepositoryTest {
   }
 
   @Test
-  public void testGetDataset() throws URISyntaxException {
+  public void testGetVersionedDataset() throws URISyntaxException {
     String datasetUUID = "uuid";
-
+    String versionUuid = "versionUuid";
     VersionMapping mapping = new VersionMapping("versioneduri", "itsame", Namespaces.DATASET_NAMESPACE + datasetUUID);
     URI trialverseDatasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl)).thenReturn(mapping);
     HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, webConstants.getTriplestoreBaseUri() + "/versions/" + versionUuid);
     httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     ResponseEntity<Graph> responseEntity = new ResponseEntity<Graph>(GraphFactory.createGraphMem(), HttpStatus.OK);
     when(restTemplate.exchange("versioneduri/data?default", HttpMethod.GET, requestEntity, Graph.class)).thenReturn(responseEntity);
-    Model model = datasetReadRepository.getDataset(trialverseDatasetUrl);
+
+
+    Model model = datasetReadRepository.getVersionedDataset(trialverseDatasetUrl, versionUuid);
 
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(trialverseDatasetUrl);
     assertNotNull(model);

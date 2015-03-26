@@ -14,8 +14,6 @@ import java.security.Principal;
 public interface DatasetReadRepository {
   public Model queryDatasets(Account currentUserAccount);
 
-  public Model getDataset(URI trialverseDatasetUri);
-
   public HttpResponse queryStudiesWithDetail(URI trialverseDatasetUri) throws IOException;
 
   public Boolean isOwner(URI trialverseDatasetUri, Principal principal);
@@ -23,4 +21,6 @@ public interface DatasetReadRepository {
   public Boolean containsStudyWithShortname(URI trialverseDatasetUri, String shortName);
 
   public HttpResponse getHistory(URI trialverseDatasetUri) throws IOException;
+
+  public Model getVersionedDataset(URI trialverseDatasetUri, String versionUuid);
 }

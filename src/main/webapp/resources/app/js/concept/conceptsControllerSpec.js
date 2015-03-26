@@ -16,7 +16,7 @@ define(['angular', 'angular-mocks'], function() {
 
     beforeEach(module('trialverse.concept'));
 
-    beforeEach(inject(function($rootScope, $q, $httpBackend, $controller, DatasetResource, GraphResource) {
+    beforeEach(inject(function($rootScope, $q, $httpBackend, $controller, GraphResource) {
       scope = $rootScope;
       httpBackend = $httpBackend;
 
