@@ -5,19 +5,21 @@ PREFIX ontology: <http://trials.drugis.org/ontology#>
 WITH <$graphUri>
 DELETE {
   <$URI>
-   rdfs:label ?label ;
-   ontology:measurementType ?measurementType ;
-   ontology:is_measured_at ?measurementMoment .
+    rdfs:label ?label ;
+    ontology:of_variable ?variable ;
+    ontology:is_measured_at ?measurementMoment .
+  ?variable ontology:measurementType ?measurementType .
 }
 INSERT {
   <$URI>
     rdfs:label "$newLabel" ;
-    ontology:measurementType <$newMeasurementType> .
-  $insertMeasurementMomentBlock
+    ontology:of_variable [ ontology:measurementType <$newMeasurementType> ].
+    $insertMeasurementMomentBlock
 }
 WHERE {
   <$URI>
-   rdfs:label ?label ;
-   ontology:measurementType ?measurementType .
-   OPTIONAL {<$URI> ontology:is_measured_at ?measurementMoment }.
+    rdfs:label ?label ;
+    ontology:of_variable ?variable .
+  ?variable ontology:measurementType ?measurementType ;
+  OPTIONAL { <$URI> ontology:is_measured_at ?measurementMoment }
 }

@@ -6,7 +6,7 @@ INSERT DATA {
   GRAPH <$graphUri> {
     instance:$UUID
     rdfs:label "$label" ;
-    ontology:measurementType <$measurementType> ;
-    rdfs:subClassOf ontology:AdverseEvent .
+    ontology:of_variable [ ontology:measurementType <$measurementType> ] ;
+    rdf:type ontology:AdverseEvent .
   }
 }
