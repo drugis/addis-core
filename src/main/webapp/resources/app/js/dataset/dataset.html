@@ -12,7 +12,7 @@
       <p>{{dataset.comment}}</p>
       <div class="row application-link">
         <div class="column large-10">
-          <a ng-click="testFun()">Concepts</a>
+          <a ui-sref=".concepts">Concepts</a>
         </div>
       </div>
       <div class="row application-link">
@@ -50,7 +50,7 @@
             <td colspan="20">No studies in dataset</td>
           </tr>
           <tr ng-repeat="studyWithDetails in studiesWithDetail | orderBy:tableOptions.orderByField:tableOptions.reverseSortOrder ">
-            <td><a ui-sref="dataset.study({studyUUID: (studyWithDetails.studyUri | stripFrontFilter:'http://trials.drugis.org/studies/')})">{{studyWithDetails.label}}</a>
+            <td><a ui-sref=".study({studyUUID: (studyWithDetails.studyUri | stripFrontFilter:'http://trials.drugis.org/studies/')})">{{studyWithDetails.label}}</a>
             </td>
             <td ng-show="column.visible" ng-repeat="column in tableOptions.columns">
               <span ng-show="!column.type">{{studyWithDetails[column.id]}}</span>

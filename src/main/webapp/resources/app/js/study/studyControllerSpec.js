@@ -13,11 +13,9 @@ define(['angular', 'angular-mocks'], function() {
       locationMock = jasmine.createSpyObj('location', ['hash']),
       modalMock = jasmine.createSpyObj('modal', ['open']),
       studyServiceMock = jasmine.createSpyObj('StudyService', ['reset','queryArmData', 'loadStore', 'queryStudyData', 'getGraph', 'studySaved']),
-      datasetServiceMock = jasmine.createSpyObj('DatasetService', ['reset', 'loadStore', 'queryDataset']),
       resultsServiceMock = jasmine.createSpyObj('ResultsService', ['cleanUpMeasurements']),
       studyDesignServiceMock = jasmine.createSpyObj('StudyDesignService', ['cleanupCoordinates']),
       loadStoreDeferred,
-      loadDatasetStoreDeferred,
       queryStudyDataDeferred,
       queryArmDataDeferred,
       getGraphDeferred;
@@ -25,26 +23,22 @@ define(['angular', 'angular-mocks'], function() {
 
     beforeEach(module('trialverse.study'));
 
-    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, GraphResource, DatasetResource) {
+    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, GraphResource) {
 
       scope = $rootScope;
       httpBackend = $httpBackend;
 
       httpBackend.expectGET('/datasets/' + datasetUUID + '/graphs/' + studyUUID).respond('study');
-      httpBackend.expectGET('/datasets/datasetUUID?studyUUID=studyUUID').respond('dataset');
 
       loadStoreDeferred = $q.defer();
       queryStudyDataDeferred = $q.defer();
       queryArmDataDeferred = $q.defer();
       getGraphDeferred = $q.defer();
-      loadDatasetStoreDeferred = $q.defer();
 
       studyServiceMock.loadStore.and.returnValue(loadStoreDeferred.promise);
       studyServiceMock.queryStudyData.and.returnValue(queryStudyDataDeferred.promise);
       studyServiceMock.queryArmData.and.returnValue(queryArmDataDeferred.promise);
       studyServiceMock.getGraph.and.returnValue(getGraphDeferred.promise);
-
-      datasetServiceMock.loadStore.and.returnValue(loadDatasetStoreDeferred.promise);
 
       $controller('StudyController', {
         $scope: scope,
@@ -55,8 +49,6 @@ define(['angular', 'angular-mocks'], function() {
         $modal: modalMock,
         $window: {bind: 'mockBind'},
         StudyService: studyServiceMock,
-        DatasetResource: DatasetResource,
-        DatasetService: datasetServiceMock,
         ResultsService: resultsServiceMock,
         StudyDesignService: studyDesignServiceMock
       });

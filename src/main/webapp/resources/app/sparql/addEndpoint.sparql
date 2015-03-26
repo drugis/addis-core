@@ -7,6 +7,6 @@ INSERT DATA {
     instance:$UUID
     rdfs:label "$label" ;
     ontology:of_variable [ ontology:measurementType <$measurementType> ] ;
-    rdf:type ontology:Endpoint .
+    a ontology:Endpoint .
   }
 }

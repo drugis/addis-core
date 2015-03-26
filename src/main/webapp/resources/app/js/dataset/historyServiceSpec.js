@@ -3,7 +3,7 @@ define(['angular', 'angular-mocks'], function() {
   describe('history service', function() {
     beforeEach(module('trialverse.dataset'));
 
-    fdescribe('addOrderIndex', function() {
+    describe('addOrderIndex', function() {
 
       it('should add a propert with tha value of zero in case of a single version', inject(function(HistoryService) {
         var data = [{
