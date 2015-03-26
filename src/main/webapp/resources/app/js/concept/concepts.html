@@ -1,5 +1,10 @@
-<navbar-directive></navbar-directive>
-<div class="row">
+<navbar-directive>
+    <ul class="left top-bar-content">
+      <li>
+        <h4 class="topbar-text">{{dataset.label}}</h4></li>
+    </ul>
+</navbar-directive>
+<div class="row nav-bar-spacer">
   <div class="columns large-2 medium-3">
     <ul class="side-nav">
       <button ng-disabled="!areConceptsModified()" ng-click="saveConcepts()" class="button expand success">Commit changes</button>

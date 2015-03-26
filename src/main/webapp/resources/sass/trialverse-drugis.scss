@@ -39,11 +39,6 @@ select option {
   line-height: 1.1rem; 
 }
  
-
-.main-content {
-  padding-top: 56px; // clear fixed navbar
-}
-
 /////////////////////////// top nav bar 
 .top-bar-section .has-form {
   height: 44px;
@@ -75,8 +70,8 @@ select option {
   margin-left: 4rem;
 }
 
-.nav-bar-spacer {
-  padding-top: 1rem; // add space top top of first item under nav-bar
+.f-topbar-fixed {
+  padding-top: 72px; // add space top top of first item under nav-bar
 }
 
 
@@ -95,6 +90,7 @@ select option {
 }
 
 ul.side-nav {
+  margin-top: -20px; 
   padding: 2rem 1rem;
   background-color: $addis-grey;
 }

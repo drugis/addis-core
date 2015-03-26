@@ -1,11 +1,16 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$modal', '$filter', 'DatasetService', 'DatasetResource',
+    var dependencies = ['$scope', '$state', '$stateParams', '$modal', '$filter', 'DatasetService', 'DatasetResource',
       'StudiesWithDetailResource', 'JsonLdService', 'RemoteRdfStoreService'
     ];
-    var DatasetController = function($scope, $stateParams, $modal, $filter, DatasetService, DatasetResource,
+    var DatasetController = function($scope, $state, $stateParams, $modal, $filter, DatasetService, DatasetResource,
       StudiesWithDetailResource, JsonLdService, RemoteRdfStoreService) {
+
+
+      $scope.testFun = function() {
+        $state.go('dataset.concepts');
+      }
 
       DatasetResource.get($stateParams, function(response) {
         DatasetService.reset();

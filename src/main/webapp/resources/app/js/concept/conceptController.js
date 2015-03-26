@@ -2,10 +2,10 @@
 define([],
   function() {
     var dependencies = ['$scope', '$modal', '$stateParams', '$anchorScroll', '$location',
-      'DatasetService', 'DatasetResource', 'ConceptService', 'GraphResource', 'CONCEPT_GRAPH_UUID'
+      'ConceptService', 'GraphResource', 'CONCEPT_GRAPH_UUID'
     ];
     var ConceptController = function($scope, $modal, $stateParams, $anchorScroll, $location,
-      DatasetService, DatasetResource, ConceptService, GraphResource, CONCEPT_GRAPH_UUID) {
+      ConceptService, GraphResource, CONCEPT_GRAPH_UUID) {
       var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUUID;
       $scope.concepts = {};
 
@@ -18,31 +18,17 @@ define([],
         });
       }
 
-      function reloadDatasetModel() {
-        DatasetResource.get($stateParams, function(response) {
-          DatasetService.reset();
-          DatasetService.loadStore(response.data).then(function() {
-            DatasetService.queryDataset().then(function(queryResult) {
-              $scope.dataset = queryResult[0];
-              $scope.dataset.uuid = $stateParams.datasetUUID;
-            });
-          });
-        });
-      }
-
       function reloadConcepts() {
         return ConceptService.queryItems(datasetUri).then(function(conceptsJson) {
           $scope.concepts = conceptsJson;
         });
       }
 
-      $scope.resetConcepts = function() {
-        reloadDatasetModel();
+      $scope.resetConcepts = function() { 
         reloadConceptsModel();
       };
 
       // onload
-      reloadDatasetModel();
       reloadConceptsModel();
 
       $scope.openAddConceptDialog = function() {

@@ -17,9 +17,9 @@
   <script src="app/js/bower_components/requirejs/require.js" data-main="app/js/main.js"></script>
 </head>
 
-<body>
+<body class="f-topbar-fixed">
   <session-expired-directive></session-expired-directive>
-  <div ui-view class="main-content"></div>
+  <div ui-view></div>
 
   <script>
   window.config = {

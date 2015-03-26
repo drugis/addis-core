@@ -2,10 +2,10 @@
 define([],
   function() {
     var dependencies = ['$scope', '$stateParams', '$window', 'GraphResource', '$location', '$anchorScroll',
-      '$modal', 'StudyService', 'DatasetResource', 'DatasetService', 'ResultsService', 'StudyDesignService'
+      '$modal', 'StudyService', 'DatasetResource', 'ResultsService', 'StudyDesignService'
     ];
     var StudyController = function($scope, $stateParams, $window, GraphResource, $location, $anchorScroll,
-      $modal, StudyService, DatasetResource, DatasetService, ResultsService, StudyDesignService) {
+      $modal, StudyService, DatasetResource, ResultsService, StudyDesignService) {
 
       StudyService.reset();
 
@@ -99,7 +99,7 @@ define([],
 
       var navbar = document.getElementsByClassName('side-nav');
       angular.element($window).bind('scroll', function() {
-        $(navbar[0]).css('margin-top', this.pageYOffset);
+        $(navbar[0]).css('margin-top', this.pageYOffset - 20);
         $scope.$apply();
       });
 
@@ -122,22 +122,9 @@ define([],
         });
       }
 
-      function reloadDatasetModel() {
-        DatasetResource.get($stateParams, function(response) {
-          DatasetService.reset();
-          DatasetService.loadStore(response.data).then(function() {
-            DatasetService.queryDataset().then(function(queryResult) {
-              $scope.dataset = queryResult[0];
-              $scope.dataset.uuid = $stateParams.datasetUUID;
-            });
-          });
-        });
-      }
-
       $scope.resetStudy = function() {
         reloadStudyModel();
-        reloadDatasetModel();
-      }
+      };
 
       // onload
       $scope.resetStudy();

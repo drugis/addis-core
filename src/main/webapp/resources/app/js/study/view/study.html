@@ -1,9 +1,11 @@
 <navbar-directive>
-<ul class="left top-bar-content">
-  <li><h4 class="topbar-text">{{dataset.label}}<small class="topbar-text"> / {{study.label}}</small> </h4></li>
-</ul>
+  <ul class="left top-bar-content">
+    <li>
+      <h4 class="topbar-text">{{dataset.label}} / {{study.label}} </h4>
+    </li>
+  </ul>
 </navbar-directive>
-<div class="row">
+<div class="row nav-bar-spacer">
   <div class="columns large-2 medium-3">
     <ul class="side-nav">
       <button ng-disabled="!isStudyModified()" ng-click="saveStudy()" class="button expand success">Commit changes</button>
@@ -38,14 +40,10 @@
         <hr>
       </div>
     </div>
-
     <study-category settings="categorySettings['arms']"></study-category>
     <study-category settings="categorySettings['epochs']"></study-category>
     <study-design></study-design>
     <study-category settings="categorySettings['activities']"></study-category>
-
-
-
     <study-category settings="categorySettings['measurementMoments']"></study-category>
     <study-category settings="categorySettings['populationCharacteristics']"></study-category>
     <study-category settings="categorySettings['endpoints']"></study-category>
@@ -59,7 +57,6 @@
         <hr>
       </div>
     </div>
-
     <results-table-list id="populationCharacteristicsResults" variable-type="'PopulationCharacteristic'" variable-name="'Population characteristics'"></results-table-list>
     <results-table-list id="endpointsResults" variable-type="'Endpoint'" variable-name="'Endpoints'"></results-table-list>
     <results-table-list id="adverseEventsResults" variable-type="'AdverseEvent'" variable-name="'Adverse events'"></results-table-list>

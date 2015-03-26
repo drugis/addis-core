@@ -51,7 +51,7 @@ define(
 
 
     Number.isInteger = Number.isInteger || function(value) {
-      return typeof value === "number" &&
+      return typeof value === 'number' &&
         isFinite(value) &&
         Math.floor(value) === value;
     };
@@ -96,13 +96,13 @@ define(
             templateUrl: 'app/js/dataset/datasetHistory.html',
             controller: 'DatasetHistoryController'
           })
-          .state('concepts', {
-            url: '/dataset/:datasetUUID/concepts',
+          .state('dataset.concepts', {
+            url: '/concepts',
             templateUrl: 'app/js/concept/concepts.html',
             controller: 'ConceptController'
           })
-          .state('study', {
-            url: '/dataset/:datasetUUID/study/:studyUUID',
+          .state('dataset.study', {
+            url: '/study/:studyUUID',
             templateUrl: 'app/js/study/view/study.html',
             controller: 'StudyController'
           });
