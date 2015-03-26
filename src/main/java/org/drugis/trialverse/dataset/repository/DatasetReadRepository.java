@@ -12,7 +12,6 @@ import java.security.Principal;
  * Created by daan on 7-11-14.
  */
 public interface DatasetReadRepository {
-
   public Model queryDatasets(Account currentUserAccount);
 
   public Model getDataset(URI trialverseDatasetUri);
@@ -22,4 +21,6 @@ public interface DatasetReadRepository {
   public Boolean isOwner(URI trialverseDatasetUri, Principal principal);
 
   public Boolean containsStudyWithShortname(URI trialverseDatasetUri, String shortName);
+
+  public HttpResponse getHistory(URI trialverseDatasetUri) throws IOException;
 }
