@@ -23,6 +23,14 @@ $addis-grey-border : $crumb-border-color;
   color: $drugis-color;
 }
 
+.row.application-link {
+  margin: 1rem 0;
+}
+
+.application-link a{
+  text-decoration: underline;
+}
+
 // needed to show part below descender line 
 input[type="number"],
 input[type="text"],

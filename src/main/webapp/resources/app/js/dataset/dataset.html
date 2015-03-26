@@ -3,8 +3,17 @@
     <div class="column large-10">
         <h1>{{dataset.label}}</h1>
         <p>{{dataset.comment}}</p>
-        <a style="display: block; margin-bottom: 2rem; text-decoration: underline;" ui-sref="concepts({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concepts</a>
-        <button ng-click="showStudyDialog()"><i class="fa fa-plus"></i> Add study</button>
+        <div class="row application-link">
+          <div class="column large-10">
+            <a ui-sref="concepts({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concepts</a>
+          </div>
+        </div>
+        <div class="row application-link">
+          <div class="column large-10">
+          <a ui-sref="datasetHistory({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">History</a>
+          </div>
+        </div>
+        <button style="margin-top: 1rem;" ng-click="showStudyDialog()"><i class="fa fa-plus"></i> Add study</button>
         <hr>
     </div>
 </div>
