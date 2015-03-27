@@ -41,8 +41,9 @@ define([], function() {
             '       ontology:has_epochs () .' +
             '   } ' +
             ' }';
-          return RemoteRdfStoreService.executeUpdate(newGraphUri, query).then(function() {
+          return RemoteRdfStoreService.executeUpdate(newGraphUri, query).then(function(responce) {
             loadDefer.resolve();
+            return responce;
           });
         });
     }

@@ -1,26 +1,21 @@
 package org.drugis.trialverse.dataset.controller;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
-import org.apache.jena.atlas.json.JSON;
-import org.apache.jena.atlas.json.JsonObject;
+import org.apache.http.message.BasicHeader;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
-import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.exception.CreateDatasetException;
-import org.drugis.trialverse.exception.MethodNotAllowedException;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +23,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -83,13 +77,16 @@ public class DatasetController extends AbstractTrialverseController {
     getVersionedDataset(httpServletResponse, datasetUUID, null);
   }
 
-  @RequestMapping(value = "/{datasetUUID}/studiesWithDetail", method = RequestMethod.GET)
+  @RequestMapping(value="/{datasetUuid}/versions/{versionUuid}/query", method = RequestMethod.GET)
   @ResponseBody
-  public void queryStudiesWithDetail(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException {
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    HttpResponse response = datasetReadRepository.queryStudiesWithDetail(trialverseDatasetUri);
+  public void executeVersionedQuery(HttpServletResponse httpServletResponse,
+                                    @RequestHeader(value = "Accept") String acceptHeaderValue,
+                                    @RequestParam(value="query") String query,
+                                    @PathVariable String datasetUuid, @PathVariable String versionUuid) throws URISyntaxException, IOException {
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    HttpResponse response = datasetReadRepository.executeQuery(query, trialverseDatasetUri, versionUuid, acceptHeaderValue);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-    httpServletResponse.setHeader("Content-Type", JSON_TYPE);
+    httpServletResponse.setHeader("Content-Type", response.getFirstHeader("Content-Type").getValue());
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
   }
 

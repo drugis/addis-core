@@ -1,11 +1,12 @@
 package org.drugis.trialverse.dataset.controller;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
-import org.apache.http.ProtocolVersion;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.riot.RDFLanguages;
@@ -33,9 +34,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.Principal;
 
 import static org.mockito.Mockito.*;
@@ -201,4 +200,26 @@ public class DatasetControllerTest {
     verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
   }
 
+  @Test
+  public void testExecuteVersionedQuery() throws Exception {
+    String uuid = "uuuuiiid-yeswecan";
+    String query = "Select * where { ?a ?b ?c}";
+    String version = "my-version";
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
+    HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1,1), HttpStatus.OK.value(), "reason"));
+    String expectedContentType = "a/b";
+    httpResponse.setHeader("Content-Type", expectedContentType);
+    String acceptValue = "c/d";
+    when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, version, acceptValue)).thenReturn(httpResponse);
+    mockMvc.perform((get("/datasets/" + uuid + "/versions/" + version + "/query"))
+            .param("query", query)
+            .header("Accept", acceptValue)
+            .principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(expectedContentType));
+
+    verify(datasetReadRepository).executeQuery(query, trialverseDatasetUri, version, acceptValue);
+    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
+
+  }
 }

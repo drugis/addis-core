@@ -40,7 +40,8 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 
-import static org.apache.http.HttpHeaders.*;
+import static org.apache.http.HttpHeaders.ACCEPT;
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 
 /**
  * Created by daan on 7-11-14.
@@ -49,16 +50,9 @@ import static org.apache.http.HttpHeaders.*;
 public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   private static final Logger logger = LoggerFactory.getLogger(DatasetReadRepositoryImpl.class);
-  private static final String STUDIES_WITH_DETAILS = loadResource("queryStudiesWithDetails.sparql");
   private static final String CONTAINS_STUDY_WITH_SHORTNAME = loadResource("askContainsStudyWithLabel.sparql");
-  public static final String QUERY_ENDPOINT = "/query";
-  public static final String HISTORY_ENDPOINT = "/history";
-  private static final String DATA_ENDPOINT = "/data";
 
-  public static final String QUERY_PARAM_QUERY = "query";
-  private static final String QUERY_STRING_DEFAULT_GRAPH = "?default";
   private static final Node CLASS_VOID_DATASET = NodeFactory.createURI("http://rdfs.org/ns/void#Dataset");
-  private static final String VERSION_PATH = "versions/";
   public static final String HTTP_DRUGIS_ORG_EVENT_SOURCING_ES = "http://drugis.org/eventSourcing/es#";
 
 
@@ -172,7 +166,6 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
     if(StringUtils.isNotEmpty(versionUuid)) {
       String headerValue = webConstants.getTriplestoreBaseUri() + VERSION_PATH + versionUuid;
-      logger.error("ASDLKFGJH~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~SPARKLE MOTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + headerValue);
       httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, headerValue);
     }
 
@@ -185,19 +178,16 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public HttpResponse queryStudiesWithDetail(URI trialverseDatasetUri) throws IOException {
-
+  public HttpResponse executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
-
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(QUERY_ENDPOINT)
-            .queryParam(QUERY_PARAM_QUERY, STUDIES_WITH_DETAILS)
+            .queryParam(QUERY_PARAM_QUERY, query)
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
-
-    request.addHeader(CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
-    request.addHeader(ACCEPT, WebContent.contentTypeResultsJSON);
-
+    String versionHeader = webConstants.getTriplestoreBaseUri() + VERSION_PATH + versionUuid;
+    request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, versionHeader);
+    request.addHeader(org.apache.http.HttpHeaders.ACCEPT, acceptHeader);
     return httpClient.execute(request);
   }
 

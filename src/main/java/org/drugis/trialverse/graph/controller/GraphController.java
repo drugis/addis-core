@@ -57,14 +57,15 @@ public class GraphController extends AbstractTrialverseController {
   }
 
   @RequestMapping(value = "/{graphUuid}", method = RequestMethod.PUT)
-  public void setGraph(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
-                       @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
+  public void setGraph(HttpServletRequest request, HttpServletResponse trialversResponse, Principal currentUser,
+                       @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle, // here because it's required
                        @PathVariable String datasetUuid, @PathVariable String graphUuid)
           throws IOException, MethodNotAllowedException, URISyntaxException {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, request);
-      response.setStatus(HttpStatus.OK.value());
+      HttpResponse versionResponse = graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, request);
+      trialversResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionResponse.getFirstHeader(WebConstants.X_EVENT_SOURCE_VERSION).getValue());
+      trialversResponse.setStatus(HttpStatus.OK.value());
     } else {
       throw new MethodNotAllowedException();
     }

@@ -38,6 +38,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Configuration
@@ -132,13 +133,18 @@ public class GraphControllerTest {
     String graphUUID = "graphUUID";
 
     when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
+    BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
+    HttpResponse httpResponse = new BasicHttpResponse(statusLine);
+    httpResponse.addHeader(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion");
+    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(HttpServletRequest.class))).thenReturn(httpResponse);
 
     mockMvc.perform(
             put("/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(updateContent)
                     .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
                     .principal(user))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion"));
 
     verify(datasetReadRepository).isOwner(datasetUrl, user);
     verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(HttpServletRequest.class));

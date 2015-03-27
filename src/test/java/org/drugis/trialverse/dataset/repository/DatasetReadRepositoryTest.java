@@ -113,33 +113,23 @@ public class DatasetReadRepositoryTest {
   public void testGetVersionedDataset() throws URISyntaxException {
     String datasetUUID = "uuid";
     String versionUuid = "versionUuid";
-    VersionMapping mapping = new VersionMapping("versioneduri", "itsame", Namespaces.DATASET_NAMESPACE + datasetUUID);
+    String versioneduri = "versioneduri";
+    VersionMapping mapping = new VersionMapping(versioneduri, "itsame", Namespaces.DATASET_NAMESPACE + datasetUUID);
     URI trialverseDatasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl)).thenReturn(mapping);
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, webConstants.getTriplestoreBaseUri() + "/versions/" + versionUuid);
+    httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, webConstants.getTriplestoreBaseUri() + DatasetReadRepository.VERSION_PATH + versionUuid);
     httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     ResponseEntity<Graph> responseEntity = new ResponseEntity<Graph>(GraphFactory.createGraphMem(), HttpStatus.OK);
-    when(restTemplate.exchange("versioneduri/data?default", HttpMethod.GET, requestEntity, Graph.class)).thenReturn(responseEntity);
-
+    String uri = versioneduri + DatasetReadRepository.DATA_ENDPOINT + DatasetReadRepository.QUERY_STRING_DEFAULT_GRAPH;
+    when(restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class)).thenReturn(responseEntity);
 
     Model model = datasetReadRepository.getVersionedDataset(trialverseDatasetUrl, versionUuid);
 
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(trialverseDatasetUrl);
+    verify(restTemplate).exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
     assertNotNull(model);
-  }
-
-  @Test
-  public void testQueryDatasetWithDetails() throws URISyntaxException, IOException {
-    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + "datasetUUID");
-    VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
-
-    datasetReadRepository.queryStudiesWithDetail(datasetUrl);
-
-    verify(httpClient).execute(any(HttpGet.class));
-
   }
 
   @Test
@@ -210,6 +200,22 @@ public class DatasetReadRepositoryTest {
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
     verify(httpClient).execute(any(HttpGet.class));
     assertEquals(mockResponse, actualHttpResponse);
+  }
+
+  @Test
+  public void testExecuteQuery() throws URISyntaxException, IOException {
+    String datasetUUID = "datasetUUID";
+    String query = "SELECT * WHERE { ?s ?p ?o }";
+    String versionUuid = "myVersion";
+    String acceptHeader = "confirm/deny";
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
+
+    datasetReadRepository.executeQuery(query, datasetUrl, versionUuid, acceptHeader);
+
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
+    verify(httpClient).execute(any(HttpGet.class));
   }
 
   @After

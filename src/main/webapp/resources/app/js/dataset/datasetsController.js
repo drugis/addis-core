@@ -1,12 +1,12 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$q', '$modal', '$filter', 'DatasetOverviewResource', 'DatasetService'];
-    var DatasetsController = function($scope, $q, $modal, $filter, DatasetOverviewResource, DatasetService) {
+    var dependencies = ['$scope', '$q', '$modal', '$filter', 'DatasetResource', 'DatasetService'];
+    var DatasetsController = function($scope, $q, $modal, $filter, DatasetResource, DatasetService) {
 
       function loadDatasets() {
         DatasetService.reset();
-        DatasetOverviewResource.query(function(response) {
+        DatasetResource.query(function(response) {
           DatasetService.loadStore(response.data).then(function() {
             console.log('loading dataset-store success');
             DatasetService.queryDatasetsOverview().then(function(datasets) {

@@ -3,13 +3,13 @@ package org.drugis.trialverse.graph.repository;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.repository.impl.GraphWriteRepositoryImpl;
-import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.AuthenticationService;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
@@ -22,7 +22,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -48,7 +47,7 @@ public class GraphWriteRepositoryTest {
   private VersionMappingRepository versionMappingRepository;
 
   @Mock
-  private RestTemplate restTemplate;
+  private HttpClient httpClient;
 
   @Mock
   private AuthenticationService authenticationService;
@@ -74,6 +73,8 @@ public class GraphWriteRepositoryTest {
   @After
   public void tearDown() {
     verifyNoMoreInteractions(mockHttpClient);
+    verifyNoMoreInteractions(versionMappingRepository);
+    verifyNoMoreInteractions(httpClient);
   }
 
   @Test
@@ -85,21 +86,16 @@ public class GraphWriteRepositoryTest {
     DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
     when(mockHttpServletRequest.getInputStream()).thenReturn(delegatingServletInputStream);
     String titleValue = "test title header";
-    when(mockHttpServletRequest.getParameter(webConstants.COMMIT_TITLE_PARAM)).thenReturn(titleValue);
+    when(mockHttpServletRequest.getParameter(WebConstants.COMMIT_TITLE_PARAM)).thenReturn(titleValue);
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    String versionStoreDatasetUri = "versionStoreDatasetUri";
+    String versionStoreDatasetUri = "http://versionstoreUri";
     VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl.toString());
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
     graphWriteRepository.updateGraph(datasetUrl, graphUuid, mockHttpServletRequest);
 
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
-    httpHeaders.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encode(titleValue.getBytes()));
-    httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + name);
-    HttpEntity<DelegatingServletInputStream> requestEntity = new HttpEntity<>(delegatingServletInputStream, httpHeaders);
-    String uri = versionMapping.getVersionedDatasetUrl() + "/data?graph={graphUri}";
-    verify(restTemplate).put(uri, requestEntity, Namespaces.GRAPH_NAMESPACE + graphUuid);
+    verify(httpClient).execute(any(HttpPut.class));
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
   }
 
   @Test
@@ -111,24 +107,18 @@ public class GraphWriteRepositoryTest {
     DelegatingServletInputStream delegatingServletInputStream = new DelegatingServletInputStream(inputStream);
     when(mockHttpServletRequest.getInputStream()).thenReturn(delegatingServletInputStream);
     String titleValue = "test title header";
-    when(mockHttpServletRequest.getParameter(webConstants.COMMIT_TITLE_PARAM)).thenReturn(titleValue);
+    when(mockHttpServletRequest.getParameter(WebConstants.COMMIT_TITLE_PARAM)).thenReturn(titleValue);
     String descriptionValue = "test description";
-    when(mockHttpServletRequest.getParameter(webConstants.COMMIT_DESCRIPTION_PARAM)).thenReturn(descriptionValue);
+    when(mockHttpServletRequest.getParameter(WebConstants.COMMIT_DESCRIPTION_PARAM)).thenReturn(descriptionValue);
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    String versionStoreDatasetUri = "versionStoreDatasetUri";
+    String versionStoreDatasetUri = "http://versionStoreDatasetUri";
     VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl.toString());
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
     graphWriteRepository.updateGraph(datasetUrl, graphUuid, mockHttpServletRequest);
 
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
-    httpHeaders.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encode(titleValue.getBytes()));
-    httpHeaders.add(WebConstants.EVENT_SOURCE_DESCRIPTION_HEADER, Base64.encode(descriptionValue.getBytes()));
-    httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + name);
-    HttpEntity<DelegatingServletInputStream> requestEntity = new HttpEntity<>(delegatingServletInputStream, httpHeaders);
-    String uri = versionMapping.getVersionedDatasetUrl() + "/data?graph={graphUri}";
-    verify(restTemplate).put(uri, requestEntity, Namespaces.GRAPH_NAMESPACE + graphUuid);
+    verify(httpClient).execute(any(HttpPut.class));
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
   }
 
 }

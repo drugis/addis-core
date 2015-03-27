@@ -1,13 +1,13 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$modal', '$filter', 'DatasetService', 'DatasetResource',
-      'StudiesWithDetailResource', 'JsonLdService', 'RemoteRdfStoreService'
+    var dependencies = ['$scope', '$stateParams', '$modal', '$filter', 'DatasetService', 'DatasetVersionedResource',
+      'StudiesWithDetailsService', 'JsonLdService', 'RemoteRdfStoreService'
     ];
-    var DatasetController = function($scope, $stateParams, $modal, $filter, DatasetService, DatasetResource,
-      StudiesWithDetailResource, JsonLdService, RemoteRdfStoreService) {
+    var DatasetController = function($scope, $stateParams, $modal, $filter, DatasetService, DatasetVersionedResource,
+      StudiesWithDetailsService, JsonLdService, RemoteRdfStoreService) {
 
-      DatasetResource.get($stateParams, function(response) {
+      DatasetVersionedResource.get($stateParams, function(response) {
         DatasetService.reset();
         DatasetService.loadStore(response.data).then(function() {
           DatasetService.queryDataset().then(function(queryResult) {
@@ -18,8 +18,8 @@ define([],
       });
 
       $scope.loadStudiesWithDetail = function() {
-        StudiesWithDetailResource.get($stateParams, function(result) {
-          $scope.studiesWithDetail = RemoteRdfStoreService.deFusekify(JSON.stringify(result));
+        StudiesWithDetailsService.get($stateParams.datasetUUID, $stateParams.versionUuid).then(function(result){
+          $scope.studiesWithDetail = result;
         });
       };
 

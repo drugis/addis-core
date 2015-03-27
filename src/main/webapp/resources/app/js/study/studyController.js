@@ -3,10 +3,10 @@
 define([],
   function() {
     var dependencies = ['$scope', '$stateParams', '$window', 'GraphResource', '$location', '$anchorScroll',
-      '$modal', 'StudyService', 'DatasetResource', 'ResultsService', 'StudyDesignService'
+      '$modal', 'StudyService', 'ResultsService', 'StudyDesignService'
     ];
     var StudyController = function($scope, $stateParams, $window, GraphResource, $location, $anchorScroll,
-      $modal, StudyService, DatasetResource, ResultsService, StudyDesignService) {
+      $modal, StudyService, ResultsService, StudyDesignService) {
 
       StudyService.reset();
 

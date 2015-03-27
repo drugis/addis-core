@@ -11,7 +11,7 @@ define(['angular', 'angular-mocks'], function() {
     beforeEach(module('trialverse.dataset'));
 
 
-    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, DatasetResource) {
+    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, DatasetVersionedResource) {
       scope = $rootScope;
       httpBackend = $httpBackend;
 
@@ -26,7 +26,7 @@ define(['angular', 'angular-mocks'], function() {
       $controller('DatasetsController', {
         $scope: scope,
         $modal: mockModal,
-        DatasetResource: DatasetResource,
+        DatasetVersionedResource: DatasetVersionedResource,
         DatasetService: mockDatasetService
       });
 
@@ -36,7 +36,7 @@ define(['angular', 'angular-mocks'], function() {
       expect(scope.createDatasetDialog).not.toBe(null);
     });
 
-    it('should query the datasetResource, process the results and place them on the scope', function() {
+    it('should query the datasetVersionedResource, process the results and place them on the scope', function() {
       httpBackend.flush();
 
       expect(mockDatasetService.loadStore).toHaveBeenCalled();

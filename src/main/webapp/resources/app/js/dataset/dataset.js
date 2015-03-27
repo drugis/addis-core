@@ -12,12 +12,12 @@ define(function (require) {
     //services
     .factory('DatasetService', require('dataset/datasetService'))
     .factory('HistoryService', require('dataset/historyService'))
+    .factory('StudiesWithDetailsService', require('dataset/studiesWithDetailsService'))
 
     //resources
+    .factory('DatasetVersionedResource', require('dataset/datasetVersionedResource'))
     .factory('DatasetResource', require('dataset/datasetResource'))
-    .factory('DatasetOverviewResource', require('dataset/datasetOverviewResource'))
     .factory('HistoryResource', require('dataset/historyResource'))
-    .factory('StudiesWithDetailResource', require('dataset/studiesWithDetailResource'))
 
     //directives
     .directive('historyItem', require('dataset/historyItemDirective'))
