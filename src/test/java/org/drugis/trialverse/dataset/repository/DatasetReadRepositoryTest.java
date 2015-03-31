@@ -203,7 +203,22 @@ public class DatasetReadRepositoryTest {
   }
 
   @Test
-  public void testExecuteQuery() throws URISyntaxException, IOException {
+  public void testExecuteVersionedQuery() throws URISyntaxException, IOException {
+    String datasetUUID = "datasetUUID";
+    String query = "SELECT * WHERE { ?s ?p ?o }";
+    String acceptHeader = "confirm/deny";
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
+
+    datasetReadRepository.executeQuery(query, datasetUrl, null, acceptHeader);
+
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
+    verify(httpClient).execute(any(HttpGet.class));
+  }
+
+  @Test
+  public void testExecuteHeadQuery() throws URISyntaxException, IOException {
     String datasetUUID = "datasetUUID";
     String query = "SELECT * WHERE { ?s ?p ?o }";
     String versionUuid = "myVersion";

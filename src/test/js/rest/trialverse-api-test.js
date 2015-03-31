@@ -1,16 +1,19 @@
 var should = require('should');
 var assert = require('assert');
 var request = require('supertest');
+var fs = require('fs');
+var path = require('path');
 
 var trialverseUrl = process.env.TRIALVERSE_URL;
-var sessionId = 'C3AED07943DC9E2F7D404420BA98217F';
-var csrfToken = 'ca997481-b731-464c-bfd0-8fdab89d9929';
+var sessionId = 'CA2177C090923A7195FB3BDF7CB9B2D8';
+var csrfToken = '9f410b8f-ccf1-4404-9eae-4720e3ffc748';
 
 var newDataset = '{"title":"my-test-dataset","description":"my test  description"}';
 var newStudy = '<http://trials.drugis.org/graphs/studyUuid>  <http://www.w3.org/2000/01/rdf-schema#label> "mystudy" ;' +
   ' <http://www.w3.org/2000/01/rdf-schema#comment> "myComment" ;' +
   ' a  <http://trials.drugis.org/ontology#Study> ; ' +
   ' <http://trials.drugis.org/ontology#has_epochs> () . ';
+var queryStudyWithDetails = fs.readFileSync(path.join(__dirname, '../../../main/webapp/resources/app/sparql/queryStudiesWithDetails.sparql'), 'utf8');
 
 
 function createDataset(callback) {
@@ -29,7 +32,7 @@ function createDataset(callback) {
 
 function createStudy(datasetUuid, callback) {
   request(trialverseUrl + '/datasets/' + datasetUuid)
-    .put('/graphs/studyUuid')
+    .put('/graphs/studyUuid?commitTitle="mocha test create study"')
     .set('Content-Type', 'text/turtle')
     .set('Cookie', 'JSESSIONID=' + sessionId)
     .set('X-CSRF-TOKEN', csrfToken)
@@ -117,9 +120,9 @@ describe('query datasets', function() {
 
   before(function(done) {
 
-    createDataset(function(){
-      createDataset(function(){
-        createDataset(function(){
+    createDataset(function() {
+      createDataset(function() {
+        createDataset(function() {
           done();
         });
       });
@@ -145,8 +148,6 @@ describe('query datasets', function() {
 });
 
 describe.skip('get study', function() {
-
-  this.timeout(300000);
 
   var _datasetUuid;
 
@@ -184,7 +185,61 @@ describe.skip('get study', function() {
   });
 });
 
+describe.only('query studies with detail', function() {
 
+  var _datasetUrl, _datasetUuid;
+
+  before(function(done) {
+    createDataset(function(datasetUrl) {
+      _datasetUrl = datasetUrl;
+      _datasetUuid = datasetUrl.split('/')[4];
+
+      done();
+    });
+  });
+
+  it('should work when there are no studies', function(done) {
+    request(trialverseUrl)
+      .get('/datasets/' + _datasetUuid + '/query?query=' + encodeURIComponent(queryStudyWithDetails))
+      .set('Content-Type', 'application/sparql-query')
+      .set('Accept', 'application/sparql-results+json')
+      .set('Cookie', 'JSESSIONID=' + sessionId)
+      .set('X-CSRF-TOKEN', csrfToken)
+      .end(function(err, res) {
+        res.should.have.property('status', 200);
+        JSON.parse(res.text).results.bindings.length.should.equal(0);
+        done();
+      });
+  });
+
+});
+
+describe.only('query studies with detail', function() {
+
+  var  _datasetUuid;
+
+  before(function(done) {
+    createDatasetAndStudy(function(datasetUuid) {
+      _datasetUuid = datasetUuid;
+      done();
+    });
+  });
+
+  it('should work when there is a study', function(done) {
+    request(trialverseUrl)
+      .get('/datasets/' + _datasetUuid + '/query?query=' + encodeURIComponent(queryStudyWithDetails))
+      .set('Content-Type', 'application/sparql-query')
+      .set('Accept', 'application/sparql-results+json')
+      .set('Cookie', 'JSESSIONID=' + sessionId)
+      .set('X-CSRF-TOKEN', csrfToken)
+      .end(function(err, res) {
+        res.should.have.property('status', 200);
+        JSON.parse(res.text).results.bindings.length.should.equal(1);
+        done();
+      });
+  });
+
+});
 
 
 

@@ -8,6 +8,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
@@ -41,7 +42,7 @@ public class TrialverseIOUtilsServiceTest {
   @Test
   public void testWriteResponseContentToServletResponse() throws IOException {
     BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
-    HttpResponse input = new BasicHttpResponse(statusLine);
+    CloseableHttpResponse input = (CloseableHttpResponse) new BasicHttpResponse(statusLine);
     BasicHttpEntity basicHttpEntity = new BasicHttpEntity();
     String testContentAsString = "This is just a test !";
     basicHttpEntity.setContent(new ByteArrayInputStream(testContentAsString.getBytes(StandardCharsets.UTF_8)));

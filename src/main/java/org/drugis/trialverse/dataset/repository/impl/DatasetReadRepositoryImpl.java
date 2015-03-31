@@ -9,8 +9,9 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
@@ -69,7 +70,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   private RestTemplate restTemplate;
 
   @Inject
-  private HttpClient httpClient;
+  private CloseableHttpClient httpClient;
 
   private final Node headProperty = ResourceFactory.createProperty(HTTP_DRUGIS_ORG_EVENT_SOURCING_ES, "head").asNode();
 
@@ -178,17 +179,26 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public HttpResponse executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException {
+  public CloseableHttpResponse executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(QUERY_ENDPOINT)
             .queryParam(QUERY_PARAM_QUERY, query)
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
-    String versionHeader = webConstants.getTriplestoreBaseUri() + VERSION_PATH + versionUuid;
-    request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, versionHeader);
+    if(StringUtils.isNotEmpty(versionUuid)) {
+      String versionHeader = webConstants.getTriplestoreBaseUri() + VERSION_PATH + versionUuid;
+      request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, versionHeader);
+    }
     request.addHeader(org.apache.http.HttpHeaders.ACCEPT, acceptHeader);
-    return httpClient.execute(request);
+    logger.info("before call to vwersionStore");
+    try(CloseableHttpResponse response = httpClient.execute(request)){
+      logger.info("after call to versionStore");
+      return response;
+    } catch (Exception e) {
+      logger.error("something when wrong with the call to versionStore");
+      throw e;
+    }
   }
 
   @Override

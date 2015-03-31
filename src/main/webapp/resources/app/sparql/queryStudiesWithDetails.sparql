@@ -65,7 +65,7 @@ GRAPH ?graphUri {
       WHERE {
         GRAPH ?dataset {
           ?drug rdfs:subClassOf ontology:Drug .
-          ?dataset ontology:contains_study ?studyUri 
+          ?dataset ontology:contains_study ?studyUri
         }
         GRAPH ?studyUri {
           ?instance a ?drug .

@@ -2,9 +2,7 @@ package org.drugis.trialverse.util.service.impl;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFDataMgr;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,14 +22,17 @@ public class TrialverseIOUtilsServiceImpl implements TrialverseIOUtilsService {
   final static Logger logger = LoggerFactory.getLogger(TrialverseIOUtilsServiceImpl.class);
 
   @Override
-  public void writeResponseContentToServletResponse(HttpResponse httpResponse, HttpServletResponse httpServletResponse) {
+  public void writeResponseContentToServletResponse(CloseableHttpResponse httpResponse, HttpServletResponse httpServletResponse) throws IOException {
     try (InputStream inputStream = httpResponse.getEntity().getContent();
          ServletOutputStream outputStream = httpServletResponse.getOutputStream()
     ) {
       IOUtils.copy(inputStream, outputStream);
+
     } catch (IOException e) {
       logger.error("Error writing jena response to client response");
       logger.error(e.toString());
+    } finally {
+      httpResponse.close();
     }
   }
 

@@ -7,6 +7,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.jena.riot.RDFLanguages;
+import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;

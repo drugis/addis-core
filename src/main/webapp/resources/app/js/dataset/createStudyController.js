@@ -1,9 +1,9 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$scope', '$stateParams', '$modalInstance',
+  var dependencies = ['$scope', '$stateParams', '$location', '$modalInstance',
     'UUIDService', 'StudyService', 'GraphResource'
   ];
-  var CreateStudyController = function($scope, $stateParams, $modalInstance,
+  var CreateStudyController = function($scope, $stateParams, $location, $modalInstance,
     UUIDService, StudyService, GraphResource) {
 
     $scope.isCreatingStudy = false;
@@ -24,10 +24,10 @@ define([], function() {
             datasetUUID: $stateParams.datasetUUID,
             graphUuid: uuid,
             commitTitle: 'Initial study creation: ' + study.label
-          }, queryResult.data, function(responcay) {
-            var newVersaion = responcay.headers('Content-Type');
-            console.log('newVersaion ' + newVersaion);
-            $scope.loadStudiesWithDetail();
+          }, queryResult.data, function(value, responseHeaders) {
+            var newVersion = responseHeaders('X-EventSource-Version');
+            newVersion = newVersion.split('/')[4];
+            $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion);
             $scope.isCreatingStudy = true;
             $modalInstance.close();
           }, function(a , b){

@@ -2,9 +2,11 @@ package org.drugis.trialverse.scratch.service.impl;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.scratch.service.ScratchService;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
@@ -31,8 +33,9 @@ public class ScratchServiceImpl implements ScratchService {
   public static final String FUSEKI_SCRATCH_DATA_URL = FUSEKI_SCRATCH_URL + "/ds/data?";
   public static final String FUSEKI_SCRATCH_QUERY_URL = FUSEKI_SCRATCH_URL + "/ds/query?";
 
+
   @Inject
-  private HttpClientFactory httpClientFactory;
+  private CloseableHttpClient httpClient;
 
   @Inject
   private TrialverseIOUtilsService trialverseIOUtilsService;
@@ -41,11 +44,10 @@ public class ScratchServiceImpl implements ScratchService {
     try (ServletInputStream servletInputStream = httpServletRequest.getInputStream()) {
       HttpPost request = new HttpPost(url + httpServletRequest.getQueryString());
       request.setHeader("Accept", httpServletRequest.getHeader("Accept"));
-      HttpClient httpClient = httpClientFactory.build();
       InputStreamEntity entity = new InputStreamEntity(servletInputStream);
       entity.setContentType(httpServletRequest.getContentType());
       request.setEntity(entity);
-      HttpResponse httpResponse = httpClient.execute(request);
+      CloseableHttpResponse httpResponse = httpClient.execute(request);
       response.setStatus(httpResponse.getStatusLine().getStatusCode());
       if (httpResponse.getEntity() != null) {
         trialverseIOUtilsService.writeResponseContentToServletResponse(httpResponse, response);
@@ -59,8 +61,7 @@ public class ScratchServiceImpl implements ScratchService {
     try {
       HttpGet request = new HttpGet(url + httpServletRequest.getQueryString());
       request.setHeader("Accept", httpServletRequest.getHeader("Accept"));
-      HttpClient httpClient = httpClientFactory.build();
-      HttpResponse httpResponse = httpClient.execute(request);
+      CloseableHttpResponse httpResponse = httpClient.execute(request);
       response.setStatus(httpResponse.getStatusLine().getStatusCode());
       trialverseIOUtilsService.writeResponseContentToServletResponse(httpResponse, response);
     } catch (IOException e) {

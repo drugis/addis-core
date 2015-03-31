@@ -1,6 +1,7 @@
 package org.drugis.trialverse.graph.controller;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.exception.MethodNotAllowedException;
@@ -50,7 +51,7 @@ public class GraphController extends AbstractTrialverseController {
   @RequestMapping(value = "/{graphUuid}", method = RequestMethod.GET)
   @ResponseBody
   public void getGraph(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException {
-    HttpResponse response = graphReadRepository.getGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid);
+    CloseableHttpResponse response = graphReadRepository.getGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);

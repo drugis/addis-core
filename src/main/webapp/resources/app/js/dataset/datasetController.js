@@ -7,6 +7,8 @@ define([],
     var DatasetController = function($scope, $stateParams, $modal, $filter, DatasetService, DatasetVersionedResource,
       StudiesWithDetailsService, JsonLdService, RemoteRdfStoreService) {
 
+      console.log('creating dataset controller');
+
       DatasetVersionedResource.get($stateParams, function(response) {
         DatasetService.reset();
         DatasetService.loadStore(response.data).then(function() {

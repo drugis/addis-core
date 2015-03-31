@@ -1,8 +1,9 @@
 package org.drugis.trialverse.graph.repository.impl;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
@@ -25,13 +26,13 @@ public class GraphReadRepositoryImpl implements GraphReadRepository {
   public static final String DATA_ENDPOINT = "/data";
   public static final String GRAPH = "graph";
   @Inject
-  private HttpClient httpClient;
+  private CloseableHttpClient httpClient;
 
   @Inject
   private VersionMappingRepository versionMappingRepository;
 
   @Override
-  public HttpResponse getGraph(URI trialverseDatasetUri, String graphUUID) throws IOException {
+  public CloseableHttpResponse getGraph(URI trialverseDatasetUri, String graphUUID) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
