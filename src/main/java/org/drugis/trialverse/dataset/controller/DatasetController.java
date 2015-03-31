@@ -46,7 +46,7 @@ public class DatasetController extends AbstractTrialverseController {
   @Inject
   private AccountRepository accountRepository;
 
-  private final static String JSON_TYPE =  "application/json; charset=UTF-8";
+  private final static String JSON_TYPE = "application/json; charset=UTF-8";
 
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
@@ -63,10 +63,10 @@ public class DatasetController extends AbstractTrialverseController {
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     Model model = datasetReadRepository.queryDatasets(currentUserAccount);
-    if(model != null) {
-        httpServletResponse.setStatus(HttpStatus.OK.value());
+    if (model != null) {
+      httpServletResponse.setStatus(HttpStatus.OK.value());
     } else {
-        httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+      httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
     trialverseIOUtilsService.writeModelToServletResponse(model, httpServletResponse);
   }
@@ -77,11 +77,11 @@ public class DatasetController extends AbstractTrialverseController {
     getVersionedDataset(httpServletResponse, datasetUUID, null);
   }
 
-  @RequestMapping(value="/{datasetUuid}/versions/{versionUuid}/query", method = RequestMethod.GET)
+  @RequestMapping(value = "/{datasetUuid}/versions/{versionUuid}/query", method = RequestMethod.GET)
   @ResponseBody
   public void executeVersionedQuery(HttpServletResponse httpServletResponse,
                                     @RequestHeader(value = "Accept") String acceptHeaderValue,
-                                    @RequestParam(value="query") String query,
+                                    @RequestParam(value = "query") String query,
                                     @PathVariable String datasetUuid, @PathVariable String versionUuid) throws URISyntaxException, IOException {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     HttpResponse response = datasetReadRepository.executeQuery(query, trialverseDatasetUri, versionUuid, acceptHeaderValue);

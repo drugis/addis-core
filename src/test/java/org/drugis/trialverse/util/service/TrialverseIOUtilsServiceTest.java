@@ -4,6 +4,7 @@ import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -55,11 +56,10 @@ public class TrialverseIOUtilsServiceTest {
   @Test
   public void testWriteModelToServletResponse() throws UnsupportedEncodingException {
     MockHttpServletResponse httpServletResponse = new MockHttpServletResponse();
-    Model model = mock(Model.class);
     Graph graph = GraphFactory.createGraphMem();
     Triple triple = new Triple(NodeFactory.createURI("http://test.com/asd"), NodeFactory.createURI("http://something"), NodeFactory.createLiteral("c"));
     graph.add(triple);
-    when(model.getGraph()).thenReturn(graph);
+    Model model = ModelFactory.createModelForGraph(graph);
     trialverseIOUtilsService.writeModelToServletResponse(model, httpServletResponse);
 
     String expected = "<http://test.com/asd>\n" +
