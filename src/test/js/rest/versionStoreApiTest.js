@@ -8,9 +8,9 @@ var fs = require('fs');
 var versionStoreServerUrl = process.env.TRIPLESTORE_BASE_URI;
 var newGraph = '<http://mockserver/someMockUuid> <http://purl.org/dc/terms/description> "description" ; ' +
   ' <http://purl.org/dc/terms/title> "my-title" . ';
+var queryStudyWithDetails = fs.readFileSync(path.join(__dirname, '../../../main/webapp/resources/app/sparql/queryStudiesWithDetails.sparql'), 'utf8');
+
 describe('create dataset ', function() {
-
-
 
   it('should return a 201 ( created ) and a location header and version', function(done) {
     request(versionStoreServerUrl)
@@ -134,7 +134,7 @@ describe('create study', function() {
       });
   });
 
-  // 
+  //
   it('should return a 201', function(done) {
     var studyUri = 'http://trials.drugis.org/studies/studyUuid';
 
@@ -188,11 +188,8 @@ describe('when the study is created, query the details', function() {
 
   it('should return the details', function(done) {
 
-    var query = fs.readFileSync(path.join(__dirname, '../../../main/resources/queryStudiesWithDetails.sparql'), 'utf8');
-    console.log(query);
-
     request(versionedDatasetUrl)
-      .get('/query?query=' + encodeURIComponent(query))
+      .get('/query?query=' + encodeURIComponent(queryStudyWithDetails))
       .set('Content-Type', 'application/sparql-query')
       .set('Accept', 'application/sparql-results+json')
       .end(function(err, res) {
@@ -246,11 +243,8 @@ describe('querying a specific dataset version', function() {
 
     it('the previous version should return the details without the new study', function(done) {
 
-      var query = fs.readFileSync(path.join(__dirname, '../../../main/resources/queryStudiesWithDetails.sparql'), 'utf8');
-      console.log(query);
-
       request(versionedDatasetUrl)
-        .get('/query?query=' + encodeURIComponent(query))
+        .get('/query?query=' + encodeURIComponent(queryStudyWithDetails))
         .set('Content-Type', 'application/sparql-query')
         .set('Accept', 'application/sparql-results+json')
         .set('X-Accept-EventSource-Version', previousVersionUrl)
@@ -306,11 +300,8 @@ describe('querying a specific dataset version', function() {
 
     it('the previous version should return the details without the new study', function(done) {
 
-      var query = fs.readFileSync(path.join(__dirname, '../../../main/resources/queryStudiesWithDetails.sparql'), 'utf8');
-      console.log(query);
-
       request(versionedDatasetUrl)
-        .get('/query?query=' + encodeURIComponent(query))
+        .get('/query?query=' + encodeURIComponent(queryStudyWithDetails))
         .set('Content-Type', 'application/sparql-query')
         .set('Accept', 'application/sparql-results+json')
         .set('X-Accept-EventSource-Version', previousVersionUrl)
@@ -329,5 +320,5 @@ describe('querying a specific dataset version', function() {
 });
 
 //
-//   node-debug -p 8030 _mocha jena-api-test.js 
+//   node-debug -p 8030 _mocha jena-api-test.js
 //
