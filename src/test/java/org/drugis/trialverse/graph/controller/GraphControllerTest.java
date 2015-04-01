@@ -1,7 +1,9 @@
 package org.drugis.trialverse.graph.controller;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.riot.RDFLanguages;
@@ -93,18 +95,16 @@ public class GraphControllerTest {
   public void testGetGraph() throws Exception {
     String datasetUUID = "datasetUUID";
     String graphUUID = "graphUUID";
-    BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
-    HttpResponse httpResponse = new BasicHttpResponse(statusLine);
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    when(graphReadRepository.getGraph(trialverseDatasetUri, graphUUID)).thenReturn(httpResponse);
-
+    String responce = "responce";
+    when(graphReadRepository.getGraph(trialverseDatasetUri, graphUUID)).thenReturn(responce.getBytes());
 
     mockMvc.perform(get("/datasets/" + datasetUUID + "/graphs/" + graphUUID).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
     verify(graphReadRepository).getGraph(trialverseDatasetUri, graphUUID);
-    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(HttpResponse.class), any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), any(HttpServletResponse.class));
   }
 
   @Test
@@ -133,10 +133,8 @@ public class GraphControllerTest {
     String graphUUID = "graphUUID";
 
     when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
-    BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
-    HttpResponse httpResponse = new BasicHttpResponse(statusLine);
-    httpResponse.addHeader(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion");
-    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(HttpServletRequest.class))).thenReturn(httpResponse);
+    Header versionHeader = new BasicHeader(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion");
+    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(HttpServletRequest.class))).thenReturn(versionHeader);
 
     mockMvc.perform(
             put("/datasets/" + datasetUUID + "/graphs/" + graphUUID)

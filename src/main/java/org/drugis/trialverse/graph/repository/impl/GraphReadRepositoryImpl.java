@@ -1,21 +1,26 @@
 package org.drugis.trialverse.graph.repository.impl;
 
-import org.apache.http.HttpResponse;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.apache.jena.riot.RDFLanguages;
+import org.drugis.trialverse.exception.ReadGraphException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.util.Namespaces;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 
 /**
@@ -31,9 +36,10 @@ public class GraphReadRepositoryImpl implements GraphReadRepository {
 
   @Inject
   private VersionMappingRepository versionMappingRepository;
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   @Override
-  public HttpResponse getGraph(URI trialverseDatasetUri, String graphUUID) throws IOException {
+  public byte[] getGraph(URI trialverseDatasetUri, String graphUUID) throws IOException, ReadGraphException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
@@ -42,7 +48,15 @@ public class GraphReadRepositoryImpl implements GraphReadRepository {
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
     request.addHeader(org.apache.http.HttpHeaders.ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
-    return httpClient.execute(request);
+    try(CloseableHttpResponse response =  (CloseableHttpResponse) httpClient.execute(request);
+        InputStream contentStream = response.getEntity().getContent()) {
+      byte[] content = IOUtils.toByteArray(contentStream);
+      EntityUtils.consume(response.getEntity());
+      return content;
+    } catch (Exception e) {
+      logger.debug("error updating graph {}", e);
+      throw new ReadGraphException();
+    }
   }
 
 }

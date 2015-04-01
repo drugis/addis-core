@@ -5,10 +5,12 @@ import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
+import org.apache.http.*;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.riot.RDFLanguages;
@@ -28,6 +30,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
@@ -191,15 +196,23 @@ public class DatasetReadRepositoryTest {
     String user1 = "user1";
     URI datasetUrl = new URI("uuid-1");
     String versionedDatasetUrl = "http://whatever";
-    HttpResponse mockResponse = mock(HttpResponse.class);
+
+    HttpResponse mockResponse = mock(CloseableHttpResponse.class);
+    org.apache.http.HttpEntity entity = mock(org.apache.http.HttpEntity.class);
+    when(mockResponse.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, org.apache.http.HttpStatus.SC_OK, "FINE!"));
+    String responceString = "check me out";
+    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString));
+    when(mockResponse.getEntity()).thenReturn(entity);
+    when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
+
     VersionMapping versionMapping = new VersionMapping(1, versionedDatasetUrl, user1, datasetUrl.toString());
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
     when(httpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
-    HttpResponse actualHttpResponse = datasetReadRepository.getHistory(datasetUrl);
+    byte[] actualHttpResponseContent = datasetReadRepository.getHistory(datasetUrl);
 
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
     verify(httpClient).execute(any(HttpGet.class));
-    assertEquals(mockResponse, actualHttpResponse);
+    assertEquals(new String(responceString.getBytes()), new String(actualHttpResponseContent));
   }
 
   @Test
@@ -209,6 +222,13 @@ public class DatasetReadRepositoryTest {
     String acceptHeader = "confirm/deny";
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
+    HttpResponse mockResponse = mock(CloseableHttpResponse.class);
+    org.apache.http.HttpEntity entity = mock(org.apache.http.HttpEntity.class);
+    when(mockResponse.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, org.apache.http.HttpStatus.SC_OK, "FINE!"));
+    String responceString = "check me out";
+    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString));
+    when(mockResponse.getEntity()).thenReturn(entity);
+    when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
     datasetReadRepository.executeQuery(query, datasetUrl, null, acceptHeader);
@@ -225,6 +245,16 @@ public class DatasetReadRepositoryTest {
     String acceptHeader = "confirm/deny";
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
+
+    HttpResponse mockResponse = mock(CloseableHttpResponse.class);
+    org.apache.http.HttpEntity entity = mock(org.apache.http.HttpEntity.class);
+    when(mockResponse.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, org.apache.http.HttpStatus.SC_OK, "FINE!"));
+    String responceString = "check me out";
+    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString));
+    when(mockResponse.getEntity()).thenReturn(entity);
+    when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
+
+    when(httpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
     datasetReadRepository.executeQuery(query, datasetUrl, versionUuid, acceptHeader);

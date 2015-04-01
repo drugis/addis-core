@@ -27,9 +27,9 @@ public interface DatasetReadRepository {
 
   public Boolean containsStudyWithShortname(URI trialverseDatasetUri, String shortName);
 
-  public HttpResponse getHistory(URI trialverseDatasetUri) throws IOException;
+  public byte[] getHistory(URI trialverseDatasetUri) throws IOException;
 
   public Model getVersionedDataset(URI trialverseDatasetUri, String versionUuid);
 
-  public HttpResponse executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException;
+  public byte[] executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException;
 }

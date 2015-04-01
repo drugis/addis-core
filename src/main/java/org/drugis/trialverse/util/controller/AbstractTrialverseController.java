@@ -1,7 +1,9 @@
 package org.drugis.trialverse.util.controller;
 
 import org.drugis.trialverse.exception.MethodNotAllowedException;
+import org.drugis.trialverse.exception.ReadGraphException;
 import org.drugis.trialverse.exception.ResourceDoesNotExistException;
+import org.drugis.trialverse.exception.UpdateGraphException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -51,6 +53,22 @@ public class AbstractTrialverseController {
   public ErrorResponse handleIllegalArgumentException(HttpServletRequest request) {
     logger.error("Bad request.\n{}", request.getQueryString());
     return new ErrorResponse(400, "Bad request");
+  }
+
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ExceptionHandler(UpdateGraphException.class)
+  @ResponseBody
+  public ErrorResponse handleGraphUpdateException(HttpServletRequest request) {
+    logger.error("Error updating graph \n{}", request.getQueryString());
+    return new ErrorResponse(500, "Internal server error");
+  }
+
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ExceptionHandler(ReadGraphException.class)
+  @ResponseBody
+  public ErrorResponse handleGraphReadException(HttpServletRequest request) {
+    logger.error("Error reading graph \n{}", request.getQueryString());
+    return new ErrorResponse(500, "Internal server error");
   }
 
 }

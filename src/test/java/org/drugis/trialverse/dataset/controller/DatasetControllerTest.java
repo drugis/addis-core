@@ -186,15 +186,16 @@ public class DatasetControllerTest {
     String uuid = "uuuuiiid-yeswecan";
     URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
     HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1,1), HttpStatus.OK.value(), "reason"));
-    httpResponse.setEntity(new StringEntity("test"));
-    when(datasetReadRepository.getHistory(datasetUri)).thenReturn((HttpResponse) httpResponse);
+    String test = "test";
+    httpResponse.setEntity(new StringEntity(test));
+    when(datasetReadRepository.getHistory(datasetUri)).thenReturn(test.getBytes());
 
     mockMvc.perform((get("/datasets/" + uuid + "/versions")).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType() ));
 
     verify(datasetReadRepository).getHistory(datasetUri);
-    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), Matchers.any(HttpServletResponse.class));
   }
 
   @Test
@@ -203,19 +204,20 @@ public class DatasetControllerTest {
     String query = "Select * where { ?a ?b ?c}";
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
     HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1,1), HttpStatus.OK.value(), "reason"));
-    String expectedContentType = "a/b";
-    httpResponse.setHeader("Content-Type", expectedContentType);
     String acceptValue = "c/d";
-    when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, null, acceptValue)).thenReturn( httpResponse);
+    httpResponse.setHeader("Content-Type", acceptValue);
+
+    String responseStr = "whatevs";
+    when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, null, acceptValue)).thenReturn(responseStr.getBytes());
     mockMvc.perform((get("/datasets/" + uuid + "/query"))
             .param("query", query)
             .header("Accept", acceptValue)
             .principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(expectedContentType));
+            .andExpect(content().contentType(acceptValue));
 
     verify(datasetReadRepository).executeQuery(query, trialverseDatasetUri, null, acceptValue);
-    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte [].class), Matchers.any(HttpServletResponse.class));
 
   }
 
@@ -225,20 +227,18 @@ public class DatasetControllerTest {
     String query = "Select * where { ?a ?b ?c}";
     String version = "my-version";
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
-    HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1,1), HttpStatus.OK.value(), "reason"));
-    String expectedContentType = "a/b";
-    httpResponse.setHeader("Content-Type", expectedContentType);
     String acceptValue = "c/d";
-    when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, version, acceptValue)).thenReturn(httpResponse);
+    String responseStr = "foo";
+    when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, version, acceptValue)).thenReturn(responseStr.getBytes());
     mockMvc.perform((get("/datasets/" + uuid + "/versions/" + version + "/query"))
             .param("query", query)
             .header("Accept", acceptValue)
             .principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(expectedContentType));
+            .andExpect(content().contentType(acceptValue));
 
     verify(datasetReadRepository).executeQuery(query, trialverseDatasetUri, version, acceptValue);
-    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte [].class), Matchers.any(HttpServletResponse.class));
 
   }
 }

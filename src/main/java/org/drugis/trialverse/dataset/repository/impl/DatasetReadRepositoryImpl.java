@@ -8,9 +8,10 @@ import com.hp.hpl.jena.sparql.graph.GraphFactory;
 import com.hp.hpl.jena.vocabulary.RDF;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
@@ -97,7 +98,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    throw new LoadResourceException("could not load resource " + filename);
+    throw new RuntimeException("could not load resource " + filename);
   }
 
 
@@ -105,11 +106,6 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     ResponseEntity<JsonObject> responseEntity = doRequest(trialverseDatasetUri, query, RDFLanguages.JSONLD.getContentType().getContentType(), JsonObject.class);
     JsonObject jsonObject = responseEntity.getBody();
     return Boolean.TRUE.equals(new Boolean(jsonObject.get("boolean").toString()));
-  }
-
-  private Graph doConstructQuery(URI trialverseDatasetUri, String query) {
-    ResponseEntity<Graph> classResponseEntity = doRequest(trialverseDatasetUri, query, RDFLanguages.TURTLE.getContentType().getContentType(), Graph.class);
-    return classResponseEntity.getBody();
   }
 
   private <T> ResponseEntity<T> doRequest(URI trialverseDatasetUri, String query, String acceptType, Class responseType) {
@@ -178,7 +174,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public HttpResponse executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException {
+  public byte[] executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(QUERY_ENDPOINT)
@@ -190,7 +186,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
       request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, versionHeader);
     }
     request.addHeader(org.apache.http.HttpHeaders.ACCEPT, acceptHeader);
-    return httpClient.execute(request);
+    return executeRequestAndCloseResponse(request);
   }
 
   @Override
@@ -206,19 +202,22 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public HttpResponse getHistory(URI trialverseDatasetUri) throws IOException {
+  public byte[] getHistory(URI trialverseDatasetUri) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(HISTORY_ENDPOINT)
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
     request.addHeader(ACCEPT, WebContent.contentTypeJSONLD);
-    return httpClient.execute(request);
+    return executeRequestAndCloseResponse(request);
   }
 
-  private static class LoadResourceException extends RuntimeException {
-    public LoadResourceException(String s) {
-      super(s);
+  private byte[] executeRequestAndCloseResponse(HttpGet request) throws IOException {
+    CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(request);
+    try (InputStream contentStream = response.getEntity().getContent()) {
+      byte[] content = IOUtils.toByteArray(contentStream);
+      EntityUtils.consume(response.getEntity());
+      return content;
     }
   }
 }

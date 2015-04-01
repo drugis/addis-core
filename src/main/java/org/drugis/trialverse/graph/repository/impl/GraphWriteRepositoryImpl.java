@@ -2,14 +2,18 @@ package org.drugis.trialverse.graph.repository.impl;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.util.EntityUtils;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
+import org.drugis.trialverse.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.security.AuthenticationService;
 import org.drugis.trialverse.util.Namespaces;
@@ -48,7 +52,7 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
   private final static Logger logger = LoggerFactory.getLogger(GraphWriteRepositoryImpl.class);
 
   @Override
-  public HttpResponse updateGraph(URI datasetUri, String graphUuid, HttpServletRequest request) throws IOException {
+  public Header updateGraph(URI datasetUri, String graphUuid, HttpServletRequest request) throws IOException, UpdateGraphException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
@@ -72,6 +76,15 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
 
     putRequest.setEntity(putBody);
     logger.debug("execute updateGraph");
-    return httpClient.execute(putRequest);
+
+    Header versionHeader;
+    try(CloseableHttpResponse response =  (CloseableHttpResponse) httpClient.execute(putRequest)) {
+      versionHeader = response.getFirstHeader(WebConstants.X_EVENT_SOURCE_VERSION);
+      EntityUtils.consume(response.getEntity());
+      return versionHeader;
+    } catch(Exception e) {
+      logger.debug("error updating graph {}", e);
+      throw new UpdateGraphException();
+    }
   }
 }

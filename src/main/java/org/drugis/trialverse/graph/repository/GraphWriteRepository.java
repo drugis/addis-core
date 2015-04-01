@@ -1,6 +1,8 @@
 package org.drugis.trialverse.graph.repository;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.drugis.trialverse.exception.UpdateGraphException;
 import org.drugis.trialverse.security.Account;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,5 +15,5 @@ import java.net.URI;
  */
 public interface GraphWriteRepository {
 
-  public HttpResponse updateGraph(URI datasetUri, String graphUuid, HttpServletRequest request) throws IOException;
+  public Header updateGraph(URI datasetUri, String graphUuid, HttpServletRequest request) throws IOException, UpdateGraphException;
 }

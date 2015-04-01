@@ -5,6 +5,7 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 
+import org.apache.http.message.BasicHeader;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -17,7 +18,6 @@ import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +59,7 @@ public class DatasetController extends AbstractTrialverseController {
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
   public void createDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody DatasetCommand datasetCommand) throws URISyntaxException, CreateDatasetException, HttpException {
+    logger.trace("createDataset");
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
     URI datasetUri = datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), currentUserAccount);
     response.setStatus(HttpServletResponse.SC_CREATED);
@@ -68,7 +69,7 @@ public class DatasetController extends AbstractTrialverseController {
   @RequestMapping(method = RequestMethod.GET)
   @ResponseBody
   public void queryDatasets(HttpServletResponse httpServletResponse, Principal currentUser) {
-    logger.info("retrieving datasets");
+    logger.trace("retrieving datasets");
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     Model model = datasetReadRepository.queryDatasets(currentUserAccount);
@@ -78,13 +79,13 @@ public class DatasetController extends AbstractTrialverseController {
       httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
     trialverseIOUtilsService.writeModelToServletResponse(model, httpServletResponse);
-    logger.error("datasets retrieved");
+    logger.trace("datasets retrieved");
   }
 
   @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.GET)
   @ResponseBody
   public void getDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws IOException, URISyntaxException {
-    logger.info("retrieving head dataset");
+    logger.trace("retrieving head dataset");
     getVersionedDataset(httpServletResponse, datasetUUID, null);
   }
 
@@ -94,7 +95,7 @@ public class DatasetController extends AbstractTrialverseController {
                                @RequestHeader(value = "Accept") String acceptHeaderValue,
                                @RequestParam(value = "query") String query,
                                @PathVariable String datasetUuid) throws URISyntaxException, IOException {
-    logger.error("non versioned query starting");
+    logger.trace("non versioned query starting");
     executeVersionedQuery(httpServletResponse, acceptHeaderValue, query, datasetUuid, null);
   }
 
@@ -104,36 +105,33 @@ public class DatasetController extends AbstractTrialverseController {
                                     @RequestHeader(value = "Accept") String acceptHeaderValue,
                                     @RequestParam(value = "query") String query,
                                     @PathVariable String datasetUuid, @PathVariable String versionUuid) throws URISyntaxException, IOException {
+    logger.trace("executing gertseki query");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-
-    logger.error("executing gertseki query");
-    HttpResponse response = datasetReadRepository.executeQuery(query, trialverseDatasetUri, versionUuid, acceptHeaderValue);
-
+    byte[] response = datasetReadRepository.executeQuery(query, trialverseDatasetUri, versionUuid, acceptHeaderValue);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-    httpServletResponse.setHeader("Content-Type", response.getFirstHeader("Content-Type").getValue());
-    trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
-    logger.info("query complete");
+    httpServletResponse.setHeader("Content-Type", acceptHeaderValue);
+    trialverseIOUtilsService.writeContentToServletResponse(response, httpServletResponse);
   }
 
   @RequestMapping(value = "/{datasetUUID}/versions", method = RequestMethod.GET)
   @ResponseBody
   public void queryHistory(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException {
+    logger.trace("executing queryHistory");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    HttpResponse response = datasetReadRepository.getHistory(trialverseDatasetUri);
+    byte[] response = datasetReadRepository.getHistory(trialverseDatasetUri);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.JSONLD.getContentType().getContentType());
-    trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
+    trialverseIOUtilsService.writeContentToServletResponse(response, httpServletResponse);
   }
 
   @RequestMapping(value = "/{datasetUUID}/versions/{versionUuid}", method = RequestMethod.GET)
   @ResponseBody
   public void getVersionedDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID, @PathVariable String versionUuid) throws URISyntaxException {
-    logger.info("retrieving versioned dataset: {}", versionUuid);
+    logger.trace("retrieving versioned dataset: {}", versionUuid);
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     Model datasetModel = datasetReadRepository.getVersionedDataset(trialverseDatasetUri, versionUuid);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     trialverseIOUtilsService.writeModelToServletResponse(datasetModel, httpServletResponse);
-    logger.info("Dataset retrieved");
   }
 }

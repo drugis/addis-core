@@ -1,13 +1,16 @@
 package org.drugis.trialverse.scratch.service.impl;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.drugis.trialverse.dataset.factory.HttpClientFactory;
+import org.apache.http.util.EntityUtils;
 import org.drugis.trialverse.scratch.service.ScratchService;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
@@ -19,13 +22,13 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by connor on 08/01/15.
  */
 @Service
 public class ScratchServiceImpl implements ScratchService {
-
 
   final static Logger logger = LoggerFactory.getLogger(ScratchServiceImpl.class);
   public static final String FUSEKI_SCRATCH_URL = System.getenv("TRIALVERSE_SCRATCH_URL");
@@ -40,52 +43,55 @@ public class ScratchServiceImpl implements ScratchService {
   @Inject
   private TrialverseIOUtilsService trialverseIOUtilsService;
 
-  private void executePost(HttpServletRequest httpServletRequest, HttpServletResponse response, String url) {
-    try (ServletInputStream servletInputStream = httpServletRequest.getInputStream()) {
-      HttpPost request = new HttpPost(url + httpServletRequest.getQueryString());
-      request.setHeader("Accept", httpServletRequest.getHeader("Accept"));
-      InputStreamEntity entity = new InputStreamEntity(servletInputStream);
-      entity.setContentType(httpServletRequest.getContentType());
-      request.setEntity(entity);
-      HttpResponse httpResponse = httpClient.execute(request);
-      response.setStatus(httpResponse.getStatusLine().getStatusCode());
-      if (httpResponse.getEntity() != null) {
-        trialverseIOUtilsService.writeResponseContentToServletResponse(httpResponse, response);
-      }
-    } catch (IOException e) {
-      logger.error(e.toString());
-    }
-  }
-
-  private void executeGet(HttpServletRequest httpServletRequest, HttpServletResponse response, String url) {
-    try {
-      HttpGet request = new HttpGet(url + httpServletRequest.getQueryString());
-      request.setHeader("Accept", httpServletRequest.getHeader("Accept"));
-      HttpResponse httpResponse = httpClient.execute(request);
-      response.setStatus(httpResponse.getStatusLine().getStatusCode());
-      trialverseIOUtilsService.writeResponseContentToServletResponse(httpResponse, response);
-    } catch (IOException e) {
-      logger.error(e.toString());
+  @Override
+  public int update(byte[] content, String queryString, Header contentTypeHeader) throws IOException {
+    HttpPost request = new HttpPost(FUSEKI_SCRATCH_UPDATE_URL + queryString);
+    ByteArrayEntity entity = new ByteArrayEntity(content);
+    entity.setContentType(contentTypeHeader);
+    request.setEntity(entity);
+    try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) httpClient.execute(request)) {
+      EntityUtils.consume(httpResponse.getEntity());
+      return httpResponse.getStatusLine().getStatusCode();
     }
   }
 
   @Override
-  public void proxyUpdate(HttpServletRequest httpServletRequest, HttpServletResponse response) {
-    executePost(httpServletRequest, response, FUSEKI_SCRATCH_UPDATE_URL);
+  public int setData(byte[] content, String queryString, Header contentTypeHeader) throws IOException {
+    ByteArrayEntity entity = new ByteArrayEntity(content);
+    entity.setContentType(contentTypeHeader);
+    HttpPost request = new HttpPost(FUSEKI_SCRATCH_DATA_URL + queryString);
+    request.setEntity(entity);
+    try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) httpClient.execute(request)) {
+      EntityUtils.consume(httpResponse.getEntity());
+      return httpResponse.getStatusLine().getStatusCode();
+    }
   }
 
   @Override
-  public void proxyData(HttpServletRequest httpServletRequest, HttpServletResponse response) {
-    executePost(httpServletRequest, response, FUSEKI_SCRATCH_DATA_URL);
+  public byte [] query(byte[] requestContent, String queryString, Header acceptHeader, Header contentTypeHeader) throws IOException {
+    HttpPost request = new HttpPost(FUSEKI_SCRATCH_QUERY_URL + queryString);
+    request.setHeader(acceptHeader);
+    ByteArrayEntity entity = new ByteArrayEntity(requestContent);
+    entity.setContentType(contentTypeHeader);
+    request.setEntity(entity);
+    try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) httpClient.execute(request);
+         InputStream responseContentStream = httpResponse.getEntity().getContent()) {
+      byte[] responseContent = IOUtils.toByteArray(responseContentStream);
+      EntityUtils.consume(httpResponse.getEntity());
+      return responseContent;
+    }
   }
 
   @Override
-  public void proxyQuery(HttpServletRequest httpServletRequest, HttpServletResponse response) {
-    executePost(httpServletRequest, response, FUSEKI_SCRATCH_QUERY_URL);
+  public byte[] get(String queryString, Header acceptHeader) throws IOException {
+    HttpGet request = new HttpGet(FUSEKI_SCRATCH_DATA_URL + queryString);
+    request.setHeader(acceptHeader);
+    try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) httpClient.execute(request);
+         InputStream responseContentStream = httpResponse.getEntity().getContent()) {
+      byte[] responseContent = IOUtils.toByteArray(responseContentStream);
+      EntityUtils.consume(httpResponse.getEntity());
+      return responseContent;
+    }
   }
 
-  @Override
-  public void proxyGetGraph(HttpServletRequest request, HttpServletResponse response) {
-    executeGet(request, response, FUSEKI_SCRATCH_DATA_URL);
-  }
 }

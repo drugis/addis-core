@@ -12,7 +12,7 @@ import java.io.InputStream;
  * Created by connor on 12-11-14.
  */
 public interface TrialverseIOUtilsService {
-  void writeResponseContentToServletResponse(HttpResponse httpResponse, HttpServletResponse httpServletResponse) throws IOException;
+  void writeContentToServletResponse(byte[] content, HttpServletResponse httpServletResponse) throws IOException;
 
   void writeModelToServletResponse(Model model, HttpServletResponse httpServletResponse);
 
