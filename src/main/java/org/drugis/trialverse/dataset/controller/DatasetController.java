@@ -4,7 +4,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
+
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -53,8 +53,6 @@ public class DatasetController extends AbstractTrialverseController {
   private HttpClient httpClient;
 
   private final static String JSON_TYPE = "application/json; charset=UTF-8";
-
-
 
   Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -109,7 +107,7 @@ public class DatasetController extends AbstractTrialverseController {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
 
     logger.error("executing gertseki query");
-    CloseableHttpResponse response = datasetReadRepository.executeQuery(query, trialverseDatasetUri, versionUuid, acceptHeaderValue);
+    HttpResponse response = datasetReadRepository.executeQuery(query, trialverseDatasetUri, versionUuid, acceptHeaderValue);
 
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", response.getFirstHeader("Content-Type").getValue());
@@ -121,7 +119,7 @@ public class DatasetController extends AbstractTrialverseController {
   @ResponseBody
   public void queryHistory(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException {
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    CloseableHttpResponse response = datasetReadRepository.getHistory(trialverseDatasetUri);
+    HttpResponse response = datasetReadRepository.getHistory(trialverseDatasetUri);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.JSONLD.getContentType().getContentType());
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);

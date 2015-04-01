@@ -9,9 +9,8 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
@@ -70,7 +69,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   private RestTemplate restTemplate;
 
   @Inject
-  private CloseableHttpClient httpClient;
+  private HttpClient httpClient;
 
   private final Node headProperty = ResourceFactory.createProperty(HTTP_DRUGIS_ORG_EVENT_SOURCING_ES, "head").asNode();
 
@@ -179,7 +178,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public CloseableHttpResponse executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException {
+  public HttpResponse executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(QUERY_ENDPOINT)
@@ -191,14 +190,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
       request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, versionHeader);
     }
     request.addHeader(org.apache.http.HttpHeaders.ACCEPT, acceptHeader);
-    logger.info("before call to vwersionStore");
-    try(CloseableHttpResponse response = httpClient.execute(request)){
-      logger.info("after call to versionStore");
-      return response;
-    } catch (Exception e) {
-      logger.error("something when wrong with the call to versionStore");
-      throw e;
-    }
+    return httpClient.execute(request);
   }
 
   @Override

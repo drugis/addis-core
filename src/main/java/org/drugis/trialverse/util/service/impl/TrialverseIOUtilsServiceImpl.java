@@ -2,7 +2,10 @@ package org.drugis.trialverse.util.service.impl;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.commons.io.IOUtils;
+
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,29 +25,25 @@ public class TrialverseIOUtilsServiceImpl implements TrialverseIOUtilsService {
   final static Logger logger = LoggerFactory.getLogger(TrialverseIOUtilsServiceImpl.class);
 
   @Override
-  public void writeResponseContentToServletResponse(CloseableHttpResponse httpResponse, HttpServletResponse httpServletResponse) throws IOException {
+  public void writeResponseContentToServletResponse(HttpResponse httpResponse, HttpServletResponse httpServletResponse) throws IOException {
     try (InputStream inputStream = httpResponse.getEntity().getContent();
          ServletOutputStream outputStream = httpServletResponse.getOutputStream()
     ) {
+      logger.trace("write output to client request");
       IOUtils.copy(inputStream, outputStream);
-
+      logger.trace("consume version store responce");
+      EntityUtils.consume(httpResponse.getEntity());
     } catch (IOException e) {
       logger.error("Error writing jena response to client response");
       logger.error(e.toString());
     } finally {
-      httpResponse.close();
-    }
-  }
-
-  @Override
-  public void writeStreamToServletResponse(InputStream inputStream, HttpServletResponse httpServletResponse) {
-    try (
-         ServletOutputStream outputStream = httpServletResponse.getOutputStream()
-    ) {
-      IOUtils.copy(inputStream, outputStream);
-    } catch (IOException e) {
-      logger.error("Error writing jena response to client response");
-      logger.error(e.toString());
+      logger.trace("close version store responce");
+      try {
+        ((CloseableHttpResponse) httpResponse).close();
+      } catch (Exception e) {
+        logger.error("Error while closing");
+        throw e;
+      }
     }
   }
 

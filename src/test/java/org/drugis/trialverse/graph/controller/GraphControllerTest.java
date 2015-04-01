@@ -2,7 +2,6 @@ package org.drugis.trialverse.graph.controller;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.riot.RDFLanguages;
@@ -95,7 +94,7 @@ public class GraphControllerTest {
     String datasetUUID = "datasetUUID";
     String graphUUID = "graphUUID";
     BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
-    CloseableHttpResponse httpResponse = (CloseableHttpResponse) new BasicHttpResponse(statusLine);
+    HttpResponse httpResponse = new BasicHttpResponse(statusLine);
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     when(graphReadRepository.getGraph(trialverseDatasetUri, graphUUID)).thenReturn(httpResponse);
 
@@ -105,7 +104,7 @@ public class GraphControllerTest {
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
     verify(graphReadRepository).getGraph(trialverseDatasetUri, graphUUID);
-    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(CloseableHttpResponse.class), any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(HttpResponse.class), any(HttpServletResponse.class));
   }
 
   @Test

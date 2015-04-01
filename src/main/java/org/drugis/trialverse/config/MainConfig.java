@@ -16,7 +16,7 @@
 package org.drugis.trialverse.config;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
+
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -62,18 +62,18 @@ public class MainConfig {
 
   @Bean
   public RestTemplate restTemplate() {
-    RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+    RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient()));
     restTemplate.getMessageConverters().add(new JenaGraphMessageConverter());
     return restTemplate;
   }
 
   @Bean
-  public CloseableHttpClient httpClient() {
+  public HttpClient httpClient() {
     logger.info("httpClient created");
     return HttpClientBuilder
             .create()
-            .setMaxConnTotal(6)
-            .setMaxConnPerRoute(3)
+            .setMaxConnTotal(20)
+            .setMaxConnPerRoute(2)
             .build();
   }
 

@@ -1,13 +1,9 @@
 package org.drugis.trialverse.dataset.controller;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import org.apache.http.Header;
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.riot.RDFLanguages;
@@ -191,14 +187,14 @@ public class DatasetControllerTest {
     URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
     HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1,1), HttpStatus.OK.value(), "reason"));
     httpResponse.setEntity(new StringEntity("test"));
-    when(datasetReadRepository.getHistory(datasetUri)).thenReturn((CloseableHttpResponse) httpResponse);
+    when(datasetReadRepository.getHistory(datasetUri)).thenReturn((HttpResponse) httpResponse);
 
     mockMvc.perform((get("/datasets/" + uuid + "/versions")).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType() ));
 
     verify(datasetReadRepository).getHistory(datasetUri);
-    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(CloseableHttpResponse.class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
   }
 
   @Test
@@ -210,7 +206,7 @@ public class DatasetControllerTest {
     String expectedContentType = "a/b";
     httpResponse.setHeader("Content-Type", expectedContentType);
     String acceptValue = "c/d";
-    when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, null, acceptValue)).thenReturn((CloseableHttpResponse) httpResponse);
+    when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, null, acceptValue)).thenReturn( httpResponse);
     mockMvc.perform((get("/datasets/" + uuid + "/query"))
             .param("query", query)
             .header("Accept", acceptValue)
@@ -219,7 +215,7 @@ public class DatasetControllerTest {
             .andExpect(content().contentType(expectedContentType));
 
     verify(datasetReadRepository).executeQuery(query, trialverseDatasetUri, null, acceptValue);
-    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(CloseableHttpResponse.class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
 
   }
 
@@ -233,7 +229,7 @@ public class DatasetControllerTest {
     String expectedContentType = "a/b";
     httpResponse.setHeader("Content-Type", expectedContentType);
     String acceptValue = "c/d";
-    when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, version, acceptValue)).thenReturn((CloseableHttpResponse) httpResponse);
+    when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, version, acceptValue)).thenReturn(httpResponse);
     mockMvc.perform((get("/datasets/" + uuid + "/versions/" + version + "/query"))
             .param("query", query)
             .header("Accept", acceptValue)
@@ -242,7 +238,7 @@ public class DatasetControllerTest {
             .andExpect(content().contentType(expectedContentType));
 
     verify(datasetReadRepository).executeQuery(query, trialverseDatasetUri, version, acceptValue);
-    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(CloseableHttpResponse.class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(HttpResponse.class), Matchers.any(HttpServletResponse.class));
 
   }
 }

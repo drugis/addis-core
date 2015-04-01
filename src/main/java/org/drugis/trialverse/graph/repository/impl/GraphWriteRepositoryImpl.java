@@ -71,6 +71,7 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
     HttpEntity putBody = new InputStreamEntity(request.getInputStream());
 
     putRequest.setEntity(putBody);
+    logger.debug("execute updateGraph");
     return httpClient.execute(putRequest);
   }
 }

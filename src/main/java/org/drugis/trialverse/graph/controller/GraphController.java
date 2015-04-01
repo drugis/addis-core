@@ -1,7 +1,9 @@
 package org.drugis.trialverse.graph.controller;
 
 import org.apache.http.HttpResponse;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.exception.MethodNotAllowedException;
@@ -13,6 +15,8 @@ import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -47,11 +51,12 @@ public class GraphController extends AbstractTrialverseController {
   @Inject
   private TrialverseIOUtilsService trialverseIOUtilsService;
 
+  Logger logger = LoggerFactory.getLogger(getClass());
 
   @RequestMapping(value = "/{graphUuid}", method = RequestMethod.GET)
   @ResponseBody
   public void getGraph(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException {
-    CloseableHttpResponse response = graphReadRepository.getGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid);
+    HttpResponse response = graphReadRepository.getGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     trialverseIOUtilsService.writeResponseContentToServletResponse(response, httpServletResponse);
@@ -67,6 +72,9 @@ public class GraphController extends AbstractTrialverseController {
       HttpResponse versionResponse = graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, request);
       trialversResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionResponse.getFirstHeader(WebConstants.X_EVENT_SOURCE_VERSION).getValue());
       trialversResponse.setStatus(HttpStatus.OK.value());
+      logger.debug("consume and close setGraph responce");
+      EntityUtils.consume(versionResponse.getEntity());
+      ((CloseableHttpResponse) versionResponse).close();
     } else {
       throw new MethodNotAllowedException();
     }

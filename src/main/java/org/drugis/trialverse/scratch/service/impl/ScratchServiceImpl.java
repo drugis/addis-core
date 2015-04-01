@@ -2,7 +2,7 @@ package org.drugis.trialverse.scratch.service.impl;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
+
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
@@ -35,7 +35,7 @@ public class ScratchServiceImpl implements ScratchService {
 
 
   @Inject
-  private CloseableHttpClient httpClient;
+  private HttpClient httpClient;
 
   @Inject
   private TrialverseIOUtilsService trialverseIOUtilsService;
@@ -47,7 +47,7 @@ public class ScratchServiceImpl implements ScratchService {
       InputStreamEntity entity = new InputStreamEntity(servletInputStream);
       entity.setContentType(httpServletRequest.getContentType());
       request.setEntity(entity);
-      CloseableHttpResponse httpResponse = httpClient.execute(request);
+      HttpResponse httpResponse = httpClient.execute(request);
       response.setStatus(httpResponse.getStatusLine().getStatusCode());
       if (httpResponse.getEntity() != null) {
         trialverseIOUtilsService.writeResponseContentToServletResponse(httpResponse, response);
@@ -61,7 +61,7 @@ public class ScratchServiceImpl implements ScratchService {
     try {
       HttpGet request = new HttpGet(url + httpServletRequest.getQueryString());
       request.setHeader("Accept", httpServletRequest.getHeader("Accept"));
-      CloseableHttpResponse httpResponse = httpClient.execute(request);
+      HttpResponse httpResponse = httpClient.execute(request);
       response.setStatus(httpResponse.getStatusLine().getStatusCode());
       trialverseIOUtilsService.writeResponseContentToServletResponse(httpResponse, response);
     } catch (IOException e) {
