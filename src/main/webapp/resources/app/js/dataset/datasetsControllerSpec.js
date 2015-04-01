@@ -37,15 +37,16 @@ define(['angular', 'angular-mocks'], function() {
     });
 
     it('should query the datasetVersionedResource, process the results and place them on the scope', function() {
+      var datasets = [{title: 'my results', headVersion: 'http://host/versions/foo'}];
       httpBackend.flush();
 
       expect(mockDatasetService.loadStore).toHaveBeenCalled();
       mockLoadStoreDeferred.resolve(101);
       scope.$digest();
       expect(mockDatasetService.queryDatasetsOverview).toHaveBeenCalled();
-      mockQueryDatasetsDeferred.resolve('my results');
+      mockQueryDatasetsDeferred.resolve(datasets);
       scope.$digest();
-      expect(scope.datasets).toBe('my results');
+      expect(scope.datasets).toBe(datasets);
     });
 
     describe('createDatasetDialog', function() {
