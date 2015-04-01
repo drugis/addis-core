@@ -8,7 +8,10 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       mockJsonLDService = jasmine.createSpyObj('JsonLdService', ['rewriteAtIds']),
       mockRemoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['deFusekify']),
       studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get']),
+      historyResource = jasmine.createSpyObj('HistoryResource', ['query']),
+      historyService = jasmine.createSpyObj('HistoryService', ['addOrderIndex']),
       mockLoadStoreDeferred,
+      queryHistoryDeferred,
       studiesWithDetailsGetDeferred,
       mockQueryDatasetDeferred,
       mockStudiesWithDetail = {
@@ -42,12 +45,20 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       mockLoadStoreDeferred = $q.defer();
       mockQueryDatasetDeferred = $q.defer();
       studiesWithDetailsGetDeferred = $q.defer();
+      queryHistoryDeferred = $q.defer();
 
       mockDatasetService.loadStore.and.returnValue(mockLoadStoreDeferred.promise);
       mockDatasetService.queryDataset.and.returnValue(mockQueryDatasetDeferred.promise);
       studiesWithDetailsService.get.and.returnValue(studiesWithDetailsGetDeferred.promise);
       mockRemoteRdfStoreService.deFusekify.and.returnValue(mockStudiesWithDetail);
-     
+      historyResource.query.and.returnValue({
+        $promise: queryHistoryDeferred.promise
+      });
+      historyService.addOrderIndex.and.returnValue([{
+        '@id': 'http://host/versions/' + versionUuid,
+        idx: 0
+      }]);
+
       mockModal.open.calls.reset();
       httpBackend.expectGET('/datasets/' + datasetUUID + '/versions/' + versionUuid).respond('dataset');
 
@@ -59,7 +70,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         DatasetVersionedResource: DatasetVersionedResource,
         StudiesWithDetailsService: studiesWithDetailsService,
         JsonLdService: mockJsonLDService,
-        RemoteRdfStoreService: mockRemoteRdfStoreService
+        RemoteRdfStoreService: mockRemoteRdfStoreService,
+        HistoryResource: historyResource,
+        HistoryService: historyService
       });
 
     }));
@@ -93,6 +106,15 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should place the table options on the scope', function() {
         expect(scope.tableOptions.columns[0].label).toEqual('Title');
+      });
+
+      it('should place the current revision on the scope', function() {
+        var historyItems = [{
+          '@id': 'http://host/versions/' + versionUuid
+        }];
+        queryHistoryDeferred.resolve(historyItems);
+        scope.$digest();
+        expect(scope.currentRevision).toBeDefined();
       });
 
     });
