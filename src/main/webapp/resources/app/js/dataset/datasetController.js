@@ -2,10 +2,10 @@
 define([],
   function() {
     var dependencies = ['$scope', '$stateParams', '$modal', '$filter', 'DatasetService', 'DatasetVersionedResource',
-      'StudiesWithDetailsService', 'JsonLdService', 'RemoteRdfStoreService', 'HistoryResource'
+      'StudiesWithDetailsService', 'JsonLdService', 'RemoteRdfStoreService', 'HistoryResource', 'HistoryService'
     ];
     var DatasetController = function($scope, $stateParams, $modal, $filter, DatasetService, DatasetVersionedResource,
-      StudiesWithDetailsService, JsonLdService, RemoteRdfStoreService, HistoryResource) {
+      StudiesWithDetailsService, JsonLdService, RemoteRdfStoreService, HistoryResource, HistoryService) {
 
       console.log('creating dataset controller');
 
@@ -20,7 +20,9 @@ define([],
       });
 
       HistoryResource.query($stateParams).$promise.then(function(historyItems) {
-        $scope.currentRevision = _.find(historyItems, function(item) {
+        // sort to know it curentRevission is head
+        var indexedHistoryItems = HistoryService.addOrderIndex(historyItems);
+        $scope.currentRevision = _.find(indexedHistoryItems, function(item) {
           return item['@id'].lastIndexOf($stateParams.versionUuid) > 0;
         }); 
       });
