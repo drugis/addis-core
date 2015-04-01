@@ -86,11 +86,6 @@ define(
             templateUrl: 'app/js/dataset/createDataset.html',
             controller: 'CreateDatasetController'
           })
-          .state('dataset', {
-            url: '/datasets/:datasetUUID',
-            templateUrl: 'app/js/dataset/dataset.html',
-            controller: 'DatasetController'
-          })
           .state('versionedDataset', {
             url: '/datasets/:datasetUUID/versions/:versionUuid',
             templateUrl: 'app/js/dataset/dataset.html',
@@ -101,12 +96,12 @@ define(
             templateUrl: 'app/js/dataset/datasetHistory.html',
             controller: 'DatasetHistoryController'
           })
-          .state('dataset.concepts', {
+          .state('versionedDataset.concepts', {
             url: '/concepts',
             templateUrl: 'app/js/concept/concepts.html',
             controller: 'ConceptController'
           })
-          .state('dataset.study', {
+          .state('versionedDataset.study', {
             url: '/studies/:studyUUID',
             templateUrl: 'app/js/study/view/study.html',
             controller: 'StudyController'

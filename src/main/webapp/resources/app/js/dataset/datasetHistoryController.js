@@ -1,9 +1,10 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', 'HistoryResource', 'HistoryService', 'DatasetVersionedResource', 'DatasetService'];
-    var DatasetHistoryController = function($scope, $stateParams, HistoryResource, HistoryService, DatasetVersionedResource, DatasetService) {
-      DatasetVersionedResource.get($stateParams, function(response) {
+    var dependencies = ['$scope', '$stateParams', 'HistoryResource', 'HistoryService', 'DatasetResource', 'DatasetService'];
+    var DatasetHistoryController = function($scope, $stateParams, HistoryResource, HistoryService, DatasetResource, DatasetService) {
+     
+      DatasetResource.get($stateParams, function(response) {
         DatasetService.reset();
         DatasetService.loadStore(response.data).then(function() {
           DatasetService.queryDataset().then(function(queryResult) {
