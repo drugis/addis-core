@@ -10,26 +10,38 @@
     <div class="column large-10">
       <h1>{{dataset.label}}</h1>
       <p>{{dataset.comment}}</p>
+      <div class="row">
+        <div class="column large-12">
+          <div class="panel">
+            <a class="right" ui-sref="datasetHistory({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">History</a>
+            <em>{{currentRevision.date | date:'medium'}}</em>
+            <p>
+              {{currentRevision.title}}, created by {{currentRevision.creator | stripFrontFilter:'mailto:'}}
+            </p>
+          </div>
+        </div>
+      </div>
       <div class="row application-link">
         <div class="column large-10">
           <a ui-sref="versionedDataset.concepts({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concepts</a>
         </div>
       </div>
-      <div class="row application-link">
-        <div class="column large-10">
-          <a ui-sref="datasetHistory({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">History</a>
-        </div>
-      </div>
-      <button style="margin-top: 1rem;" ng-click="showStudyDialog()"><i class="fa fa-plus"></i> Add study</button>
       <hr>
     </div>
   </div>
   <div class="row">
     <div class="column large-12">
-      <h3>Studies</h3>
-      <button class="button small secondary" ng-click="showTableOptions()">
-        <i class="fa fa-cog"></i>&nbsp; Show/Hide Columns
-      </button>
+      <div class="button-label-container">
+        <h3 style="display: inline;">Studies</h3>
+        <button class="small" style="
+    margin-left: 0.5rem;
+    vertical-align: super;" ng-click="showStudyDialog()"><i class="fa fa-plus"></i></button>
+      </div>
+      <p style="margin-bottom: 0;">
+        <button class="button small secondary" ng-click="showTableOptions()">
+          <i class="fa fa-cog"></i>&nbsp; Show/Hide Columns
+        </button>
+      </p>
       <table>
         <thead>
           <tr>

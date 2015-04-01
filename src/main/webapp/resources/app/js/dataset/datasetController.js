@@ -2,10 +2,10 @@
 define([],
   function() {
     var dependencies = ['$scope', '$stateParams', '$modal', '$filter', 'DatasetService', 'DatasetVersionedResource',
-      'StudiesWithDetailsService', 'JsonLdService', 'RemoteRdfStoreService'
+      'StudiesWithDetailsService', 'JsonLdService', 'RemoteRdfStoreService', 'HistoryResource'
     ];
     var DatasetController = function($scope, $stateParams, $modal, $filter, DatasetService, DatasetVersionedResource,
-      StudiesWithDetailsService, JsonLdService, RemoteRdfStoreService) {
+      StudiesWithDetailsService, JsonLdService, RemoteRdfStoreService, HistoryResource) {
 
       console.log('creating dataset controller');
 
@@ -18,6 +18,14 @@ define([],
           });
         });
       });
+
+      HistoryResource.query($stateParams).$promise.then(function(historyItems) {
+        $scope.currentRevision = _.find(historyItems, function(item) {
+          return item['@id'].lastIndexOf($stateParams.versionUuid) > 0;
+        }); 
+      });
+
+
 
       $scope.loadStudiesWithDetail = function() {
         StudiesWithDetailsService.get($stateParams.datasetUUID, $stateParams.versionUuid).then(function(result){
