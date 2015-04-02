@@ -1,11 +1,7 @@
 package org.drugis.trialverse.graph.controller;
 
 import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.security.Account;
@@ -23,7 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -95,15 +90,16 @@ public class GraphControllerTest {
   public void testGetGraph() throws Exception {
     String datasetUUID = "datasetUUID";
     String graphUUID = "graphUUID";
+    String versionUuid = "versionUuid";
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     String responce = "responce";
-    when(graphReadRepository.getGraph(trialverseDatasetUri, graphUUID)).thenReturn(responce.getBytes());
+    when(graphReadRepository.getGraph(trialverseDatasetUri, versionUuid, graphUUID)).thenReturn(responce.getBytes());
 
-    mockMvc.perform(get("/datasets/" + datasetUUID + "/graphs/" + graphUUID).principal(user))
+    mockMvc.perform(get("/datasets/" + datasetUUID + "/versions/" + versionUuid + "/graphs/" + graphUUID).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
-    verify(graphReadRepository).getGraph(trialverseDatasetUri, graphUUID);
+    verify(graphReadRepository).getGraph(trialverseDatasetUri, versionUuid, graphUUID);
     verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), any(HttpServletResponse.class));
   }
 

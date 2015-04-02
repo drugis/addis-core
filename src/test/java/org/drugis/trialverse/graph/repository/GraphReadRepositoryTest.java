@@ -59,7 +59,8 @@ public class GraphReadRepositoryTest {
   @Test
   public void testGetGraph() throws IOException, URISyntaxException, ReadGraphException {
     String datasetUUID = "datasetUUID";
-    String graphUUID = "uuid";
+    String graphUUID = "graphUuid";
+    String versionUuid = "versionUuid";
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
 
     VersionMapping mapping = new VersionMapping("http://versionedDatsetUrl", "ownerUuid", trialverseDatasetUri.toString());
@@ -71,7 +72,7 @@ public class GraphReadRepositoryTest {
     when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString));
     when(mockResponse.getEntity()).thenReturn(entity);
     when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
-    graphReadRepository.getGraph(trialverseDatasetUri, graphUUID);
+    graphReadRepository.getGraph(trialverseDatasetUri, versionUuid, graphUUID);
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(mapping.getVersionedDatasetUrl())
             .path("/data")

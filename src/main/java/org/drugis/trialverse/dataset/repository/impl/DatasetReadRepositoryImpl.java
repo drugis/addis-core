@@ -116,8 +116,8 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
-            .path(QUERY_ENDPOINT)
-            .queryParam(QUERY_PARAM_QUERY, query)
+            .path(WebConstants.QUERY_ENDPOINT)
+            .queryParam(WebConstants.QUERY_PARAM_QUERY, query)
             .build();
 
     ResponseEntity<T> result  = restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, responseType);
@@ -141,7 +141,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
       HttpHeaders httpHeaders = new HttpHeaders();
       httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
       HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-      String uri = mapping.getVersionedDatasetUrl() + DATA_ENDPOINT + QUERY_STRING_DEFAULT_GRAPH;
+      String uri = mapping.getVersionedDatasetUrl() + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
 
       ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
       final String version  = responseEntity.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION).get(0);
@@ -161,12 +161,11 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
     if(StringUtils.isNotEmpty(versionUuid)) {
-      String headerValue = webConstants.getTriplestoreBaseUri() + VERSION_PATH + versionUuid;
-      httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, headerValue);
+      httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, webConstants.buildVersionUri(versionUuid));
     }
 
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-    String uri = versionMapping.getVersionedDatasetUrl() + DATA_ENDPOINT + QUERY_STRING_DEFAULT_GRAPH;
+    String uri = versionMapping.getVersionedDatasetUrl() + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
 
     ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
     Graph graph = addDatasetType(versionMapping.getTrialverseDatasetUrl(), responseEntity.getBody());
@@ -177,13 +176,12 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   public byte[] executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
-            .path(QUERY_ENDPOINT)
-            .queryParam(QUERY_PARAM_QUERY, query)
+            .path(WebConstants.QUERY_ENDPOINT)
+            .queryParam(WebConstants.QUERY_PARAM_QUERY, query)
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
     if(StringUtils.isNotEmpty(versionUuid)) {
-      String versionHeader = webConstants.getTriplestoreBaseUri() + VERSION_PATH + versionUuid;
-      request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, versionHeader);
+      request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, webConstants.buildVersionUri(versionUuid));
     }
     request.addHeader(org.apache.http.HttpHeaders.ACCEPT, acceptHeader);
     return executeRequestAndCloseResponse(request);
@@ -205,7 +203,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   public byte[] getHistory(URI trialverseDatasetUri) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
-            .path(HISTORY_ENDPOINT)
+            .path(WebConstants.HISTORY_ENDPOINT)
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
     request.addHeader(ACCEPT, WebContent.contentTypeJSONLD);

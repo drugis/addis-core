@@ -6,5 +6,6 @@ define(function (require) {
   return angular.module('trialverse.graph', ['ngResource'])
     //resources
     .factory('GraphResource', require('graph/graphResource'))
+    .factory('VersionedGraphResource', require('graph/versionedGraphResource'))
     ;
 });

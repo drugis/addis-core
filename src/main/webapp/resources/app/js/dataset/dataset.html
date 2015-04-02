@@ -10,23 +10,7 @@
     <div class="column large-10">
       <h1>{{dataset.label}}</h1>
       <p>{{dataset.comment}}</p>
-      <div class="row">
-        <div class="column large-12">
-          <div class="panel">
-
-            <span  ng-show="currentRevision.idx === 0" class="right">
-              <span><i class="fa fa-check"></i> This is the current version</span>
-              (<a style="text-decoration: underline;" ui-sref="datasetHistory({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>)
-            </span>
-
-            <a class="right" style="text-decoration: underline;" ng-show="currentRevision.idx !== 0" ui-sref="datasetHistory({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>
-            <em>{{currentRevision.date | date:'medium'}}</em>
-            <p>
-              {{currentRevision.title}}, created by {{currentRevision.creator | stripFrontFilter:'mailto:'}}
-            </p>
-          </div>
-        </div>
-      </div>
+      <version-info></version-info>
       <div class="row application-link">
         <div class="column large-10">
           <a ui-sref="versionedDataset.concepts({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concepts</a>

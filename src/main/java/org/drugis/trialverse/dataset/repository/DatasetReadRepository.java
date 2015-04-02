@@ -14,12 +14,6 @@ import java.security.Principal;
  * Created by daan on 7-11-14.
  */
 public interface DatasetReadRepository {
-  String QUERY_ENDPOINT = "/query";
-  String HISTORY_ENDPOINT = "/history";
-  String DATA_ENDPOINT = "/data";
-  String QUERY_PARAM_QUERY = "query";
-  String QUERY_STRING_DEFAULT_GRAPH = "?default";
-  String VERSION_PATH = "versions/";
 
   public Model queryDatasets(Account currentUserAccount);
 

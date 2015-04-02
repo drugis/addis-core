@@ -32,7 +32,7 @@ import java.security.Principal;
  * Created by daan on 19-11-14.
  */
 @Controller
-@RequestMapping(value = "/datasets/{datasetUuid}/graphs")
+@RequestMapping(value = "/datasets/{datasetUuid}")
 public class GraphController extends AbstractTrialverseController {
 
   @Inject
@@ -52,16 +52,17 @@ public class GraphController extends AbstractTrialverseController {
 
   Logger logger = LoggerFactory.getLogger(getClass());
 
-  @RequestMapping(value = "/{graphUuid}", method = RequestMethod.GET)
+  @RequestMapping(value = "/versions/{versionUuid}/graphs/{graphUuid}", method = RequestMethod.GET)
   @ResponseBody
-  public void getGraph(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
-    byte[] responseContent = graphReadRepository.getGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid);
+  public void getGraph(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid,
+                       @PathVariable String versionUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
+    byte[] responseContent = graphReadRepository.getGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), versionUuid, graphUuid);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
   }
 
-  @RequestMapping(value = "/{graphUuid}", method = RequestMethod.PUT)
+  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT)
   public void setGraph(HttpServletRequest request, HttpServletResponse trialversResponse, Principal currentUser,
                        @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle, // here because it's required
                        @PathVariable String datasetUuid, @PathVariable String graphUuid)

@@ -10,17 +10,6 @@ define([], function() {
         commitTitle: '@commitTitle',
         commitDescription: '@commitDescription'
       }, {
-        'get': {
-          method: 'get',
-          headers: {
-            'Content-Type': 'text/n3'
-          },
-          transformResponse: function(data) {
-            return {
-              data: data // property on Responce object to access raw result data
-            };
-          }
-        },
         'put': {
           method: 'put'
         }

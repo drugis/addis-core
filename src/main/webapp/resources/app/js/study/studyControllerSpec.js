@@ -5,14 +5,16 @@ define(['angular', 'angular-mocks'], function() {
     var scope, httpBackend,
       datasetUUID = 'datasetUUID',
       studyUUID = 'studyUUID',
+      versionUuid = 'versionUuid',
       mockStateParams = {
         datasetUUID: datasetUUID,
-        studyUUID: studyUUID
+        studyUUID: studyUUID,
+        versionUuid: versionUuid
       },
       anchorScrollMock = jasmine.createSpy('anchorScroll'),
       locationMock = jasmine.createSpyObj('location', ['hash']),
       modalMock = jasmine.createSpyObj('modal', ['open']),
-      studyServiceMock = jasmine.createSpyObj('StudyService', ['reset','queryArmData', 'loadStore', 'queryStudyData', 'getGraph', 'studySaved']),
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['reset', 'queryArmData', 'loadStore', 'queryStudyData', 'getGraph', 'studySaved']),
       resultsServiceMock = jasmine.createSpyObj('ResultsService', ['cleanUpMeasurements']),
       studyDesignServiceMock = jasmine.createSpyObj('StudyDesignService', ['cleanupCoordinates']),
       loadStoreDeferred,
@@ -23,12 +25,12 @@ define(['angular', 'angular-mocks'], function() {
 
     beforeEach(module('trialverse.study'));
 
-    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, GraphResource) {
+    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, VersionedGraphResource) {
 
       scope = $rootScope;
       httpBackend = $httpBackend;
 
-      httpBackend.expectGET('/datasets/' + datasetUUID + '/graphs/' + studyUUID).respond('study');
+      httpBackend.expectGET('/datasets/' + datasetUUID + '/versions/' + versionUuid + '/graphs/' + studyUUID).respond('study');
 
       loadStoreDeferred = $q.defer();
       queryStudyDataDeferred = $q.defer();
@@ -43,11 +45,13 @@ define(['angular', 'angular-mocks'], function() {
       $controller('StudyController', {
         $scope: scope,
         $stateParams: mockStateParams,
-        GraphResource: GraphResource,
+        VersionedGraphResource: VersionedGraphResource,
         $location: locationMock,
         $anchorScroll: anchorScrollMock,
         $modal: modalMock,
-        $window: {bind: 'mockBind'},
+        $window: {
+          bind: 'mockBind'
+        },
         StudyService: studyServiceMock,
         ResultsService: resultsServiceMock,
         StudyDesignService: studyDesignServiceMock

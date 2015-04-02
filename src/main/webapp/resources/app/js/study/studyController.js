@@ -2,10 +2,10 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$window', 'GraphResource', '$location', '$anchorScroll',
+    var dependencies = ['$scope', '$stateParams', '$window', 'VersionedGraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'ResultsService', 'StudyDesignService'
     ];
-    var StudyController = function($scope, $stateParams, $window, GraphResource, $location, $anchorScroll,
+    var StudyController = function($scope, $stateParams, $window, VersionedGraphResource, $location, $anchorScroll,
       $modal, StudyService, ResultsService, StudyDesignService) {
 
       StudyService.reset();
@@ -105,9 +105,10 @@ define([],
       });
 
       function reloadStudyModel() {
-        GraphResource.get({
+        VersionedGraphResource.get({
           datasetUUID: $stateParams.datasetUUID,
-          graphUuid: $stateParams.studyUUID
+          graphUuid: $stateParams.studyUUID,
+          versionUuid: $stateParams.versionUuid
         }, function(response) {
           StudyService.loadStore(response.data)
             .then(function() {

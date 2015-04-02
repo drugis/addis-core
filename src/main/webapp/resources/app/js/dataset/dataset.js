@@ -21,6 +21,7 @@ define(function (require) {
 
     //directives
     .directive('historyItem', require('dataset/historyItemDirective'))
+    .directive('versionInfo', require('dataset/versionInfoDirective'))
 
     //filters
     .filter('splitOnTokenFilter', require('dataset/splitOnTokenFilter'))
