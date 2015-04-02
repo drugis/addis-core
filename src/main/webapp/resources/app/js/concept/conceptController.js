@@ -54,7 +54,10 @@ define([],
           controller: 'CommitController',
           resolve: {
             callback: function() {
-              return ConceptService.conceptsSaved;
+              return function(newVersion) {
+                ConceptService.conceptsSaved();
+                $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/concepts');
+              };
             },
             datasetUuid: function() {
               return $stateParams.datasetUUID;

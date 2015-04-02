@@ -1,14 +1,14 @@
 <navbar-directive>
-    <ul class="left top-bar-content">
-      <li>
-        <h4 class="topbar-text">{{dataset.label}}</h4></li>
-    </ul>
+  <ul class="left top-bar-content">
+    <li>
+      <h4 class="topbar-text">{{dataset.label}}</h4></li>
+  </ul>
 </navbar-directive>
 <div class="row nav-bar-spacer">
   <div class="columns large-2 medium-3">
     <ul class="side-nav">
-      <button ng-disabled="!areConceptsModified()" ng-click="saveConcepts()" class="button expand success">Commit changes</button>
-      <div class="modified-warning info">
+      <button ng-show="isEditingAllowed" ng-disabled="!areConceptsModified()" ng-click="saveConcepts()" class="button expand success">Commit changes</button>
+      <div ng-show="isEditingAllowed" class="modified-warning info">
         <div ng-show="areConceptsModified()"><a ng-click="resetConcepts()" style="text-decoration: underline;">undo changes</a></div>
         <div ng-show="!areConceptsModified()">No unsaved changes</div>
       </div>
@@ -20,25 +20,23 @@
       <li><a ng-click="sideNavClick('adverseEvents')">Adverse Events</a></li>
     </ul>
   </div>
-
   <div class="columns large-10 medium-9">
-    <h2>{{dataset.label}}</h2>
-    <h5>{{dataset.comment}}</h5>
-    <h3>Concepts</h3>
-    <button class="small" ng-click="openAddConceptDialog()"><i class="fa fa-plus"> Add Concept</i></button>
-    <h5>Drugs</h5>
+    <h1>Concepts</h1>
+    <version-info></version-info>
+    <button ng-show="isEditingAllowed" class="small" ng-click="openAddConceptDialog()"><i class="fa fa-plus"> Add Concept</i></button>
+    <h3>Drugs</h3>
     <ul id="drugs">
       <li ng-repeat="concept in concepts | filter:'ontology#drug'">{{concept.label}}</li>
     </ul>
-    <h5>Population Characteristics</h5>
+    <h3>Population Characteristics</h3>
     <ul id="popchars">
-    <li ng-repeat="concept in concepts | filter:'ontology#PopulationCharacteristic'">{{concept.label}}</li>
+      <li ng-repeat="concept in concepts | filter:'ontology#PopulationCharacteristic'">{{concept.label}}</li>
     </ul>
-    <h5>Endpoints</h5>
+    <h3>Endpoints</h3>
     <ul id="endpoints">
       <li ng-repeat="concept in concepts | filter:'ontology#Endpoint'">{{concept.label}}</li>
     </ul>
-    <h5>Adverse Events</h5>
+    <h3>Adverse Events</h3>
     <ul id="adverseEvents">
       <li ng-repeat="concept in concepts | filter:'ontology#AdverseEvent'">{{concept.label}}</li>
     </ul>
