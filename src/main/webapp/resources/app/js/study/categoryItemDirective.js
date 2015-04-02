@@ -10,7 +10,8 @@ define([], function() {
         item: '=',
         reloadItems: '=',
         settings: '=',
-        studyUuid: '='
+        studyUuid: '=',
+        isEditingAllowed: '='
       },
       link: function(scope) {
 

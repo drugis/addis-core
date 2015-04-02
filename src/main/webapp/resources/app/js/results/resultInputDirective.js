@@ -9,6 +9,7 @@ define([], function() {
       scope: {
         row: '=',
         column: '=',
+        isEditingAllowed: '='
       },
       link: function(scope) {
 

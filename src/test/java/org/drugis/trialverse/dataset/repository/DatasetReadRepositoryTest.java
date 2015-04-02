@@ -42,6 +42,7 @@ import sun.security.acl.PrincipalImpl;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -137,6 +138,18 @@ public class DatasetReadRepositoryTest {
     verify(restTemplate).exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
     verify(webConstants).buildVersionUri(versionUuid);
     assertNotNull(model);
+    StringWriter writer = new StringWriter();
+    model.write(writer);
+    String expectedGraph = "<rdf:RDF\n" +
+            "    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n" +
+            "    xmlns:j.0=\"http://purl.org/dc/terms/\"\n" +
+            "    xmlns:j.1=\"http://rdfs.org/ns/void#\" > \n" +
+            "  <rdf:Description rdf:about=\"http://trials.drugis.org/datasets/uuid\">\n" +
+            "    <j.0:creator>itsame</j.0:creator>\n" +
+            "    <rdf:type rdf:resource=\"http://rdfs.org/ns/void#Dataset\"/>\n" +
+            "  </rdf:Description>\n" +
+            "</rdf:RDF>\n";
+    assertEquals(expectedGraph, writer.toString());
   }
 
   @Test

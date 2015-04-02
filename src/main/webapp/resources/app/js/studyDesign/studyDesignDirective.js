@@ -6,7 +6,9 @@ define([], function() {
     return {
       restrict: 'E',
       templateUrl: 'app/js/studyDesign/studyDesignDirective.html',
-      scope: {},
+      scope: {
+        isEditingAllowed: '='
+      },
       link: function(scope) {
 
         // scope.studyDesign = {};

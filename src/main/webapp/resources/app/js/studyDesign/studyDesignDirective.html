@@ -9,9 +9,10 @@
             </tr>
             <tr ng-repeat="arm in arms">
                 <td class="y-head ">{{arm.label}}</td>
-                <td ng-repeat="epoch in epochs" class="input-cell">
+                <td ng-show="isEditingAllowed" ng-repeat="epoch in epochs" class="input-cell">
                     <select ng-model="studyDesign[epoch.uri][arm.armURI]" placeholder="select coordinate" ng-options="activity.label for activity in activities" ng-change="onActivitySelected(epoch.uri, arm.armURI, studyDesign[epoch.uri][arm.armURI])">
                 </td>
+                <td ng-show="!isEditingAllowed" ng-repeat="epoch in epochs">{{studyDesign[epoch.uri][arm.armURI].label}}</td>
             </tr>
         </tbody>
     </table>

@@ -1,13 +1,20 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$modal', '$filter', 'DatasetService', 'DatasetVersionedResource',
+    var dependencies = ['$scope', '$window','$stateParams', '$modal', '$filter', 'DatasetService', 'DatasetVersionedResource',
       'StudiesWithDetailsService', 'JsonLdService', 'RemoteRdfStoreService', 'HistoryResource', 'HistoryService'
     ];
-    var DatasetController = function($scope, $stateParams, $modal, $filter, DatasetService, DatasetVersionedResource,
+    var DatasetController = function($scope, $window, $stateParams, $modal, $filter, DatasetService, DatasetVersionedResource,
       StudiesWithDetailsService, JsonLdService, RemoteRdfStoreService, HistoryResource, HistoryService) {
 
       console.log('creating dataset controller');
+
+      function isEditingAllowed() {
+        return !!($scope.dataset && $scope.dataset.creator === $window.config.user.userEmail &&
+          $scope.currentRevision && $scope.currentRevision.idx === 0);
+      }
+
+      $scope.isEditingAllowed = false;
 
       DatasetVersionedResource.get($stateParams, function(response) {
         DatasetService.reset();
@@ -15,6 +22,7 @@ define([],
           DatasetService.queryDataset().then(function(queryResult) {
             $scope.dataset = queryResult[0];
             $scope.dataset.uuid = $stateParams.datasetUUID;
+            $scope.isEditingAllowed = isEditingAllowed();
           });
         });
       });
@@ -24,13 +32,14 @@ define([],
         var indexedHistoryItems = HistoryService.addOrderIndex(historyItems);
         $scope.currentRevision = _.find(indexedHistoryItems, function(item) {
           return item['@id'].lastIndexOf($stateParams.versionUuid) > 0;
-        }); 
+        });
+        $scope.isEditingAllowed = isEditingAllowed();
       });
 
 
 
       $scope.loadStudiesWithDetail = function() {
-        StudiesWithDetailsService.get($stateParams.datasetUUID, $stateParams.versionUuid).then(function(result){
+        StudiesWithDetailsService.get($stateParams.datasetUUID, $stateParams.versionUuid).then(function(result) {
           $scope.studiesWithDetail = result;
         });
       };

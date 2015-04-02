@@ -62,8 +62,17 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       mockModal.open.calls.reset();
       httpBackend.expectGET('/datasets/' + datasetUUID + '/versions/' + versionUuid).respond('dataset');
 
+      var windowMock = {
+        config: {
+          user: {
+            userEmail: 'foo@bar.google'
+          }
+        }
+      };
+
       $controller('DatasetController', {
         $scope: scope,
+        $window: windowMock,
         $stateParams: stateParams,
         $modal: mockModal,
         DatasetService: mockDatasetService,

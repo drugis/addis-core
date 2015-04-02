@@ -41,9 +41,10 @@ define([], function() {
           ' PREFIX dcterms: <http://purl.org/dc/terms/> ' +
           ' PREFIX void: <http://rdfs.org/ns/void#> ' +
           ' SELECT' +
-          ' ?datasetUri ?label ?comment' +
+          ' ?datasetUri ?label ?comment ?creator' +
           ' WHERE { graph <' + scratchDatasetUri + '> {' +
           '   ?datasetUri dcterms:title ?label ; ' +
+          '     dcterms:creator ?creator ; ' +
           '     a void:Dataset . ' +
           '   OPTIONAL { ?datasetUri dcterms:description ?comment . } ' +
           ' } }';

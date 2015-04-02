@@ -8,8 +8,8 @@
 <div class="row nav-bar-spacer">
   <div class="columns large-2 medium-3">
     <ul class="side-nav">
-      <button ng-disabled="!isStudyModified()" ng-click="saveStudy()" class="button expand success">Commit changes</button>
-      <div class="modified-warning info">
+      <button ng-show="isEditingAllowed" ng-disabled="!isStudyModified()" ng-click="saveStudy()" class="button expand success">Commit changes</button>
+      <div ng-show="isEditingAllowed" class="modified-warning info">
         <div ng-show="isStudyModified()"><a ng-click="resetStudy()" style="text-decoration: underline;">undo changes</a></div>
         <div ng-show="!isStudyModified()">No unsaved changes</div>
       </div>
@@ -33,34 +33,28 @@
   <div class="columns large-10 medium-9 nav-bar-spacer">
     <h1>Study</h1>
     <version-info></version-info>
-    <h3 style="color: #008CBA;
-    font-weight: bold;
-    text-align: center;
-    text-transform: uppercase;">Design</h3>
+    <h3 class="study-main-category-header">Design</h3>
     <div class="row">
       <div class="columns large-12">
         <hr>
       </div>
     </div>
-    <study-category settings="categorySettings['arms']"></study-category>
-    <study-category settings="categorySettings['epochs']"></study-category>
-    <study-design></study-design>
-    <study-category settings="categorySettings['activities']"></study-category>
-    <study-category settings="categorySettings['measurementMoments']"></study-category>
-    <study-category settings="categorySettings['populationCharacteristics']"></study-category>
-    <study-category settings="categorySettings['endpoints']"></study-category>
-    <study-category settings="categorySettings['adverseEvents']"></study-category>
-    <h3 style="color: #008CBA;
-    font-weight: bold;
-    text-align: center;
-    text-transform: uppercase;">Results</h3>
+    <study-category settings="categorySettings['arms']" is-editing-allowed="isEditingAllowed"></study-category>
+    <study-category settings="categorySettings['epochs']" is-editing-allowed="isEditingAllowed"></study-category>
+    <study-design is-editing-allowed="isEditingAllowed"></study-design>
+    <study-category settings="categorySettings['activities']" is-editing-allowed="isEditingAllowed"></study-category>
+    <study-category settings="categorySettings['measurementMoments']" is-editing-allowed="isEditingAllowed"></study-category>
+    <study-category settings="categorySettings['populationCharacteristics']" is-editing-allowed="isEditingAllowed"></study-category>
+    <study-category settings="categorySettings['endpoints']" is-editing-allowed="isEditingAllowed"></study-category>
+    <study-category settings="categorySettings['adverseEvents']" is-editing-allowed="isEditingAllowed"></study-category>
+    <h3 class="study-main-category-header">Results</h3>
     <div class="row">
       <div class="columns large-12">
         <hr>
       </div>
     </div>
-    <results-table-list id="populationCharacteristicsResults" variable-type="'PopulationCharacteristic'" variable-name="'Population characteristics'"></results-table-list>
-    <results-table-list id="endpointsResults" variable-type="'Endpoint'" variable-name="'Endpoints'"></results-table-list>
-    <results-table-list id="adverseEventsResults" variable-type="'AdverseEvent'" variable-name="'Adverse events'"></results-table-list>
+    <results-table-list is-editing-allowed="isEditingAllowed" id="populationCharacteristicsResults" variable-type="'PopulationCharacteristic'" variable-name="'Population characteristics'"></results-table-list>
+    <results-table-list is-editing-allowed="isEditingAllowed" id="endpointsResults" variable-type="'Endpoint'" variable-name="'Endpoints'"></results-table-list>
+    <results-table-list is-editing-allowed="isEditingAllowed" id="adverseEventsResults" variable-type="'AdverseEvent'" variable-name="'Adverse events'"></results-table-list>
   </div>
 </div>

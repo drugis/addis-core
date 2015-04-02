@@ -5,6 +5,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 import com.hp.hpl.jena.vocabulary.RDF;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -124,10 +125,17 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     return result;
   }
 
-  private Graph addDatasetType(String trialverseDatasetUrl, Graph datasetGraph) {
+  private Graph addDatasetType(String trialverseDatasetUrl, Graph sourceGraph) {
     Graph graph = GraphFactory.createGraphMem();
-    GraphUtil.addInto(graph, datasetGraph);
+    GraphUtil.addInto(graph, sourceGraph);
     graph.add(new Triple(NodeFactory.createURI(trialverseDatasetUrl), RDF.Nodes.type, CLASS_VOID_DATASET));
+    return graph;
+  }
+
+  private Graph addCreator(String trialverseDatasetUrl, String creatorUuid, Graph sourceGraph) {
+    Graph graph = GraphFactory.createGraphMem();
+    GraphUtil.addInto(graph, sourceGraph);
+    graph.add(new Triple(NodeFactory.createURI(trialverseDatasetUrl), DCTerms.creator.asNode(), NodeFactory.createLiteral(creatorUuid)));
     return graph;
   }
 
@@ -168,7 +176,8 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     String uri = versionMapping.getVersionedDatasetUrl() + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
 
     ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
-    Graph graph = addDatasetType(versionMapping.getTrialverseDatasetUrl(), responseEntity.getBody());
+    Graph typedGraph = addDatasetType(versionMapping.getTrialverseDatasetUrl(), responseEntity.getBody());
+    Graph graph = addCreator(versionMapping.getTrialverseDatasetUrl(), versionMapping.getOwnerUuid(), typedGraph);
     return ModelFactory.createModelForGraph(graph);
   }
 

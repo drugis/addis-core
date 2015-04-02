@@ -24,10 +24,10 @@
   <script>
   window.config = {
     user : {
-      id : ${account.id},
       name : "${account.firstName}",
       firstName : "${account.firstName}",
       lastName : "${account.lastName}",
+      userEmail: "${userEmail}",
       userMd5: "${userMD5}"
     },
     _csrf_token : "${_csrf.token}",

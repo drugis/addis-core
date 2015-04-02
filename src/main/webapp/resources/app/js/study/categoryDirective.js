@@ -6,7 +6,8 @@ define([], function() {
       restrict: 'E',
       templateUrl: 'app/js/study/categoryDirective.html',
       scope: {
-        settings: '='
+        settings: '=',
+        isEditingAllowed: '='
       },
       link: function(scope) {
 

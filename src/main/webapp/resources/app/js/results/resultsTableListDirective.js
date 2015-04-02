@@ -8,7 +8,8 @@ define([], function() {
       templateUrl: 'app/js/results/resultsTableListDirective.html',
       scope: {
         variableType: '=',
-        variableName: '='
+        variableName: '=',
+        isEditingAllowed: '='
       },
       link: function(scope) {
         var variableService = $injector.get(scope.variableType + 'Service');

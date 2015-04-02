@@ -7,6 +7,7 @@ define([],
     var StudyController = function($scope, $stateParams, $window, VersionedGraphResource, $location, $anchorScroll,
       $modal, StudyService, ResultsService, StudyDesignService) {
 
+      // onload
       StudyService.reset();
 
       $scope.study = {};
@@ -127,7 +128,6 @@ define([],
         reloadStudyModel();
       };
 
-      // onload
       $scope.resetStudy();
 
       $scope.$on('updateStudyDesign', function() {
@@ -164,7 +164,7 @@ define([],
               return function(newVersion) {
                 StudyService.studySaved();
                 $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyUUID);
-              }
+              };
             },
             datasetUuid: function() {
               return $stateParams.datasetUUID;
