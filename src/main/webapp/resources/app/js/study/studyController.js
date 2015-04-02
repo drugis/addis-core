@@ -1,4 +1,3 @@
-
 'use strict';
 define([],
   function() {
@@ -162,7 +161,10 @@ define([],
           controller: 'CommitController',
           resolve: {
             callback: function() {
-              return StudyService.studySaved;
+              return function(newVersion) {
+                StudyService.studySaved();
+                $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyUUID);
+              }
             },
             datasetUuid: function() {
               return $stateParams.datasetUUID;

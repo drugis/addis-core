@@ -8,8 +8,8 @@ define([],
       $scope.graphUuid = graphUuid;
       $scope.itemServiceName = itemServiceName;
 
-      $scope.changesCommited = function() {
-        callback();
+      $scope.changesCommited = function(newVersion) {
+        callback(newVersion);
         $modalInstance.close();
       };
 

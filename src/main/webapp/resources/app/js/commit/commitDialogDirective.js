@@ -22,11 +22,13 @@ define([], function() {
               graphUuid: scope.graphUuid,
               commitTitle: commitTitle,
               commitDescription: commitDescription
-            }, graph.data, function() {
-              scope.changesCommited();
+            }, graph.data, function(value, responseHeaders) {
+              var newVersion = responseHeaders('X-EventSource-Version');
+              newVersion = newVersion.split('/')[4];
+              scope.changesCommited(newVersion);
             });
           });
-        }
+        };
       }
     };
   };

@@ -2,17 +2,18 @@
 define([],
   function() {
     var dependencies = ['$scope', '$modal', '$stateParams', '$anchorScroll', '$location',
-      'ConceptService', 'GraphResource', 'CONCEPT_GRAPH_UUID'
+      'ConceptService', 'VersionedGraphResource', 'CONCEPT_GRAPH_UUID'
     ];
     var ConceptController = function($scope, $modal, $stateParams, $anchorScroll, $location,
-      ConceptService, GraphResource, CONCEPT_GRAPH_UUID) {
+      ConceptService, VersionedGraphResource, CONCEPT_GRAPH_UUID) {
       var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUUID;
       $scope.concepts = {};
 
       function reloadConceptsModel() {
-        GraphResource.get({
+        VersionedGraphResource.get({
           datasetUUID: $stateParams.datasetUUID,
-          graphUuid: 'concepts'
+          graphUuid: 'concepts',
+          versionUuid: $stateParams.versionUuid
         }).$promise.then(function(conceptsTurtle) {
           ConceptService.loadStore(conceptsTurtle.data).then(reloadConcepts);
         });

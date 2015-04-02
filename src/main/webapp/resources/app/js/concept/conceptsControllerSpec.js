@@ -5,8 +5,10 @@ define(['angular', 'angular-mocks'], function() {
     var
       scope, httpBackend,
       datasetUuid = 'datasetUuid',
+      versionUuid = 'versionUuid',
       stateParamsMock = {
-        datasetUUID: datasetUuid
+        datasetUUID: datasetUuid,
+        versionUuid: versionUuid
       },
       loadConceptStoreDefer,
       queryItemsDefer,
@@ -16,11 +18,11 @@ define(['angular', 'angular-mocks'], function() {
 
     beforeEach(module('trialverse.concept'));
 
-    beforeEach(inject(function($rootScope, $q, $httpBackend, $controller, GraphResource) {
+    beforeEach(inject(function($rootScope, $q, $httpBackend, $controller, VersionedGraphResource) {
       scope = $rootScope;
       httpBackend = $httpBackend;
 
-      httpBackend.expectGET('/datasets/' + datasetUuid + '/graphs/concepts').respond('concepts');
+      httpBackend.expectGET('/datasets/' + datasetUuid + '/versions/' + versionUuid + '/graphs/concepts').respond('concepts');
 
       loadConceptStoreDefer = $q.defer();
       queryItemsDefer = $q.defer();
@@ -33,7 +35,7 @@ define(['angular', 'angular-mocks'], function() {
         $modal: modalMock,
         $stateParams: stateParamsMock,
         ConceptService: conceptServiceMock,
-        GraphResource: GraphResource,
+        VersionedGraphResource: VersionedGraphResource,
         CONCEPT_GRAPH_UUID: 'CONCEPT_GRAPH_UUID'
       });
     }));
