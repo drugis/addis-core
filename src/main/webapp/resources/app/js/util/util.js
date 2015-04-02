@@ -24,5 +24,10 @@ define(function (require) {
     .directive('navbarDirective', require('util/directives/navbar/navbarDirective'))
     .directive('subsetSelect', require('util/directives/subsetSelect/subsetSelectDirective'))
     .directive('durationInput', require('util/directives/durationInput/durationInputDirective'))
+    .directive('sessionExpired', require('util/directives/sessionExpired/sessionExpiredDirective'))
+
+    //interceptors
+    .factory('SessionExpiredInterceptor', require('util/interceptors/sessionExpiredInterceptor'));
+
     ;
 });

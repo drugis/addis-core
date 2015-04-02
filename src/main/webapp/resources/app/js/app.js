@@ -73,8 +73,10 @@ define(
     app.constant('SCRATCH_RDF_STORE_URL', '/scratch');
     app.constant('CONCEPT_GRAPH_UUID', 'concepts');
 
-    app.config(['$stateProvider', '$urlRouterProvider',
-      function($stateProvider, $urlRouterProvider) {
+    app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider',
+      function($stateProvider, $urlRouterProvider, $httpProvider) {
+        $httpProvider.interceptors.push('SessionExpiredInterceptor');
+
         $stateProvider
           .state('datasets', {
             url: '/datasets',

@@ -18,8 +18,9 @@
 </head>
 
 <body class="f-topbar-fixed">
-  <session-expired-directive></session-expired-directive>
-  <div ui-view></div>
+  <session-expired></session-expired>
+  <div ui-view>
+  </div>
 
   <script>
   window.config = {
@@ -33,7 +34,6 @@
     _csrf_token : "${_csrf.token}",
     _csrf_header : "${_csrf.headerName}"
   };
-
   function signout(){
     var signoutForm = document.getElementById('signout_form');
 
