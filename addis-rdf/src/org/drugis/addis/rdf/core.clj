@@ -30,9 +30,8 @@
                uri
                (trig/spo uri [(trig/iri :owl "sameAs") (trig/iri :atc atcCode)]))]
     (trig/spo subj
-         [(trig/iri :rdf "type") (trig/iri :owl "Class")]
-         [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
-         [(trig/iri :rdfs "subClassOf") (trig/iri :ontology "Drug")])))
+         [(trig/iri :rdf "type") (trig/iri :ontology "Drug")]
+         [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))])))
 
 (defn indication-rdf [xml uri]
   (let [snomedCode (vtd/attr xml :code)
@@ -40,9 +39,8 @@
                uri
                (trig/spo uri [(trig/iri :owl "sameAs") (trig/iri :snomed snomedCode)]))]
     (trig/spo subj 
-         [(trig/iri :rdf "type") (trig/iri :owl "Class")]
-         [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
-         [(trig/iri :rdfs "subClassOf") (trig/iri :ontology "Indication")])))
+         [(trig/iri :rdf "type") (trig/iri :ontology "Indication")]
+         [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))])))
 
 (defn variable-rdf [xml uri]
   (let [m-type-map { "rate" "dichotomous"
@@ -159,7 +157,8 @@
   (let [entity-name (vtd/attr (vtd/at xml "./indication") :name)
         entity-uri ((:indication entity-uris) entity-name)]
     (trig/spo instance-uri
-              [(trig/iri :rdf "type") entity-uri]
+              [(trig/iri :rdf "type") (trig/iri :ontology "Indication")]
+              [(trig/iri :owl "sameAs") entity-uri]
               [(trig/iri :rdfs "label") entity-name])))
 
 (defn when-taken-key [xml]
@@ -197,7 +196,8 @@
 
 (defn study-drug-rdf [xml instance-uri entity-uris]
   (trig/spo instance-uri
-            [(trig/iri :rdf "type") ((entity-uris :drug) (vtd/attr xml :name))]
+            [(trig/iri :rdf "type") (trig/iri :ontology "Drug")]
+            [(trig/iri :owl "sameAs") ((entity-uris :drug) (vtd/attr xml :name))]
             [(trig/iri :rdfs "label") (vtd/attr xml :name)]))
 
 (defn dose-unit-key [xml]
