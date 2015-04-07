@@ -116,6 +116,7 @@ define([],
               StudyService.queryStudyData().then(function(queryResult) {
                 $scope.study = queryResult;
                 $scope.$broadcast('refreshStudyDesign');
+                $scope.$broadcast('refreshResults');
                 StudyService.studySaved();
               });
             }, function() {

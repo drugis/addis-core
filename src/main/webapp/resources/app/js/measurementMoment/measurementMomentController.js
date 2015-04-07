@@ -62,7 +62,6 @@ define([],
         $scope.commit = $scope.editItem;
       }
 
-
       $scope.isValidDuration = function(duration) {
         return DurationService.isValidDuration(duration);
       };
@@ -74,9 +73,6 @@ define([],
           $scope.itemScratch.label = MeasurementMomentService.generateLabel($scope.itemScratch);
         });
       });
-
-
-
 
       $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
