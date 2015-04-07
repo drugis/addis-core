@@ -175,6 +175,10 @@ define([],
         return uri.split('/')[uri.split('/').length - 1];
       }
 
+      function formatDouble(num) {
+        return num.toExponential.replace('+','');
+      }
+
       function fillInTreatmentTemplate(template, activityUri, treatment) {
         return template.replace(/\$activityUri/g, activityUri)
           .replace(/\$treatmentUri/g, 'http://trials.drugis.org/instances/' + UUIDService.generate())
@@ -183,9 +187,9 @@ define([],
           .replace(/\$treatmentDrugUri/g, treatment.drug.uri)
           .replace(/\$treatmentDrugLabel/g, treatment.drug.label)
           .replace(/\$treatmentDoseType/g, treatment.treatmentDoseType)
-          .replace(/\$treatmentFixedValue/g, treatment.fixedValue)
-          .replace(/\$treatmentMinValue/g, treatment.minValue)
-          .replace(/\$treatmentMaxValue/g, treatment.maxValue)
+          .replace(/\$treatmentFixedValue/g, formatDouble(treatment.fixedValue))
+          .replace(/\$treatmentMinValue/g, formatDouble(treatment.minValue))
+          .replace(/\$treatmentMaxValue/g, formatDouble(treatment.maxValue))
           .replace(/\$treatmentDosingPeriodicity/g, treatment.dosingPeriodicity)
           ;
       }

@@ -19,7 +19,7 @@ define([], function() {
         scope.results = ResultsService.queryResults(scope.variable.uri);
 
         $q.all([scope.arms, scope.measurementMoments, scope.results]).then(function() {
-          scope.inputRows = ResultsTableService.createInputRows(scope.variable, scope.arms, scope.measurementMoments, scope.results.$$state.value);
+          scope.inputRows = ResultsTableService.createInputRows(scope.variable, scope.arms, scope.measurementMoments.$$state.value, scope.results.$$state.value);
           scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.measurementType);
         });
         
