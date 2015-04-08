@@ -27,18 +27,36 @@ define([],
 
       // public
       var ACTIVITY_TYPE_OPTIONS = {};
-      ACTIVITY_TYPE_OPTIONS[SCREENING_ACTIVITY] = {label: 'screening', uri: SCREENING_ACTIVITY };
-      ACTIVITY_TYPE_OPTIONS[WASH_OUT_ACTIVITY] = {label: 'wash out', uri: WASH_OUT_ACTIVITY };
-      ACTIVITY_TYPE_OPTIONS[RANDOMIZATION_ACTIVITY] = {label: 'randomization', uri: RANDOMIZATION_ACTIVITY };
-      ACTIVITY_TYPE_OPTIONS[DRUG_TREATMENT_ACTIVITY] = {label: 'drug treatment', uri: DRUG_TREATMENT_ACTIVITY };
-      ACTIVITY_TYPE_OPTIONS[FOLLOW_UP_ACTIVITY] = {label: 'follow up', uri: FOLLOW_UP_ACTIVITY };
-      ACTIVITY_TYPE_OPTIONS[OTHER_ACTIVITY] = {label: 'other', uri: OTHER_ACTIVITY };
+      ACTIVITY_TYPE_OPTIONS[SCREENING_ACTIVITY] = {
+        label: 'screening',
+        uri: SCREENING_ACTIVITY
+      };
+      ACTIVITY_TYPE_OPTIONS[WASH_OUT_ACTIVITY] = {
+        label: 'wash out',
+        uri: WASH_OUT_ACTIVITY
+      };
+      ACTIVITY_TYPE_OPTIONS[RANDOMIZATION_ACTIVITY] = {
+        label: 'randomization',
+        uri: RANDOMIZATION_ACTIVITY
+      };
+      ACTIVITY_TYPE_OPTIONS[DRUG_TREATMENT_ACTIVITY] = {
+        label: 'drug treatment',
+        uri: DRUG_TREATMENT_ACTIVITY
+      };
+      ACTIVITY_TYPE_OPTIONS[FOLLOW_UP_ACTIVITY] = {
+        label: 'follow up',
+        uri: FOLLOW_UP_ACTIVITY
+      };
+      ACTIVITY_TYPE_OPTIONS[OTHER_ACTIVITY] = {
+        label: 'other',
+        uri: OTHER_ACTIVITY
+      };
 
       function queryItems(studyUuid) {
 
         var activities, treatmentsRows;
 
-        var activitiesPromise = queryActivityTemplate.then(function(template){
+        var activitiesPromise = queryActivityTemplate.then(function(template) {
           var query = fillInTemplate(template, studyUuid);
           return StudyService.doNonModifyingQuery(query).then(function(result) {
             // make object {label, uri} from uri's to use as options in select
@@ -47,30 +65,30 @@ define([],
           });
         });
 
-        var treatmentsPromise = queryActivityTreatmentTemplate.then(function(template){
-            var query = fillInTemplate(template, studyUuid);
-            return StudyService.doNonModifyingQuery(query).then(function(result) {
-              treatmentsRows = result;
-              return;
-            });
+        var treatmentsPromise = queryActivityTreatmentTemplate.then(function(template) {
+          var query = fillInTemplate(template, studyUuid);
+          return StudyService.doNonModifyingQuery(query).then(function(result) {
+            treatmentsRows = result;
+            return;
+          });
         });
 
-        return $q.all([activitiesPromise, treatmentsPromise]).then(function(){
-            // use a map to avoid double loop
-            var activitiesMap = _.indexBy(activities, 'activityUri');
+        return $q.all([activitiesPromise, treatmentsPromise]).then(function() {
+          // use a map to avoid double loop
+          var activitiesMap = _.indexBy(activities, 'activityUri');
 
-            var treatments = _.map(treatmentsRows, createTreatmentObject);
+          var treatments = _.map(treatmentsRows, createTreatmentObject);
 
-            _.each(treatments, function(treatment) {
-                // make sure the activity has a array of treatments
-                if(!activitiesMap[treatment.activityUri].treatments) {
-                  activitiesMap[treatment.activityUri].treatments = [];
-                }
-                // assign each treatment to appropriate activity
-                activitiesMap[treatment.activityUri].treatments.push(treatment);
-            });
-            // return list of activities with treatments added
-            return _.values(activitiesMap);
+          _.each(treatments, function(treatment) {
+            // make sure the activity has a array of treatments
+            if (!activitiesMap[treatment.activityUri].treatments) {
+              activitiesMap[treatment.activityUri].treatments = [];
+            }
+            // assign each treatment to appropriate activity
+            activitiesMap[treatment.activityUri].treatments.push(treatment);
+          });
+          // return list of activities with treatments added
+          return _.values(activitiesMap);
         });
       }
 
@@ -90,11 +108,11 @@ define([],
           dosingPeriodicity: treatmentRow.treatmentDosingPeriodicity
         }
 
-        if(treatment.treatmentDoseType === FIXED_DOSE_TYPE) {
+        if (treatment.treatmentDoseType === FIXED_DOSE_TYPE) {
           treatment.fixedValue = treatmentRow.treatmentFixedValue;
         } else {
           treatment.minValue = treatmentRow.treatmentMinValue;
-          treatment.maxValue =  treatmentRow.treatmentMaxValue;
+          treatment.maxValue = treatmentRow.treatmentMaxValue;
         }
 
         return treatment;
@@ -124,7 +142,7 @@ define([],
       function addTreatments(treatments, activityUri) {
         var treatmentPromises = [];
         _.each(treatments, function(treatment) {
-          if(!treatment.treatmentUri) {
+          if (!treatment.treatmentUri) {
             treatmentPromises.push(addTreatment(activityUri, treatment));
           }
         });
@@ -142,7 +160,7 @@ define([],
 
         var treatmentPromises = addTreatments(item.treatments, newActivity.activityUri);
 
-        if(newActivity.activityDescription) {
+        if (newActivity.activityDescription) {
           addOptionalDescriptionPromise = CommentService.addComment(newActivity.activityUri, item.activityDescription);
         }
 
@@ -155,7 +173,7 @@ define([],
           return StudyService.doModifyingQuery(query).then(function() {
             // no need to use edit as remove is dbone in the edit activity
             // therefore wait for edit activity to return
-            if(activity.activityDescription) {
+            if (activity.activityDescription) {
               return CommentService.addComment(activity.activityUri, activity.activityDescription);
             }
           });
@@ -176,7 +194,10 @@ define([],
       }
 
       function formatDouble(num) {
-        return num.toExponential.replace('+','');
+        if(!isNaN(parseFloat(num)) && isFinite(num)) {
+          return parseFloat(num).toExponential().replace('+', '');
+        }
+        return null;
       }
 
       function fillInTreatmentTemplate(template, activityUri, treatment) {
@@ -190,13 +211,12 @@ define([],
           .replace(/\$treatmentFixedValue/g, formatDouble(treatment.fixedValue))
           .replace(/\$treatmentMinValue/g, formatDouble(treatment.minValue))
           .replace(/\$treatmentMaxValue/g, formatDouble(treatment.maxValue))
-          .replace(/\$treatmentDosingPeriodicity/g, treatment.dosingPeriodicity)
-          ;
+          .replace(/\$treatmentDosingPeriodicity/g, treatment.dosingPeriodicity);
       }
 
       function fillInTemplate(template, studyUuid, activity) {
         var query = template.replace(/\$studyUuid/g, studyUuid);
-        if(activity) {
+        if (activity) {
           query = query.replace(/\$activityUri/g, activity.activityUri)
             .replace(/\$label/g, activity.label)
             .replace(/\$comment/g, activity.activityDescription)

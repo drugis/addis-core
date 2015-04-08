@@ -202,7 +202,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             uri: 'http://unit/oldUnit',
             label: 'old unit label'
           },
-          fixedValue: '1.5e+02',
+          fixedValue: '1500',
           dosingPeriodicity: 'P3W'
         };
 
@@ -216,8 +216,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             uri: 'http://unit/oldUnit',
             label: 'old unit label'
           },
-          minValue: '1.2e+02',
-          maxValue: '1.3e+03',
+          minValue: '120',
+          maxValue: '1300',
           dosingPeriodicity: 'P2W'
         };
 
@@ -247,14 +247,14 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           expect(activity.treatments[0].drug.label).toEqual('old drug');
           expect(activity.treatments[0].doseUnit.label).toEqual('old unit label');
           expect(activity.treatments[0].dosingPeriodicity).toEqual('P2W');
-          expect(activity.treatments[0].minValue).toEqual('1.2e+02');
-          expect(activity.treatments[0].maxValue).toEqual('1.3e+03');
+          expect(activity.treatments[0].minValue).toEqual('1.2e2');
+          expect(activity.treatments[0].maxValue).toEqual('1.3e3');
 
           expect(activity.treatments[1].treatmentDoseType).toEqual('http://trials.drugis.org/ontology#FixedDoseDrugTreatment');
           expect(activity.treatments[1].drug.label).toEqual('new drug');
           expect(activity.treatments[1].doseUnit.label).toEqual('old unit label');
           expect(activity.treatments[1].dosingPeriodicity).toEqual('P3W');
-          expect(activity.treatments[1].fixedValue).toEqual('1.5e+02');
+          expect(activity.treatments[1].fixedValue).toEqual('1.5e3');
           drugService.queryItems(mockStudyUuid).then(function(drugResults) {
             expect(drugResults.length).toBe(2);
             expect(drugResults[0].label).toEqual('old drug');
@@ -297,7 +297,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             uri: 'http://trials.drugis.org/instances/unit1Uuid',
             label: 'milligram'
           },
-          fixedValue: '1.5e+02',
+          fixedValue: '150',
           dosingPeriodicity: 'P3W'
         };
         var newTreatment = {
@@ -310,7 +310,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             uri: 'http://trials.drugis.org/instances/unit1Uuid',
             label: 'milligram'
           },
-          fixedValue: '1.5e+02',
+          fixedValue: '150',
           dosingPeriodicity: 'P3W'
         };
 

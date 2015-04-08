@@ -15,8 +15,8 @@
         <span><strong>Treatments: </strong></span>
         <ul>
             <li ng-repeat="treatment in item.treatments">
-                <span ng-show="treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.fixedValue}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter }}</span>
-                <span ng-show="treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.minValue}}-{{treatment.maxValue}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter }}</span>
+                <span ng-show="treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.fixedValue | exponentialFilter}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter }}</span>
+                <span ng-show="treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.minValue | exponentialFilter}}-{{treatment.maxValue | exponentialFilter}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter }}</span>
             </li>
         </ul>
     </li>
