@@ -1,0 +1,15 @@
+<navbar-directive>
+  <ul class="left top-bar-content">
+    <li>
+      <h4 class="topbar-text">{{dataset.label}}</h4>
+    </li>
+  </ul>
+</navbar-directive>
+<div class="row nav-bar-spacer">
+  <div class="column large-10">
+    <h1>Concept mapping</h1>
+    <ul>
+      <li ng-repeat="mapping in mappings">{{mapping.label}}</li>
+    </ul>
+  </div>
+</div>

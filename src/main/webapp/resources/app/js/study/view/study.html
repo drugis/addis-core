@@ -39,6 +39,11 @@
         <hr>
       </div>
     </div>
+      <div class="row application-link">
+        <div class="column large-10">
+          <a ui-sref="versionedDataset.mapping({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concept mapping</a>
+        </div>
+      </div>
     <study-category settings="categorySettings['arms']" is-editing-allowed="isEditingAllowed"></study-category>
     <study-category settings="categorySettings['epochs']" is-editing-allowed="isEditingAllowed"></study-category>
     <study-category settings="categorySettings['activities']" is-editing-allowed="isEditingAllowed"></study-category>

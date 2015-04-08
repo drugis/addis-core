@@ -21,6 +21,7 @@ define(
     'activity/activity',
     'studyDesign/studyDesign',
     'concept/concept',
+    'mapping/mapping',
     'commit/commit',
     'angular-resource',
     'rdfstore',
@@ -46,6 +47,7 @@ define(
       'trialverse.activity',
       'trialverse.results',
       'trialverse.concept',
+      'trialverse.mapping',
       'trialverse.commit'
     ];
 
@@ -102,6 +104,11 @@ define(
             url: '/concepts',
             templateUrl: 'app/js/concept/concepts.html',
             controller: 'ConceptController'
+          })
+          .state('versionedDataset.study.mapping', {
+            url: '/mapping',
+            templateUrl: 'app/js/mapping/mapping.html',
+            controller: 'MappingController'
           })
           .state('versionedDataset.study', {
             url: '/studies/:studyUUID',
