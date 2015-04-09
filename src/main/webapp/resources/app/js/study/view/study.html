@@ -1,3 +1,4 @@
+<div ui-view>
 <navbar-directive>
   <ul class="left top-bar-content">
     <li>
@@ -41,7 +42,7 @@
     </div>
       <div class="row application-link">
         <div class="column large-10">
-          <a ui-sref="versionedDataset.mapping({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concept mapping</a>
+          <a ui-sref="versionedDataset.study.mapping({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concept mapping</a>
         </div>
       </div>
     <study-category settings="categorySettings['arms']" is-editing-allowed="isEditingAllowed"></study-category>
@@ -62,4 +63,5 @@
     <results-table-list is-editing-allowed="isEditingAllowed" id="endpointsResults" variable-type="'Endpoint'" variable-name="'Endpoints'"></results-table-list>
     <results-table-list is-editing-allowed="isEditingAllowed" id="adverseEventsResults" variable-type="'AdverseEvent'" variable-name="'Adverse events'"></results-table-list>
   </div>
+</div>
 </div>

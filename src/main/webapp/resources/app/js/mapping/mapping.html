@@ -8,6 +8,7 @@
 <div class="row nav-bar-spacer">
   <div class="column large-10">
     <h1>Concept mapping</h1>
+    <button ng-click="openMappingDialog()"><i class="fa fa-plus"></i>Create mapping</button>
     <ul>
       <li ng-repeat="mapping in mappings">{{mapping.label}}</li>
     </ul>

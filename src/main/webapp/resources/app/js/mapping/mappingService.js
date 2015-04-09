@@ -1,8 +1,10 @@
 'use strict';
 define([], function() {
-  var dependencies = [];
+  var dependencies = ['SparqlResource', 'StudyService'];
 
-  var MappingService = function() {
+  var MappingService = function(SparqlResource, StudyService) {
+
+    var addMappingQuery = SparqlResource.get('addMapping.sparql');
 
     function queryItems(datasetUuid) {
       return [{
@@ -10,8 +12,16 @@ define([], function() {
       }];
     }
 
+    function addItem(datasetConcept, studyConcept) {
+      return addMappingQuery.then(template) {
+        var query = fillInTemplate(template, datasetConcept, studyConcept);
+        return StudyService.doModifyingQuery(query);
+      }
+    }
+
     return {
-      queryItems: queryItems
+      queryItems: queryItems,
+      addItem: addItem
     };
 
   };

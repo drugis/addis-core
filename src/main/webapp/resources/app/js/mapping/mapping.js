@@ -7,7 +7,8 @@ define(function (require) {
 
     // controllers
     .controller('MappingController', require('mapping/mappingController'))
-
+    .controller('CreateMappingController', require('mapping/createMappingController'))
+    
     //services
     .factory('MappingService', require('mapping/mappingService'))
 

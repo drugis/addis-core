@@ -1,0 +1,15 @@
+
+% variable (adverse event, popchar, endpoint)
+ontology:of_variable [
+  owl:sameAs entity:1f414fd8-67d3-4140-b641-794546d56918 ;
+    rdf:type ontology:Variable ;
+    rdfs:label "SBP nighttime mean" ;
+    rdfs:comment "Change from baseline in nighttime (12am - 6am) mean systolic blood pressure" ;
+    ontology:measurementType ontology:continuous ;
+    rdfs:comment "mmHg"
+] ;
+
+% drug / indication
+instance:3e9500dc-5b97-4dad-b137-ac8344a1229d
+  rdf:type entity:714bf656-ddea-4c5f-9583-4dfd5ce04a6d ;
+  rdfs:label "Azilsartan" .
