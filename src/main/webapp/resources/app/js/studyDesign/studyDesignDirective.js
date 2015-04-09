@@ -11,9 +11,14 @@ define([], function() {
       },
       link: function(scope) {
 
-        // scope.studyDesign = {};
+        var refreshStudyDesignListener;
 
         var reloadData = function() {
+          if (refreshStudyDesignListener) {
+            // cancel listening while loading
+            refreshStudyDesignListener();
+          }
+
           var armsPromise = ArmService.queryItems($stateParams.studyUUID).then(function(result) {
             scope.arms = result.sort(function(a, b) {
               return a.label.localeCompare(b.label);
@@ -33,6 +38,7 @@ define([], function() {
           });
 
           $q.all([armsPromise, epochsPromise, activitiesPromise]).then(function() {
+
             StudyDesignService.queryItems($stateParams.studyUUID).then(function(coordinates) {
               var activityMap = _.indexBy(scope.activities, 'activityUri');
               var studyDesign = _.object(_.pluck(scope.epochs, 'uri'));
@@ -45,15 +51,18 @@ define([], function() {
                 studyDesign[coordinate.epochUri][coordinate.armUri] = activityMap[coordinate.activityUri];
               });
               scope.studyDesign = studyDesign;
+
+              // only listen for events when laoding is done
+              refreshStudyDesignListener = scope.$on('refreshStudyDesign', function() {
+                reloadData();
+              });
+
             });
+
           });
-        }
+        };
 
         reloadData();
-
-        scope.$on('refreshStudyDesign', function() {
-          reloadData();
-        });
 
         scope.onActivitySelected = function(epochUri, armUri, activity) {
           var coordinate = {
