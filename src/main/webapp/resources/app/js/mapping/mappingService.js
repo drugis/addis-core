@@ -6,6 +6,10 @@ define([], function() {
 
     var addMappingQuery = SparqlResource.get('addMapping.sparql');
 
+    function fillInTemplate(template, datasetConcept, studyConcept) {
+      return '';
+    }
+
     function queryItems(datasetUuid) {
       return [{
         label: 'test'
@@ -13,10 +17,10 @@ define([], function() {
     }
 
     function addItem(datasetConcept, studyConcept) {
-      return addMappingQuery.then(template) {
+      return addMappingQuery.then(function(template) {
         var query = fillInTemplate(template, datasetConcept, studyConcept);
         return StudyService.doModifyingQuery(query);
-      }
+      });
     }
 
     return {
