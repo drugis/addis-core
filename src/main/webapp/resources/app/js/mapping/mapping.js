@@ -12,6 +12,9 @@ define(function (require) {
     //services
     .factory('MappingService', require('mapping/mappingService'))
 
+    //directives
+    .directive('mappingItem', require('mapping/mappingItemDirective'))
+
   ;
 
 });

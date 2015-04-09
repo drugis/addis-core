@@ -16,6 +16,13 @@ define([], function() {
       }];
     }
 
+    function createMapping(studyConcept, datasetConcept) {
+      return {
+        studyConcept: studyConcept,
+        datasetConcept: datasetConcept
+      };
+    }
+
     function addItem(datasetConcept, studyConcept) {
       return addMappingQuery.then(function(template) {
         var query = fillInTemplate(template, datasetConcept, studyConcept);
@@ -25,7 +32,8 @@ define([], function() {
 
     return {
       queryItems: queryItems,
-      addItem: addItem
+      addItem: addItem,
+      createMapping: createMapping
     };
 
   };
