@@ -29,6 +29,11 @@
       <li><a ng-click="sideNavClick('populationCharacteristicsResults')">Population characteristics</a></li>
       <li><a ng-click="sideNavClick('endpointsResults')">Endpoints</a></li>
       <li><a ng-click="sideNavClick('adverseEventsResults')">Adverse events</a></li>
+      <li class="heading">Concept mapping</li>
+      <li><a ng-click="sideNavClick('drugMapping')">Drugs</a></li>
+      <li><a ng-click="sideNavClick('populationCharacteristicMapping')">Population Characteristics</a></li>
+      <li><a ng-click="sideNavClick('endpointMapping')">Endpoints</a></li>
+      <li><a ng-click="sideNavClick('adverseEventMapping')">Adverse Events</a></li>
     </ul>
   </div>
   <div class="columns large-10 medium-9 nav-bar-spacer">
@@ -40,11 +45,6 @@
         <hr>
       </div>
     </div>
-      <div class="row application-link">
-        <div class="column large-10">
-          <a ui-sref="versionedDataset.study.mapping({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concept mapping</a>
-        </div>
-      </div>
     <study-category settings="categorySettings['arms']" is-editing-allowed="isEditingAllowed"></study-category>
     <study-category settings="categorySettings['epochs']" is-editing-allowed="isEditingAllowed"></study-category>
     <study-category settings="categorySettings['activities']" is-editing-allowed="isEditingAllowed"></study-category>
@@ -62,6 +62,10 @@
     <results-table-list is-editing-allowed="isEditingAllowed" id="populationCharacteristicsResults" variable-type="'PopulationCharacteristic'" variable-name="'Population characteristics'"></results-table-list>
     <results-table-list is-editing-allowed="isEditingAllowed" id="endpointsResults" variable-type="'Endpoint'" variable-name="'Endpoints'"></results-table-list>
     <results-table-list is-editing-allowed="isEditingAllowed" id="adverseEventsResults" variable-type="'AdverseEvent'" variable-name="'Adverse events'"></results-table-list>
+    <concept-mapping-list settings="conceptSettings['drugs']" id="drugMapping"></concept-mapping-list>
+    <concept-mapping-list settings="conceptSettings['populationCharacteristics']" id="populationCharacteristicMapping"></concept-mapping-list>
+    <concept-mapping-list settings="conceptSettings['endpoints']" id="endpointMapping"></concept-mapping-list>
+    <concept-mapping-list settings="conceptSettings['adverseEvents']" id="adverseEventMapping"></concept-mapping-list>
   </div>
 </div>
 </div>

@@ -98,13 +98,36 @@ define([],
         }
       };
 
+      $scope.conceptSettings = {
+        drugs: {
+          label: 'Drugs',
+          serviceName: 'DrugService',
+          typeUri: 'http://trials.drugis.org/ontology#Drug'
+        },
+        populationCharacteristics: {
+          label: 'Population characteristics',
+          serviceName: 'PopulationCharacteristicService',
+          typeUri: 'http://trials.drugis.org/ontology#PopulationCharacteristic'
+        },
+        endpoints: {
+          label: 'Endpoints',
+          serviceName: 'EndpointService',
+          typeUri: 'http://trials.drugis.org/ontology#Endpoint'
+        },
+        adverseEvents: {
+          label: 'Adverse events',
+          serviceName: 'AdverseEventService',
+          typeUri: 'http://trials.drugis.org/ontology#AdverseEvent'
+        }
+      };
+
       var navbar = document.getElementsByClassName('side-nav');
       angular.element($window).bind('scroll', function() {
         $(navbar[0]).css('margin-top', this.pageYOffset - 20);
         $scope.$apply();
       });
 
-      var loadStudyStore = function(callback) {
+      function reloadStudyModel() {
         VersionedGraphResource.get({
           datasetUUID: $stateParams.datasetUUID,
           graphUuid: $stateParams.studyUUID,
@@ -114,7 +137,10 @@ define([],
             .then(function() {
               console.log('loading study-store success');
               StudyService.queryStudyData().then(function(queryResult) {
-                callback(queryResult);
+                $scope.study = queryResult;
+                $scope.$broadcast('refreshStudyDesign');
+                $scope.$broadcast('refreshResults');
+                StudyService.studySaved();
               });
             }, function() {
               console.error('failed loading study-store');
@@ -122,22 +148,11 @@ define([],
         });
       }
 
-      $scope.reloadStudyModel = function() {
-        loadStudyStore(function(store) {
-          $scope.study = store;
-          $scope.$broadcast('refreshStudyDesign');
-          $scope.$broadcast('refreshResults');
-          StudyService.studySaved();
-        });
+      $scope.resetStudy = function() {
+        reloadStudyModel();
       };
 
-      var initializeStudyModel = function() {
-        loadStudyStore(function(store) {
-          $scope.study = store;
-          StudyService.studySaved();
-        });
-      };
-      initializeStudyModel();
+      $scope.resetStudy();
 
       $scope.$on('updateStudyDesign', function() {
         console.log('update design');

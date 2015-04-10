@@ -1,0 +1,12 @@
+<h1>Concept Mappings</h1>
+<h4>{{settings.label}}</h4>
+<table>
+  <tr>
+    <th>Study Concept</th>
+    <th>Dataset Concept</th>
+  </tr>
+  <tr ng-repeat="studyConcept in studyConcepts">
+    <td>{{studyConcept.label}}</td>
+    <td><select ng-model="selectedDatasetConcept" ng-options="datasetConcept.label for datasetConcept in datasetConcepts"></select></td>
+  </tr>
+</table>

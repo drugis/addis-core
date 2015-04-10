@@ -11,7 +11,8 @@ define(function (require) {
     'trialverse.adverseEvent',
     'trialverse.measurementMoment',
     'trialverse.results',
-    'trialverse.graph'])
+    'trialverse.graph',
+    'trialverse.activity'])
     // controllers
     .controller('StudyController', require('study/studyController'))
 
@@ -21,5 +22,6 @@ define(function (require) {
     //directives
     .directive('studyCategory', require('study/categoryDirective'))
     .directive('categoryItemDirective', require('study/categoryItemDirective'))
+    .directive('conceptMappingList', require('study/conceptMappingListDirective'))
     ;
 });

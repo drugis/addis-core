@@ -16,7 +16,7 @@ define([], function() {
 
         scope.reloadItems = function() {
           console.log("CategoryDirective.reloadItems");
-          if(refreshStudyDesignLister) {
+          if (refreshStudyDesignLister) {
             // stop listning while loading
             refreshStudyDesignLister();
           }
