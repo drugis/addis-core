@@ -7,6 +7,6 @@
   </tr>
   <tr ng-repeat="studyConcept in studyConcepts">
     <td>{{studyConcept.label}}</td>
-    <td><select ng-model="selectedDatasetConcept" ng-options="datasetConcept.label for datasetConcept in datasetConcepts"></select></td>
+    <td><select ng-model="selectedDatasetConcept" ng-change="updateMapping($index, selectedDatasetConcept)" ng-options="datasetConcept.label for datasetConcept in datasetConcepts"></select></td>
   </tr>
 </table>

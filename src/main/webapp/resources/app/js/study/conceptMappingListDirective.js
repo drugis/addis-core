@@ -1,7 +1,7 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$injector', '$stateParams', 'VersionedGraphResource', 'ConceptService', 'MappingService'];
-  var ConceptMappingListDirective = function($injector, $stateParams, VersionedGraphResource, ConceptService, MappingService) {
+  var dependencies = ['$injector', '$stateParams', 'VersionedGraphResource', 'ConceptService'];
+  var ConceptMappingListDirective = function($injector, $stateParams, VersionedGraphResource, ConceptService) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/study/conceptMappingListDirective.html',
@@ -41,11 +41,12 @@ define([], function() {
           });
         });
 
+        scope.updateMapping = function(studyConceptIndex, selectedDatasetConcept) {
+          console.log('mapping updated;' + scope.studyConcepts[studyConceptIndex].label + ' -> ' + selectedDatasetConcept.label);
+        }
+
         scope.reloadItems();
 
-        scope.updateMapping = function() {
-          scope.conceptMapping = MappingService.createMapping(scope.studyConcept, scope.selectedDatasetConcept);
-        };
       }
     };
   };
