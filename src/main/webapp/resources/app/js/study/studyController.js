@@ -104,7 +104,7 @@ define([],
         $scope.$apply();
       });
 
-      function reloadStudyModel() {
+      var loadStudyStore = function(callback) {
         VersionedGraphResource.get({
           datasetUUID: $stateParams.datasetUUID,
           graphUuid: $stateParams.studyUUID,
@@ -114,10 +114,7 @@ define([],
             .then(function() {
               console.log('loading study-store success');
               StudyService.queryStudyData().then(function(queryResult) {
-                $scope.study = queryResult;
-                $scope.$broadcast('refreshStudyDesign');
-                $scope.$broadcast('refreshResults');
-                StudyService.studySaved();
+                callback(queryResult);
               });
             }, function() {
               console.error('failed loading study-store');
@@ -125,11 +122,22 @@ define([],
         });
       }
 
-      $scope.resetStudy = function() {
-        reloadStudyModel();
+      $scope.reloadStudyModel = function() {
+        loadStudyStore(function(store) {
+          $scope.study = store;
+          $scope.$broadcast('refreshStudyDesign');
+          $scope.$broadcast('refreshResults');
+          StudyService.studySaved();
+        });
       };
 
-      $scope.resetStudy();
+      var initializeStudyModel = function() {
+        loadStudyStore(function(store) {
+          $scope.study = store;
+          StudyService.studySaved();
+        });
+      };
+      initializeStudyModel();
 
       $scope.$on('updateStudyDesign', function() {
         console.log('update design');
