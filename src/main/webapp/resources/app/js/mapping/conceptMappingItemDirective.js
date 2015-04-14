@@ -17,6 +17,7 @@ define([], function() {
 
         scope.removeMapping = function() {
           MappingService.removeMapping(scope.studyConcept, scope.selectedDatasetConcept);
+          scope.selectedDatasetConcept = undefined;
         }
 
         scope.datasetConcepts.then(function(concepts) {
