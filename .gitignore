@@ -16,3 +16,4 @@ dbms/*Example.sql
 src/main/webapp/resources/app/js/bower_components/
 .idea
 node_modules
+main.iml
