@@ -7,30 +7,12 @@ define([],
     var ConceptController = function($scope, $modal, $stateParams, $anchorScroll, $location,
       ConceptService, VersionedGraphResource, CONCEPT_GRAPH_UUID) {
       var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUUID;
-      $scope.concepts = {};
-
-      function reloadConceptsModel() {
-        VersionedGraphResource.get({
-          datasetUUID: $stateParams.datasetUUID,
-          graphUuid: 'concepts',
-          versionUuid: $stateParams.versionUuid
-        }).$promise.then(function(conceptsTurtle) {
-          ConceptService.loadStore(conceptsTurtle.data).then(reloadConcepts);
-        });
-      }
 
       function reloadConcepts() {
         return ConceptService.queryItems(datasetUri).then(function(conceptsJson) {
           $scope.concepts = conceptsJson;
         });
       }
-
-      $scope.resetConcepts = function() { 
-        reloadConceptsModel();
-      };
-
-      // onload
-      reloadConceptsModel();
 
       $scope.openAddConceptDialog = function() {
         $modal.open({
@@ -43,6 +25,10 @@ define([],
           }
         });
       };
+
+      $scope.datasetConcepts.then(function(result) {
+        $scope.concepts = result;
+      });
 
       $scope.areConceptsModified = function() {
         return ConceptService.areConceptsModified();

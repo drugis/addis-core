@@ -1,71 +1,77 @@
 <div ui-view>
-<navbar-directive>
-  <ul class="left top-bar-content">
-    <li>
-      <h4 class="topbar-text">{{dataset.label}} / {{study.label}} </h4>
-    </li>
-  </ul>
-</navbar-directive>
-<div class="row nav-bar-spacer">
-  <div class="columns large-2 medium-3">
-    <ul class="side-nav">
-      <button ng-show="isEditingAllowed" ng-disabled="!isStudyModified()" ng-click="saveStudy()" class="button expand success">Commit changes</button>
-      <div ng-show="isEditingAllowed" class="modified-warning info">
-        <div ng-show="isStudyModified()"><a ng-click="reloadStudyModel()" style="text-decoration: underline;">undo changes</a></div>
-        <div ng-show="!isStudyModified()">No unsaved changes</div>
-      </div>
-      <li class="divider"></li>
-      <li class="heading">Design</li>
-      <li><a ng-click="sideNavClick('arms')">Arms</a></li>
-      <li><a ng-click="sideNavClick('epochs')">Epochs</a></li>
-      <li><a ng-click="sideNavClick('activities')">Activities</a></li>
-      <li><a ng-click="sideNavClick('study-design')">Study design</a></li>
-      <li><a ng-click="sideNavClick('measurementMoments')">Measurement moments</a></li>
-      <li><a ng-click="sideNavClick('populationCharacteristics')">Population characteristics</a></li>
-      <li><a ng-click="sideNavClick('endpoints')">Endpoints</a></li>
-      <li><a ng-click="sideNavClick('adverseEvents')">Adverse events</a></li>
-      <li class="divider"></li>
-      <li class="heading">Results</li>
-      <li><a ng-click="sideNavClick('populationCharacteristicsResults')">Population characteristics</a></li>
-      <li><a ng-click="sideNavClick('endpointsResults')">Endpoints</a></li>
-      <li><a ng-click="sideNavClick('adverseEventsResults')">Adverse events</a></li>
-      <li class="heading">Concept mapping</li>
-      <li><a ng-click="sideNavClick('drugMapping')">Drugs</a></li>
-      <li><a ng-click="sideNavClick('populationCharacteristicMapping')">Population Characteristics</a></li>
-      <li><a ng-click="sideNavClick('endpointMapping')">Endpoints</a></li>
-      <li><a ng-click="sideNavClick('adverseEventMapping')">Adverse Events</a></li>
+  <navbar-directive>
+    <ul class="left top-bar-content">
+      <li>
+        <h4 class="topbar-text">{{dataset.label}} / {{study.label}} </h4>
+      </li>
     </ul>
-  </div>
-  <div class="columns large-10 medium-9 nav-bar-spacer">
-    <h1>Study</h1>
-    <version-info></version-info>
-    <h3 class="study-main-category-header">Design</h3>
-    <div class="row">
-      <div class="columns large-12">
-        <hr>
-      </div>
+  </navbar-directive>
+  <div class="row nav-bar-spacer">
+    <div class="columns large-2 medium-3">
+      <ul class="side-nav">
+        <button ng-show="isEditingAllowed" ng-disabled="!isStudyModified()" ng-click="saveStudy()" class="button expand success">Commit changes</button>
+        <div ng-show="isEditingAllowed" class="modified-warning info">
+          <div ng-show="isStudyModified()"><a ng-click="reloadStudyModel()" style="text-decoration: underline;">undo changes</a></div>
+          <div ng-show="!isStudyModified()">No unsaved changes</div>
+        </div>
+        <li class="divider"></li>
+        <li class="heading">Design</li>
+        <li><a ng-click="sideNavClick('arms')">Arms</a></li>
+        <li><a ng-click="sideNavClick('epochs')">Epochs</a></li>
+        <li><a ng-click="sideNavClick('activities')">Activities</a></li>
+        <li><a ng-click="sideNavClick('study-design')">Study design</a></li>
+        <li><a ng-click="sideNavClick('measurementMoments')">Measurement moments</a></li>
+        <li><a ng-click="sideNavClick('populationCharacteristics')">Population characteristics</a></li>
+        <li><a ng-click="sideNavClick('endpoints')">Endpoints</a></li>
+        <li><a ng-click="sideNavClick('adverseEvents')">Adverse events</a></li>
+        <li class="divider"></li>
+        <li class="heading">Results</li>
+        <li><a ng-click="sideNavClick('populationCharacteristicsResults')">Population characteristics</a></li>
+        <li><a ng-click="sideNavClick('endpointsResults')">Endpoints</a></li>
+        <li><a ng-click="sideNavClick('adverseEventsResults')">Adverse events</a></li>
+        <li class="heading">Concept mapping</li>
+        <li><a ng-click="sideNavClick('drugMapping')">Drugs</a></li>
+        <li><a ng-click="sideNavClick('populationCharacteristicMapping')">Population Characteristics</a></li>
+        <li><a ng-click="sideNavClick('endpointMapping')">Endpoints</a></li>
+        <li><a ng-click="sideNavClick('adverseEventMapping')">Adverse Events</a></li>
+      </ul>
     </div>
-    <study-category settings="categorySettings['arms']" is-editing-allowed="isEditingAllowed"></study-category>
-    <study-category settings="categorySettings['epochs']" is-editing-allowed="isEditingAllowed"></study-category>
-    <study-category settings="categorySettings['activities']" is-editing-allowed="isEditingAllowed"></study-category>
-    <study-design is-editing-allowed="isEditingAllowed"></study-design>
-    <study-category settings="categorySettings['measurementMoments']" is-editing-allowed="isEditingAllowed"></study-category>
-    <study-category settings="categorySettings['populationCharacteristics']" is-editing-allowed="isEditingAllowed"></study-category>
-    <study-category settings="categorySettings['endpoints']" is-editing-allowed="isEditingAllowed"></study-category>
-    <study-category settings="categorySettings['adverseEvents']" is-editing-allowed="isEditingAllowed"></study-category>
-    <h3 class="study-main-category-header">Results</h3>
-    <div class="row">
-      <div class="columns large-12">
-        <hr>
+    <div class="columns large-10 medium-9 nav-bar-spacer">
+      <h1>Study</h1>
+      <version-info></version-info>
+      <h3 class="study-main-category-header">Design</h3>
+      <div class="row">
+        <div class="columns large-12">
+          <hr>
+        </div>
       </div>
+      <study-category settings="categorySettings['arms']" is-editing-allowed="isEditingAllowed"></study-category>
+      <study-category settings="categorySettings['epochs']" is-editing-allowed="isEditingAllowed"></study-category>
+      <study-category settings="categorySettings['activities']" is-editing-allowed="isEditingAllowed"></study-category>
+      <study-design is-editing-allowed="isEditingAllowed"></study-design>
+      <study-category settings="categorySettings['measurementMoments']" is-editing-allowed="isEditingAllowed"></study-category>
+      <study-category settings="categorySettings['populationCharacteristics']" is-editing-allowed="isEditingAllowed"></study-category>
+      <study-category settings="categorySettings['endpoints']" is-editing-allowed="isEditingAllowed"></study-category>
+      <study-category settings="categorySettings['adverseEvents']" is-editing-allowed="isEditingAllowed"></study-category>
+      <h3 class="study-main-category-header">Results</h3>
+      <div class="row">
+        <div class="columns large-12">
+          <hr>
+        </div>
+      </div>
+      <results-table-list is-editing-allowed="isEditingAllowed" id="populationCharacteristicsResults" variable-type="'PopulationCharacteristic'" variable-name="'Population characteristics'"></results-table-list>
+      <results-table-list is-editing-allowed="isEditingAllowed" id="endpointsResults" variable-type="'Endpoint'" variable-name="'Endpoints'"></results-table-list>
+      <results-table-list is-editing-allowed="isEditingAllowed" id="adverseEventsResults" variable-type="'AdverseEvent'" variable-name="'Adverse events'"></results-table-list>
+      <h3 class="study-main-category-header">Concept mappings</h3>
+      <div class="row">
+        <div class="columns large-12">
+          <hr>
+        </div>
+      </div>
+      <concept-mapping-list id="drugMapping" settings="conceptSettings['drugs']" dataset-concepts="datasetConcepts"></concept-mapping-list>
+      <concept-mapping-list id="populationCharacteristicMapping" settings="conceptSettings['populationCharacteristics']" dataset-concepts="datasetConcepts"></concept-mapping-list>
+      <concept-mapping-list id="endpointMapping" settings="conceptSettings['endpoints']" dataset-concepts="datasetConcepts"></concept-mapping-list>
+      <concept-mapping-list id="adverseEventMapping" settings="conceptSettings['adverseEvents']" dataset-concepts="datasetConcepts"></concept-mapping-list>
     </div>
-    <results-table-list is-editing-allowed="isEditingAllowed" id="populationCharacteristicsResults" variable-type="'PopulationCharacteristic'" variable-name="'Population characteristics'"></results-table-list>
-    <results-table-list is-editing-allowed="isEditingAllowed" id="endpointsResults" variable-type="'Endpoint'" variable-name="'Endpoints'"></results-table-list>
-    <results-table-list is-editing-allowed="isEditingAllowed" id="adverseEventsResults" variable-type="'AdverseEvent'" variable-name="'Adverse events'"></results-table-list>
-    <concept-mapping-list settings="conceptSettings['drugs']" id="drugMapping"></concept-mapping-list>
-    <concept-mapping-list settings="conceptSettings['populationCharacteristics']" id="populationCharacteristicMapping"></concept-mapping-list>
-    <concept-mapping-list settings="conceptSettings['endpoints']" id="endpointMapping"></concept-mapping-list>
-    <concept-mapping-list settings="conceptSettings['adverseEvents']" id="adverseEventMapping"></concept-mapping-list>
   </div>
-</div>
 </div>

@@ -22,6 +22,5 @@ define(function (require) {
     //directives
     .directive('studyCategory', require('study/categoryDirective'))
     .directive('categoryItemDirective', require('study/categoryItemDirective'))
-    .directive('conceptMappingList', require('study/conceptMappingListDirective'))
     ;
 });

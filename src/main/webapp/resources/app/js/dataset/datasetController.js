@@ -1,11 +1,14 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$window','$stateParams', '$modal', '$filter', 'DatasetService', 'DatasetVersionedResource',
-      'StudiesWithDetailsService', 'JsonLdService', 'RemoteRdfStoreService', 'HistoryResource', 'HistoryService'
+    var dependencies = ['$scope', '$q', '$window','$stateParams', '$modal', '$filter',
+     'DatasetService', 'DatasetVersionedResource','StudiesWithDetailsService',
+     'JsonLdService', 'RemoteRdfStoreService', 'HistoryResource', 'HistoryService',
+     'ConceptService', 'VersionedGraphResource'
     ];
-    var DatasetController = function($scope, $window, $stateParams, $modal, $filter, DatasetService, DatasetVersionedResource,
-      StudiesWithDetailsService, JsonLdService, RemoteRdfStoreService, HistoryResource, HistoryService) {
+    var DatasetController = function($scope, $q, $window, $stateParams, $modal, $filter,
+     DatasetService, DatasetVersionedResource, StudiesWithDetailsService, JsonLdService,
+     RemoteRdfStoreService, HistoryResource, HistoryService, ConceptService, VersionedGraphResource) {
 
       function isEditingAllowed() {
         return !!($scope.dataset && $scope.dataset.creator === $window.config.user.userEmail &&
@@ -34,7 +37,16 @@ define([],
         $scope.isEditingAllowed = isEditingAllowed();
       });
 
-
+      // load concepts
+      $scope.datasetConcepts = VersionedGraphResource.get({
+        datasetUUID: $stateParams.datasetUUID,
+        graphUuid: 'concepts',
+        versionUuid: $stateParams.versionUuid
+      }).$promise.then(function(conceptsTurtle) {
+        return ConceptService.loadStore(conceptsTurtle.data).then(function() {
+          return ConceptService.queryItems($stateParams.datasetUUID);
+        });
+      });
 
       $scope.loadStudiesWithDetail = function() {
         StudiesWithDetailsService.get($stateParams.datasetUUID, $stateParams.versionUuid).then(function(result) {

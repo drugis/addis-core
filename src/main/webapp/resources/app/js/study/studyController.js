@@ -121,6 +121,7 @@ define([],
         }
       };
 
+
       var navbar = document.getElementsByClassName('side-nav');
       angular.element($window).bind('scroll', function() {
         $(navbar[0]).css('margin-top', this.pageYOffset - 20);
