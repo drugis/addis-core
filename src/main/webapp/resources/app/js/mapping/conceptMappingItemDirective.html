@@ -1,5 +1,8 @@
-<select 
-  ng-model="selectedDatasetConcept" 
-  ng-change="updateMapping()" 
-  ng-options="datasetConcept.label for datasetConcept in filteredConcepts">
-</select>
+<span class="cell-with-single-btn">
+  <select
+    ng-model="selectedDatasetConcept" 
+    ng-change="updateMapping()" 
+    ng-options="datasetConcept.label for datasetConcept in filteredConcepts">
+  </select>
+  <button class="small secondary ">remove</button>
+</span>

@@ -9894,7 +9894,24 @@ tr.clickable td {
   color: #452F8C;
 }
 
-/* line 202, ../../sass/trialverse-drugis.scss */
+/* line 203, ../../sass/trialverse-drugis.scss */
+.cell-with-single-btn {
+  display: inline;
+}
+/* line 205, ../../sass/trialverse-drugis.scss */
+.cell-with-single-btn select {
+  width: 66%;
+  margin: 0;
+  margin-right: 1rem;
+}
+/* line 210, ../../sass/trialverse-drugis.scss */
+.cell-with-single-btn button {
+  margin: 0;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+}
+
+/* line 220, ../../sass/trialverse-drugis.scss */
 .scrollable-wrapper {
   overflow-y: auto;
   margin-top: 1.5rem;
