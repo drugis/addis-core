@@ -15,6 +15,10 @@ define([], function() {
           MappingService.updateMapping(scope.studyConcept, scope.selectedDatasetConcept);
         };
 
+        scope.removeMapping = function() {
+          MappingService.removeMapping(scope.studyConcept, scope.selectedDatasetConcept);
+        }
+
         scope.datasetConcepts.then(function(concepts) {
           scope.filteredConcepts = _.filter(concepts, function(datasetConcept) {
             return datasetConcept.type === scope.settings.typeUri;

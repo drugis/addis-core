@@ -34,6 +34,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       // load service templates and flush httpBackend
       testUtils.loadTemplate('setDrugMapping.sparql', httpBackend);
+      testUtils.loadTemplate('removeDrugMapping.sparql', httpBackend);
       httpBackend.flush();
 
       // create and load empty test store
@@ -131,6 +132,42 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         expect(resultTriples[0].p).toEqual('http://www.w3.org/2002/07/owl#sameAs');
         expect(resultTriples[0].o).toEqual(datasetConcept2.uri);
 
+        done();
+      });
+    });
+
+    describe('remove mapping', function() {
+
+      var studyConcept = {
+          uri: 'http://testuri/1'
+        },
+        datasetConcept = {
+          uri: 'http://testuri/dataset/1'
+        };
+
+      beforeEach(function(done) {
+
+        // stub remotestoreServiceStub.executeQuery method
+        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
+
+        mappingService.updateMapping(studyConcept, datasetConcept).then(function() {
+          mappingService.removeMapping(studyConcept, datasetConcept).then(function() {
+            done();
+          });
+        });
+        rootScope.$digest();
+
+      });
+
+      it('should remote the old mapping', function(done) {
+
+        // call function under test
+        var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o }}';
+        var result = testUtils.queryTeststore(query);
+        var resultTriples = testUtils.deFusekify(result);
+
+        // verify results
+        expect(resultTriples.length).toBe(0);
         done();
       });
     });
