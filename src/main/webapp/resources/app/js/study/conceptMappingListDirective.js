@@ -1,7 +1,7 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$injector', '$stateParams', 'VersionedGraphResource', 'ConceptService'];
-  var ConceptMappingListDirective = function($injector, $stateParams, VersionedGraphResource, ConceptService) {
+  var dependencies = ['$injector', '$stateParams', 'VersionedGraphResource', 'ConceptService', 'MappingService'];
+  var ConceptMappingListDirective = function($injector, $stateParams, VersionedGraphResource, ConceptService, MappingService) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/study/conceptMappingListDirective.html',
@@ -43,6 +43,7 @@ define([], function() {
 
         scope.updateMapping = function(studyConceptIndex, selectedDatasetConcept) {
           console.log('mapping updated;' + scope.studyConcepts[studyConceptIndex].label + ' -> ' + selectedDatasetConcept.label);
+          MappingService.updateMapping(scope.studyConcepts[studyConceptIndex], selectedDatasetConcept);
         }
 
         scope.reloadItems();

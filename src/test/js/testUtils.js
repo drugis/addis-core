@@ -38,6 +38,9 @@ define('testUtils', ['lodash'],
       xmlHTTP.open('POST', testFusekiUri + '/update', false);
       xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');
       xmlHTTP.send(query);
+      if(xmlHTTP.status > 399) {
+        console.error(xmlHTTP.response);
+      }
       return xmlHTTP.responseText;
     }
 
