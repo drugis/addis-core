@@ -8,25 +8,28 @@ define([], function() {
       templateUrl: 'app/js/results/resultsTableListDirective.html',
       scope: {
         variableType: '=',
-        variableName: '='
+        variableName: '=',
+        isEditingAllowed: '='
       },
       link: function(scope) {
+        var refreshListener;
         var variableService = $injector.get(scope.variableType + 'Service');
-        var variablesPromise, armsPromise;
+        var variablesPromise, armsPromise, measurementMomentsPromise;
         scope.showResults = false;
 
-        scope.$on('refreshResults', function(event, args){
-          reloadResultTables();
-        });
-
         function reloadResultTables() {
+
+          if(refreshListener) {
+            // stop listening while loading to prevent race conditions
+            refreshListener();
+          }
 
           armsPromise = ArmService.queryItems($stateParams.studyUUID).then(function(result) {
             scope.arms = result;
             return result;
           });
 
-          scope.measurementMoments = MeasurementMomentService.queryItems($stateParams.studyUUID).then(function(result) {
+          measurementMomentsPromise = MeasurementMomentService.queryItems($stateParams.studyUUID).then(function(result) {
             scope.measurementMoments = result;
             return result;
           });
@@ -41,8 +44,16 @@ define([], function() {
             });
             scope.showResults = isAnyMeasuredVariable && scope.arms.length > 0;
           });
+
+          $q.all([armsPromise, measurementMomentsPromise, variablesPromise]).then(function() {
+            // register listnener as the loading is now done
+            refreshListener = scope.$on('refreshResults', function(event, args) {
+              reloadResultTables();
+            });
+          })
         }
 
+        // initialize the directive 
         reloadResultTables();
 
       }

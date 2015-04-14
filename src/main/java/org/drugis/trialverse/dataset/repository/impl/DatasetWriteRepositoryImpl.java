@@ -62,48 +62,30 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetWriteRepositoryImpl.class);
 
-  private String createDatasetGraphUri(String datasetUUID) {
-    URIBuilder builder = null;
-    try {
-      builder = new URIBuilder(webConstants.getTriplestoreDataUri() + "/data");
-      builder.addParameter("graph", Namespaces.DATASET_NAMESPACE + datasetUUID);
-      return builder.build().toString();
-    } catch (URISyntaxException e) {
-      logger.error(e.toString());
-    }
-    return "";
-  }
-
   @Override
   public URI createDataset(String title, String description, Account owner) throws URISyntaxException, CreateDatasetException {
-
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + owner.getUsername());
     httpHeaders.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(INITIAL_COMMIT_MESSAGE.getBytes()));
     httpHeaders.add(HTTP.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
-
     String datasetUri = jenaFactory.createDatasetURI();
-
     Model baseDatasetModel = buildDatasetBaseModel(title, description, datasetUri);
     String triples = modelToString(baseDatasetModel);
     HttpEntity<String> requestEntity = new HttpEntity<>(triples, httpHeaders);
-    ResponseEntity<String> response = null;
+
     try {
-      response = restTemplate.postForEntity(webConstants.getTriplestoreBaseUri() + PATH, requestEntity, String.class);
+      ResponseEntity<String> response = restTemplate.postForEntity(webConstants.getTriplestoreBaseUri() + PATH, requestEntity, String.class);
+      if (!HttpStatus.CREATED.equals(response.getStatusCode())) {
+        logger.error("error , could not create dataset, tripleStore responce = " + response.getStatusCode().getReasonPhrase());
+        throw new CreateDatasetException();
+      }
+      URI location = response.getHeaders().getLocation();
+      //store link from uri to location
+      versionMappingRepository.save(new VersionMapping(location.toString(), owner.getUsername(), datasetUri));
     } catch (RestClientException e) {
       logger.error(e.toString());
       throw new CreateDatasetException();
     }
-
-    if (!HttpStatus.CREATED.equals(response.getStatusCode())) {
-      logger.error("error , could not create dataset, tripleStore responce = " + response.getStatusCode().getReasonPhrase());
-      throw new CreateDatasetException();
-    }
-
-    URI location = response.getHeaders().getLocation();
-    //store link from uri to location
-    versionMappingRepository.save(new VersionMapping(location.toString(), owner.getUsername(), datasetUri));
-
     return new URI(datasetUri);
   }
 

@@ -1,18 +1,25 @@
 package org.drugis.trialverse.scratch.service;
 
+import org.apache.http.Header;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Created by connor on 08/01/15.
  */
 
 public interface ScratchService {
-  void proxyUpdate(HttpServletRequest request, HttpServletResponse response);
+  int update(byte[] content, String queryString, Header contentTypeHeader) throws IOException;
 
-  void proxyData(HttpServletRequest request, HttpServletResponse response);
+  /**
+   *  returns response status code
+   */
+  int setData(byte[] content, String queryString, Header contentTypeHeader) throws IOException ;
 
-  void proxyQuery(HttpServletRequest request, HttpServletResponse response);
+  byte [] query(byte[] requestContent, String queryString, Header acceptHeader, Header contentTypeHeader) throws IOException;
 
-  void proxyGetGraph(HttpServletRequest request, HttpServletResponse response);
+  byte[] get(String queryString, Header acceptHeader) throws IOException;
+
 }

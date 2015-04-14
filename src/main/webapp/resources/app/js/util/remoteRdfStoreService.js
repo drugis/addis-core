@@ -30,9 +30,6 @@ define([], function() {
       return $http.post(
         SCRATCH_RDF_STORE_URL + '/update',
         query, {
-          params: {
-            'output': 'json'
-          },
           headers: {
             'Content-Type': 'application/sparql-update'
           }

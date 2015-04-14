@@ -19,10 +19,16 @@ define(function (require) {
     .filter('ontologyFilter', require('util/filters/ontologyFilter'))
     .filter('durationFilter', require('util/filters/durationFilter'))
     .filter('stripFrontFilter', require('util/filters/stripFrontFilter'))
+    .filter('exponentialFilter', require('util/filters/exponentialFilter'))
 
     //directives
     .directive('navbarDirective', require('util/directives/navbar/navbarDirective'))
     .directive('subsetSelect', require('util/directives/subsetSelect/subsetSelectDirective'))
     .directive('durationInput', require('util/directives/durationInput/durationInputDirective'))
+    .directive('sessionExpired', require('util/directives/sessionExpired/sessionExpiredDirective'))
+
+    //interceptors
+    .factory('SessionExpiredInterceptor', require('util/interceptors/sessionExpiredInterceptor'));
+
     ;
 });

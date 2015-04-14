@@ -16,7 +16,7 @@ INSERT {
      ontology:has_result_property ontology:sample_size .
 }
 WHERE {
-  <$URI> ontology:measurementType <http://trials.drugis.org/ontology#dichotomous>
+  <$URI> ontology:of_variable [ ontology:measurementType <http://trials.drugis.org/ontology#dichotomous> ]
 };
 
 WITH <$graphUri>
@@ -27,7 +27,7 @@ INSERT {
      ontology:has_result_property ontology:sample_size .
 }
 WHERE {
-  <$URI> ontology:measurementType <http://trials.drugis.org/ontology#continuous>
+  <$URI> ontology:of_variable [ ontology:measurementType <http://trials.drugis.org/ontology#continuous> ]
 };
 
 

@@ -6,20 +6,27 @@ define([], function() {
       restrict: 'E',
       templateUrl: 'app/js/study/categoryDirective.html',
       scope: {
-        settings: '='
+        settings: '=',
+        isEditingAllowed: '='
       },
       link: function(scope) {
 
+        var refreshStudyDesignLister;
         var service = $injector.get(scope.settings.service);
 
-        scope.$on('refreshStudyDesign', function() {
-          scope.reloadItems();
-        });
-
         scope.reloadItems = function() {
+          console.log("CategoryDirective.reloadItems");
+          if(refreshStudyDesignLister) {
+            // stop listning while loading
+            refreshStudyDesignLister();
+          }
+
           service.queryItems($stateParams.studyUUID).then(function(queryResult) {
             scope.items = queryResult;
-            // console.log('category items retrieved. ' + queryResult.length);
+
+            refreshStudyDesignLister = scope.$on('refreshStudyDesign', function() {
+              scope.reloadItems();
+            });
           });
         };
 

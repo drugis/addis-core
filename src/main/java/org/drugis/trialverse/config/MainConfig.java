@@ -16,10 +16,14 @@
 package org.drugis.trialverse.config;
 
 import org.apache.http.client.HttpClient;
+
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.drugis.trialverse.util.JenaGraphMessageConverter;
 import org.drugis.trialverse.util.WebConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -50,20 +54,27 @@ import java.util.Properties;
 @EnableJpaRepositories(basePackages = {"org.drugis.trialverse.security"})
 public class MainConfig {
 
+  private final static Logger logger = LoggerFactory.getLogger(MainConfig.class);
+
   // load environment variables on deploy
   @Inject
   WebConstants webConstants;
 
   @Bean
   public RestTemplate restTemplate() {
-    RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+    RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient()));
     restTemplate.getMessageConverters().add(new JenaGraphMessageConverter());
     return restTemplate;
   }
 
   @Bean
   public HttpClient httpClient() {
-    return HttpClientBuilder.create().build();
+    logger.info("httpClient created");
+    return HttpClientBuilder
+            .create()
+            .setMaxConnTotal(20)
+            .setMaxConnPerRoute(2)
+            .build();
   }
 
   @Bean(name = "dsTrialverse")

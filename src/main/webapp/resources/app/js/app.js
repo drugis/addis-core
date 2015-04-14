@@ -51,9 +51,9 @@ define(
 
 
     Number.isInteger = Number.isInteger || function(value) {
-    return typeof value === "number" &&
-           isFinite(value) &&
-           Math.floor(value) === value;
+      return typeof value === 'number' &&
+        isFinite(value) &&
+        Math.floor(value) === value;
     };
 
     var app = angular.module('trialverse', dependencies);
@@ -73,8 +73,10 @@ define(
     app.constant('SCRATCH_RDF_STORE_URL', '/scratch');
     app.constant('CONCEPT_GRAPH_UUID', 'concepts');
 
-    app.config(['$stateProvider', '$urlRouterProvider',
-      function($stateProvider, $urlRouterProvider) {
+    app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider',
+      function($stateProvider, $urlRouterProvider, $httpProvider) {
+        $httpProvider.interceptors.push('SessionExpiredInterceptor');
+
         $stateProvider
           .state('datasets', {
             url: '/datasets',
@@ -86,18 +88,23 @@ define(
             templateUrl: 'app/js/dataset/createDataset.html',
             controller: 'CreateDatasetController'
           })
-          .state('dataset', {
-            url: '/dataset/:datasetUUID',
+          .state('versionedDataset', {
+            url: '/datasets/:datasetUUID/versions/:versionUuid',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
           })
-          .state('concepts', {
-            url: '/dataset/:datasetUUID/concepts',
+          .state('datasetHistory', {
+            url: '/datasets/:datasetUUID/history',
+            templateUrl: 'app/js/dataset/datasetHistory.html',
+            controller: 'DatasetHistoryController'
+          })
+          .state('versionedDataset.concepts', {
+            url: '/concepts',
             templateUrl: 'app/js/concept/concepts.html',
             controller: 'ConceptController'
           })
-          .state('study', {
-            url: '/dataset/:datasetUUID/study/:studyUUID',
+          .state('versionedDataset.study', {
+            url: '/studies/:studyUUID',
             templateUrl: 'app/js/study/view/study.html',
             controller: 'StudyController'
           });

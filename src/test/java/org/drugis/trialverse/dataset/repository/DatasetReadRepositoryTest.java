@@ -4,22 +4,21 @@ package org.drugis.trialverse.dataset.repository;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
-import net.minidev.json.JSONObject;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
+import org.apache.http.*;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
-import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.impl.DatasetReadRepositoryImpl;
 import org.drugis.trialverse.security.Account;
-import org.drugis.trialverse.testutils.TestUtils;
 import org.drugis.trialverse.util.JenaGraphMessageConverter;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
@@ -30,10 +29,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -41,18 +41,16 @@ import sun.security.acl.PrincipalImpl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import static org.drugis.trialverse.testutils.TestUtils.loadResource;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -87,7 +85,7 @@ public class DatasetReadRepositoryTest {
     datasetReadRepository = new DatasetReadRepositoryImpl();
     MockitoAnnotations.initMocks(this);
 
-    when(webConstants.getTriplestoreBaseUri()).thenReturn("baseUri");
+    when(webConstants.getTriplestoreBaseUri()).thenReturn("baseUri/");
 
   }
 
@@ -103,7 +101,9 @@ public class DatasetReadRepositoryTest {
     List<VersionMapping> mockResult = Arrays.asList(versionMapping, versionMapping2);
     when(versionMappingRepository.findMappingsByUsername(account.getUsername())).thenReturn(mockResult);
     when(webConstants.getTriplestoreBaseUri()).thenReturn("http://mockserver/");
-    ResponseEntity<Graph> responseEntity = new ResponseEntity<Graph>(GraphFactory.createGraphMem(), HttpStatus.OK);
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(WebConstants.X_EVENT_SOURCE_VERSION, "http://myhost/myversion");
+    ResponseEntity<Graph> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), httpHeaders, HttpStatus.OK);
     List<HttpMessageConverter<?>> convertorList = new ArrayList<>();
     convertorList.add(new JenaGraphMessageConverter());
     when(restTemplate.getMessageConverters()).thenReturn(convertorList);
@@ -116,33 +116,40 @@ public class DatasetReadRepositoryTest {
   }
 
   @Test
-  public void testGetDataset() throws URISyntaxException {
+  public void testGetVersionedDataset() throws URISyntaxException {
     String datasetUUID = "uuid";
-
-    VersionMapping mapping = new VersionMapping("versioneduri", "itsame", Namespaces.DATASET_NAMESPACE + datasetUUID);
+    String versionUuid = "versionUuid";
+    String versionedUri = "baseUri/versions/" + versionUuid;
+    VersionMapping mapping = new VersionMapping(versionedUri, "itsame", Namespaces.DATASET_NAMESPACE + datasetUUID);
     URI trialverseDatasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl)).thenReturn(mapping);
     HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, webConstants.getTriplestoreBaseUri() + WebConstants.VERSION_PATH + versionUuid);
     httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-    ResponseEntity<Graph> responseEntity = new ResponseEntity<Graph>(GraphFactory.createGraphMem(), HttpStatus.OK);
-    when(restTemplate.exchange("versioneduri/data?default", HttpMethod.GET, requestEntity, Graph.class)).thenReturn(responseEntity);
-    Model model = datasetReadRepository.getDataset(trialverseDatasetUrl);
+    ResponseEntity<Graph> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), HttpStatus.OK);
+    String uri = versionedUri + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
+    when(webConstants.buildVersionUri(versionUuid)).thenReturn(versionedUri);
+    when(restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class)).thenReturn(responseEntity);
+
+    Model model = datasetReadRepository.getVersionedDataset(trialverseDatasetUrl, versionUuid);
 
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(trialverseDatasetUrl);
+    verify(restTemplate).exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
+    verify(webConstants).buildVersionUri(versionUuid);
     assertNotNull(model);
-  }
-
-  @Test
-  public void testQueryDatasetWithDetails() throws URISyntaxException, IOException {
-    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + "datasetUUID");
-    VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
-
-    datasetReadRepository.queryStudiesWithDetail(datasetUrl);
-
-    verify(httpClient).execute(any(HttpGet.class));
-
+    StringWriter writer = new StringWriter();
+    model.write(writer);
+    String expectedGraph = "<rdf:RDF\n" +
+            "    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n" +
+            "    xmlns:j.0=\"http://purl.org/dc/terms/\"\n" +
+            "    xmlns:j.1=\"http://rdfs.org/ns/void#\" > \n" +
+            "  <rdf:Description rdf:about=\"http://trials.drugis.org/datasets/uuid\">\n" +
+            "    <j.0:creator>itsame</j.0:creator>\n" +
+            "    <rdf:type rdf:resource=\"http://rdfs.org/ns/void#Dataset\"/>\n" +
+            "  </rdf:Description>\n" +
+            "</rdf:RDF>\n";
+    assertEquals(expectedGraph, writer.toString());
   }
 
   @Test
@@ -197,6 +204,78 @@ public class DatasetReadRepositoryTest {
 
     verify(restTemplate).exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, JsonObject.class);
     assertTrue(result);
+  }
+
+  @Test
+  public void testGetHistory() throws URISyntaxException, IOException {
+    String user1 = "user1";
+    URI datasetUrl = new URI("uuid-1");
+    String versionedDatasetUrl = "http://whatever";
+
+    HttpResponse mockResponse = mock(CloseableHttpResponse.class);
+    org.apache.http.HttpEntity entity = mock(org.apache.http.HttpEntity.class);
+    when(mockResponse.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, org.apache.http.HttpStatus.SC_OK, "FINE!"));
+    String responceString = "check me out";
+    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString));
+    when(mockResponse.getEntity()).thenReturn(entity);
+    when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
+
+    VersionMapping versionMapping = new VersionMapping(1, versionedDatasetUrl, user1, datasetUrl.toString());
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
+    when(httpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
+    byte[] actualHttpResponseContent = datasetReadRepository.getHistory(datasetUrl);
+
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
+    verify(httpClient).execute(any(HttpGet.class));
+    assertEquals(new String(responceString.getBytes()), new String(actualHttpResponseContent));
+  }
+
+  @Test
+  public void testExecuteVersionedQuery() throws URISyntaxException, IOException {
+    String datasetUUID = "datasetUUID";
+    String query = "SELECT * WHERE { ?s ?p ?o }";
+    String acceptHeader = "confirm/deny";
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
+    HttpResponse mockResponse = mock(CloseableHttpResponse.class);
+    org.apache.http.HttpEntity entity = mock(org.apache.http.HttpEntity.class);
+    when(mockResponse.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, org.apache.http.HttpStatus.SC_OK, "FINE!"));
+    String responceString = "check me out";
+    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString));
+    when(mockResponse.getEntity()).thenReturn(entity);
+    when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
+
+    datasetReadRepository.executeQuery(query, datasetUrl, null, acceptHeader);
+
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
+    verify(httpClient).execute(any(HttpGet.class));
+  }
+
+  @Test
+  public void testExecuteHeadQuery() throws URISyntaxException, IOException {
+    String datasetUUID = "datasetUUID";
+    String query = "SELECT * WHERE { ?s ?p ?o }";
+    String versionUuid = "myVersion";
+    String acceptHeader = "confirm/deny";
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    VersionMapping versionMapping = new VersionMapping(1, "http://whatever", "pietje@precies.gov", datasetUrl.toString());
+
+    HttpResponse mockResponse = mock(CloseableHttpResponse.class);
+    org.apache.http.HttpEntity entity = mock(org.apache.http.HttpEntity.class);
+    when(mockResponse.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, org.apache.http.HttpStatus.SC_OK, "FINE!"));
+    String responceString = "check me out";
+    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString));
+    when(mockResponse.getEntity()).thenReturn(entity);
+    when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
+
+    when(httpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
+
+    datasetReadRepository.executeQuery(query, datasetUrl, versionUuid, acceptHeader);
+
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
+    verify(httpClient).execute(any(HttpGet.class));
   }
 
   @After

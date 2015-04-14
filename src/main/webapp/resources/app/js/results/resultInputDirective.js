@@ -9,18 +9,19 @@ define([], function() {
       scope: {
         row: '=',
         column: '=',
+        isEditingAllowed: '='
       },
       link: function(scope) {
 
         scope.updateValue = function(row, column) {
-          if(ResultsTableService.isValidValue(column)) {
+          if (ResultsTableService.isValidValue(column)) {
             column.isInValidValue = false;
             ResultsService.updateResultValue(row, column);
-          } else{
+          } else {
             column.isInValidValue = true;
           }
         }
-        
+
       }
     };
   };

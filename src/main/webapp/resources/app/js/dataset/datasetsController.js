@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$q', '$modal', '$filter', 'DatasetResource', 'DatasetService'];
-    var DatasetsController = function($scope, $q, $modal, $filter, DatasetResource, DatasetService) {
+    var dependencies = ['$scope', '$location', '$q', '$modal', '$filter', 'DatasetResource', 'DatasetService'];
+    var DatasetsController = function($scope, $location, $q, $modal, $filter, DatasetResource, DatasetService) {
 
       function loadDatasets() {
         DatasetService.reset();
@@ -12,6 +12,9 @@ define([],
             DatasetService.queryDatasetsOverview().then(function(datasets) {
               $scope.datasets = datasets;
               $scope.datasetsLoaded = true;
+              if (datasets.length > 0) {
+                $scope.versionUrlBase = datasets[0].headVersion.split('/').slice(0,4).join('/') + '/';
+              }
             }, function() {
               console.error('failed loading datasetstore');
             });

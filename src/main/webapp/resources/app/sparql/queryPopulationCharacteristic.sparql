@@ -6,7 +6,7 @@ select
 where {
   graph <$graphUri> {
    ?uri rdfs:label ?label ;
-   ontology:measurementType ?measurementType ;
-   rdfs:subClassOf ontology:PopulationCharacteristic .
+   ontology:of_variable [ ontology:measurementType ?measurementType ] ;
+   rdf:type ontology:PopulationCharacteristic .
  }
 }

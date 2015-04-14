@@ -68,7 +68,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         // console.log('graphUri = ' + uri);
         // console.log('query = ' + query);
 
-        testUtils.executeUpdateQuery(query);
+        var result = testUtils.executeUpdateQuery(query);
+        console.log('executeUpdateQuery result  = ' + result);
+
 
         var executeUpdateDeferred = q.defer();
         executeUpdateDeferred.resolve();
@@ -79,7 +81,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     describe('setOutcomeProperty', function() {
 
-      it('should add the triples for count and sampleSize then the outcome is dichotomous type outcome', function(done) {
+      it('should add the triples for count and sampleSize when the outcome is dichotomous type outcome', function(done) {
 
         // the test item to add 
         var outcome = {
@@ -88,7 +90,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           measurementType: 'http://trials.drugis.org/ontology#dichotomous'
         };
 
-        //first add a outcome 
+        //first add an outcome 
         var addOutcomeQuery = addPopulationCharacteristicTemplate
             .replace(/\$UUID/g, 'my-outcome')
             .replace('$label', outcome.label)

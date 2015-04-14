@@ -1,9 +1,9 @@
 package org.drugis.trialverse.dataset.controller;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolVersion;
+import org.apache.http.HttpVersion;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.riot.RDFLanguages;
@@ -31,7 +31,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
 
@@ -149,19 +148,97 @@ public class DatasetControllerTest {
   }
 
   @Test
-  public void testGetDatasetRequestPath() throws Exception {
+  public void testGetDataset() throws Exception {
     String uuid = "uuuuiiid-yeswecan";
     URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
     Model model = mock(Model.class);
-    when(datasetReadRepository.getDataset(datasetUri)).thenReturn(model);
+    when(datasetReadRepository.getVersionedDataset(datasetUri, null)).thenReturn(model);
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
     mockMvc.perform((get("/datasets/" + uuid)).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
-    verify(datasetReadRepository).getDataset(datasetUri);
+    verify(datasetReadRepository).getVersionedDataset(datasetUri, null);
     verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
   }
 
+  @Test
+  public void testGetDatasetVersion() throws Exception {
+    String uuid = "uuuuiiid-yeswecan";
+    String versionUuid = "versionUuid";
+
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
+    Model model = mock(Model.class);
+    when(datasetReadRepository.getVersionedDataset(datasetUri, versionUuid)).thenReturn(model);
+    when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
+
+    mockMvc.perform((get("/datasets/" + uuid + "/versions/" + versionUuid)).principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
+
+    verify(datasetReadRepository).getVersionedDataset(datasetUri, versionUuid);
+    verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
+  }
+
+  @Test
+  public void testGetHistory() throws Exception {
+    String uuid = "uuuuiiid-yeswecan";
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
+    HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1,1), HttpStatus.OK.value(), "reason"));
+    String test = "test";
+    httpResponse.setEntity(new StringEntity(test));
+    when(datasetReadRepository.getHistory(datasetUri)).thenReturn(test.getBytes());
+
+    mockMvc.perform((get("/datasets/" + uuid + "/versions")).principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType() ));
+
+    verify(datasetReadRepository).getHistory(datasetUri);
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), Matchers.any(HttpServletResponse.class));
+  }
+
+  @Test
+  public void testExecuteHeadQuery() throws Exception {
+    String uuid = "uuuuiiid-yeswecan";
+    String query = "Select * where { ?a ?b ?c}";
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
+    HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1,1), HttpStatus.OK.value(), "reason"));
+    String acceptValue = "c/d";
+    httpResponse.setHeader("Content-Type", acceptValue);
+
+    String responseStr = "whatevs";
+    when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, null, acceptValue)).thenReturn(responseStr.getBytes());
+    mockMvc.perform((get("/datasets/" + uuid + "/query"))
+            .param("query", query)
+            .header("Accept", acceptValue)
+            .principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(acceptValue));
+
+    verify(datasetReadRepository).executeQuery(query, trialverseDatasetUri, null, acceptValue);
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte [].class), Matchers.any(HttpServletResponse.class));
+
+  }
+
+  @Test
+  public void testExecuteVersionedQuery() throws Exception {
+    String uuid = "uuuuiiid-yeswecan";
+    String query = "Select * where { ?a ?b ?c}";
+    String version = "my-version";
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
+    String acceptValue = "c/d";
+    String responseStr = "foo";
+    when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, version, acceptValue)).thenReturn(responseStr.getBytes());
+    mockMvc.perform((get("/datasets/" + uuid + "/versions/" + version + "/query"))
+            .param("query", query)
+            .header("Accept", acceptValue)
+            .principal(user))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(acceptValue));
+
+    verify(datasetReadRepository).executeQuery(query, trialverseDatasetUri, version, acceptValue);
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte [].class), Matchers.any(HttpServletResponse.class));
+
+  }
 }

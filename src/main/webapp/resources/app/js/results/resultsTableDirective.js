@@ -11,7 +11,8 @@ define([], function() {
       scope: {
         variable: '=',
         arms: '=',
-        measurementMoments: '='
+        measurementMoments: '=',
+        isEditingAllowed: '='
       },
       link: function(scope) {
 
@@ -21,7 +22,7 @@ define([], function() {
           scope.inputRows = ResultsTableService.createInputRows(scope.variable, scope.arms, scope.measurementMoments, scope.results.$$state.value);
           scope.inputHeaders = ResultsTableService.createHeaders(scope.variable.measurementType);
         });
-        
+
       }
     };
   };

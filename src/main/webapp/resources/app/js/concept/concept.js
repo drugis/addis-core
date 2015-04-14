@@ -14,7 +14,7 @@ define(function (require) {
     .controller('CreateConceptController', require('concept/createConceptController'))
 
      //resources
-    .factory('DatasetResource', require('dataset/datasetResource')) // only need resource, not entire module
+    .factory('DatasetVersionedResource', require('dataset/datasetVersionedResource')) // only need resource, not entire module
 
     ;
 });

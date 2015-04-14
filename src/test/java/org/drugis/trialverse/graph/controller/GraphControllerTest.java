@@ -1,9 +1,7 @@
 package org.drugis.trialverse.graph.controller;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolVersion;
-import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.message.BasicStatusLine;
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.security.Account;
@@ -21,7 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -38,6 +35,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Configuration
@@ -92,18 +90,17 @@ public class GraphControllerTest {
   public void testGetGraph() throws Exception {
     String datasetUUID = "datasetUUID";
     String graphUUID = "graphUUID";
-    BasicStatusLine statusLine = new BasicStatusLine(new ProtocolVersion("mock protocol", 1, 0), HttpStatus.OK.value(), "some good reason");
-    HttpResponse httpResponse = new BasicHttpResponse(statusLine);
+    String versionUuid = "versionUuid";
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    when(graphReadRepository.getGraph(trialverseDatasetUri, graphUUID)).thenReturn(httpResponse);
+    String responce = "responce";
+    when(graphReadRepository.getGraph(trialverseDatasetUri, versionUuid, graphUUID)).thenReturn(responce.getBytes());
 
-
-    mockMvc.perform(get("/datasets/" + datasetUUID + "/graphs/" + graphUUID).principal(user))
+    mockMvc.perform(get("/datasets/" + datasetUUID + "/versions/" + versionUuid + "/graphs/" + graphUUID).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
-    verify(graphReadRepository).getGraph(trialverseDatasetUri, graphUUID);
-    verify(trialverseIOUtilsService).writeResponseContentToServletResponse(any(HttpResponse.class), any(HttpServletResponse.class));
+    verify(graphReadRepository).getGraph(trialverseDatasetUri, versionUuid, graphUUID);
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), any(HttpServletResponse.class));
   }
 
   @Test
@@ -132,13 +129,16 @@ public class GraphControllerTest {
     String graphUUID = "graphUUID";
 
     when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
+    Header versionHeader = new BasicHeader(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion");
+    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(HttpServletRequest.class))).thenReturn(versionHeader);
 
     mockMvc.perform(
             put("/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(updateContent)
                     .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
                     .principal(user))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion"));
 
     verify(datasetReadRepository).isOwner(datasetUrl, user);
     verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(HttpServletRequest.class));

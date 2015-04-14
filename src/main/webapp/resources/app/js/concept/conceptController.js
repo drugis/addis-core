@@ -2,31 +2,20 @@
 define([],
   function() {
     var dependencies = ['$scope', '$modal', '$stateParams', '$anchorScroll', '$location',
-      'DatasetService', 'DatasetResource', 'ConceptService', 'GraphResource', 'CONCEPT_GRAPH_UUID'
+      'ConceptService', 'VersionedGraphResource', 'CONCEPT_GRAPH_UUID'
     ];
     var ConceptController = function($scope, $modal, $stateParams, $anchorScroll, $location,
-      DatasetService, DatasetResource, ConceptService, GraphResource, CONCEPT_GRAPH_UUID) {
+      ConceptService, VersionedGraphResource, CONCEPT_GRAPH_UUID) {
       var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUUID;
       $scope.concepts = {};
 
       function reloadConceptsModel() {
-        GraphResource.get({
+        VersionedGraphResource.get({
           datasetUUID: $stateParams.datasetUUID,
-          graphUuid: 'concepts'
+          graphUuid: 'concepts',
+          versionUuid: $stateParams.versionUuid
         }).$promise.then(function(conceptsTurtle) {
           ConceptService.loadStore(conceptsTurtle.data).then(reloadConcepts);
-        });
-      }
-
-      function reloadDatasetModel() {
-        DatasetResource.get($stateParams, function(response) {
-          DatasetService.reset();
-          DatasetService.loadStore(response.data).then(function() {
-            DatasetService.queryDataset().then(function(queryResult) {
-              $scope.dataset = queryResult[0];
-              $scope.dataset.uuid = $stateParams.datasetUUID;
-            });
-          });
         });
       }
 
@@ -36,13 +25,11 @@ define([],
         });
       }
 
-      $scope.resetConcepts = function() {
-        reloadDatasetModel();
+      $scope.resetConcepts = function() { 
         reloadConceptsModel();
       };
 
       // onload
-      reloadDatasetModel();
       reloadConceptsModel();
 
       $scope.openAddConceptDialog = function() {
@@ -67,7 +54,10 @@ define([],
           controller: 'CommitController',
           resolve: {
             callback: function() {
-              return ConceptService.conceptsSaved;
+              return function(newVersion) {
+                ConceptService.conceptsSaved();
+                $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/concepts');
+              };
             },
             datasetUuid: function() {
               return $stateParams.datasetUUID;

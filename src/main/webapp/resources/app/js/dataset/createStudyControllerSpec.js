@@ -5,7 +5,7 @@ define(['angular', 'angular-mocks'], function() {
     var scope,
       modalMock = jasmine.createSpyObj('$mock', ['dismiss', 'close']),
       datasetServiceMock = jasmine.createSpyObj('DatasetService', ['addStudyToDatasetGraph']),
-      datasetResourceMock = jasmine.createSpyObj('DatasetResource', ['save']),
+      datasetVersionedResourceMock = jasmine.createSpyObj('DatasetVersionedResource', ['save']),
       uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']),
       studyServiceMock = jasmine.createSpyObj('StudyService', ['createEmptyStudyJsonLD']),
       graphResourceMock = jasmine.createSpyObj('GraphResource', ['put']),
@@ -27,7 +27,7 @@ define(['angular', 'angular-mocks'], function() {
         $stateParams: {},
         $modalInstance: modalMock,
         DatasetService: datasetServiceMock,
-        DatasetResource: datasetResourceMock,
+        DatasetVersionedResource: datasetVersionedResourceMock,
         UUIDService: uuidServiceMock,
         StudyService: studyServiceMock,
         GraphResource: graphResourceMock

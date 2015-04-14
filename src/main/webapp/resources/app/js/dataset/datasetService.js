@@ -21,11 +21,14 @@ define([], function() {
         var query =
           ' PREFIX dcterms: <http://purl.org/dc/terms/> ' +
           ' PREFIX void: <http://rdfs.org/ns/void#> ' +
+          ' PREFIX es: <http://drugis.org/eventSourcing/es#> ' +
           ' SELECT ' +
-          ' ?datasetUri ?label ?comment' +
+          ' ?datasetUri ?label ?comment ?headVersion ' +
           ' WHERE { graph <' + scratchDatasetUri + '> {' +
-          '   ?datasetUri dcterms:title ?label ; ' +
-          '     a void:Dataset . ' +
+          '   ?datasetUri ' +
+          '     dcterms:title ?label ; ' +
+          '     a void:Dataset ; ' +
+          '     es:head ?headVersion . ' +
           '   OPTIONAL { ?datasetUri dcterms:description ?comment . } ' +
           ' } }';
         return RemoteRdfStoreService.executeQuery(scratchDatasetUri, query);
@@ -38,9 +41,10 @@ define([], function() {
           ' PREFIX dcterms: <http://purl.org/dc/terms/> ' +
           ' PREFIX void: <http://rdfs.org/ns/void#> ' +
           ' SELECT' +
-          ' ?datasetUri ?label ?comment' +
+          ' ?datasetUri ?label ?comment ?creator' +
           ' WHERE { graph <' + scratchDatasetUri + '> {' +
           '   ?datasetUri dcterms:title ?label ; ' +
+          '     dcterms:creator ?creator ; ' +
           '     a void:Dataset . ' +
           '   OPTIONAL { ?datasetUri dcterms:description ?comment . } ' +
           ' } }';

@@ -1,12 +1,13 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$window', 'GraphResource', '$location', '$anchorScroll',
-      '$modal', 'StudyService', 'DatasetResource', 'DatasetService', 'ResultsService', 'StudyDesignService'
+    var dependencies = ['$scope', '$stateParams', '$window', 'VersionedGraphResource', '$location', '$anchorScroll',
+      '$modal', 'StudyService', 'ResultsService', 'StudyDesignService'
     ];
-    var StudyController = function($scope, $stateParams, $window, GraphResource, $location, $anchorScroll,
-      $modal, StudyService, DatasetResource, DatasetService, ResultsService, StudyDesignService) {
+    var StudyController = function($scope, $stateParams, $window, VersionedGraphResource, $location, $anchorScroll,
+      $modal, StudyService, ResultsService, StudyDesignService) {
 
+      // onload
       StudyService.reset();
 
       $scope.study = {};
@@ -99,22 +100,21 @@ define([],
 
       var navbar = document.getElementsByClassName('side-nav');
       angular.element($window).bind('scroll', function() {
-        $(navbar[0]).css('margin-top', this.pageYOffset);
+        $(navbar[0]).css('margin-top', this.pageYOffset - 20);
         $scope.$apply();
       });
 
-      function reloadStudyModel() {
-        GraphResource.get({
+      var loadStudyStore = function(callback) {
+        VersionedGraphResource.get({
           datasetUUID: $stateParams.datasetUUID,
-          graphUuid: $stateParams.studyUUID
+          graphUuid: $stateParams.studyUUID,
+          versionUuid: $stateParams.versionUuid
         }, function(response) {
           StudyService.loadStore(response.data)
             .then(function() {
               console.log('loading study-store success');
               StudyService.queryStudyData().then(function(queryResult) {
-                $scope.study = queryResult;
-                $scope.$broadcast('refreshStudyDesign');
-                StudyService.studySaved();
+                callback(queryResult);
               });
             }, function() {
               console.error('failed loading study-store');
@@ -122,25 +122,22 @@ define([],
         });
       }
 
-      function reloadDatasetModel() {
-        DatasetResource.get($stateParams, function(response) {
-          DatasetService.reset();
-          DatasetService.loadStore(response.data).then(function() {
-            DatasetService.queryDataset().then(function(queryResult) {
-              $scope.dataset = queryResult[0];
-              $scope.dataset.uuid = $stateParams.datasetUUID;
-            });
-          });
+      $scope.reloadStudyModel = function() {
+        loadStudyStore(function(store) {
+          $scope.study = store;
+          $scope.$broadcast('refreshStudyDesign');
+          $scope.$broadcast('refreshResults');
+          StudyService.studySaved();
         });
-      }
+      };
 
-      $scope.resetStudy = function() {
-        reloadStudyModel();
-        reloadDatasetModel();
-      }
-
-      // onload
-      $scope.resetStudy();
+      var initializeStudyModel = function() {
+        loadStudyStore(function(store) {
+          $scope.study = store;
+          StudyService.studySaved();
+        });
+      };
+      initializeStudyModel();
 
       $scope.$on('updateStudyDesign', function() {
         console.log('update design');
@@ -173,7 +170,10 @@ define([],
           controller: 'CommitController',
           resolve: {
             callback: function() {
-              return StudyService.studySaved;
+              return function(newVersion) {
+                StudyService.studySaved();
+                $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyUUID);
+              };
             },
             datasetUuid: function() {
               return $stateParams.datasetUUID;

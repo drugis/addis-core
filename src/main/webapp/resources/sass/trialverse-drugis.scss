@@ -23,6 +23,14 @@ $addis-grey-border : $crumb-border-color;
   color: $drugis-color;
 }
 
+.row.application-link {
+  margin: 1rem 0;
+}
+
+.application-link a{
+  text-decoration: underline;
+}
+
 // needed to show part below descender line 
 input[type="number"],
 input[type="text"],
@@ -31,11 +39,6 @@ select option {
   line-height: 1.1rem; 
 }
  
-
-.main-content {
-  padding-top: 56px; // clear fixed navbar
-}
-
 /////////////////////////// top nav bar 
 .top-bar-section .has-form {
   height: 44px;
@@ -67,8 +70,8 @@ select option {
   margin-left: 4rem;
 }
 
-.nav-bar-spacer {
-  padding-top: 1rem; // add space top top of first item under nav-bar
+.f-topbar-fixed {
+  padding-top: 72px; // add space top top of first item under nav-bar
 }
 
 
@@ -87,6 +90,7 @@ select option {
 }
 
 ul.side-nav {
+  margin-top: -20px; 
   padding: 2rem 1rem;
   background-color: $addis-grey;
 }
@@ -102,6 +106,13 @@ ul.side-nav li.heading {
 
 .study-item {
   margin: 0 0 3rem 0;
+}
+
+.study-main-category-header {
+  color: #008CBA;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 /////////////////////////// end study

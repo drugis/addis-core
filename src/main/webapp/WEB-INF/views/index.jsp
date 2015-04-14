@@ -17,23 +17,23 @@
   <script src="app/js/bower_components/requirejs/require.js" data-main="app/js/main.js"></script>
 </head>
 
-<body>
-  <session-expired-directive></session-expired-directive>
-  <div ui-view class="main-content"></div>
+<body class="f-topbar-fixed">
+  <session-expired></session-expired>
+  <div ui-view>
+  </div>
 
   <script>
   window.config = {
     user : {
-      id : ${account.id},
       name : "${account.firstName}",
       firstName : "${account.firstName}",
       lastName : "${account.lastName}",
+      userEmail: "${userEmail}",
       userMd5: "${userMD5}"
     },
     _csrf_token : "${_csrf.token}",
     _csrf_header : "${_csrf.headerName}"
   };
-
   function signout(){
     var signoutForm = document.getElementById('signout_form');
 
