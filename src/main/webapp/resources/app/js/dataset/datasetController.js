@@ -7,8 +7,6 @@ define([],
     var DatasetController = function($scope, $window, $stateParams, $modal, $filter, DatasetService, DatasetVersionedResource,
       StudiesWithDetailsService, JsonLdService, RemoteRdfStoreService, HistoryResource, HistoryService) {
 
-      console.log('creating dataset controller');
-
       function isEditingAllowed() {
         return !!($scope.dataset && $scope.dataset.creator === $window.config.user.userEmail &&
           $scope.currentRevision && $scope.currentRevision.idx === 0);

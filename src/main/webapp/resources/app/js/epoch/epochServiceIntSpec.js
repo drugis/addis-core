@@ -118,7 +118,7 @@ define(['angular', 'angular-mocks'], function() {
     });
 
 
-    fdescribe('editEpoch', function() {
+    describe('editEpoch', function() {
       it('should modify the epoch without comment', function() {
         var mockEpoch = {
           uri: {

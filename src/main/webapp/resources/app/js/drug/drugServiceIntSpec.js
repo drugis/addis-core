@@ -107,7 +107,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           expect(drugs.length).toBe(2);
           expect(drugs[0].label).toEqual('Sertraline');
           expect(drugs[1].label).toEqual('Bupropion');
-
+          expect(drugs[1].conceptMapping).toEqual('http://some/dataset/concepts/buproprionEntity');
           done();
         });
         rootScope.$digest();

@@ -51,7 +51,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     }));
 
 
-    fdescribe('set drug mapping where none existed', function() {
+    describe('set drug mapping where none existed', function() {
 
       var studyConcept = {
           uri: 'http://testuri/1'
@@ -90,7 +90,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
     });
 
-    fdescribe('set drug mapping where one existed', function() {
+    describe('set drug mapping where one existed', function() {
 
       var studyConcept = {
           uri: 'http://testuri/1'

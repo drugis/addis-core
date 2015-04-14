@@ -69,8 +69,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         // console.log('query = ' + query);
 
         var result = testUtils.executeUpdateQuery(query);
-        console.log('executeUpdateQuery result  = ' + result);
-
 
         var executeUpdateDeferred = q.defer();
         executeUpdateDeferred.resolve();
