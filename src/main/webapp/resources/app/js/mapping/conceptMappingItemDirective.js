@@ -8,7 +8,8 @@ define([], function() {
       scope: {
         settings: '=',
         studyConcept: '=',
-        datasetConcepts: '='
+        datasetConcepts: '=',
+        isEditingAllowed: '='
       },
       link: function(scope) {
         scope.updateMapping = function() {

@@ -7,7 +7,8 @@ define([], function() {
       templateUrl: 'app/js/mapping/conceptMappingListDirective.html',
       scope: {
         settings: '=',
-        datasetConcepts: '='
+        datasetConcepts: '=',
+        isEditingAllowed: '='
       },
       link: function(scope) {
         var refreshListener;
@@ -28,7 +29,6 @@ define([], function() {
         };
 
         scope.updateMapping = function(studyConceptIndex, selectedDatasetConcept) {
-          console.log('mapping updated;' + scope.studyConcepts[studyConceptIndex].label + ' -> ' + selectedDatasetConcept.label);
           MappingService.updateMapping(scope.studyConcepts[studyConceptIndex], selectedDatasetConcept);
         };
 
