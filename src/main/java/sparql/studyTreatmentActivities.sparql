@@ -39,14 +39,12 @@ WHERE {
      ?studyUid ontology:has_arm ?armUid .
      ?epochs  list:member ?epochUid .
      ?treatmentActivityUid a ?treatmentActivityType .
-     ?treatmentActivityUid ontology:activity_application [
+     ?treatmentActivityUid ontology:has_activity_application [
        ontology:applied_to_arm ?armUid ;
        ontology:applied_in_epoch ?epochUid
      ] .
      OPTIONAL {
-       ?treatmentActivityUid ontology:administered_drugs ?administeredDrugs .
-       ?administeredDrugs list:member ?treatment .
-       ?treatment ontology:treatment_has_drug ?drugUid .
+       ?treatmentActivityUid ontology:treatment_has_drug ?drugUid .
        ?drugUid rdfs:label ?treatmentDrugLabel .
        OPTIONAL {
          ?treatment ontology:treatment_min_dose [
