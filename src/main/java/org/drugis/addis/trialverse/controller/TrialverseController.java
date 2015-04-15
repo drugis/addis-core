@@ -74,7 +74,7 @@ public class TrialverseController {
 
   @RequestMapping(value = "/{namespaceUid}/studiesWithDetail/{studyUid}", method = RequestMethod.GET)
   @ResponseBody
-  public StudyWithDetails getStudysWithDetails(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException {
+  public StudyWithDetails getStudyWithDetails(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException {
     return triplestoreService.getStudydetails(namespaceUid, studyUid);
   }
 
