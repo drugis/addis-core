@@ -28,8 +28,29 @@ define('testUtils', ['lodash'],
       xmlHTTP.open('GET', 'base/app/sparql/' + templateName, false);
       xmlHTTP.send(null);
       var template = xmlHTTP.responseText;
+      if (xmlHTTP.status > 399) {
+        console.error(xmlHTTP.response);
+      }
       httpBackend.expectGET('app/sparql/' + templateName).respond(template);
       return template;
+    }
+
+    function loadTestGraph(graphName, graphUri) {
+      // load some mock graph with activities
+      var xmlHTTP = new XMLHttpRequest();
+      xmlHTTP.open('GET', 'base/test_graphs/' + graphName, false);
+      xmlHTTP.send(null);
+      var mockGraph = xmlHTTP.responseText;
+      if (xmlHTTP.status > 399) {
+        console.error(xmlHTTP.response);
+      }
+
+      xmlHTTP.open('PUT', testFusekiUri + '/data?graph=' + graphUri, false);
+      xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
+      xmlHTTP.send(mockGraph);
+      if (xmlHTTP.status > 399) {
+        console.error(xmlHTTP.response);
+      }
     }
 
     function executeUpdateQuery(query) {
@@ -38,7 +59,7 @@ define('testUtils', ['lodash'],
       xmlHTTP.open('POST', testFusekiUri + '/update', false);
       xmlHTTP.setRequestHeader('Content-type', 'application/sparql-update');
       xmlHTTP.send(query);
-      if(xmlHTTP.status > 399) {
+      if (xmlHTTP.status > 399) {
         console.error(xmlHTTP.response);
       }
       return xmlHTTP.responseText;
@@ -102,6 +123,7 @@ define('testUtils', ['lodash'],
       queryTeststore: queryTeststore,
       dropGraph: dropGraph,
       loadTemplate: loadTemplate,
+      loadTestGraph: loadTestGraph,
       executeUpdateQuery: executeUpdateQuery,
       deFusekify: deFusekify,
       createRemoteStoreStub: createRemoteStoreStub,

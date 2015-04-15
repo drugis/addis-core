@@ -5,8 +5,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     var graphUri = 'http://karma-test/';
     var scratchStudyUri = 'http://localhost:9876/scratch'; // NB proxied by karma to actual fuseki instance
 
-    var mockStudyUuid = 'mockStudyUuid';
-
     var rootScope, q, httpBackend;
     var remotestoreServiceStub;
     var studyService;
@@ -34,6 +32,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       // load service templates and flush httpBackend
       testUtils.loadTemplate('setDrugMapping.sparql', httpBackend);
+      testUtils.loadTemplate('setVariableMapping.sparql', httpBackend);
       testUtils.loadTemplate('removeDrugMapping.sparql', httpBackend);
       httpBackend.flush();
 
@@ -58,7 +57,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           uri: 'http://testuri/1'
         },
         datasetConcept = {
-          uri: 'http://testuri/2'
+          uri: 'http://testuri/2',
+          type: 'http://trials.drugis.org/ontology#Drug'
         };
       beforeEach(function(done) {
 
@@ -66,8 +66,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
 
         mappingService.updateMapping(studyConcept, datasetConcept).then(function() {
-          console.log('mapping updated')
-          done()
+          done();
         });
         rootScope.$digest();
 
@@ -97,10 +96,13 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           uri: 'http://testuri/1'
         },
         datasetConcept1 = {
-          uri: 'http://testuri/dataset/1'
+          uri: 'http://testuri/dataset/1',
+          type: 'http://trials.drugis.org/ontology#Drug'
+
         },
         datasetConcept2 = {
-          uri: 'http://testuri/dataset/2'
+          uri: 'http://testuri/dataset/2',
+          type: 'http://trials.drugis.org/ontology#Drug'
         };
 
       beforeEach(function(done) {
@@ -110,8 +112,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
         mappingService.updateMapping(studyConcept, datasetConcept1).then(function() {
           mappingService.updateMapping(studyConcept, datasetConcept2).then(function() {
-            console.log('mapping updated')
-            done()
+            done();
           });
         });
         rootScope.$digest();
@@ -136,13 +137,15 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
     });
 
-    describe('remove mapping', function() {
+    describe('remove drug mapping', function() {
 
       var studyConcept = {
-          uri: 'http://testuri/1'
+          uri: 'http://testuri/1',
+          type: 'http://trials.drugis.org/ontology#Drug'
         },
         datasetConcept = {
-          uri: 'http://testuri/dataset/1'
+          uri: 'http://testuri/dataset/1',
+          type: 'http://trials.drugis.org/ontology#Drug'
         };
 
       beforeEach(function(done) {
@@ -159,7 +162,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       });
 
-      it('should remote the old mapping', function(done) {
+      it('should remove the old mapping', function(done) {
 
         // call function under test
         var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o }}';
@@ -172,6 +175,132 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
     });
 
+    describe('set variable mapping where none existed', function() {
+      var studyConcept = {
+          uri: 'http://trials.drugis.org/instances/instance1'
+        },
+        datasetConcept = {
+          uri: 'http://trials.drugis.org/entities/entities1',
+          type: 'http://trials.drugis.org/ontology#AdverseEvent'
+        };
+      beforeEach(function(done) {
+        testUtils.loadTestGraph('mappingsTestGraph.ttl', graphUri);
+
+        // stub remotestoreServiceStub.executeQuery method
+        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
+
+        mappingService.updateMapping(studyConcept, datasetConcept).then(function() {
+          done();
+        });
+        rootScope.$digest();
+
+      });
+
+      it('should add the new variable mapping to the graph', function(done) {
+
+        // call function under test
+        var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o }}';
+        var result = testUtils.queryTeststore(query);
+        var resultTriples = testUtils.deFusekify(result);
+
+        // verify results
+        expect(resultTriples.length).toBe(4);
+
+        var sameAsTriple = _.find(resultTriples, function(triple) {
+          return triple.s === 'b0' && triple.p === 'http://www.w3.org/2002/07/owl#sameAs';
+        });
+
+        expect(sameAsTriple.o).toEqual(datasetConcept.uri);
+
+        done();
+      });
+    });
+
+    describe('set variable mapping where one existed', function() {
+      var studyConcept = {
+          uri: 'http://trials.drugis.org/instances/instance1'
+        },
+        datasetConcept1 = {
+          uri: 'http://trials.drugis.org/entities/entities1',
+          type: 'http://trials.drugis.org/ontology#AdverseEvent'
+        },
+        datasetConcept2 = {
+          uri: 'http://trials.drugis.org/entities/entities2',
+          type: 'http://trials.drugis.org/ontology#AdverseEvent'
+        };
+      beforeEach(function(done) {
+        testUtils.loadTestGraph('mappingsTestGraph.ttl', graphUri);
+
+        // stub remotestoreServiceStub.executeQuery method
+        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
+
+        // first set one mapping then replace it
+        mappingService.updateMapping(studyConcept, datasetConcept1).then(function() {
+          mappingService.updateMapping(studyConcept, datasetConcept2).then(function() {
+            done();
+          });
+        });
+        rootScope.$digest();
+
+      });
+
+      it('should overwrite the old variable mapping to the graph', function(done) {
+
+        // call function under test
+        var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o }}';
+        var result = testUtils.queryTeststore(query);
+        var resultTriples = testUtils.deFusekify(result);
+
+        // verify results
+        expect(resultTriples.length).toBe(4);
+
+        var sameAsTriple = _.find(resultTriples, function(triple) {
+          return triple.s === 'b0' && triple.p === 'http://www.w3.org/2002/07/owl#sameAs';
+        });
+
+        expect(sameAsTriple.s).toEqual('b0');
+        expect(sameAsTriple.o).toEqual(datasetConcept2.uri);
+
+        done();
+      });
+    });
+
+    describe('remove variable mapping', function() {
+      var studyConcept = {
+          uri: 'http://trials.drugis.org/instances/instance1'
+        },
+        datasetConcept = {
+          uri: 'http://trials.drugis.org/entities/entities1',
+          type: 'http://trials.drugis.org/ontology#AdverseEvent'
+        };
+      beforeEach(function(done) {
+        testUtils.loadTestGraph('mappingsTestGraph.ttl', graphUri);
+
+        // stub remotestoreServiceStub.executeQuery method
+        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
+
+        mappingService.updateMapping(studyConcept, datasetConcept).then(function() {
+          mappingService.removeMapping(studyConcept, datasetConcept).then(function() {
+            done();
+          });
+        });
+        rootScope.$digest();
+
+      });
+
+      it('should remove the variable mapping', function(done) {
+
+        // call function under test
+        var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o }}';
+        var result = testUtils.queryTeststore(query);
+        var resultTriples = testUtils.deFusekify(result);
+
+        // verify results
+        expect(resultTriples.length).toBe(3);
+
+        done();
+      });
+    });
 
   });
 });

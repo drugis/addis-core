@@ -1,8 +1,8 @@
-PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
 WITH <$graphUri>
 DELETE {
-  <$studyConcept> owl:sameAs ?oldDatasetConcept .
+  ?node owl:sameAs <$datasetConcept> .
 } WHERE {
-  <$studyConcept> owl:sameAs ?oldDatasetConcept .
+  ?node owl:sameAs <$datasetConcept> .
 };

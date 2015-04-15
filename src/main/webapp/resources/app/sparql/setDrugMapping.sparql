@@ -1,4 +1,4 @@
-PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
 WITH <$graphUri>
 DELETE {
@@ -7,9 +7,9 @@ DELETE {
   <$studyConcept> owl:sameAs ?oldDatasetConcept .
 };
 
-INSERT DATA {  
+INSERT DATA {
   GRAPH <$graphUri> {
-    <$studyConcept> owl:sameAs <$newDatasetConcept> .
+    <$studyConcept> owl:sameAs <$datasetConcept> .
   }
 }
 
