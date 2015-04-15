@@ -489,10 +489,10 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "           WHERE {\n" +
             "            BIND ('Flexible' as ?doseType)\n" +
             "             ?activity a ontology:TreatmentActivity ;\n" +
-            "               ontology:activity_application [\n" +
+            "               ontology:has_activity_application [\n" +
             "                 ontology:applied_to_arm ?arm \n" +
             "               ] ;\n" +
-            "               ontology:administered_drugs/rdf:rest*/rdf:first [ a ontology:TitratedDoseDrugTreatment ] .\n" +
+            "               ontology:has_drug_treatment [ a ontology:TitratedDoseDrugTreatment ] .\n" +
             "               ?study ontology:has_arm ?arm .\n" +
             "            } GROUP BY ?study ?doseType\n" +
             "              HAVING (COUNT(*) > 0)\n" +
@@ -638,7 +638,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "    ?study ontology:has_arm ?arm .\n" +
             "    ?study ontology:has_primary_epoch ?epoch .\n" +
             "    ?activity a ontology:TreatmentActivity ;\n" +
-            "      ontology:activity_application [\n" +
+            "      ontology:has_activity_application [\n" +
             "        ontology:applied_to_arm ?arm ;\n" +
             "        ontology:applied_in_epoch ?epoch\n" +
             "      ] ;\n" +
