@@ -439,6 +439,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
             "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
             "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+            "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
             "\n" +
             "PREFIX study: <http://trials.drugis.org/studies/>\n" +
             "\n" +
@@ -501,11 +502,11 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             "      SELECT ?study (group_concat(?drugName; separator = \", \") as ?drugNames)\n" +
             "      WHERE {\n" +
             "        GRAPH ?dataset {\n" +
-            "          ?drug rdfs:subClassOf ontology:Drug .\n" +
+            "          ?drug a ontology:Drug .\n" +
             "          ?dataset ontology:contains_study ?study \n" +
             "        }\n" +
             "        GRAPH ?study {\n" +
-            "          ?instance a ?drug .\n" +
+            "          ?instance owl:sameAs ?drug .\n" +
             "          ?instance rdfs:label ?drugName.\n" +
             "        }\n" +
             "      } GROUP BY ?study\n" +
