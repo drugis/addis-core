@@ -56,6 +56,9 @@ define([], function() {
           row.relativeToEpochLabel = moment.relativeToEpochLabel;
           row.timeOffsetDuration = moment.timeOffsetDuration;
           row.studyDataArmValues = moment.studyDataArmValues;
+          row.studyDataArmValues.sort(function(a, b){
+            return a.armLabel.localeCompare(b.armLabel);
+          });
           rows.push(row);
         });
 
