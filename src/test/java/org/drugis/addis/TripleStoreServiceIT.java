@@ -1,9 +1,7 @@
 package org.drugis.addis;
 
 import org.drugis.addis.config.TrialverseServiceIntegrationTestConfig;
-import org.drugis.addis.trialverse.model.AbstractStudyDataArmValue;
-import org.drugis.addis.trialverse.model.StudyData;
-import org.drugis.addis.trialverse.model.TreatmentActivity;
+import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.junit.Test;
@@ -62,6 +60,22 @@ public class TripleStoreServiceIT {
     String studyUid = "30b36971-1074-4482-9252-74f6541b566b"; //TAK491-008 / NCT00696241
     List<StudyData> studyData = triplestoreService.getStudyData(nameSpaceUid, studyUid, StudyDataSection.BASE_LINE_CHARACTERISTICS);
     assertEquals(2, studyData.size());
+  }
+
+  @Test
+  public void testGetOutcomes() {
+    String nameSpaceUid = "6292ccea-083c-4941-a3b6-2347f6165755"; // edarbi
+    String version = "http://drugis.org/eventSourcing/event/15b24e23-f9fc-47d0-80ae-471df7830ba2";
+    List<SemanticOutcome> outcomes = triplestoreService.getOutcomes(nameSpaceUid, version);
+    assertEquals(95, outcomes.size());
+  }
+
+  @Test
+  public void testGetInterventions() {
+    String nameSpaceUid = "6292ccea-083c-4941-a3b6-2347f6165755"; // edarbi
+    String version = "http://drugis.org/eventSourcing/event/15b24e23-f9fc-47d0-80ae-471df7830ba2";
+    List<SemanticIntervention> interventions = triplestoreService.getInterventions(nameSpaceUid, version);
+    assertEquals(7, interventions.size());
   }
 
 }

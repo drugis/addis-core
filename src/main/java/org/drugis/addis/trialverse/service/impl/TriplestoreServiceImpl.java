@@ -49,6 +49,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private final static String STUDY_TREATMENT_ACTIVITIES = loadResource("sparql/studyTreatmentActivities.sparql");
   private final static String STUDY_DATA = loadResource("sparql/studyData.sparql");
   private final static String SINGLE_STUDY_MEASUREMENTS = loadResource("sparql/singleStudyMeasurements.sparql");
+  private final static String OUTCOME_QUERY = loadResource("sparql/outcomes.sparql");
+  private final static String INTERVENTION_QUERY = loadResource("sparql/interventions.sparql");
 
   @Inject
   RestOperationsFactory restOperationsFactory;
@@ -124,19 +126,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public List<SemanticOutcome> getOutcomes(String namespaceUid, String version) {
     List<SemanticOutcome> outcomes = new ArrayList<>();
 
-    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
-            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "\n" +
-            "PREFIX entity: <http://trials.drugis.org/entities/> \n" +
-            "\n" +
-            "SELECT ?outcome ?label WHERE {\n" +
-            "  GRAPH dataset:" + namespaceUid + " {\n" +
-            "    { ?outcome rdfs:subClassOf ontology:Endpoint } UNION { ?outcome rdfs:subClassOf ontology:AdverseEvent } .\n" +
-            "    ?outcome rdfs:label ?label .\n" +
-            "  }\n" +
-            "}\n";
+    String query = StringUtils.replace(OUTCOME_QUERY, "$namespaceUid", namespaceUid);
     //System.out.println(query);
     String response = queryTripleStore(query, version);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
@@ -152,20 +142,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Override
   public List<SemanticIntervention> getInterventions(String namespaceUid, String version) {
     List<SemanticIntervention> interventions = new ArrayList<>();
-
-    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
-            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
-            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "\n" +
-            "PREFIX entity: <http://trials.drugis.org/entities/> \n" +
-            "\n" +
-            "SELECT ?intervention ?label WHERE {\n" +
-            "  GRAPH dataset:" + namespaceUid + " {\n" +
-            "    ?intervention rdfs:subClassOf ontology:Drug .\n" +
-            "    ?intervention rdfs:label ?label .\n" +
-            "  }\n" +
-            "}\n";
-
+    String query = StringUtils.replace(INTERVENTION_QUERY, "$namespaceUid", namespaceUid);
     String response = queryTripleStore(query, version);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
