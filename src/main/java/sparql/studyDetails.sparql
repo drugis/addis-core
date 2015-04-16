@@ -2,6 +2,7 @@ PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX dataset: <http://trials.drugis.org/datasets/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
 PREFIX study: <http://trials.drugis.org/studies/>
 
@@ -64,11 +65,11 @@ SELECT ?study ?title ?label ?studySize ?allocation ?blinding ?objective ?drugNam
         SELECT ?study (group_concat(?drugName; separator = ", ") as ?drugNames)
         WHERE {
           GRAPH ?dataset {
-            ?drug rdfs:subClassOf ontology:Drug .
+            ?drug a ontology:Drug .
             ?dataset ontology:contains_study ?study
           }
           GRAPH ?study {
-            ?instance a ?drug .
+            ?instance owl:sameAs ?drug .
             ?instance rdfs:label ?drugName.
           }
         } GROUP BY ?study

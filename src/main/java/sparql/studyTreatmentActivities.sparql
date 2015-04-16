@@ -44,26 +44,27 @@ WHERE {
        ontology:applied_in_epoch ?epochUid
      ] .
      OPTIONAL {
-       ?treatmentActivityUid ontology:treatment_has_drug ?drugUid .
+       ?treatmentActivityUid ontology:has_drug_treatment ?treatmentNode .
+       ?treatmentNode ontology:treatment_has_drug ?drugUid .
        ?drugUid rdfs:label ?treatmentDrugLabel .
        OPTIONAL {
-         ?treatment ontology:treatment_min_dose [
-           rdf:value ?minValue ;
-           ontology:dosingPeriodicity ?minDosingPeriodicity;
-           ontology:units ?minUnit
-         ] .
+         ?treatmentNode ontology:treatment_min_dose [
+             rdf:value ?minValue ;
+             ontology:dosingPeriodicity ?minDosingPeriodicity;
+             ontology:unit ?minUnit
+          ] ;
+           ontology:treatment_max_dose [
+             ontology:unit ?maxUnit ;
+             rdf:value ?maxValue ;
+             ontology:dosingPeriodicity ?maxDosingPeriodicity
+           ] .
          ?minUnit rdfs:label ?minUnitLabel .
-         ?treatment ontology:treatment_max_dose [
-           ontology:units ?maxUnit ;
-           rdf:value ?maxValue ;
-           ontology:dosingPeriodicity ?maxDosingPeriodicity
-         ] .
          ?maxUnit rdfs:label ?maxUnitLabel .
        }
        OPTIONAL {
-         ?treatment ontology:treatment_dose [
+         ?treatmentNode ontology:treatment_dose [
            rdf:value ?fixedValue ;
-           ontology:units ?fixedUnit ;
+           ontology:unit ?fixedUnit ;
            ontology:dosingPeriodicity ?fixedDosingPeriodicity
          ] .
          ?fixedUnit rdfs:label ?fixedUnitLabel .
