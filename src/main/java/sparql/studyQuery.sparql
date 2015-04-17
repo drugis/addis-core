@@ -2,7 +2,7 @@ PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX dataset: <http://trials.drugis.org/datasets/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
 PREFIX study: <http://trials.drugis.org/studies/>
 
@@ -15,22 +15,23 @@ SELECT ?study ?title ?label ?outcomeUids ?armUid ?drugUid  WHERE {
     ?study rdfs:comment ?title .
     ?activity 
       a ontology:TreatmentActivity ;
-      ontology:activity_application [
+      ontology:has_activity_application [
         ontology:applied_to_arm ?armUid
       ] ;
-      ontology:administered_drugs ?administeredDrugs .
-    ?administeredDrugs list:member ?administeredDrug .
+      ontology:has_drug_treatment [
+        ontology:treatment_has_drug ?treatmentDrug
+      ] .
     ?armUid rdfs:label ?armLabel .
-    ?administeredDrug ontology:treatment_has_drug ?treatmentDrug .
     ?treatmentDrug rdfs:label ?drugLabel .
-    ?treatmentDrug a ?drugUid .
+    ?treatmentDrug owl:sameAs ?drugUid .
     {
       SELECT ?study (group_concat(?outcomeUid; separator = ", ") as ?outcomeUids)
       WHERE {
         GRAPH ?study {
           ?study ontology:has_outcome ?outcomeInstanceUid .
-          ?outcomeInstanceUid a ?outcomeUid .
-
+          ?outcomeInstanceUid ontology:of_variable [
+            owl:sameAs ?outcomeUid
+          ] .
         }
       } GROUP BY ?study
     }

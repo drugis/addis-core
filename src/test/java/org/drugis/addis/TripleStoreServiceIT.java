@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by connor on 16-4-15.
@@ -76,6 +77,16 @@ public class TripleStoreServiceIT {
     String version = "http://drugis.org/eventSourcing/event/15b24e23-f9fc-47d0-80ae-471df7830ba2";
     List<SemanticIntervention> interventions = triplestoreService.getInterventions(nameSpaceUid, version);
     assertEquals(7, interventions.size());
+  }
+
+  @Test
+  public void testGetStudies() {
+    String nameSpaceUid = "6292ccea-083c-4941-a3b6-2347f6165755"; // edarbi
+    String version = "http://drugis.org/eventSourcing/event/15b24e23-f9fc-47d0-80ae-471df7830ba2";
+    List<Study> studies = triplestoreService.queryStudies(nameSpaceUid, version);
+    assertEquals(5, studies.size());
+    assertEquals(59, studies.get(0).getOutcomeUids().size());
+    assertTrue(studies.get(0).getOutcomeUids().get(0).startsWith("http://trials.drugis.org/entities/"));
   }
 
 }
