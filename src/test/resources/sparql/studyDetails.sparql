@@ -46,21 +46,20 @@ PREFIX ontology: <http://trials.drugis.org/ontology#>
       OPTIONAL {
         ?study ontology:has_end_date ?endDate .
       }
-        OPTIONAL {
-           SELECT ?study ?doseType
-             WHERE {
-              BIND ('Flexible' as ?doseType)
-               ?activity a ontology:TreatmentActivity ;
-                 ontology:activity_application [
-                   ontology:applied_to_arm ?arm
-                 ] ;
-                 ontology:administered_drugs/rdf:rest*/rdf:first [ a ontology:TitratedDoseDrugTreatment ] .
-                 ?study ontology:has_arm ?arm .
-              } GROUP BY ?study ?doseType
-                HAVING (COUNT(*) > 0)
-        }
-      OPTIONAL
-      {
+      OPTIONAL {
+        SELECT ?study ?doseType
+           WHERE {
+            BIND ('Flexible' as ?doseType)
+             ?activity a ontology:TreatmentActivity ;
+               ontology:has_activity_application [
+                 ontology:applied_to_arm ?arm
+               ] ;
+               ontology:has_drug_treatment [ a ontology:TitratedDoseDrugTreatment ] .
+               ?study ontology:has_arm ?arm .
+            } GROUP BY ?study ?doseType
+              HAVING (COUNT(*) > 0)
+      }
+      OPTIONAL {
         SELECT ?study (group_concat(?drugName; separator = ", ") as ?drugNames)
         WHERE {
           GRAPH ?dataset {
@@ -68,7 +67,7 @@ PREFIX ontology: <http://trials.drugis.org/ontology#>
             ?dataset ontology:contains_study ?study
           }
           GRAPH ?study {
-            ?instance a ?drug .
+            ?instance owl:sameAs ?drug .
             ?instance rdfs:label ?drugName.
           }
         } GROUP BY ?study

@@ -44,6 +44,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private final static String NAMESPACE = loadResource("sparql/namespace.sparql");
   private final static String STUDY_QUERY = loadResource("sparql/studyQuery.sparql");
   private final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
+  private final static String STUDIES_WITH_DETAILS_QUERY = loadResource("sparql/studiesWithDetails.sparql");
   private final static String STUDY_ARMS_QUERY = loadResource("sparql/studyArms.sparql");
   private final static String STUDY_ARMS_EPOCHS = loadResource("sparql/studyEpochs.sparql");
   private final static String STUDY_TREATMENT_ACTIVITIES = loadResource("sparql/studyTreatmentActivities.sparql");
@@ -413,108 +414,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Override
   public List<StudyWithDetails> queryStudydetails(String namespaceUid) {
     List<StudyWithDetails> studiesWithDetail = new ArrayList<>();
-    String query = "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
-            "PREFIX dataset: <http://trials.drugis.org/datasets/>\n" +
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
-            "\n" +
-            "PREFIX study: <http://trials.drugis.org/studies/>\n" +
-            "\n" +
-            "SELECT ?study ?title ?label ?studySize ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria" +
-            " ?publications ?status ?numberOfCenters ?indication ?startDate ?endDate ?numberOfArms ?doseType WHERE {\n" +
-            "  GRAPH dataset:" + namespaceUid + " {\n" +
-            "    ?dataset ontology:contains_study ?study .\n" +
-            "  }\n" +
-            "GRAPH ?study {\n" +
-            "    ?study \n" +
-            "      rdfs:label ?label ;\n" +
-            "      rdfs:comment ?title .\n" +
-            "    OPTIONAL {\n" +
-            "      ?study ontology:has_allocation ?allocation .\n" +
-            "    }\n" +
-            "    OPTIONAL {\n" +
-            "      ?study ontology:has_blinding ?blinding .\n" +
-            "    }\n" +
-            "    OPTIONAL {\n" +
-            "      ?study ontology:has_objective [\n" +
-            "        rdfs:comment ?objective\n" +
-            "      ] .\n" +
-            "    }\n" +
-            "    OPTIONAL {\n" +
-            "      ?study ontology:has_eligibility_criteria [\n" +
-            "        rdfs:comment ?inclusionCriteria\n" +
-            "      ] .\n" +
-            "    }\n" +
-            "    OPTIONAL {\n" +
-            "      ?study ontology:status ?status .\n" +
-            "    }\n" +
-            "    OPTIONAL {\n" +
-            "      ?study ontology:has_number_of_centers ?numberOfCenters .\n" +
-            "    }\n" +
-            "    OPTIONAL {\n" +
-            "      ?study ontology:has_indication ?indication_instance .\n" +
-            "      ?indication_instance rdfs:label ?indication .\n" +
-            "    }\n" +
-            "    OPTIONAL {\n" +
-            "      ?study ontology:has_start_date ?startDate .\n" +
-            "    }\n" +
-            "    OPTIONAL {\n" +
-            "      ?study ontology:has_end_date ?endDate .\n" +
-            "    }\n" +
-            "      OPTIONAL {\n" +
-            "         SELECT ?study ?doseType\n" +
-            "           WHERE {\n" +
-            "            BIND ('Flexible' as ?doseType)\n" +
-            "             ?activity a ontology:TreatmentActivity ;\n" +
-            "               ontology:has_activity_application [\n" +
-            "                 ontology:applied_to_arm ?arm \n" +
-            "               ] ;\n" +
-            "               ontology:has_drug_treatment [ a ontology:TitratedDoseDrugTreatment ] .\n" +
-            "               ?study ontology:has_arm ?arm .\n" +
-            "            } GROUP BY ?study ?doseType\n" +
-            "              HAVING (COUNT(*) > 0)\n" +
-            "      }\n" +
-            "    OPTIONAL\n" +
-            "    {\n" +
-            "      SELECT ?study (group_concat(?drugName; separator = \", \") as ?drugNames)\n" +
-            "      WHERE {\n" +
-            "        GRAPH ?dataset {\n" +
-            "          ?drug a ontology:Drug .\n" +
-            "          ?dataset ontology:contains_study ?study \n" +
-            "        }\n" +
-            "        GRAPH ?study {\n" +
-            "          ?instance owl:sameAs ?drug .\n" +
-            "          ?instance rdfs:label ?drugName.\n" +
-            "        }\n" +
-            "      } GROUP BY ?study\n" +
-            "    }\n" +
-            "    OPTIONAL\n" +
-            "    {\n" +
-            "      SELECT ?study (group_concat(?publication; separator = \", \") as ?publications)\n" +
-            "      WHERE {\n" +
-            "        GRAPH ?study {\n" +
-            "          OPTIONAL {\n" +
-            "            ?study ontology:has_publication [\n" +
-            "              ontology:has_id ?publication\n" +
-            "            ] .\n" +
-            "          }\n" +
-            "        }\n" +
-            "      } GROUP BY ?study\n" +
-            "    }\n" +
-            "    {\n" +
-            "      SELECT ?study (COUNT(?arm) as ?numberOfArms) (SUM(?numberOfParticipantsStarting) as ?studySize)\n" +
-            "        WHERE {\n" +
-            "          GRAPH ?study {\n" +
-            "            ?arm a ontology:Arm .\n" +
-            "            ?participantsStarting ontology:of_arm ?arm .\n" +
-            "            ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .\n" +
-            "          }\n" +
-            "        } GROUP BY ?study\n" +
-            "    }\n" +
-            "  }\n" +
-            "}";
-    //System.out.println(query);
+    String query = STUDIES_WITH_DETAILS_QUERY.replace("$namespaceUid", namespaceUid);
     String response = queryTripleStore(query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
