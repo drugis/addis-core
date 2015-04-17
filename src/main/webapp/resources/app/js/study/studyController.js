@@ -107,17 +107,17 @@ define([],
         populationCharacteristics: {
           label: 'Population characteristics',
           serviceName: 'PopulationCharacteristicService',
-          typeUri: 'http://trials.drugis.org/ontology#PopulationCharacteristic'
+          typeUri: 'http://trials.drugis.org/ontology#Variable'
         },
         endpoints: {
           label: 'Endpoints',
           serviceName: 'EndpointService',
-          typeUri: 'http://trials.drugis.org/ontology#Endpoint'
+          typeUri: 'http://trials.drugis.org/ontology#Variable'
         },
         adverseEvents: {
           label: 'Adverse events',
           serviceName: 'AdverseEventService',
-          typeUri: 'http://trials.drugis.org/ontology#AdverseEvent'
+          typeUri: 'http://trials.drugis.org/ontology#Variable'
         }
       };
 
