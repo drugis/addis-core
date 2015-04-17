@@ -15,7 +15,6 @@ Make sure you have the bower components needen by running `bower install` from t
 Running with PostgreSQL
 -----------------------
 
-
 Set up the database:
 
 ```
@@ -44,4 +43,9 @@ Run the Tomcat server (using the exact version of the plugin for which the syste
 
 ```
 mvn org.apache.tomcat.maven:tomcat7-maven-plugin:2.2:run
+```
+
+To run integration tests:
+```
+mvn test -Dtest=*IT
 ```
