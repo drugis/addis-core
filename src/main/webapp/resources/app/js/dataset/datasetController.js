@@ -84,11 +84,11 @@ define([],
           label: 'Title',
           visible: true
         }, {
-          id: 'ontology:studySize',
+          id: 'studySize',
           label: 'Study size',
           visible: true
         }, {
-          id: 'hasIndicationLabel',
+          id: 'indication',
           label: 'Indication',
           visible: false
         }, {
@@ -96,25 +96,25 @@ define([],
           label: 'Status',
           visible: true,
           type: 'removePreamble',
-          frontStr: 'status:'
+          frontStr: 'http://trials.drugis.org/ontology#status'
         }, {
-          id: 'has_allocation',
+          id: 'allocation',
           label: 'Allocation',
           type: 'removePreamble',
-          frontStr: 'ontology:allocation',
+          frontStr: 'http://trials.drugis.org/ontology#allocation',
           visible: false
         }, {
-          id: 'has_blinding',
+          id: 'blinding',
           label: 'Blinding',
           type: 'removePreamble',
-          frontStr: 'ontology:blinding',
+          frontStr: 'http://trials.drugis.org/ontology#blinding',
           visible: false
         }, {
-          id: 'usesDrugs',
+          id: 'drugNames',
           label: 'Investigational drugNames',
           visible: true
         }, {
-          id: 'ontology:numberOfArms',
+          id: 'numberOfArms',
           label: 'Number of Arms',
           visible: false
         }, {
@@ -128,11 +128,11 @@ define([],
           visible: false,
           type: 'dosing'
         }, {
-          id: 'has_start_date',
+          id: 'startDate',
           label: 'Start date',
           visible: false,
         }, {
-          id: 'has_end_date',
+          id: 'endDate',
           label: 'End date',
           visible: false,
         }],
