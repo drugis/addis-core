@@ -62,6 +62,20 @@ SELECT DISTINCT ?study ?studyName
       ?measurement
         ontology:count ?count ;
         ontology:sample_size ?sampleSize .
+    } .
+    {
+      SELECT ?study ?arm
+      WHERE {
+       ?activity a ontology:TreatmentActivity ;
+             ontology:has_activity_application [
+               ontology:applied_to_arm ?arm ;
+               ontology:applied_in_epoch ?epoch
+             ] ;
+             ontology:has_drug_treatment [
+               ontology:treatment_has_drug ?drugInstance
+             ] .
+      } GROUP BY ?study ?arm
+          HAVING (COUNT(?drugInstance) < 2)
     }
   }
 }

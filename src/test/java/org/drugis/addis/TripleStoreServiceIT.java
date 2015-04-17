@@ -117,7 +117,7 @@ public class TripleStoreServiceIT {
     String placebo = "dce4e0b8-57a4-438b-9001-742fcc1b9c8b";
     List<String> interventionUids = Arrays.asList(azilsartan, placebo);
     List<TrialDataStudy> trialData = triplestoreService.getTrialData(nameSpaceUid, version, nonSAE, interventionUids);
-    assertEquals(5, trialData.size());
+    assertEquals(4, trialData.size());
   }
 
 }
