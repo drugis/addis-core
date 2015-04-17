@@ -9,14 +9,8 @@ define([], function() {
       uri: 'http://trials.drugis.org/ontology#Drug',
       label: 'Drug'
     }, {
-      uri: 'http://trials.drugis.org/ontology#Endpoint',
-      label: 'Endpoint'
-    }, {
-      uri: 'http://trials.drugis.org/ontology#AdverseEvent',
-      label: 'Adverse Event'
-    }, {
-      uri: 'http://trials.drugis.org/ontology#PopulationCharacteristic',
-      label: 'Population Characteristic'
+      uri: 'http://trials.drugis.org/ontology#Variable',
+      label: 'Variable'
     }];
 
     $scope.createConcept = function() {

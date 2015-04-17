@@ -15,9 +15,7 @@
       <li class="divider"></li>
       <li class="heading">Concepts</li>
       <li><a ng-click="sideNavClick('drugs')">Drugs</a></li>
-      <li><a ng-click="sideNavClick('popchars')">Population Characteristics</a></li>
-      <li><a ng-click="sideNavClick('endpoints')">Endpoints</a></li>
-      <li><a ng-click="sideNavClick('adverseEvents')">Adverse Events</a></li>
+      <li><a ng-click="sideNavClick('variables')">Variables</a></li>
     </ul>
   </div>
   <div class="columns large-10 medium-9">
@@ -26,19 +24,11 @@
     <button ng-show="isEditingAllowed" class="small" ng-click="openAddConceptDialog()"><i class="fa fa-plus"> Add Concept</i></button>
     <h3>Drugs</h3>
     <ul id="drugs">
-      <li ng-repeat="concept in concepts | filter:'ontology#drug'">{{concept.label}}</li>
+      <li ng-repeat="concept in concepts | filter:'ontology#Drug' | orderBy:'label'">{{concept.label}}</li>
     </ul>
-    <h3>Population Characteristics</h3>
-    <ul id="popchars">
-      <li ng-repeat="concept in concepts | filter:'ontology#PopulationCharacteristic'">{{concept.label}}</li>
-    </ul>
-    <h3>Endpoints</h3>
-    <ul id="endpoints">
-      <li ng-repeat="concept in concepts | filter:'ontology#Endpoint'">{{concept.label}}</li>
-    </ul>
-    <h3>Adverse Events</h3>
-    <ul id="adverseEvents">
-      <li ng-repeat="concept in concepts | filter:'ontology#AdverseEvent'">{{concept.label}}</li>
+    <h3>Variables</h3>
+    <ul id="variables">
+      <li ng-repeat="concept in concepts | filter:'ontology#Variable'  | orderBy:'label'">{{concept.label}}</li>
     </ul>
   </div>
 </div>

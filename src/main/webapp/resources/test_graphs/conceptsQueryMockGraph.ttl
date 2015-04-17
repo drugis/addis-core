@@ -1,5 +1,5 @@
 <http://trials.drugis.org/concepts/e43c3332-31ac-4fa0-b994-7673757fce4b>
-        a       <http://trials.drugis.org/ontology#Endpoint> ;
+        a       <http://trials.drugis.org/ontology#Variable> ;
         <http://www.w3.org/2000/01/rdf-schema#label>
                 "endpoint" .
 
