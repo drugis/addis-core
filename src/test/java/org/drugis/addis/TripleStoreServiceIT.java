@@ -4,15 +4,18 @@ import org.drugis.addis.config.TrialverseServiceIntegrationTestConfig;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -87,6 +90,34 @@ public class TripleStoreServiceIT {
     assertEquals(5, studies.size());
     assertEquals(59, studies.get(0).getOutcomeUids().size());
     assertTrue(studies.get(0).getOutcomeUids().get(0).startsWith("http://trials.drugis.org/entities/"));
+  }
+
+  @Test
+  public void testGetSingleStudyMeasurements() {
+    String studyUid = "30b36971-1074-4482-9252-74f6541b566b"; //TAK491-008 / NCT00696241
+    String version = "http://drugis.org/eventSourcing/event/15b24e23-f9fc-47d0-80ae-471df7830ba2";
+
+    String nonSAE = "832c2831-dab2-4707-8bf4-af0cf057ba5a";
+    String SBPMeanTroughSitting = "151afdaf-ed92-4204-a389-a3e125e0f19d";
+    List<String> outcomeUids = Arrays.asList(SBPMeanTroughSitting, nonSAE);
+    String azilsartan = "f1b57b39-1887-4547-aaf3-7699ed37463b";
+    String placebo = "dce4e0b8-57a4-438b-9001-742fcc1b9c8b";
+    List<String> interventionUids = Arrays.asList(azilsartan, placebo);
+    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> singleStudyMeasurements = triplestoreService.getSingleStudyMeasurements(studyUid, version, outcomeUids, interventionUids);
+    assertEquals(8, singleStudyMeasurements.size());
+    assertFalse(singleStudyMeasurements.get(0).getAlternativeUid().startsWith("ontology"));
+  }
+
+  @Test
+  public void testGetTrialData() {
+    String nameSpaceUid = "6292ccea-083c-4941-a3b6-2347f6165755"; // edarbi
+    String version = "http://drugis.org/eventSourcing/event/15b24e23-f9fc-47d0-80ae-471df7830ba2";
+    String nonSAE = "832c2831-dab2-4707-8bf4-af0cf057ba5a";
+    String azilsartan = "f1b57b39-1887-4547-aaf3-7699ed37463b";
+    String placebo = "dce4e0b8-57a4-438b-9001-742fcc1b9c8b";
+    List<String> interventionUids = Arrays.asList(azilsartan, placebo);
+    List<TrialDataStudy> trialData = triplestoreService.getTrialData(nameSpaceUid, version, nonSAE, interventionUids);
+    assertEquals(10, trialData.size());
   }
 
 }
