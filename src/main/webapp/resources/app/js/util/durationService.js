@@ -72,6 +72,12 @@ define([], function() {
     }
 
     function durationStringToMills(durationString) {
+      if(durationString[0] === '-'){
+        durationString = durationString.slice(1);
+      }
+      if(durationString === 'P0D' ) {
+        durationString = 'PT0S';
+      }
       if(!isValidDuration(durationString)) {
         throw "not a valid duration string";
       }
