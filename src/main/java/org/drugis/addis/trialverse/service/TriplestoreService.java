@@ -14,8 +14,6 @@ import java.util.List;
  */
 public interface TriplestoreService {
   public final static String TRIPLESTORE_BASE_URI = System.getenv("TRIPLESTORE_BASE_URI");
-  public final static String TRIPLESTORE_URI =  TRIPLESTORE_BASE_URI + "/current/query";
-  public final static String HISTORY_URI = TRIPLESTORE_BASE_URI + "/history/query";
 
   public Collection<Namespace> queryNameSpaces();
 

@@ -21,8 +21,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestOperations;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -39,7 +45,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   private final static Logger logger = LoggerFactory.getLogger(TriplestoreServiceImpl.class);
 
-  private final static String LATEST_EVENT_QUERY = loadResource("sparql/latestEvent.sparql");
   private final static String NAMESPACE_QUERY = loadResource("sparql/namespaceQuery.sparql");
   private final static String NAMESPACE = loadResource("sparql/namespace.sparql");
   private final static String STUDY_QUERY = loadResource("sparql/studyQuery.sparql");
@@ -53,6 +58,13 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private final static String TRIAL_DATA = loadResource("sparql/trialData.sparql");
   private final static String OUTCOME_QUERY = loadResource("sparql/outcomes.sparql");
   private final static String INTERVENTION_QUERY = loadResource("sparql/interventions.sparql");
+
+  public static final String QUERY_ENDPOINT = "/query";
+  public static final String QUERY_PARAM_QUERY = "query";
+  public static final String X_ACCEPT_EVENT_SOURCE_VERSION = "X-Accept-EventSource-Version";
+  public static final String VERSION_PATH = "versions/";
+  public static final String ACCEPT_HEADER = "Accept";
+  public static final String APPLICATION_SPARQL_RESULTS_JSON = "application/sparql-results+json";
 
   @Inject
   RestOperationsFactory restOperationsFactory;
@@ -69,29 +81,25 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return "";
   }
 
-  private String getLatestEvent() {
-    String query = LATEST_EVENT_QUERY;
-    String response = queryHistory(query);
-    String lastEventId;
 
-    JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    if(bindings.size() != 1) {
-      logger.error("there can only be one latestEvent");
-      throw new RuntimeException();
-    }
-    Object binding = bindings.get(0);
-     lastEventId = JsonPath.read(binding, "$.lastEventId.value");
-
-    return lastEventId;
-  }
 
 
   @Override
   public Collection<Namespace> queryNameSpaces() {
-    String query = NAMESPACE_QUERY;
-    String response = queryTripleStore(query);
+
+
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(TRIPLESTORE_BASE_URI)
+            .path("datasets/")
+            .build();
+
+    final String[] response = restOperationsFactory.build().getForObject(uriComponents.toUri(), String[].class);// todo use queryNamespaces endpoint
+    List<String> datasetUries = Arrays.asList(response);
+
+    for(String datasetUri: datasetUries) {
+      logger.debug(datasetUri);
+    }
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
-    String currentVersionUri = getLatestEvent();
+
     List<Namespace> namespaces = new ArrayList<>(bindings.size());
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.dataset.value");
@@ -102,7 +110,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 	  
       JSONObject row = (JSONObject) binding;
       String sourceUrl = row.containsKey("sourceUrl") ? JsonPath.<String>read(row, "$.sourceUrl.value") : null;
-      namespaces.add(new Namespace(uid, name, description, numberOfStudies, sourceUrl, currentVersionUri));
+      namespaces.add(new Namespace(uid, name, description, numberOfStudies, sourceUrl, "foo"));
     }
     return namespaces;
   }
@@ -111,7 +119,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public Namespace getNamespace(String uid) {
     String query = StringUtils.replace(NAMESPACE, "$namespaceUid", uid);
 
-    String response = queryTripleStore(query);
+    String response = queryTripleStore(uid, query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     Object binding = bindings.get(0);
     String name = JsonPath.read(binding, "$.label.value");
@@ -119,8 +127,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     Integer numberOfStudies = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfStudies.value"));
     JSONObject row = (JSONObject) binding;
     String sourceUrl = row.containsKey("sourceUrl") ? JsonPath.<String>read(row, "$.sourceUrl.value") : null;
-    String currentVersionURI = getLatestEvent();
-    return new Namespace(uid, name, description, numberOfStudies, sourceUrl, currentVersionURI);
+    return new Namespace(uid, name, description, numberOfStudies, sourceUrl, "foo");
   }
 
 
@@ -145,7 +152,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public List<SemanticIntervention> getInterventions(String namespaceUid, String version) {
     List<SemanticIntervention> interventions = new ArrayList<>();
     String query = StringUtils.replace(INTERVENTION_QUERY, "$namespaceUid", namespaceUid);
-    String response = queryTripleStore(query, version);
+    String response = queryTripleStore(namespaceUid, query, version);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       String uid = JsonPath.read(binding, "$.intervention.value");
@@ -199,7 +206,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     String query = StringUtils.replace(STUDY_DETAILS_QUERY, "$namespaceUid", namespaceUid);
     query = StringUtils.replace(query, "$studyUid", studyUid);
     logger.debug(query);
-    String response = queryTripleStore(query);
+    String response = queryTripleStore(namespaceUid, query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     if (bindings.size() != 1) {
       throw new ResourceDoesNotExistException();
@@ -213,14 +220,14 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public JSONArray getStudyArms(String namespaceUid, String studyUid) {
     String query = StringUtils.replace(STUDY_ARMS_QUERY, "$namespaceUid", namespaceUid);
     query = StringUtils.replace(query, "$studyUid", studyUid);
-    return getQueryResultList(query);
+    return getQueryResultList(namespaceUid, query);
   }
 
   @Override
   public JSONArray getStudyEpochs(String namespaceUid, String studyUid) {
     String query = StringUtils.replace(STUDY_ARMS_EPOCHS, "$namespaceUid", namespaceUid);
     query = StringUtils.replace(query, "$studyUid", studyUid);
-    return getQueryResultList(query);
+    return getQueryResultList(namespaceUid, query);
   }
 
   public Integer tryParseInt(String str) {
@@ -251,7 +258,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid) {
     String query = StringUtils.replace(STUDY_TREATMENT_ACTIVITIES, "$namespaceUid", namespaceUid);
     query = StringUtils.replace(query, "$studyUid", studyUid);
-    JSONArray queryResult = getQueryResultList(query);
+    JSONArray queryResult = getQueryResultList(namespaceUid, query);
 
     Map<String, TreatmentActivity> treatmentActivityMap = new HashMap<>();
     for (Object object : queryResult) {
@@ -310,7 +317,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     query = StringUtils.replace(query, "$studyUid", studyUid);
     query = StringUtils.replace(query, "$studyDataType", studyDataSection.toString());
     logger.info(query);
-    JSONArray queryResult = getQueryResultList(query);
+    JSONArray queryResult = getQueryResultList(namespaceUid, query);
 
     Map<String, StudyData> stringStudyDataMap = new HashMap<>();
     Map<Pair<String, String>, StudyDataMoment> outcomeMomentCache = new HashMap<>();
@@ -385,9 +392,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
 
-  private JSONArray getQueryResultList(String query) {
+  private JSONArray getQueryResultList(String namespaceUid, String query) {
     logger.debug(query);
-    String response = queryTripleStore(query);
+    String response = queryTripleStore(namespaceUid, query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     return parseBindings(bindings);
   }
@@ -415,7 +422,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public List<StudyWithDetails> queryStudydetails(String namespaceUid) {
     List<StudyWithDetails> studiesWithDetail = new ArrayList<>();
     String query = STUDIES_WITH_DETAILS_QUERY.replace("$namespaceUid", namespaceUid);
-    String response = queryTripleStore(query);
+    String response = queryTripleStore(namespaceUid, query);
     JSONArray bindings = JsonPath.read(response, "$.results.bindings");
     for (Object binding : bindings) {
       studiesWithDetail.add(buildStudyWithDetailsFromJsonObject(binding));
@@ -564,34 +571,51 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return measurementObjects;
   }
 
-  private String queryTripleStore(String query) {
-    logger.info("Triplestore uri = " + TRIPLESTORE_URI);
-    logger.info("sparql query = " + query);
-    Map<String, String> vars = new HashMap<>();
-    vars.put("query", query);
-    vars.put("output", "json");
-    RestOperations restOperations =  restOperationsFactory.build();
-    return restOperations.getForObject(TRIPLESTORE_URI + "?query={query}&output={output}", String.class, vars);
+  private String buildVersionUri(String versionUuid) {
+    return TRIPLESTORE_BASE_URI + VERSION_PATH + versionUuid;
   }
 
-  private String queryTripleStore(String query, String version) {
-    logger.info("Triplestore uri = " + TRIPLESTORE_URI);
+  private String queryTripleStore(String datasetUid, String query) {
+    logger.info("Triplestore uri = " + TRIPLESTORE_BASE_URI);
     logger.info("sparql query = " + query);
     Map<String, String> vars = new HashMap<>();
-    vars.put("query", query);
-    vars.put("output", "json");
-    RestOperations restOperations =  restOperationsFactory.build();
-    return restOperations.getForObject(TRIPLESTORE_URI + "?query={query}&output={output}&event=" + version, String.class, vars);
+    vars.put(QUERY_PARAM_QUERY, query);
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(TRIPLESTORE_BASE_URI)
+            .path("datasets/" + datasetUid)
+            .path(QUERY_ENDPOINT)
+            .queryParam(QUERY_PARAM_QUERY, query)
+            .build();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.put(QUERY_PARAM_QUERY, Arrays.asList(query));
+    headers.put(ACCEPT_HEADER, Arrays.asList(APPLICATION_SPARQL_RESULTS_JSON));
+
+    RestOperations restOperations =  restOperationsFactory.build(); //todo use application bean
+    ResponseEntity<String> result = restOperations.exchange(uriComponents.toUri().toString(), HttpMethod.GET,  new HttpEntity<>(headers), String.class, vars);
+    return result.getBody();
   }
 
-  private String queryHistory(String query) {
-    logger.info("Triplestore uri = " + HISTORY_URI);
+
+  private String queryTripleStore(String namespaceUid, String query, String versionUid) {
+    logger.info("Triplestore uri = " + TRIPLESTORE_BASE_URI);
     logger.info("sparql query = " + query);
     Map<String, String> vars = new HashMap<>();
-    vars.put("query", query);
-    vars.put("output", "json");
-    RestOperations restOperations =  restOperationsFactory.build();
-    return restOperations.getForObject(HISTORY_URI + "?query={query}&output={output}", String.class, vars);
+    vars.put(QUERY_PARAM_QUERY, query);
+
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(TRIPLESTORE_BASE_URI)
+            .path("datasets/" + namespaceUid)
+            .path(QUERY_ENDPOINT)
+            .queryParam(QUERY_PARAM_QUERY, query)
+            .build();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.put(QUERY_PARAM_QUERY, Arrays.asList(query));
+    headers.put(X_ACCEPT_EVENT_SOURCE_VERSION, Arrays.asList(buildVersionUri(versionUid)));
+    headers.put(ACCEPT_HEADER, Arrays.asList(APPLICATION_SPARQL_RESULTS_JSON));
+
+    RestOperations restOperations =  restOperationsFactory.build(); //todo use application bean
+    ResponseEntity<String> result = restOperations.exchange(uriComponents.toUri().toString(), HttpMethod.GET, new HttpEntity<>(headers), String.class, vars);
+    return result.getBody();
   }
 
   private String subStringAfterLastSymbol(String inStr, char symbol) {
