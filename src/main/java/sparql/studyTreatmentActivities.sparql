@@ -2,15 +2,7 @@ PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX dataset: <http://trials.drugis.org/datasets/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX study: <http://trials.drugis.org/studies/>
-PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
-PREFIX instance: <http://trials.drugis.org/instances/>
-
-PREFIX ontology: <http://trials.drugis.org/ontology#>
-PREFIX dataset: <http://trials.drugis.org/datasets/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX study: <http://trials.drugis.org/studies/>
+PREFIX graph: <http://trials.drugis.org/graphs/>
 PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 PREFIX instance: <http://trials.drugis.org/instances/>
 
@@ -31,10 +23,7 @@ SELECT DISTINCT
   ?fixedUnitLabel
   ?fixedDosingPeriodicity
 WHERE {
-  GRAPH dataset:$namespaceUid {
-    ?dataset ontology:contains_study ?studyUid .
-  }
-  GRAPH study:$studyUid {
+  GRAPH graph:$studyUid {
  ?studyUid ontology:has_epochs ?epochs .
      ?studyUid ontology:has_arm ?armUid .
      ?epochs  list:member ?epochUid .

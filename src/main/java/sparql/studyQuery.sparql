@@ -3,14 +3,11 @@ PREFIX dataset: <http://trials.drugis.org/datasets/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX graph: <http://trials.drugis.org/graphs/>
 
-PREFIX study: <http://trials.drugis.org/studies/>
-
-SELECT ?study ?title ?label ?outcomeUids ?armUid ?drugUid  WHERE {
-  GRAPH dataset:$namespaceUid {
-   ?dataset ontology:contains_study ?study .
-  }
-  GRAPH ?study {
+SELECT * WHERE {
+  GRAPH ?graph {
+    ?study a ontology:Study .
     ?study rdfs:label ?label .
     ?study rdfs:comment ?title .
     ?activity 
@@ -27,12 +24,10 @@ SELECT ?study ?title ?label ?outcomeUids ?armUid ?drugUid  WHERE {
     {
       SELECT ?study (group_concat(?outcomeUid; separator = ", ") as ?outcomeUids)
       WHERE {
-        GRAPH ?study {
           ?study ontology:has_outcome ?outcomeInstanceUid .
           ?outcomeInstanceUid ontology:of_variable [
             owl:sameAs ?outcomeUid
           ] .
-        }
       } GROUP BY ?study
     }
   }

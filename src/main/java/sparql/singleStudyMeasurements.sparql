@@ -7,14 +7,10 @@ PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX entity: <http://trials.drugis.org/entities/>
 PREFIX instance: <http://trials.drugis.org/instances/>
-PREFIX study: <http://trials.drugis.org/studies/>
+PREFIX graph: <http://trials.drugis.org/graphs/>
 
 SELECT DISTINCT ?interventionTypeUid ?interventionLabel ?outcomeTypeUid ?outcomeInstanceLabel ?mean ?stdDev ?count ?sampleSize WHERE {
-  GRAPH ?dataset {
-    ?dataset a ontology:Dataset .
-    ?dataset ontology:contains_study ?study .
-  }
-  GRAPH study:$studyUid {
+  GRAPH graph:$studyUid {
     #?study rdfs:label ?studyName . # debug info
     ?study ontology:has_outcome ?outcomeInstance .
     $outcomeUnionString .
@@ -25,8 +21,9 @@ SELECT DISTINCT ?interventionTypeUid ?interventionLabel ?outcomeTypeUid ?outcome
     $interventionUnionString .
     ?interventionInstance owl:sameAs ?interventionTypeUid .
   }
-  GRAPH ?study {
+  GRAPH ?graph {
     ?interventionInstance rdfs:label ?interventionLabel .
+    ?study a ontology:Study .
     ?study ontology:has_arm ?arm .
     ?study ontology:has_primary_epoch ?epoch .
     ?activity a ontology:TreatmentActivity ;

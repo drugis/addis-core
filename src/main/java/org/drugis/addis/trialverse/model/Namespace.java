@@ -9,18 +9,16 @@ public class Namespace {
   private String name;
   private String description;
   private Integer numberOfStudies;
-  private String sourceUrl;
   private String version;
 
   public Namespace() {
   }
 
-  public Namespace(String uid, String name, String description, Integer numberOfStudies, String sourceUrl, String version) {
+  public Namespace(String uid, String name, String description, Integer numberOfStudies, String version) {
     this.uid = uid;
     this.name = name;
     this.description = description;
     this.numberOfStudies = numberOfStudies;
-    this.sourceUrl = sourceUrl;
     this.version = version;
   }
 
@@ -40,10 +38,6 @@ public class Namespace {
     return numberOfStudies;
   }
 
-  public String getSourceUrl() {
-    return sourceUrl;
-  }
-
   public String getVersion() {
     return version;
   }
@@ -55,24 +49,22 @@ public class Namespace {
 
     Namespace namespace = (Namespace) o;
 
-    if (!description.equals(namespace.description)) return false;
-    if (!name.equals(namespace.name)) return false;
-    if (!numberOfStudies.equals(namespace.numberOfStudies)) return false;
-    if (!sourceUrl.equals(namespace.sourceUrl)) return false;
-    if (!uid.equals(namespace.uid)) return false;
-    if (!version.equals(namespace.version)) return false;
+    if (uid != null ? !uid.equals(namespace.uid) : namespace.uid != null) return false;
+    if (name != null ? !name.equals(namespace.name) : namespace.name != null) return false;
+    if (description != null ? !description.equals(namespace.description) : namespace.description != null) return false;
+    if (numberOfStudies != null ? !numberOfStudies.equals(namespace.numberOfStudies) : namespace.numberOfStudies != null)
+      return false;
+    return !(version != null ? !version.equals(namespace.version) : namespace.version != null);
 
-    return true;
   }
 
   @Override
   public int hashCode() {
-    int result = uid.hashCode();
-    result = 31 * result + name.hashCode();
-    result = 31 * result + description.hashCode();
-    result = 31 * result + numberOfStudies.hashCode();
-    result = 31 * result + sourceUrl.hashCode();
-    result = 31 * result + version.hashCode();
+    int result = uid != null ? uid.hashCode() : 0;
+    result = 31 * result + (name != null ? name.hashCode() : 0);
+    result = 31 * result + (description != null ? description.hashCode() : 0);
+    result = 31 * result + (numberOfStudies != null ? numberOfStudies.hashCode() : 0);
+    result = 31 * result + (version != null ? version.hashCode() : 0);
     return result;
   }
 }

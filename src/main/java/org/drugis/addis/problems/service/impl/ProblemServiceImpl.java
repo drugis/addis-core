@@ -55,7 +55,7 @@ public class ProblemServiceImpl implements ProblemService {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(projectId, analysisId);
     if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
-      return getSingleStudyBenefitRiskProblem((SingleStudyBenefitRiskAnalysis) analysis, project.getDatasetVersion());
+      return getSingleStudyBenefitRiskProblem(project, (SingleStudyBenefitRiskAnalysis) analysis);
     } else if (analysis instanceof NetworkMetaAnalysis) {
       return getNetworkMetaAnalysisProblem(project, (NetworkMetaAnalysis) analysis);
     }
@@ -180,7 +180,7 @@ public class ProblemServiceImpl implements ProblemService {
     return interventionByIdMap.get(arm.getDrugConceptUid()) != null;
   }
 
-  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(SingleStudyBenefitRiskAnalysis analysis, String projectVersion) throws ResourceDoesNotExistException {
+  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException {
     List<String> outcomeUids = new ArrayList<>();
     for (Outcome outcome : analysis.getSelectedOutcomes()) {
       outcomeUids.add(outcome.getSemanticOutcomeUri());
@@ -190,7 +190,7 @@ public class ProblemServiceImpl implements ProblemService {
       alternativeUids.add(intervention.getSemanticInterventionUri());
     }
     List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementNodes =
-            triplestoreService.getSingleStudyMeasurements(analysis.getStudyUid(), projectVersion, outcomeUids, alternativeUids);
+            triplestoreService.getSingleStudyMeasurements(project.getNamespaceUid(), analysis.getStudyUid(), project.getDatasetVersion(), outcomeUids, alternativeUids);
 
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
     Map<String, CriterionEntry> criteria = new HashMap<>();

@@ -1,10 +1,10 @@
 PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX dataset: <http://trials.drugis.org/datasets/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX entity: <http://trials.drugis.org/entities/>
+PREFIX graph: <http://trials.drugis.org/graphs/>
 
 SELECT ?intervention ?label WHERE {
-GRAPH dataset:$namespaceUid {
+GRAPH graph:concepts {
       ?intervention a ontology:Drug ;
       rdfs:label ?label .
   }

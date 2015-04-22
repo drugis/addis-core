@@ -190,26 +190,6 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testQueryNamespaces() {
-    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleQueryNamespacesResult.json");
-    String mockHistoryResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleLatestEventResult.json");
-    createMockTrialverseServiceWithLatestEvent(mockResult, mockHistoryResult);
-    Collection<Namespace> result = triplestoreService.queryNameSpaces();
-    List<Namespace> resultList = new ArrayList<>(result);
-    assertEquals(2, resultList.size());
-    assertEquals("http://drugis.org/eventSourcing/event/89b5ed9c-96c1-4cee-87fd-d6d6506ae9e2", resultList.get(0).getVersion());
-  }
-
-  @Test
-  public void testGetNamespace() {
-    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleGetNamespaceResult.json");
-    String mockHistoryResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleLatestEventResult.json");
-    createMockTrialverseServiceWithLatestEvent(mockResult, mockHistoryResult);
-    Namespace result = triplestoreService.getNamespace("any id");
-    assertEquals("http://www.ema.europa.eu/docs/en_GB/document_library/EPAR_-_Public_assessment_report/human/002293/WC500119206.pdf", result.getSourceUrl());
-  }
-
-  @Test
   public void testRegEx() {
     String studyOptionsString = "1|2";
     String uri1 = "foo/study/1/whatevr";
@@ -227,14 +207,14 @@ public class TriplestoreServiceTest {
 
   private void createMockTrialverseService(String result) {
     RestOperations restTemplate = mock(RestTemplate.class);
-    when(restTemplate.getForObject(Mockito.startsWith(TriplestoreService.TRIPLESTORE_URI), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(result);
+    when(restTemplate.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(result);
     when(restOperationsFactory.build()).thenReturn(restTemplate);
   }
 
   private void createMockTrialverseServiceWithLatestEvent(String result, String historyResult) {
     RestOperations restTemplate = mock(RestTemplate.class);
-    when(restTemplate.getForObject(Mockito.startsWith(TriplestoreService.TRIPLESTORE_URI), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(result);
-    when(restTemplate.getForObject(Mockito.startsWith(TriplestoreService.HISTORY_URI), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(historyResult);
+    when(restTemplate.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(result);
+    when(restTemplate.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(historyResult);
     when(restOperationsFactory.build()).thenReturn(restTemplate);
   }
 

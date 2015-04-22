@@ -5,7 +5,7 @@
   "results": {
     "bindings": [
       {
-        "study": { "type": "uri" , "value": "http://trials.drugis.org/studies/9da22e13-9e5f-4846-9a66-b9c0ed24ac69" } ,
+        "study": { "type": "uri" , "value": "http://trials.drugis.org/graphs/9da22e13-9e5f-4846-9a66-b9c0ed24ac69" } ,
         "title": { "type": "literal" , "value": "Double-blind comparison of bupropion and fluoxetine in depressed outpatients" } ,
         "label": { "type": "literal" , "value": "Feighner et al, 1991" } ,
         "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,

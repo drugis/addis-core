@@ -2,7 +2,7 @@ PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX dataset: <http://trials.drugis.org/datasets/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX study: <http://trials.drugis.org/studies/>
+PREFIX graph: <http://trials.drugis.org/graphs/>
 PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 PREFIX instance: <http://trials.drugis.org/instances/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -25,13 +25,13 @@ SELECT
   ?duration
   ?relativeToEpochLabel
   {
-  GRAPH dataset:$namespaceUid {
-    ?dataset ontology:contains_study ?study .
+  GRAPH graph:concepts{
     ?studyDataTypeUri
       a ontology:Variable ;
       rdfs:label ?studyDataTypeLabel .
    }
-   GRAPH study:$studyUid {
+   GRAPH graph:$studyUid {
+     ?study a ontology:Study .
      ?study ontology:has_outcome ?outcomeUid .
      ?outcomeUid
        a ontology:$studyDataType ;

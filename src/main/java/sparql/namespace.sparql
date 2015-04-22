@@ -1,25 +1,14 @@
-PREFIX dc: <http://purl.org/dc/elements/1.1/>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX ontology: <http://trials.drugis.org/ontology#>
-PREFIX dataset: <http://trials.drugis.org/datasets/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX dcterms: <http://purl.org/dc/terms/>
 
-SELECT ?label ?comment ?sourceUrl (COUNT(DISTINCT(?study)) AS ?numberOfStudies) WHERE {
-  GRAPH dataset:$namespaceUid {
-    ?dataset a ontology:Dataset .
-    ?dataset rdfs:label ?label .
-    ?dataset rdfs:comment ?comment .
-    ?dataset ontology:contains_study ?study .
-  }
-  OPTIONAL {
-    GRAPH dataset:$namespaceUid {
-      ?dataset dc:source ?sourceGraph .
+## ADD sourceUrl
+
+SELECT ?dataset ?label ?comment (COUNT(?study) AS ?numberOfStudies) WHERE {
+      ?dataset
+        dcterms:title ?label ;
+        dcterms:description ?comment .
+    graph ?study {
+      ?studyUri a ontology:Study .
     }
-    GRAPH ?sourceGraph {
-      ?sourceGraph rdfs:seeAlso ?seeAlso .
-      ?seeAlso dcterms:source ?sourceUrl .
-    }
-  }
-} GROUP BY ?dataset ?label ?comment ?sourceUrl
+} GROUP BY ?dataset ?label ?comment
+
