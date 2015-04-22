@@ -47,13 +47,14 @@ define([],
         });
       }
 
-      function addItem(endpoint) {
+      function addItem(studyUuid, endpoint) {
         var newUUid = UUIDService.generate();
         endpoint.uri = 'http://trials.drugis.org/instances/' + newUUid;
         var stringToInsert = buildInsertMeasuredAtBlock(endpoint);
 
         var addEndpointPromise = addEndpointQueryRaw.then(function(query) {
           var addEndpointQuery = query
+            .replace(/\$studyUuid/g, studyUuid)
             .replace(/\$UUID/g, newUUid)
             .replace('$label', endpoint.label)
             .replace('$measurementType', endpoint.measurementType);

@@ -11,7 +11,7 @@ define([],
       $scope.measurementMoments = MeasurementMomentService.queryItems($stateParams.studyUUID);
 
       $scope.addItem = function() {
-        EndpointService.addItem($scope.item)
+        EndpointService.addItem($stateParams.studyUUID, $scope.item)
           .then(function() {
               callback();
               $modalInstance.close();

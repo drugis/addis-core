@@ -3,7 +3,7 @@ define([], function() {
   var dependencies = ['$q', '$filter', 'UUIDService', 'RemoteRdfStoreService'];
   var StudyService = function($q, $filter, UUIDService, RemoteRdfStoreService) {
 
-    var studyPrefix = 'http://trials.drugis.org/studies/';
+    var studyPrefix = 'http://trials.drugis.org/graphs/';
     var loadDefer = $q.defer();
     var scratchStudyUri,
       modified = false;
@@ -31,7 +31,6 @@ define([], function() {
             'PREFIX ontology: <http://trials.drugis.org/ontology#> ' +
             'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ' +
             'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ' +
-            'PREFIX study: <http://trials.drugis.org/studies/> ' +
             ' INSERT DATA ' +
             ' { ' +
             '   GRAPH <' + newGraphUri + '> {' +
