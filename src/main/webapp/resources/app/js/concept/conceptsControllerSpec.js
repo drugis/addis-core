@@ -14,15 +14,19 @@ define(['angular', 'angular-mocks'], function() {
       queryItemsDefer,
       loadDatasetStoreDefer,
       modalMock = jasmine.createSpyObj('$modal', ['open']),
-      conceptServiceMock = jasmine.createSpyObj('ConceptService', ['loadStore', 'queryItems']);
+      conceptServiceMock = jasmine.createSpyObj('ConceptService', ['loadStore', 'queryItems']),
+      datasetConceptDefer;
 
     beforeEach(module('trialverse.concept'));
 
     beforeEach(inject(function($rootScope, $q, $httpBackend, $controller, VersionedGraphResource) {
       scope = $rootScope;
-      httpBackend = $httpBackend;
 
-      httpBackend.expectGET('/datasets/' + datasetUuid + '/versions/' + versionUuid + '/graphs/concepts').respond('concepts');
+      // mock parent scope
+      datasetConceptDefer = $q.defer();
+      scope.datasetConcepts = datasetConceptDefer.promise; 
+      datasetConceptDefer.resolve('anyValue2');
+      httpBackend = $httpBackend;
 
       loadConceptStoreDefer = $q.defer();
       queryItemsDefer = $q.defer();
@@ -38,6 +42,8 @@ define(['angular', 'angular-mocks'], function() {
         VersionedGraphResource: VersionedGraphResource,
         CONCEPT_GRAPH_UUID: 'CONCEPT_GRAPH_UUID'
       });
+
+      scope.$apply();
     }));
 
     describe('on load', function() {
@@ -45,13 +51,6 @@ define(['angular', 'angular-mocks'], function() {
         var conceptResult ='anyValue2';
 
         expect(scope.concepts).toBeDefined();
-        httpBackend.flush();
-        expect(conceptServiceMock.loadStore).toHaveBeenCalled();
-        loadConceptStoreDefer.resolve('anyValue');
-        scope.$digest();
-        expect(conceptServiceMock.queryItems).toHaveBeenCalled();
-        queryItemsDefer.resolve(conceptResult);
-        scope.$digest();
         expect(scope.concepts).toBe(conceptResult);
       });
     });

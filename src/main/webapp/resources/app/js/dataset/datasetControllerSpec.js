@@ -10,10 +10,13 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get']),
       historyResource = jasmine.createSpyObj('HistoryResource', ['query']),
       historyService = jasmine.createSpyObj('HistoryService', ['addOrderIndex']),
+      conceptService = jasmine.createSpyObj('ConceptService', ['loadStore', 'queryItems']),
+      versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get']),
       mockLoadStoreDeferred,
       queryHistoryDeferred,
       studiesWithDetailsGetDeferred,
       mockQueryDatasetDeferred,
+      getConceptsDeferred,
       mockStudiesWithDetail = {
         '@graph': {}
       },
@@ -46,11 +49,16 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       mockQueryDatasetDeferred = $q.defer();
       studiesWithDetailsGetDeferred = $q.defer();
       queryHistoryDeferred = $q.defer();
+      getConceptsDeferred = $q.defer();
 
       mockDatasetService.loadStore.and.returnValue(mockLoadStoreDeferred.promise);
       mockDatasetService.queryDataset.and.returnValue(mockQueryDatasetDeferred.promise);
       studiesWithDetailsService.get.and.returnValue(studiesWithDetailsGetDeferred.promise);
       mockRemoteRdfStoreService.deFusekify.and.returnValue(mockStudiesWithDetail);
+      conceptService.loadStore.and.returnValue({then: function(){}});
+      versionedGraphResource.get.and.returnValue({
+        $promise: getConceptsDeferred.promise
+      });
       historyResource.query.and.returnValue({
         $promise: queryHistoryDeferred.promise
       });
@@ -81,7 +89,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         JsonLdService: mockJsonLDService,
         RemoteRdfStoreService: mockRemoteRdfStoreService,
         HistoryResource: historyResource,
-        HistoryService: historyService
+        HistoryService: historyService,
+        ConceptService: conceptService,
+        VersionedGraphResource: versionedGraphResource
       });
 
     }));
@@ -124,6 +134,15 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         queryHistoryDeferred.resolve(historyItems);
         scope.$digest();
         expect(scope.currentRevision).toBeDefined();
+      });
+
+      it('should place the concepts on the scope', function() {
+        var datasetConcepts = [{label: 'concept 1'}];
+        getConceptsDeferred.resolve(datasetConcepts);
+        scope.$digest();
+        expect(scope.datasetConcepts.$$state.status).toEqual(1); // promise resolved
+        expect(versionedGraphResource.get).toHaveBeenCalled();
+        expect(conceptService.loadStore).toHaveBeenCalled();
       });
 
     });

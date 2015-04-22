@@ -11,7 +11,8 @@ define(function (require) {
     'trialverse.adverseEvent',
     'trialverse.measurementMoment',
     'trialverse.results',
-    'trialverse.graph'])
+    'trialverse.graph',
+    'trialverse.activity'])
     // controllers
     .controller('StudyController', require('study/studyController'))
 

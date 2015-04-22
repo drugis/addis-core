@@ -73,15 +73,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     describe('query activities', function() {
 
       beforeEach(function(done) {
-        // load some mock graph with activities
-        var xmlHTTP = new XMLHttpRequest();
-        xmlHTTP.open('GET', 'base/test_graphs/activitiesMockGraph.ttl', false);
-        xmlHTTP.send(null);
-        var activitiesQueryMockGraph = xmlHTTP.responseText;
 
-        xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
-        xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
-        xmlHTTP.send(activitiesQueryMockGraph);
+        testUtils.loadTestGraph('activitiesMockGraph.ttl', graphUri);
 
         // stub remotestoreServiceStub.executeQuery method
         testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
