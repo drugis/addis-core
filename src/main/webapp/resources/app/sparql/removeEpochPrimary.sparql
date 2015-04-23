@@ -1,11 +1,10 @@
 PREFIX ontology: <http://trials.drugis.org/ontology#>
-PREFIX study: <http://trials.drugis.org/studies/>
 
 ## update is-primary
 WITH <$graphUri>
 DELETE {
-  study:$studyUuid ontology:has_primary_epoch <$URI> .
+  ?s ontology:has_primary_epoch <$URI> .
 }
 WHERE {
-  study:$studyUuid ontology:has_primary_epoch  <$URI> .
+  ?s ontology:has_primary_epoch  <$URI> .
 };
