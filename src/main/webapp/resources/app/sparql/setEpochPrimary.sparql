@@ -7,8 +7,9 @@ DELETE {
   ?study ontology:has_primary_epoch ?oldPrimary .
 }
 INSERT {
-  study:$studyUUID ontology:has_primary_epoch instance:$newUUID
+  ?study ontology:has_primary_epoch instance:$newUUID
 }
 WHERE {
-  OPTIONAL { ?study ontology:has_primary_epoch ?oldPrimary .}
+  ?study a ontology:Study .
+  OPTIONAL { ?study ontology:has_primary_epoch ?oldPrimary }
 }
