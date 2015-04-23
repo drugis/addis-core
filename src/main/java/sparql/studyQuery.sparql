@@ -6,11 +6,11 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX graph: <http://trials.drugis.org/graphs/>
 
 SELECT * WHERE {
-  GRAPH ?graph {
-    ?study a ontology:Study .
-    ?study rdfs:label ?label .
-    ?study rdfs:comment ?title .
-    ?activity 
+  GRAPH ?graphUri {
+    ?studyUri a ontology:Study .
+    ?studyUri rdfs:label ?label .
+    ?studyUri rdfs:comment ?title .
+    ?activity
       a ontology:TreatmentActivity ;
       ontology:has_activity_application [
         ontology:applied_to_arm ?armUid
@@ -22,13 +22,13 @@ SELECT * WHERE {
     ?treatmentDrug rdfs:label ?drugLabel .
     ?treatmentDrug owl:sameAs ?drugUid .
     {
-      SELECT ?study (group_concat(?outcomeUid; separator = ", ") as ?outcomeUids)
+      SELECT ?studyUri (group_concat(?outcomeUid; separator = ", ") as ?outcomeUids)
       WHERE {
-          ?study ontology:has_outcome ?outcomeInstanceUid .
+          ?studyUri ontology:has_outcome ?outcomeInstanceUid .
           ?outcomeInstanceUid ontology:of_variable [
             owl:sameAs ?outcomeUid
           ] .
-      } GROUP BY ?study
+      } GROUP BY ?studyUri
     }
   }
 }

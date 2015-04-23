@@ -1,11 +1,11 @@
 {
   "head": {
-    "vars": [ "study" , "title" , "label" , "allocation" , "blinding" , "objective" , "drugNames" , "inclusionCriteria" , "publications" , "status" , "numberOfCenters" , "indication" , "startDate" , "endDate" , "numberOfArms" ]
+    "vars": [ "studyUri" , "title" , "label" , "allocation" , "blinding" , "objective" , "drugNames" , "inclusionCriteria" , "publications" , "status" , "numberOfCenters" , "indication" , "startDate" , "endDate" , "numberOfArms" ]
   } ,
   "results": {
     "bindings": [
       {
-        "study": { "type": "uri" , "value": "http://trials.drugis.org/graphs/9da22e13-9e5f-4846-9a66-b9c0ed24ac69" } ,
+        "studyUri": { "type": "uri" , "value": "http://trials.drugis.org/graphs/9da22e13-9e5f-4846-9a66-b9c0ed24ac69" } ,
         "title": { "type": "literal" , "value": "Double-blind comparison of bupropion and fluoxetine in depressed outpatients" } ,
         "label": { "type": "literal" , "value": "Feighner et al, 1991" } ,
         "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,
@@ -20,7 +20,7 @@
         "numberOfArms": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "2" }
       } ,
       {
-        "study": { "type": "uri" , "value": "http://trials.drugis.org/graphs/3f8fb072-b592-4eb3-ab42-861bf82fcba4" } ,
+        "studyUri": { "type": "uri" , "value": "http://trials.drugis.org/graphs/3f8fb072-b592-4eb3-ab42-861bf82fcba4" } ,
         "title": { "type": "literal" , "value": "A double-blind, randomized, group-comparative study of the tolerability and efficacy of 6 weeks' treatment with mirtazapine or fluoxetine in depressed chinese patients" } ,
         "label": { "type": "literal" , "value": "Hong et al, 2003" } ,
         "allocation": { "type": "uri" , "value": "http://trials.drugis.org/ontology#allocationRandomized" } ,

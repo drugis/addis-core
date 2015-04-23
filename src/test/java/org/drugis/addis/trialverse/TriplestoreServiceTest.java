@@ -15,17 +15,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.net.URI;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -74,7 +78,7 @@ public class TriplestoreServiceTest {
     createMockTrialverseService(mockResult);
 
     String namespaceUid = "namespaceUid";
-    List<StudyWithDetails> studyWithDetailsList = triplestoreService.queryStudydetails(namespaceUid);
+    List<StudyWithDetails> studyWithDetailsList = triplestoreService.queryStudydetailsHead(namespaceUid);
 
     assertNotNull(studyWithDetailsList);
     assertEquals(2, studyWithDetailsList.size());
@@ -206,8 +210,10 @@ public class TriplestoreServiceTest {
   }
 
   private void createMockTrialverseService(String result) {
+    ResponseEntity<String> resultEntity = new ResponseEntity<String>(result, HttpStatus.OK);
     RestOperations restTemplate = mock(RestTemplate.class);
     when(restTemplate.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(result);
+    when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), any(Class.class))).thenReturn(resultEntity);
     when(restOperationsFactory.build()).thenReturn(restTemplate);
   }
 

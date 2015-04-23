@@ -17,7 +17,9 @@ public interface TriplestoreService {
 
   public Collection<Namespace> queryNameSpaces();
 
-  public Namespace getNamespace(String uid);
+  public Namespace getNamespaceHead(String uid);
+
+  public Namespace getNamespaceVersioned(String datasetUri, String versionUri);
 
   public List<SemanticOutcome> getOutcomes(String namespaceUid, String version);
 
@@ -25,7 +27,7 @@ public interface TriplestoreService {
 
   public List<Study> queryStudies(String namespaceUid, String version);
 
-  public List<StudyWithDetails> queryStudydetails(String namespaceUid);
+  public List<StudyWithDetails> queryStudydetailsHead(String namespaceUid);
   
   public StudyWithDetails getStudydetails(String namespaceUid, String studyUid) throws ResourceDoesNotExistException;
 

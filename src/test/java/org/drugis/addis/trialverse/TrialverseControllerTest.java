@@ -97,12 +97,12 @@ public class TrialverseControllerTest {
     String versionUid = "current";
     int numberOfStudies = 666;
     Namespace namespace1 = new Namespace(uid, "a", "descrea", numberOfStudies, versionUid);
-    when(triplestoreService.getNamespace(uid)).thenReturn(namespace1);
+    when(triplestoreService.getNamespaceVersioned(uid, versionUid)).thenReturn(namespace1);
     mockMvc.perform(get("/namespaces/UID-1").param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.name", is("a")));
-    verify(triplestoreService).getNamespace(uid);
+    verify(triplestoreService).getNamespaceVersioned(uid, versionUid);
   }
 
   @Test
@@ -195,7 +195,7 @@ public class TrialverseControllerTest {
     String versionUid = "current";
 
     List<StudyWithDetails> studyWithDetailsList = Arrays.asList(createStudyWithDetials());
-    when(triplestoreService.queryStudydetails(namespaceUuid)).thenReturn(studyWithDetailsList);
+    when(triplestoreService.queryStudydetailsHead(namespaceUuid)).thenReturn(studyWithDetailsList);
     ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail").param("version", versionUid));
     resultActions
             .andExpect(status().isOk())
@@ -203,7 +203,7 @@ public class TrialverseControllerTest {
             .andExpect(jsonPath("$[0]", notNullValue()))
             .andExpect(jsonPath("$[0].title", is("studyTitle")))
             .andExpect(jsonPath("$[0].pubmedUrls", is("publicationURL, moreurls")));
-    verify(triplestoreService).queryStudydetails(namespaceUuid);
+    verify(triplestoreService).queryStudydetailsHead(namespaceUuid);
 
   }
 
