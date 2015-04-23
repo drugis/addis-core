@@ -17,5 +17,5 @@ src/main/webapp/resources/app/js/bower_components/
 .idea
 node_modules
 main.iml
-*.ttl
 *.log.*
+addis-rdf/*.ttl

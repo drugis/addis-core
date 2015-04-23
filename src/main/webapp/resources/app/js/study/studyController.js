@@ -1,10 +1,10 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$window', 'VersionedGraphResource', '$location', '$anchorScroll',
+    var dependencies = ['$scope', '$stateParams', '$window', '$filter', 'VersionedGraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'ResultsService', 'StudyDesignService'
     ];
-    var StudyController = function($scope, $stateParams, $window, VersionedGraphResource, $location, $anchorScroll,
+    var StudyController = function($scope, $stateParams, $window, $filter, VersionedGraphResource, $location, $anchorScroll,
       $modal, StudyService, ResultsService, StudyDesignService) {
 
       // onload
@@ -131,7 +131,7 @@ define([],
       function reloadStudyModel() {
         VersionedGraphResource.get({
           datasetUUID: $stateParams.datasetUUID,
-          graphUuid: $stateParams.studyUUID,
+          graphUuid: $stateParams.studyGraphUuid,
           versionUuid: $stateParams.versionUuid
         }, function(response) {
           StudyService.loadStore(response.data)
@@ -139,6 +139,7 @@ define([],
               console.log('loading study-store success');
               StudyService.queryStudyData().then(function(queryResult) {
                 $scope.study = queryResult;
+                $scope.studyUuid = $filter('stripFrontFilter')(queryResult.studyUri, 'http://trials.drugis.org/studies/');
                 $scope.$broadcast('refreshStudyDesign');
                 $scope.$broadcast('refreshResults');
                 StudyService.studySaved();

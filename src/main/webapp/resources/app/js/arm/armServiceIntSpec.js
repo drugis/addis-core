@@ -1,220 +1,202 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
-  describe('the arm service', function() {
+define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
+  fdescribe('the arm service', function() {
 
-    var rootScope, q, httpBackend, armService, studyService,
-      queryArms, addArmQuery, addArmCommentQuery, editArmWithCommentSparql, editArmWithoutCommentSparql,
-      deleteArmSparql, deleteHasArmSparql, graphAsText,
-      mockStudyService = jasmine.createSpyObj('StudyService', ['doModifyingQuery']);
-    var armsQuery =
-      ' prefix ontology: <http://trials.drugis.org/ontology#>' +
-      ' prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
-      ' prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
-      ' select' +
-      ' ?armURI ?label ?comment ' +
-      ' where {' +
-      '    ?armURI ' +
-      '      rdf:type ontology:Arm ;' +
-      '      rdfs:label ?label . ' +
-      '     OPTIONAL { ?armURI rdfs:comment ?comment . } ' +
-      '}';
+    var graphUri = 'http://karma-test/';
+    var scratchStudyUri = 'http://localhost:9876/scratch'; // NB proxied by karma to actual fuseki instance
 
-    var originalTimeout;
-
-    beforeEach(module('trialverse.util'));
-    beforeEach(module('trialverse.arm'));
+    var rootScope, q, httpBackend;
+    var remotestoreServiceStub;
+    var studyService;
+    var armService;
 
     beforeEach(function() {
-      module('trialverse', function($provide) {
-        studyService = jasmine.createSpyObj('StudyService', ['doModifyingQuery']);
-        $provide.value('StudyService', studyService);
+      module('trialverse.util', function($provide) {
+        remotestoreServiceStub = testUtils.createRemoteStoreStub();
+        $provide.value('RemoteRdfStoreService', remotestoreServiceStub);
       });
     });
 
-    beforeEach(inject(function($q, $rootScope, $httpBackend, ArmService) {
-      var xmlHTTP = new XMLHttpRequest();
+    beforeEach(module('trialverse.activity'));
 
+    beforeEach(inject(function($q, $rootScope, $httpBackend, ArmService, StudyService) {
       q = $q;
       httpBackend = $httpBackend;
       rootScope = $rootScope;
+      studyService = StudyService;
+
       armService = ArmService;
-      
 
-      xmlHTTP.open('GET', 'base/app/sparql/queryArm.sparql', false);
-      xmlHTTP.send(null);
-      queryArms = xmlHTTP.responseText;
-      xmlHTTP.open('GET', 'base/app/sparql/addArmQuery.sparql', false);
-      xmlHTTP.send(null);
-      addArmQuery = xmlHTTP.responseText;
-      xmlHTTP.open('GET', 'base/app/sparql/addArmCommentQuery.sparql', false);
-      xmlHTTP.send(null);
-      addArmCommentQuery = xmlHTTP.responseText;
-      xmlHTTP.open('GET', 'base/app/sparql/editArmWithComment.sparql', false);
-      xmlHTTP.send(null);
-      editArmWithCommentSparql = xmlHTTP.responseText;
+      // reset the test graph
+      testUtils.dropGraph(graphUri);
 
-      xmlHTTP.open('GET', 'base/app/sparql/editArmWithoutComment.sparql', false);
-      xmlHTTP.send(null);
-      editArmWithoutCommentSparql = xmlHTTP.responseText;
-      xmlHTTP.open('GET', 'base/app/sparql/deleteArm.sparql', false);
-      xmlHTTP.send(null);
-      deleteArmSparql = xmlHTTP.responseText;
-      xmlHTTP.open('GET', 'base/app/sparql/deleteHasArm.sparql', false);
-      xmlHTTP.send(null);
-      deleteHasArmSparql = xmlHTTP.responseText;
+      // load service templates and flush httpBackend
+      testUtils.loadTemplate('queryArm.sparql', httpBackend);
+      testUtils.loadTemplate('addArmQuery.sparql', httpBackend);
+      testUtils.loadTemplate('addArmCommentQuery.sparql', httpBackend);
+      testUtils.loadTemplate('editArmWithComment.sparql', httpBackend);
+      testUtils.loadTemplate('editArmWithoutComment.sparql', httpBackend);
+      testUtils.loadTemplate('deleteArm.sparql', httpBackend);
+      testUtils.loadTemplate('deleteHasArm.sparql', httpBackend);
 
-      xmlHTTP.open('GET', 'base/test_graphs/testStudyGraph.ttl', false);
-      xmlHTTP.send(null);
-      graphAsText = xmlHTTP.responseText;
-
-      httpBackend.expectGET('app/sparql/queryArm.sparql').respond(queryArms);
-      httpBackend.expectGET('app/sparql/addArmQuery.sparql').respond(addArmQuery);
-      httpBackend.expectGET('app/sparql/addArmCommentQuery.sparql').respond(addArmCommentQuery);
-      httpBackend.expectGET('app/sparql/editArmWithComment.sparql').respond(editArmWithCommentSparql);
-      httpBackend.expectGET('app/sparql/editArmWithoutComment.sparql').respond(editArmWithoutCommentSparql);
-      httpBackend.expectGET('app/sparql/deleteArm.sparql').respond(deleteArmSparql);
-      httpBackend.expectGET('app/sparql/deleteHasArm.sparql').respond(deleteHasArmSparql);
       httpBackend.flush();
 
+      // create and load empty test store
+      var createStoreDeferred = $q.defer();
+      remotestoreServiceStub.create.and.returnValue(createStoreDeferred.promise);
+
+      var loadStoreDeferred = $q.defer();
+      remotestoreServiceStub.load.and.returnValue(loadStoreDeferred.promise);
+
+      studyService.loadStore();
+      createStoreDeferred.resolve(scratchStudyUri);
+      loadStoreDeferred.resolve();
+
+      rootScope.$digest();
     }));
 
-    describe('addArm with comment', function() {
+    describe('query arms', function() {
+      var studyUuid = 'studyUuid';
+      beforeEach(function() {
+        testUtils.loadTestGraph('testArmGraph.ttl', graphUri);
+        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
+      });
 
-      it('should edit the arm (with comment)', function(done) {
-        var mockArm = {
-          armURI: {
-            value: 'http://trials.drugis.org/instances/arm1uuid'
-          },
-          label: {
-            value: 'new arm label'
-          },
-          comment: {
-            value: 'new arm comment'
-          }
-        };
-
-        var doModifyingQueryDefer = q.defer();
-        studyService.doModifyingQuery.and.returnValue(doModifyingQueryDefer.promise);
-
-        var resultPromise = armService.addItem(mockArm, 'studyUid');
-        doModifyingQueryDefer.resolve(200);
+      it('should query the arms', function(done) {
+        armService.queryItems(studyUuid).then(function(result) {
+          expect(result.length).toBe(1);
+          expect(result[0].label).toEqual('arm label');
+          done();
+        });
         rootScope.$digest();
+      });
 
-        expect(studyService.doModifyingQuery).toHaveBeenCalled();
-        expect(studyService.doModifyingQuery.calls.count()).toEqual(2);
-        done();
+    });
+
+    describe('add arm', function() {
+      var studyUuid = 'studyUuid';
+      var newArm = {
+        label: 'test label'
+      };
+      beforeEach(function(done) {
+
+        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
+        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
+
+        armService.addItem(newArm, studyUuid).then(function() {
+          done();
+        });
+        rootScope.$digest();
+      });
+
+      it('should add the arm to the graph', function(done) {
+        // call function under test
+        var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o }}';
+        var result = testUtils.queryTeststore(query);
+        var resultTriples = testUtils.deFusekify(result);
+
+        expect(resultTriples.length).toBe(3);
+
+        var hasArmQuery = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s <http://trials.drugis.org/ontology#has_arm> ?o }}';
+        result = testUtils.queryTeststore(hasArmQuery);
+        var hasArmTriples = testUtils.deFusekify(result);
+
+        expect(hasArmTriples.length).toBe(1);
+        expect(hasArmTriples[0].s).toEqual('http://trials.drugis.org/studies/studyUuid');
+        expect(hasArmTriples[0].o).toContain('http://trials.drugis.org/instances/');
+
+        var isArmQuery = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s a ?o }}';
+        result = testUtils.queryTeststore(isArmQuery);
+        var isArmTriples = testUtils.deFusekify(result);
+
+        expect(isArmTriples.length).toBe(1);
+        expect(isArmTriples[0].s).toContain('http://trials.drugis.org/instances/');
+        expect(isArmTriples[0].o).toEqual('http://trials.drugis.org/ontology#Arm');
+
+        var hasLabelQuery = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s <http://www.w3.org/2000/01/rdf-schema#label> ?o }}';
+        result = testUtils.queryTeststore(hasLabelQuery);
+        var hasLabelTriples = testUtils.deFusekify(result);
+
+        expect(hasLabelTriples.length).toBe(1);
+        expect(hasLabelTriples[0].s).toContain('http://trials.drugis.org/instances/');
+        expect(hasLabelTriples[0].o).toEqual(newArm.label);
+        armService.queryItems(studyUuid).then(function(result) {
+          expect(result.length).toBe(1);
+          expect(result[0].label).toEqual(newArm.label);
+          done();
+        });
+
       });
     });
 
-    describe('editArm without comment', function() {
+    describe('edit arm', function() {
+      var studyUuid = 'studyUuid';
+      var newArm = {
+        label: 'test label'
+      };
+      var editedArm = {
+        label: 'edited label'
+      };
 
-      it('should edit the arm (without comment)', function(done) {
+      beforeEach(function(done) {
+        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
+        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
 
-        studyService.doModifyingQuery.calls.reset();
-        var mockArm = {
-          armURI: {
-            value: 'http://trials.drugis.org/instances/arm1uuid'
-          },
-          label: {
-            value: 'new arm label'
-          }
-        };
-
-        var doModifyingQueryDefer = q.defer();
-        studyService.doModifyingQuery.and.returnValue(doModifyingQueryDefer.promise);
-
-        var resultPromise = armService.addItem(mockArm, 'studyUid');
-        doModifyingQueryDefer.resolve(200);
+        armService.addItem(newArm, studyUuid).then(function() {
+          armService.queryItems(studyUuid).then(function(result) {
+            result[0].label = editedArm.label;
+            armService.editItem(result[0]).then(done);
+          })
+        })
         rootScope.$digest();
+      });
 
-        expect(studyService.doModifyingQuery).toHaveBeenCalled();
-        expect(studyService.doModifyingQuery.calls.count()).toEqual(1);
-        done();
+      it('should edit the arm', function() {
+        var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o }}';
+        var result = testUtils.queryTeststore(query);
+        var resultTriples = testUtils.deFusekify(result);
+
+        expect(resultTriples.length).toBe(3);
+        var hasLabelQuery = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s <http://www.w3.org/2000/01/rdf-schema#label> ?o }}';
+        result = testUtils.queryTeststore(hasLabelQuery);
+        var hasLabelTriples = testUtils.deFusekify(result);
+
+        expect(hasLabelTriples.length).toBe(1);
+        expect(hasLabelTriples[0].s).toContain('http://trials.drugis.org/instances/');
+        expect(hasLabelTriples[0].o).toEqual(editedArm.label);
+
       });
     });
 
-    describe('editArm with comment', function() {
+    describe('delete arm', function() {
+      var studyUuid = 'studyUuid';
+      var newArm = {
+        label: 'test label'
+      };
+      var editedArm = {
+        label: 'edited label'
+      };
 
-      it('should edit the arm (with comment)', function(done) {
-        var mockArm = {
-          armURI: {
-            value: 'http://trials.drugis.org/instances/arm1uuid'
-          },
-          label: {
-            value: 'new arm label'
-          },
-          comment: {
-            value: 'new arm comment'
-          }
-        };
+      beforeEach(function(done) {
+        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
+        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
 
-        var doModifyingQueryDefer = q.defer();
-        studyService.doModifyingQuery.and.returnValue(doModifyingQueryDefer.promise);
-
-        var resultPromise = armService.editItem(mockArm, 'studyUid');
-        doModifyingQueryDefer.resolve(200);
+        armService.addItem(newArm, studyUuid).then(function() {
+          armService.queryItems(studyUuid).then(function(result) {
+            armService.deleteItem(result[0]).then(done);
+          });
+        });
         rootScope.$digest();
-
-        expect(studyService.doModifyingQuery).toHaveBeenCalled();
-        expect(studyService.doModifyingQuery.calls.count()).toEqual(1);
-        done();
       });
-    });
-
-    describe('editArm without comment', function() {
-
-      it('should edit the arm (without comment)', function(done) {
-
-        studyService.doModifyingQuery.calls.reset();
-        var mockArm = {
-          armURI: {
-            value: 'http://trials.drugis.org/instances/arm1uuid'
-          },
-          label: {
-            value: 'new arm label'
-          }
-        };
-
-        var doModifyingQueryDefer = q.defer();
-        studyService.doModifyingQuery.and.returnValue(doModifyingQueryDefer.promise);
-
-        var resultPromise = armService.editItem(mockArm, 'studyUid');
-        doModifyingQueryDefer.resolve(200);
-        rootScope.$digest();
-
-        expect(studyService.doModifyingQuery).toHaveBeenCalled();
-        expect(studyService.doModifyingQuery.calls.count()).toEqual(1);
-        done();
-      });
-    });
-
-    describe('deleteArm', function() {
 
       it('should delete the arm', function(done) {
-        studyService.doModifyingQuery.calls.reset();
-        var mockArm = {
-          armURI: {
-            value: 'http://trials.drugis.org/instances/arm1uuid'
-          },
-          label: {
-            value: 'new arm label'
-          }
-        };
-
-        var doModifyingQueryDefer = q.defer();
-        studyService.doModifyingQuery.and.returnValue(doModifyingQueryDefer.promise);
-
-        var resultPromise = armService.deleteItem(mockArm);
-        doModifyingQueryDefer.resolve(200);
-        rootScope.$digest();
-
-        expect(studyService.doModifyingQuery).toHaveBeenCalled();
-        expect(studyService.doModifyingQuery.calls.count()).toEqual(2);
-        done();
-
+        armService.queryItems(studyUuid).then(function(result) {
+          expect(result.length).toBe(0);
+          done();
+        });
       });
-
     });
+
 
   });
 });

@@ -1,0 +1,7 @@
+<http://trials.drugis.org/instances/armInstance> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://trials.drugis.org/ontology#Arm> .
+<http://trials.drugis.org/instances/armInstance> <http://www.w3.org/2000/01/rdf-schema#label> "arm label" .
+<http://trials.drugis.org/studies/studyUuid> <http://trials.drugis.org/ontology#has_arm> <http://trials.drugis.org/instances/armInstance> .
+<http://trials.drugis.org/studies/studyUuid> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://trials.drugis.org/ontology#Study> .
+<http://trials.drugis.org/studies/studyUuid> <http://www.w3.org/2000/01/rdf-schema#comment> "study title 1" .
+<http://trials.drugis.org/studies/studyUuid> <http://www.w3.org/2000/01/rdf-schema#label> "study 1" .
+<http://trials.drugis.org/studies/studyUuid> <http://trials.drugis.org/ontology#has_epochs> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .

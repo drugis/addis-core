@@ -6,7 +6,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
 SELECT * WHERE {
-GRAPH ?graphUri {
+GRAPH ?studyGraphUri {
     ?studyUri 
       rdfs:label ?label ;
       a ontology:Study ;

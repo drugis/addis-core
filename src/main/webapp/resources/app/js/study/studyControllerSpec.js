@@ -4,11 +4,11 @@ define(['angular', 'angular-mocks'], function() {
 
     var scope, httpBackend,
       datasetUUID = 'datasetUUID',
-      studyUUID = 'studyUUID',
+      studyGraphUuid = 'studyGraphUuid',
       versionUuid = 'versionUuid',
       mockStateParams = {
         datasetUUID: datasetUUID,
-        studyUUID: studyUUID,
+        studyGraphUuid: studyGraphUuid,
         versionUuid: versionUuid
       },
       anchorScrollMock = jasmine.createSpy('anchorScroll'),
@@ -30,7 +30,7 @@ define(['angular', 'angular-mocks'], function() {
       scope = $rootScope;
       httpBackend = $httpBackend;
 
-      httpBackend.expectGET('/datasets/' + datasetUUID + '/versions/' + versionUuid + '/graphs/' + studyUUID).respond('study');
+      httpBackend.expectGET('/datasets/' + datasetUUID + '/versions/' + versionUuid + '/graphs/' + studyGraphUuid).respond('study');
 
       loadStoreDeferred = $q.defer();
       queryStudyDataDeferred = $q.defer();

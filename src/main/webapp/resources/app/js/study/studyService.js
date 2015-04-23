@@ -73,7 +73,7 @@ define([], function() {
     }
 
     function loadStore(data) {
-      return RemoteRdfStoreService.create(studyPrefix).then(function(graphUri) {
+      return RemoteRdfStoreService.create(graphPrefix).then(function(graphUri) {
         //console.log('RemoteRdfStoreService.create result, = ' + graphUri);
         scratchStudyUri = graphUri;
         return RemoteRdfStoreService.load(scratchStudyUri, data).then(function() {
@@ -97,7 +97,7 @@ define([], function() {
     }
 
     function getStudyUUID() {
-      return $filter('stripFrontFilter')(scratchStudyUri, studyPrefix);
+      return $filter('stripFrontFilter')(scratchStudyUri, graphPrefix);
     }
 
     function reset() {
