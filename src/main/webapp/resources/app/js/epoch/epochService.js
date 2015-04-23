@@ -60,9 +60,9 @@ define([],
         });
 
         return $q.all([addEpochPromise,
-                       addCommentPromise,
-                       setPrimaryPromise,
-                       addToListPromise]);
+                        addCommentPromise,
+                        setPrimaryPromise,
+                        addToListPromise]);
       }
 
       function deleteItem(item) {

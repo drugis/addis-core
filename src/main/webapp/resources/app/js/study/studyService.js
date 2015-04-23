@@ -3,7 +3,7 @@ define([], function() {
   var dependencies = ['$q', '$filter', 'UUIDService', 'RemoteRdfStoreService'];
   var StudyService = function($q, $filter, UUIDService, RemoteRdfStoreService) {
 
-    var studyPrefix = 'http://trials.drugis.org/graphs/';
+    var graphPrefix = 'http://trials.drugis.org/graphs/';
     var loadDefer = $q.defer();
     var scratchStudyUri,
       modified = false;
@@ -24,17 +24,18 @@ define([], function() {
 
     function createEmptyStudy(study) {
       loadDefer = $q.defer();
-      return RemoteRdfStoreService.create(studyPrefix)
+      return RemoteRdfStoreService.create(graphPrefix)
         .then(function(newGraphUri) {
           scratchStudyUri = newGraphUri;
           var query =
             'PREFIX ontology: <http://trials.drugis.org/ontology#> ' +
             'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ' +
             'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ' +
+            'PREFIX study: <http://trials.drugis.org/studies/> ' +
             ' INSERT DATA ' +
             ' { ' +
             '   GRAPH <' + newGraphUri + '> {' +
-            '    <' + newGraphUri + '> rdfs:label "' + study.label + '" ; ' +
+            '    study:' + UUIDService.generate() + ' rdfs:label "' + study.label + '" ; ' +
             '       rdf:type  ontology:Study ; ' +
             '       rdfs:comment   "' + study.comment + '" ; ' +
             '       ontology:has_epochs () .' +

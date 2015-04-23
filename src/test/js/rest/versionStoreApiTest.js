@@ -136,10 +136,10 @@ describe('create study', function() {
 
   //
   it('should return a 201', function(done) {
-    var studyUri = 'http://trials.drugis.org/studies/studyUuid';
+    var studyGraphUri = 'http://trials.drugis.org/graphs/studyUuid';
 
     request(versionedDatasetUrl)
-      .put('/data?graph=' + studyUri)
+      .put('/data?graph=' + studyGraphUri)
       .set('Content-Type', 'text/turtle')
       .send(study)
       .end(function(err, res) {
@@ -157,7 +157,7 @@ describe('create study', function() {
 describe('when the study is created, query the details', function() {
 
   var versionedDatasetUrl;
-  var studyUri = 'http://trials.drugis.org/studies/studyUuid';
+  var studyGraphUri = 'http://trials.drugis.org/graphs/studyUuid';
   var study = '<http://trials.drugis.org/studies/studyUuid>  <http://www.w3.org/2000/01/rdf-schema#label> "mystudy" ;' +
     ' <http://www.w3.org/2000/01/rdf-schema#comment> "myComment" ;' +
     ' a  <http://trials.drugis.org/ontology#Study> ; ' +
@@ -171,7 +171,7 @@ describe('when the study is created, query the details', function() {
       .end(function(err, res) {
         versionedDatasetUrl = res.headers.location;
         request(versionedDatasetUrl)
-          .put('/data?graph=' + studyUri)
+          .put('/data?graph=' + studyGraphUri)
           .set('Content-Type', 'text/turtle')
           .send(study)
           .end(function(err, res) {
@@ -213,7 +213,7 @@ describe('querying a specific dataset version', function() {
 
     var versionedDatasetUrl;
     var previousVersionUrl;
-    var studyUri = 'http://trials.drugis.org/studies/studyUuid';
+    var studyGraphUri = 'http://trials.drugis.org/graphs/studyUuid';
     var study = '<http://trials.drugis.org/studies/studyUuid>  <http://www.w3.org/2000/01/rdf-schema#label> "mystudy" ;' +
       ' <http://www.w3.org/2000/01/rdf-schema#comment> "myComment" ;' +
       ' a  <http://trials.drugis.org/ontology#Study> ; ' +
@@ -228,7 +228,7 @@ describe('querying a specific dataset version', function() {
           versionedDatasetUrl = res.headers.location;
           previousVersionUrl = res.headers['x-eventsource-version'];
           request(versionedDatasetUrl)
-            .put('/data?graph=' + studyUri)
+            .put('/data?graph=' + studyGraphUri)
             .set('Content-Type', 'text/turtle')
             .send(study)
             .end(function(err, res) {
@@ -265,8 +265,8 @@ describe('querying a specific dataset version', function() {
 
     var versionedDatasetUrl;
     var previousVersionUrl;
-    var studyUri1 = 'http://trials.drugis.org/studies/studyUuid1';
-    var studyUri2 = 'http://trials.drugis.org/studies/studyUuid2';
+    var studyGraphUri1 = 'http://trials.drugis.org/graphs/studyUuid1';
+    var studyGraphUri2 = 'http://trials.drugis.org/graphs/studyUuid2';
     var study1 = '<http://trials.drugis.org/studies/studyUuid1>  <http://www.w3.org/2000/01/rdf-schema#label> "mystudy" ;' +
       ' <http://www.w3.org/2000/01/rdf-schema#comment> "myComment" ;' +
       ' a  <http://trials.drugis.org/ontology#Study> ; ' +
@@ -284,13 +284,13 @@ describe('querying a specific dataset version', function() {
         .end(function(err, res) {
           versionedDatasetUrl = res.headers.location;
           request(versionedDatasetUrl)
-            .put('/data?graph=' + studyUri1)
+            .put('/data?graph=' + studyGraphUri1)
             .set('Content-Type', 'text/turtle')
             .send(study1)
             .end(function(err, res) {
               previousVersionUrl = res.headers['x-eventsource-version'];
               request(versionedDatasetUrl)
-                .put('/data?graph=' + studyUri2)
+                .put('/data?graph=' + studyGraphUri2)
                 .set('Content-Type', 'text/turtle')
                 .send(study2)
                 .end(done);

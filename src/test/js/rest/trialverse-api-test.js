@@ -5,11 +5,11 @@ var fs = require('fs');
 var path = require('path');
 
 var trialverseUrl = process.env.TRIALVERSE_URL;
-var sessionId = 'CA2177C090923A7195FB3BDF7CB9B2D8';
-var csrfToken = '9f410b8f-ccf1-4404-9eae-4720e3ffc748';
+var sessionId = '415A9BC843E939B4C038753D893F8019';
+var csrfToken = '7547838b-60b3-4fe2-b1bb-c2092f444977';
 
 var newDataset = '{"title":"my-test-dataset","description":"my test  description"}';
-var newStudy = '<http://trials.drugis.org/graphs/studyUuid>  <http://www.w3.org/2000/01/rdf-schema#label> "mystudy" ;' +
+var newStudy = '<http://trials.drugis.org/studies/studyUuid>  <http://www.w3.org/2000/01/rdf-schema#label> "mystudy" ;' +
   ' <http://www.w3.org/2000/01/rdf-schema#comment> "myComment" ;' +
   ' a  <http://trials.drugis.org/ontology#Study> ; ' +
   ' <http://trials.drugis.org/ontology#has_epochs> () . ';
@@ -160,7 +160,7 @@ describe.skip('get study', function() {
   });
 
   it('should get the study', function(done) {
-    var expectedTtl = '<http://trials.drugis.org/graphs/studyUuid>\n' +
+    var expectedTtl = '<http://trials.drugis.org/studies/studyUuid>\n' +
       '        a       <http://trials.drugis.org/ontology#Study> ;\n' +
       '        <http://www.w3.org/2000/01/rdf-schema#comment>\n' +
       '                "myComment" ;\n' +
