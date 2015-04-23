@@ -189,14 +189,14 @@ define([],
             callback: function() {
               return function(newVersion) {
                 StudyService.studySaved();
-                $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyUUID);
+                $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);
               };
             },
             datasetUuid: function() {
               return $stateParams.datasetUUID;
             },
             graphUuid: function() {
-              return $stateParams.studyUUID;
+              return $stateParams.studyGraphUuid;
             },
             itemServiceName: function() {
               return 'StudyService';
