@@ -7,7 +7,7 @@
     <div ng-if="items">
         <div class="panel clearfix" ng-repeat="item in items | orderBy:'pos'">
 
-            <category-item-directive itemIndex="{{$index}}" item="item" reload-items="reloadItems"
+            <category-item-directive itemIndex="{{$index}}" item="item" study-uuid="studyUuid" reload-items="reloadItems"
              settings="settings" is-editing-allowed="isEditingAllowed"></category-item-directive>
         </div>
     </div>
@@ -15,4 +15,3 @@
     <a ng-show="isEditingAllowed" ng-click="addItem()" class="button success"><i class="fa fa-plus"></i> Add {{settings.itemName}}</a>
 
 </div>
-

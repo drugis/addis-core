@@ -42,7 +42,7 @@ define([], function() {
         };
 
         scope.deleteItem = function() {
-          service.deleteItem(scope.item, $stateParams.studyUUID).then(function() {
+          service.deleteItem(scope.item, scope.studyUuid).then(function() {
             scope.$emit('updateStudyDesign');
             scope.reloadItems();
           });
