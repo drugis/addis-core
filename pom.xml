@@ -363,7 +363,6 @@
                 <configuration>
                     <path>/</path>
                     <contextFile>${basedir}/src/main/webapp/META-INF/context.xml</contextFile>
-                    <port>8090</port>
                     <systemProperties>
                         <TRIALVERSE_DB_DRIVER>${env.TRIALVERSE_DB_DRIVER}</TRIALVERSE_DB_DRIVER>
                         <TRIALVERSE_DB_URL>${env.TRIALVERSE_DB_URL}</TRIALVERSE_DB_URL>
