@@ -125,6 +125,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       beforeEach(function(done) {
 
         testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
+        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
 
         var newActivity = {
           activityUri: 'http://trials.drugis.org/instances/newActivityUuid',
