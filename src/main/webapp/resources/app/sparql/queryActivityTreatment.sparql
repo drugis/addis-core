@@ -1,11 +1,10 @@
 PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX study: <http://trials.drugis.org/studies/>
 
 SELECT * WHERE {
   GRAPH <$graphUri> {
-    study:$studyUuid ontology:has_activity ?activityUri .
+    ?s ontology:has_activity ?activityUri .
     ?activityUri
       rdf:type ontology:TreatmentActivity ;
       ontology:has_drug_treatment ?treatmentUri .

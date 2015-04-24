@@ -120,7 +120,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
     });
 
-    describe('add non-treatment activity', function() {
+    fdescribe('add non-treatment activity', function() {
 
       beforeEach(function(done) {
 
@@ -135,7 +135,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           activityDescription: 'some description'
         };
 
-        activityService.addItem(mockStudyUuid, newActivity).then(function() {
+        activityService.addItem(newActivity).then(function() {
           done();
         });
 
@@ -223,7 +223,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           treatments: [fixedTreatment, titRatedTreatment]
         };
 
-        activityService.addItem(mockStudyUuid, newActivity).then(function() {
+        activityService.addItem(newActivity).then(function() {
           done();
         });
 
@@ -231,7 +231,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
 
       it('should add the new activity to the graph', function(done) {
-        activityService.queryItems(mockStudyUuid).then(function(resultActivities) {
+        activityService.queryItems().then(function(resultActivities) {
           expect(resultActivities.length).toBe(1);
           var activity = resultActivities[0];
           expect(activity.treatments.length).toBe(2);
@@ -248,11 +248,11 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           expect(activity.treatments[1].doseUnit.label).toEqual('old unit label');
           expect(activity.treatments[1].dosingPeriodicity).toEqual('P3W');
           expect(activity.treatments[1].fixedValue).toEqual('1.5e3');
-          drugService.queryItems(mockStudyUuid).then(function(drugResults) {
+          drugService.queryItems().then(function(drugResults) {
             expect(drugResults.length).toBe(2);
             expect(drugResults[0].label).toEqual('old drug');
             expect(drugResults[1].label).toEqual('new drug');
-            unitService.queryItems(mockStudyUuid).then(function(unitResults) {
+            unitService.queryItems().then(function(unitResults) {
               expect(unitResults.length).toBe(1);
               expect(unitResults[0].label).toEqual('old unit label');
               done();
@@ -317,7 +317,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           activityDescription: undefined
         };
 
-        activityService.editItem(mockStudyUuid, editActivity).then(function() {
+        activityService.editItem(editActivity).then(function() {
           done();
         });
 
@@ -326,7 +326,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should edit the activity', function(done) {
 
-        activityService.queryItems(mockStudyUuid).then(function(activities) {
+        activityService.queryItems().then(function(activities) {
           // verify query result
           expect(activities.length).toBe(2);
           expect(activities[1].label).toEqual('edit label');
@@ -363,7 +363,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           }
         };
 
-        activityService.deleteItem(deleteActivity, mockStudyUuid).then(function() {
+        activityService.deleteItem(deleteActivity).then(function() {
           done();
         });
         rootScope.$digest();

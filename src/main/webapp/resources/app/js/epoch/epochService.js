@@ -71,7 +71,7 @@ define([],
         });
       }
 
-      function editItem(oldItem, newItem, studyUuid) {
+      function editItem(oldItem, newItem) {
 
         var isPrimaryDefer, epochDefer;
 
@@ -80,21 +80,18 @@ define([],
 
         if (oldItem.isPrimary === 'true' && !newItem.isPrimary) {
           isPrimaryDefer = removeEpochPrimaryRaw.then(function(queryRaw) {
-            var query = queryRaw.replace(/\$URI/g, newItem.uri)
-              .replace(/\$studyUuid/g, studyUuid);
+            var query = queryRaw.replace(/\$URI/g, newItem.uri);
             return StudyService.doModifyingQuery(query);
           });
         } else if (newItem.isPrimary) {
           isPrimaryDefer = setEpochToPrimaryRaw.then(function(queryRaw) {
-            var query = queryRaw.replace(/\$URI/g, newItem.uri)
-              .replace(/\$studyUuid/g, studyUuid);
+            var query = queryRaw.replace(/\$URI/g, newItem.uri);
             return StudyService.doModifyingQuery(query);
           });
         }
 
         epochDefer = editEpochRaw.then(function(editQueryRaw) {
           var editQuery = editQueryRaw.replace(/\$URI/g, newItem.uri)
-            .replace(/\$studyUuid/g, studyUuid)
             .replace(/\$newDuration/g, newDuration)
             .replace(/\$newLabel/g, newItem.label);
             editQuery = editQuery.replace(/\$newComment/g, newCommentValue);
