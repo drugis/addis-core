@@ -94,7 +94,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           conceptService.queryItems().then(function(result) {
             var concepts = result;
             expect(concepts.length).toBe(4);
-            console.log(JSON.stringify(concepts));
             expect(concepts[0].label).toEqual(newConcept.title);
             expect(concepts[0].type).toEqual(newConcept.type.uri);
             done();
