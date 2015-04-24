@@ -1,0 +1,97 @@
+<http://trials.drugis.org/instances/3f904688-3062-443d-9f9a-cb89d1fd2a9a>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "dr1" .
+
+<http://trials.drugis.org/instances/4be1f8d0-7d6c-45f0-a651-69bb9d4df948>
+        a       <http://trials.drugis.org/ontology#Epoch> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "epoch description" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "epoch 1" ;
+        <http://trials.drugis.org/ontology#duration>
+                "PT0S"^^<http://www.w3.org/2001/XMLSchema#duration> .
+
+<http://trials.drugis.org/instances/b1e12c66-5e45-4a15-84b5-3a976b0c0b36>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "drug1" .
+
+<http://trials.drugis.org/instances/c198d66d-2e81-45ec-a5e1-8bb0129ca13a>
+        a       <http://trials.drugis.org/ontology#Unit> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "as" .
+
+<http://trials.drugis.org/instances/6b34e2e3-3a3e-4caf-b5a9-66fca298b65c>
+        a       <http://trials.drugis.org/ontology#TreatmentActivity> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "treatment" ;
+        <http://trials.drugis.org/ontology#has_drug_treatment>
+                <http://trials.drugis.org/instances/2ab7dcf2-7ada-4441-a72c-048ee91b4c4d> .
+
+<http://trials.drugis.org/instances/2634b5b6-d557-4b38-8c48-ec08fa12d434>
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "At start of epoch 1" ;
+        <http://trials.drugis.org/ontology#relative_to_anchor>
+                <http://trials.drugis.org/ontology#anchorEpochStart> ;
+        <http://trials.drugis.org/ontology#relative_to_epoch>
+                <http://trials.drugis.org/instances/4be1f8d0-7d6c-45f0-a651-69bb9d4df948> ;
+        <http://trials.drugis.org/ontology#time_offset>
+                "PT0S"^^<http://www.w3.org/2001/XMLSchema#duration> .
+
+<http://localhost:8080/.well-known/genid/0000014ceb9f4e207afe979900000000>
+        <http://www.w3.org/1999/02/22-rdf-syntax-ns#value>
+                2e0 ;
+        <http://trials.drugis.org/ontology#dosingPeriodicity>
+                "P1W"^^<http://www.w3.org/2001/XMLSchema#duration> ;
+        <http://trials.drugis.org/ontology#unit>
+                <http://trials.drugis.org/instances/682b2937-8f11-4f00-9aaa-9e915133d3da> .
+
+<http://trials.drugis.org/studies/12b26700-4ff6-4f1f-91db-29e99d4c5392>
+        a       <http://trials.drugis.org/ontology#Study> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "study title 1" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "study 1" ;
+        <http://trials.drugis.org/ontology#has_activity>
+                <http://trials.drugis.org/instances/6b34e2e3-3a3e-4caf-b5a9-66fca298b65c> , <http://trials.drugis.org/instances/58254642-3d13-407c-9c99-c98fa8ff27fb> ;
+        <http://trials.drugis.org/ontology#has_arm>
+                <http://trials.drugis.org/instances/42835a91-4588-4c8d-9b59-b0fb06b7541b> ;
+        <http://trials.drugis.org/ontology#has_epochs>
+                ( <http://trials.drugis.org/instances/4be1f8d0-7d6c-45f0-a651-69bb9d4df948> ) ;
+        <http://trials.drugis.org/ontology#has_primary_epoch>
+                <http://trials.drugis.org/instances/4be1f8d0-7d6c-45f0-a651-69bb9d4df948> .
+
+<http://trials.drugis.org/instances/42835a91-4588-4c8d-9b59-b0fb06b7541b>
+        a       <http://trials.drugis.org/ontology#Arm> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "arm 1" .
+
+<http://trials.drugis.org/instances/7b39cceb-1605-4c8f-b419-28768bea9ea1>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "dr2" .
+
+<http://trials.drugis.org/instances/58254642-3d13-407c-9c99-c98fa8ff27fb>
+        a       <http://trials.drugis.org/ontology#StudyActivity> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "some desc" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "non treatment" .
+
+<http://trials.drugis.org/instances/682b2937-8f11-4f00-9aaa-9e915133d3da>
+        a       <http://trials.drugis.org/ontology#Unit> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "ll" .
+
+<http://trials.drugis.org/instances/4750a6e7-b4eb-44f1-b858-b05d19af9308>
+        a       <http://trials.drugis.org/ontology#Unit> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "cc" .
+
+<http://trials.drugis.org/instances/2ab7dcf2-7ada-4441-a72c-048ee91b4c4d>
+        a       <http://trials.drugis.org/ontology#FixedDoseDrugTreatment> ;
+        <http://trials.drugis.org/ontology#treatment_dose>
+                <http://localhost:8080/.well-known/genid/0000014ceb9f4e207afe979900000000> ;
+        <http://trials.drugis.org/ontology#treatment_has_drug>
+                <http://trials.drugis.org/instances/b1e12c66-5e45-4a15-84b5-3a976b0c0b36> .

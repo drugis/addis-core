@@ -2,7 +2,6 @@
 define([],
   function() {
     var dependencies = ['$scope',
-      '$stateParams',
       '$modalInstance',
       'callback',
       'actionType',
@@ -10,11 +9,10 @@ define([],
       'EpochService',
       'DurationService'
     ];
-    var MeasurementMomentController = function($scope,
-      $stateParams, $modalInstance, callback, actionType,
+    var MeasurementMomentController = function($scope, $modalInstance, callback, actionType,
       MeasurementMomentService, EpochService, DurationService) {
 
-      var epochsPromise = EpochService.queryItems($stateParams.studyUUID).then(function(queryResult) {
+      var epochsPromise = EpochService.queryItems().then(function(queryResult) {
         $scope.epochs = _.sortBy(queryResult, 'pos');
         $scope.itemScratch.epoch = _.find($scope.epochs, function(epoch) {
           return $scope.itemScratch.epochUri === epoch.uri;

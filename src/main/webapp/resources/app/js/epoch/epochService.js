@@ -14,9 +14,8 @@ define([],
       var removeEpochPrimaryRaw = SparqlResource.get('removeEpochPrimary.sparql');
       var setEpochToPrimaryRaw = SparqlResource.get('setEpochToPrimary.sparql');
 
-      function queryItems(studyUuid) {
-        return epochQuery.then(function(queryRaw) {
-          var query = queryRaw.replace(/\$studyUuid/g, studyUuid);
+      function queryItems() {
+        return epochQuery.then(function(query) {
           return StudyService.doNonModifyingQuery(query);
         });
       }

@@ -9,9 +9,9 @@ define([],
       var editItemQuery = SparqlResource.get('editMeasurementMoment.sparql');
       var deleteItemQuery = SparqlResource.get('deleteMeasurementMoment.sparql');
 
-      function queryItems(studyUuid) {
+      function queryItems() {
         var measurementMoments, epochs;
-        var epochsPromise = EpochService.queryItems(studyUuid).then(function(result){
+        var epochsPromise = EpochService.queryItems().then(function(result){
           epochs = result;
         });
 
