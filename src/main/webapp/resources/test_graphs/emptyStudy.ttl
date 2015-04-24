@@ -1,5 +1,5 @@
 <http://trials.drugis.org/studies/study1>   
   <http://www.w3.org/1999/02/22-rdf-syntax-ns#label> "Study1" ;  
-  <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  ontology:Study ;  
+  a  <http://trials.drugis.org/ontology#Study> ;  
   <http://www.w3.org/2000/01/rdf-schema#comment>  "Description" ;  
   <http://trials.drugis.org/ontology#has_epochs> () . 

@@ -12,5 +12,7 @@ INSERT {
   }
 }
 WHERE {
-  ?s a ontology:Study .
+  GRAPH <$graphUri> {
+    ?s a ontology:Study .
+  }
 };

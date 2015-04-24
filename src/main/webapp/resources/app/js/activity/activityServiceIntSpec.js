@@ -85,7 +85,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       it('should return the activities contained in the study', function(done) {
 
         // call function under test
-        activityService.queryItems(mockStudyUuid).then(function(result) {
+        activityService.queryItems().then(function(result) {
           var activities = result;
 
           // verify query result
@@ -120,111 +120,90 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
     });
 
-    fdescribe('add non-treatment activity', function() {
+    describe('add non-treatment activity', function() {
+
+      var queryPromise;
+      var newActivity = {
+        activityUri: 'http://trials.drugis.org/instances/newActivityUuid',
+        label: 'newActivityLabel',
+        activityType: {
+          uri: 'http://mockActivityUri'
+        },
+        activityDescription: 'some description'
+      };
 
       beforeEach(function(done) {
 
         testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
         testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
-
-        var newActivity = {
-          activityUri: 'http://trials.drugis.org/instances/newActivityUuid',
-          label: 'newActivityLabel',
-          activityType: {
-            uri: 'http://mockActivityUri'
-          },
-          activityDescription: 'some description'
-        };
-
         activityService.addItem(newActivity).then(function() {
+          queryPromise = activityService.queryItems();
           done();
         });
-
         rootScope.$digest();
       });
 
-      it('should add the new activity to the graph', function(done) {
-
-        // call function under test
-        var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o }}';
-        var result = testUtils.queryTeststore(query);
-        var resultTriples = testUtils.deFusekify(result);
-
-        expect(commentServiceStub.addComment).toHaveBeenCalled();
-
-        // verify results
-        expect(resultTriples.length).toBe(3);
-        var hasActivityTriple = _.find(resultTriples, function(item) {
-          return item.s === 'http://trials.drugis.org/studies/mockStudyUuid';
+      it('should add the new activity to the graph', function() {
+        queryPromise.then(function(result) {
+          expect(result.length).toBe(1);
+          expect(activities[0].label).toEqual(newActivity.label);
+          expect(activities[0].activityType).toEqual(newActivity.activityType);
+          expect(activities[0].activityDescription).toEqual(newActivity.activityDescription);
+          expect(activities[0].treatments).not.toBeDefined();
         });
-        expect(hasActivityTriple.s).toBeDefined();
-        expect(hasActivityTriple.p).toEqual('http://trials.drugis.org/ontology#has_activity');
-        expect(hasActivityTriple.o).toBeDefined();
-
-        var activityLabelTriple = _.find(resultTriples, function(item) {
-          return item.p === 'http://www.w3.org/2000/01/rdf-schema#label';
-        });
-        expect(activityLabelTriple.s).toBeDefined();
-        expect(activityLabelTriple.p).toBeDefined();
-        expect(activityLabelTriple.o).toEqual('newActivityLabel');
-
-        var activityTypeTriple = _.find(resultTriples, function(item) {
-          return item.p === 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
-        });
-        expect(activityTypeTriple.s).toBeDefined();
-        expect(activityTypeTriple.p).toBeDefined();
-        expect(activityTypeTriple.o).toEqual('http://mockActivityUri');
-
-        done();
       });
     });
 
     describe('add treatment activity', function() {
+
+      var queryActivityPromise, queryUnitPromise, queryDrugsPromise;
+      var fixedTreatment = {
+        treatmentDoseType: 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment',
+        drug: {
+          uri: 'http://drug/newDrugUuid',
+          label: 'new drug'
+        },
+        doseUnit: {
+          uri: 'http://unit/oldUnit',
+          label: 'old unit label'
+        },
+        fixedValue: '1500',
+        dosingPeriodicity: 'P3W'
+      };
+
+      var titRatedTreatment = {
+        treatmentDoseType: 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment',
+        drug: {
+          uri: 'http://drug/oldDrugUuid',
+          label: 'old drug'
+        },
+        doseUnit: {
+          uri: 'http://unit/oldUnit',
+          label: 'old unit label'
+        },
+        minValue: '120',
+        maxValue: '1300',
+        dosingPeriodicity: 'P2W'
+      };
+
+      var newActivity = {
+        activityUri: 'http://trials.drugis.org/instances/newActivityUuid',
+        label: 'newActivityLabel',
+        activityType: {
+          uri: 'http://trials.drugis.org/ontology#TreatmentActivity'
+        },
+        treatments: [fixedTreatment, titRatedTreatment]
+      };
 
       beforeEach(function(done) {
 
         testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
         testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
 
-        var fixedTreatment = {
-          treatmentDoseType: 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment',
-          drug: {
-            uri: 'http://drug/newDrugUuid',
-            label: 'new drug'
-          },
-          doseUnit: {
-            uri: 'http://unit/oldUnit',
-            label: 'old unit label'
-          },
-          fixedValue: '1500',
-          dosingPeriodicity: 'P3W'
-        };
-
-        var titRatedTreatment = {
-          treatmentDoseType: 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment',
-          drug: {
-            uri: 'http://drug/oldDrugUuid',
-            label: 'old drug'
-          },
-          doseUnit: {
-            uri: 'http://unit/oldUnit',
-            label: 'old unit label'
-          },
-          minValue: '120',
-          maxValue: '1300',
-          dosingPeriodicity: 'P2W'
-        };
-
-        var newActivity = {
-          activityUri: 'http://trials.drugis.org/instances/newActivityUuid',
-          label: 'newActivityLabel',
-          activityType: {
-            uri: 'http://trials.drugis.org/ontology#TreatmentActivity'
-          },
-          treatments: [fixedTreatment, titRatedTreatment]
-        };
-
         activityService.addItem(newActivity).then(function() {
+          queryActivityPromise = activityService.queryItems();
+          queryDrugsPromise = drugService.queryItems();
+          queryUnitPromise = unitService.queryItems()
           done();
         });
 
@@ -232,7 +211,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
 
       it('should add the new activity to the graph', function(done) {
-        activityService.queryItems().then(function(resultActivities) {
+        queryActivityPromise.then(function(resultActivities) {
           expect(resultActivities.length).toBe(1);
           var activity = resultActivities[0];
           expect(activity.treatments.length).toBe(2);
@@ -249,16 +228,19 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           expect(activity.treatments[1].doseUnit.label).toEqual('old unit label');
           expect(activity.treatments[1].dosingPeriodicity).toEqual('P3W');
           expect(activity.treatments[1].fixedValue).toEqual('1.5e3');
-          drugService.queryItems().then(function(drugResults) {
-            expect(drugResults.length).toBe(2);
-            expect(drugResults[0].label).toEqual('old drug');
-            expect(drugResults[1].label).toEqual('new drug');
-            unitService.queryItems().then(function(unitResults) {
-              expect(unitResults.length).toBe(1);
-              expect(unitResults[0].label).toEqual('old unit label');
-              done();
-            });
-          });
+
+        });
+
+        queryDrugsPromise.then(function(drugResults) {
+          expect(drugResults.length).toBe(2);
+          expect(drugResults[0].label).toEqual('old drug');
+          expect(drugResults[1].label).toEqual('new drug');
+        });
+
+        queryUnitPromise.then(function(unitResults) {
+          expect(unitResults.length).toBe(1);
+          expect(unitResults[0].label).toEqual('old unit label');
+          done();
         });
       });
     });

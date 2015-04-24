@@ -3,7 +3,6 @@ define([],
   function() {
     var dependencies = [
       '$scope',
-      '$stateParams',
       '$modalInstance',
       'callback',
       'actionType',
@@ -11,7 +10,7 @@ define([],
       'DrugService',
       'UnitService'
     ];
-    var ActivityController = function($scope, $stateParams, $modalInstance, callback, actionType, ActivityService, DrugService, UnitService) {
+    var ActivityController = function($scope, $modalInstance, callback, actionType, ActivityService, DrugService, UnitService) {
 
       $scope.actionType = actionType;
       $scope.activityTypeOptions = _.values(ActivityService.ACTIVITY_TYPE_OPTIONS);
@@ -30,7 +29,7 @@ define([],
       }
 
       $scope.addItem = function() {
-        ActivityService.addItem($stateParams.studyUUID, $scope.itemScratch)
+        ActivityService.addItem($scope.itemScratch)
           .then(function() {
               callback();
               $modalInstance.close();
@@ -42,7 +41,7 @@ define([],
       };
 
       $scope.editItem = function() {
-        ActivityService.editItem($stateParams.studyUUID, $scope.itemScratch)
+        ActivityService.editItem($scope.itemScratch)
           .then(function() {
               callback();
               $modalInstance.close();
