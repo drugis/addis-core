@@ -6,6 +6,7 @@ define([], function() {
       restrict: 'E',
       templateUrl: 'app/js/study/categoryDirective.html',
       scope: {
+        studyUuid: '=',
         settings: '=',
         isEditingAllowed: '='
       },

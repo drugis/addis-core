@@ -3,7 +3,7 @@ define([], function() {
   var dependencies = ['$q', '$filter', 'UUIDService', 'RemoteRdfStoreService'];
   var StudyService = function($q, $filter, UUIDService, RemoteRdfStoreService) {
 
-    var studyPrefix = 'http://trials.drugis.org/studies/';
+    var graphPrefix = 'http://trials.drugis.org/graphs/';
     var loadDefer = $q.defer();
     var scratchStudyUri,
       modified = false;
@@ -24,7 +24,7 @@ define([], function() {
 
     function createEmptyStudy(study) {
       loadDefer = $q.defer();
-      return RemoteRdfStoreService.create(studyPrefix)
+      return RemoteRdfStoreService.create(graphPrefix)
         .then(function(newGraphUri) {
           scratchStudyUri = newGraphUri;
           var query =
@@ -35,7 +35,7 @@ define([], function() {
             ' INSERT DATA ' +
             ' { ' +
             '   GRAPH <' + newGraphUri + '> {' +
-            '    <' + newGraphUri + '> rdfs:label "' + study.label + '" ; ' +
+            '    study:' + UUIDService.generate() + ' rdfs:label "' + study.label + '" ; ' +
             '       rdf:type  ontology:Study ; ' +
             '       rdfs:comment   "' + study.comment + '" ; ' +
             '       ontology:has_epochs () .' +
@@ -73,7 +73,7 @@ define([], function() {
     }
 
     function loadStore(data) {
-      return RemoteRdfStoreService.create(studyPrefix).then(function(graphUri) {
+      return RemoteRdfStoreService.create(graphPrefix).then(function(graphUri) {
         //console.log('RemoteRdfStoreService.create result, = ' + graphUri);
         scratchStudyUri = graphUri;
         return RemoteRdfStoreService.load(scratchStudyUri, data).then(function() {
@@ -97,7 +97,7 @@ define([], function() {
     }
 
     function getStudyUUID() {
-      return $filter('stripFrontFilter')(scratchStudyUri, studyPrefix);
+      return $filter('stripFrontFilter')(scratchStudyUri, graphPrefix);
     }
 
     function reset() {

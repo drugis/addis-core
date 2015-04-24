@@ -1,10 +1,10 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$window', 'VersionedGraphResource', '$location', '$anchorScroll',
+    var dependencies = ['$scope', '$stateParams', '$window', '$filter', 'VersionedGraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'ResultsService', 'StudyDesignService'
     ];
-    var StudyController = function($scope, $stateParams, $window, VersionedGraphResource, $location, $anchorScroll,
+    var StudyController = function($scope, $stateParams, $window, $filter, VersionedGraphResource, $location, $anchorScroll,
       $modal, StudyService, ResultsService, StudyDesignService) {
 
       // onload
@@ -107,17 +107,17 @@ define([],
         populationCharacteristics: {
           label: 'Population characteristics',
           serviceName: 'PopulationCharacteristicService',
-          typeUri: 'http://trials.drugis.org/ontology#PopulationCharacteristic'
+          typeUri: 'http://trials.drugis.org/ontology#Variable'
         },
         endpoints: {
           label: 'Endpoints',
           serviceName: 'EndpointService',
-          typeUri: 'http://trials.drugis.org/ontology#Endpoint'
+          typeUri: 'http://trials.drugis.org/ontology#Variable'
         },
         adverseEvents: {
           label: 'Adverse events',
           serviceName: 'AdverseEventService',
-          typeUri: 'http://trials.drugis.org/ontology#AdverseEvent'
+          typeUri: 'http://trials.drugis.org/ontology#Variable'
         }
       };
 
@@ -131,7 +131,7 @@ define([],
       function reloadStudyModel() {
         VersionedGraphResource.get({
           datasetUUID: $stateParams.datasetUUID,
-          graphUuid: $stateParams.studyUUID,
+          graphUuid: $stateParams.studyGraphUuid,
           versionUuid: $stateParams.versionUuid
         }, function(response) {
           StudyService.loadStore(response.data)
@@ -139,6 +139,7 @@ define([],
               console.log('loading study-store success');
               StudyService.queryStudyData().then(function(queryResult) {
                 $scope.study = queryResult;
+                $scope.studyUuid = $filter('stripFrontFilter')(queryResult.studyUri, 'http://trials.drugis.org/studies/');
                 $scope.$broadcast('refreshStudyDesign');
                 $scope.$broadcast('refreshResults');
                 StudyService.studySaved();
@@ -188,14 +189,14 @@ define([],
             callback: function() {
               return function(newVersion) {
                 StudyService.studySaved();
-                $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyUUID);
+                $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);
               };
             },
             datasetUuid: function() {
               return $stateParams.datasetUUID;
             },
             graphUuid: function() {
-              return $stateParams.studyUUID;
+              return $stateParams.studyGraphUuid;
             },
             itemServiceName: function() {
               return 'StudyService';

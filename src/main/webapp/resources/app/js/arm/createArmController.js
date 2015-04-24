@@ -6,7 +6,7 @@ define([],
       $scope.item = {}; // necessary to make html bindings not go to parent scope
 
       $scope.createArm = function () {
-        ArmService.addItem($scope.item, $state.params.studyUUID).then(function() {
+        ArmService.addItem($scope.item, $scope.studyUuid).then(function() {
           console.log('arm ' + $scope.item + 'create');
           callback();
           $modalInstance.close();

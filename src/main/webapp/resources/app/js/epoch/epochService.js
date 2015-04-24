@@ -21,7 +21,7 @@ define([],
         });
       }
 
-      function addItem(item, studyUUID) {
+      function addItem(item) {
         var uuid = UUIDService.generate();
         var addEpochPromise, addCommentPromise, setPrimaryPromise, addToListPromise;
 
@@ -46,7 +46,6 @@ define([],
         if (item.isPrimaryEpoch) {
           setPrimaryPromise = setEpochPrimaryQueryRaw.then(function(query) {
             var setEpochPrimaryQuery = query
-              .replace(/\$studyUUID/g, studyUUID)
               .replace(/\$newUUID/g, uuid);
             return StudyService.doModifyingQuery(setEpochPrimaryQuery);
           });
@@ -60,9 +59,9 @@ define([],
         });
 
         return $q.all([addEpochPromise,
-                       addCommentPromise,
-                       setPrimaryPromise,
-                       addToListPromise]);
+                        addCommentPromise,
+                        setPrimaryPromise,
+                        addToListPromise]);
       }
 
       function deleteItem(item) {

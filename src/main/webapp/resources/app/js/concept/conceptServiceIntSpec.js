@@ -72,7 +72,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           expect(concepts[0].label).toBe('endpoint');
           expect(concepts[1].label).toBe('conc 2 the druggening');
           expect(concepts[2].label).toBe('conc 1');
-          expect(concepts[0].type).toBe('http://trials.drugis.org/ontology#Endpoint');
+          expect(concepts[0].type).toBe('http://trials.drugis.org/ontology#Variable');
           expect(concepts[1].type).toBe('http://trials.drugis.org/ontology#Drug');
           expect(concepts[2].type).toBe('http://trials.drugis.org/ontology#Drug');
           done();

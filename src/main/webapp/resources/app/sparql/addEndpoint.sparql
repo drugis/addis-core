@@ -1,12 +1,14 @@
 PREFIX instance: <http://trials.drugis.org/instances/>
 PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX study: <http://trials.drugis.org/studies/>
 
 INSERT DATA {
   graph <$graphUri> {
+    study:$studyUuid ontology:has_outcome instance:$UUID .
     instance:$UUID
-    rdfs:label "$label" ;
-    ontology:of_variable [ ontology:measurementType <$measurementType> ] ;
-    a ontology:Endpoint .
+      rdfs:label "$label" ;
+      ontology:of_variable [ ontology:measurementType <$measurementType> ] ;
+      a ontology:Endpoint .
   }
 }

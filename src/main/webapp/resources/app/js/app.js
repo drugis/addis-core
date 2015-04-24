@@ -106,7 +106,7 @@ define(
             controller: 'ConceptController'
           })
           .state('versionedDataset.study', {
-            url: '/studies/:studyUUID',
+            url: '/studies/:studyGraphUuid',
             templateUrl: 'app/js/study/view/study.html',
             controller: 'StudyController'
           });

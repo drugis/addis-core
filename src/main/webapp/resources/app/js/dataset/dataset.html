@@ -53,7 +53,7 @@
           </tr>
           <tr ng-repeat="studyWithDetails in studiesWithDetail | orderBy:tableOptions.orderByField:tableOptions.reverseSortOrder ">
             <td><a ui-sref="versionedDataset.study({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'),
-            studyUUID: (studyWithDetails.studyUri | stripFrontFilter:'http://trials.drugis.org/studies/')})">{{studyWithDetails.label}}</a>
+            studyGraphUuid: (studyWithDetails.studyGraphUri | stripFrontFilter:'http://trials.drugis.org/graphs/')})">{{studyWithDetails.label}}</a>
             </td>
             <td ng-show="column.visible" ng-repeat="column in tableOptions.columns">
               <span ng-show="!column.type">{{studyWithDetails[column.id]}}</span>

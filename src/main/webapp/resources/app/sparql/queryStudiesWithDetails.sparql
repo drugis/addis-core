@@ -3,13 +3,10 @@ PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX dataset: <http://trials.drugis.org/datasets/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
-PREFIX study: <http://trials.drugis.org/studies/>
-
-SELECT
-  ?studyUri ?title ?label ?studySize ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria
- ?publications ?status ?numberOfCenters ?indication ?startDate ?endDate ?numberOfArms ?doseType WHERE {
-GRAPH ?graphUri {
+SELECT * WHERE {
+GRAPH ?studyGraphUri {
     ?studyUri 
       rdfs:label ?label ;
       a ontology:Study ;
@@ -46,7 +43,7 @@ GRAPH ?graphUri {
     OPTIONAL {
       ?studyUri ontology:has_end_date ?endDate .
     }
-  OPTIONAL {
+    OPTIONAL {
      SELECT ?studyUri ?doseType
        WHERE {
         BIND ('Flexible' as ?doseType)
@@ -54,47 +51,27 @@ GRAPH ?graphUri {
            ontology:has_activity_application [
              ontology:applied_to_arm ?arm
            ] ;
-           ontology:administered_drugs/rdf:rest*/rdf:first [ a ontology:TitratedDoseDrugTreatment ] .
+           ontology:has_drug_treatment [ a ontology:TitratedDoseDrugTreatment ] .
            ?studyUri ontology:has_arm ?arm .
         } GROUP BY ?studyUri ?doseType
           HAVING (COUNT(*) > 0)
-  }
+    }
     OPTIONAL
     {
       SELECT ?studyUri (group_concat(?drugName; separator = ', ') as ?drugNames)
       WHERE {
-        GRAPH ?dataset {
-          ?drug rdfs:subClassOf ontology:Drug .
-          ?dataset ontology:contains_study ?studyUri
-        }
-        GRAPH ?studyUri {
-          ?instance a ?drug .
-          ?instance rdfs:label ?drugName.
-        }
-      } GROUP BY ?studyUri
-    }
-    OPTIONAL
-    {
-      SELECT ?studyUri (group_concat(?publication; separator = ', ') as ?publications)
-      WHERE {
-        GRAPH ?studyUri {
-          OPTIONAL {
-            ?studyUri ontology:has_publication [
-              ontology:has_id ?publication
+        {
+          SELECT DISTINCT ?studyUri ?drugName WHERE {
+            ?studyUri ontology:has_activity ?activityInstance .
+            ?activityInstance ontology:has_drug_treatment [
+              ontology:treatment_has_drug ?instance
             ] .
+            ?instance owl:sameAs ?drug .
+            ?instance a ontology:Drug .
+            ?instance rdfs:label ?drugName .
           }
         }
       } GROUP BY ?studyUri
-    }
-    OPTIONAL {
-      SELECT ?studyUri (COUNT(?arm) as ?numberOfArms) (SUM(?numberOfParticipantsStarting) as ?studySize)
-        WHERE {
-          GRAPH ?studyUri {
-            ?arm a ontology:Arm .
-            ?participantsStarting ontology:of_arm ?arm .
-            ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .
-          }
-        } GROUP BY ?studyUri
     }
   }
 }

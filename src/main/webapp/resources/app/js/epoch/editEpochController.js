@@ -28,7 +28,7 @@ define([],
       }
 
       $scope.editItem = function() {
-        itemService.editItem($scope.item, $scope.itemScratch, $state.params.studyUUID).then(function() {
+        itemService.editItem($scope.item, $scope.itemScratch).then(function() {
             $scope.item = angular.copy($scope.itemScratch);
             callback();
             $modalInstance.close();
