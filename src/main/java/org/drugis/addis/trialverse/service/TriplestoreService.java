@@ -1,6 +1,7 @@
 package org.drugis.addis.trialverse.service;
 
 import net.minidev.json.JSONArray;
+import net.minidev.json.parser.ParseException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
@@ -15,7 +16,7 @@ import java.util.List;
 public interface TriplestoreService {
   public final static String TRIPLESTORE_BASE_URI = System.getenv("TRIPLESTORE_BASE_URI");
 
-  public Collection<Namespace> queryNameSpaces();
+  public Collection<Namespace> queryNameSpaces() throws ParseException;
 
   public Namespace getNamespaceHead(String uid);
 

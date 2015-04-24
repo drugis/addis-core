@@ -1,9 +1,9 @@
 package org.drugis.addis;
 
 import net.minidev.json.JSONArray;
+import net.minidev.json.parser.ParseException;
 import org.drugis.addis.config.TrialverseServiceIntegrationTestConfig;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.projects.Project;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -31,13 +31,22 @@ public class TripleStoreServiceIT {
   @Inject
   TriplestoreService triplestoreService;
 
-  private String nameSpaceUid = "f833282f-9090-4b50-87ea-5f6a12dc6e19";
+  private String nameSpaceUid = "c41d402e-6762-4221-b040-5a244b2aba3f";
+  private final String tak491019 = "4d4b11f1-5bfd-4b45-a42b-04b71cc47b01"; //TAK491-019 / NCT00696436
+  private final String tak491301 = "521121d5-ccda-4c67-96b7-2b1b41142e99"; //TAK491-301 / NCT00846365
+  private final String tak491008 = "dfe24960-8e9b-4a3a-b1b8-d644bb7a7b1c"; //TAK491-008 / NCT00696241
+  private final String nonSAE = "7668ae03-fc7d-4d3e-a98e-a66e24247572";
+  private final String sbpMeanTroughSitting = "e6bb1301-c130-46c6-ad9c-d4c89a3fbecc";
+  private final String azilsartan = "40e4b07f-026d-4f5d-a4c1-54d24917b194";
+  private final String placebo = "47cd2e00-a967-4c24-b798-b2d5c37d9553";
+  private final String ramipril = "7f0beb7b-87cc-4f9f-8e78-f63aec4676ee";
+  private final String spugen = "18bd5e16-5254-4e8d-a171-753d01d22fd4";
+  private final String version = "http://localhost:8080/versions/0f85b12d-73c4-4d34-a1ce-9b9d5122dab4";
 
   @Test
   public void testGetTreatmentActivitiesFixedDose() {
 
-    String studyUid = "30b36971-1074-4482-9252-74f6541b566b"; //TAK491-008 / NCT00696241
-    List<TreatmentActivity> studyTreatmentActivities = triplestoreService.getStudyTreatmentActivities(nameSpaceUid, studyUid);
+    List<TreatmentActivity> studyTreatmentActivities = triplestoreService.getStudyTreatmentActivities(nameSpaceUid, tak491019);
     assertEquals(6, studyTreatmentActivities.size());
     TreatmentActivity treatmentActivity = studyTreatmentActivities.get(1);
     assertEquals(1, treatmentActivity.getAdministeredDrugs().size());
@@ -45,9 +54,7 @@ public class TripleStoreServiceIT {
 
   @Test
   public void testGetTreatmentActivitiesFlexDose() {
-    String nameSpaceUid = "f833282f-9090-4b50-87ea-5f6a12dc6e19"; // edarbi
-    String studyUid = "89b86b85-ea02-4a43-bc18-17dcca9f9c9a"; //TAK491-019 / NCT00696436
-    List<TreatmentActivity> studyTreatmentActivities = triplestoreService.getStudyTreatmentActivities(nameSpaceUid, studyUid);
+    List<TreatmentActivity> studyTreatmentActivities = triplestoreService.getStudyTreatmentActivities(nameSpaceUid, tak491019);
     assertEquals(6, studyTreatmentActivities.size());
     TreatmentActivity treatmentActivity = studyTreatmentActivities.get(1);
     assertEquals(1, treatmentActivity.getAdministeredDrugs().size());
@@ -55,44 +62,34 @@ public class TripleStoreServiceIT {
 
   @Test
   public void testGetTreatmentActivitiesMultidrugArms() {
-    String nameSpaceUid = "f833282f-9090-4b50-87ea-5f6a12dc6e19"; // edarbi
-    String studyUid = "f0b7c1e7-b3e9-4a45-9acc-0e612d43c4e2"; //TAK491-301 / NCT00846365
-    List<TreatmentActivity> studyTreatmentActivities = triplestoreService.getStudyTreatmentActivities(nameSpaceUid, studyUid);
+    List<TreatmentActivity> studyTreatmentActivities = triplestoreService.getStudyTreatmentActivities(nameSpaceUid, tak491301);
     assertEquals(4, studyTreatmentActivities.size());
-    TreatmentActivity treatmentActivity = studyTreatmentActivities.get(1);
+    TreatmentActivity treatmentActivity = studyTreatmentActivities.get(0);
     assertEquals(2, treatmentActivity.getAdministeredDrugs().size());
   }
 
   @Test
   public void testGetPopulationCharacteristics() {
-    String nameSpaceUid = "f833282f-9090-4b50-87ea-5f6a12dc6e19"; // edarbi
-    String studyUid = "30b36971-1074-4482-9252-74f6541b566b"; //TAK491-008 / NCT00696241
-    List<StudyData> studyData = triplestoreService.getStudyData(nameSpaceUid, studyUid, StudyDataSection.BASE_LINE_CHARACTERISTICS);
+    List<StudyData> studyData = triplestoreService.getStudyData(nameSpaceUid, tak491008, StudyDataSection.BASE_LINE_CHARACTERISTICS);
     assertEquals(2, studyData.size());
   }
 
   @Test
   public void testGetOutcomes() {
-    String nameSpaceUid = "f833282f-9090-4b50-87ea-5f6a12dc6e19"; // edarbi
-    String version = "http://localhost:8080/versions/9a02c9e3-44b4-415b-b042-f449a1b5dcc0";
     List<SemanticOutcome> outcomes = triplestoreService.getOutcomes(nameSpaceUid, version);
     assertEquals(95, outcomes.size());
   }
 
   @Test
   public void testGetInterventions() {
-    String nameSpaceUid = "f833282f-9090-4b50-87ea-5f6a12dc6e19"; // edarbi
-    String version = "http://localhost:8080/versions/9a02c9e3-44b4-415b-b042-f449a1b5dcc0";
     List<SemanticIntervention> interventions = triplestoreService.getInterventions(nameSpaceUid, version);
     assertEquals(7, interventions.size());
   }
 
   @Test
   public void testGetStudies() {
-    String nameSpaceUid = "f833282f-9090-4b50-87ea-5f6a12dc6e19"; // edarbi
-    String version = "http://localhost:8080/versions/75f5834f-314e-44d7-beed-979dce4a1e4f";
     List<Study> studies = triplestoreService.queryStudies(nameSpaceUid, version);
-    assertEquals(6, studies.size());
+    assertEquals(5, studies.size());
     assertEquals(59, studies.get(1).getOutcomeUids().size());
     assertTrue(studies.get(1).getOutcomeUids().get(0).startsWith("http://trials.drugis.org/entities/"));
   }
@@ -100,16 +97,9 @@ public class TripleStoreServiceIT {
   @Test
   @Ignore // TODO needs fixing
   public void testGetSingleStudyMeasurements() {
-    String studyUid = "30b36971-1074-4482-9252-74f6541b566b"; //TAK491-008 / NCT00696241
-    String version = "http://localhost:8080/versions/9a02c9e3-44b4-415b-b042-f449a1b5dcc0";
-
-    String nonSAE = "832c2831-dab2-4707-8bf4-af0cf057ba5a";
-    String SBPMeanTroughSitting = "151afdaf-ed92-4204-a389-a3e125e0f19d";
-    List<String> outcomeUids = Arrays.asList(SBPMeanTroughSitting, nonSAE);
-    String azilsartan = "f1b57b39-1887-4547-aaf3-7699ed37463b";
-    String placebo = "dce4e0b8-57a4-438b-9001-742fcc1b9c8b";
+    List<String> outcomeUids = Arrays.asList(sbpMeanTroughSitting, nonSAE);
     List<String> interventionUids = Arrays.asList(azilsartan, placebo);
-    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> singleStudyMeasurements = triplestoreService.getSingleStudyMeasurements(nameSpaceUid, studyUid, version, outcomeUids, interventionUids);
+    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> singleStudyMeasurements = triplestoreService.getSingleStudyMeasurements(nameSpaceUid, tak491008, version, outcomeUids, interventionUids);
     assertEquals(8, singleStudyMeasurements.size());
     assertFalse(singleStudyMeasurements.get(0).getAlternativeUid().startsWith("ontology"));
   }
@@ -118,13 +108,8 @@ public class TripleStoreServiceIT {
   @Ignore // TODO needs fixing
   public void testGetSingleStudyMeasurementsteststudy() {
     String studyUid = "9b7f8a8d-f96b-4f3a-99d4-8b1d4433d649"; //test study
-    String version = "http://localhost:8080/versions/de01d954-95ff-4523-8d02-bb08780deeca";
 
-    String nonSAE = "832c2831-dab2-4707-8bf4-af0cf057ba5a";
-    String spugen = "05303d8c-2609-4bda-adfc-8c5883454efd";
     List<String> outcomeUids = Arrays.asList(spugen, nonSAE);
-    String azilsartan = "f1b57b39-1887-4547-aaf3-7699ed37463b";
-    String ramipril = "330a5743-d827-4696-a2c2-43970517f58b";
     List<String> interventionUids = Arrays.asList(azilsartan, ramipril);
     List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> singleStudyMeasurements = triplestoreService.getSingleStudyMeasurements(nameSpaceUid, studyUid, version, outcomeUids, interventionUids);
     assertEquals(8, singleStudyMeasurements.size());
@@ -133,10 +118,6 @@ public class TripleStoreServiceIT {
 
   @Test
   public void testGetTrialData() {
-    String version = "http://localhost:8080/versions/9a02c9e3-44b4-415b-b042-f449a1b5dcc0";
-    String nonSAE = "832c2831-dab2-4707-8bf4-af0cf057ba5a";
-    String azilsartan = "f1b57b39-1887-4547-aaf3-7699ed37463b";
-    String placebo = "dce4e0b8-57a4-438b-9001-742fcc1b9c8b";
     List<String> interventionUids = Arrays.asList(azilsartan, placebo);
     List<TrialDataStudy> trialData = triplestoreService.getTrialData(nameSpaceUid, version, nonSAE, interventionUids);
     assertEquals(4, trialData.size());
@@ -146,46 +127,43 @@ public class TripleStoreServiceIT {
   public void testNamespaceGet() {
     Namespace namespace = triplestoreService.getNamespaceHead(nameSpaceUid);
     assertNotNull(namespace);
-    assertEquals("Edarbi integration", namespace.getName());
-    assertEquals("created for integration tests of trialverse",namespace.getDescription());
-    assertEquals(new Integer(8), namespace.getNumberOfStudies());
-    assertEquals("http://localhost:8080/versions/de01d954-95ff-4523-8d02-bb08780deeca", namespace.getVersion());
+    assertEquals("EDARBI", namespace.getName());
+    assertEquals("The EDARBI dataset", namespace.getDescription());
+    assertEquals(new Integer(5), namespace.getNumberOfStudies());
+    assertEquals("http://localhost:8080/versions/0f85b12d-73c4-4d34-a1ce-9b9d5122dab4", namespace.getVersion());
   }
 
   @Test
-  public void testQueryNamespaces() {
+  public void testQueryNamespaces() throws ParseException {
     Collection<Namespace> namespaces = triplestoreService.queryNameSpaces();
     assertEquals(4, namespaces.size());
   }
   
   @Test
   public void getStudyDetailsTest() throws ResourceDoesNotExistException {
-    String studyUid = "30b36971-1074-4482-9252-74f6541b566b"; //TAK491-008 / NCT00696241
-    StudyWithDetails studydetails = triplestoreService.getStudydetails(nameSpaceUid, studyUid);
+    StudyWithDetails studydetails = triplestoreService.getStudydetails(nameSpaceUid, tak491008);
     assertEquals("TAK491-008 / NCT00696241", studydetails.getName());
     assertEquals(new Integer(1275), studydetails.getStudySize());
-    assertEquals("Placebo, Olmesartan, Azilsartan", studydetails.getInvestigationalDrugNames());
+    assertEquals("Azilsartan, Olmesartan, Placebo", studydetails.getInvestigationalDrugNames());
     assertEquals(new Integer(5), studydetails.getNumberOfArms());
   }
 
   @Test
   public void testGetEpochs() {
-    String studyUid = "30b36971-1074-4482-9252-74f6541b566b"; //TAK491-008 / NCT00696241
-    JSONArray studyEpochs = triplestoreService.getStudyEpochs(nameSpaceUid, studyUid);
+    JSONArray studyEpochs = triplestoreService.getStudyEpochs(nameSpaceUid, tak491008);
     assertEquals(2, studyEpochs.size());
   }
 
   @Test
   public void testGetArms() {
-    String studyUid = "30b36971-1074-4482-9252-74f6541b566b"; //TAK491-008 / NCT00696241
-    JSONArray studyArms = triplestoreService.getStudyArms(nameSpaceUid, studyUid);
+    JSONArray studyArms = triplestoreService.getStudyArms(nameSpaceUid, tak491008);
     assertEquals(5, studyArms.size());
   }
 
   @Test
   public void testGetStudiesWithDetails() {
     List<StudyWithDetails> studyWithDetailses = triplestoreService.queryStudydetailsHead(nameSpaceUid);
-    assertEquals(6, studyWithDetailses.size());
+    assertEquals(5, studyWithDetailses.size());
   }
 
 // @Test

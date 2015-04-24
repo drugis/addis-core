@@ -3,6 +3,8 @@ package org.drugis.addis.trialverse.service.impl;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -14,6 +16,7 @@ import org.drugis.addis.trialverse.model.emun.StudyBlindingEmun;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.model.emun.StudyStatusEnum;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.util.WebConstants;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -44,30 +47,45 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public final static String STUDY_DATE_FORMAT = "yyyy-MM-dd";
 
   private final static Logger logger = LoggerFactory.getLogger(TriplestoreServiceImpl.class);
+  private static final HttpHeaders getJsonHeaders = createGetJsonHeader();
+  private static final HttpHeaders getSparqlResultsHeaders = createGetSparqlResultHeader();
 
-  private final static String NAMESPACE = loadResource("sparql/namespace.sparql");
-  private final static String STUDY_QUERY = loadResource("sparql/studyQuery.sparql");
-  private final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
-  private final static String STUDIES_WITH_DETAILS_QUERY = loadResource("sparql/studiesWithDetails.sparql");
-  private final static String STUDY_ARMS_QUERY = loadResource("sparql/studyArms.sparql");
-  private final static String STUDY_ARMS_EPOCHS = loadResource("sparql/studyEpochs.sparql");
-  private final static String STUDY_TREATMENT_ACTIVITIES = loadResource("sparql/studyTreatmentActivities.sparql");
-  private final static String STUDY_DATA = loadResource("sparql/studyData.sparql");
-  private final static String SINGLE_STUDY_MEASUREMENTS = loadResource("sparql/singleStudyMeasurements.sparql");
-  private final static String TRIAL_DATA = loadResource("sparql/trialData.sparql");
-  private final static String OUTCOME_QUERY = loadResource("sparql/outcomes.sparql");
-  private final static String INTERVENTION_QUERY = loadResource("sparql/interventions.sparql");
+  public final static String NAMESPACE = loadResource("sparql/namespace.sparql");
+  public final static String STUDY_QUERY = loadResource("sparql/studyQuery.sparql");
+  public final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
+  public final static String STUDIES_WITH_DETAILS_QUERY = loadResource("sparql/studiesWithDetails.sparql");
+  public final static String STUDY_ARMS_QUERY = loadResource("sparql/studyArms.sparql");
+  public final static String STUDY_ARMS_EPOCHS = loadResource("sparql/studyEpochs.sparql");
+  public final static String STUDY_TREATMENT_ACTIVITIES = loadResource("sparql/studyTreatmentActivities.sparql");
+  public final static String STUDY_DATA = loadResource("sparql/studyData.sparql");
+  public final static String SINGLE_STUDY_MEASUREMENTS = loadResource("sparql/singleStudyMeasurements.sparql");
+  public final static String TRIAL_DATA = loadResource("sparql/trialData.sparql");
+  public final static String OUTCOME_QUERY = loadResource("sparql/outcomes.sparql");
+  public final static String INTERVENTION_QUERY = loadResource("sparql/interventions.sparql");
 
   public static final String QUERY_ENDPOINT = "/query";
   public static final String QUERY_PARAM_QUERY = "query";
   public static final String X_ACCEPT_EVENT_SOURCE_VERSION = "X-Accept-EventSource-Version";
   public static final String X_EVENT_SOURCE_VERSION = "X-EventSource-Version";
-  public static final String VERSION_PATH = "versions/";
   public static final String ACCEPT_HEADER = "Accept";
   public static final String APPLICATION_SPARQL_RESULTS_JSON = "application/sparql-results+json";
+  public static final HttpEntity<String> acceptJsonRequest = new HttpEntity<>(getJsonHeaders);
+  public static final HttpEntity<String> acceptSpaqlResultsRequest = new HttpEntity<>(getSparqlResultsHeaders);
 
   @Inject
   RestOperationsFactory restOperationsFactory;
+
+  private static final HttpHeaders createGetJsonHeader() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(ACCEPT_HEADER, WebConstants.APPLICATION_JSON_UTF8_VALUE);
+    return headers;
+  }
+
+  private static final HttpHeaders createGetSparqlResultHeader() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.put(ACCEPT_HEADER, Arrays.asList(APPLICATION_SPARQL_RESULTS_JSON));
+    return headers;
+  }
 
   private static String loadResource(String filename) {
     try {
@@ -83,18 +101,22 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
 
   @Override
-  public Collection<Namespace> queryNameSpaces() {
+  public Collection<Namespace> queryNameSpaces() throws ParseException {
     UriComponents uriComponents = UriComponentsBuilder
             .fromHttpUrl(TRIPLESTORE_BASE_URI)
             .path("datasets/")
             .build();
-    final String[] response = restOperationsFactory
-            .build()
-            .getForObject(uriComponents.toUri(), String[].class);
-    List<Namespace> namespaces = new ArrayList<>(response.length);
 
-    for(String datasetUri: Arrays.asList(response)) {
-      namespaces.add(getNamespaceHead(datasetUri));
+    final ResponseEntity<String> response = restOperationsFactory
+            .build()
+            .exchange(uriComponents.toUri(), HttpMethod.GET, acceptJsonRequest, String.class);
+    List<Namespace> namespaces = new ArrayList<>();
+
+    JSONArray namespaceUris = (JSONArray) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(response.getBody());
+
+    for (Object datasetUri : namespaceUris) {
+      logger.debug("query namespaces; URI: " + datasetUri.toString());
+      namespaces.add(getNamespaceHead(datasetUri.toString()));
     }
 
     return namespaces;
@@ -116,9 +138,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public Namespace getNamespaceHead(String datasetUri) {
     ResponseEntity<String> response = queryTripleStoreHead(datasetUri, NAMESPACE);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
-    Object binding = bindings.get(0);
+    JSONObject binding = (JSONObject) bindings.get(0);
     String name = JsonPath.read(binding, "$.label.value");
-    String description = JsonPath.read(binding, "$.comment.value");
+    String description = binding.containsKey("comment") ? (String) JsonPath.read(binding, "$.comment.value") : "";
     Integer numberOfStudies = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfStudies.value"));
     String version = response.getHeaders().get(X_EVENT_SOURCE_VERSION).get(0);
     return new Namespace(subStringAfterLastSymbol(datasetUri, '/'), name, description, numberOfStudies, version);
@@ -560,25 +582,21 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return measurementObjects;
   }
 
-  private String buildVersionUri(String versionUuid) {
-    return TRIPLESTORE_BASE_URI + VERSION_PATH + versionUuid;
-  }
-
   private ResponseEntity queryTripleStoreHead(String datasetUri, String query) {
+    String datasetUuid = subStringAfterLastSymbol(datasetUri, '/');
+
     logger.info("Triplestore uri = " + TRIPLESTORE_BASE_URI);
     logger.info("sparql query = " + query);
+    logger.info("dataset uuid = " + datasetUuid);
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(TRIPLESTORE_BASE_URI)
-            .path("datasets/" + subStringAfterLastSymbol(datasetUri, '/'))
+            .path("datasets/" + datasetUuid)
             .path(QUERY_ENDPOINT)
             .queryParam(QUERY_PARAM_QUERY, query)
             .build();
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.put(ACCEPT_HEADER, Arrays.asList(APPLICATION_SPARQL_RESULTS_JSON));
-
     RestOperations restOperations =  restOperationsFactory.build(); //todo use application bean
-    return  restOperations.exchange(uriComponents.toUri(), HttpMethod.GET, new HttpEntity<>(headers), String.class);
+    return restOperations.exchange(uriComponents.toUri(), HttpMethod.GET, acceptSpaqlResultsRequest, String.class);
   }
 
 

@@ -1,6 +1,7 @@
 package org.drugis.addis.trialverse.controller;
 
 import net.minidev.json.JSONArray;
+import net.minidev.json.parser.ParseException;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -38,14 +39,18 @@ public class TrialverseController {
 
   @RequestMapping(value = "", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<Namespace> query() throws MethodNotAllowedException {
+  public Collection<Namespace> query() throws MethodNotAllowedException, ParseException {
     return triplestoreService.queryNameSpaces();
   }
 
   @RequestMapping(value = "/{namespaceUid}", method = RequestMethod.GET)
   @ResponseBody
-  public Namespace get(@PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException {
-    return triplestoreService.getNamespaceVersioned(namespaceUid, version);
+  public Namespace get(@PathVariable String namespaceUid, @RequestParam(required = false) String version) throws ResourceDoesNotExistException {
+    if (version != null) {
+      return triplestoreService.getNamespaceVersioned(namespaceUid, version);
+    } else {
+      return triplestoreService.getNamespaceHead(namespaceUid);
+    }
   }
 
   @RequestMapping(value = "/{namespaceUid}/outcomes", method = RequestMethod.GET)
