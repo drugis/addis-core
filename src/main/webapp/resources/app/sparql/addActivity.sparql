@@ -2,13 +2,15 @@ PREFIX instance: <http://trials.drugis.org/instances/>
 PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX study: <http://trials.drugis.org/studies/>
 
-INSERT DATA {
+INSERT {
   GRAPH <$graphUri> {
-    study:$studyUuid ontology:has_activity <$activityUri> .
+    ?s ontology:has_activity <$activityUri> .
     <$activityUri>
       rdfs:label "$label" ;
       rdf:type <$activityTypeUri> .
   }
+}
+WHERE {
+  ?s a ontology:Study .
 };

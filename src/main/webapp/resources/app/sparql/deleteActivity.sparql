@@ -1,9 +1,8 @@
 PREFIX ontology: <http://trials.drugis.org/ontology#>
-PREFIX study: <http://trials.drugis.org/studies/>
 
 DELETE {
   GRAPH <$graphUri> {
-    ?study ontology:has_activity <$activityUri> . 
+    ?s ontology:has_activity <$activityUri> . 
     <$activityUri> ?activityProperty ?activityObject . 
     ?treatmentUri ?treatmentProperty ?treatmenObject . 
     ?dose ?doseProperty ?doseValue .
@@ -15,7 +14,7 @@ DELETE {
 }
 WHERE {
   GRAPH <$graphUri> {
-    ?study ontology:has_activity <$activityUri> . 
+    ?s ontology:has_activity <$activityUri> . 
     <$activityUri> ?activityProperty ?activityObject .
     OPTIONAL {
     	<$activityUri> ontology:has_drug_treatment ?treatmentUri . 

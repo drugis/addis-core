@@ -52,12 +52,11 @@ define([],
         uri: OTHER_ACTIVITY
       };
 
-      function queryItems(studyUuid) {
+      function queryItems() {
 
         var activities, treatmentsRows;
 
-        var activitiesPromise = queryActivityTemplate.then(function(template) {
-          var query = fillInTemplate(template, studyUuid);
+        var activitiesPromise = queryActivityTemplate.then(function(query) {
           return StudyService.doNonModifyingQuery(query).then(function(result) {
             // make object {label, uri} from uri's to use as options in select
             activities = convertTypeUrisToTypeOptions(result);
@@ -65,8 +64,7 @@ define([],
           });
         });
 
-        var treatmentsPromise = queryActivityTreatmentTemplate.then(function(template) {
-          var query = fillInTemplate(template, studyUuid);
+        var treatmentsPromise = queryActivityTreatmentTemplate.then(function(query) {
           return StudyService.doNonModifyingQuery(query).then(function(result) {
             treatmentsRows = result;
             return;
@@ -149,12 +147,12 @@ define([],
         return treatmentPromises;
       }
 
-      function addItem(studyUuid, item) {
+      function addItem(item) {
         var newActivity = angular.copy(item);
         newActivity.activityUri = INSTANCE_PREFIX + UUIDService.generate();
         var addOptionalDescriptionPromise;
         var addActivityPromise = addActivityTemplate.then(function(template) {
-          var query = fillInTemplate(template, studyUuid, newActivity);
+          var query = fillInTemplate(template, newActivity);
           return StudyService.doModifyingQuery(query);
         });
 
@@ -167,9 +165,9 @@ define([],
         return $q.all([addActivityPromise, addOptionalDescriptionPromise].concat(treatmentPromises));
       }
 
-      function editItem(studyUuid, activity) {
+      function editItem(activity) {
         var editActivityPromise = editActivityTemplate.then(function(template) {
-          var query = fillInTemplate(template, studyUuid, activity);
+          var query = fillInTemplate(template, activity);
           return StudyService.doModifyingQuery(query).then(function() {
             // no need to use edit as remove is dbone in the edit activity
             // therefore wait for edit activity to return
@@ -182,9 +180,9 @@ define([],
         return $q.all(treatmentPromises.concat(editActivityPromise));
       }
 
-      function deleteItem(activity, studyUuid) {
+      function deleteItem(activity) {
         return deleteActivityTemplate.then(function(template) {
-          var query = fillInTemplate(template, studyUuid, activity);
+          var query = fillInTemplate(template, activity);
           return StudyService.doModifyingQuery(query);
         });
       }
@@ -214,15 +212,11 @@ define([],
           .replace(/\$treatmentDosingPeriodicity/g, treatment.dosingPeriodicity);
       }
 
-      function fillInTemplate(template, studyUuid, activity) {
-        var query = template.replace(/\$studyUuid/g, studyUuid);
-        if (activity) {
-          query = query.replace(/\$activityUri/g, activity.activityUri)
+      function fillInTemplate(template, activity) {
+          return template.replace(/\$activityUri/g, activity.activityUri)
             .replace(/\$label/g, activity.label)
             .replace(/\$comment/g, activity.activityDescription)
             .replace(/\$activityTypeUri/g, activity.activityType.uri);
-        }
-        return query;
       }
 
       return {
