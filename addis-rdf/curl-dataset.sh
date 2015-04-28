@@ -1,7 +1,8 @@
 INPUT=$1
 STUDIES=`grep "^study:.*" $INPUT | sed 's/study://' | sed 's/ {//'`
 
-DATASET=http://localhost:8080/datasets/5bdb1cb7-46a6-4537-8369-d50aeae833c1
+DATASET=http://localhost:8080/datasets/bf09cd9c-caa6-4763-885c-d5a5b353ea4b
+
 
 for s in $STUDIES; do
   grep '@prefix' $INPUT > $s.ttl
