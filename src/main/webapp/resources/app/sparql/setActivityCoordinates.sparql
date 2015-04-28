@@ -1,16 +1,14 @@
 PREFIX ontology: <http://trials.drugis.org/ontology#>
-PREFIX study: <http://trials.drugis.org/studies/>
 
 WITH <$graphUri>
 DELETE {
-  <$activityUri> ontology:has_activity_application ?application .
+ ?activity ontology:has_activity_application ?application .
   ?application 
     ontology:applied_in_epoch <$epochUri> ;
     ontology:applied_to_arm <$armUri> .
 }
 WHERE {
-  study:$studyUuid ontology:has_activity <$activityUri> .
-  <$activityUri> ontology:has_activity_application ?application .
+  ?activity ontology:has_activity_application ?application .
   ?application 
     ontology:applied_in_epoch <$epochUri> ;
     ontology:applied_to_arm <$armUri> .

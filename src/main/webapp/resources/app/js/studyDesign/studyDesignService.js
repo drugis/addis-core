@@ -8,33 +8,29 @@ define([],
       var setActivityCoordinatesTemplate = SparqlResource.get('setActivityCoordinates.sparql');
       var cleanupCoordinatesTemplate = SparqlResource.get('cleanupCoordinates.sparql');
 
-      function queryItems(studyUuid) {
+      function queryItems() {
         return queryActivityCoordinatesTemplate.then(function(template){
-          var query = fillInTemplate(template, studyUuid, {});
+          var query = fillInTemplate(template, {});
           return StudyService.doNonModifyingQuery(query);
         });
       }
 
-      function setActivityCoordinates(studyUuid, coordinates) {
+      function setActivityCoordinates(coordinates) {
         return setActivityCoordinatesTemplate.then(function(template){
-          var query = fillInTemplate(template, studyUuid, coordinates);
+          var query = fillInTemplate(template, coordinates);
           return StudyService.doModifyingQuery(query);
         });
       }
 
-      function cleanupCoordinates(studyUuid) {
-        if(!studyUuid) {
-          throw 'cleanup study design with undefined studyUuid';
-        }
+      function cleanupCoordinates() {
         return cleanupCoordinatesTemplate.then(function(template) {
-          var query = fillInTemplate(template, studyUuid, {});
+          var query = fillInTemplate(template, {});
           return StudyService.doModifyingQuery(query);
         });
       }
 
-      function fillInTemplate(template, studyUuid, coordinates) {
+      function fillInTemplate(template, coordinates) {
         return template
-            .replace(/\$studyUuid/g, studyUuid)
             .replace(/\$epochUri/g, coordinates.epochUri)
             .replace(/\$armUri/g, coordinates.armUri)
             .replace(/\$activityUri/g, coordinates.activityUri);

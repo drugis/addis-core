@@ -95,7 +95,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should return the activity coordinates contained in the study', function(done) {
 
-        studyDesignService.queryItems(mockStudyUuid).then(function(results) {
+        studyDesignService.queryItems().then(function(results) {
           expect(results.length).toBe(3);
           expect(results[0].activityUri).toBe('http://trials.drugis.org/instances/activity1Uuid');
           expect(results[0].epochUri).toBe('http://trials.drugis.org/instances/epoch1Uuid');
@@ -150,7 +150,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           activityUri: 'http://trials.drugis.org/instances/activity1Uuid'
         };
 
-        studyDesignService.setActivityCoordinates(mockStudyUuid, coordinates).then(function() {
+        studyDesignService.setActivityCoordinates(coordinates).then(function() {
           studyDesignService.queryItems(mockStudyUuid).then(function(result) {
             expect(result.length).toEqual(2);
             done();

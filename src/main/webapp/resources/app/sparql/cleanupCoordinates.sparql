@@ -1,4 +1,3 @@
-PREFIX study: <http://trials.drugis.org/studies/>
 PREFIX ontology: <http://trials.drugis.org/ontology#>
 
 DELETE {
@@ -13,7 +12,7 @@ DELETE {
     ?application ontology:applied_to_arm ?armUri .
     ?application ontology:applied_in_epoch ?epochUri .
     FILTER NOT EXISTS  {
-      study:$studyUuid ontology:has_arm ?armUri
+      ?s ontology:has_arm ?armUri
     }
   }
 };
