@@ -1,14 +1,14 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams','$modalInstance', 'PopulationCharacteristicService', 'MeasurementMomentService', 'callback'];
-    var CreatePopulationCharacteristicController = function($scope, $stateParams, $modalInstance, PopulationCharacteristicService, MeasurementMomentService, callback) {
+    var dependencies = ['$scope','$modalInstance', 'PopulationCharacteristicService', 'MeasurementMomentService', 'callback'];
+    var CreatePopulationCharacteristicController = function($scope, $modalInstance, PopulationCharacteristicService, MeasurementMomentService, callback) {
 
       $scope.item = {
         measuredAtMoments: []
       };
 
-      $scope.measurementMoments = MeasurementMomentService.queryItems($stateParams.studyUUID);
+      $scope.measurementMoments = MeasurementMomentService.queryItems();
 
       $scope.createPopulationCharacteristic = function() {
         PopulationCharacteristicService.addItem($scope.item)

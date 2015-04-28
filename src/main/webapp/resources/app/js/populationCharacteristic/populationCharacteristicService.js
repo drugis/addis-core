@@ -11,9 +11,9 @@ define([],
       var deletePopulationCharacteristicRaw = SparqlResource.get('deletePopulationCharacteristic.sparql');
       var editPopulationCharacteristicRaw = SparqlResource.get('editPopulationCharacteristic.sparql');
 
-      var queryAdverseEventMeasuredAtRaw = SparqlResource.get('queryMeasuredAt.sparql');
+      var queryMeasuredAtTemplate = SparqlResource.get('queryMeasuredAt.sparql');
 
-      function queryItems(studyUuid) {
+      function queryItems() {
         var items, measuredAtMoments, measurementMoments;
 
         var queryItemsPromise = populationCharacteristicsQuery.then(function(query) {
@@ -22,13 +22,13 @@ define([],
           });
         });
 
-        var measuredAtQueryPromise = queryAdverseEventMeasuredAtRaw.then(function(query) {
+        var measuredAtQueryPromise = queryMeasuredAtTemplate.then(function(query) {
           return StudyService.doNonModifyingQuery(query).then(function(result) {
             measuredAtMoments = result;
           });
         });
 
-        var measurementMomentsPromise = MeasurementMomentService.queryItems(studyUuid).then(function(result){
+        var measurementMomentsPromise = MeasurementMomentService.queryItems().then(function(result){
           measurementMoments = result;
         });
 
