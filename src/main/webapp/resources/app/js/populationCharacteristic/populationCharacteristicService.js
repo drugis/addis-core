@@ -9,7 +9,7 @@ define([],
       var addPopulationCharacteristicQueryRaw = SparqlResource.get('addPopulationCharacteristic.sparql');
       var populationCharacteristicsQuery = SparqlResource.get('queryPopulationCharacteristic.sparql');
       var deletePopulationCharacteristicRaw = SparqlResource.get('deletePopulationCharacteristic.sparql');
-      var editPopulationCharacteristicRaw = SparqlResource.get('editPopulationCharacteristic.sparql');
+      var editPopulationCharacteristicRaw = SparqlResource.get('editVariable.sparql');
 
       var queryMeasuredAtTemplate = SparqlResource.get('queryMeasuredAt.sparql');
 

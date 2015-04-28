@@ -9,10 +9,10 @@ define([],
       var addEndpointQueryRaw = SparqlResource.get('addEndpoint.sparql');
       var endpointQuery = SparqlResource.get('queryEndpoint.sparql');
       var deleteEndpointRaw = SparqlResource.get('deleteEndpoint.sparql');
-      var editEndpointRaw = SparqlResource.get('editEndpoint.sparql');
+      var editEndpointRaw = SparqlResource.get('editVariable.sparql');
       var queryEndpointMeasuredAtRaw = SparqlResource.get('queryMeasuredAt.sparql');
 
-      function queryItems(studyUuid) {
+      function queryItems() {
         var endpoints, measuredAtMoments, measurementMoments;
 
         var endpointsQueryPromise = endpointQuery.then(function(query) {
@@ -27,7 +27,7 @@ define([],
           });
         });
 
-        var measurementMomentsPromise = MeasurementMomentService.queryItems(studyUuid).then(function(result) {
+        var measurementMomentsPromise = MeasurementMomentService.queryItems().then(function(result) {
           measurementMoments = result;
         });
 
@@ -47,14 +47,13 @@ define([],
         });
       }
 
-      function addItem(studyUuid, endpoint) {
+      function addItem(endpoint) {
         var newUUid = UUIDService.generate();
         endpoint.uri = 'http://trials.drugis.org/instances/' + newUUid;
         var stringToInsert = buildInsertMeasuredAtBlock(endpoint);
 
         var addEndpointPromise = addEndpointQueryRaw.then(function(query) {
           var addEndpointQuery = query
-            .replace(/\$studyUuid/g, studyUuid)
             .replace(/\$UUID/g, newUUid)
             .replace('$label', endpoint.label)
             .replace('$measurementType', endpoint.measurementType);

@@ -9,7 +9,7 @@ define([],
       var addAdverseEventQueryRaw = SparqlResource.get('addAdverseEvent.sparql');
       var adverseEventsQuery = SparqlResource.get('queryAdverseEvent.sparql');
       var deleteAdverseEventRaw = SparqlResource.get('deleteAdverseEvent.sparql');
-      var editAdverseEventRaw = SparqlResource.get('editAdverseEvent.sparql');
+      var editAdverseEventRaw = SparqlResource.get('editVariable.sparql');
       var queryAdverseEventMeasuredAtRaw = SparqlResource.get('queryMeasuredAt.sparql');
 
       function queryItems(studyUuid) {

@@ -68,7 +68,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       addAdverseEventQueryRaw = testUtils.loadTemplate('addAdverseEvent.sparql', httpBackend);
       adverseEventsQuery = testUtils.loadTemplate('queryAdverseEvent.sparql', httpBackend);
       deleteAdverseEventRaw = testUtils.loadTemplate('deleteAdverseEvent.sparql', httpBackend);
-      editAdverseEventRaw = testUtils.loadTemplate('editAdverseEvent.sparql', httpBackend);
+      editAdverseEventRaw = testUtils.loadTemplate('editVariable.sparql', httpBackend);
       queryAdverseEventMeasuredAtRaw = testUtils.loadTemplate('queryMeasuredAt.sparql', httpBackend);
 
       httpBackend.flush();
@@ -107,6 +107,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should add the adverseEvent triples and measuredAtMoments triples to the graph', function(done) {
 
+        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
+
         // the test item to add 
         var adverseEvent = {
           label: 'adverse event label',
@@ -119,10 +121,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         var adverseEventWithMoments = angular.copy(adverseEvent);
         adverseEventWithMoments.measuredAtMoments = [moment1, moment2];
 
-        // call the method to test
         var resultPromise = adverseEventService.addItem(adverseEventWithMoments);
 
-        // setup verification, ready for digest cycle to kickoff 
         resultPromise.then(function(result) {
           // verify addAdverseEvent query
           var adverseEventsAsString = testUtils.queryTeststore(adverseEventsQuery.replace(/\$graphUri/g, graphUri));
@@ -142,11 +142,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           expect(measuredAtMoments[0].measurementMoment).toEqual('http://moments/moment2');
           expect(measuredAtMoments[1].measurementMoment).toEqual('http://moments/moment1');
 
-          // do not forget to signal async test is done !
           done();
         });
 
-        // fire in the hole !
         rootScope.$digest();
 
       });

@@ -81,6 +81,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should add the triples for count and sampleSize when the outcome is dichotomous type outcome', function(done) {
 
+        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
+
         // the test item to add 
         var outcome = {
           uri: 'http://trials.drugis.org/instances/my-outcome',
@@ -119,6 +121,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should add the triples for mean, sd and sampleSize then the outcome is continous type outcome', function(done) {
 
+        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
+        
         // the test item to add 
         var outcome = {
           uri: 'http://trials.drugis.org/instances/my-outcome',
