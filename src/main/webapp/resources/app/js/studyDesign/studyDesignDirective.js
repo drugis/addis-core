@@ -25,13 +25,13 @@ define([], function() {
             });
           });
 
-          var epochsPromise = EpochService.queryItems($stateParams.studyUUID).then(function(result) {
+          var epochsPromise = EpochService.queryItems().then(function(result) {
             scope.epochs = result.sort(function(a, b) {
               return a.pos - b.pos;
             });
           });
 
-          var activitiesPromise = ActivityService.queryItems($stateParams.studyUUID).then(function(result) {
+          var activitiesPromise = ActivityService.queryItems().then(function(result) {
             scope.activities = result.sort(function(a, b) {
               return a.label.localeCompare(b.label);
             });
@@ -39,7 +39,7 @@ define([], function() {
 
           $q.all([armsPromise, epochsPromise, activitiesPromise]).then(function() {
 
-            StudyDesignService.queryItems($stateParams.studyUUID).then(function(coordinates) {
+            StudyDesignService.queryItems().then(function(coordinates) {
               var activityMap = _.indexBy(scope.activities, 'activityUri');
               var studyDesign = _.object(_.pluck(scope.epochs, 'uri'));
 
@@ -70,7 +70,7 @@ define([], function() {
             armUri: armUri,
             activityUri: activity.activityUri
           };
-          StudyDesignService.setActivityCoordinates($stateParams.studyUUID, coordinate);
+          StudyDesignService.setActivityCoordinates(coordinate);
         };
 
       }
