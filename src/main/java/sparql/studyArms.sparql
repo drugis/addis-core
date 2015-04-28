@@ -11,8 +11,10 @@ SELECT ?armUid ?armLabel ?numberOfParticipantsStarting {
        ?study ontology:has_arm ?armUid .
        ?armUid a ontology:Arm ;
          rdfs:label ?armLabel .
-       ?participantFlow a ontology:ParticipantFlow ;
-           ontology:participants_starting ?numberOfParticipantsStarting ;
-           ontology:of_arm ?armUid .
+       OPTIONAL {
+         ?participantFlow a ontology:ParticipantFlow ;
+             ontology:participants_starting ?numberOfParticipantsStarting ;
+             ontology:of_arm ?armUid .
+       }
    }
  }

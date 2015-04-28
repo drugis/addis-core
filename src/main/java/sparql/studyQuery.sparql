@@ -6,7 +6,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX graph: <http://trials.drugis.org/graphs/>
 
 SELECT * WHERE {
-  GRAPH ?graphUri {
+  GRAPH ?studyGraphUri {
     ?studyUri a ontology:Study .
     ?studyUri rdfs:label ?label .
     ?studyUri rdfs:comment ?title .

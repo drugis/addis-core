@@ -75,15 +75,15 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Inject
   RestOperationsFactory restOperationsFactory;
 
-  private static final HttpHeaders createGetJsonHeader() {
+  private static HttpHeaders createGetJsonHeader() {
     HttpHeaders headers = new HttpHeaders();
     headers.add(ACCEPT_HEADER, WebConstants.APPLICATION_JSON_UTF8_VALUE);
     return headers;
   }
 
-  private static final HttpHeaders createGetSparqlResultHeader() {
+  private static HttpHeaders createGetSparqlResultHeader() {
     HttpHeaders headers = new HttpHeaders();
-    headers.put(ACCEPT_HEADER, Arrays.asList(APPLICATION_SPARQL_RESULTS_JSON));
+    headers.put(ACCEPT_HEADER, Collections.singletonList(APPLICATION_SPARQL_RESULTS_JSON));
     return headers;
   }
 
@@ -91,8 +91,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     try {
       Resource myData = new ClassPathResource(filename);
       InputStream stream = myData.getInputStream();
-      String query = IOUtils.toString(stream, "UTF-8");
-      return query;
+      return IOUtils.toString(stream, "UTF-8");
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -191,6 +190,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     for (Object binding : bindings) {
       String studyUri = JsonPath.read(binding, "$.studyUri.value");
       String studyUid = subStringAfterLastSymbol(studyUri, '/');
+      String studyGraphUri = JsonPath.read(binding, "$.studyGraphUri.value");
+      String studyGraphUuid = subStringAfterLastSymbol(studyGraphUri, '/');
       String name = JsonPath.read(binding, "$.label.value");
       String title = JsonPath.read(binding, "$.title.value");
       String outcomeUidStr = JsonPath.read(binding, "$.outcomeUids.value");
@@ -200,7 +201,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
       Study study = studyCache.get(studyUid);
       if(study == null) {
-        study = new Study(studyUid, name, title, Arrays.asList(outcomeUids));
+        study = new Study(studyUid, studyGraphUuid, name, title, Arrays.asList(outcomeUids));
       }
 
       StudyTreatmentArm studyArm = studyArmsCache.get(Pair.of(studyUid, armUid));
@@ -218,8 +219,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public StudyWithDetails getStudydetails(String namespaceUid, String studyUid) throws ResourceDoesNotExistException {
-    String query = StringUtils.replace(STUDY_DETAILS_QUERY,  "$studyUid", studyUid);
+  public StudyWithDetails getStudydetails(String namespaceUid, String studyGraphUid) throws ResourceDoesNotExistException {
+    String query = StringUtils.replace(STUDY_DETAILS_QUERY,  "$studyGraphUid", studyGraphUid);
     logger.debug(query);
     ResponseEntity<String> response = queryTripleStoreHead(namespaceUid, query);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
@@ -228,6 +229,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     }
 
     StudyWithDetails studyWithDetails = buildStudyWithDetailsFromJsonObject(bindings.get(0));
+    studyWithDetails.setGraphUuid(studyGraphUid);
     return studyWithDetails;
   }
 
@@ -444,6 +446,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   private StudyWithDetails buildStudyWithDetailsFromJsonObject(Object binding) {
     JSONObject row = (net.minidev.json.JSONObject) binding;
+    String graphUuid = row.containsKey("graphUri") ? subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.graphUri.value"), '/') : null;
     String uid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.studyUri.value"), '/');
     String name = row.containsKey("label") ? JsonPath.<String>read(binding, "$.label.value") : null;
     String title = row.containsKey("title") ? JsonPath.<String>read(binding, "$.title.value") : null;
@@ -467,6 +470,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     return new StudyWithDetails
             .StudyWithDetailsBuilder()
+            .graphUuid(graphUuid)
             .studyUid(uid)
             .name(name)
             .title(title)
@@ -489,8 +493,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   private String buildInterventionUnionString(List<String> interventionUids) {
     String result = "";
-    for (String interventionUid : interventionUids) {
-      result = result + " { ?interventionInstance owl:sameAs entity:" + interventionUid + " } UNION \n";
+    for (String interventionUid : interventionUids) { // FIXME: pick one
+      result = result + " { ?interventionInstance owl:sameAs entity:" + interventionUid + " } UNION \n"
+                      + " { ?interventionInstance owl:sameAs concept:" + interventionUid + " } UNION \n";
     }
     return result.substring(0, result.lastIndexOf("UNION"));
   }
@@ -498,7 +503,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private String buildOutcomeUnionString(List<String> outcomeUids) {
     String result = "";
     for (String outcomeUid : outcomeUids) {
-      result = result + " { ?outcomeInstance ontology:of_variable [ owl:sameAs entity:" + outcomeUid + " ] } UNION \n";
+      result = result + " { ?outcomeInstance ontology:of_variable [ owl:sameAs entity:" + outcomeUid + " ] } UNION \n"
+                      + " { ?outcomeInstance ontology:of_variable [ owl:sameAs concept:" + outcomeUid + " ] } UNION \n";
     }
     return result.substring(0, result.lastIndexOf("UNION"));
   }
@@ -553,8 +559,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public List<SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String namespaceUid, String studyUid, String version, List<String> outcomeUids, List<String> interventionUids) {
 
     String query = StringUtils.replace(SINGLE_STUDY_MEASUREMENTS, "$studyUid", studyUid);
-    query = StringUtils.replace(query, "$outcomeUnionString",  buildOutcomeUnionString(outcomeUids));
-    query = StringUtils.replace(query, "$interventionUnionString", buildInterventionUnionString(interventionUids));
+    query = StringUtils.replace(query, "$outcomeUnionString", buildOutcomeUnionString(outcomeUids));
+    String interventionUn = buildInterventionUnionString(interventionUids);
+    query = StringUtils.replace(query, "$interventionUnionString", interventionUn);
     logger.info(query);
 
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
@@ -612,8 +619,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     HttpHeaders headers = new HttpHeaders();
 
-    headers.put(X_ACCEPT_EVENT_SOURCE_VERSION, Arrays.asList(versionUri));
-    headers.put(ACCEPT_HEADER, Arrays.asList(APPLICATION_SPARQL_RESULTS_JSON));
+    headers.put(X_ACCEPT_EVENT_SOURCE_VERSION, Collections.singletonList(versionUri));
+    headers.put(ACCEPT_HEADER, Collections.singletonList(APPLICATION_SPARQL_RESULTS_JSON));
 
     RestOperations restOperations =  restOperationsFactory.build(); //todo use application bean
     return restOperations.exchange(uriComponents.toUri(), HttpMethod.GET, new HttpEntity<>(headers), String.class);
@@ -676,6 +683,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       return sampleSize;
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
@@ -689,10 +697,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       if (!outcomeLabel.equals(that.outcomeLabel)) return false;
       if (!outcomeUid.equals(that.outcomeUid)) return false;
       if (rate != null ? !rate.equals(that.rate) : that.rate != null) return false;
-      if (!sampleSize.equals(that.sampleSize)) return false;
-      if (stdDev != null ? !stdDev.equals(that.stdDev) : that.stdDev != null) return false;
+      return sampleSize.equals(that.sampleSize) && !(stdDev != null ? !stdDev.equals(that.stdDev) : that.stdDev != null);
 
-      return true;
     }
 
     @Override

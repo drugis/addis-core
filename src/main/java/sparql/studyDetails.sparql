@@ -25,7 +25,7 @@ SELECT
     ?numberOfArms
     ?studySize
 WHERE {
-GRAPH graph:$studyUid {
+GRAPH graph:$studyGraphUid {
     ?studyUri 
       rdfs:label ?label ;
       a ontology:Study ;
@@ -99,8 +99,10 @@ GRAPH graph:$studyUid {
       SELECT ?studyUri (COUNT(?arm) as ?numberOfArms) (SUM(?numberOfParticipantsStarting) as ?studySize)
         WHERE {
             ?arm a ontology:Arm .
-            ?participantsStarting ontology:of_arm ?arm .
-            ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .
+            OPTIONAL {
+              ?participantsStarting ontology:of_arm ?arm .
+              ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .
+            }
         } GROUP BY ?studyUri
     }
   }

@@ -8,7 +8,6 @@ import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -30,6 +29,9 @@ public class TripleStoreServiceIT {
 
   @Inject
   TriplestoreService triplestoreService;
+
+  private final String testNamespaceUid = "3e6a82b0-582e-4c5d-af93-f1a46a220035";
+  private final String testVersionHead = "http://localhost:8080/versions/c585694a-a896-41cb-b93f-36cbbddc5c1a";
 
   private String nameSpaceUid = "c41d402e-6762-4221-b040-5a244b2aba3f";
   private final String tak491019 = "4d4b11f1-5bfd-4b45-a42b-04b71cc47b01"; //TAK491-019 / NCT00696436
@@ -81,10 +83,24 @@ public class TripleStoreServiceIT {
   }
 
   @Test
+  public void testGetOutcomesTestStudy() {
+    List<SemanticOutcome> outcomes = triplestoreService.getOutcomes(testNamespaceUid, testVersionHead);
+    assertEquals(3, outcomes.size());
+
+  }
+
+  @Test
   public void testGetInterventions() {
     List<SemanticIntervention> interventions = triplestoreService.getInterventions(nameSpaceUid, version);
     assertEquals(7, interventions.size());
   }
+
+  @Test
+  public void testGetInterventionsTestStudy() {
+    List<SemanticIntervention> interventions = triplestoreService.getInterventions(testNamespaceUid, testVersionHead);
+    assertEquals(2, interventions.size());
+  }
+
 
   @Test
   public void testGetStudies() {
@@ -95,24 +111,30 @@ public class TripleStoreServiceIT {
   }
 
   @Test
-  @Ignore // TODO needs fixing
   public void testGetSingleStudyMeasurements() {
     List<String> outcomeUids = Arrays.asList(sbpMeanTroughSitting, nonSAE);
     List<String> interventionUids = Arrays.asList(azilsartan, placebo);
-    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> singleStudyMeasurements = triplestoreService.getSingleStudyMeasurements(nameSpaceUid, tak491008, version, outcomeUids, interventionUids);
+    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> singleStudyMeasurements
+            = triplestoreService.getSingleStudyMeasurements(nameSpaceUid, tak491008, version, outcomeUids, interventionUids);
     assertEquals(8, singleStudyMeasurements.size());
     assertFalse(singleStudyMeasurements.get(0).getAlternativeUid().startsWith("ontology"));
   }
 
   @Test
-  @Ignore // TODO needs fixing
   public void testGetSingleStudyMeasurementsteststudy() {
-    String studyUid = "9b7f8a8d-f96b-4f3a-99d4-8b1d4433d649"; //test study
+    String testStudy = "0a333700-89b0-49fd-a423-37a874ff1e6b";
+    String var1 = "4cf45ac4-e287-425a-b838-7b2a2ce0d8b7";
+    String var2 = "f7ea96f9-029d-4d4d-8a78-ac4c6cc9b464";
+    String var3 = "448daf84-d548-48f0-8660-8b848d9edaf2";
+    List<String> outcomeUids = Arrays.asList(var1, var2, var3);
+    String drug1 = "32398992-dcfb-4b23-9d49-7ffbf3c4c8ff";
+    String drug2 = "84260271-5b92-4b89-a714-da982077c383";
+    List<String> interventionUids = Arrays.asList(drug1, drug2);
 
-    List<String> outcomeUids = Arrays.asList(spugen, nonSAE);
-    List<String> interventionUids = Arrays.asList(azilsartan, ramipril);
-    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> singleStudyMeasurements = triplestoreService.getSingleStudyMeasurements(nameSpaceUid, studyUid, version, outcomeUids, interventionUids);
-    assertEquals(8, singleStudyMeasurements.size());
+    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> singleStudyMeasurements
+            = triplestoreService.getSingleStudyMeasurements(testNamespaceUid, testStudy, testVersionHead, outcomeUids, interventionUids);
+
+    assertEquals(2, singleStudyMeasurements.size());
     assertFalse(singleStudyMeasurements.get(0).getAlternativeUid().startsWith("ontology"));
   }
 
@@ -136,7 +158,7 @@ public class TripleStoreServiceIT {
   @Test
   public void testQueryNamespaces() throws ParseException {
     Collection<Namespace> namespaces = triplestoreService.queryNameSpaces();
-    assertEquals(4, namespaces.size());
+    assertEquals(5, namespaces.size());
   }
   
   @Test

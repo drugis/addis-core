@@ -135,7 +135,7 @@ public class TrialverseControllerTest {
   public void testQuerySemanticStudies() throws Exception {
     String namespaceUid = "abc";
     String versionUid = "current";
-    Study study = new Study("studyUid", "name", "this is a title", Arrays.asList("outcome1", "outcome2"));
+    Study study = new Study("studyUid", "studyGraphUid", "name", "this is a title", Arrays.asList("outcome1", "outcome2"));
     when(triplestoreService.queryStudies(namespaceUid, versionUid)).thenReturn(Arrays.asList(study));
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/studies").param("version", versionUid))
             .andExpect(status().isOk())

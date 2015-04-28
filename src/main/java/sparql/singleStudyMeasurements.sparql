@@ -6,54 +6,55 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX entity: <http://trials.drugis.org/entities/>
+PREFIX concept: <http://trials.drugis.org/concepts/>
 PREFIX instance: <http://trials.drugis.org/instances/>
 PREFIX graph: <http://trials.drugis.org/graphs/>
 
 SELECT DISTINCT * WHERE {
   GRAPH graph:$studyUid {
-    #?study rdfs:label ?studyName . # debug info
+    ?study rdfs:label ?studyName . # debug info
     ?study ontology:has_outcome ?outcomeInstance .
-#    $outcomeUnionString .
-#    ?outcomeInstance ontology:of_variable [
-#      rdfs:label ?outcomeInstanceLabel ;
-#      owl:sameAs ?outcomeTypeUid
-#    ] .
-#    $interventionUnionString .
-#    ?interventionInstance
-#      owl:sameAs ?interventionTypeUid ;
-#      rdfs:label ?interventionLabel .
-#    ?study a ontology:Study .
-#    ?study ontology:has_arm ?arm .
-#    ?study ontology:has_primary_epoch ?epoch .
-#    ?activity a ontology:TreatmentActivity ;
-#      ontology:has_activity_application [
-#        ontology:applied_to_arm ?arm ;
-#        ontology:applied_in_epoch ?epoch
-#      ] ;
-#      ontology:has_drug_treatment [
-#        ontology:treatment_has_drug ?interventionInstance
-#      ] .
+    $outcomeUnionString .
+    ?outcomeInstance ontology:of_variable [
+      rdfs:label ?outcomeInstanceLabel ;
+      owl:sameAs ?outcomeTypeUid
+    ] .
+    $interventionUnionString .
+    ?interventionInstance
+      owl:sameAs ?interventionTypeUid ;
+      rdfs:label ?interventionLabel .
+    ?study a ontology:Study .
+    ?study ontology:has_arm ?arm .
+    ?study ontology:has_primary_epoch ?epoch .
+    ?activity a ontology:TreatmentActivity ;
+      ontology:has_activity_application [
+        ontology:applied_to_arm ?arm ;
+        ontology:applied_in_epoch ?epoch
+      ] ;
+      ontology:has_drug_treatment [
+        ontology:treatment_has_drug ?interventionInstance
+      ] .
 #    #?epoch rdfs:label ?epochLabel .  # debug info
 #    #?arm rdfs:label ?armLabel .  # debug info
 #    # also get the measurement while we're here
-#    ?measurementMoment
-#      ontology:relative_to_epoch ?epoch ;
-#      ontology:relative_to_anchor ontology:anchorEpochEnd ;
-#      ontology:time_offset "-P0D"^^xsd:duration .
-#    ?measurement
-#      ontology:of_moment ?measurementMoment ;
-#      ontology:of_outcome ?outcomeInstance ;
-#      ontology:of_arm ?arm .
-#    OPTIONAL {
-#      ?measurement
-#        ontology:mean ?mean ;
-#        ontology:standard_deviation ?stdDev ;
-#        ontology:sample_size ?sampleSize .
-#    }
-#    OPTIONAL {
-#      ?measurement
-#        ontology:count ?count ;
-#        ontology:sample_size ?sampleSize .
-#    }
+    ?measurementMoment
+      ontology:relative_to_epoch ?epoch ;
+      ontology:relative_to_anchor ontology:anchorEpochEnd ;
+      ontology:time_offset "-P0D"^^xsd:duration .
+    ?measurement
+      ontology:of_moment ?measurementMoment ;
+      ontology:of_outcome ?outcomeInstance ;
+      ontology:of_arm ?arm .
+    OPTIONAL {
+      ?measurement
+        ontology:mean ?mean ;
+        ontology:standard_deviation ?stdDev ;
+        ontology:sample_size ?sampleSize .
+    }
+    OPTIONAL {
+      ?measurement
+        ontology:count ?count ;
+        ontology:sample_size ?sampleSize .
+    }
   }
 }

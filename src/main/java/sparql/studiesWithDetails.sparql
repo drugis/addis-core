@@ -6,7 +6,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
 SELECT
-  ?studyUri ?title ?label ?studySize ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria
+  ?graphUri ?studyUri ?title ?label ?studySize ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria
  ?publications ?status ?numberOfCenters ?indication ?startDate ?endDate ?numberOfArms ?doseType WHERE {
 GRAPH ?graphUri {
     ?studyUri 
