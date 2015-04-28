@@ -1,14 +1,14 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$modalInstance', 'AdverseEventService', 'MeasurementMomentService', 'callback'];
-    var addAdverseEventController = function($scope, $stateParams, $modalInstance, AdverseEventService, MeasurementMomentService, callback) {
+    var dependencies = ['$scope', '$modalInstance', 'AdverseEventService', 'MeasurementMomentService', 'callback'];
+    var addAdverseEventController = function($scope, $modalInstance, AdverseEventService, MeasurementMomentService, callback) {
 
       $scope.item = {
         measuredAtMoments: []
       };
 
-      $scope.measurementMoments = MeasurementMomentService.queryItems($stateParams.studyUUID);
+      $scope.measurementMoments = MeasurementMomentService.queryItems();
 
       $scope.addItem = function() {
         AdverseEventService.addItem($scope.item)
