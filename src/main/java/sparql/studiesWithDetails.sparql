@@ -87,8 +87,10 @@ GRAPH ?graphUri {
         WHERE {
           GRAPH ?graphUri {
             ?arm a ontology:Arm .
-            ?participantsStarting ontology:of_arm ?arm .
-            ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .
+            OPTIONAL {
+              ?participantsStarting ontology:of_arm ?arm .
+              ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .
+            }
           }
         } GROUP BY ?graphUri
     }
