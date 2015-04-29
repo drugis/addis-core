@@ -190,7 +190,7 @@ public class ProblemServiceImpl implements ProblemService {
       alternativeUids.add(intervention.getSemanticInterventionUri());
     }
     List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementNodes =
-            triplestoreService.getSingleStudyMeasurements(project.getNamespaceUid(), analysis.getStudyUid(), project.getDatasetVersion(), outcomeUids, alternativeUids);
+            triplestoreService.getSingleStudyMeasurements(project.getNamespaceUid(), analysis.getStudyGraphUid(), project.getDatasetVersion(), outcomeUids, alternativeUids);
 
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
     Map<String, CriterionEntry> criteria = new HashMap<>();

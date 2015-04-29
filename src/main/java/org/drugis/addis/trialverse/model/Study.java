@@ -10,8 +10,8 @@ import java.util.Set;
  */
 public class Study {
 
-  private String uid;
-  private String studyGraphUuid;
+  private String studyUid;
+  private String studyGraphUid;
   private String name;
   private String title;
   private List<String> outcomeUids = new ArrayList<>();
@@ -20,20 +20,20 @@ public class Study {
   public Study() {
   }
 
-  public Study(String uid, String studyGraphUuid, String name, String title, List<String> outcomeUids) {
-    this.uid = uid;
-    this.studyGraphUuid = studyGraphUuid;
+  public Study(String studyUid, String studyGraphUid, String name, String title, List<String> outcomeUids) {
+    this.studyUid = studyUid;
+    this.studyGraphUid = studyGraphUid;
     this.name = name;
     this.title = title;
     this.outcomeUids = outcomeUids;
   }
 
-  public String getUid() {
-    return uid;
+  public String getStudyUid() {
+    return studyUid;
   }
 
-  public String getStudyGraphUuid() {
-    return studyGraphUuid;
+  public String getStudyGraphUid() {
+    return studyGraphUid;
   }
 
   public String getName() {
@@ -59,8 +59,8 @@ public class Study {
 
     Study study = (Study) o;
 
-    if (uid != null ? !uid.equals(study.uid) : study.uid != null) return false;
-    if (studyGraphUuid != null ? !studyGraphUuid.equals(study.studyGraphUuid) : study.studyGraphUuid != null)
+    if (studyUid != null ? !studyUid.equals(study.studyUid) : study.studyUid != null) return false;
+    if (studyGraphUid != null ? !studyGraphUid.equals(study.studyGraphUid) : study.studyGraphUid != null)
       return false;
     if (name != null ? !name.equals(study.name) : study.name != null) return false;
     if (title != null ? !title.equals(study.title) : study.title != null) return false;
@@ -71,8 +71,8 @@ public class Study {
 
   @Override
   public int hashCode() {
-    int result = uid != null ? uid.hashCode() : 0;
-    result = 31 * result + (studyGraphUuid != null ? studyGraphUuid.hashCode() : 0);
+    int result = studyUid != null ? studyUid.hashCode() : 0;
+    result = 31 * result + (studyGraphUid != null ? studyGraphUid.hashCode() : 0);
     result = 31 * result + (name != null ? name.hashCode() : 0);
     result = 31 * result + (title != null ? title.hashCode() : 0);
     result = 31 * result + (outcomeUids != null ? outcomeUids.hashCode() : 0);

@@ -140,7 +140,7 @@ public class TrialverseControllerTest {
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/studies").param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$[0].uid", is(study.getUid())))
+            .andExpect(jsonPath("$[0].studyUid", is(study.getStudyUid())))
             .andExpect(jsonPath("$[0].name", is(study.getName())))
             .andExpect(jsonPath("$[0].title", is(study.getTitle())));
     verify(triplestoreService).queryStudies(namespaceUid, versionUid);

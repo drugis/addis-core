@@ -95,7 +95,7 @@ define(['underscore'], function() {
       $scope.studyArrayLength = studies.length;
 
       $scope.studyModel.selectedStudy = _.find(studies, function(study) {
-        return study.uid === $scope.analysis.studyUid;
+        return study.studyGraphUid === $scope.analysis.studyGraphUid;
       });
 
       _.each(studies, function(study) {
@@ -126,7 +126,7 @@ define(['underscore'], function() {
     }
 
     $scope.onStudySelect = function(item) {
-      $scope.analysis.studyUid = item.uid;
+      $scope.analysis.studyGraphUid = item.studyGraphUid;
       saveAnalysis();
     };
 

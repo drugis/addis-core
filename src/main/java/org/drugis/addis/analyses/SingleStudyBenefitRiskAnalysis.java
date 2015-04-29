@@ -26,7 +26,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
   @JsonRawValue
   private String problem;
 
-  private String studyUid;
+  private String studyGraphUid;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinTable(name = "singleStudyBenefitRiskAnalysis_Outcome",
@@ -77,12 +77,12 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     return name;
   }
 
-  public String getStudyUid() {
-    return studyUid;
+  public String getStudyGraphUid() {
+    return studyGraphUid;
   }
 
-  public void setStudyUid(String studyUid) {
-    this.studyUid = studyUid;
+  public void setStudyGraphUid(String studyGraphUid) {
+    this.studyGraphUid = studyGraphUid;
   }
 
   public List<Outcome> getSelectedOutcomes() {
@@ -116,7 +116,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     if (!projectId.equals(analysis.projectId)) return false;
     if (!selectedInterventions.equals(analysis.selectedInterventions)) return false;
     if (!selectedOutcomes.equals(analysis.selectedOutcomes)) return false;
-    if (studyUid != null ? !studyUid.equals(analysis.studyUid) : analysis.studyUid != null) return false;
+    if (studyGraphUid != null ? !studyGraphUid.equals(analysis.studyGraphUid) : analysis.studyGraphUid != null) return false;
 
     return true;
   }
@@ -127,7 +127,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     result = 31 * result + projectId.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + (problem != null ? problem.hashCode() : 0);
-    result = 31 * result + (studyUid != null ? studyUid.hashCode() : 0);
+    result = 31 * result + (studyGraphUid != null ? studyGraphUid.hashCode() : 0);
     result = 31 * result + selectedOutcomes.hashCode();
     result = 31 * result + selectedInterventions.hashCode();
     return result;

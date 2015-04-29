@@ -120,7 +120,7 @@ public class ProblemServiceTest {
     List<Intervention> interventions = Arrays.asList(intervention1, intervention2);
     when(analysis.getSelectedInterventions()).thenReturn(interventions);
 
-    when(analysis.getStudyUid()).thenReturn(studyUid);
+    when(analysis.getStudyGraphUid()).thenReturn(studyUid);
     List<String> outcomeUids = Arrays.asList(criterionUri1, criterionUri2);
     List<String> interventionUids = Arrays.asList(alternativeUri1, alternativeUri2);
 

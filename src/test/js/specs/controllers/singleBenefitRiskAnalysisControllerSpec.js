@@ -22,9 +22,11 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       name: 'mock intervention 1'
     }];
     var mockStudies = [{
-      uid: 'uid1',
+      studyGraphUid: 'graphUid1',
+      studyUid: 'uid1',
     }, {
-      uid: 'uid2'
+      studyGraphUid: 'graphuid2',
+      studyUid: 'graphuid2'
     }];
     var q;
     var mockProject = {
@@ -48,11 +50,11 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       // set a mockNameSpace for the current project
       scope.project = mockProject
 
-      // set some mock outcomes and interventions
+      // set some mock outcomes anU interventions
       scope.analysis = {
         selectedOutcomes: [],
         selectedInterventions: [],
-        studyUid: 'uid2'
+        studyGraphUid: 'graphuid2'
       };
       scope.analysis.selectedOutcomes = [{
         a: 'a'
@@ -219,9 +221,9 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
     describe('when a study is selected', function() {
       it('should place the selected items ui on the analysis as the studyUid', function() {
         scope.onStudySelect({
-          uid: 'test-uid'
+          studyGraphUid: 'test-uid'
         });
-        expect(scope.analysis.studyUid).toEqual('test-uid');
+        expect(scope.analysis.studyGraphUid).toEqual('test-uid');
       });
     });
 
