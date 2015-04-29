@@ -31,7 +31,7 @@ public class TripleStoreServiceIT {
   TriplestoreService triplestoreService;
 
   private final String testNamespaceUid = "3e6a82b0-582e-4c5d-af93-f1a46a220035";
-  private final String testVersionHead = "http://localhost:8080/versions/c585694a-a896-41cb-b93f-36cbbddc5c1a";
+  private final String testVersionHead = "http://localhost:8080/versions/85aad3a5-a9cc-46e0-ac60-c6b4adb83a4b";
 
   private String nameSpaceUid = "e56ab1ac-9d36-4acf-baf6-0d47b618e817";
   private final String tak491019 = "eaea4081-8da1-4c5b-96e0-aa3077adebca"; //TAK491-019 / NCT00696436
@@ -131,7 +131,7 @@ public class TripleStoreServiceIT {
     List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> singleStudyMeasurements
             = triplestoreService.getSingleStudyMeasurements(testNamespaceUid, testStudy, testVersionHead, outcomeUids, interventionUids);
 
-    assertEquals(2, singleStudyMeasurements.size());
+    assertEquals(4, singleStudyMeasurements.size());
     assertFalse(singleStudyMeasurements.get(0).getAlternativeUid().startsWith("ontology"));
   }
 

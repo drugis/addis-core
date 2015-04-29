@@ -15,10 +15,11 @@ SELECT DISTINCT * WHERE {
     ?study rdfs:label ?studyName . # debug info
     ?study ontology:has_outcome ?outcomeInstance .
     $outcomeUnionString .
-    ?outcomeInstance ontology:of_variable [
+    ?outcomeInstance
       rdfs:label ?outcomeInstanceLabel ;
-      owl:sameAs ?outcomeTypeUid
-    ] .
+      ontology:of_variable [
+        owl:sameAs ?outcomeTypeUid
+      ] .
     $interventionUnionString .
     ?interventionInstance
       owl:sameAs ?interventionTypeUid ;
@@ -37,10 +38,12 @@ SELECT DISTINCT * WHERE {
 #    #?epoch rdfs:label ?epochLabel .  # debug info
 #    #?arm rdfs:label ?armLabel .  # debug info
 #    # also get the measurement while we're here
+
     ?measurementMoment
       ontology:relative_to_epoch ?epoch ;
       ontology:relative_to_anchor ontology:anchorEpochEnd ;
-      ontology:time_offset "-P0D"^^xsd:duration .
+      ontology:time_offset "PT0S"^^xsd:duration .
+
     ?measurement
       ontology:of_moment ?measurementMoment ;
       ontology:of_outcome ?outcomeInstance ;
