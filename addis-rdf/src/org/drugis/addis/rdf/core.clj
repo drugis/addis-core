@@ -224,9 +224,13 @@
             [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
             [(trig/iri :rdf "type") (trig/iri :ontology "Arm")]))
 
+(defn fix-duration
+  [duration]
+  (if (= "P0D" duration) "PT0S" duration))
+
 (defn study-epoch-rdf [xml instance-uri]
   (let [epoch-name (vtd/attr xml :name)
-        duration (vtd/text (vtd/at xml "./duration"))
+        duration (fix-duration (vtd/text (vtd/at xml "./duration")))
         subj (if duration
                (trig/spo instance-uri [(trig/iri :ontology "duration") (trig/lit duration (trig/iri :xsd "duration"))])
                instance-uri)]
@@ -324,11 +328,7 @@
               [(trig/iri :ontology "relative_to_epoch") (epoch-uris (:epochName mm))]
               [(trig/iri :ontology "relative_to_anchor") (anchorUri (:relativeTo mm))]
               [(trig/iri :ontology "time_offset")
-               (trig/lit
-                 (if (= (:relativeTo mm) "BEFORE_EPOCH_END")
-                   (str "-" (:howLong mm))
-                   (:howLong mm))
-                 (trig/iri :xsd "duration"))])))
+               (trig/lit (fix-duration (:howLong mm)) (trig/iri :xsd "duration"))])))
 
 (defn study-measurement-rdf
   [xml subj study-outcomes arm-uris mm-uris]
