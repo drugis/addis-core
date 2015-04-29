@@ -1,0 +1,16 @@
+<form novalidate ng-submit="editItem()">
+  <div class="row">
+    <div class="large-9 medium-12 columns">
+      <h3>Edit population information</h3>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="large-9 columns">
+      <button class="success" type="submit"
+              ng-disabled="(!itemScratch.label || !isValidDuration(itemScratch.duration))">Edit
+      </button>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>
