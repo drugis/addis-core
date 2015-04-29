@@ -11,11 +11,14 @@ define([], function() {
         reloadItems: '=',
         settings: '=',
         studyUuid: '=',
-        isEditingAllowed: '='
+        isEditingAllowed: '=',
+        isSingleItem: '='
       },
-      link: function(scope) {
+      link: function(scope, element, attibutes) {
 
         var service = $injector.get(scope.settings.service);
+
+       // scope.isSingleItem = !!attibutes.isSingleItem;
 
         function onEdit() {
           scope.$emit('updateStudyDesign');

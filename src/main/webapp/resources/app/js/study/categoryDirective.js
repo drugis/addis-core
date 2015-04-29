@@ -10,10 +10,12 @@ define([], function() {
         settings: '=',
         isEditingAllowed: '='
       },
-      link: function(scope) {
+      link: function(scope, element, attributes) {
 
         var refreshStudyDesignLister;
         var service = $injector.get(scope.settings.service);
+        
+        scope.isSingleItem = !!attributes.isSingleItem;
 
         scope.reloadItems = function() {
           console.log("CategoryDirective.reloadItems");
