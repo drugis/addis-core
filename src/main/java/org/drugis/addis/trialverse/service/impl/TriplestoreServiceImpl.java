@@ -502,7 +502,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   private String buildOutcomeUnionString(List<String> outcomeUids) {
     String result = "";
-    for (String outcomeUid : outcomeUids) {
+    for (String outcomeUid : outcomeUids) { // FIXME: pick one
       result = result + " { ?outcomeInstance ontology:of_variable [ owl:sameAs entity:" + outcomeUid + " ] } UNION \n"
                       + " { ?outcomeInstance ontology:of_variable [ owl:sameAs concept:" + outcomeUid + " ] } UNION \n";
     }

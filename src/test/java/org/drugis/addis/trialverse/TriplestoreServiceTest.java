@@ -219,9 +219,9 @@ public class TriplestoreServiceTest {
 
     List<Study> result = triplestoreService.queryStudies(namespaceUid, "version");
     assertEquals(5, result.size()); // epar example
-    assertEquals(3, result.get(4).getTreatmentArms().size());
+    assertEquals(3, result.get(0).getTreatmentArms().size());
     // this one should have a multi drug arm
-    assertEquals(2, ((StudyTreatmentArm) result.get(4).getTreatmentArms().toArray()[2]).getInterventionUids().size());
+    assertEquals(2, ((StudyTreatmentArm) result.get(0).getTreatmentArms().toArray()[2]).getInterventionUids().size());
   }
 
   @Test

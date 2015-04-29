@@ -4,6 +4,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> 
 PREFIX entity: <http://trials.drugis.org/entities/>
+PREFIX concept: <http://trials.drugis.org/concepts/>
 PREFIX instance: <http://trials.drugis.org/instances/>
 PREFIX graph: <http://trials.drugis.org/graphs/>
 
@@ -40,7 +41,7 @@ SELECT DISTINCT ?graph ?studyName
     ?measurementMoment
       ontology:relative_to_epoch ?epoch ;
       ontology:relative_to_anchor ontology:anchorEpochEnd ;
-      ontology:time_offset "-P0D"^^xsd:duration .
+      ontology:time_offset "PT0S"^^xsd:duration .
 
     ?measurement
       ontology:of_moment ?measurementMoment ;

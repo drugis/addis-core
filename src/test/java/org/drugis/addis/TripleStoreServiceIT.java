@@ -33,24 +33,21 @@ public class TripleStoreServiceIT {
   private final String testNamespaceUid = "3e6a82b0-582e-4c5d-af93-f1a46a220035";
   private final String testVersionHead = "http://localhost:8080/versions/c585694a-a896-41cb-b93f-36cbbddc5c1a";
 
-  private String nameSpaceUid = "c41d402e-6762-4221-b040-5a244b2aba3f";
-  private final String tak491019 = "4d4b11f1-5bfd-4b45-a42b-04b71cc47b01"; //TAK491-019 / NCT00696436
-  private final String tak491301 = "521121d5-ccda-4c67-96b7-2b1b41142e99"; //TAK491-301 / NCT00846365
-  private final String tak491008 = "dfe24960-8e9b-4a3a-b1b8-d644bb7a7b1c"; //TAK491-008 / NCT00696241
-  private final String nonSAE = "7668ae03-fc7d-4d3e-a98e-a66e24247572";
-  private final String sbpMeanTroughSitting = "e6bb1301-c130-46c6-ad9c-d4c89a3fbecc";
-  private final String azilsartan = "40e4b07f-026d-4f5d-a4c1-54d24917b194";
-  private final String placebo = "47cd2e00-a967-4c24-b798-b2d5c37d9553";
-  private final String ramipril = "7f0beb7b-87cc-4f9f-8e78-f63aec4676ee";
-  private final String spugen = "18bd5e16-5254-4e8d-a171-753d01d22fd4";
-  private final String version = "http://localhost:8080/versions/0f85b12d-73c4-4d34-a1ce-9b9d5122dab4";
+  private String nameSpaceUid = "e56ab1ac-9d36-4acf-baf6-0d47b618e817";
+  private final String tak491019 = "eaea4081-8da1-4c5b-96e0-aa3077adebca"; //TAK491-019 / NCT00696436
+  private final String tak491301 = "733c8344-66d4-4137-b0e5-80762812be2f"; //TAK491-301 / NCT00846365
+  private final String tak491008 = "a795e3f0-325e-4172-973f-f25c34a5db96"; //TAK491-008 / NCT00696241
+  private final String nonSAE = "2c7f5c18-e7fc-45e5-8e63-2c90c31afaea";
+  private final String sbpMeanTroughSitting = "399b6814-8289-482b-87f7-ade143e42791";
+  private final String azilsartan = "40d2e6b0-56cc-434b-9199-fde1b5b9a6be";
+  private final String placebo = "5af90963-8999-4b6b-a71f-6a21872c649d";
+  private final String version = "http://localhost:8080/versions/c81a90be-f0f1-402a-93e1-d6f3c6cf7796";
 
   @Test
   public void testGetTreatmentActivitiesFixedDose() {
-
     List<TreatmentActivity> studyTreatmentActivities = triplestoreService.getStudyTreatmentActivities(nameSpaceUid, tak491019);
     assertEquals(6, studyTreatmentActivities.size());
-    TreatmentActivity treatmentActivity = studyTreatmentActivities.get(1);
+    TreatmentActivity treatmentActivity = studyTreatmentActivities.get(0); // NB: may change on reimport
     assertEquals(1, treatmentActivity.getAdministeredDrugs().size());
   }
 
@@ -58,7 +55,7 @@ public class TripleStoreServiceIT {
   public void testGetTreatmentActivitiesFlexDose() {
     List<TreatmentActivity> studyTreatmentActivities = triplestoreService.getStudyTreatmentActivities(nameSpaceUid, tak491019);
     assertEquals(6, studyTreatmentActivities.size());
-    TreatmentActivity treatmentActivity = studyTreatmentActivities.get(1);
+    TreatmentActivity treatmentActivity = studyTreatmentActivities.get(0);
     assertEquals(1, treatmentActivity.getAdministeredDrugs().size());
   }
 
@@ -106,7 +103,7 @@ public class TripleStoreServiceIT {
   public void testGetStudies() {
     List<Study> studies = triplestoreService.queryStudies(nameSpaceUid, version);
     assertEquals(5, studies.size());
-    assertEquals(59, studies.get(1).getOutcomeUids().size());
+    assertEquals(36, studies.get(1).getOutcomeUids().size()); // NB changes on re-import
     assertTrue(studies.get(1).getOutcomeUids().get(0).startsWith("http://trials.drugis.org/entities/"));
   }
 
@@ -149,16 +146,16 @@ public class TripleStoreServiceIT {
   public void testNamespaceGet() {
     Namespace namespace = triplestoreService.getNamespaceHead(nameSpaceUid);
     assertNotNull(namespace);
-    assertEquals("EDARBI", namespace.getName());
-    assertEquals("The EDARBI dataset", namespace.getDescription());
+    assertEquals("EDARBI duration update", namespace.getName());
+    assertEquals("from -P0D to PT0S", namespace.getDescription());
     assertEquals(new Integer(5), namespace.getNumberOfStudies());
-    assertEquals("http://localhost:8080/versions/0f85b12d-73c4-4d34-a1ce-9b9d5122dab4", namespace.getVersion());
+    assertEquals(version, namespace.getVersion());
   }
 
   @Test
   public void testQueryNamespaces() throws ParseException {
     Collection<Namespace> namespaces = triplestoreService.queryNameSpaces();
-    assertEquals(5, namespaces.size());
+    assertEquals(6, namespaces.size());
   }
   
   @Test
@@ -166,7 +163,7 @@ public class TripleStoreServiceIT {
     StudyWithDetails studydetails = triplestoreService.getStudydetails(nameSpaceUid, tak491008);
     assertEquals("TAK491-008 / NCT00696241", studydetails.getName());
     assertEquals(new Integer(1275), studydetails.getStudySize());
-    assertEquals("Azilsartan, Olmesartan, Placebo", studydetails.getInvestigationalDrugNames());
+    assertEquals("Olmesartan, Azilsartan, Placebo", studydetails.getInvestigationalDrugNames());
     assertEquals(new Integer(5), studydetails.getNumberOfArms());
   }
 
