@@ -169,7 +169,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
     if(StringUtils.isNotEmpty(versionUuid)) {
-      httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, webConstants.buildVersionUri(versionUuid));
+      httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, webConstants.buildVersionUri(versionUuid).toString());
     }
 
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
@@ -190,7 +190,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
     if(StringUtils.isNotEmpty(versionUuid)) {
-      request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, webConstants.buildVersionUri(versionUuid));
+      request.addHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, webConstants.buildVersionUri(versionUuid).toString());
     }
     request.addHeader(org.apache.http.HttpHeaders.ACCEPT, acceptHeader);
     return executeRequestAndCloseResponse(request);

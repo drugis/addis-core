@@ -3,7 +3,9 @@ package org.drugis.trialverse.util;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.nio.charset.Charset;
 
 /**
@@ -63,8 +65,12 @@ public class WebConstants {
     return APPLICATION_JSON_UTF8_VALUE;
   }
 
-  public String buildVersionUri(String versionUuid) {
-    return getTriplestoreBaseUri() + VERSION_PATH + versionUuid;
+  public URI buildVersionUri(String versionUuid) {
+    return UriComponentsBuilder.fromHttpUrl(getTriplestoreBaseUri())
+            .path(VERSION_PATH)
+            .path(versionUuid)
+            .build()
+            .toUri();
   }
 }
 
