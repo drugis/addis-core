@@ -5,7 +5,9 @@ import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.*;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -30,9 +32,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
@@ -129,7 +128,7 @@ public class DatasetReadRepositoryTest {
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     ResponseEntity<Graph> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), HttpStatus.OK);
     String uri = versionedUri + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
-    when(webConstants.buildVersionUri(versionUuid)).thenReturn(versionedUri);
+    when(webConstants.buildVersionUri(versionUuid)).thenReturn(new URI(versionedUri));
     when(restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class)).thenReturn(responseEntity);
 
     Model model = datasetReadRepository.getVersionedDataset(trialverseDatasetUrl, versionUuid);
@@ -268,7 +267,7 @@ public class DatasetReadRepositoryTest {
     when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString));
     when(mockResponse.getEntity()).thenReturn(entity);
     when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
-
+    when(webConstants.buildVersionUri(versionUuid)).thenReturn(new URI("versions/versionedUri"));
     when(httpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 

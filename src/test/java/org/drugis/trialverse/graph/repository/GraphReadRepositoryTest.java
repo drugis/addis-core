@@ -27,9 +27,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by connor on 28-11-14.
@@ -71,6 +69,7 @@ public class GraphReadRepositoryTest {
     String responceString = "check me out";
     when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString));
     when(mockResponse.getEntity()).thenReturn(entity);
+    when(webConstants.buildVersionUri(versionUuid)).thenReturn(new URI("version/versionedUri"));
     when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
     graphReadRepository.getGraph(trialverseDatasetUri, versionUuid, graphUUID);
 
