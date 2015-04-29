@@ -12,6 +12,15 @@ define([],
 
       $scope.study = {};
       $scope.categorySettings = {
+        populationInformation: {
+          service: 'PopulationInformationService',
+          anchorId: 'population-information',
+          header: 'Population Information',
+          itemName: 'Population Information',
+          itemTemplateUrl: 'app/js/populationInformation/populationInformation.html',
+          editItemTemplateUrl: 'app/js/populationInformation/editPopulationInformation.html',
+          editItemController: 'EditPopulationInformationController',
+        },
         arms: {
           service: 'ArmService',
           anchorId: 'arms',
