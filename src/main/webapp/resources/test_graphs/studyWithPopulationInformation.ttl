@@ -2,8 +2,12 @@
   <http://www.w3.org/1999/02/22-rdf-syntax-ns#label> "Study1" ;  
   a  <http://trials.drugis.org/ontology#Study> ;  
   <http://www.w3.org/2000/01/rdf-schema#comment>  "Description" ;  
+  <http://trials.drugis.org/ontology#has_eligibility_criteria> [
+    <http://www.w3.org/2000/01/rdf-schema#comment> "eligibility criterion"
+  ] ;
   <http://trials.drugis.org/ontology#has_epochs> () . 
 
 <http://trials.drugis.org/instances/indication-instance>
     a <http://trials.drugis.org/ontology#Indication> ;
     <http://www.w3.org/2000/01/rdf-schema#label> "Indication label" .
+

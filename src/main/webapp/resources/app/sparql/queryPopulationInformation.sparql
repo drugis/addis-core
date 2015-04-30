@@ -3,8 +3,11 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT * WHERE {
   GRAPH <$graphUri> {
-  ?indicationUri
-    a ontology:Indication ;
-    rdfs:label ?label .
+    ?indicationUri
+      a ontology:Indication ;
+      rdfs:label ?indicationLabel .
+    ?s ontology:has_eligibility_criteria [
+      rdfs:comment ?eligibilityCriteria
+    ]
   }
 }

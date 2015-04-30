@@ -9,12 +9,11 @@ define([],
       itemService, callback) {
 
       var itemScratch = angular.copy($scope.item);
-      itemScratch.isPrimary = itemScratch.isPrimary === 'true';
 
       $scope.itemScratch = itemScratch;
 
       $scope.editItem = function() {
-        itemService.editItem($scope.item, $scope.itemScratch).then(function() {
+        itemService.editItem($scope.itemScratch).then(function() {
             $scope.item = angular.copy($scope.itemScratch);
             callback();
             $modalInstance.close();

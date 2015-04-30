@@ -5,10 +5,24 @@
     </div>
   </div>
 
+   <div class="row">
+    <div class="large-9 columns">
+      <label>Indication
+        <textarea autofocus rows="8" ng-model="itemScratch.indication.label"></textarea>
+      </label>
+    </div>
+  </div>
   <div class="row">
     <div class="large-9 columns">
-      <button class="success" type="submit"
-              ng-disabled="(!itemScratch.label || !isValidDuration(itemScratch.duration))">Edit
+      <label>Eligibility criteria
+        <textarea rows="8" ng-model="itemScratch.eligibilityCriteria.label"></textarea>
+      </label>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="large-9 columns">
+      <button class="success" type="submit">Edit
       </button>
     </div>
   </div>
