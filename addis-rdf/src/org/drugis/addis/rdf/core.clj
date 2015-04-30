@@ -465,7 +465,7 @@
                   :dataset "http://trials.drugis.org/datasets/"
                   :study "http://trials.drugis.org/studies/"
                   :instance "http://trials.drugis.org/instances/"
-                  :entity "http://trials.drugis.org/entities/"
+                  :entity "http://trials.drugis.org/concepts/"
                   :atc "http://www.whocc.no/ATC2011/"
                   :snomed "http://www.ihtsdo.org/SCT_"
                   :dc "http://purl.org/dc/elements/1.1/" }
