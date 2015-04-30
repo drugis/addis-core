@@ -1,29 +1,31 @@
 package org.drugis.addis.config;
 
-import org.drugis.addis.analyses.repository.AnalysisRepository;
-import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
-import org.drugis.addis.interventions.repository.InterventionRepository;
-import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
-import org.drugis.addis.projects.repository.ProjectRepository;
-import org.drugis.addis.trialverse.factory.RestOperationsFactory;
-import org.drugis.addis.trialverse.factory.impl.RestOperationsFactoryImpl;
-import org.drugis.addis.trialverse.service.TrialverseService;
-import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-
-import javax.inject.Inject;
-
-import static org.mockito.Mockito.mock;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
 
 @ComponentScan(excludeFilters = {@ComponentScan.Filter(Configuration.class)}, basePackages = {
         "org.drugis.addis.trialverse.service"
 })
 public class TrialverseServiceIntegrationTestConfig {
-  @Bean
-  public RestOperationsFactory restOperationsFactory() {
-    return new RestOperationsFactoryImpl();
-  }
+
+        @Bean
+        public RestTemplate restTemplate() {
+                RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient()));
+                return restTemplate;
+        }
+
+        @Bean
+        public HttpClient httpClient() {
+                return HttpClientBuilder
+                        .create()
+                        .setMaxConnTotal(20)
+                        .setMaxConnPerRoute(2)
+                        .build();
+        }
 }
 

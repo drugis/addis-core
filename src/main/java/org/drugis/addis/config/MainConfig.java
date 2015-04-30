@@ -15,6 +15,10 @@
  */
 package org.drugis.addis.config;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,6 +26,7 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jndi.JndiTemplate;
@@ -30,6 +35,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -53,6 +59,25 @@ import java.util.Properties;
         "org.drugis.addis.interventions", "org.drugis.addis.scenarios", "org.drugis.addis.models", "org.drugis.addis.remarks",
 })
 public class MainConfig {
+
+  private final static Logger logger = LoggerFactory.getLogger(MainConfig.class);
+
+  @Bean
+  public RestTemplate restTemplate() {
+    RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient()));
+    return restTemplate;
+  }
+
+  @Bean
+  public HttpClient httpClient() {
+    logger.info("httpClient created");
+    return HttpClientBuilder
+            .create()
+            .setMaxConnTotal(20)
+            .setMaxConnPerRoute(2)
+            .build();
+  }
+
   @Bean(name = "dsAddisCore")
   public DataSource dataSource() {
     DataSource ds;

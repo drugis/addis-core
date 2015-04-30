@@ -5,7 +5,6 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -17,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.*;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -30,7 +28,6 @@ import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -40,7 +37,7 @@ import static org.mockito.Mockito.when;
 public class TriplestoreServiceTest {
 
   @Mock
-  RestOperationsFactory restOperationsFactory;
+  RestTemplate restTemplate;
 
   @InjectMocks
   TriplestoreService triplestoreService;
@@ -55,7 +52,6 @@ public class TriplestoreServiceTest {
   public void testQueryNamespaces() throws ParseException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleQueryNamespacesResult.json");
     ResponseEntity<String> resultEntity = new ResponseEntity<String>(mockResult, HttpStatus.OK);
-    RestOperations restTemplate = mock(RestTemplate.class);
 
     UriComponents uriComponents = UriComponentsBuilder
             .fromHttpUrl(TriplestoreService.TRIPLESTORE_BASE_URI)
@@ -75,7 +71,6 @@ public class TriplestoreServiceTest {
     responceHeaders.add(TriplestoreServiceImpl.X_EVENT_SOURCE_VERSION, "version");
     ResponseEntity<String> resultEntity2 = new ResponseEntity<String>(mockResult2, responceHeaders, HttpStatus.OK);
     when(restTemplate.exchange(uriComponents2.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptSpaqlResultsRequest, String.class)).thenReturn(resultEntity2);
-    when(restOperationsFactory.build()).thenReturn(restTemplate);
 
     Collection<Namespace> namespaces = triplestoreService.queryNameSpaces();
 
@@ -242,10 +237,7 @@ public class TriplestoreServiceTest {
 
   private void createMockTrialverseService(String result) {
     ResponseEntity<String> resultEntity = new ResponseEntity<String>(result, HttpStatus.OK);
-    RestOperations restTemplate = mock(RestTemplate.class);
-//    when(restTemplate.getForObject(Mockito.anyString(), Mockito.any(Class.class), Mockito.anyMap())).thenReturn(result);
     when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), any(Class.class))).thenReturn(resultEntity);
-    when(restOperationsFactory.build()).thenReturn(restTemplate);
   }
 
 }

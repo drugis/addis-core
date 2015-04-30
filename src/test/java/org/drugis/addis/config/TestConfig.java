@@ -14,7 +14,6 @@ import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.remarks.repository.RemarksRepository;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -104,11 +103,6 @@ public class TestConfig {
   @Bean
   public ModelRepository mockModelRepository() {
     return mock(ModelRepository.class);
-  }
-
-  @Bean
-  public RestOperationsFactory mockRestOperationsFactory() {
-    return mock(RestOperationsFactory.class);
   }
 
   @Bean

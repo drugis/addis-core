@@ -9,7 +9,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.trialverse.factory.RestOperationsFactory;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyAllocationEnum;
 import org.drugis.addis.trialverse.model.emun.StudyBlindingEmun;
@@ -29,7 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -73,7 +72,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public static final HttpEntity<String> acceptSpaqlResultsRequest = new HttpEntity<>(getSparqlResultsHeaders);
 
   @Inject
-  RestOperationsFactory restOperationsFactory;
+  RestTemplate restTemplate;
 
   private static HttpHeaders createGetJsonHeader() {
     HttpHeaders headers = new HttpHeaders();
@@ -106,9 +105,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             .path("datasets/")
             .build();
 
-    final ResponseEntity<String> response = restOperationsFactory
-            .build()
-            .exchange(uriComponents.toUri(), HttpMethod.GET, acceptJsonRequest, String.class);
+    final ResponseEntity<String> response = restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, acceptJsonRequest, String.class);
     List<Namespace> namespaces = new ArrayList<>();
 
     JSONArray namespaceUris = (JSONArray) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(response.getBody());
@@ -602,8 +599,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             .queryParam(QUERY_PARAM_QUERY, query)
             .build();
 
-    RestOperations restOperations =  restOperationsFactory.build(); //todo use application bean
-    return restOperations.exchange(uriComponents.toUri(), HttpMethod.GET, acceptSpaqlResultsRequest, String.class);
+    return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, acceptSpaqlResultsRequest, String.class);
   }
 
 
@@ -622,8 +618,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     headers.put(X_ACCEPT_EVENT_SOURCE_VERSION, Collections.singletonList(versionUri));
     headers.put(ACCEPT_HEADER, Collections.singletonList(APPLICATION_SPARQL_RESULTS_JSON));
 
-    RestOperations restOperations =  restOperationsFactory.build(); //todo use application bean
-    return restOperations.exchange(uriComponents.toUri(), HttpMethod.GET, new HttpEntity<>(headers), String.class);
+    return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, new HttpEntity<>(headers), String.class);
   }
 
   private String subStringAfterLastSymbol(String inStr, char symbol) {

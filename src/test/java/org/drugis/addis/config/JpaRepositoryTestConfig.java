@@ -14,10 +14,14 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
+import org.springframework.web.client.RestTemplate;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
+
+import static org.mockito.Mockito.mock;
+
+
 
 @Configuration
 @ComponentScan(excludeFilters = {@ComponentScan.Filter(Configuration.class)},
@@ -47,6 +51,11 @@ import java.util.Properties;
         "org.drugis.addis.remarks"
 })
 public class JpaRepositoryTestConfig {
+
+  @Bean
+  public RestTemplate restTemplate() {
+    return mock(RestTemplate.class);
+  }
 
   @Bean
   public DataSource dataSource() {
