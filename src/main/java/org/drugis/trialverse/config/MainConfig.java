@@ -17,8 +17,6 @@ package org.drugis.trialverse.config;
 
 import org.apache.http.client.HttpClient;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.drugis.trialverse.util.JenaGraphMessageConverter;
 import org.drugis.trialverse.util.WebConstants;

@@ -16,6 +16,9 @@
         </div>
         <li class="divider"></li>
         <li class="heading">Design</li>
+        
+        <li><a ng-click="sideNavClick('population-information')">Population information</a></li>
+        
         <li><a ng-click="sideNavClick('arms')">Arms</a></li>
         <li><a ng-click="sideNavClick('epochs')">Epochs</a></li>
         <li><a ng-click="sideNavClick('activities')">Activities</a></li>
@@ -45,14 +48,17 @@
           <hr>
         </div>
       </div>
-      <study-category study-uuid="studyUuid" settings="categorySettings['arms']" is-editing-allowed="isEditingAllowed"></study-category>
-      <study-category study-uuid="studyUuid" settings="categorySettings['epochs']" is-editing-allowed="isEditingAllowed"></study-category>
-      <study-category study-uuid="studyUuid" settings="categorySettings['activities']" is-editing-allowed="isEditingAllowed"></study-category>
+
+      <study-category study-uuid="studyUuid" settings="categorySettings['populationInformation']" is-editing-allowed="isEditingAllowed" is-single-item="true"></study-category>
+
+      <study-category study-uuid="studyUuid" settings="categorySettings['arms']" is-editing-allowed="isEditingAllowed" ></study-category>
+      <study-category study-uuid="studyUuid" settings="categorySettings['epochs']" is-editing-allowed="isEditingAllowed" ></study-category>
+      <study-category study-uuid="studyUuid" settings="categorySettings['activities']" is-editing-allowed="isEditingAllowed" ></study-category>
       <study-design is-editing-allowed="isEditingAllowed"></study-design>
-      <study-category study-uuid="studyUuid" settings="categorySettings['measurementMoments']" is-editing-allowed="isEditingAllowed"></study-category>
-      <study-category study-uuid="studyUuid" settings="categorySettings['populationCharacteristics']" is-editing-allowed="isEditingAllowed"></study-category>
-      <study-category study-uuid="studyUuid" settings="categorySettings['endpoints']" is-editing-allowed="isEditingAllowed"></study-category>
-      <study-category study-uuid="studyUuid" settings="categorySettings['adverseEvents']" is-editing-allowed="isEditingAllowed"></study-category>
+      <study-category study-uuid="studyUuid" settings="categorySettings['measurementMoments']" is-editing-allowed="isEditingAllowed" ></study-category>
+      <study-category study-uuid="studyUuid" settings="categorySettings['populationCharacteristics']" is-editing-allowed="isEditingAllowed" ></study-category>
+      <study-category study-uuid="studyUuid" settings="categorySettings['endpoints']" is-editing-allowed="isEditingAllowed" ></study-category>
+      <study-category study-uuid="studyUuid" settings="categorySettings['adverseEvents']" is-editing-allowed="isEditingAllowed" ></study-category>
       <h3 class="study-main-category-header">Results</h3>
       <div class="row">
         <div class="columns large-12">
