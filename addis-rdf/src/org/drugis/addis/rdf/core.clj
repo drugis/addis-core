@@ -88,10 +88,10 @@
       subj)))
 
 (def blindingTypeUri
-  {"OPEN" (trig/iri :ontology "blindingNone")
-   "SINGLE_BLIND" (trig/iri :ontology "blindingSingle")
-   "DOUBLE_BLIND" (trig/iri :ontology "blindingDouble")
-   "TRIPLE_BLIND" (trig/iri :ontology "blindingTriple") })
+  {"OPEN" (trig/iri :ontology "OpenLabel")
+   "SINGLE_BLIND" (trig/iri :ontology "SingleBlind")
+   "DOUBLE_BLIND" (trig/iri :ontology "DoubleBlind")
+   "TRIPLE_BLIND" (trig/iri :ontology "TripleBlind") })
 
 (defn blinding-rdf [subj xml]
   (let [blinding (blindingTypeUri (studyCharVal xml "blinding"))]
