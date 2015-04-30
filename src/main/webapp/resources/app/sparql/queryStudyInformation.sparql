@@ -1,0 +1,7 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+
+SELECT * WHERE {
+  GRAPH <$graphUri> {
+    ?s ontology:has_blinding ?blindingUri .
+  }
+}

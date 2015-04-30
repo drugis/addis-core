@@ -24,6 +24,7 @@ define(
     'concept/concept',
     'commit/commit',
     'mapping/mapping',
+    'studyInformation/studyInformation',
     'angular-resource',
     'rdfstore',
     'lodash'
@@ -50,7 +51,8 @@ define(
       'trialverse.results',
       'trialverse.concept',
       'trialverse.commit',
-      'trialverse.mapping'
+      'trialverse.mapping',
+      'trialverse.studyInformation'
     ];
 
 

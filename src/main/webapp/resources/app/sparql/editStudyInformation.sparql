@@ -1,0 +1,20 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+
+WITH <$graphUri>
+DELETE {
+  ?s ontology:has_blinding ?blindingUri .
+} WHERE {
+  ?s ontology:has_blinding ?blindingUri .
+};
+
+INSERT {
+  GRAPH <$graphUri> {
+    ?study ontology:has_blinding <$blindingUri> .
+  }
+} WHERE {
+  GRAPH <$graphUri> {
+    ?study a ontology:Study .
+  }
+}
+
+

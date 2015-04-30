@@ -17,6 +17,7 @@
         <li class="divider"></li>
         <li class="heading">Design</li>
         
+        <li><a ng-click="sideNavClick('study-information')">Study information</a></li>
         <li><a ng-click="sideNavClick('population-information')">Population information</a></li>
         
         <li><a ng-click="sideNavClick('arms')">Arms</a></li>
@@ -48,6 +49,8 @@
           <hr>
         </div>
       </div>
+
+      <study-category study-uuid="studyUuid" settings="categorySettings['studyInformation']" is-editing-allowed="isEditingAllowed" is-single-item="true"></study-category>
 
       <study-category study-uuid="studyUuid" settings="categorySettings['populationInformation']" is-editing-allowed="isEditingAllowed" is-single-item="true"></study-category>
 
