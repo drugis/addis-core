@@ -2,7 +2,7 @@
 define([],
   function() {
     var dependencies = ['$scope', '$location', '$q', '$modal', '$filter', '$window', '$stateParams', 'DatasetResource', 'DatasetService'];
-    var DatasetsController = function($scope, $location, $q, $modal, $filter, $window, $stateParams, DatasetResource, DatasetService) {
+    var UserController = function($scope, $location, $q, $modal, $filter, $window, $stateParams, DatasetResource, DatasetService) {
 
       $scope.userUid = $stateParams.userUid;
       if(!$scope.userUid) {
@@ -44,7 +44,7 @@ define([],
       $scope.stripFrontFilter = $filter('stripFrontFilter');
 
     };
-    return dependencies.concat(DatasetsController);
+    return dependencies.concat(UserController);
   });
 
 

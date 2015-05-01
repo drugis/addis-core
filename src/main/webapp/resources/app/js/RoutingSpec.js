@@ -21,7 +21,7 @@ define(['angular', 'angular-mocks', 'jQuery', 'app'], function() {
 
     it('should navigate to /datasets by default', function() {
       $location.url('test');
-      $httpBackend.expect('GET', 'app/js/user/datasets.html')
+      $httpBackend.expect('GET', 'app/js/user/user.html')
         .respond(200);
 
       $rootScope.$apply();

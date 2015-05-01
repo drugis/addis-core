@@ -3,7 +3,7 @@ define(function (require) {
   var angular = require('angular');
   return angular.module('trialverse.user', ['ngResource', 'trialverse.util'])
     //controllers
-    .controller('DatasetsController', require('user/datasetsController'))
+    .controller('UserController', require('user/userController'))
     .controller('CreateDatasetController', require('user/createDatasetController'))
 
     //services

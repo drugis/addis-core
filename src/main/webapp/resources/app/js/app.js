@@ -86,8 +86,8 @@ define(
         $stateProvider
           .state('users', {
             url: '/users/:userUid',
-            templateUrl: 'app/js/user/datasets.html',
-            controller: 'DatasetsController'
+            templateUrl: 'app/js/user/user.html',
+            controller: 'UserController'
           })
           .state('create-dataset', {
             url: '/users/:userUid/create-dataset',

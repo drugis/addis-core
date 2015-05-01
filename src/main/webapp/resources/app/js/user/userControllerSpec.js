@@ -23,7 +23,7 @@ define(['angular', 'angular-mocks'], function() {
 
       httpBackend.expectGET('/datasets').respond('datasets');
 
-      $controller('DatasetsController', {
+      $controller('UserController', {
         $scope: scope,
         $modal: mockModal,
         $stateParams: {userUid: 12345},
