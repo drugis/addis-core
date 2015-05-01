@@ -6,6 +6,7 @@ define(
     'foundation',
     'mmfoundation',
     'angular-ui-router',
+    'user/user',
     'dataset/dataset',
     'util/util',
     'study/study',
@@ -33,6 +34,7 @@ define(
       'ui.router',
       'mm.foundation.modal',
       'mm.foundation.typeahead',
+      'trialverse.user',
       'trialverse.dataset',
       'trialverse.util',
       'trialverse.graph',
@@ -84,12 +86,12 @@ define(
         $stateProvider
           .state('users', {
             url: '/users/:userUid',
-            templateUrl: 'app/js/dataset/datasets.html',
+            templateUrl: 'app/js/user/datasets.html',
             controller: 'DatasetsController'
           })
           .state('create-dataset', {
             url: '/users/:userUid/create-dataset',
-            templateUrl: 'app/js/dataset/createDataset.html',
+            templateUrl: 'app/js/user/createDataset.html',
             controller: 'CreateDatasetController'
           })
           .state('versionedDataset', {

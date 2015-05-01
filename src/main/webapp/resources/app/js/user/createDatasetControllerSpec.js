@@ -12,7 +12,7 @@ define(['angular', 'angular-mocks'], function() {
       datasetDeferred = {};
     mockDatasetResource.save.and.returnValue(mockDataset);
 
-    beforeEach(module('trialverse.dataset'));
+    beforeEach(module('trialverse.user'));
 
     beforeEach(inject(function($rootScope, $controller, $q) {
       scope = $rootScope;

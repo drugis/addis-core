@@ -8,7 +8,7 @@ define(['angular', 'angular-mocks'], function() {
       mockLoadStoreDeferred,
       mockQueryDatasetsDeferred;
 
-    beforeEach(module('trialverse.dataset'));
+    beforeEach(module('trialverse.user'));
 
 
     beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, DatasetVersionedResource) {

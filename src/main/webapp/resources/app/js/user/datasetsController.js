@@ -31,7 +31,7 @@ define([],
 
       $scope.createDatasetDialog = function() {
         $modal.open({
-          templateUrl: 'app/js/dataset/createDataset.html',
+          templateUrl: 'app/js/user/createDataset.html',
           controller: 'CreateDatasetController',
           resolve: {
             callback: function() {
