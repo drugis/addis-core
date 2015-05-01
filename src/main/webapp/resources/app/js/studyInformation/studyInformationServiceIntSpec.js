@@ -12,6 +12,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     var studyInformationService;
     var mockGeneratedUuid = 'newUuid';
 
+    var blindingOptions;
+
     beforeEach(module('trialverse.studyInformation'));
     beforeEach(function() {
       module('trialverse.util', function($provide) {
@@ -26,11 +28,12 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     });
 
 
-    beforeEach(inject(function($q, $rootScope, $httpBackend, StudyInformationService, StudyService) {
+    beforeEach(inject(function($q, $rootScope, $httpBackend, StudyInformationService, StudyService, BLINDING_OPTIONS) {
       q = $q;
       httpBackend = $httpBackend;
       rootScope = $rootScope;
       studyService = StudyService;
+      blindingOptions = BLINDING_OPTIONS;
 
       studyInformationService = StudyInformationService;
 
@@ -109,6 +112,34 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         expect(studyInformation[0].blinding.uri).toEqual(newInformation.blinding.uri);
       });
 
+    });
+
+    describe('edit study information with an empty blinding', function() {
+      var result;
+      var newInformation = {
+        blinding: {
+          uri: 'unknownBlinding'
+        }
+      };
+
+      beforeEach(function(done) {
+
+        testUtils.loadTestGraph('studyWithStudyInformation.ttl', graphUri);
+        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
+        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
+
+        studyInformationService.editItem(newInformation).then(function() {
+          studyInformationService.queryItems().then(function(resultInfo) {
+            result = resultInfo;
+            done();
+          });
+        });
+        rootScope.$digest();
+      });
+
+      it('should delete previous blinding', function() {
+        expect(result.length).toBe(0);
+      });
     });
 
 

@@ -91,7 +91,7 @@ define(
         uri: 'http://trials.drugis.org/ontology#TripleBlind',
         label: 'Triple blind'
       }, {
-        uri: 'http://trials.drugis.org/ontology#UnknownBlind',
+        uri: 'unknownBlinding',
         label: 'Unknown'
       }]);
 
