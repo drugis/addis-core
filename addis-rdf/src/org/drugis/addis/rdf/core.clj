@@ -88,10 +88,10 @@
       subj)))
 
 (def blindingTypeUri
-  {"OPEN" (trig/iri :ontology "blindingNone")
-   "SINGLE_BLIND" (trig/iri :ontology "blindingSingle")
-   "DOUBLE_BLIND" (trig/iri :ontology "blindingDouble")
-   "TRIPLE_BLIND" (trig/iri :ontology "blindingTriple") })
+  {"OPEN" (trig/iri :ontology "OpenLabel")
+   "SINGLE_BLIND" (trig/iri :ontology "SingleBlind")
+   "DOUBLE_BLIND" (trig/iri :ontology "DoubleBlind")
+   "TRIPLE_BLIND" (trig/iri :ontology "TripleBlind") })
 
 (defn blinding-rdf [subj xml]
   (let [blinding (blindingTypeUri (studyCharVal xml "blinding"))]
@@ -465,7 +465,7 @@
                   :dataset "http://trials.drugis.org/datasets/"
                   :study "http://trials.drugis.org/studies/"
                   :instance "http://trials.drugis.org/instances/"
-                  :entity "http://trials.drugis.org/entities/"
+                  :entity "http://trials.drugis.org/concepts/"
                   :atc "http://www.whocc.no/ATC2011/"
                   :snomed "http://www.ihtsdo.org/SCT_"
                   :dc "http://purl.org/dc/elements/1.1/" }
