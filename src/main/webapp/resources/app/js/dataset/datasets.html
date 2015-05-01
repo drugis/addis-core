@@ -21,7 +21,7 @@
       <ul>
         <li ng-cloak class="ng-cloak" ng-show="!datasets.length">No Datasets have been created yet</li>
         <li ng-repeat="dataset in datasets">
-          <a ui-sref="versionedDataset({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'), 
+          <a ui-sref="versionedDataset({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'), 
                                versionUuid: stripFrontFilter(dataset.headVersion, versionUrlBase)})">{{dataset.label}} <span
                         ng-if="dataset.comment"> - {{dataset.comment}}</span></a>
         </li>

@@ -10,6 +10,8 @@ define([],
      DatasetService, DatasetVersionedResource, StudiesWithDetailsService, JsonLdService,
      RemoteRdfStoreService, HistoryResource, HistoryService, ConceptService, VersionedGraphResource) {
 
+      $scope.userUid = $stateParams.userUid;
+
       function isEditingAllowed() {
         return !!($scope.dataset && $scope.dataset.creator === $window.config.user.userEmail &&
           $scope.currentRevision && $scope.currentRevision.idx === 0);

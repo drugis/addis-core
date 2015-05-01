@@ -4,6 +4,8 @@ define([],
     var dependencies = ['$scope', '$stateParams', 'HistoryResource', 'HistoryService', 'DatasetResource', 'DatasetService'];
     var DatasetHistoryController = function($scope, $stateParams, HistoryResource, HistoryService, DatasetResource, DatasetService) {
      
+      $scope.userUid = $stateParams.userUid;
+     
       DatasetResource.get($stateParams, function(response) {
         DatasetService.reset();
         DatasetService.loadStore(response.data).then(function() {

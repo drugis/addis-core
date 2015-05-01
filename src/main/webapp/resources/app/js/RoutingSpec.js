@@ -25,7 +25,7 @@ define(['angular', 'angular-mocks', 'jQuery', 'app'], function() {
         .respond(200);
 
       $rootScope.$apply();
-      expect($location.path()).toEqual('/datasets');
+      expect($location.path()).toEqual('/users/');
     });
 
 

@@ -82,23 +82,23 @@ define(
         $httpProvider.interceptors.push('SessionExpiredInterceptor');
 
         $stateProvider
-          .state('datasets', {
-            url: '/datasets',
+          .state('users', {
+            url: '/users/:userUid',
             templateUrl: 'app/js/dataset/datasets.html',
             controller: 'DatasetsController'
           })
           .state('create-dataset', {
-            url: '/create-dataset',
+            url: '/users/:userUid/create-dataset',
             templateUrl: 'app/js/dataset/createDataset.html',
             controller: 'CreateDatasetController'
           })
           .state('versionedDataset', {
-            url: '/datasets/:datasetUUID/versions/:versionUuid',
+            url: '/users/:userUid/datasets/:datasetUUID/versions/:versionUuid',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
           })
           .state('datasetHistory', {
-            url: '/datasets/:datasetUUID/history',
+            url: '/users/:userUid/datasets/:datasetUUID/history',
             templateUrl: 'app/js/dataset/datasetHistory.html',
             controller: 'DatasetHistoryController'
           })
@@ -114,7 +114,7 @@ define(
           });
 
         // Default route
-        $urlRouterProvider.otherwise('/datasets');
+        $urlRouterProvider.otherwise('/users/');
       }
     ]);
 

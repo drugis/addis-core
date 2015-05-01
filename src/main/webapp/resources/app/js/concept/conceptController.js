@@ -42,7 +42,7 @@ define([],
             callback: function() {
               return function(newVersion) {
                 ConceptService.conceptsSaved();
-                $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/concepts');
+                $location.path('/users/' + $stateParams.userId + '/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/concepts');
               };
             },
             datasetUuid: function() {

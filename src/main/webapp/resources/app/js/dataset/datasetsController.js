@@ -1,8 +1,13 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$location', '$q', '$modal', '$filter', 'DatasetResource', 'DatasetService'];
-    var DatasetsController = function($scope, $location, $q, $modal, $filter, DatasetResource, DatasetService) {
+    var dependencies = ['$scope', '$location', '$q', '$modal', '$filter', '$window', '$stateParams', 'DatasetResource', 'DatasetService'];
+    var DatasetsController = function($scope, $location, $q, $modal, $filter, $window, $stateParams, DatasetResource, DatasetService) {
+
+      $scope.userUid = $stateParams.userUid;
+      if(!$scope.userUid) {
+        $location.path('/users/' + $window.config.user.userMd5);
+      }
 
       function loadDatasets() {
         DatasetService.reset();

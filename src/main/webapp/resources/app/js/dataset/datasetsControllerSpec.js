@@ -26,6 +26,7 @@ define(['angular', 'angular-mocks'], function() {
       $controller('DatasetsController', {
         $scope: scope,
         $modal: mockModal,
+        $stateParams: {userUid: 12345},
         DatasetVersionedResource: DatasetVersionedResource,
         DatasetService: mockDatasetService
       });

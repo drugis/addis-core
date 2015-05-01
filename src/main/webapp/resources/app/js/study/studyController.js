@@ -198,7 +198,7 @@ define([],
             callback: function() {
               return function(newVersion) {
                 StudyService.studySaved();
-                $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);
+                $location.path('/users/' + $stateParams.userId + '/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);
               };
             },
             datasetUuid: function() {
