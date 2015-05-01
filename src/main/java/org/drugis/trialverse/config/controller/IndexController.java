@@ -55,6 +55,7 @@ public class IndexController {
         String md5String = DigestUtils.md5DigestAsHex(account.getUsername().getBytes());
         model.addAttribute("userEmail", account.getUsername());
         model.addAttribute("userMD5", md5String); // user email MD5 hash needed to retrieve gravatar image
+        model.addAttribute("userNameHash", account.getHashedUserName());
       }
     } catch (org.springframework.dao.EmptyResultDataAccessException e) {
       request.getSession().invalidate();

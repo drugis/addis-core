@@ -73,9 +73,9 @@ public class DatasetControllerTest {
 
   private Principal user;
 
-  private Account john = new Account(1, "john@apple.co.uk", "John", "Lennon"),
-          paul = new Account(2, "paul@apple.co.uk", "Paul", "MC Cartney"),
-          george = new Account(3, "george@apple.co.uk", "George", "Harrison");
+  private Account john = new Account(1, "john@apple.co.uk", "John", "Lennon", "hash"),
+          paul = new Account(2, "paul@apple.co.uk", "Paul", "MC Cartney", "hash"),
+          george = new Account(3, "george@apple.co.uk", "George", "Harrison", "hash");
 
 
   @Before

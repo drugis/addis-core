@@ -90,7 +90,7 @@ public class DatasetReadRepositoryTest {
 
   @Test
   public void testQueryDatasets() throws Exception {
-    Account account = new Account(1, "username", "firstName", "lastName");
+    Account account = new Account(1, "username", "firstName", "lastName", "userNameHash");
     String datasetLocation = "loc1";
     String versionKey = "version1";
     VersionMapping versionMapping = new VersionMapping(1, datasetLocation, account.getUsername(), versionKey);

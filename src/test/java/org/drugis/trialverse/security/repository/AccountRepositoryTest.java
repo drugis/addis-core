@@ -30,12 +30,19 @@ public class AccountRepositoryTest {
 
   @Test
   public void testCreateAccount() throws Exception {
-    Account account = new Account("username", "firstname", "lastname");
-    accountRepository.createAccount(account);
+    accountRepository.createAccount("username", "firstname", "lastname");
     Account result = accountRepository.findAccountByUsername("username");
     assertEquals("username", result.getUsername());
     assertEquals("firstname", result.getFirstName());
     assertEquals("lastname", result.getLastName());
+  }
+
+  @Test
+  public void testFindUserByUserNameHash() {
+    Account account = accountRepository.findAccountByHash("hashedUserNameConnor");
+    assertEquals("foo@bar.com", account.getUsername());
+    assertEquals("Connor", account.getFirstName());
+    assertEquals("Bonnor", account.getLastName());
   }
 
 }

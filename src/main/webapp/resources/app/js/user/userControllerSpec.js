@@ -21,12 +21,14 @@ define(['angular', 'angular-mocks'], function() {
       mockDatasetService.loadStore.and.returnValue(mockLoadStoreDeferred.promise);
       mockDatasetService.queryDatasetsOverview.and.returnValue(mockQueryDatasetsDeferred.promise);
 
+      httpBackend.expectGET('/users/' + 'abcdef').respond('users');
       httpBackend.expectGET('/datasets').respond('datasets');
 
       $controller('UserController', {
         $scope: scope,
         $modal: mockModal,
         $stateParams: {userUid: 12345},
+        $window: {config: {user: {userNameHash: 'abcdef'}}},
         DatasetVersionedResource: DatasetVersionedResource,
         DatasetService: mockDatasetService
       });

@@ -70,10 +70,9 @@ public class SignupController {
   private Account createAccount(UserProfile profile) {
     try {
       logger.info("creating new account");
-      Account account = new Account(profile.getEmail(), profile.getFirstName(), profile.getLastName());
-      accountRepository.createAccount(account);
+      accountRepository.createAccount(profile.getEmail(), profile.getFirstName(), profile.getLastName());
       logger.info("new account created");
-      return account;
+      return accountRepository.findAccountByUsername((profile.getEmail()));
     } catch (UsernameAlreadyInUseException e) {
       logger.error("UsernameAlreadyInUseException");
       return null;

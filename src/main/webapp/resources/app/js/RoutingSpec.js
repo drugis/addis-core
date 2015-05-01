@@ -16,10 +16,10 @@ define(['angular', 'angular-mocks', 'jQuery', 'app'], function() {
 
       // We need add the template entry into the templateCache if we ever
       // specify a templateUrl
-      $templateCache.put('datasets.html', '');
+      $templateCache.put('user.html', '');
     }));
 
-    it('should navigate to /datasets by default', function() {
+    it('should navigate to /users/ by default', function() {
       $location.url('test');
       $httpBackend.expect('GET', 'app/js/user/user.html')
         .respond(200);

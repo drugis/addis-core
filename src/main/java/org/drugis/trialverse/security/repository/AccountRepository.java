@@ -20,10 +20,12 @@ import org.drugis.trialverse.security.UsernameAlreadyInUseException;
 
 public interface AccountRepository {
 
-  void createAccount(Account account) throws UsernameAlreadyInUseException;
+  void createAccount(String email, String firstName, String lastName) throws UsernameAlreadyInUseException;
 
   Account findAccountByUsername(String username);
 
   Account findAccountById(int id);
+
+  Account findAccountByHash(String hash);
 
 }

@@ -65,7 +65,7 @@ public class GraphControllerTest {
   @InjectMocks
   private GraphController graphController;
 
-  private Account john = new Account(1, "john@apple.co.uk", "John", "Lennon");
+  private Account john = new Account(1, "john@apple.co.uk", "John", "Lennon", "hash");
   private Principal user;
 
   @Before

@@ -10,6 +10,7 @@ define(function (require) {
     .factory('DatasetService', require('dataset/datasetService'))
 
     //resources
+    .factory('UserResource', require('user/userResource'))
     .factory('DatasetVersionedResource', require('dataset/datasetVersionedResource'))
     .factory('DatasetResource', require('dataset/datasetResource'))
     ;

@@ -29,19 +29,21 @@ public class Account {
   private String username;
   private String firstName;
   private String lastName;
+  private String hashedUserName;
 
   protected Account() {
   }
 
-  public Account(String username, String firstName, String lastName) {
-    this(-1, username, firstName, lastName);
+  public Account(String username, String firstName, String lastName, String hashedUserName) {
+    this(-1, username, firstName, lastName, hashedUserName);
   }
 
-  public Account(int id, String username, String firstName, String lastName) {
+  public Account(int id, String username, String firstName, String lastName, String hashedUserName) {
     this.id = id;
     this.username = username;
     this.firstName = firstName;
     this.lastName = lastName;
+    this.hashedUserName = hashedUserName;
   }
 
   public Integer getId() {
@@ -76,6 +78,14 @@ public class Account {
     this.lastName = lastName;
   }
 
+  public String getHashedUserName() {
+    return hashedUserName;
+  }
+
+  public void setHashedUserName(String hashedUserName) {
+    this.hashedUserName = hashedUserName;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -83,20 +93,18 @@ public class Account {
 
     Account account = (Account) o;
 
-    if (!firstName.equals(account.firstName)) return false;
-    if (!id.equals(account.id)) return false;
-    if (!lastName.equals(account.lastName)) return false;
     if (!username.equals(account.username)) return false;
+    if (firstName != null ? !firstName.equals(account.firstName) : account.firstName != null) return false;
+    if (lastName != null ? !lastName.equals(account.lastName) : account.lastName != null) return false;
+    return hashedUserName.equals(account.hashedUserName);
 
-    return true;
   }
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
-    result = 31 * result + username.hashCode();
-    result = 31 * result + firstName.hashCode();
-    result = 31 * result + lastName.hashCode();
+    int result = firstName != null ? firstName.hashCode() : 0;
+    result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+    result = 31 * result + hashedUserName.hashCode();
     return result;
   }
 }

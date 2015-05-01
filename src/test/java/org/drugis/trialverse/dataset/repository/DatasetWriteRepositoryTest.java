@@ -61,7 +61,7 @@ public class DatasetWriteRepositoryTest {
 
   @Test
   public void testCreateDataset() throws Exception {
-    Account owner = new Account("my-owner", "fn", "ln");
+    Account owner = new Account("my-owner", "fn", "ln", "unh");
     String title = "my-title";
     String description = "description";
     HttpHeaders httpHeaders = new HttpHeaders();
@@ -77,7 +77,7 @@ public class DatasetWriteRepositoryTest {
 
   @Test
   public void testCreateDatasetWithNullDescription() throws Exception {
-    Account owner = new Account("my-owner", "fn", "ln");
+    Account owner = new Account("my-owner", "fn", "ln", "unh");
     String title = "my-title";
     String description = null;
     HttpHeaders httpHeaders = new HttpHeaders();
