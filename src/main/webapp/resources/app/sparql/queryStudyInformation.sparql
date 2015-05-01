@@ -2,6 +2,9 @@ PREFIX ontology: <http://trials.drugis.org/ontology#>
 
 SELECT * WHERE {
   GRAPH <$graphUri> {
-    ?s ontology:has_blinding ?blindingUri .
+    OPTIONAL { ?s ontology:has_allocation ?groupAllocationUri } .
+    OPTIONAL { ?s ontology:has_blinding ?blindingUri } .
+    OPTIONAL { ?s ontology:status ?statusUri } .
+    OPTIONAL { ?s ontology:has_number_of_centers ?numberOfCenters } .
   }
 }

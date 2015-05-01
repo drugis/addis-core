@@ -12,14 +12,13 @@ define([], function() {
       },
       link: function(scope) {
 
-        scope.enumOptions = $injector.get(scope.optionsConstantName);
+        scope.enumOptions = _.values($injector.get(scope.optionsConstantName));
 
         if (scope.selectedOption) {
           scope.selectedOption = _.find(scope.enumOptions, function(option) {
             return option.uri === scope.selectedOption.uri;
           });
         }
-
 
         scope.onOptionChange = function(newOption) {
           if (newOption) {

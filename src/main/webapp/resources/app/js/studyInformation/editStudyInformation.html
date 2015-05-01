@@ -7,11 +7,26 @@
 
    <div class="row">
     <div class="large-9 columns">
+      <label>Group Allocation
+         <enum-options
+         options-constant-name="'GROUP_ALLOCATION_OPTIONS'"
+         edit-mode="true"
+         selected-option="itemScratch.groupAllocation" ></enum-options>
+      </label>
       <label>Blinding
-         <enum-options 
-         options-constant-name="'BLINDING_OPTIONS'" 
-         edit-mode="true" 
+         <enum-options
+         options-constant-name="'BLINDING_OPTIONS'"
+         edit-mode="true"
          selected-option="itemScratch.blinding" ></enum-options>
+      </label>
+      <label>Status
+         <enum-options
+         options-constant-name="'STATUS_OPTIONS'"
+         edit-mode="true"
+         selected-option="itemScratch.status" ></enum-options>
+      </label>
+      <label>Number of centers
+         <input type="number" ng-model="itemScratch.numberOfCenters" />
       </label>
     </div>
   </div>

@@ -1,7 +1,7 @@
 INPUT=$1
 STUDIES=`grep "^study:.*" $INPUT | sed 's/study://' | sed 's/ {//'`
 
-DATASET=http://localhost:8080/datasets/bf09cd9c-caa6-4763-885c-d5a5b353ea4b
+DATASET=http://fuseki-test.drugis.org:3030/datasets/506b6cb6-8544-4c28-b15e-31c9266cb184
 
 
 for s in $STUDIES; do

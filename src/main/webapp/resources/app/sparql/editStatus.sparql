@@ -1,0 +1,20 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+
+WITH <$graphUri>
+DELETE {
+  ?s ontology:status ?statusUri .
+} WHERE {
+  ?s ontology:status ?statusUri .
+};
+
+INSERT {
+  GRAPH <$graphUri> {
+    ?study ontology:status <$statusUri> .
+  }
+} WHERE {
+  GRAPH <$graphUri> {
+    ?study a ontology:Study .
+  }
+}
+
+

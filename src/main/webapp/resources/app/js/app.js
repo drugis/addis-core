@@ -57,10 +57,10 @@ define(
 
 
     Number.isInteger = Number.isInteger || function(value) {
-      return typeof value === 'number' &&
-        isFinite(value) &&
-        Math.floor(value) === value;
-    };
+        return typeof value === 'number' &&
+          isFinite(value) &&
+          Math.floor(value) === value;
+      };
 
     var app = angular.module('trialverse', dependencies);
 
@@ -78,22 +78,57 @@ define(
 
     app.constant('SCRATCH_RDF_STORE_URL', '/scratch');
     app.constant('CONCEPT_GRAPH_UUID', 'concepts');
-    app.constant('BLINDING_OPTIONS', [{
-        uri: 'http://trials.drugis.org/ontology#OpenLabel',
-        label: 'Open'
-      }, {
-        uri: 'http://trials.drugis.org/ontology#SingleBlind',
-        label: 'Single blind'
-      }, {
-        uri: 'http://trials.drugis.org/ontology#DoubleBlind',
-        label: 'Double blind'
-      }, {
-        uri: 'http://trials.drugis.org/ontology#TripleBlind',
-        label: 'Triple blind'
-      }, {
-        uri: 'unknownBlinding',
-        label: 'Unknown'
-      }]);
+    app.constant('GROUP_ALLOCATION_OPTIONS', _.indexBy([{
+      uri: 'http://trials.drugis.org/ontology#AllocationRandomized',
+      label: 'Randomized'
+    }, {
+      uri: 'http://trials.drugis.org/ontology#AllocationNonRandomized',
+      label: 'Non-Randomized'
+    }, {
+      uri: 'unknown',
+      label: 'Unknown'
+    }], 'uri'));
+    app.constant('BLINDING_OPTIONS', _.indexBy([{
+      uri: 'http://trials.drugis.org/ontology#OpenLabel',
+      label: 'Open'
+    }, {
+      uri: 'http://trials.drugis.org/ontology#SingleBlind',
+      label: 'Single blind'
+    }, {
+      uri: 'http://trials.drugis.org/ontology#DoubleBlind',
+      label: 'Double blind'
+    }, {
+      uri: 'http://trials.drugis.org/ontology#TripleBlind',
+      label: 'Triple blind'
+    }, {
+      uri: 'unknown',
+      label: 'Unknown'
+    }], 'uri'));
+    app.constant('STATUS_OPTIONS', _.indexBy([{
+      uri: 'http://trials.drugis.org/ontology#StatusRecruiting',
+      label: 'Recruiting'
+    }, {
+      uri: 'http://trials.drugis.org/ontology#StatusEnrolling',
+      label: 'Enrolling'
+    }, {
+      uri: 'http://trials.drugis.org/ontology#StatusActive',
+      label: 'Active'
+    }, {
+      uri: 'http://trials.drugis.org/ontology#StatusCompleted',
+      label: 'Completed'
+    }, {
+      uri: 'http://trials.drugis.org/ontology#StatusSuspended',
+      label: 'Suspended'
+    }, {
+      uri: 'http://trials.drugis.org/ontology#StatusTerminated',
+      label: 'Terminated'
+    }, {
+      uri: 'http://trials.drugis.org/ontology#StatusWithdrawn',
+      label: 'Withdrawn'
+    }, {
+      uri: 'unknown',
+      label: 'Unknown'
+    }], 'uri'));
 
     app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider',
       function($stateProvider, $urlRouterProvider, $httpProvider) {
