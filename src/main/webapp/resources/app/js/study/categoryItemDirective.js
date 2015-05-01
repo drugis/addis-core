@@ -18,8 +18,6 @@ define([], function() {
 
         var service = $injector.get(scope.settings.service);
 
-       // scope.isSingleItem = !!attibutes.isSingleItem;
-
         function onEdit() {
           scope.$emit('updateStudyDesign');
           scope.reloadItems();

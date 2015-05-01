@@ -8,17 +8,17 @@
    <div class="row">
     <div class="large-9 columns">
       <label>Blinding
-        <select 
-         ng-model="itemScratch.blinding"
-         ng-options="blindingOption.label for blindingOption in blindingOptions track by blindingOption.uri ">
-        </select>
+         <enum-options 
+         options-constant-name="'BLINDING_OPTIONS'" 
+         edit-mode="true" 
+         selected-option="itemScratch.blinding" ></enum-options>
       </label>
     </div>
   </div>
 
   <div class="row">
     <div class="large-9 columns">
-      <button class="success" type="submit">Edit
+      <button class="success" type="submit" ng-disabled="!itemScratch.blinding">Edit
       </button>
     </div>
   </div>

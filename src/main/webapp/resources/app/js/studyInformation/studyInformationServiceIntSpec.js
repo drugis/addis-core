@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
-  fdescribe('the population information service', function() {
+  describe('the population information service', function() {
 
     var graphUri = 'http://karma-test/';
     var scratchStudyUri = 'http://localhost:9876/scratch'; // NB proxied by karma to actual fuseki instance

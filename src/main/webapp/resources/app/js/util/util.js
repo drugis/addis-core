@@ -26,9 +26,9 @@ define(function (require) {
     .directive('subsetSelect', require('util/directives/subsetSelect/subsetSelectDirective'))
     .directive('durationInput', require('util/directives/durationInput/durationInputDirective'))
     .directive('sessionExpired', require('util/directives/sessionExpired/sessionExpiredDirective'))
+    .directive('enumOptions', require('util/directives/enumOptions/enumOptionsDirective'))
 
     //interceptors
-    .factory('SessionExpiredInterceptor', require('util/interceptors/sessionExpiredInterceptor'));
-
+    .factory('SessionExpiredInterceptor', require('util/interceptors/sessionExpiredInterceptor'))
     ;
 });

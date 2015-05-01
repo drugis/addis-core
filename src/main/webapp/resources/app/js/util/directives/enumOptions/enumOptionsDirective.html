@@ -1,5 +1,6 @@
 <select ng-show="editMode"
          ng-model="selectedOption"
+         ng-change="onOptionChange(selectedOption)"
          ng-options="enumOption.label for enumOption in enumOptions track by enumOption.uri ">
         </select>
-<div ng-show="!editMode">{{selectedOption.label}}</div>
+<span ng-show="!editMode">{{selectedOption.label || 'none'}}</span>
