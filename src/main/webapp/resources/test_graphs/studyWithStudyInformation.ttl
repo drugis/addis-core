@@ -6,4 +6,7 @@
   <http://trials.drugis.org/ontology#has_allocation> <http://trials.drugis.org/ontology#AllocationRandomized> ;
   <http://trials.drugis.org/ontology#has_blinding> <http://trials.drugis.org/ontology#SingleBlind> ;
   <http://trials.drugis.org/ontology#status> <http://trials.drugis.org/ontology#StatusWithdrawn> ;
+  <http://trials.drugis.org/ontology#has_objective> [
+    <http://www.w3.org/2000/01/rdf-schema#comment>  "objective"
+  ] ;
   <http://trials.drugis.org/ontology#has_epochs> () .

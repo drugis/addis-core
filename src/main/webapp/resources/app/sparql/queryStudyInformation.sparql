@@ -1,4 +1,5 @@
 PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT * WHERE {
   GRAPH <$graphUri> {
@@ -6,5 +7,6 @@ SELECT * WHERE {
     OPTIONAL { ?s ontology:has_blinding ?blindingUri } .
     OPTIONAL { ?s ontology:status ?statusUri } .
     OPTIONAL { ?s ontology:has_number_of_centers ?numberOfCenters } .
+    OPTIONAL { ?s ontology:has_objective [ rdfs:comment ?objective ] } .
   }
 }

@@ -47,6 +47,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       testUtils.loadTemplate('deleteStatus.sparql', httpBackend);
       testUtils.loadTemplate('editNumberOfCenters.sparql', httpBackend);
       testUtils.loadTemplate('deleteNumberOfCenters.sparql', httpBackend);
+      testUtils.loadTemplate('editObjective.sparql', httpBackend);
+      testUtils.loadTemplate('deleteObjective.sparql', httpBackend);
 
       httpBackend.flush();
 
@@ -87,6 +89,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         expect(result[0].groupAllocation.uri).toBe('http://trials.drugis.org/ontology#AllocationRandomized');
         expect(result[0].status.uri).toBe('http://trials.drugis.org/ontology#StatusWithdrawn');
         expect(result[0].numberOfCenters).toBe(37);
+        expect(result[0].objective).toBe('objective');
       });
 
     });
@@ -103,7 +106,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         status: {
           uri: 'http://trials.drugis.org/ontology#Completed'
         },
-        numberOfCenters: 29
+        numberOfCenters: 29,
+        objective: 'new study objective'
       };
       var studyInformation;
 
@@ -127,6 +131,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         expect(studyInformation[0].groupAllocation.uri).toEqual(newInformation.groupAllocation.uri);
         expect(studyInformation[0].status.uri).toEqual(newInformation.status.uri);
         expect(studyInformation[0].numberOfCenters).toEqual(29);
+        expect(studyInformation[0].objective).toBe(newInformation.objective);
       });
 
     });
@@ -143,7 +148,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         status: {
           uri: 'http://trials.drugis.org/ontology#StatusSuspended'
         },
-        numberOfCenters: 28
+        numberOfCenters: 28,
+        objective: 'new study objective'
       };
 
 
@@ -168,6 +174,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         expect(result[0].groupAllocation.uri).toBe(newInformation.groupAllocation.uri);
         expect(result[0].status.uri).toBe(newInformation.status.uri);
         expect(result[0].numberOfCenters).toBe(newInformation.numberOfCenters);
+        expect(result[0].objective).toBe(newInformation.objective);
       });
     });
 

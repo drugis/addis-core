@@ -28,13 +28,15 @@
       <label>Number of centers
          <input type="number" ng-model="itemScratch.numberOfCenters" />
       </label>
+      <label>Objective
+        <textarea rows="6" ng-model="itemScratch.objective"></textarea>
+      </label>
     </div>
   </div>
 
   <div class="row">
     <div class="large-9 columns">
-      <button class="success" type="submit" ng-disabled="!itemScratch.blinding">Edit
-      </button>
+      <button class="success" type="submit">Edit</button>
     </div>
   </div>
   <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>

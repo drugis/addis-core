@@ -13,6 +13,8 @@ define([],
       var deleteStatusTemplate = SparqlResource.get('deleteStatus.sparql');
       var editNumberOfCentersTemplate = SparqlResource.get('editNumberOfCenters.sparql');
       var deleteNumberOfCentersTemplate = SparqlResource.get('deleteNumberOfCenters.sparql');
+      var editObjectiveTemplate = SparqlResource.get('editObjective.sparql');
+      var deleteObjectiveTemplate = SparqlResource.get('deleteObjective.sparql');
 
       function queryItems() {
         return studyInformationQuery.then(function(query) {
@@ -27,24 +29,28 @@ define([],
               transformedResult.groupAllocation.uri = result[0].groupAllocationUri;
               transformedResult.status.uri = result[0].statusUri;
               transformedResult.numberOfCenters = parseInt(result[0].numberOfCenters);
+              transformedResult.objective = result[0].objective;
             }
             return [transformedResult];
           });
         });
       }
 
-      function editSelectItem(item, editProperty, options, editTemplate, deleteTemplate) {
-        if (item[editProperty].uri === options.unknown.uri) {
-          return deleteTemplate.then(function(template) {
-            return StudyService.doModifyingQuery(template);
-          });
-        } else {
+      function editProperty(item, editCondition, editTemplate, deleteTemplate) {
+        if (editCondition) {
           return editTemplate.then(function(template) {
             var query = fillTemplate(template, item);
             return StudyService.doModifyingQuery(query);
           });
+        } else {
+          return deleteTemplate.then(function(template) {
+            return StudyService.doModifyingQuery(template);
+          });
         }
+      }
 
+      function editSelectItem(item, propertyToEdit, options, editTemplate, deleteTemplate) {
+        return editProperty(item, item[propertyToEdit].uri !== options.unknown.uri, editTemplate, deleteTemplate);
       }
 
       function editGroupAllocation(item) {
@@ -63,16 +69,11 @@ define([],
         var editGroupAllocationPromise = editGroupAllocation(item),
           editBlindingPromise = editBlinding(item),
           editStatusPromise = editStatus(item),
-          editNumberOfCentersPromise;
+          editNumberOfCentersPromise = editProperty(item, !!parseInt(item.numberOfCenters), editNumberOfCentersTemplate, deleteNumberOfCentersTemplate),
+          editObjectivePromise = editProperty(item, item.objective, editObjectiveTemplate, deleteObjectiveTemplate);
 
-        if(!!parseInt(item.numberOfCenters)) {
-          editNumberOfCentersPromise = editNumberOfCentersTemplate.then(function(template){
-            var query = fillTemplate(template, item);
-            return StudyService.doModifyingQuery(query);
-          });
-        }
-
-        return $q.all([editGroupAllocationPromise, editBlindingPromise, editStatusPromise]);
+        return $q.all([editGroupAllocationPromise, editBlindingPromise, editStatusPromise,
+          editNumberOfCentersPromise, editObjectivePromise]);
       }
 
       function fillTemplate(template, item) {
@@ -81,7 +82,7 @@ define([],
           .replace(/\$blindingUri/g, item.blinding.uri)
           .replace(/\$statusUri/g, item.status.uri)
           .replace(/\$numberOfCenters/g, item.numberOfCenters)
-          ;
+          .replace(/\$objective/g, item.objective);
       }
 
       return {
