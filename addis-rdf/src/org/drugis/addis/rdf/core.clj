@@ -107,8 +107,7 @@
    "COMPLETED" (trig/iri :ontology "StatusCompleted")
    "SUSPENDED" (trig/iri :ontogogy "StatusSuspended")
    "TERMINATED" (trig/iri :ontology "StatusTerminated")
-   "WITHDRAWN" (trig/iri :ontology "StatusWithdrawn")
-   "UNKNOWN" (trig/iri :ontology "StatusUnknown")})
+   "WITHDRAWN" (trig/iri :ontology "StatusWithdrawn")})
 
 (defn status-rdf [subj xml]
   (let [status (statusTypeUri (studyCharVal xml "status"))]
