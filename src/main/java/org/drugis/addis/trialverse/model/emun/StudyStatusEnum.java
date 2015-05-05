@@ -35,10 +35,10 @@ public enum StudyStatusEnum {
       return StudyStatusEnum.SUSPENDED;
     } else if (inputString.equalsIgnoreCase("StatusTerminated")) {
       return StudyStatusEnum.TERMINATED;
-    } else if (inputString.equalsIgnoreCase("statusWithdrawn")) {
+    } else if (inputString.equalsIgnoreCase("StatusWithdrawn")) {
       return StudyStatusEnum.WITHDRAWN;
     }
 
-    throw new IllegalArgumentException("Can not create StudyStatus enum from given input");
+    throw new IllegalArgumentException("Can not create StudyStatus enum from given input " + inputString);
   }
 }

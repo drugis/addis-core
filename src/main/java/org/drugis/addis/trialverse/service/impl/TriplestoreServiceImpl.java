@@ -490,18 +490,16 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   private String buildInterventionUnionString(List<String> interventionUids) {
     String result = "";
-    for (String interventionUid : interventionUids) { // FIXME: pick one
-      result = result + " { ?interventionInstance owl:sameAs entity:" + interventionUid + " } UNION \n"
-                      + " { ?interventionInstance owl:sameAs concept:" + interventionUid + " } UNION \n";
+    for (String interventionUid : interventionUids) {
+      result += " { ?interventionInstance owl:sameAs concept:" + interventionUid + " } UNION \n";
     }
     return result.substring(0, result.lastIndexOf("UNION"));
   }
 
   private String buildOutcomeUnionString(List<String> outcomeUids) {
     String result = "";
-    for (String outcomeUid : outcomeUids) { // FIXME: pick one
-      result = result + " { ?outcomeInstance ontology:of_variable [ owl:sameAs entity:" + outcomeUid + " ] } UNION \n"
-                      + " { ?outcomeInstance ontology:of_variable [ owl:sameAs concept:" + outcomeUid + " ] } UNION \n";
+    for (String outcomeUid : outcomeUids) {
+      result += " { ?outcomeInstance ontology:of_variable [ owl:sameAs concept:" + outcomeUid + " ] } UNION \n";
     }
     return result.substring(0, result.lastIndexOf("UNION"));
   }

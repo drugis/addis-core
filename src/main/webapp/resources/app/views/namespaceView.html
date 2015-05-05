@@ -43,7 +43,7 @@
                 <td><a ui-sref="study({namespaceUid: namespace.uid, studyUid: studyWithDetails.graphUuid})">{{studyWithDetails.name}}</a>
                 </td>
                 <td ng-show="column.visible" ng-repeat="column in tableOptions.columns">
-                    <span ng-show="!column.type">{{studyWithDetails[column.id]}}</span>
+                    <span ng-show="!column.type">{{studyWithDetails[column.id] || 'Unknown'}}</span>
                 <span ng-show="column.type === 'urlList'"
                       ng-repeat="uri in studyWithDetails.pubmedUrls | splitOnTokenFilter">
                   <a target="_blank" ng-href={{uri}}>{{uri}}</a>
