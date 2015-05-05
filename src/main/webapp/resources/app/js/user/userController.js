@@ -2,16 +2,28 @@
 define([],
   function() {
     var dependencies = ['$scope', '$location', '$q', '$modal', '$filter', '$window',
-     '$stateParams', 'DatasetResource', 'DatasetService', 'UserResource'];
+     '$stateParams', 'DatasetResource', 'DatasetService', 'UserResource', 'md5'];
     var UserController = function($scope, $location, $q, $modal, $filter, $window,
-     $stateParams, DatasetResource, DatasetService, UserResource) {
+     $stateParams, DatasetResource, DatasetService, UserResource, md5) {
 
       $scope.userUid = $stateParams.userUid;
       if(!$scope.userUid) {
-        $location.path('/users/' + $window.config.user.userMd5);
+        $location.path('/users/' + $window.config.user.userNameHash);
       }
 
-      $scope.user = UserResource.get({userUid: $window.config.user.userNameHash}); 
+      $scope.user = UserResource.get({userUid: $window.config.user.userNameHash}, function(user) {
+        $scope.user.md5 = md5.createHash(user.username);
+      }); 
+
+      UserResource.query(function(users){
+        var usersWithMd5 = _.map(users, function(user){
+          user.md5 = md5.createHash(user.username);
+          return user;
+        });
+        $scope.otherUsers = _.filter(usersWithMd5, function(user) {
+          return user.hashedUserName !== $scope.user.hashedUserName;
+        });
+      }); 
 
       function loadDatasets() {
         DatasetService.reset();

@@ -18,6 +18,8 @@ package org.drugis.trialverse.security.repository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.UsernameAlreadyInUseException;
 
+import java.util.List;
+
 public interface AccountRepository {
 
   void createAccount(String email, String firstName, String lastName) throws UsernameAlreadyInUseException;
@@ -28,4 +30,5 @@ public interface AccountRepository {
 
   Account findAccountByHash(String hash);
 
+  List<Account> getUsers();
 }

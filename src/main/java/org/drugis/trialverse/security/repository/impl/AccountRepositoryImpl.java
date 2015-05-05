@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 @Repository
 public class AccountRepositoryImpl implements AccountRepository {
@@ -43,6 +44,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
   };
 
+  @Override
   @Transactional()
   public void createAccount(String email, String firstName, String lastName) throws UsernameAlreadyInUseException {
     String hashedUserName = DigestUtils.sha256Hex(email);
@@ -55,12 +57,14 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
   }
 
+  @Override
   public Account findAccountByUsername(String username) {
     return jdbcTemplate.queryForObject(
             "select id, username, firstName, lastName, hashedUserName from Account where username = ?",
             rowMapper, username);
   }
 
+  @Override
   public Account findAccountById(int id) {
     return jdbcTemplate.queryForObject(
             "select id, username, firstName, lastName, hashedUserName from Account where id = ?",
@@ -72,5 +76,10 @@ public class AccountRepositoryImpl implements AccountRepository {
     return jdbcTemplate.queryForObject(
             "select id, username, firstName, lastName, hashedUserName from Account where hashedUserName = ?",
             rowMapper, hash);
+  }
+
+  @Override
+  public List<Account> getUsers() {
+    return jdbcTemplate.query("select id, username, firstName, lastName, hashedUserName from Account", rowMapper);
   }
 }

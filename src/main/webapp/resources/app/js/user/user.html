@@ -3,7 +3,7 @@
   </navbar-directive>
   <div class="row nav-bar-spacer" style="margin-bottom: 2rem;">
     <div class="columns large-1">
-      <img class="user-image-large" ng-src="{{userInfo.imageUrl}}">
+      <img class="user-image-large" ng-src="https://secure.gravatar.com/avatar/{{::user.md5}}?s=43&d=mm">
     </div>
     <div class="columns large-11">
       <h1>{{::user.firstName}} {{::user.lastName}}</h1>
@@ -42,10 +42,10 @@
     </div>
     <div class="columns large-12">
       <ul class="no-bullet">
-        <li ng-cloak class="ng-cloak" ng-show="!users.length"><em>You are the only user of trialverse</em></li>
-        <li ng-repeat="otherUser in users">
-          <a>
-            <img class="user-image-large" ng-src="{{userInfo.imageUrl}}"> {{::otherUser.firstName}} {{::otherUser.lastName}}
+        <li ng-cloak class="ng-cloak" ng-show="!otherUsers.length"><em>You are the only user of trialverse</em></li>
+        <li ng-repeat="otherUser in otherUsers" style="margin-bottom: 1rem;">
+          <a ui-sref="user({userUid: otherUser.hashedUserName})">
+            <img class="user-image" ng-src="https://secure.gravatar.com/avatar/{{::otherUser.md5}}?s=43&d=mm"> {{::otherUser.firstName}} {{::otherUser.lastName}}
           </a>
         </li>
       </ul>

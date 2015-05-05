@@ -12,6 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -43,6 +45,12 @@ public class AccountRepositoryTest {
     assertEquals("foo@bar.com", account.getUsername());
     assertEquals("Connor", account.getFirstName());
     assertEquals("Bonnor", account.getLastName());
+  }
+
+  @Test
+  public void testGetUsers() {
+    List<Account> accounts = accountRepository.getUsers();
+    assertEquals(2, accounts.size());
   }
 
 }

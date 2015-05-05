@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Created by connor on 1-5-15.
@@ -34,8 +35,15 @@ public class UserController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/{userHash}", method = RequestMethod.GET)
   @ResponseBody
-  public Account getUser(HttpServletResponse httpServletResponse, @PathVariable String userHash) {
+  public Account getUser(@PathVariable String userHash) {
     logger.trace("retrieving user");
     return accountRepository.findAccountByHash(userHash);
+  }
+
+  @RequestMapping(method = RequestMethod.GET)
+  @ResponseBody
+  public List<Account> getAllUsers() {
+    logger.trace("retrieving all user");
+    return accountRepository.getUsers();
   }
 }

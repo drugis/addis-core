@@ -26,7 +26,7 @@ define(
     'commit/commit',
     'mapping/mapping',
     'angular-resource',
-    'rdfstore',
+    'angular-md5',
     'lodash'
   ],
   function(angular) {
@@ -34,6 +34,7 @@ define(
       'ui.router',
       'mm.foundation.modal',
       'mm.foundation.typeahead',
+      'angular-md5',
       'trialverse.user',
       'trialverse.dataset',
       'trialverse.util',
@@ -84,7 +85,7 @@ define(
         $httpProvider.interceptors.push('SessionExpiredInterceptor');
 
         $stateProvider
-          .state('users', {
+          .state('user', {
             url: '/users/:userUid',
             templateUrl: 'app/js/user/user.html',
             controller: 'UserController'
