@@ -96,18 +96,18 @@ define([],
           label: 'Status',
           visible: true,
           type: 'removePreamble',
-          frontStr: 'http://trials.drugis.org/ontology#status'
+          frontStr: 'http://trials.drugis.org/ontology#Status'
         }, {
           id: 'allocation',
           label: 'Allocation',
           type: 'removePreamble',
-          frontStr: 'http://trials.drugis.org/ontology#allocation',
+          frontStr: 'http://trials.drugis.org/ontology#Allocation',
           visible: false
         }, {
           id: 'blinding',
           label: 'Blinding',
           type: 'removePreamble',
-          frontStr: 'http://trials.drugis.org/ontology#blinding',
+          frontStr: 'http://trials.drugis.org/ontology#',
           visible: false
         }, {
           id: 'drugNames',
