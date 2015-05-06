@@ -22,7 +22,8 @@
       <button ng-show="loginUser.userNameHash === userUid" tabindex="0" class="button small" ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button>
     </div>
     <div class="columns large-12">
-      <table>
+      <em ng-show="datasets.length === 0">No datasets have been created</em>
+      <table ng-show="datasets.length > 0">
         <tr>
           <th class="large-3">Name</th>
           <th class="large-9">Description</th>
@@ -46,7 +47,7 @@
         <li ng-repeat="otherUser in otherUsers" style="margin-bottom: 1rem;">
           <a ui-sref="user({userUid: otherUser.userNameHash})">
             <img class="user-image" ng-src="https://secure.gravatar.com/avatar/{{::otherUser.md5}}?s=43&d=mm"> {{::otherUser.firstName}} {{::otherUser.lastName}}
-          </a>
+          </a><span ng-show="loginUser.userNameHash === otherUser.userNameHash"> (this is you)</span>
         </li>
       </ul>
     </div>
