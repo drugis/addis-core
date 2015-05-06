@@ -40,18 +40,18 @@ public class AccountRepositoryImpl implements AccountRepository {
 
   private RowMapper<Account> rowMapper = new RowMapper<Account>() {
     public Account mapRow(ResultSet rs, int rowNum) throws SQLException {
-      return new Account(rs.getInt("id"), rs.getString("username"), rs.getString("firstName"), rs.getString("lastName"), rs.getString("hashedUserName"));
+      return new Account(rs.getInt("id"), rs.getString("username"), rs.getString("firstName"), rs.getString("lastName"), rs.getString("userNameHash"));
     }
   };
 
   @Override
   @Transactional()
   public void createAccount(String email, String firstName, String lastName) throws UsernameAlreadyInUseException {
-    String hashedUserName = DigestUtils.sha256Hex(email);
+    String userNameHash = DigestUtils.sha256Hex(email);
     try {
       jdbcTemplate.update(
-              "insert into Account (firstName, lastName, username, hashedUserName) values (?, ?, ?, ?)",
-              firstName, lastName,email, hashedUserName);
+              "insert into Account (firstName, lastName, username, userNameHash) values (?, ?, ?, ?)",
+              firstName, lastName,email, userNameHash);
     } catch (DuplicateKeyException e) {
       throw new UsernameAlreadyInUseException(email);
     }
@@ -60,26 +60,26 @@ public class AccountRepositoryImpl implements AccountRepository {
   @Override
   public Account findAccountByUsername(String username) {
     return jdbcTemplate.queryForObject(
-            "select id, username, firstName, lastName, hashedUserName from Account where username = ?",
+            "select id, username, firstName, lastName, userNameHash from Account where username = ?",
             rowMapper, username);
   }
 
   @Override
   public Account findAccountById(int id) {
     return jdbcTemplate.queryForObject(
-            "select id, username, firstName, lastName, hashedUserName from Account where id = ?",
+            "select id, username, firstName, lastName, userNameHash from Account where id = ?",
             rowMapper, id);
   }
 
   @Override
   public Account findAccountByHash(String hash) {
     return jdbcTemplate.queryForObject(
-            "select id, username, firstName, lastName, hashedUserName from Account where hashedUserName = ?",
+            "select id, username, firstName, lastName, userNameHash from Account where userNameHash = ?",
             rowMapper, hash);
   }
 
   @Override
   public List<Account> getUsers() {
-    return jdbcTemplate.query("select id, username, firstName, lastName, hashedUserName from Account", rowMapper);
+    return jdbcTemplate.query("select id, username, firstName, lastName, userNameHash from Account", rowMapper);
   }
 }

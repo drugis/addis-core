@@ -72,11 +72,7 @@ public class DatasetControllerTest {
 
 
   private Principal user;
-
-  private Account john = new Account(1, "john@apple.co.uk", "John", "Lennon", "hash"),
-          paul = new Account(2, "paul@apple.co.uk", "Paul", "MC Cartney", "hash"),
-          george = new Account(3, "george@apple.co.uk", "George", "Harrison", "hash");
-
+  private Account john = new Account(1, "john@apple.co.uk", "John", "Lennon", "hash");
 
   @Before
   public void setUp() {
@@ -99,14 +95,34 @@ public class DatasetControllerTest {
   }
 
   @Test
-  public void testCreateDataset() throws Exception {
+  public void testCreateDatasetForNonLoginUser() throws Exception {
     String newDatasetUri = "http://some.thing.like/this/asd123";
     URI uri = new URI(newDatasetUri);
     DatasetCommand datasetCommand = new DatasetCommand("dataset title");
     String jsonContent = TestUtils.createJson(datasetCommand);
     when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john)).thenReturn(uri);
     mockMvc
-            .perform(post("/datasets")
+            .perform(post("/users/some-user-uid/datasets")
+                            .principal(user)
+                            .content(jsonContent)
+                            .contentType(webConstants.getApplicationJsonUtf8())
+            )
+            .andExpect(status().isInternalServerError());
+
+    verify(accountRepository).findAccountByUsername(john.getUsername());
+    verifyNoMoreInteractions(datasetWriteRepository);
+  }
+
+  @Test
+  public void testCreateDataset() throws Exception {
+    String newDatasetUri = "http://some.thing.like/this/asd123";
+    URI uri = new URI(newDatasetUri);
+    DatasetCommand datasetCommand = new DatasetCommand("dataset title");
+    String jsonContent = TestUtils.createJson(datasetCommand);
+    when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john)).thenReturn(uri);
+    String userhash = john.getuserNameHash();
+    mockMvc
+            .perform(post("/users/" + userhash + "/datasets")
                             .principal(user)
                             .content(jsonContent)
                             .contentType(webConstants.getApplicationJsonUtf8())
@@ -122,13 +138,14 @@ public class DatasetControllerTest {
   public void queryDatasetsRequestPath() throws Exception {
     Model model = mock(Model.class);
     when(datasetReadRepository.queryDatasets(john)).thenReturn(model);
-    when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
+    String userNameHash = "userNameHash";
+    when(accountRepository.findAccountByHash(userNameHash)).thenReturn(john);
 
-    mockMvc.perform(get("/datasets").principal(user))
+    mockMvc.perform(get("/users/" + userNameHash + "/datasets").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
-    verify(accountRepository).findAccountByUsername(user.getName());
+    verify(accountRepository).findAccountByHash(userNameHash);
     verify(datasetReadRepository).queryDatasets(john);
     verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
   }
@@ -138,11 +155,12 @@ public class DatasetControllerTest {
     Model model = mock(Model.class);
     HttpServletResponse mockServletResponse = mock(HttpServletResponse.class);
     when(datasetReadRepository.queryDatasets(john)).thenReturn(model);
-    when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
+    String userNameHash = "userNameHash";
+    when(accountRepository.findAccountByHash(userNameHash)).thenReturn(john);
 
-    datasetController.queryDatasets(mockServletResponse, user);
+    datasetController.queryDatasetsByUser(mockServletResponse, userNameHash);
 
-    verify(accountRepository).findAccountByUsername(user.getName());
+    verify(accountRepository).findAccountByHash(userNameHash);
     verify(datasetReadRepository).queryDatasets(john);
     verify(trialverseIOUtilsService).writeModelToServletResponse(model, mockServletResponse);
   }
@@ -155,7 +173,7 @@ public class DatasetControllerTest {
     when(datasetReadRepository.getVersionedDataset(datasetUri, null)).thenReturn(model);
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
-    mockMvc.perform((get("/datasets/" + uuid)).principal(user))
+    mockMvc.perform((get("/users/some-user-uid/datasets/" + uuid)).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
@@ -173,7 +191,7 @@ public class DatasetControllerTest {
     when(datasetReadRepository.getVersionedDataset(datasetUri, versionUuid)).thenReturn(model);
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
 
-    mockMvc.perform((get("/datasets/" + uuid + "/versions/" + versionUuid)).principal(user))
+    mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/versions/" + versionUuid)).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
@@ -190,7 +208,7 @@ public class DatasetControllerTest {
     httpResponse.setEntity(new StringEntity(test));
     when(datasetReadRepository.getHistory(datasetUri)).thenReturn(test.getBytes());
 
-    mockMvc.perform((get("/datasets/" + uuid + "/versions")).principal(user))
+    mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/versions")).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType() ));
 
@@ -209,7 +227,7 @@ public class DatasetControllerTest {
 
     String responseStr = "whatevs";
     when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, null, acceptValue)).thenReturn(responseStr.getBytes());
-    mockMvc.perform((get("/datasets/" + uuid + "/query"))
+    mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/query"))
             .param("query", query)
             .header("Accept", acceptValue)
             .principal(user))
@@ -230,7 +248,7 @@ public class DatasetControllerTest {
     String acceptValue = "c/d";
     String responseStr = "foo";
     when(datasetReadRepository.executeQuery(query, trialverseDatasetUri, version, acceptValue)).thenReturn(responseStr.getBytes());
-    mockMvc.perform((get("/datasets/" + uuid + "/versions/" + version + "/query"))
+    mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/versions/" + version + "/query"))
             .param("query", query)
             .header("Accept", acceptValue)
             .principal(user))

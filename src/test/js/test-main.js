@@ -20,9 +20,9 @@ require.config({
     'jasmine-html': 'bower_components/jasmine/lib/jasmine-core/jasmine-html',
     'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
     'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
-    'rdfstore': 'bower_components/rdfstore-js/index',
     'lodash': 'bower_components/lodash/dist/lodash.min',
     'moment': 'bower_components/moment/min/moment.min',
+    'angular-md5': 'bower_components/angular-md5/angular-md5',
     'testUtils': '../../../src/test/js/testUtils',
   },
   baseUrl: '/base/app/js',
@@ -72,9 +72,10 @@ require.config({
       deps: ['jasmine'],
       exports: 'jasmine'
     },
-    'rdfstore': {
-      exports: 'rdfstore'
-    },
+     'angular-md5': {
+      deps: ['angular'],
+      exports: 'angular-md5'
+    },    
     'testUtils': {
       exports: 'testUtils',
       deps: ['lodash'],

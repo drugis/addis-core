@@ -41,7 +41,7 @@ public class AccountRepositoryTest {
 
   @Test
   public void testFindUserByUserNameHash() {
-    Account account = accountRepository.findAccountByHash("hashedUserNameConnor");
+    Account account = accountRepository.findAccountByHash("userNameHashConnor");
     assertEquals("foo@bar.com", account.getUsername());
     assertEquals("Connor", account.getFirstName());
     assertEquals("Bonnor", account.getLastName());

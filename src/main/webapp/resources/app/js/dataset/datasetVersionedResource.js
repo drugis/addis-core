@@ -3,7 +3,8 @@ define([], function() {
 
   var dependencies = ['$resource'];
   var DatasetVersionedResource = function($resource) {
-    return $resource('/datasets/:datasetUUID/versions/:versionUuid', {
+    return $resource('/users/:userUid/datasets/:datasetUUID/versions/:versionUuid', {
+      userUid: '@userUid',
       datasetUUID: '@datasetUUID',
       versionUuid: '@versionUuid'
     }, {

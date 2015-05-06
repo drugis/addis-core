@@ -40,5 +40,5 @@ CREATE TABLE VersionMapping (id SERIAL NOT NULL,
 
 -- changeset stroombergc:3
 
-ALTER TABLE Account ADD hashedUserName VARCHAR NOT NULL;
---rollback ALTER TABLE Account DROP COLUMN hashedUserName;
+ALTER TABLE Account ADD userNameHash VARCHAR NOT NULL;
+--rollback ALTER TABLE Account DROP COLUMN userNameHash;

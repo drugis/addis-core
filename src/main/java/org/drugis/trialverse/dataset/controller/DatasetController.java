@@ -34,8 +34,10 @@ import java.security.Principal;
  * Created by connor on 6-11-14.
  */
 @Controller
-@RequestMapping(value = "/datasets")
+@RequestMapping(value = "/users/{userUid}/datasets")
 public class DatasetController extends AbstractTrialverseController {
+
+  private final static Logger logger = LoggerFactory.getLogger(DatasetController.class);
 
   @Inject
   private DatasetWriteRepository datasetWriteRepository;
@@ -52,27 +54,30 @@ public class DatasetController extends AbstractTrialverseController {
   @Inject
   private HttpClient httpClient;
 
-  private final static String JSON_TYPE = "application/json; charset=UTF-8";
-
-  Logger logger = LoggerFactory.getLogger(getClass());
-
   @RequestMapping(method = RequestMethod.POST)
   @ResponseBody
-  public void createDataset(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @RequestBody DatasetCommand datasetCommand) throws URISyntaxException, CreateDatasetException, HttpException {
+  public void createDataset(HttpServletResponse response, Principal currentUser,
+                            @RequestBody DatasetCommand datasetCommand, @PathVariable String userUid)
+          throws URISyntaxException, CreateDatasetException, HttpException {
     logger.trace("createDataset");
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-    URI datasetUri = datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), currentUserAccount);
-    response.setStatus(HttpServletResponse.SC_CREATED);
-    response.setHeader("Location", datasetUri.toString());
+    if(currentUserAccount.getuserNameHash().equals(userUid)) {
+      URI datasetUri = datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), currentUserAccount);
+      response.setStatus(HttpServletResponse.SC_CREATED);
+      response.setHeader("Location", datasetUri.toString());
+    }else {
+      logger.error("attempted to created database for user that is not the login-user ");
+      response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
   }
 
   @RequestMapping(method = RequestMethod.GET)
   @ResponseBody
-  public void queryDatasets(HttpServletResponse httpServletResponse, Principal currentUser) {
+  public void queryDatasetsByUser(HttpServletResponse httpServletResponse, @PathVariable String userUid) {
     logger.trace("retrieving datasets");
-    Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
+    Account user = accountRepository.findAccountByHash(userUid);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
-    Model model = datasetReadRepository.queryDatasets(currentUserAccount);
+    Model model = datasetReadRepository.queryDatasets(user);
     if (model != null) {
       httpServletResponse.setStatus(HttpStatus.OK.value());
     } else {

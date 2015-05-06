@@ -1,8 +1,7 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$window'];
-
-  var NavbarDirective = function($window) {
+  var dependencies = ['$window', '$state', '$stateParams'];
+  var NavbarDirective = function($window, $state, $stateParams) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/util/directives/navbar/navbarDirective.html',
@@ -12,6 +11,8 @@ define([], function() {
           imageUrl: 'https://secure.gravatar.com/avatar/' + $window.config.user.userMd5 + '?s=43&d=mm',
           name: $window.config.user.firstName + " " + $window.config.user.lastName
         }
+        scope.isOwnUserPage = $state.current.name === 'user' && 
+         scope.$parent.loginUser.userNameHash === $stateParams.userUid;
       }
     };
   };

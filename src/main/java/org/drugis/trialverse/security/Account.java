@@ -29,21 +29,21 @@ public class Account {
   private String username;
   private String firstName;
   private String lastName;
-  private String hashedUserName;
+  private String userNameHash;
 
   protected Account() {
   }
 
-  public Account(String username, String firstName, String lastName, String hashedUserName) {
-    this(-1, username, firstName, lastName, hashedUserName);
+  public Account(String username, String firstName, String lastName, String userNameHash) {
+    this(-1, username, firstName, lastName, userNameHash);
   }
 
-  public Account(int id, String username, String firstName, String lastName, String hashedUserName) {
+  public Account(int id, String username, String firstName, String lastName, String userNameHash) {
     this.id = id;
     this.username = username;
     this.firstName = firstName;
     this.lastName = lastName;
-    this.hashedUserName = hashedUserName;
+    this.userNameHash = userNameHash;
   }
 
   public Integer getId() {
@@ -78,12 +78,12 @@ public class Account {
     this.lastName = lastName;
   }
 
-  public String getHashedUserName() {
-    return hashedUserName;
+  public String getuserNameHash() {
+    return userNameHash;
   }
 
-  public void setHashedUserName(String hashedUserName) {
-    this.hashedUserName = hashedUserName;
+  public void setuserNameHash(String userNameHash) {
+    this.userNameHash = userNameHash;
   }
 
   @Override
@@ -96,7 +96,7 @@ public class Account {
     if (!username.equals(account.username)) return false;
     if (firstName != null ? !firstName.equals(account.firstName) : account.firstName != null) return false;
     if (lastName != null ? !lastName.equals(account.lastName) : account.lastName != null) return false;
-    return hashedUserName.equals(account.hashedUserName);
+    return userNameHash.equals(account.userNameHash);
 
   }
 
@@ -104,7 +104,7 @@ public class Account {
   public int hashCode() {
     int result = firstName != null ? firstName.hashCode() : 0;
     result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-    result = 31 * result + hashedUserName.hashCode();
+    result = 31 * result + userNameHash.hashCode();
     return result;
   }
 }

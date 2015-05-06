@@ -5,10 +5,10 @@ define([], function() {
 
     var queryStudiesWithDetails = SparqlResource.get('queryStudiesWithDetails.sparql');
 
-    function get(datasetUuid, datasetVersionUuid) {
+    function get(userUid, datasetUuid, datasetVersionUuid) {
       return queryStudiesWithDetails.then(function(query) {
         return $http.get(
-          '/datasets/' + datasetUuid + '/versions/' + datasetVersionUuid + '/query', {
+          '/users/'+ userUid +'/datasets/' + datasetUuid + '/versions/' + datasetVersionUuid + '/query', {
             params: {
               query: query
             },

@@ -17,6 +17,7 @@ define([], function() {
       return RemoteRdfStoreService.create(conceptsGraphUriBase).then(function(graphUri) {
         scratchConceptsGraphUri = graphUri;
         return RemoteRdfStoreService.load(scratchConceptsGraphUri, data).then(function() {
+          modified = false;
           loadDefer.resolve();
         });
       });

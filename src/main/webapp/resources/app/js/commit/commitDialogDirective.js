@@ -9,6 +9,7 @@ define([], function() {
         itemServiceName: '=',
         changesCommited: '=',
         commitCancelled: '=',
+        userUid: '=',
         datasetUuid: '=',
         graphUuid: '='
       },
@@ -18,6 +19,7 @@ define([], function() {
         scope.commitChanges = function(commitTitle, commitDescription) {
           ItemService.getGraph().then(function(graph) {
             GraphResource.put({
+              userUid: scope.userUid,
               datasetUUID: scope.datasetUuid,
               graphUuid: scope.graphUuid,
               commitTitle: commitTitle,

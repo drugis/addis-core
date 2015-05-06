@@ -14,7 +14,7 @@
 
         <!-- Right Nav Section -->
         <ul class="right">
-          <li class="has-dropdown not-click">
+          <li ng-show="!isOwnUserPage" class="has-dropdown not-click">
             <a href="#">
               <img class="user-image" ng-src="{{userInfo.imageUrl}}">
               {{userInfo.name}}
@@ -24,6 +24,9 @@
                 <a href="signin?logout">Sign out</a>
               </li>
             </ul>
+          </li>
+          <li ng-show="isOwnUserPage">
+                <a href="signin?logout">Sign out</a>
           </li>
         </ul>
       </section>

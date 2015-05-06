@@ -4,7 +4,8 @@ define([], function() {
   var dependencies = ['$resource'];
   var GraphResource = function($resource) {
     return $resource(
-      '/datasets/:datasetUUID/graphs/:graphUuid', {
+      '/users/:userUid/datasets/:datasetUUID/graphs/:graphUuid', {
+        userUid: '@userUid',
         datasetUUID: '@datasetUUID',
         graphUuid: '@graphUuid',
         commitTitle: '@commitTitle',

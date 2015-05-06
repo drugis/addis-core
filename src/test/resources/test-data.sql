@@ -1,2 +1,2 @@
-INSERT INTO public.account (id, username, firstname, lastname, password, hashedUserName) VALUES (1, 'foo@bar.com', 'Connor', 'Bonnor', null, 'hashedUserNameConnor');
-INSERT INTO public.account (id, username, firstname, lastname, password, hashedUserName) VALUES (2, 'test@bla.com', 'Daan', 'Baan', null, 'hashedUserNameDaan');
+INSERT INTO public.account (id, username, firstname, lastname, password, userNameHash) VALUES (1, 'foo@bar.com', 'Connor', 'Bonnor', null, 'userNameHashConnor');
+INSERT INTO public.account (id, username, firstname, lastname, password, userNameHash) VALUES (2, 'test@bla.com', 'Daan', 'Baan', null, 'userNameHashDaan');

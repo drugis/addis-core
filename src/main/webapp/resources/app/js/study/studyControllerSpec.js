@@ -3,10 +3,12 @@ define(['angular', 'angular-mocks'], function() {
   describe('the study controller', function() {
 
     var scope, httpBackend,
+      userUid = 'userUid',
       datasetUUID = 'datasetUUID',
       studyGraphUuid = 'studyGraphUuid',
       versionUuid = 'versionUuid',
       mockStateParams = {
+        userUid: userUid,
         datasetUUID: datasetUUID,
         studyGraphUuid: studyGraphUuid,
         versionUuid: versionUuid
@@ -30,7 +32,7 @@ define(['angular', 'angular-mocks'], function() {
       scope = $rootScope;
       httpBackend = $httpBackend;
 
-      httpBackend.expectGET('/datasets/' + datasetUUID + '/versions/' + versionUuid + '/graphs/' + studyGraphUuid).respond('study');
+      httpBackend.expectGET('/users/' + userUid + '/datasets/' + datasetUUID + '/versions/' + versionUuid + '/graphs/' + studyGraphUuid).respond('study');
 
       loadStoreDeferred = $q.defer();
       queryStudyDataDeferred = $q.defer();
