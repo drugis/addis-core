@@ -6,6 +6,7 @@ define(
     'foundation',
     'mmfoundation',
     'angular-ui-router',
+    'user/user',
     'dataset/dataset',
     'util/util',
     'study/study',
@@ -26,7 +27,7 @@ define(
     'mapping/mapping',
     'studyInformation/studyInformation',
     'angular-resource',
-    'rdfstore',
+    'angular-md5',
     'lodash'
   ],
   function(angular) {
@@ -34,6 +35,8 @@ define(
       'ui.router',
       'mm.foundation.modal',
       'mm.foundation.typeahead',
+      'angular-md5',
+      'trialverse.user',
       'trialverse.dataset',
       'trialverse.util',
       'trialverse.graph',
@@ -135,23 +138,23 @@ define(
         $httpProvider.interceptors.push('SessionExpiredInterceptor');
 
         $stateProvider
-          .state('datasets', {
-            url: '/datasets',
-            templateUrl: 'app/js/dataset/datasets.html',
-            controller: 'DatasetsController'
+          .state('user', {
+            url: '/users/:userUid',
+            templateUrl: 'app/js/user/user.html',
+            controller: 'UserController'
           })
           .state('create-dataset', {
-            url: '/create-dataset',
-            templateUrl: 'app/js/dataset/createDataset.html',
+            url: '/users/:userUid/create-dataset',
+            templateUrl: 'app/js/user/createDataset.html',
             controller: 'CreateDatasetController'
           })
           .state('versionedDataset', {
-            url: '/datasets/:datasetUUID/versions/:versionUuid',
+            url: '/users/:userUid/datasets/:datasetUUID/versions/:versionUuid',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
           })
           .state('datasetHistory', {
-            url: '/datasets/:datasetUUID/history',
+            url: '/users/:userUid/datasets/:datasetUUID/history',
             templateUrl: 'app/js/dataset/datasetHistory.html',
             controller: 'DatasetHistoryController'
           })
@@ -167,7 +170,7 @@ define(
           });
 
         // Default route
-        $urlRouterProvider.otherwise('/datasets');
+        $urlRouterProvider.otherwise('/users/');
       }
     ]);
 

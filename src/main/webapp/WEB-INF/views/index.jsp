@@ -29,7 +29,7 @@
       firstName : "${account.firstName}",
       lastName : "${account.lastName}",
       userEmail: "${userEmail}",
-      userMd5: "${userMD5}"
+      userNameHash: "${userNameHash}"
     },
     _csrf_token : "${_csrf.token}",
     _csrf_header : "${_csrf.headerName}"

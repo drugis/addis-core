@@ -1,17 +1,21 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  describe('datasets controller', function() {
+  describe('user controller', function() {
 
     var scope, httpBackend,
+      userHash = 'userHash',
       mockModal = jasmine.createSpyObj('$mock', ['open']),
       mockDatasetService = jasmine.createSpyObj('DatasetService', ['loadStore', 'queryDatasetsOverview', 'reset']),
+      md5Mock = jasmine.createSpyObj('md5', ['createHash']),
       mockLoadStoreDeferred,
-      mockQueryDatasetsDeferred;
+      mockQueryDatasetsDeferred,
+      users = [{user:'user1'}, {user:'user2'}],
+      datasets = [{title: 'my results', headVersion: 'http://host/versions/foo'}];
 
-    beforeEach(module('trialverse.dataset'));
+    beforeEach(module('trialverse.user'));
 
 
-    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, DatasetVersionedResource) {
+    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, DatasetResource) {
       scope = $rootScope;
       httpBackend = $httpBackend;
 
@@ -20,14 +24,19 @@ define(['angular', 'angular-mocks'], function() {
 
       mockDatasetService.loadStore.and.returnValue(mockLoadStoreDeferred.promise);
       mockDatasetService.queryDatasetsOverview.and.returnValue(mockQueryDatasetsDeferred.promise);
+      md5Mock.createHash.and.returnValue(userHash);
 
-      httpBackend.expectGET('/datasets').respond('datasets');
+      httpBackend.expectGET('/users').respond(users);
+      httpBackend.expectGET('/users/' + userHash + '/datasets').respond(datasets);
 
-      $controller('DatasetsController', {
+      $controller('UserController', {
         $scope: scope,
         $modal: mockModal,
-        DatasetVersionedResource: DatasetVersionedResource,
-        DatasetService: mockDatasetService
+        $stateParams: {userUid: userHash},
+        $window: {config: {user: {userNameHash: userHash}}},
+        DatasetResource: DatasetResource,
+        DatasetService: mockDatasetService,
+        md5: md5Mock
       });
 
     }));
@@ -37,7 +46,7 @@ define(['angular', 'angular-mocks'], function() {
     });
 
     it('should query the datasetVersionedResource, process the results and place them on the scope', function() {
-      var datasets = [{title: 'my results', headVersion: 'http://host/versions/foo'}];
+
       httpBackend.flush();
 
       expect(mockDatasetService.loadStore).toHaveBeenCalled();

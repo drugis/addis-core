@@ -8,7 +8,7 @@ define([],
       ConceptService, VersionedGraphResource, CONCEPT_GRAPH_UUID) {
       var datasetUri = 'http://trials.drugis/org/datasets/' + $stateParams.datasetUUID;
 
-      function reloadConcepts() {
+      function reloadConceptsFromScratch() {
         return ConceptService.queryItems(datasetUri).then(function(conceptsJson) {
           $scope.concepts = conceptsJson;
         });
@@ -20,7 +20,7 @@ define([],
           controller: 'CreateConceptController',
           resolve: {
             callback: function() {
-              return reloadConcepts;
+              return reloadConceptsFromScratch;
             }
           }
         });
@@ -29,6 +29,12 @@ define([],
       $scope.datasetConcepts.then(function(result) {
         $scope.concepts = result;
       });
+
+      $scope.resetConcepts = function() {
+        $scope.$parent.loadConcepts().then(function() {
+          reloadConceptsFromScratch();
+        });
+      }
 
       $scope.areConceptsModified = function() {
         return ConceptService.areConceptsModified();
@@ -42,8 +48,11 @@ define([],
             callback: function() {
               return function(newVersion) {
                 ConceptService.conceptsSaved();
-                $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/concepts');
+                $location.path('/users/' + $stateParams.userId + '/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/concepts');
               };
+            },
+            userUid: function() {
+              return $stateParams.userUid;
             },
             datasetUuid: function() {
               return $stateParams.datasetUUID;

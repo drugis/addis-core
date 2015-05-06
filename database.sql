@@ -35,3 +35,8 @@ CREATE TABLE VersionMapping (id SERIAL NOT NULL,
     ownerUuid VARCHAR NOT NULL,
     trialverseDatasetUrl VARCHAR NOT NULL,
     PRIMARY KEY (id));
+
+-- changeset stroombergc:3
+
+ALTER TABLE Account ADD userNameHash VARCHAR NOT NULL;
+--rollback ALTER TABLE Account DROP COLUMN userNameHash;

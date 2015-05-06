@@ -65,7 +65,8 @@ public class GraphControllerTest {
   @InjectMocks
   private GraphController graphController;
 
-  private Account john = new Account(1, "john@apple.co.uk", "John", "Lennon");
+  private String userHash = "userHash";
+  private Account john = new Account(1, "john@apple.co.uk", "John", "Lennon", userHash);
   private Principal user;
 
   @Before
@@ -95,7 +96,7 @@ public class GraphControllerTest {
     String responce = "responce";
     when(graphReadRepository.getGraph(trialverseDatasetUri, versionUuid, graphUUID)).thenReturn(responce.getBytes());
 
-    mockMvc.perform(get("/datasets/" + datasetUUID + "/versions/" + versionUuid + "/graphs/" + graphUUID).principal(user))
+    mockMvc.perform(get("/users/" + userHash + "/datasets/" + datasetUUID + "/versions/" + versionUuid + "/graphs/" + graphUUID).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
@@ -112,7 +113,7 @@ public class GraphControllerTest {
     when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(false);
 
     mockMvc.perform(
-            put("/datasets/" + datasetUUID + "/graphs/" + graphUUID)
+            put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(jsonContent)
                     .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
                     .principal(user)).andExpect(status().isForbidden());
@@ -133,7 +134,7 @@ public class GraphControllerTest {
     when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(HttpServletRequest.class))).thenReturn(versionHeader);
 
     mockMvc.perform(
-            put("/datasets/" + datasetUUID + "/graphs/" + graphUUID)
+            put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(updateContent)
                     .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
                     .principal(user))
@@ -153,7 +154,7 @@ public class GraphControllerTest {
     when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(false);
 
     mockMvc.perform(
-            put("/datasets/" + datasetUUID + "/graphs/" + graphUUID)
+            put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(jsonContent)
                     .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
                     .principal(user)).andExpect(status().isForbidden());

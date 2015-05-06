@@ -15,6 +15,7 @@
  */
 package org.drugis.trialverse.security.repository.impl;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.UsernameAlreadyInUseException;
 import org.drugis.trialverse.security.repository.AccountRepository;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 @Repository
 public class AccountRepositoryImpl implements AccountRepository {
@@ -38,31 +40,46 @@ public class AccountRepositoryImpl implements AccountRepository {
 
   private RowMapper<Account> rowMapper = new RowMapper<Account>() {
     public Account mapRow(ResultSet rs, int rowNum) throws SQLException {
-      return new Account(rs.getInt("id"), rs.getString("username"), rs.getString("firstName"), rs.getString("lastName"));
+      return new Account(rs.getInt("id"), rs.getString("username"), rs.getString("firstName"), rs.getString("lastName"), rs.getString("userNameHash"));
     }
   };
 
+  @Override
   @Transactional()
-  public void createAccount(Account user) throws UsernameAlreadyInUseException {
+  public void createAccount(String email, String firstName, String lastName) throws UsernameAlreadyInUseException {
+    String userNameHash = DigestUtils.sha256Hex(email);
     try {
       jdbcTemplate.update(
-              "insert into Account (firstName, lastName, username) values (?, ?, ?)",
-              user.getFirstName(), user.getLastName(), user.getUsername());
+              "insert into Account (firstName, lastName, username, userNameHash) values (?, ?, ?, ?)",
+              firstName, lastName,email, userNameHash);
     } catch (DuplicateKeyException e) {
-      throw new UsernameAlreadyInUseException(user.getUsername());
+      throw new UsernameAlreadyInUseException(email);
     }
   }
 
+  @Override
   public Account findAccountByUsername(String username) {
     return jdbcTemplate.queryForObject(
-            "select id, username, firstName, lastName from Account where username = ?",
+            "select id, username, firstName, lastName, userNameHash from Account where username = ?",
             rowMapper, username);
   }
 
+  @Override
   public Account findAccountById(int id) {
     return jdbcTemplate.queryForObject(
-            "select id, username, firstName, lastName from Account where id = ?",
+            "select id, username, firstName, lastName, userNameHash from Account where id = ?",
             rowMapper, id);
   }
 
+  @Override
+  public Account findAccountByHash(String hash) {
+    return jdbcTemplate.queryForObject(
+            "select id, username, firstName, lastName, userNameHash from Account where userNameHash = ?",
+            rowMapper, hash);
+  }
+
+  @Override
+  public List<Account> getUsers() {
+    return jdbcTemplate.query("select id, username, firstName, lastName, userNameHash from Account", rowMapper);
+  }
 }

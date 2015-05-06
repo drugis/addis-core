@@ -18,12 +18,17 @@ package org.drugis.trialverse.security.repository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.UsernameAlreadyInUseException;
 
+import java.util.List;
+
 public interface AccountRepository {
 
-  void createAccount(Account account) throws UsernameAlreadyInUseException;
+  void createAccount(String email, String firstName, String lastName) throws UsernameAlreadyInUseException;
 
   Account findAccountByUsername(String username);
 
   Account findAccountById(int id);
 
+  Account findAccountByHash(String hash);
+
+  List<Account> getUsers();
 }

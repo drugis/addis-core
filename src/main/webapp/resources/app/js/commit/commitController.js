@@ -1,9 +1,10 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$injector', '$stateParams', '$modalInstance', 'datasetUuid', 'graphUuid', 'callback', 'itemServiceName'];
-    var CommitController = function($scope, $injector, $stateParams, $modalInstance, datasetUuid, graphUuid, callback, itemServiceName) {
+    var dependencies = ['$scope', '$injector', '$stateParams', '$modalInstance', 'userUid', 'datasetUuid', 'graphUuid', 'callback', 'itemServiceName'];
+    var CommitController = function($scope, $injector, $stateParams, $modalInstance, userUid, datasetUuid, graphUuid, callback, itemServiceName) {
 
+      $scope.userUid = userUid;
       $scope.datasetUuid = datasetUuid;
       $scope.graphUuid = graphUuid;
       $scope.itemServiceName = itemServiceName;

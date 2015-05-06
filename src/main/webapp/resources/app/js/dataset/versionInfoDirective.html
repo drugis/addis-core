@@ -3,9 +3,9 @@
     <div class="panel">
       <span ng-show="currentRevision.idx === 0" class="right">
               <span><i class="fa fa-check"></i> This is the current version</span> (
-      <a style="text-decoration: underline;" ui-sref="datasetHistory({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>)
+      <a style="text-decoration: underline;" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>)
       </span>
-      <a class="right" style="text-decoration: underline;" ng-show="currentRevision.idx !== 0" ui-sref="datasetHistory({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>
+      <a class="right" style="text-decoration: underline;" ng-show="currentRevision.idx !== 0" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>
       <em>{{currentRevision.date | date:'medium'}}</em>
       <p>
         {{currentRevision.title}}, created by {{currentRevision.creator | stripFrontFilter:'mailto:'}}

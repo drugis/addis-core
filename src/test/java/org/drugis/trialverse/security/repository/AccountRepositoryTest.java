@@ -12,6 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -30,12 +32,25 @@ public class AccountRepositoryTest {
 
   @Test
   public void testCreateAccount() throws Exception {
-    Account account = new Account("username", "firstname", "lastname");
-    accountRepository.createAccount(account);
+    accountRepository.createAccount("username", "firstname", "lastname");
     Account result = accountRepository.findAccountByUsername("username");
     assertEquals("username", result.getUsername());
     assertEquals("firstname", result.getFirstName());
     assertEquals("lastname", result.getLastName());
+  }
+
+  @Test
+  public void testFindUserByUserNameHash() {
+    Account account = accountRepository.findAccountByHash("userNameHashConnor");
+    assertEquals("foo@bar.com", account.getUsername());
+    assertEquals("Connor", account.getFirstName());
+    assertEquals("Bonnor", account.getLastName());
+  }
+
+  @Test
+  public void testGetUsers() {
+    List<Account> accounts = accountRepository.getUsers();
+    assertEquals(2, accounts.size());
   }
 
 }

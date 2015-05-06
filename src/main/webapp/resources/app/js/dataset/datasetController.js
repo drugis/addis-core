@@ -1,14 +1,17 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$q', '$window','$stateParams', '$modal', '$filter',
-     'DatasetService', 'DatasetVersionedResource','StudiesWithDetailsService',
-     'JsonLdService', 'RemoteRdfStoreService', 'HistoryResource', 'HistoryService',
-     'ConceptService', 'VersionedGraphResource'
+    var dependencies = ['$scope', '$q', '$window', '$stateParams', '$modal', '$filter',
+      'DatasetService', 'DatasetVersionedResource', 'StudiesWithDetailsService',
+      'RemoteRdfStoreService', 'HistoryResource', 'HistoryService',
+      'ConceptService', 'VersionedGraphResource'
     ];
     var DatasetController = function($scope, $q, $window, $stateParams, $modal, $filter,
-     DatasetService, DatasetVersionedResource, StudiesWithDetailsService, JsonLdService,
-     RemoteRdfStoreService, HistoryResource, HistoryService, ConceptService, VersionedGraphResource) {
+      DatasetService, DatasetVersionedResource, StudiesWithDetailsService,
+      RemoteRdfStoreService, HistoryResource, HistoryService, ConceptService, VersionedGraphResource) {
+
+      $scope.stripFrontFilter = $filter('stripFrontFilter');
+      $scope.userUid = $stateParams.userUid;
 
       function isEditingAllowed() {
         return !!($scope.dataset && $scope.dataset.creator === $window.config.user.userEmail &&
@@ -37,21 +40,27 @@ define([],
         $scope.isEditingAllowed = isEditingAllowed();
       });
 
-      // load concepts
-      $scope.datasetConcepts = VersionedGraphResource.get({
-        datasetUUID: $stateParams.datasetUUID,
-        graphUuid: 'concepts',
-        versionUuid: $stateParams.versionUuid
-      }).$promise.then(function(conceptsTurtle) {
-        return ConceptService.loadStore(conceptsTurtle.data).then(function() {
-          return ConceptService.queryItems($stateParams.datasetUUID);
+      $scope.loadConcepts = function() {
+        return VersionedGraphResource.get({
+          userUid: $stateParams.userUid,
+          datasetUUID: $stateParams.datasetUUID,
+          graphUuid: 'concepts',
+          versionUuid: $stateParams.versionUuid
+        }).$promise.then(function(conceptsTurtle) {
+          return ConceptService.loadStore(conceptsTurtle.data).then(function() {
+            return ConceptService.queryItems($stateParams.datasetUUID);
+          });
         });
-      });
+      };
+
+      $scope.datasetConcepts = $scope.loadConcepts();
+
 
       $scope.loadStudiesWithDetail = function() {
-        StudiesWithDetailsService.get($stateParams.datasetUUID, $stateParams.versionUuid).then(function(result) {
-          $scope.studiesWithDetail = result;
-        });
+        StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUUID, $stateParams.versionUuid)
+          .then(function(result) {
+            $scope.studiesWithDetail = result;
+          });
       };
 
       $scope.showTableOptions = function() {
@@ -75,8 +84,6 @@ define([],
       };
 
       $scope.loadStudiesWithDetail();
-
-      $scope.stripFrontFilter = $filter('stripFrontFilter');
 
       $scope.tableOptions = {
         columns: [{

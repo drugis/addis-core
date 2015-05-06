@@ -148,6 +148,7 @@ define([],
 
       function reloadStudyModel() {
         VersionedGraphResource.get({
+          userUid: $stateParams.userUid,
           datasetUUID: $stateParams.datasetUUID,
           graphUuid: $stateParams.studyGraphUuid,
           versionUuid: $stateParams.versionUuid
@@ -207,8 +208,11 @@ define([],
             callback: function() {
               return function(newVersion) {
                 StudyService.studySaved();
-                $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);
+                $location.path('/users/' + $stateParams.userId + '/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);
               };
+            },
+            userUid: function() {
+              return $stateParams.userUid;
             },
             datasetUuid: function() {
               return $stateParams.datasetUUID;

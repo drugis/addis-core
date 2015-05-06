@@ -10,6 +10,7 @@ define([], function() {
       },
       link: function(scope) {
         var itemId = scope.item['@id'];
+        scope.userUid = $stateParams.userUid;
         scope.versionUuid = itemId.substr(itemId.lastIndexOf('/') + 1);
         scope.datasetUUID = $stateParams.datasetUUID;
       }

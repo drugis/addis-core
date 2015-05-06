@@ -4,7 +4,8 @@ define([], function() {
   var dependencies = ['$resource'];
   var VersionedGraphResource = function($resource) {
     return $resource(
-      '/datasets/:datasetUUID/versions/:versionUuid/graphs/:graphUuid', {
+      '/users/:userUid/datasets/:datasetUUID/versions/:versionUuid/graphs/:graphUuid', {
+        usersUid: '@usersUid',
         datasetUUID: '@datasetUUID',
         graphUuid: '@graphUuid',
         versionUuid: '@versionUuid'

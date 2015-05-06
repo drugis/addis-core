@@ -5,7 +5,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     var scope, httpBackend,
       mockModal = jasmine.createSpyObj('$mock', ['open']),
       mockDatasetService = jasmine.createSpyObj('DatasetService', ['loadStore', 'queryDataset', 'reset']),
-      mockJsonLDService = jasmine.createSpyObj('JsonLdService', ['rewriteAtIds']),
       mockRemoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['deFusekify']),
       studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get']),
       historyResource = jasmine.createSpyObj('HistoryResource', ['query']),
@@ -20,9 +19,11 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       mockStudiesWithDetail = {
         '@graph': {}
       },
+      userUid = 'userUid',
       datasetUUID = 'uuid-1',
       versionUuid = 'version-1',
       stateParams = {
+        userUid: userUid,
         datasetUUID: datasetUUID,
         versionUuid: versionUuid
       };
@@ -68,7 +69,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       }]);
 
       mockModal.open.calls.reset();
-      httpBackend.expectGET('/datasets/' + datasetUUID + '/versions/' + versionUuid).respond('dataset');
+      httpBackend.expectGET('/users/' + userUid + '/datasets/' + datasetUUID + '/versions/' + versionUuid).respond('dataset');
 
       var windowMock = {
         config: {
@@ -86,7 +87,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         DatasetService: mockDatasetService,
         DatasetVersionedResource: DatasetVersionedResource,
         StudiesWithDetailsService: studiesWithDetailsService,
-        JsonLdService: mockJsonLDService,
         RemoteRdfStoreService: mockRemoteRdfStoreService,
         HistoryResource: historyResource,
         HistoryService: historyService,

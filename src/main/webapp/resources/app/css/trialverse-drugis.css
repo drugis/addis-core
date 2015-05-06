@@ -9735,13 +9735,19 @@ select option {
 }
 
 /* line 54, ../../sass/trialverse-drugis.scss */
+.user-image-large {
+  height: 4rem;
+  border-radius: 3rem;
+}
+
+/* line 59, ../../sass/trialverse-drugis.scss */
 .topbar-text {
   color: white;
   padding: 0;
   margin: 0;
 }
 
-/* line 60, ../../sass/trialverse-drugis.scss */
+/* line 65, ../../sass/trialverse-drugis.scss */
 .color-stripe {
   background: #CC3333;
   height: 0.45rem;
@@ -9750,23 +9756,23 @@ select option {
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
 }
 
-/* line 68, ../../sass/trialverse-drugis.scss */
+/* line 73, ../../sass/trialverse-drugis.scss */
 .top-bar-section ul.top-bar-content {
   padding-top: 5px;
   margin-left: 4rem;
 }
 
-/* line 73, ../../sass/trialverse-drugis.scss */
+/* line 78, ../../sass/trialverse-drugis.scss */
 .f-topbar-fixed {
   padding-top: 72px;
 }
 
-/* line 81, ../../sass/trialverse-drugis.scss */
+/* line 86, ../../sass/trialverse-drugis.scss */
 .side-nav .button {
   margin-bottom: 0.5rem;
 }
 
-/* line 85, ../../sass/trialverse-drugis.scss */
+/* line 90, ../../sass/trialverse-drugis.scss */
 .modified-warning {
   font-size: 14px;
   font-style: italic;
@@ -9774,14 +9780,14 @@ select option {
   margin-bottom: 0.5rem;
 }
 
-/* line 92, ../../sass/trialverse-drugis.scss */
+/* line 97, ../../sass/trialverse-drugis.scss */
 ul.side-nav {
   margin-top: -20px;
   padding: 2rem 1rem;
   background-color: #f4f4f4;
 }
 
-/* line 98, ../../sass/trialverse-drugis.scss */
+/* line 103, ../../sass/trialverse-drugis.scss */
 ul.side-nav li.heading {
   color: #008CBA;
   font-size: 0.77778rem;
@@ -9789,12 +9795,12 @@ ul.side-nav li.heading {
   text-transform: uppercase;
 }
 
-/* line 107, ../../sass/trialverse-drugis.scss */
+/* line 112, ../../sass/trialverse-drugis.scss */
 .study-item {
   margin: 0 0 3rem 0;
 }
 
-/* line 111, ../../sass/trialverse-drugis.scss */
+/* line 116, ../../sass/trialverse-drugis.scss */
 .study-main-category-header {
   color: #008CBA;
   font-weight: bold;
@@ -9802,12 +9808,12 @@ ul.side-nav li.heading {
   text-transform: uppercase;
 }
 
-/* line 122, ../../sass/trialverse-drugis.scss */
+/* line 127, ../../sass/trialverse-drugis.scss */
 .form-input-group {
   padding-bottom: 16px;
 }
 
-/* line 126, ../../sass/trialverse-drugis.scss */
+/* line 131, ../../sass/trialverse-drugis.scss */
 ul.form-list li {
   font-size: 0.875rem;
   cursor: pointer;
@@ -9816,103 +9822,103 @@ ul.form-list li {
   margin-bottom: 0;
 }
 
-/* line 134, ../../sass/trialverse-drugis.scss */
+/* line 139, ../../sass/trialverse-drugis.scss */
 .modal-bottom-button-bar {
   margin-top: 2rem;
 }
 
-/* line 141, ../../sass/trialverse-drugis.scss */
+/* line 146, ../../sass/trialverse-drugis.scss */
 .y-head {
   font-weight: bold;
 }
 
-/* line 146, ../../sass/trialverse-drugis.scss */
+/* line 151, ../../sass/trialverse-drugis.scss */
 table {
   border-collapse: collapse;
 }
-/* line 149, ../../sass/trialverse-drugis.scss */
+/* line 154, ../../sass/trialverse-drugis.scss */
 table tr:nth-of-type(even) {
   background-color: transparent;
 }
-/* line 152, ../../sass/trialverse-drugis.scss */
+/* line 157, ../../sass/trialverse-drugis.scss */
 table tr {
   height: 1rem;
 }
-/* line 154, ../../sass/trialverse-drugis.scss */
+/* line 159, ../../sass/trialverse-drugis.scss */
 table tr th, table tr .y-head {
   text-align: center;
   background-color: #F5F5F5;
 }
-/* line 158, ../../sass/trialverse-drugis.scss */
+/* line 163, ../../sass/trialverse-drugis.scss */
 table tr th.sortable {
   cursor: pointer;
 }
-/* line 161, ../../sass/trialverse-drugis.scss */
+/* line 166, ../../sass/trialverse-drugis.scss */
 table tr th, table tr td {
   border: solid 1px gainsboro;
 }
-/* line 163, ../../sass/trialverse-drugis.scss */
+/* line 168, ../../sass/trialverse-drugis.scss */
 table tr th a:hover, table tr td a:hover {
   text-decoration: underline;
 }
-/* line 167, ../../sass/trialverse-drugis.scss */
+/* line 172, ../../sass/trialverse-drugis.scss */
 table tr td.input-cell {
   padding: 0;
 }
-/* line 169, ../../sass/trialverse-drugis.scss */
+/* line 174, ../../sass/trialverse-drugis.scss */
 table tr td.input-cell select,
 table tr td.input-cell input[type="number"] {
   margin: 0;
   border: 0;
   text-align: center;
 }
-/* line 175, ../../sass/trialverse-drugis.scss */
+/* line 180, ../../sass/trialverse-drugis.scss */
 table tr td.input-cell select {
   padding-right: 1rem;
 }
-/* line 178, ../../sass/trialverse-drugis.scss */
+/* line 183, ../../sass/trialverse-drugis.scss */
 table tr td.input-cell input[type="number"].ng-invalid,
 table tr td.input-cell input[type="number"].ng-invalid-number,
 table tr td.input-cell input[type="number"].invalid-trialverse-number {
   background-color: #ed9090;
 }
 
-/* line 186, ../../sass/trialverse-drugis.scss */
+/* line 191, ../../sass/trialverse-drugis.scss */
 td.empty-cell {
   background-color: gainsboro;
 }
 
-/* line 190, ../../sass/trialverse-drugis.scss */
+/* line 195, ../../sass/trialverse-drugis.scss */
 tr.on-hover:hover {
   background: #e6e6e6;
   cursor: pointer;
   text-decoration: none;
 }
 
-/* line 196, ../../sass/trialverse-drugis.scss */
+/* line 201, ../../sass/trialverse-drugis.scss */
 tr.clickable td {
   color: #452F8C;
 }
 
-/* line 203, ../../sass/trialverse-drugis.scss */
+/* line 208, ../../sass/trialverse-drugis.scss */
 .cell-with-single-btn {
   display: inline;
 }
-/* line 205, ../../sass/trialverse-drugis.scss */
+/* line 210, ../../sass/trialverse-drugis.scss */
 .cell-with-single-btn select {
   width: 66%;
   margin: 0;
   margin-right: 1rem;
   padding-right: 1rem;
 }
-/* line 211, ../../sass/trialverse-drugis.scss */
+/* line 216, ../../sass/trialverse-drugis.scss */
 .cell-with-single-btn button {
   margin: 0;
   padding-top: 0.7rem;
   padding-bottom: 0.7rem;
 }
 
-/* line 221, ../../sass/trialverse-drugis.scss */
+/* line 226, ../../sass/trialverse-drugis.scss */
 .scrollable-wrapper {
   overflow-y: auto;
   margin-top: 1.5rem;

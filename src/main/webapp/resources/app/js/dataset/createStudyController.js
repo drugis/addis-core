@@ -21,17 +21,19 @@ define([], function() {
         StudyService.getGraph().then(function(queryResult) {
           var uuid = StudyService.getStudyUUID();
           GraphResource.put({
+            userUid: $stateParams.userUid,
             datasetUUID: $stateParams.datasetUUID,
             graphUuid: uuid,
             commitTitle: 'Initial study creation: ' + study.label
           }, queryResult.data, function(value, responseHeaders) {
             var newVersion = responseHeaders('X-EventSource-Version');
             newVersion = newVersion.split('/')[4];
-            $location.path('/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion);
+            $location.path('/users/' + $stateParams.userUid + '/datasets/' +
+              $stateParams.datasetUUID + '/versions/' + newVersion);
             $scope.isCreatingStudy = true;
             $modalInstance.close();
-          }, function(a , b){
-            console.log("error" + a);
+          }, function(error) {
+            console.log('error' + error);
           });
         });
       });

@@ -32,7 +32,7 @@ import java.security.Principal;
  * Created by daan on 19-11-14.
  */
 @Controller
-@RequestMapping(value = "/datasets/{datasetUuid}")
+@RequestMapping(value = "/users/{userUid}/datasets/{datasetUuid}")
 public class GraphController extends AbstractTrialverseController {
 
   @Inject
@@ -56,6 +56,7 @@ public class GraphController extends AbstractTrialverseController {
   @ResponseBody
   public void getGraph(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid,
                        @PathVariable String versionUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
+    logger.trace("get graph");
     byte[] responseContent = graphReadRepository.getGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), versionUuid, graphUuid);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
@@ -67,6 +68,7 @@ public class GraphController extends AbstractTrialverseController {
                        @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle, // here because it's required
                        @PathVariable String datasetUuid, @PathVariable String graphUuid)
           throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
+    logger.trace("set graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
       Header versionHeader = graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, request);

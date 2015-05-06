@@ -5,14 +5,21 @@ define(['angular', 'angular-mocks'], function() {
       mockDatasetResource = jasmine.createSpyObj('DatasetResource', ['save']),
       mockModalInstance = jasmine.createSpyObj('$modalInstance', ['close', 'dismiss']),
       mockcallback = jasmine.createSpy('callback'),
-      mockState = jasmine.createSpyObj('$state', ['go']),
       mockDataset = {
         title: 'title'
       },
-      datasetDeferred = {};
+      datasetDeferred = {},
+      userUid = 'userUid',
+      datasetUUID = 'uuid-1',
+      versionUuid = 'version-1',
+      stateParams = {
+        userUid: userUid,
+        datasetUUID: datasetUUID,
+        versionUuid: versionUuid
+      };
     mockDatasetResource.save.and.returnValue(mockDataset);
 
-    beforeEach(module('trialverse.dataset'));
+    beforeEach(module('trialverse.user'));
 
     beforeEach(inject(function($rootScope, $controller, $q) {
       scope = $rootScope;
@@ -22,7 +29,7 @@ define(['angular', 'angular-mocks'], function() {
 
       $controller('CreateDatasetController', {
         $scope: scope,
-        $state: mockState,
+        $stateParams: stateParams,
         $modalInstance: mockModalInstance,
         DatasetResource: mockDatasetResource,
         callback: mockcallback
@@ -39,7 +46,7 @@ define(['angular', 'angular-mocks'], function() {
         scope.createDataset();
       });
       it('should save the dataset to the DatasetResource', function() {
-        expect(mockDatasetResource.save).toHaveBeenCalledWith(mockDataset);
+        expect(mockDatasetResource.save).toHaveBeenCalledWith(stateParams, mockDataset);
       });
       it('should close the modalInstance', function() {
         expect(mockModalInstance.close).toHaveBeenCalled();
