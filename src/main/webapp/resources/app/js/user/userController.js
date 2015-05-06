@@ -2,28 +2,29 @@
 define([],
   function() {
     var dependencies = ['$scope', '$location', '$q', '$modal', '$filter', '$window',
-     '$stateParams', 'DatasetResource', 'DatasetService', 'UserResource', 'md5'];
+      '$stateParams', 'DatasetResource', 'DatasetService', 'UserResource', 'md5'
+    ];
     var UserController = function($scope, $location, $q, $modal, $filter, $window,
-     $stateParams, DatasetResource, DatasetService, UserResource, md5) {
-
+      $stateParams, DatasetResource, DatasetService, UserResource, md5) {
+      $scope.otherUsers = [];
       $scope.userUid = $stateParams.userUid;
-      if(!$scope.userUid) {
+
+      // if no user is supplied, then go to the logedin user user-page
+      if (!$scope.userUid || $scope.userUid.length === 0) {
         $location.path('/users/' + $window.config.user.userNameHash);
       }
 
-      $scope.user = UserResource.get({userUid: $window.config.user.userNameHash}, function(user) {
-        $scope.user.md5 = md5.createHash(user.username);
-      }); 
-
-      UserResource.query(function(users){
-        var usersWithMd5 = _.map(users, function(user){
+      UserResource.query(function(users) {
+        _.each(users, function(user) {
           user.md5 = md5.createHash(user.username);
-          return user;
+          if ($scope.userUid === user.hashedUserName) {
+            $scope.user = user;
+          } else {
+            $scope.otherUsers.push(user);
+          }
         });
-        $scope.otherUsers = _.filter(usersWithMd5, function(user) {
-          return user.hashedUserName !== $scope.user.hashedUserName;
-        });
-      }); 
+      });
+
 
       function loadDatasets() {
         DatasetService.reset();
@@ -34,7 +35,7 @@ define([],
               $scope.datasets = datasets;
               $scope.datasetsLoaded = true;
               if (datasets.length > 0) {
-                $scope.versionUrlBase = datasets[0].headVersion.split('/').slice(0,4).join('/') + '/';
+                $scope.versionUrlBase = datasets[0].headVersion.split('/').slice(0, 4).join('/') + '/';
               }
             }, function() {
               console.error('failed loading datasetstore');
@@ -62,5 +63,3 @@ define([],
     };
     return dependencies.concat(UserController);
   });
-
-
