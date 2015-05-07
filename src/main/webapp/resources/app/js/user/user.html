@@ -29,10 +29,10 @@
           <th class="large-9">Description</th>
         </tr>
         <tr ng-repeat="dataset in datasets">
-          <td>
+          <td style="vertical-align: top;">
             <a ui-sref="versionedDataset({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'), 
                                versionUuid: stripFrontFilter(dataset.headVersion, versionUrlBase)})">{{dataset.label}}</a></td>
-          <td>{{dataset.comment}}</td>
+          <td style="white-space: pre-wrap;">{{dataset.comment}}</td>
         </tr>
       </table>
     </div>
