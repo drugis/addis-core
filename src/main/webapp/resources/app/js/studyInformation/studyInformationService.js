@@ -1,8 +1,10 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService', 'BLINDING_OPTIONS', 'GROUP_ALLOCATION_OPTIONS', 'STATUS_OPTIONS'];
-    var StudyInformationService = function($q, StudyService, SparqlResource, UUIDService, BLINDING_OPTIONS, GROUP_ALLOCATION_OPTIONS, STATUS_OPTIONS) {
+    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService',
+     'BLINDING_OPTIONS', 'GROUP_ALLOCATION_OPTIONS', 'STATUS_OPTIONS', 'SanitizeService'];
+    var StudyInformationService = function($q, StudyService, SparqlResource,
+     UUIDService, BLINDING_OPTIONS, GROUP_ALLOCATION_OPTIONS, STATUS_OPTIONS, SanitizeService) {
 
       var studyInformationQuery = SparqlResource.get('queryStudyInformation.sparql');
       var editBlindingTemplate = SparqlResource.get('editBlinding.sparql');
@@ -82,7 +84,7 @@ define([],
           .replace(/\$blindingUri/g, item.blinding.uri)
           .replace(/\$statusUri/g, item.status.uri)
           .replace(/\$numberOfCenters/g, item.numberOfCenters)
-          .replace(/\$objective/g, item.objective);
+          .replace(/\$objective/g, SanitizeService.sanatize(item.objective, SanitizeService.MULTI_LINE_STRING));
       }
 
       return {

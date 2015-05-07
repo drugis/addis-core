@@ -1,7 +1,7 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$q', '$filter', 'UUIDService', 'RemoteRdfStoreService', 'SparqlResource'];
-  var StudyService = function($q, $filter, UUIDService, RemoteRdfStoreService, SparqlResource) {
+  var dependencies = ['$q', '$filter', 'UUIDService', 'RemoteRdfStoreService', 'SparqlResource', 'SanitizeService'];
+  var StudyService = function($q, $filter, UUIDService, RemoteRdfStoreService, SparqlResource, SanitizeService) {
 
     var graphPrefix = 'http://trials.drugis.org/graphs/';
     var loadDefer = $q.defer();
@@ -86,7 +86,7 @@ define([], function() {
     function fillTemplate(template, study) {
       return template.replace(/\$studyUuid/g, study.uuid)
         .replace(/\$label/g, study.label)
-        .replace(/\$comment/g, study.comment);
+        .replace(/\$comment/g, SanitizeService.sanatize(study.comment, SanitizeService.MULTI_LINE_STRING));
     }
 
     return {

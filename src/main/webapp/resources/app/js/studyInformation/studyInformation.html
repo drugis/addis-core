@@ -1,24 +1,76 @@
 <div class="row">
-  <div class="columns large-6 medium-6 small-12 end">
+  <div class="columns large-10 medium-10 small-12 end">
     <ul class="no-bullet">
       <li>
         <span><strong>Group allocation: </strong></span>
-        <enum-options options-constant-name="'GROUP_ALLOCATION_OPTIONS'" edit-mode="false" selected-option="item.groupAllocation" ></enum-options>
+        <enum-options options-constant-name="'GROUP_ALLOCATION_OPTIONS'" edit-mode="false" selected-option="item.groupAllocation"></enum-options>
       </li>
       <li>
         <span><strong>Blinding: </strong></span>
-        <enum-options options-constant-name="'BLINDING_OPTIONS'" edit-mode="false" selected-option="item.blinding" ></enum-options>
+        <enum-options options-constant-name="'BLINDING_OPTIONS'" edit-mode="false" selected-option="item.blinding"></enum-options>
       </li>
       <li>
         <span><strong>Status: </strong></span>
-        <enum-options options-constant-name="'STATUS_OPTIONS'" edit-mode="false" selected-option="item.status" ></enum-options>
+        <enum-options options-constant-name="'STATUS_OPTIONS'" edit-mode="false" selected-option="item.status"></enum-options>
       </li>
       <li>
-        <span><strong>Number of centers: </strong></span> {{::item.numberOfCenters || 'unknown'}}
+        <span><strong>Number of centers: </strong></span>
+        <span> {{::item.numberOfCenters || 'unknown'}}</span>
       </li>
       <li>
-        <span><strong>Objective: </strong></span> {{::item.objective || 'unknown'}}
+        <span><strong>Objective: </strong></span>
+      </li>
+      <li>
+        <span style="white-space: pre-wrap;">{{::item.objective || 'unknown'}}</span>
       </li>
     </ul>
   </div>
 </div>
+
+
+ <!-------------------------------------- some ideas about alignment --------------------------------------------------------------------------------->
+<!-- <div class="row">
+  <div class="columns large-3 medium-4 small-6">
+    <strong class="right">Group allocation: </strong>
+  </div>
+  <div class="columns large-7 medium-6 small-4 end">
+    <enum-options options-constant-name="'GROUP_ALLOCATION_OPTIONS'" edit-mode="false" selected-option="item.groupAllocation"></enum-options>
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns large-3 medium-4 small-6">
+    <strong class="right">Blinding: </strong>
+  </div>
+  <div class="columns large-9 medium-8 small-6 end">
+    <enum-options options-constant-name="'BLINDING_OPTIONS'" edit-mode="false" selected-option="item.blinding"></enum-options>
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns large-3 medium-4 small-6">
+    <strong class="right">Status: </strong>
+  </div>
+  <div class="columns large-9 medium-8 small-6 end">
+     <enum-options options-constant-name="'STATUS_OPTIONS'" edit-mode="false" selected-option="item.status"></enum-options>
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns large-3 medium-4 small-6">
+    <strong class="right">Number of centers: </strong>
+  </div>
+  <div class="columns large-9 medium-8 small-6 end">
+    <span> {{::item.numberOfCenters || 'unknown'}}</span>
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns large-3 medium-4 small-6">
+    <strong class="right">Objective: </strong>
+  </div>
+  <div class="columns large-9 medium-8 small-6 end">
+    <span style="white-space: pre-wrap;">{{::item.objective || 'unknown'}}</span>
+  </div>
+</div>
+ -->
