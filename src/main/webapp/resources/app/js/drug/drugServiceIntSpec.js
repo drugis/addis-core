@@ -45,6 +45,10 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       testUtils.dropGraph(graphUri);
 
+      // load study service templates
+      testUtils.loadTemplate('createEmptyStudy.sparql', httpBackend);
+      testUtils.loadTemplate('queryStudyData.sparql', httpBackend);
+
       queryDrugTemplate = testUtils.loadTemplate('queryDrug.sparql', httpBackend);
 
       httpBackend.flush();

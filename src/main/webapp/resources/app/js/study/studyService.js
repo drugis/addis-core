@@ -1,12 +1,15 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$q', '$filter', 'UUIDService', 'RemoteRdfStoreService'];
-  var StudyService = function($q, $filter, UUIDService, RemoteRdfStoreService) {
+  var dependencies = ['$q', '$filter', 'UUIDService', 'RemoteRdfStoreService', 'SparqlResource'];
+  var StudyService = function($q, $filter, UUIDService, RemoteRdfStoreService, SparqlResource) {
 
     var graphPrefix = 'http://trials.drugis.org/graphs/';
     var loadDefer = $q.defer();
     var scratchStudyUri,
       modified = false;
+
+    var createEmptyStudyTemplate = SparqlResource.get('createEmptyStudy.sparql');
+    var studyDataQuery = SparqlResource.get('queryStudyData.sparql');
 
     function doModifyingQuery(query) {
       return loadDefer.promise.then(function() {
@@ -23,58 +26,33 @@ define([], function() {
     }
 
     function createEmptyStudy(study) {
+      var studyCopy = angular.copy(study);
       loadDefer = $q.defer();
-      return RemoteRdfStoreService.create(graphPrefix)
-        .then(function(newGraphUri) {
-          scratchStudyUri = newGraphUri;
-          var query =
-            'PREFIX ontology: <http://trials.drugis.org/ontology#> ' +
-            'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ' +
-            'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ' +
-            'PREFIX study: <http://trials.drugis.org/studies/> ' +
-            ' INSERT DATA ' +
-            ' { ' +
-            '   GRAPH <' + newGraphUri + '> {' +
-            '    study:' + UUIDService.generate() + ' rdfs:label "' + study.label + '" ; ' +
-            '       rdf:type  ontology:Study ; ' +
-            '       rdfs:comment   "' + study.comment + '" ; ' +
-            '       ontology:has_epochs () .' +
-            '   } ' +
-            ' }';
-          return RemoteRdfStoreService.executeUpdate(newGraphUri, query).then(function(responce) {
+      return RemoteRdfStoreService.create(graphPrefix).then(function(newGraphUri) {
+        scratchStudyUri = newGraphUri;
+        studyCopy.uuid = UUIDService.generate();
+        return createEmptyStudyTemplate.then(function(template) {
+          var query = fillTemplate(template, studyCopy);
+          return RemoteRdfStoreService.executeUpdate(newGraphUri, query).then(function(response) {
             loadDefer.resolve();
-            return responce;
+            return response;
           });
         });
+      });
     }
 
     function queryStudyData() {
-      var studyDataQuery =
-        'prefix ontology: <http://trials.drugis.org/ontology#>' +
-        'prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>' +
-        'prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' +
-        'prefix study: <http://trials.drugis.org/studies/>' +
-        'prefix instance: <http://trials.drugis.org/instances/>' +
-        'prefix list: <http://jena.hpl.hp.com/ARQ/list#>' +
-        ' ' +
-        'select' +
-        ' ?studyUri ?label ?comment ' +
-        ' where { GRAPH <' + scratchStudyUri + '> {' +
-        '    ?studyUri' +
-        '      rdf:type ontology:Study ;' +
-        '      rdfs:label ?label ; ' +
-        '      rdfs:comment ?comment .' +
-        '}}';
       return loadDefer.promise.then(function() {
-        return RemoteRdfStoreService.executeQuery(scratchStudyUri, studyDataQuery).then(function(results) {
-          return results[0];
+        return studyDataQuery.then(function(query) {
+          return RemoteRdfStoreService.executeQuery(scratchStudyUri, query).then(function(results) {
+            return results[0];
+          });
         });
       });
     }
 
     function loadStore(data) {
       return RemoteRdfStoreService.create(graphPrefix).then(function(graphUri) {
-        //console.log('RemoteRdfStoreService.create result, = ' + graphUri);
         scratchStudyUri = graphUri;
         return RemoteRdfStoreService.load(scratchStudyUri, data).then(function() {
           loadDefer.resolve();
@@ -103,6 +81,12 @@ define([], function() {
     function reset() {
       loadDefer = $q.defer();
       modified = false;
+    }
+
+    function fillTemplate(template, study) {
+      return template.replace(/\$studyUuid/g, study.uuid)
+        .replace(/\$label/g, study.label)
+        .replace(/\$comment/g, study.comment);
     }
 
     return {

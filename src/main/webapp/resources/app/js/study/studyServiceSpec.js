@@ -1,10 +1,11 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular', 'angular-mocks', 'testUtils'],
+ function(angular, angularMocks, testUtils) {
   describe('study service', function() {
 
     var remoteRdfStoreService, studyService,
       createDefer, loadDefer, executeUpdateDefer, executeQueryDefer,
-      rootScope;
+      rootScope, httpBackend;
 
     beforeEach(module('trialverse', function($provide) {
       remoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['create', 'load', 'executeUpdate', 'executeQuery']);
@@ -14,18 +15,25 @@ define(['angular', 'angular-mocks'], function() {
 
     describe('createEmptyStudy', function() {
 
-      beforeEach(inject(function($rootScope, $q, StudyService) {
+      beforeEach(inject(function($rootScope, $q, $httpBackend, StudyService) {
         rootScope = $rootScope;
         createDefer = $q.defer();
         loadDefer = $q.defer();
         executeUpdateDefer = $q.defer();
         executeQueryDefer = $q.defer();
+        httpBackend = $httpBackend;
 
         remoteRdfStoreService.create.and.returnValue(createDefer.promise);
         remoteRdfStoreService.load.and.returnValue(loadDefer.promise);
         remoteRdfStoreService.executeUpdate.and.returnValue(executeUpdateDefer.promise);
         remoteRdfStoreService.executeQuery.and.returnValue(executeQueryDefer.promise);
         studyService = StudyService;
+
+        // load study service templates
+        testUtils.loadTemplate('createEmptyStudy.sparql', httpBackend);
+        testUtils.loadTemplate('queryStudyData.sparql', httpBackend);
+
+        httpBackend.flush();
       }));
 
       it('should be defined', function() {
