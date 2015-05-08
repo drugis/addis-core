@@ -1,7 +1,0 @@
-WITH <$graphUri>
-DELETE {
-  <$armURI> ?p ?o .
-}
-WHERE {
-  <$armURI> ?p ?o .
-};

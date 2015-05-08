@@ -4,7 +4,7 @@ define(['angular'], function() {
 
   function SanitizeService() {
 
-    function sanitizeStringLiteral(input, type) {
+    function sanitizeStringLiteral(input) {
       var output = input;
       if (input) {
         output = input

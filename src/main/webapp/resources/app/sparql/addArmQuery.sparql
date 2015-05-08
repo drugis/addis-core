@@ -3,11 +3,15 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX study: <http://trials.drugis.org/studies/>
 PREFIX instance: <http://trials.drugis.org/instances/>
-INSERT DATA
-{
-  graph <$graphUri> {
+INSERT {
+  GRAPH <$graphUri> {
     instance:$newUUID rdfs:label "$label" ;
     rdf:type  ontology:Arm .
-    study:$studyUUID ontology:has_arm instance:$newUUID .
+    ?s ontology:has_arm instance:$newUUID .
   }
 }
+WHERE {
+  GRAPH <$graphUri> {
+    ?s a ontology:Study .
+  }
+};
