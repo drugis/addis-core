@@ -1,8 +1,11 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService', 'CommentService'];
-    var ActivityService = function($q, StudyService, SparqlResource, UUIDService, CommentService) {
+    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService',
+      'CommentService', 'SanitizeService'
+    ];
+    var ActivityService = function($q, StudyService, SparqlResource, UUIDService,
+      CommentService, SanitizeService) {
 
       // private
       var INSTANCE_PREFIX = 'http://trials.drugis.org/instances/';
@@ -104,7 +107,7 @@ define([],
           },
           treatmentDoseType: treatmentRow.treatmentDoseType,
           dosingPeriodicity: treatmentRow.treatmentDosingPeriodicity
-        }
+        };
 
         if (treatment.treatmentDoseType === FIXED_DOSE_TYPE) {
           treatment.fixedValue = treatmentRow.treatmentFixedValue;
@@ -187,12 +190,8 @@ define([],
         });
       }
 
-      function getUuid(uri) {
-        return uri.split('/')[uri.split('/').length - 1];
-      }
-
       function formatDouble(num) {
-        if(!isNaN(parseFloat(num)) && isFinite(num)) {
+        if (!isNaN(parseFloat(num)) && isFinite(num)) {
           return parseFloat(num).toExponential().replace('+', '');
         }
         return null;
@@ -213,10 +212,10 @@ define([],
       }
 
       function fillInTemplate(template, activity) {
-          return template.replace(/\$activityUri/g, activity.activityUri)
-            .replace(/\$label/g, activity.label)
-            .replace(/\$comment/g, activity.activityDescription)
-            .replace(/\$activityTypeUri/g, activity.activityType.uri);
+        return template.replace(/\$activityUri/g, activity.activityUri)
+          .replace(/\$label/g, activity.label)
+          .replace(/\$comment/g, SanitizeService.sanitizeStringLiteral(activity.activityDescription))
+          .replace(/\$activityTypeUri/g, activity.activityType.uri);
       }
 
       return {
