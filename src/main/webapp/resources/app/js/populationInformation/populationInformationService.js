@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService'];
-    var PopulationInformationService = function($q, StudyService, SparqlResource, UUIDService) {
+    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService', 'SanitizeService'];
+    var PopulationInformationService = function($q, StudyService, SparqlResource, UUIDService, SanitizeService) {
 
       var INSTANCE_PREFIX = 'http://trials.drugis.org/instances/';
 
@@ -41,7 +41,7 @@ define([],
       function fillTemplate(template, item) {
         return template
           .replace(/\$indicationUri/g, item.indication.uri)
-          .replace(/\$indicationLabel/g, item.indication.label)
+          .replace(/\$indicationLabel/g, SanitizeService.sanitizeStringLiteral(item.indication.label))
           .replace(/\$eligibilityCriteria/g, item.eligibilityCriteria.label)
           ;
       }

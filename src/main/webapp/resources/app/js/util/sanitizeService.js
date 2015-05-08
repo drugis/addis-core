@@ -4,9 +4,7 @@ define(['angular'], function() {
 
   function SanitizeService() {
 
-    var SPARQL_STRING_LITERAL = 'multiLineString';
-
-    function sanitize(input, type) {
+    function sanitizeStringLiteral(input, type) {
       var output = input;
       if (input && type && type === SPARQL_STRING_LITERAL) {
         output = input
@@ -26,8 +24,7 @@ define(['angular'], function() {
       return output;
     }
     return {
-      SPARQL_STRING_LITERAL: SPARQL_STRING_LITERAL,
-      sanitize: sanitize
+      sanitizeStringLiteral: sanitizeStringLiteral
     };
   }
   return dependencies.concat(SanitizeService);
