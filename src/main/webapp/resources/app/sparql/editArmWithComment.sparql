@@ -7,8 +7,8 @@ DELETE {
   <$armURI> rdfs:comment ?comment .
 }
 INSERT {
-  <$armURI> rdfs:label "$newArmLabel" .
-  <$armURI> rdfs:comment "$newArmComment" .
+  <$armURI> rdfs:label "$label" .
+  <$armURI> rdfs:comment "$comment" .
 }
 WHERE {
   <$armURI> rdfs:label ?label .

@@ -1,62 +1,50 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService'];
-    var ArmService = function($q, StudyService, SparqlResource, UUIDService) {
+    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService', 'SanitizeService'];
+    var ArmService = function($q, StudyService, SparqlResource, UUIDService, SanitizeService) {
 
-      var armsQuery = SparqlResource.get('queryArm.sparql');
-      var rawAddArmQuery = SparqlResource.get('addArmQuery.sparql');
-      var rawAddArmCommentQuery = SparqlResource.get('addArmCommentQuery.sparql');
-      var editArmWithCommentQuery = SparqlResource.get('editArmWithComment.sparql');
-      var editArmWithoutCommentQuery = SparqlResource.get('editArmWithoutComment.sparql');
-      var rawDeleteArmQuery = SparqlResource.get('deleteArm.sparql');
-      var rawDeleteHasArmQuery = SparqlResource.get('deleteHasArm.sparql');
+      var queryArms = SparqlResource.get('queryArm.sparql');
+      var addArmTemplate = SparqlResource.get('addArmQuery.sparql');
+      var addArmCommentTemplate = SparqlResource.get('addArmCommentQuery.sparql');
+      var editArmWithCommentTemplate = SparqlResource.get('editArmWithComment.sparql');
+      var editArmWithoutCommentTemplate = SparqlResource.get('editArmWithoutComment.sparql');
+      var deleteSubjectTemplate = SparqlResource.get('deleteSubject.sparql');
+      var deleteHasArmTemplate = SparqlResource.get('deleteHasArm.sparql');
 
-      function queryItems(studyUuid) {
-        return armsQuery.then(function(query) {
+      function queryItems() {
+        return queryArms.then(function(query) {
           return StudyService.doNonModifyingQuery(query);
         });
       }
 
-      function addItem(arm, studyUUID) {
-
-        var uuid = UUIDService.generate();
+      function addItem(item) {
         var addArmPromise, addCommentPromise;
+        var armToAdd = angular.copy(item);
+        armToAdd.uuid = UUIDService.generate();
 
-        addArmPromise = rawAddArmQuery.then(function(rawQuery) {
-          var query = rawQuery
-            .replace(/\$newUUID/g, uuid)
-            .replace(/\$label/g, arm.label)
-            .replace('$studyUUID', studyUUID);
-          return StudyService.doModifyingQuery(query);
+        addArmPromise = addArmTemplate.then(function(template) {
+          return StudyService.doModifyingQuery(fillTemplate(template, armToAdd));
         });
 
-        if(arm.comment) {
-          addCommentPromise = rawAddArmCommentQuery.then(function(rawQuery) {
-            var query = rawQuery
-              .replace(/\$newUUID/g, uuid)
-              .replace(/\$comment/g, arm.comment);
-            return StudyService.doModifyingQuery(query);
+        if (armToAdd.comment) {
+          addCommentPromise = addArmCommentTemplate.then(function(template) {
+            return StudyService.doModifyingQuery(fillTemplate(template, armToAdd));
           });
         }
 
         return $q.all([addArmPromise, addCommentPromise]);
       }
 
-      function editItem(arm) {
+      function editItem(item) {
         var defer = $q.defer();
-        if (arm.comment) {
-          editArmWithCommentQuery.then(function(query) {
-            var editArmWithCommentQuery = query.replace(/\$armURI/g, arm.armURI)
-              .replace('$newArmLabel', arm.label)
-              .replace('$newArmComment', arm.comment);
-            defer.resolve(StudyService.doModifyingQuery(editArmWithCommentQuery));
+        if (item.comment) {
+          editArmWithCommentTemplate.then(function(template) {
+            defer.resolve(StudyService.doModifyingQuery(fillTemplate(template, item)));
           });
         } else {
-          editArmWithoutCommentQuery.then(function(query) {
-            var editArmWithoutCommentQuery = query.replace(/\$armURI/g, arm.armURI)
-              .replace('$newArmLabel', arm.label);
-            defer.resolve(StudyService.doModifyingQuery(editArmWithoutCommentQuery));
+          editArmWithoutCommentTemplate.then(function(template) {
+            defer.resolve(StudyService.doModifyingQuery(fillTemplate(template, item)));
           });
         }
         return defer.promise;
@@ -65,17 +53,24 @@ define([],
       function deleteItem(arm) {
         var deleteArmPromise, deleteHasArmPromise;
 
-        deleteArmPromise = rawDeleteArmQuery.then(function(rawQuery){
-          var query = rawQuery.replace(/\$armURI/g, arm.armURI);
-          return StudyService.doModifyingQuery(query);
+        deleteArmPromise = deleteSubjectTemplate.then(function(template) {
+          return StudyService.doModifyingQuery(fillTemplate(template, arm));
         });
 
-        deleteArmPromise = rawDeleteHasArmQuery.then(function(rawQuery){
-          var query = rawQuery.replace(/\$armURI/g, arm.armURI);
-          return StudyService.doModifyingQuery(query);
+        deleteArmPromise = deleteHasArmTemplate.then(function(template) {
+          return StudyService.doModifyingQuery(fillTemplate(template, arm));
         });
 
         return $q.all([deleteArmPromise, deleteHasArmPromise]);
+      }
+
+      function fillTemplate(template, item) {
+        return template
+          .replace(/\$newUUID/g, item.uuid)
+          .replace(/\$subjectURI/g, item.armURI)
+          .replace(/\$armURI/g, item.armURI)
+          .replace(/\$label/g, item.label)
+          .replace(/\$comment/g, SanitizeService.sanitizeStringLiteral(item.comment));
       }
 
       return {
