@@ -52,7 +52,7 @@ define([],
       }
 
       function editSelectItem(item, propertyToEdit, options, editTemplate, deleteTemplate) {
-        return editProperty(item, item[propertyToEdit].uri !== options.unknown.uri, editTemplate, deleteTemplate);
+        return editProperty(item, item && item[propertyToEdit].uri !== options.unknown.uri, editTemplate, deleteTemplate);
       }
 
       function editGroupAllocation(item) {
@@ -84,7 +84,7 @@ define([],
           .replace(/\$blindingUri/g, item.blinding.uri)
           .replace(/\$statusUri/g, item.status.uri)
           .replace(/\$numberOfCenters/g, item.numberOfCenters)
-          .replace(/\$objective/g, SanitizeService.sanatize(item.objective, SanitizeService.MULTI_LINE_STRING));
+          .replace(/\$objective/g, SanitizeService.sanitize(item.objective, SanitizeService.SPARQL_STRING_LITERAL));
       }
 
       return {

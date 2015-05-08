@@ -4,13 +4,12 @@ define(['angular'], function() {
 
   function SanitizeService() {
 
-    var SINGLE_LINE_STRING = 'singleLineString';
-    var MULTI_LINE_STRING = 'multiLineString';
+    var SPARQL_STRING_LITERAL = 'multiLineString';
 
-    function sanatize(input, type) {
-
-      if (input && type && type === MULTI_LINE_STRING) {
-        var output = input
+    function sanitize(input, type) {
+      var output = input;
+      if (input && type && type === SPARQL_STRING_LITERAL) {
+        output = input
           .replace(/[\\]/g, '\\\\')
           .replace(/[\"]/g, '\\\"')
           .replace(/[\/]/g, '\\/')
@@ -27,9 +26,8 @@ define(['angular'], function() {
       return output;
     }
     return {
-      SINGLE_LINE_STRING,
-      MULTI_LINE_STRING,
-      sanatize: sanatize
+      SPARQL_STRING_LITERAL: SPARQL_STRING_LITERAL,
+      sanitize: sanitize
     };
   }
   return dependencies.concat(SanitizeService);
