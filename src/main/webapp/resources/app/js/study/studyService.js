@@ -86,7 +86,7 @@ define([], function() {
     function fillTemplate(template, study) {
       return template.replace(/\$studyUuid/g, study.uuid)
         .replace(/\$label/g, study.label)
-        .replace(/\$comment/g, SanitizeService.sanitizeStringLiteral(study.comment, SanitizeService.SPARQL_STRING_LITERAL));
+        .replace(/\$comment/g, SanitizeService.sanitizeStringLiteral(study.comment));
     }
 
     return {

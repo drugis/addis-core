@@ -84,7 +84,7 @@ define([],
           .replace(/\$blindingUri/g, item.blinding? item.blinding.uri : '')
           .replace(/\$statusUri/g, item.status? item.status.uri : '')
           .replace(/\$numberOfCenters/g, item.numberOfCenters)
-          .replace(/\$objective/g, SanitizeService.sanitizeStringLiteral(item.objective, SanitizeService.SPARQL_STRING_LITERAL));
+          .replace(/\$objective/g, SanitizeService.sanitizeStringLiteral(item.objective));
       }
 
       return {

@@ -6,7 +6,7 @@ define(['angular'], function() {
 
     function sanitizeStringLiteral(input, type) {
       var output = input;
-      if (input && type && type === SPARQL_STRING_LITERAL) {
+      if (input) {
         output = input
           .replace(/[\\]/g, '\\\\')
           .replace(/[\"]/g, '\\\"')
