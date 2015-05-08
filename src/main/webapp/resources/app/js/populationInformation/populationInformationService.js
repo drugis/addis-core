@@ -42,7 +42,7 @@ define([],
         return template
           .replace(/\$indicationUri/g, item.indication.uri)
           .replace(/\$indicationLabel/g, SanitizeService.sanitizeStringLiteral(item.indication.label))
-          .replace(/\$eligibilityCriteria/g, item.eligibilityCriteria.label)
+          .replace(/\$eligibilityCriteria/g, SanitizeService.sanitizeStringLiteral(item.eligibilityCriteria.label))
           ;
       }
 
