@@ -51,20 +51,20 @@ define([],
         }
       }
 
-      function editSelectItem(item, propertyToEdit, options, editTemplate, deleteTemplate) {
-        return editProperty(item, item && item[propertyToEdit].uri !== options.unknown.uri, editTemplate, deleteTemplate);
+      function editSelectItem(item, selectedProperty, options, editTemplate, deleteTemplate) {
+        return editProperty(item, selectedProperty && selectedProperty.uri !== options.unknown.uri, editTemplate, deleteTemplate);
       }
 
       function editGroupAllocation(item) {
-        editSelectItem(item, 'groupAllocation', GROUP_ALLOCATION_OPTIONS, editGroupAllocationTemplate, deleteGroupAllocationTemplate);
+        editSelectItem(item, item.groupAllocation, GROUP_ALLOCATION_OPTIONS, editGroupAllocationTemplate, deleteGroupAllocationTemplate);
       }
 
       function editBlinding(item) {
-        editSelectItem(item, 'blinding', BLINDING_OPTIONS, editBlindingTemplate, deleteBlindingTemplate);
+        editSelectItem(item, item.blinding, BLINDING_OPTIONS, editBlindingTemplate, deleteBlindingTemplate);
       }
 
       function editStatus(item) {
-        editSelectItem(item, 'status', STATUS_OPTIONS, editStatusTemplate, deleteStatusTemplate);
+        editSelectItem(item, item.status, STATUS_OPTIONS, editStatusTemplate, deleteStatusTemplate);
       }
 
       function editItem(item) {
@@ -80,9 +80,9 @@ define([],
 
       function fillTemplate(template, item) {
         return template
-          .replace(/\$groupAllocationUri/g, item.groupAllocation.uri)
-          .replace(/\$blindingUri/g, item.blinding.uri)
-          .replace(/\$statusUri/g, item.status.uri)
+          .replace(/\$groupAllocationUri/g, item.groupAllocation ? item.groupAllocation.uri : '')
+          .replace(/\$blindingUri/g, item.blinding? item.blinding.uri : '')
+          .replace(/\$statusUri/g, item.status? item.status.uri : '')
           .replace(/\$numberOfCenters/g, item.numberOfCenters)
           .replace(/\$objective/g, SanitizeService.sanitize(item.objective, SanitizeService.SPARQL_STRING_LITERAL));
       }

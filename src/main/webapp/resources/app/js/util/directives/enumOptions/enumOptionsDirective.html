@@ -3,4 +3,4 @@
          ng-change="onOptionChange(selectedOption)"
          ng-options="enumOption.label for enumOption in enumOptions track by enumOption.uri ">
         </select>
-<span ng-show="!editMode">{{selectedOption.label || 'none'}}</span>
+<span ng-show="!editMode">{{selectedOption.label || 'unknown'}}</span>
