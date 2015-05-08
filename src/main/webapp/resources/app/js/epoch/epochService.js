@@ -22,7 +22,7 @@ define([],
 
       function addItem(item) {
         var newItem = angular.copy(item);
-        item.uuid = UUIDService.generate();
+        newItem.uuid = UUIDService.generate();
 
         var addEpochPromise, addCommentPromise, setPrimaryPromise, addToListPromise;
 
