@@ -7,6 +7,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     var rootScope, q, httpBackend;
     var remotestoreServiceStub;
+    var uuidServiceStub;
     var measurementMomentServiceMock;
     var adverseEventService;
     var studyService;
@@ -46,6 +47,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           'generateLabel'
         ]);
         $provide.value('MeasurementMomentService', measurementMomentServiceMock);
+        uuidServiceStub = jasmine.createSpyObj('UUIDService', ['generate']);
+        $provide.value('UUIDService', uuidServiceStub);
       });
     });
 
@@ -71,7 +74,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       addTemplateRaw = testUtils.loadTemplate('addTemplate.sparql', httpBackend);
       addAdverseEventQueryRaw = testUtils.loadTemplate('addAdverseEvent.sparql', httpBackend);
       adverseEventsQuery = testUtils.loadTemplate('queryAdverseEvent.sparql', httpBackend);
-      deleteAdverseEventRaw = testUtils.loadTemplate('deleteAdverseEvent.sparql', httpBackend);
+      deleteAdverseEventRaw = testUtils.loadTemplate('deleteVariable.sparql', httpBackend);
       editAdverseEventRaw = testUtils.loadTemplate('editVariable.sparql', httpBackend);
       queryAdverseEventMeasuredAtRaw = testUtils.loadTemplate('queryMeasuredAt.sparql', httpBackend);
 
@@ -113,17 +116,21 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
         testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
 
-        // the test item to add 
+        // the test item to add
         var adverseEvent = {
           label: 'adverse event label',
           measurementType: 'http://some-measurementType'
         };
+        var newUuid = 'newUuid';
+        uuidServiceStub.generate.and.returnValue(newUuid);
 
-        // add some measured at moments 
+        // add some measured at moments
         var moment1 = {uri: 'http://moments/moment1'};
         var moment2 = {uri: 'http://moments/moment2'};
         var adverseEventWithMoments = angular.copy(adverseEvent);
         adverseEventWithMoments.measuredAtMoments = [moment1, moment2];
+        adverseEventWithMoments.uuid = newUuid;
+        adverseEventWithMoments.uri = 'http://trials.drugis.org/instances/' + newUuid;
 
         var resultPromise = adverseEventService.addItem(adverseEventWithMoments);
 

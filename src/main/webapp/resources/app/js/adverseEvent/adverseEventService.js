@@ -8,7 +8,7 @@ define([],
 
       var addAdverseEventQueryRaw = SparqlResource.get('addAdverseEvent.sparql');
       var adverseEventsQuery = SparqlResource.get('queryAdverseEvent.sparql');
-      var deleteAdverseEventRaw = SparqlResource.get('deleteAdverseEvent.sparql');
+      var deleteAdverseEventRaw = SparqlResource.get('deleteVariable.sparql');
       var editAdverseEventRaw = SparqlResource.get('editVariable.sparql');
       var queryAdverseEventMeasuredAtRaw = SparqlResource.get('queryMeasuredAt.sparql');
 
@@ -48,17 +48,15 @@ define([],
       }
 
       function addItem(adverseEvent) {
-        var newUUid = UUIDService.generate();
-        adverseEvent.uri = 'http://trials.drugis.org/instances/' + newUUid;
-        var stringToInsert = buildInsertMeasuredAtBlock(adverseEvent);
+        var newItem = angular.copy(adverseEvent);
+        newItem.uuid = UUIDService.generate();
+        newItem.uri = 'http://trials.drugis.org/instances/' + newItem.uuid;
+        var stringToInsert = buildInsertMeasuredAtBlock(newItem);
 
         var addAdverseEventPromise = addAdverseEventQueryRaw.then(function(query) {
-          var addAdverseEventQuery = query
-            .replace(/\$UUID/g, newUUid)
-            .replace('$label', adverseEvent.label)
-            .replace('$measurementType', adverseEvent.measurementType);
+          var addAdverseEventQuery = fillInTemplate(query, newItem);
           return StudyService.doModifyingQuery(addAdverseEventQuery).then(function(){
-            return OutcomeService.setOutcomeProperty(adverseEvent);
+            return OutcomeService.setOutcomeProperty(newItem);
           });
         });
 
@@ -72,20 +70,18 @@ define([],
 
       function deleteItem(item) {
         return deleteAdverseEventRaw.then(function(deleteQueryRaw) {
-          return StudyService.doModifyingQuery(deleteQueryRaw.replace(/\$URI/g, item.uri));
+          return StudyService.doModifyingQuery(fillInTemplate(deleteQueryRaw, item));
         });
       }
 
       function editItem(item) {
-        var stringToInsert = buildInsertMeasuredAtBlock(item);
+        var newItem = angular.copy(item);
+        newItem.measurementMomentBlock = buildInsertMeasuredAtBlock(item);
         return editAdverseEventRaw.then(function(editQueryRaw) {
-          var editQuery = editQueryRaw.replace(/\$URI/g, item.uri)
-            .replace('$newLabel', item.label)
-            .replace('$newMeasurementType', item.measurementType)
-            .replace('$insertMeasurementMomentBlock', stringToInsert);
+          var editQuery = fillInTemplate(editQueryRaw, newItem);
           return StudyService.doModifyingQuery(editQuery).then(function(){
             return OutcomeService.setOutcomeProperty(item);
-          })
+          });
         });
       }
 
@@ -93,6 +89,16 @@ define([],
         return _.reduce(adverseEvent.measuredAtMoments, function(accumulator, measuredAtMoment){
           return accumulator + ' <' + adverseEvent.uri + '> ontology:is_measured_at <' + measuredAtMoment.uri + '> .';
         }, '');
+      }
+
+      function fillInTemplate(template, item) {
+        return template
+               .replace(/\$UUID/g, item.uuid)
+               .replace('$label', item.label)
+               .replace('$measurementType', item.measurementType)
+               .replace('$insertMeasurementMomentBlock', item.measurementMomentBlock)
+               .replace(/\$URI/g, item.uri)
+              ;
       }
 
       return {

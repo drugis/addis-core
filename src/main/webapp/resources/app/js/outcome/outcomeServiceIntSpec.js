@@ -87,14 +87,14 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
         testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
 
-        // the test item to add 
+        // the test item to add
         var outcome = {
           uri: 'http://trials.drugis.org/instances/my-outcome',
           label: 'outcome label',
           measurementType: 'http://trials.drugis.org/ontology#dichotomous'
         };
 
-        //first add an outcome 
+        //first add an outcome
         var addOutcomeQuery = addPopulationCharacteristicTemplate
             .replace(/\$UUID/g, 'my-outcome')
             .replace('$label', outcome.label)
@@ -105,7 +105,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         // call the method to test
         var resultPromise = outcomeService.setOutcomeProperty(outcome);
 
-        // setup verification, ready for digest cycle to kickoff 
+        // setup verification, ready for digest cycle to kickoff
         resultPromise.then(function(result) {
           // verify addAdverseEvent query
           var query = 'select ?property where { graph <' + graphUri + '> { <http://trials.drugis.org/instances/my-outcome> <http://trials.drugis.org/ontology#has_result_property> ?property . } }  ';
@@ -126,15 +126,15 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       it('should add the triples for mean, sd and sampleSize then the outcome is continous type outcome', function(done) {
 
         testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
-        
-        // the test item to add 
+
+        // the test item to add
         var outcome = {
           uri: 'http://trials.drugis.org/instances/my-outcome',
           label: 'outcome label',
           measurementType: 'http://trials.drugis.org/ontology#continuous'
         };
 
-        //first add a outcome 
+        //first add a outcome
         var addOutcomeQuery = addPopulationCharacteristicTemplate
             .replace(/\$UUID/g, 'my-outcome')
             .replace('$label', outcome.label)
@@ -145,7 +145,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         // call the method to test
         var resultPromise = outcomeService.setOutcomeProperty(outcome);
 
-        // setup verification, ready for digest cycle to kickoff 
+        // setup verification, ready for digest cycle to kickoff
         resultPromise.then(function(result) {
           // verify addAdverseEvent query
           var query = 'select ?property where { graph <' + graphUri + '> { <http://trials.drugis.org/instances/my-outcome> <http://trials.drugis.org/ontology#has_result_property> ?property . } }  ';
@@ -166,6 +166,10 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     });
 
+
+    describe('deleteOutcome', function() {
+
+    });
 
   });
 });

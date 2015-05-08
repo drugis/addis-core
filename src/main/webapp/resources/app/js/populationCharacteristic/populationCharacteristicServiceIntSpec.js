@@ -6,7 +6,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     var scratchStudyUri = 'http://localhost:9876/scratch';
 
     var rootScope, q, httpBackend;
-    var remotestoreServiceStub, uUIDServiceStub, measurementMomentServiceStub;;
+    var remotestoreServiceStub, uUIDServiceStub, measurementMomentServiceStub;
     var populationCharacteristicService;
     var outcomeService;
     var studyService;
@@ -43,7 +43,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       rootScope = $rootScope;
       populationCharacteristicService = PopulationCharacteristicService;
       studyService = StudyService;
-      outcomeService = OutcomeService
+      outcomeService = OutcomeService;
 
       // reset the test graph
       testUtils.dropGraph(graphUri);
@@ -57,7 +57,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       testUtils.loadTemplate('addTemplate.sparql', httpBackend);
       testUtils.loadTemplate('addPopulationCharacteristic.sparql', httpBackend);
       testUtils.loadTemplate('queryPopulationCharacteristic.sparql', httpBackend);
-      testUtils.loadTemplate('deletePopulationCharacteristic.sparql', httpBackend);
+      testUtils.loadTemplate('deleteVariable.sparql', httpBackend);
       testUtils.loadTemplate('editVariable.sparql', httpBackend);
       testUtils.loadTemplate('queryMeasuredAt.sparql', httpBackend);
       httpBackend.flush();
@@ -75,7 +75,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     describe('add population characteristic', function() {
 
-      var popCharUri = 'http://trials.drugis.org/instances/newUUid';
+      var popCharUri = 'http://trials.drugis.org/instances/newUuid';
       var queryPromise;
       var moment = 'http://mm/uri';
       var measuredAtMoment = {
@@ -111,8 +111,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should add the population characteristics', function(done) {
 
-        queryPromise.then(function(queryRestult) {
-          expect(queryRestult.length).toEqual(1);
+        queryPromise.then(function(queryResult) {
+          expect(queryResult.length).toEqual(1);
+          expect(queryResult[0].label).toEqual(newPopulationChar.label);
           done();
         });
       });
@@ -121,7 +122,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     describe('edit population characteristic', function() {
 
       var editItem;
-      var popCharUri = 'http://trials.drugis.org/instances/newUUid';
+      var popCharUri = 'http://trials.drugis.org/instances/newUuid';
       var queryPromise;
       var moment = 'http://mm/uri';
       var measuredAtMoment = {
@@ -147,8 +148,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           measurementMoment: moment
         }]);
         measurementMomentServiceStub.queryItems.and.returnValue(queryMeasurementMomentsDefer.promise);
+
         populationCharacteristicService.addItem(newPopulationChar).then(function() {
-          editItem = newPopulationChar;
+          editItem = angular.copy(newPopulationChar);
           editItem.label = 'edit label';
           populationCharacteristicService.editItem(editItem).then(function() {
             queryPromise = populationCharacteristicService.queryItems();
@@ -160,16 +162,16 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should have changed the population characteristics', function(done) {
 
-        queryPromise.then(function(queryRestult) {
-          expect(queryRestult.length).toEqual(1);
-          expect(queryRestult[0].label).toEqual(editItem.label);
+        queryPromise.then(function(queryResult) {
+          expect(queryResult.length).toEqual(1);
+          expect(queryResult[0].label).toEqual(editItem.label);
           done();
         });
       });
     });
 
     describe('delete population characteristic', function() {
-      var popCharUri = 'http://trials.drugis.org/instances/newUUid';
+      var popCharUri = 'http://trials.drugis.org/instances/newUuid';
       var queryPromise;
       var moment = 'http://mm/uri';
       var measuredAtMoment = {
@@ -206,8 +208,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should have removed the population characteristics', function(done) {
 
-        queryPromise.then(function(queryRestult) {
-          expect(queryRestult.length).toEqual(0);
+        queryPromise.then(function(queryResult) {
+          expect(queryResult.length).toEqual(0);
           done();
         });
       });

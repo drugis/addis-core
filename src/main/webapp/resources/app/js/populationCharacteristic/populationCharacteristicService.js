@@ -8,7 +8,7 @@ define([],
 
       var addPopulationCharacteristicQueryRaw = SparqlResource.get('addPopulationCharacteristic.sparql');
       var populationCharacteristicsQuery = SparqlResource.get('queryPopulationCharacteristic.sparql');
-      var deletePopulationCharacteristicRaw = SparqlResource.get('deletePopulationCharacteristic.sparql');
+      var deletePopulationCharacteristicRaw = SparqlResource.get('deleteVariable.sparql');
       var editPopulationCharacteristicRaw = SparqlResource.get('editVariable.sparql');
 
       var queryMeasuredAtTemplate = SparqlResource.get('queryMeasuredAt.sparql');
@@ -37,11 +37,11 @@ define([],
             var filtered = _.filter(measuredAtMoments, function(measuredAtMoment) {
               return item.uri === measuredAtMoment.itemUri;
             });
-           
+
             item.measuredAtMoments = _.map(_.pluck(filtered, 'measurementMoment'), function(measurementMomentUri) {
               return _.find(measurementMoments, function(moment){
                 return measurementMomentUri === moment.uri;
-              }); 
+              });
             });
             return item;
           });
@@ -49,17 +49,15 @@ define([],
       }
 
       function addItem(item) {
-        var newUUid = UUIDService.generate();
-        item.uri = 'http://trials.drugis.org/instances/' + newUUid;
-        var stringToInsert = buildInsertMeasuredAtBlock(item);
+        var newItem = angular.copy(item);
+        newItem.uuid = UUIDService.generate();
+        newItem.uri = 'http://trials.drugis.org/instances/' + newItem.uuid;
+        var stringToInsert = buildInsertMeasuredAtBlock(newItem);
 
         var addItemPromise = addPopulationCharacteristicQueryRaw.then(function(query) {
-          var addPopulationCharacteristicQuery = query
-            .replace(/\$UUID/g, newUUid)
-            .replace('$label', item.label)
-            .replace('$measurementType', item.measurementType);
+          var addPopulationCharacteristicQuery =fillInTemplate(query, newItem);
           return StudyService.doModifyingQuery(addPopulationCharacteristicQuery).then(function(){
-            return OutcomeService.setOutcomeProperty(item);
+            return OutcomeService.setOutcomeProperty(newItem);
           });
         });
 
@@ -78,13 +76,10 @@ define([],
       }
 
       function editItem(item) {
-        var stringToInsert = buildInsertMeasuredAtBlock(item);
-
+        var newItem = angular.copy(item);
+        newItem.measurementMomentBlock = buildInsertMeasuredAtBlock(newItem);
         return editPopulationCharacteristicRaw.then(function(editQueryRaw) {
-          var editQuery = editQueryRaw.replace(/\$URI/g, item.uri)
-            .replace('$newLabel', item.label)
-            .replace('$newMeasurementType', item.measurementType)
-            .replace('$insertMeasurementMomentBlock', stringToInsert);
+          var editQuery = fillInTemplate(editQueryRaw, newItem);
           return StudyService.doModifyingQuery(editQuery).then(function(){
             return OutcomeService.setOutcomeProperty(item);
           });
@@ -95,6 +90,16 @@ define([],
         return _.reduce(item.measuredAtMoments, function(accumulator, measuredAtMoment){
           return accumulator + ' <' + item.uri + '> ontology:is_measured_at <' + measuredAtMoment.uri + '> .';
         }, '');
+      }
+
+      function fillInTemplate(template, item) {
+        return template
+               .replace(/\$UUID/g, item.uuid)
+               .replace('$label', item.label)
+               .replace('$measurementType', item.measurementType)
+               .replace('$insertMeasurementMomentBlock', item.measurementMomentBlock)
+               .replace(/\$URI/g, item.uri)
+              ;
       }
 
       return {

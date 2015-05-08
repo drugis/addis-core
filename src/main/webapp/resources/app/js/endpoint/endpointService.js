@@ -8,7 +8,7 @@ define([],
 
       var addEndpointQueryRaw = SparqlResource.get('addEndpoint.sparql');
       var endpointQuery = SparqlResource.get('queryEndpoint.sparql');
-      var deleteEndpointRaw = SparqlResource.get('deleteEndpoint.sparql');
+      var deleteEndpointRaw = SparqlResource.get('deleteVariable.sparql');
       var editEndpointRaw = SparqlResource.get('editVariable.sparql');
       var queryEndpointMeasuredAtRaw = SparqlResource.get('queryMeasuredAt.sparql');
 
@@ -50,13 +50,13 @@ define([],
       function addItem(endpoint) {
         var newItem = angular.copy(endpoint);
         newItem.uuid = UUIDService.generate();
-        endpoint.uri = 'http://trials.drugis.org/instances/' + newUUid;
-        var stringToInsert = buildInsertMeasuredAtBlock(endpoint);
+        newItem.uri = 'http://trials.drugis.org/instances/' + newItem.uuid;
+        var stringToInsert = buildInsertMeasuredAtBlock(newItem);
 
         var addEndpointPromise = addEndpointQueryRaw.then(function(query) {
           var addEndpointQuery = fillInTemplate(query, newItem);
           return StudyService.doModifyingQuery(addEndpointQuery).then(function(){
-            return OutcomeService.setOutcomeProperty(endpoint);
+            return OutcomeService.setOutcomeProperty(newItem);
           });
         });
 
@@ -96,6 +96,7 @@ define([],
                .replace(/\$UUID/g, item.uuid)
                .replace('$label', item.label)
                .replace('$measurementType', item.measurementType)
+               .replace('$insertBlock', item)
                .replace('$insertMeasurementMomentBlock', item.measurementMomentBlock)
                .replace(/\$URI/g, item.uri)
               ;

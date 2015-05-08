@@ -22,8 +22,8 @@ DELETE {
 }
 INSERT {
   <$URI>
-    rdfs:label "$newLabel" ;
-    ontology:of_variable [ ontology:measurementType <$newMeasurementType> ].
+    rdfs:label "$label" ;
+    ontology:of_variable [ ontology:measurementType <$measurementType> ].
     $insertMeasurementMomentBlock
 }
 WHERE {
