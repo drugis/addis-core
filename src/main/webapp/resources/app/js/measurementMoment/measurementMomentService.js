@@ -11,7 +11,7 @@ define([],
 
       function queryItems() {
         var measurementMoments, epochs;
-        var epochsPromise = EpochService.queryItems().then(function(result){
+        var epochsPromise = EpochService.queryItems().then(function(result) {
           epochs = result;
         });
 
@@ -23,7 +23,7 @@ define([],
 
         return $q.all([epochsPromise, measurementsMomentsPromise]).then(function() {
 
-          var unsorted =  _.map(measurementMoments, function(measurementMoment) {
+          var unsorted = _.map(measurementMoments, function(measurementMoment) {
             measurementMoment.epoch = _.find(epochs, function(epoch) {
               return measurementMoment.epochUri === epoch.uri;
             });
@@ -37,9 +37,9 @@ define([],
 
       function sortByEpochAnchorAndDuration(unsorted) {
         return unsorted.sort(function(a, b) {
-          if(a.epoch.pos === b.epoch.pos) {
-            if(a.relativeToAnchor === b.relativeToAnchor) {
-              if(a.offset === b.offset) {
+          if (a.epoch.pos === b.epoch.pos) {
+            if (a.relativeToAnchor === b.relativeToAnchor) {
+              if (a.offset === b.offset) {
                 // its all the same
                 return 0;
               } else {
@@ -57,36 +57,22 @@ define([],
 
 
       function addItem(item) {
-        return addItemQuery.then(function(rawQuery) {
-
-          var uuid = UUIDService.generate();
-          var query = rawQuery
-            .replace('$newItemUuid', uuid)
-            .replace('$newLabel', item.label)
-            .replace('$epochUri', item.epoch.uri)
-            .replace('$anchorMoment', item.relativeToAnchor)
-            .replace('$timeOffset', item.offset);
-          return StudyService.doModifyingQuery(query);
+        var newItem = angular.copy(item);
+        newItem.uuid = UUIDService.generate();
+        return addItemQuery.then(function(template) {
+          return StudyService.doModifyingQuery(fillTemplate(template, newItem));
         });
       }
 
       function editItem(item) {
-        return editItemQuery.then(function(rawQuery) {
-          var query = rawQuery
-            .replace(/\$itemUri/g, item.uri)
-            .replace('$newLabel', item.label)
-            .replace('$epochUri', item.epoch.uri)
-            .replace('$anchorMoment', item.relativeToAnchor)
-            .replace('$timeOffset', item.offset);
-          return StudyService.doModifyingQuery(query);
+        return editItemQuery.then(function(template) {
+          return StudyService.doModifyingQuery(fillTemplate(template, item));
         });
       }
 
       function deleteItem(item) {
-        return deleteItemQuery.then(function(rawQuery) {
-          var query = rawQuery
-            .replace(/\$itemUri/g, item.uri);
-          return StudyService.doModifyingQuery(query);
+        return deleteItemQuery.then(function(template) {
+          return StudyService.doModifyingQuery(fillTemplate(template, item));
         });
 
       }
@@ -98,6 +84,19 @@ define([],
         var offsetStr = (measurementMoment.offset === 'PT0S') ? 'At' : $filter('durationFilter')(measurementMoment.offset) + ' from';
         var anchorStr = measurementMoment.relativeToAnchor === 'http://trials.drugis.org/ontology#anchorEpochStart' ? 'start' : 'end';
         return offsetStr + ' ' + anchorStr + ' of ' + measurementMoment.epoch.label;
+      }
+
+      function fillTemplate(template, item) {
+        var query = template
+          .replace(/\$newItemUuid/g, item.uuid)
+          .replace(/\$itemUri/g, item.uri)
+          .replace(/\$newLabel/g, item.label)
+          .replace(/\$anchorMoment/g, item.relativeToAnchor)
+          .replace(/\$timeOffset/g, item.offset);
+        if(item.epoch) {
+          query = query.replace(/\$epochUri/g, item.epoch.uri)
+        }
+        return query;
       }
 
       return {
