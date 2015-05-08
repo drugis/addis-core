@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'UUIDService', 'SparqlResource'];
-    var EpochService = function($q, StudyService, UUIDService, SparqlResource) {
+    var dependencies = ['$q', 'StudyService', 'UUIDService', 'SparqlResource', 'SanitizeService'];
+    var EpochService = function($q, StudyService, UUIDService, SparqlResource, SanitizeService) {
 
       var epochQuery = SparqlResource.get('queryEpoch.sparql');
       var addEpochQueryRaw = SparqlResource.get('addEpoch.sparql');
@@ -21,39 +21,34 @@ define([],
       }
 
       function addItem(item) {
-        var uuid = UUIDService.generate();
+        var newItem = angular.copy(item);
+        item.uuid = UUIDService.generate();
+
         var addEpochPromise, addCommentPromise, setPrimaryPromise, addToListPromise;
 
         // add epoch
         addEpochPromise = addEpochQueryRaw.then(function(query) {
-          var addEpochQuery = query
-            .replace(/\$newUUID/g, uuid)
-            .replace('$label', item.label)
-            .replace('$duration', item.duration);
+          var addEpochQuery = fillInTemplate(query, newItem);
           return StudyService.doModifyingQuery(addEpochQuery);
         });
         // optional add comment
         if (item.comment) {
           addCommentPromise = addEpochCommentQueryRaw.then(function(query) {
-            var addEpochCommentQuery = query
-              .replace(/\$newUUID/g, uuid)
-              .replace('$comment', item.comment);
+            var addEpochCommentQuery = fillInTemplate(query, newItem);
             return StudyService.doModifyingQuery(addEpochCommentQuery);
           });
         }
         // optional is_primary
         if (item.isPrimaryEpoch) {
           setPrimaryPromise = setEpochPrimaryQueryRaw.then(function(query) {
-            var setEpochPrimaryQuery = query
-              .replace(/\$newUUID/g, uuid);
+            var setEpochPrimaryQuery = fillInTemplate(query, newItem);
             return StudyService.doModifyingQuery(setEpochPrimaryQuery);
           });
         }
 
         // add epoch to list of has_epochs in study
         addToListPromise = addEpochToEndOfListQueryRaw.then(function(query) {
-          var addEpochToEndOfListQuery = query
-            .replace(/\$elementToInsert/g, uuid);
+          var addEpochToEndOfListQuery = fillInTemplate(query, newItem);
           return StudyService.doModifyingQuery(addEpochToEndOfListQuery);
         });
 
@@ -71,33 +66,43 @@ define([],
       }
 
       function editItem(oldItem, newItem) {
+        var newItemCopy = angular.copy(newItem);
+        newItemCopy.comment = newItemCopy.comment ? newItemCopy.comment : '';
 
         var isPrimaryDefer, epochDefer;
 
-        var newDuration = newItem.duration;
-        var newCommentValue = newItem.comment ? newItem.comment : '';
-
-        if (oldItem.isPrimary === 'true' && !newItem.isPrimary) {
+        if (oldItem.isPrimary === 'true' && !newItemCopy.isPrimary) {
           isPrimaryDefer = removeEpochPrimaryRaw.then(function(queryRaw) {
-            var query = queryRaw.replace(/\$URI/g, newItem.uri);
+            var query = fillInTemplate(queryRaw, newItemCopy);
             return StudyService.doModifyingQuery(query);
           });
-        } else if (newItem.isPrimary) {
+        } else if (newItemCopy.isPrimary) {
           isPrimaryDefer = setEpochToPrimaryRaw.then(function(queryRaw) {
-            var query = queryRaw.replace(/\$URI/g, newItem.uri);
+            var query = fillInTemplate(queryRaw, newItemCopy);
             return StudyService.doModifyingQuery(query);
           });
         }
 
         epochDefer = editEpochRaw.then(function(editQueryRaw) {
-          var editQuery = editQueryRaw.replace(/\$URI/g, newItem.uri)
-            .replace(/\$newDuration/g, newDuration)
-            .replace(/\$newLabel/g, newItem.label);
-            editQuery = editQuery.replace(/\$newComment/g, newCommentValue);
+          var editQuery = fillInTemplate(editQueryRaw, newItemCopy);
           return StudyService.doModifyingQuery(editQuery);
         });
 
         return $q.all([isPrimaryDefer, epochDefer]);
+      }
+
+      function fillInTemplate(template, item) {
+        return template
+                .replace(/\$newUUID/g, item.uuid)
+                .replace('$label', item.label)
+                .replace('$duration', item.duration)
+                .replace('$comment', SanitizeService.sanitizeStringLiteral(item.comment))
+                .replace(/\$elementToInsert/g, item.uuid)
+                .replace(/\$URI/g, item.uri)
+                .replace(/\$newDuration/g, item.duration)
+                .replace(/\$newLabel/g, item.label)
+                .replace(/\$newComment/g, SanitizeService.sanitizeStringLiteral(item.comment))
+                ;
       }
 
       return {
