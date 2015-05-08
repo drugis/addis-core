@@ -48,22 +48,20 @@ define([],
       }
 
       function addItem(endpoint) {
-        var newUUid = UUIDService.generate();
+        var newItem = angular.copy(endpoint);
+        newItem.uuid = UUIDService.generate();
         endpoint.uri = 'http://trials.drugis.org/instances/' + newUUid;
         var stringToInsert = buildInsertMeasuredAtBlock(endpoint);
 
         var addEndpointPromise = addEndpointQueryRaw.then(function(query) {
-          var addEndpointQuery = query
-            .replace(/\$UUID/g, newUUid)
-            .replace('$label', endpoint.label)
-            .replace('$measurementType', endpoint.measurementType);
+          var addEndpointQuery = fillInTemplate(query, newItem);
           return StudyService.doModifyingQuery(addEndpointQuery).then(function(){
             return OutcomeService.setOutcomeProperty(endpoint);
           });
         });
 
         var addMeasuredAtPromise = addTemplateRaw.then(function(query) {
-          var addMeasuredAtQuery = query.replace('$insertBlock', stringToInsert);
+          var addMeasuredAtQuery = fillInTemplate(query, stringToInsert);
           return StudyService.doModifyingQuery(addMeasuredAtQuery);
         });
 
@@ -72,17 +70,15 @@ define([],
 
       function deleteItem(item) {
         return deleteEndpointRaw.then(function(deleteQueryRaw) {
-          return StudyService.doModifyingQuery(deleteQueryRaw.replace(/\$URI/g, item.uri));
+          return StudyService.doModifyingQuery(fillInTemplate(deleteQueryRaw, item));
         });
       }
 
       function editItem(item) {
-        var stringToInsert = buildInsertMeasuredAtBlock(item);
+        var newItem = angular.copy(item);
+        newItem.measurementMomentBlock = buildInsertMeasuredAtBlock(item);
         return editEndpointRaw.then(function(editQueryRaw) {
-          var editQuery = editQueryRaw.replace(/\$URI/g, item.uri)
-            .replace('$newLabel', item.label)
-            .replace('$newMeasurementType', item.measurementType)
-            .replace('$insertMeasurementMomentBlock', stringToInsert);
+          var editQuery = fillInTemplate(editQueryRaw, newItem);
           return StudyService.doModifyingQuery(editQuery).then(function(){
             return OutcomeService.setOutcomeProperty(item);
           });
@@ -93,6 +89,16 @@ define([],
         return _.reduce(endpoint.measuredAtMoments, function(accumulator, measuredAtMoment) {
           return accumulator + ' <' + endpoint.uri + '> ontology:is_measured_at <' + measuredAtMoment.uri + '> .';
         }, '');
+      }
+
+      function fillInTemplate(template, item) {
+        return template
+               .replace(/\$UUID/g, item.uuid)
+               .replace('$label', item.label)
+               .replace('$measurementType', item.measurementType)
+               .replace('$insertMeasurementMomentBlock', item.measurementMomentBlock)
+               .replace(/\$URI/g, item.uri)
+              ;
       }
 
 
