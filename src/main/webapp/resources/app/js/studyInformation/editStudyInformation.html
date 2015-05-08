@@ -1,4 +1,4 @@
-<form novalidate ng-submit="editItem()">
+<form name="myForm" novalidate ng-submit="editItem()">
   <div class="row">
     <div class="large-9 medium-12 columns">
       <h3>Edit study information</h3>
@@ -26,7 +26,7 @@
          selected-option="itemScratch.status" ></enum-options>
       </label>
       <label>Number of centers
-         <input type="number" ng-model="itemScratch.numberOfCenters" />
+         <input name="numberOfCenters" min="0" ng-pattern="/\d+$/" type="number" ng-model="itemScratch.numberOfCenters" />
       </label>
       <label>Objective
         <textarea rows="6" ng-model="itemScratch.objective"></textarea>
@@ -36,7 +36,8 @@
 
   <div class="row">
     <div class="large-9 columns">
-      <button class="success" type="submit">Edit</button>
+      <button ng-disabled="!myForm.numberOfCenters.$valid" class="success" type="submit">Edit</button>
+      <span ng-show="!myForm.numberOfCenters.$valid" style="color: red">Number of centers must be a whole number greater than 0.</span>
     </div>
   </div>
   <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>

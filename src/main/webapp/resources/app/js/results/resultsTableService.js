@@ -31,29 +31,29 @@ define([],
             valueName: 'mean',
             value: findResultValueByType(rowValueObjects, MEAN_TYPE),
             dataType: DOUBLE_TYPE,
-            isInValidValue : false
+            isInValidValue: false
           }, {
             valueName: 'standard_deviation',
             value: findResultValueByType(rowValueObjects, STANDARD_DEVIATION_TYPE),
             dataType: DOUBLE_TYPE,
-            isInValidValue : false
+            isInValidValue: false
           }, {
             valueName: 'sample_size',
             value: findResultValueByType(rowValueObjects, SAMPLE_SIZE_TYPE),
             dataType: INTEGER_TYPE,
-            isInValidValue : false
+            isInValidValue: false
           }];
         } else if (variable.measurementType === DICHOTOMOUS_TYPE) {
           return [{
             valueName: 'count',
             value: findResultValueByType(rowValueObjects, COUNT_TYPE),
             dataType: INTEGER_TYPE,
-            isInValidValue : false
+            isInValidValue: false
           }, {
             valueName: 'sample_size',
             value: findResultValueByType(rowValueObjects, SAMPLE_SIZE_TYPE),
             dataType: INTEGER_TYPE,
-            isInValidValue : false
+            isInValidValue: false
           }];
         }
       }
@@ -107,7 +107,7 @@ define([],
           return false;
         }
         if (inputColumn.value) {
-          if(inputColumn.dataType === INTEGER_TYPE) {
+          if (inputColumn.dataType === INTEGER_TYPE) {
             return Number.isInteger(inputColumn.value);
           } else if (inputColumn.dataType === DOUBLE_TYPE) {
             return !isNaN(filterFloat(inputColumn.value));
@@ -117,14 +117,14 @@ define([],
         }
       }
 
-      var filterFloat = function (value) {
-        if(/^(\-|\+)?([0-9]+(\.[0-9]+)?|Infinity)$/.test(value)) {
+      var filterFloat = function(value) {
+        if (/^(\-|\+)?([0-9]+(\.[0-9]+)?|Infinity)$/.test(value)) {
           return Number(value);
         }
-      return NaN;
-    }
+        return NaN;
+      }
 
-    return {
+      return {
         createInputRows: createInputRows,
         createHeaders: createHeaders,
         isValidValue: isValidValue,

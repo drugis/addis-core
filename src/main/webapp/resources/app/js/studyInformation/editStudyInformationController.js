@@ -23,6 +23,10 @@ define([],
           });
       };
 
+      $scope.isValidNumberOfCenters = function(a) {
+        return a === undefined || Number.isInteger(a);
+      }
+
       $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
       };
