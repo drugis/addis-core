@@ -35,6 +35,7 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         projectResource,
         mockProject = {
           datasetVersion: 'version',
+          id: 'projectId',
           $promise: {
             then: function() {}
           }
@@ -93,6 +94,7 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
             state.go.calls.reset();
             scope.goToAnalysis(analysisId, analysisTypes[0].label);
             expect(state.go).toHaveBeenCalledWith(analysisTypes[0].stateName, {
+              projectId: mockProject.id,
               analysisId: analysisId
             });
           });
