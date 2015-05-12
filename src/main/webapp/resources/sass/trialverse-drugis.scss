@@ -60,6 +60,14 @@ select option {
   display: inline;
 }
 
+// workaround for missing style on disabled anchor tags in foundaton menu
+li#top-bar-commit > a.success.disabled:hover{
+  background-color: #29A329
+}
+li#top-bar-commit-cancel > a.secondary.disabled:hover{
+  background-color: #e7e7e7
+}
+
 .color-stripe {
   background: $drugis-color;
   height: 0.45rem;

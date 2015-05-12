@@ -1,18 +1,16 @@
 <div ui-view>
   <navbar-directive>
     <ul class="left top-bar-content">
-      <li ng-show="navSettings.isHidden">
-        <a ng-show="isEditingAllowed" ng-disabled="!isStudyModified()" ng-click="saveStudy()" class="button success">
+      <li id="top-bar-commit" ng-show="navSettings.isHidden && isEditingAllowed" class="has-form">
+        <a ng-click="saveStudy()" class="button success" ng-class="{'disabled' : !isStudyModified()}">
           Commit changes
         </a>
       </li>
       
-      <li ng-show="navSettings.isHidden">
-        <span ng-show="isEditingAllowed" class="info">
-          <a class="button secondary" ng-disabled="!isStudyModified()" ng-click="resetStudy()">
+      <li id="top-bar-commit-cancel" ng-show="navSettings.isHidden && isEditingAllowed" class="has-form">
+          <a class="button secondary" ng-click="resetStudy()" ng-class="{'disabled' : !isStudyModified()}">
             Undo changes
           </a>
-        </span>
       </li>
       
       <li class="name">
