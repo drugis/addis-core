@@ -10,6 +10,10 @@ define([],
       DatasetService, DatasetVersionedResource, StudiesWithDetailsService,
       RemoteRdfStoreService, HistoryResource, HistoryService, ConceptService, VersionedGraphResource) {
 
+      $scope.userUid = $stateParams.userUid;
+      $scope.datasetUUID = $stateParams.datasetUUID;
+      $scope.versionUuid = $stateParams.versionUuid;
+
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.userUid = $stateParams.userUid;
 

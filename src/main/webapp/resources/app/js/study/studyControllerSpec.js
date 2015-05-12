@@ -52,7 +52,8 @@ define(['angular', 'angular-mocks'], function() {
         $anchorScroll: anchorScrollMock,
         $modal: modalMock,
         $window: {
-          bind: 'mockBind'
+          bind: 'mockBind',
+          innerHeight: 'innerHeightMock'
         },
         StudyService: studyServiceMock,
         ResultsService: resultsServiceMock,

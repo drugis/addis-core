@@ -1,7 +1,11 @@
 <navbar-directive>
   <ul class="left top-bar-content">
-    <li>
-      <h4 class="topbar-text">{{dataset.label}}</h4></li>
+    <li class="name">
+      <h1 class="topbar-text">
+        <a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">
+        {{dataset.label}}</a>
+     </h1>
+  </li>
   </ul>
 </navbar-directive>
 <div class="row nav-bar-spacer">

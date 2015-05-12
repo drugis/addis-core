@@ -79,6 +79,47 @@ define(
       }
     ]);
 
+    app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider',
+      function($stateProvider, $urlRouterProvider, $httpProvider) {
+        $httpProvider.interceptors.push('SessionExpiredInterceptor');
+
+        $stateProvider
+          .state('user', {
+            url: '/users/:userUid',
+            templateUrl: 'app/js/user/user.html',
+            controller: 'UserController'
+          })
+          .state('create-dataset', {
+            url: '/users/:userUid/create-dataset',
+            templateUrl: 'app/js/user/createDataset.html',
+            controller: 'CreateDatasetController'
+          })
+          .state('versionedDataset', {
+            url: '/users/:userUid/datasets/:datasetUUID/versions/:versionUuid',
+            templateUrl: 'app/js/dataset/dataset.html',
+            controller: 'DatasetController'
+          })
+          .state('datasetHistory', {
+            url: '/users/:userUid/datasets/:datasetUUID/history',
+            templateUrl: 'app/js/dataset/datasetHistory.html',
+            controller: 'DatasetHistoryController'
+          })
+          .state('versionedDataset.concepts', {
+            url: '/concepts',
+            templateUrl: 'app/js/concept/concepts.html',
+            controller: 'ConceptController'
+          })
+          .state('versionedDataset.study', {
+            url: '/studies/:studyGraphUuid',
+            templateUrl: 'app/js/study/view/study.html',
+            controller: 'StudyController'
+          });
+
+        // Default route
+        $urlRouterProvider.otherwise('/users/');
+      }
+    ]);
+
     app.constant('SCRATCH_RDF_STORE_URL', '/scratch');
     app.constant('CONCEPT_GRAPH_UUID', 'concepts');
     app.constant('GROUP_ALLOCATION_OPTIONS', _.indexBy([{
@@ -132,47 +173,6 @@ define(
       uri: 'unknown',
       label: 'Unknown'
     }], 'uri'));
-
-    app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider',
-      function($stateProvider, $urlRouterProvider, $httpProvider) {
-        $httpProvider.interceptors.push('SessionExpiredInterceptor');
-
-        $stateProvider
-          .state('user', {
-            url: '/users/:userUid',
-            templateUrl: 'app/js/user/user.html',
-            controller: 'UserController'
-          })
-          .state('create-dataset', {
-            url: '/users/:userUid/create-dataset',
-            templateUrl: 'app/js/user/createDataset.html',
-            controller: 'CreateDatasetController'
-          })
-          .state('versionedDataset', {
-            url: '/users/:userUid/datasets/:datasetUUID/versions/:versionUuid',
-            templateUrl: 'app/js/dataset/dataset.html',
-            controller: 'DatasetController'
-          })
-          .state('datasetHistory', {
-            url: '/users/:userUid/datasets/:datasetUUID/history',
-            templateUrl: 'app/js/dataset/datasetHistory.html',
-            controller: 'DatasetHistoryController'
-          })
-          .state('versionedDataset.concepts', {
-            url: '/concepts',
-            templateUrl: 'app/js/concept/concepts.html',
-            controller: 'ConceptController'
-          })
-          .state('versionedDataset.study', {
-            url: '/studies/:studyGraphUuid',
-            templateUrl: 'app/js/study/view/study.html',
-            controller: 'StudyController'
-          });
-
-        // Default route
-        $urlRouterProvider.otherwise('/users/');
-      }
-    ]);
 
     return app;
   });

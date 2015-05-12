@@ -1,13 +1,32 @@
 <div ui-view>
   <navbar-directive>
     <ul class="left top-bar-content">
-      <li>
-        <h4 class="topbar-text">{{dataset.label}} / {{study.label}} </h4>
+      <li ng-show="navSettings.isHidden">
+        <a ng-show="isEditingAllowed" ng-disabled="!isStudyModified()" ng-click="saveStudy()" class="button success">
+          Commit changes
+        </a>
       </li>
+      
+      <li ng-show="navSettings.isHidden">
+        <span ng-show="isEditingAllowed" class="info">
+          <a class="button secondary" ng-disabled="!isStudyModified()" ng-click="resetStudy()">
+            Undo changes
+          </a>
+        </span>
+      </li>
+      
+      <li class="name">
+        <h1 class="topbar-text">
+          <a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">
+            {{dataset.label}} / {{study.label}}
+          </a>
+        </h1>
+      </li>
+
     </ul>
   </navbar-directive>
   <div class="row nav-bar-spacer">
-    <div class="columns large-2 medium-3">
+    <div ng-hide="navSettings.isHidden" class="columns large-2 medium-3 show-for-medium-up" ng-class="{'compact-nav': navSettings.isCompact}">
       <ul class="side-nav">
         <button ng-show="isEditingAllowed" ng-disabled="!isStudyModified()" ng-click="saveStudy()" class="button expand success">Commit changes</button>
         <div ng-show="isEditingAllowed" class="modified-warning info">
@@ -15,11 +34,9 @@
           <div ng-show="!isStudyModified()">No unsaved changes</div>
         </div>
         <li class="divider"></li>
-        <li class="heading">Design</li>
-        
+        <li><a class="heading" ng-click="sideNavClick('design')">Design</a></li>
         <li><a ng-click="sideNavClick('study-information')">Study information</a></li>
         <li><a ng-click="sideNavClick('population-information')">Population information</a></li>
-        
         <li><a ng-click="sideNavClick('arms')">Arms</a></li>
         <li><a ng-click="sideNavClick('epochs')">Epochs</a></li>
         <li><a ng-click="sideNavClick('activities')">Activities</a></li>
@@ -29,40 +46,37 @@
         <li><a ng-click="sideNavClick('endpoints')">Endpoints</a></li>
         <li><a ng-click="sideNavClick('adverseEvents')">Adverse events</a></li>
         <li class="divider"></li>
-        <li class="heading">Results</li>
-        <li><a ng-click="sideNavClick('populationCharacteristicsResults')">Population characteristics</a></li>
-        <li><a ng-click="sideNavClick('endpointsResults')">Endpoints</a></li>
-        <li><a ng-click="sideNavClick('adverseEventsResults')">Adverse events</a></li>
-        <li class="heading">Concept mapping</li>
-        <li><a ng-click="sideNavClick('drugMapping')">Drugs</a></li>
-        <li><a ng-click="sideNavClick('populationCharacteristicMapping')">Population Characteristics</a></li>
-        <li><a ng-click="sideNavClick('endpointMapping')">Endpoints</a></li>
-        <li><a ng-click="sideNavClick('adverseEventMapping')">Adverse Events</a></li>
+        <li><a class="heading" ng-click="sideNavClick('results')">Results</a></li>
+        <li ng-hide="navSettings.isCompact"><a ng-click="sideNavClick('populationCharacteristicsResults')">Population characteristics</a></li>
+        <li ng-hide="navSettings.isCompact"><a ng-click="sideNavClick('endpointsResults')">Endpoints</a></li>
+        <li ng-hide="navSettings.isCompact"><a ng-click="sideNavClick('adverseEventsResults')">Adverse events</a></li>
+        <li> <a class="heading" ng-click="sideNavClick('concept-mapping')">Concept mapping</a></li>
+        <li ng-hide="navSettings.isCompact"><a ng-click="sideNavClick('drugMapping')">Drugs</a></li>
+        <li ng-hide="navSettings.isCompact"><a ng-click="sideNavClick('populationCharacteristicMapping')">Population Characteristics</a></li>
+        <li ng-hide="navSettings.isCompact"><a ng-click="sideNavClick('endpointMapping')">Endpoints</a></li>
+        <li ng-hide="navSettings.isCompact"><a ng-click="sideNavClick('adverseEventMapping')">Adverse Events</a></li>
       </ul>
     </div>
-    <div class="columns large-10 medium-9 nav-bar-spacer">
+    <div class="columns large-10 medium-9 small-12 nav-bar-spacer " ng-class="{'large-12 medium-12': navSettings.isHidden}">
       <h1>Study</h1>
       <version-info></version-info>
-      <h3 class="study-main-category-header">Design</h3>
+      <h3 id="design" class="study-main-category-header">Design</h3>
       <div class="row">
         <div class="columns large-12">
           <hr>
         </div>
       </div>
-
       <study-category study-uuid="studyUuid" settings="categorySettings['studyInformation']" is-editing-allowed="isEditingAllowed" is-single-item="true"></study-category>
-
       <study-category study-uuid="studyUuid" settings="categorySettings['populationInformation']" is-editing-allowed="isEditingAllowed" is-single-item="true"></study-category>
-
-      <study-category study-uuid="studyUuid" settings="categorySettings['arms']" is-editing-allowed="isEditingAllowed" ></study-category>
-      <study-category study-uuid="studyUuid" settings="categorySettings['epochs']" is-editing-allowed="isEditingAllowed" ></study-category>
-      <study-category study-uuid="studyUuid" settings="categorySettings['activities']" is-editing-allowed="isEditingAllowed" ></study-category>
+      <study-category study-uuid="studyUuid" settings="categorySettings['arms']" is-editing-allowed="isEditingAllowed"></study-category>
+      <study-category study-uuid="studyUuid" settings="categorySettings['epochs']" is-editing-allowed="isEditingAllowed"></study-category>
+      <study-category study-uuid="studyUuid" settings="categorySettings['activities']" is-editing-allowed="isEditingAllowed"></study-category>
       <study-design is-editing-allowed="isEditingAllowed"></study-design>
-      <study-category study-uuid="studyUuid" settings="categorySettings['measurementMoments']" is-editing-allowed="isEditingAllowed" ></study-category>
-      <study-category study-uuid="studyUuid" settings="categorySettings['populationCharacteristics']" is-editing-allowed="isEditingAllowed" ></study-category>
-      <study-category study-uuid="studyUuid" settings="categorySettings['endpoints']" is-editing-allowed="isEditingAllowed" ></study-category>
-      <study-category study-uuid="studyUuid" settings="categorySettings['adverseEvents']" is-editing-allowed="isEditingAllowed" ></study-category>
-      <h3 class="study-main-category-header">Results</h3>
+      <study-category study-uuid="studyUuid" settings="categorySettings['measurementMoments']" is-editing-allowed="isEditingAllowed"></study-category>
+      <study-category study-uuid="studyUuid" settings="categorySettings['populationCharacteristics']" is-editing-allowed="isEditingAllowed"></study-category>
+      <study-category study-uuid="studyUuid" settings="categorySettings['endpoints']" is-editing-allowed="isEditingAllowed"></study-category>
+      <study-category study-uuid="studyUuid" settings="categorySettings['adverseEvents']" is-editing-allowed="isEditingAllowed"></study-category>
+      <h3 id="results" class="study-main-category-header">Results</h3>
       <div class="row">
         <div class="columns large-12">
           <hr>
@@ -71,7 +85,7 @@
       <results-table-list is-editing-allowed="isEditingAllowed" id="populationCharacteristicsResults" variable-type="'PopulationCharacteristic'" variable-name="'Population characteristics'"></results-table-list>
       <results-table-list is-editing-allowed="isEditingAllowed" id="endpointsResults" variable-type="'Endpoint'" variable-name="'Endpoints'"></results-table-list>
       <results-table-list is-editing-allowed="isEditingAllowed" id="adverseEventsResults" variable-type="'AdverseEvent'" variable-name="'Adverse events'"></results-table-list>
-      <h3 class="study-main-category-header">Concept mappings</h3>
+      <h3 id="concept-mapping" class="study-main-category-header">Concept mappings</h3>
       <div class="row">
         <div class="columns large-12">
           <hr>
