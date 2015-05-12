@@ -2,7 +2,7 @@
 
 require.config({
   paths: {
-    'jQuery': 'bower_components/jquery/jquery.min',
+    'jQuery': 'bower_components/jquery/dist/jquery.min',
     'mcda': 'bower_components/mcda-web/app/js',
     'gemtc-web': 'bower_components/gemtc-web/app/js',
     'jquery-slider': 'bower_components/jslider/dist/jquery.slider.min',
@@ -13,6 +13,7 @@ require.config({
     'angular-select': 'bower_components/angular-ui-select/dist/select.min',
     'domReady': 'bower_components/requirejs-domready/domReady',
     'foundation': 'bower_components/foundation/js/foundation.min',
+    'modernizr': 'bower_components/modernizr/modernizr',
     'd3': 'bower_components/d3/d3.min',
     'nvd3': 'bower_components/nvd3/nv.d3.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
@@ -65,7 +66,7 @@ require.config({
       exports: '_'
     },
     'foundation': {
-      deps: ['jQuery']
+      deps: ['jQuery', 'modernizr']
     },
     'domReady': {
       exports: 'domReady'

@@ -4,9 +4,11 @@ define(
     'require',
     'jQuery',
     'mcda/config',
+    'mmfoundation',
     'foundation',
     'angular-ui-router',
     'angular-select',
+    'angularanimate',
     'ngSanitize',
     'controllers',
     'directives',
@@ -25,11 +27,11 @@ define(
     'mcda/services/workspaceResource',
     'mcda/services/taskDependencies',
     'mcda/services/errorHandling',
+    'mcda/services/valueTreeService',
     'mcda/services/routeFactory',
     'mcda/services/pataviService',
     'mcda/services/hashCodeService',
     'mcda/services/partialValueFunction',
-    'mcda/services/workspaceService',
     'mcda/services/scaleRangeService',
     'mcda/services/util'
   ],
@@ -38,11 +40,11 @@ define(
       'elicit.errorHandling',
       'elicit.scaleRangeService',
       'elicit.workspaceResource',
+      'elicit.valueTreeService',
       'elicit.taskDependencies',
       'elicit.directives',
       'elicit.controllers',
       'elicit.pvfService',
-      'elicit.workspaceService',
       'elicit.pataviService',
       'elicit.util',
       'elicit.routeFactory',
@@ -117,8 +119,8 @@ define(
     // });
 
     app.config(function(uiSelectConfig) {
-  uiSelectConfig.theme = 'select2';
-});
+      uiSelectConfig.theme = 'select2';
+    });
 
     app.config(['Tasks', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES', '$httpProvider', '$animateProvider', 'MCDARouteProvider',
       function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider, $animateProvider, MCDARouteProvider) {

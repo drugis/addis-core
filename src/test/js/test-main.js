@@ -13,7 +13,7 @@ console.log(tests);
 
 require.config({
   paths: {
-    'jQuery': 'bower_components/jquery/jquery',
+    'jQuery': 'bower_components/jquery/dist/jquery.min',
     'underscore': 'bower_components/underscore/underscore',
     'angular': 'bower_components/angular/angular',
     'angular-resource': 'bower_components/angular-resource/angular-resource',
@@ -22,6 +22,7 @@ require.config({
     'foundation': 'bower_components/foundation/js/foundation',
     'jasmine': 'bower_components/jasmine/lib/jasmine-core/jasmine',
     'jasmine-html': 'bower_components/jasmine/lib/jasmine-core/jasmine-html',
+    'jquery-slider': 'bower_components/jslider/dist/jquery.slider.min',
     'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
     'mcda': 'bower_components/mcda-web/app/js',
     'gemtc-web': 'bower_components/gemtc-web/app/js',
@@ -37,6 +38,9 @@ require.config({
   shim: {
     'jQuery': {
       exports: 'jQuery'
+    },
+    'jquery-slider': {
+      deps: ['jQuery']
     },
     'foundation': {
       deps: ['jQuery']

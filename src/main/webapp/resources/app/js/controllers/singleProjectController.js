@@ -100,6 +100,7 @@ define([], function() {
         return type.label === analysisTypeLabel;
       });
       $state.go(analysisType.stateName, {
+        projectId: $scope.project.id,
         analysisId: analysisId
       });
     };
