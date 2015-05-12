@@ -71,7 +71,7 @@ define([],
       $scope.$watch(function() {
         return angular.element('.scrollable-wrapper').parent().parent().height();
       }, function(oldValue, newValue){
-        console.log('recalculate , old = ' + oldValue, ' new = ' + newValue);
+          //console.log('recalculate , old = ' + oldValue, ' new = ' + newValue);
           $scope.showScrolbarIfNessesary();
       });
 

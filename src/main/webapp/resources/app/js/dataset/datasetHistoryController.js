@@ -4,6 +4,7 @@ define([],
     var dependencies = ['$scope', '$stateParams', 'HistoryResource', 'HistoryService', 'DatasetResource', 'DatasetService'];
     var DatasetHistoryController = function($scope, $stateParams, HistoryResource, HistoryService, DatasetResource, DatasetService) {
      
+      $scope.datasetUUID = $stateParams.datasetUUID;
       $scope.userUid = $stateParams.userUid;
      
       DatasetResource.get($stateParams, function(response) {
@@ -20,6 +21,8 @@ define([],
 
       $scope.historyItems.$promise.then(function(historyResult) {
         $scope.historyItems = HistoryService.addOrderIndex($scope.historyItems);
+        var headItemId = ($scope.historyItems[0])['@id'];
+        $scope.headVersion = headItemId.substr(headItemId.lastIndexOf('/') + 1);
       });
     };
     return dependencies.concat(DatasetHistoryController);

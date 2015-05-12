@@ -10,6 +10,11 @@ define([],
       // onload
       StudyService.reset();
 
+      $scope.userUid = $stateParams.userUid;
+      $scope.datasetUUID = $stateParams.datasetUUID;
+      $scope.studyGraphUuid = $stateParams.studyGraphUuid;
+      $scope.versionUuid = $stateParams.versionUuid;
+
       $scope.study = {};
       $scope.categorySettings = {
         studyInformation: {
@@ -139,13 +144,6 @@ define([],
         }
       };
 
-
-      var navbar = document.getElementsByClassName('side-nav');
-      angular.element($window).bind('scroll', function() {
-        $(navbar[0]).css('margin-top', this.pageYOffset - 20);
-        $scope.$apply();
-      });
-
       function reloadStudyModel() {
         VersionedGraphResource.get({
           userUid: $stateParams.userUid,
@@ -170,10 +168,13 @@ define([],
       }
 
       $scope.resetStudy = function() {
-        reloadStudyModel();
+        // skip reset check in controller as ng-disabled does not work with a <a> tag needed by foundation menu item
+        if(StudyService.isStudyModified()) {
+           reloadStudyModel();
+        }
       };
 
-      $scope.resetStudy();
+      reloadStudyModel();
 
       $scope.$on('updateStudyDesign', function() {
         console.log('update design');
@@ -201,6 +202,11 @@ define([],
       };
 
       $scope.saveStudy = function() {
+        // skip save check in controller as ng-disabled does not work with a <a> tag needed by foundation menu item
+        if(!StudyService.isStudyModified()) {
+           return;
+        }
+
         $modal.open({
           templateUrl: 'app/js/commit/commit.html',
           controller: 'CommitController',
@@ -226,6 +232,30 @@ define([],
           }
         });
       };
+
+      var navbar = document.getElementsByClassName('side-nav');
+      angular.element($window).bind('scroll', function() {
+        $(navbar[0]).css('margin-top', this.pageYOffset - 20);
+        $scope.$apply();
+      });
+
+      $scope.navSettings = {
+        isCompact: false,
+        isHidden: false
+      };
+
+      function calculateNavSettings() {
+        var windowHeight = $window.innerHeight;
+        $scope.navSettings.isCompact = windowHeight < 1199;
+        $scope.navSettings.isHidden = windowHeight < 799;
+      }
+
+      // check if the menu still fits on resize
+      angular.element($window).bind('resize', function() {
+        $scope.$apply(calculateNavSettings());
+      });
+      // initial setup
+      calculateNavSettings();
 
     };
     return dependencies.concat(StudyController);

@@ -56,10 +56,8 @@ select option {
   border-radius: 3rem;
 }
 
-.topbar-text {
-  color: white;
-  padding: 0;
-  margin: 0;
+.top-bar li.name h1.topbar-text a  {
+  display: inline;
 }
 
 .color-stripe {
@@ -68,11 +66,6 @@ select option {
   -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
   -moz-box-shadow:    0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
-}
-
-.top-bar-section ul.top-bar-content {
-  padding-top: 5px;
-  margin-left: 4rem;
 }
 
 .f-topbar-fixed {
@@ -100,11 +93,13 @@ ul.side-nav {
   background-color: $addis-grey;
 }
 
-ul.side-nav li.heading {
+ul.side-nav li.heading,
+ul.side-nav li a.heading {
   color: #008CBA;
   font-size: 0.77778rem;
   font-weight: bold;
   text-transform: uppercase;
+  padding: 0;
 }
 
 /////////////////////////// study

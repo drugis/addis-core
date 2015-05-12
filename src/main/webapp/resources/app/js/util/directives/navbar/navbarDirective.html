@@ -17,7 +17,7 @@
           <li ng-show="!isOwnUserPage" class="has-dropdown not-click">
             <a href="#">
               <img class="user-image" ng-src="{{userInfo.imageUrl}}">
-              {{userInfo.name}}
+              <span ng-show="!navSettings.isHidden">{{userInfo.name}}</span>
             </a>
             <ul class="dropdown">
               <li>

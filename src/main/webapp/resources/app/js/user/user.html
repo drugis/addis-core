@@ -30,8 +30,7 @@
         </tr>
         <tr ng-repeat="dataset in datasets">
           <td style="vertical-align: top;">
-            <a ui-sref="versionedDataset({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'), 
-                               versionUuid: stripFrontFilter(dataset.headVersion, versionUrlBase)})">{{dataset.label}}</a></td>
+            <a ui-sref="versionedDataset({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'), versionUuid: stripFrontFilter(dataset.headVersion, versionUrlBase)})">{{dataset.label}}</a></td>
           <td style="white-space: pre-wrap;">{{dataset.comment}}</td>
         </tr>
       </table>
