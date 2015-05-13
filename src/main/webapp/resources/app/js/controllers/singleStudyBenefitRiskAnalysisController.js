@@ -7,6 +7,8 @@ define(['underscore'], function() {
   var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $q, $window,
     OutcomeResource, InterventionResource, TrialverseStudyResource, ProblemResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW, AnalysisResource) {
 
+    var deregisterOutcomeWatch, deregisterInterventionWatch;
+
     $scope.studies = [];
     $scope.outcomes = $scope.analysis.selectedOutcomes;
     $scope.interventions = $scope.analysis.selectedInterventions;
@@ -73,7 +75,7 @@ define(['underscore'], function() {
     OutcomeResource.query(projectIdParam).$promise.then(function(outcomes) {
       // use same object in options list as in selected option list, as ui-select uses object equality internaly
       $scope.outcomes = SingleStudyBenefitRiskAnalysisService.concatWithNoDuplicates(outcomes, $scope.outcomes, isIdEqual);
-      $scope.$watchCollection('analysis.selectedOutcomes', function(oldValue, newValue) {
+      deregisterOutcomeWatch = $scope.$watchCollection('analysis.selectedOutcomes', function(oldValue, newValue) {
         if (newValue.length !== oldValue.length) {
           outcomesChanged();
         }
@@ -83,7 +85,7 @@ define(['underscore'], function() {
     InterventionResource.query(projectIdParam).$promise.then(function(interventions) {
       // use same object in options list as in selected option list, as ui-select uses object equality internaly
       $scope.interventions = SingleStudyBenefitRiskAnalysisService.concatWithNoDuplicates(interventions, $scope.interventions, isIdEqual);
-      $scope.$watchCollection('analysis.selectedInterventions', function(oldValue, newValue) {
+      deregisterInterventionWatch = $scope.$watchCollection('analysis.selectedInterventions', function(oldValue, newValue) {
         if (newValue.length !== oldValue.length) {
           interventionsChanged();
         }
@@ -141,9 +143,13 @@ define(['underscore'], function() {
     };
 
     $scope.createProblem = function() {
+      deregisterOutcomeWatch();
+      deregisterInterventionWatch();
       SingleStudyBenefitRiskAnalysisService.getProblem($scope.analysis).then(function(problem) {
         $scope.analysis.problem = problem;
-        AnalysisResource.save($scope.analysis).$promise.then(function() {
+        AnalysisResource.save($scope.analysis).$promise.then(function(response) {
+          $scope.analysis = response;
+          $scope.workspace = response;
           $scope.goToDefaultScenarioView();
         });
       });
