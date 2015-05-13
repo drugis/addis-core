@@ -143,8 +143,8 @@ define(['underscore'], function() {
     };
 
     $scope.createProblem = function() {
-      deregisterOutcomeWatch();
-      deregisterInterventionWatch();
+      deregisterOutcomeWatch && deregisterOutcomeWatch();
+      deregisterInterventionWatch && deregisterInterventionWatch();
       SingleStudyBenefitRiskAnalysisService.getProblem($scope.analysis).then(function(problem) {
         $scope.analysis.problem = problem;
         AnalysisResource.save($scope.analysis).$promise.then(function(response) {

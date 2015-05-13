@@ -306,10 +306,13 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         problem.$promise = problemDeferred.promise;
         analysisDeferred = q.defer();
         scope.analysis.$promise = analysisDeferred.promise;
+        saveDeferred = q.defer();
+        saveDeferred.$promise = saveDeferred.promise;
         singleStudyBenefitRiskAnalysisService.getProblem.and.returnValue(problem.$promise);
-        analysisResource.save.and.returnValue(scope.analysis);
+        analysisResource.save.and.returnValue(saveDeferred);
         problemDeferred.resolve(problem);
         analysisDeferred.resolve();
+        saveDeferred.resolve(scope.analysis);
         scope.createProblem();
         scope.$apply();
       });
