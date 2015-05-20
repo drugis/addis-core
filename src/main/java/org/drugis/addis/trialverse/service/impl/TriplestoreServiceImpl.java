@@ -121,18 +121,16 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Override
   public Namespace getNamespaceVersioned(String datasetUri, String versionUri) {
     ResponseEntity<String> response = queryTripleStoreVersion(datasetUri, NAMESPACE, versionUri);
-    JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
-    Object binding = bindings.get(0);
-    String name = JsonPath.read(binding, "$.label.value");
-    String description = JsonPath.read(binding, "$.comment.value");
-    Integer numberOfStudies = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfStudies.value"));
-    String version = response.getHeaders().get(X_EVENT_SOURCE_VERSION).get(0);
-    return new Namespace(subStringAfterLastSymbol(datasetUri, '/'), name, description, numberOfStudies, version);
+    return buildNameSpace(datasetUri, response);
   }
 
   @Override
   public Namespace getNamespaceHead(String datasetUri) {
     ResponseEntity<String> response = queryTripleStoreHead(datasetUri, NAMESPACE);
+    return buildNameSpace(datasetUri, response);
+  }
+
+  private Namespace buildNameSpace(String datasetUri, ResponseEntity<String> response) {
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
     JSONObject binding = (JSONObject) bindings.get(0);
     String name = JsonPath.read(binding, "$.label.value");
