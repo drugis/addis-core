@@ -327,7 +327,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     String query = StringUtils.replace(STUDY_DATA, "$namespaceUid", namespaceUid);
     query = StringUtils.replace(query, "$studyUid", studyUid);
     query = StringUtils.replace(query, "$studyDataType", studyDataSection.toString());
-    logger.info(query);
+    logger.debug(query);
     JSONArray queryResult = getQueryResultList(namespaceUid, query);
 
     Map<String, StudyData> stringStudyDataMap = new HashMap<>();
@@ -557,7 +557,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     query = StringUtils.replace(query, "$outcomeUnionString", buildOutcomeUnionString(outcomeUids));
     String interventionUn = buildInterventionUnionString(interventionUids);
     query = StringUtils.replace(query, "$interventionUnionString", interventionUn);
-    logger.info(query);
+    logger.debug(query);
 
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
@@ -587,9 +587,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private ResponseEntity queryTripleStoreHead(String datasetUri, String query) {
     String datasetUuid = subStringAfterLastSymbol(datasetUri, '/');
 
-    logger.info("Triplestore uri = " + TRIPLESTORE_BASE_URI);
-    logger.info("sparql query = " + query);
-    logger.info("dataset uuid = " + datasetUuid);
+    logger.debug("Triplestore uri = " + TRIPLESTORE_BASE_URI);
+    logger.debug("sparql query = " + query);
+    logger.debug("dataset uuid = " + datasetUuid);
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(TRIPLESTORE_BASE_URI)
             .path("datasets/" + datasetUuid)
@@ -602,8 +602,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
 
   private ResponseEntity queryTripleStoreVersion(String namespaceUid, String query, String versionUri) {
-    logger.info("Triplestore uri = " + TRIPLESTORE_BASE_URI);
-    logger.info("sparql query = " + query);
+    logger.debug("Triplestore uri = " + TRIPLESTORE_BASE_URI);
+    logger.debug("sparql query = " + query);
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(TRIPLESTORE_BASE_URI)
             .path("datasets/" + namespaceUid)
