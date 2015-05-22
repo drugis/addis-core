@@ -1,4 +1,4 @@
-var login = require('./utils/login.js');
+var login = require('./util/login.js');
 
 module.exports = {
   "Addis login test" : function (browser) {
