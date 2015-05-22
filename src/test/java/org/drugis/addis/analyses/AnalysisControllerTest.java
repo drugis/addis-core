@@ -340,7 +340,7 @@ public class AnalysisControllerTest {
             .principal(user)
             .contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
-    verify(accountRepository).findAccountByUsername("error");
+    verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
   }
 
