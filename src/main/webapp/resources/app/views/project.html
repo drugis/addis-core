@@ -42,7 +42,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="outcome in outcomes" data-tooltip class="colored-row has-tip" title="{{outcome.motivation}}">
+        <tr ng-repeat="outcome in outcomes" class="has-tip" title="{{outcome.motivation}}">
           <td>{{outcome.name}}</td>
           <td>{{outcome.semanticOutcomeLabel}}</td>
         </tr>
@@ -74,7 +74,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="intervention in interventions" data-tooltip class="colored-row has-tip"
+        <tr ng-repeat="intervention in interventions" class="has-tip"
         title="{{intervention.motivation}}">
         <td>{{intervention.name}}</td>
         <td>{{intervention.semanticInterventionLabel}}</td>
