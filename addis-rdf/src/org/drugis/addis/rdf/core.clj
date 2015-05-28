@@ -488,15 +488,16 @@
                                    [(trig/iri :rdfs "comment") description])
                          (spo-each (trig/iri :ontology "contains_study") (vals studies-uri-map))
                          (dataset-source-doc source-doc-uri))]
-        meta-graph (concat 
-                     units-rdf
-                     indications-rdf
-                     drugs-rdf
-                     endpoints-rdf
-                     adverseEvents-rdf
-                     populationCharacteristics-rdf
-                     dataset-rdf)]
-    (trig/write-trig prefixes (cons (trig/graph (trig/iri :dataset dataset-id) meta-graph) studies-graphs))))
+	concepts-graph (trig/graph (trig/iri (str (:dataset prefixes) dataset-id "/concepts"))
+			(concat 
+			 units-rdf
+			 indications-rdf
+			 drugs-rdf
+			 endpoints-rdf
+			 adverseEvents-rdf
+			 populationCharacteristics-rdf))
+	default-graph (trig/graph (trig/default-graph) dataset-rdf)]
+    (trig/write-trig prefixes (concat [default-graph concepts-graph] studies-graphs))))
 
 (defn -main
   [& args]
