@@ -11,7 +11,7 @@ module.exports = {
               // Source will be stored in result.value
               console.log(result.value);
           })
-      .assert.containsText('h2.nested-view-header', 'Projects')
+      .assert.containsText('#projects-page-header', 'Projects')
       .pause(1000)
       .end();
   }
