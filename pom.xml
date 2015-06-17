@@ -327,6 +327,10 @@
                         <ADDIS_CORE_DB_USERNAME>${env.ADDIS_CORE_DB_USERNAME}</ADDIS_CORE_DB_USERNAME>
                         <ADDIS_CORE_DB_PASSWORD>${env.ADDIS_CORE_DB_PASSWORD}</ADDIS_CORE_DB_PASSWORD>
                         <TRIPLESTORE_URI>${env.TRIPLESTORE_URI}</TRIPLESTORE_URI>
+                      <PATAVI_TASK_DB_DRIVER>${env.PATAVI_TASK_DB_DRIVER}</PATAVI_TASK_DB_DRIVER>
+                      <PATAVI_TASK_DB_URL>${env.PATAVI_TASK_DB_URL}</PATAVI_TASK_DB_URL>
+                      <PATAVI_TASK_DB_USERNAME>${env.PATAVI_TASK_DB_USERNAME}</PATAVI_TASK_DB_USERNAME>
+                      <PATAVI_TASK_DB_PASSWORD>${env.PATAVI_TASK_DB_PASSWORD}</PATAVI_TASK_DB_PASSWORD>
                     </systemProperties>
                 </configuration>
             </plugin>

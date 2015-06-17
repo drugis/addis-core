@@ -7,7 +7,7 @@ import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisReposi
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.models.repository.ModelRepository;
-import org.drugis.addis.models.repository.PataviTaskRepository;
+import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.repository.ProjectRepository;

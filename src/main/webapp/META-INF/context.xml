@@ -10,11 +10,19 @@
             username="${ADDIS_CORE_DB_USERNAME}" password="${ADDIS_CORE_DB_PASSWORD}"
             maxActive="20" maxIdle="10" maxWait="-1"/>
 
+  <Resource
+          name="jdbc/patavitask"
+          auth="Container"
+          type="javax.sql.DataSource" driverClassName="${PATAVI_TASK_DB_DRIVER}"
+          url="${PATAVI_TASK_DB_URL}"
+          username="${PATAVI_TASK_DB_USERNAME}" password="${PATAVI_TASK_DB_PASSWORD}"
+          maxActive="20" maxIdle="10" maxWait="-1"/>
+
     <ResourceLink name="jdbc/addiscore"
                   global="jdbc/addiscore"
                   type="javax.sql.DataSource"/>
 
-    <ResourceLink name="jdbc/trialverse"
-                  global="jdbc/trialverse"
+    <ResourceLink name="jdbc/patavitask"
+                  global="jdbc/patavitask"
                   type="javax.sql.DataSource"/>
 </Context>	

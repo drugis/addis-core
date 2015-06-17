@@ -1,4 +1,4 @@
-package org.drugis.addis.models;
+package org.drugis.addis.patavitask;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
@@ -10,35 +10,30 @@ import javax.persistence.Id;
 /**
  * Created by connor on 26-6-14.
  */
-@Entity
 public class PataviTask {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
-
-  private Integer modelId;
 
   private String method;
 
-  @JsonRawValue
   private String problem;
 
   public PataviTask() {
   }
 
-  public PataviTask(Integer modelId, String method, String problem) {
-    this.modelId = modelId;
+  public PataviTask(Integer id, String method, String problem) {
+    this.id = id;
+    this.method = method;
+    this.problem = problem;
+  }
+
+  public PataviTask(String method, String problem) {
     this.method = method;
     this.problem = problem;
   }
 
   public Integer getId() {
     return id;
-  }
-
-  public Integer getModelId() {
-    return modelId;
   }
 
   public String getMethod() {
@@ -58,7 +53,6 @@ public class PataviTask {
 
     if (id != null ? !id.equals(that.id) : that.id != null) return false;
     if (!method.equals(that.method)) return false;
-    if (!modelId.equals(that.modelId)) return false;
     if (!problem.equals(that.problem)) return false;
 
     return true;
@@ -67,7 +61,6 @@ public class PataviTask {
   @Override
   public int hashCode() {
     int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + modelId.hashCode();
     result = 31 * result + method.hashCode();
     result = 31 * result + problem.hashCode();
     return result;

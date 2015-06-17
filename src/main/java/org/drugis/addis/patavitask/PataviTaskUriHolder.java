@@ -1,4 +1,4 @@
-package org.drugis.addis.models;
+package org.drugis.addis.patavitask;
 
 /**
  * Created by connor on 26-6-14.

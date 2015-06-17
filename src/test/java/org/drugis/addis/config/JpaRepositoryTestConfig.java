@@ -33,6 +33,7 @@ import static org.mockito.Mockito.mock;
                 "org.drugis.addis.scenarios",
                 "org.drugis.addis.security",
                 "org.drugis.addis.models",
+                "org.drugis.addis.patavitask",
                 "org.drugis.addis.problems",
                 "org.drugis.addis.trialverse.service",
                 "org.drugis.addis.trialverse.factory",
@@ -67,6 +68,15 @@ public class JpaRepositoryTestConfig {
   }
 
   @Bean
+  public DataSource pataviDataSource() {
+    return new EmbeddedDatabaseBuilder()
+            .setType(EmbeddedDatabaseType.HSQL)
+            .addScript("classpath:/patavi-schema.sql")
+            .addScript("classpath:/patavi-task-data.sql")
+            .build();
+  }
+
+  @Bean
   public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
     JpaTransactionManager transactionManager = new JpaTransactionManager();
     transactionManager.setEntityManagerFactory(entityManagerFactory);
@@ -75,6 +85,11 @@ public class JpaRepositoryTestConfig {
 
   @Bean(name = "jtAddisCore")
   public JdbcTemplate jdbcTemplate() {
+    return new JdbcTemplate(dataSource());
+  }
+
+  @Bean(name = "jtPataviTask")
+  public JdbcTemplate jdbcTemplatePataviTask() {
     return new JdbcTemplate(dataSource());
   }
 
