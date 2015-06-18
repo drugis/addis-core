@@ -21,6 +21,9 @@ Set up the database:
 sudo -u postgres psql -c "CREATE USER addiscore WITH PASSWORD 'develop'"
 sudo -u postgres psql -c "CREATE DATABASE addiscore ENCODING 'utf-8' OWNER addiscore"
 
+sudo -u postgres psql -c "CREATE USER patavitask WITH PASSWORD 'develop'"
+sudo -u postgres psql -c "CREATE DATABASE patavitask ENCODING 'utf-8' OWNER patavitask"
+
 ```
 
 Set up the environment:

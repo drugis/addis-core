@@ -1,7 +1,8 @@
 CREATE TABLE PataviTask (
   id SERIAL NOT NULL,
   method varchar,
-  problem JSONB,
+  problem text,
   result TEXT,
-  PRIMARY KEY(id),
+  PRIMARY KEY(id)
 );
+from

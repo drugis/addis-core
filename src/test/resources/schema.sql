@@ -199,3 +199,18 @@ CREATE TABLE remarks (
 --changeset stroombergc:14
 ALTER TABLE project ADD COLUMN datasetVersion VARCHAR;
 --rollback ALTER TABLE project drop column datasetVersion
+
+--changeset stroombergc:15
+ALTER TABLE project ALTER column description DROP NOT NULL;
+--rollback ALTER TABLE project ALTER COLUMN description SET NOT NULL;
+
+--changeset reidd:16
+ALTER TABLE SingleStudyBenefitRiskAnalysis DROP COLUMN studyUId;
+ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN studyGraphUid VARCHAR;
+--rollback ALTER TABLE SingleStudyBenefitRiskAnalysis DROP COLUMN studyGraphUid;
+--rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN studyUid VARCHAR;
+
+--changeset stroombergc:17
+DROP TABLE PataviTask;
+ALTER TABLE model ADD COLUMN taskId INT;
+
