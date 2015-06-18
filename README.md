@@ -30,6 +30,11 @@ Set up the environment:
 export TRIPLESTORE_BASE_URI=http://localhost:3030
 export PATAVI_URI=http://localhost:3000/ws/staged/
 
+export PATAVI_TASK_DB_DRIVER=org.postgresql.Driver
+export PATAVI_TASK_DB_URL=jdbc:postgresql://localhost/patavitask
+export PATAVI_TASK_DB_USERNAME=patavitask
+export PATAVI_TASK_DB_PASSWORD=develop
+
 export ADDIS_CORE_DB_CHANGELOG=database.sql
 export ADDIS_CORE_DB_DRIVER=org.postgresql.Driver
 export ADDIS_CORE_DB_URL=jdbc:postgresql://localhost/addiscore
