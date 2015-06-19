@@ -56,13 +56,11 @@
             <div class="columns large-6 medium-6 small-11" data-equalizer-watch>
                 <div class="addis-graph">
                     <div class="row">
-                        <div class="columns large-6 large-centered ">
+                        <div class="columns large-8 large-centered ">
                             <div ng-show="!analysis.outcome">
                                 <p>No outcome selected.</p>
                             </div>
-                            <div ng-show="analysis.outcome" id="network-graph">
-                                <svg></svg>
-                            </div>
+                            <network-plot network="networkGraph.network" ng-show="analysis.outcome"></network-plot>
                         </div>
                     </div>
                     <div class="row">
