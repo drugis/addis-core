@@ -1,8 +1,9 @@
 package org.drugis.addis.models.controller;
 
 import org.drugis.addis.config.TestConfig;
-import org.drugis.addis.models.PataviTaskUriHolder;
-import org.drugis.addis.models.service.PataviTaskService;
+import org.drugis.addis.patavitask.PataviTaskUriHolder;
+import org.drugis.addis.patavitask.service.PataviTaskService;
+import org.drugis.addis.patavitask.controller.PataviTaskController;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -21,6 +21,9 @@ Set up the database:
 sudo -u postgres psql -c "CREATE USER addiscore WITH PASSWORD 'develop'"
 sudo -u postgres psql -c "CREATE DATABASE addiscore ENCODING 'utf-8' OWNER addiscore"
 
+sudo -u postgres psql -c "CREATE USER patavitask WITH PASSWORD 'develop'"
+sudo -u postgres psql -c "CREATE DATABASE patavitask ENCODING 'utf-8' OWNER patavitask"
+
 ```
 
 Set up the environment:
@@ -29,6 +32,11 @@ Set up the environment:
 ```
 export TRIPLESTORE_BASE_URI=http://localhost:3030
 export PATAVI_URI=http://localhost:3000/ws/staged/
+
+export PATAVI_TASK_DB_DRIVER=org.postgresql.Driver
+export PATAVI_TASK_DB_URL=jdbc:postgresql://localhost/patavitask
+export PATAVI_TASK_DB_USERNAME=patavitask
+export PATAVI_TASK_DB_PASSWORD=develop
 
 export ADDIS_CORE_DB_CHANGELOG=database.sql
 export ADDIS_CORE_DB_DRIVER=org.postgresql.Driver

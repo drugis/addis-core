@@ -48,6 +48,7 @@ import java.util.Properties;
         "org.drugis.addis.security",
         "org.drugis.addis.outcomes",
         "org.drugis.addis.models",
+        "org.drugis.addis.patavitask",
         "org.drugis.addis.interventions",
         "org.drugis.addis.analyses",
         "org.drugis.addis.problems",
@@ -90,6 +91,18 @@ public class MainConfig {
     return ds;
   }
 
+  @Bean(name = "dsPataviTask")
+  public DataSource dataSourcePataviTask() {
+    DataSource ds;
+    JndiTemplate jndi = new JndiTemplate();
+    try {
+      ds = (DataSource) jndi.lookup("java:/comp/env/jdbc/patavitask");
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    return ds;
+  }
+
   @Bean(name = "ptmAddisCore")
   public PlatformTransactionManager transactionManager(@Qualifier("emAddisCore") EntityManagerFactory entityManagerFactory) {
     JpaTransactionManager transactionManager = new JpaTransactionManager();
@@ -100,6 +113,11 @@ public class MainConfig {
   @Bean(name = "jtAddisCore")
   public JdbcTemplate jdbcTemplate() {
     return new JdbcTemplate(dataSource());
+  }
+
+  @Bean(name = "jtPataviTask")
+  public JdbcTemplate jdbcTemplatePataviTask() {
+    return new JdbcTemplate(dataSourcePataviTask());
   }
 
   @Bean(name = "petppAddisCore")

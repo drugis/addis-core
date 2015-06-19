@@ -206,3 +206,9 @@ ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN studyGraphUid VARCHAR;
 --rollback ALTER TABLE SingleStudyBenefitRiskAnalysis DROP COLUMN studyGraphUid;
 --rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN studyUid VARCHAR;
 
+--changeset stroombergc:17
+DROP TABLE PataviTask;
+ALTER TABLE model ADD COLUMN taskId INT;
+
+
+

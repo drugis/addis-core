@@ -16,7 +16,15 @@ public class Model {
 
   private Integer analysisId;
 
+  private Integer taskId;
+
   public Model() {
+  }
+
+  public Model(Integer taskId, Integer id, Integer analysisId) {
+    this.taskId = taskId;
+    this.id = id;
+    this.analysisId = analysisId;
   }
 
   public Model(Integer id, Integer analysisId) {
@@ -36,6 +44,14 @@ public class Model {
     return analysisId;
   }
 
+  public Integer getTaskId() {
+    return taskId;
+  }
+
+  public void setTaskId(Integer taskId) {
+    this.taskId = taskId;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -43,16 +59,18 @@ public class Model {
 
     Model model = (Model) o;
 
-    if (!analysisId.equals(model.analysisId)) return false;
-    if (id != null ? !id.equals(model.id) : model.id != null) return false;
+    if (analysisId != null ? !analysisId.equals(model.analysisId) : model.analysisId != null) return false;
+    if (!id.equals(model.id)) return false;
+    if (taskId != null ? !taskId.equals(model.taskId) : model.taskId != null) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + analysisId.hashCode();
+    int result = id.hashCode();
+    result = 31 * result + (analysisId != null ? analysisId.hashCode() : 0);
+    result = 31 * result + (taskId != null ? taskId.hashCode() : 0);
     return result;
   }
 }

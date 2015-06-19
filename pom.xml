@@ -323,10 +323,14 @@
                     <contextFile>${basedir}/src/main/webapp/META-INF/context.xml</contextFile>
                     <systemProperties>
                         <ADDIS_CORE_DB_DRIVER>${env.ADDIS_CORE_DB_DRIVER}</ADDIS_CORE_DB_DRIVER>
-                        <ADDIS_CORE_DB_URL>${env.ADDIS_CORE_DB_URL}</ADDIS_CORE_DB_URL>
+                        <ADDIS_CORE_DB_URL>jdbc:postgresql://${env.ADDIS_CORE_DB_HOST}/${env.ADDIS_CORE_DB}</ADDIS_CORE_DB_URL>
                         <ADDIS_CORE_DB_USERNAME>${env.ADDIS_CORE_DB_USERNAME}</ADDIS_CORE_DB_USERNAME>
                         <ADDIS_CORE_DB_PASSWORD>${env.ADDIS_CORE_DB_PASSWORD}</ADDIS_CORE_DB_PASSWORD>
                         <TRIPLESTORE_URI>${env.TRIPLESTORE_URI}</TRIPLESTORE_URI>
+                        <PATAVI_TASK_DB_DRIVER>${env.PATAVI_TASK_DB_DRIVER}</PATAVI_TASK_DB_DRIVER>
+                        <PATAVI_TASK_DB_URL>jdbc:postgresql://${env.PATAVI_TASK_DB_HOST}/${env.PATAVI_TASK_DB}</PATAVI_TASK_DB_URL>
+                      <PATAVI_TASK_DB_USERNAME>${env.PATAVI_TASK_DB_USERNAME}</PATAVI_TASK_DB_USERNAME>
+                      <PATAVI_TASK_DB_PASSWORD>${env.PATAVI_TASK_DB_PASSWORD}</PATAVI_TASK_DB_PASSWORD>
                     </systemProperties>
                 </configuration>
             </plugin>
@@ -340,7 +344,7 @@
                         <configuration>
                             <changeLogFile>${env.ADDIS_CORE_DB_CHANGELOG}</changeLogFile>
                             <driver>${env.ADDIS_CORE_DB_DRIVER}</driver>
-                            <url>${env.ADDIS_CORE_DB_URL}</url>
+                            <url>jdbc:postgresql://${env.ADDIS_CORE_DB_HOST}/${env.ADDIS_CORE_DB}</url>
                             <username>${env.ADDIS_CORE_DB_USERNAME}</username>
                             <password>${env.ADDIS_CORE_DB_PASSWORD}</password>
                             <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
