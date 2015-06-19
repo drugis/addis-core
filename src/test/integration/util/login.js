@@ -7,6 +7,11 @@ module.exports = function(browser, url){
       .assert.containsText('h2', 'Sign in with your Google Account')
       .pause(1000)
       .setValue('input[type=email]', 'addistestuser1@gmail.com')
-      .setValue('input[type=password]', 'speciaalvoordejenkins')
       .click('input[type="submit"]')
+      .pause(1000)
+      .setValue('input[type=password]', 'speciaalvoordejenkins')
+      .click('#signIn')
+      // No need to approve approve acces each time
+      // .pause(3000) // wait for submit button to become active (thanks for keeping us safe google)
+      // .click('#submit_approve_access')
 };

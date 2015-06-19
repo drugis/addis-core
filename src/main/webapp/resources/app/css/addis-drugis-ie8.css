@@ -1,3 +1,4 @@
+@charset "UTF-8";
 @import url("//fonts.googleapis.com/css?family=Droid+Sans:400,700");
 @import url("//fonts.googleapis.com/css?family=Droid+Sans:400,700");
 /* line 1, ../../drugis-css/foundation3/stylesheets/foundation.min.scss */
@@ -411,8 +412,7 @@ abbr {
 
   @page {
     margin: 0.5cm;
-}
-
+  }
   /* line 1, ../../drugis-css/foundation3/stylesheets/foundation.min.scss */
   p, h2, h3 {
     orphans: 3;
@@ -906,7 +906,6 @@ form.custom .custom.disabled {
     height: 28px;
   }
 }
-
 /* line 1, ../../drugis-css/foundation3/stylesheets/foundation.min.scss */
 .lt-ie9 form.custom div.custom.dropdown a.selector {
   height: 28px;
@@ -1632,7 +1631,6 @@ input[type=submit].button, button.button {
     padding: 13px 30px 14px;
   }
 }
-
 /* line 1, ../../drugis-css/foundation3/stylesheets/foundation.min.scss */
 .button.dropdown {
   position: relative;
@@ -4376,7 +4374,6 @@ div.progress.round .meter {
     padding: 3px;
   }
 }
-
 /* line 1, ../../drugis-css/foundation3/stylesheets/foundation.min.scss */
 .lt-ie9 .top-bar ul li a {
   color: #fff;
@@ -4829,9 +4826,9 @@ ul.block-grid[data-clearing] {
 /* line 1, ../../drugis-css/foundation3/stylesheets/foundation.min.scss */
 .clearing-blackout .th img {
   border: none;
-  -webkit-box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-  -moz-box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  -webkit-box-shadow: 0 0 0 0 transparent;
+  -moz-box-shadow: 0 0 0 0 transparent;
+  box-shadow: 0 0 0 0 transparent;
   -webkit-border-radius: 0;
   -moz-border-radius: 0;
   -ms-border-radius: 0;
@@ -4841,9 +4838,9 @@ ul.block-grid[data-clearing] {
 
 /* line 1, ../../drugis-css/foundation3/stylesheets/foundation.min.scss */
 .clearing-blackout:hover img, .clearing-blackout:focus img {
-  -webkit-box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-  -moz-box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  -webkit-box-shadow: 0 0 0 0 transparent;
+  -moz-box-shadow: 0 0 0 0 transparent;
+  box-shadow: 0 0 0 0 transparent;
 }
 
 /* line 1, ../../drugis-css/foundation3/stylesheets/foundation.min.scss */
@@ -6070,7 +6067,7 @@ table.show-for-xlarge, table.show-for-large, table.hide-for-small, table.hide-fo
 }
 /* line 1, ../../drugis-css/_drugis.scss */
 #hero {
-  background: #cc3333;
+  background: #CC3333;
   height: 420px;
   text-align: left;
   position: relative;
@@ -6100,7 +6097,7 @@ table.show-for-xlarge, table.show-for-large, table.hide-for-small, table.hide-fo
 
 /* line 27, ../../drugis-css/_drugis.scss */
 header {
-  background: #cc3333;
+  background: #CC3333;
   text-align: left;
   position: relative;
   padding: 25px 20px 35px 0px;
@@ -6154,7 +6151,7 @@ h3 img {
   padding: 24px 0 10px;
 }
 
-/* line 76, ../../drugis-css/_drugis.scss */
+/* line 74, ../../drugis-css/_drugis.scss */
 .footer a,
 .footer h4,
 .footer p {
