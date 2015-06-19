@@ -92,6 +92,19 @@ public class TrialverseControllerTest {
   }
 
   @Test
+  public void testGetEmptyNamespaces() throws Exception {
+    Collection<Namespace> namespaceCollection = Collections.emptyList();
+    when(triplestoreService.queryNameSpaces()).thenReturn(namespaceCollection);
+    mockMvc.perform(get("/namespaces"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", hasSize(0)));
+    verify(triplestoreService).queryNameSpaces();
+  }
+
+
+
+  @Test
   public void testGetNamespaceById() throws Exception {
     String uid = "UID-1";
     String versionUid = "current";
