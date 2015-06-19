@@ -7,6 +7,7 @@ require.config({
     'gemtc-web': 'bower_components/gemtc-web/app/js',
     'jquery-slider': 'bower_components/jslider/dist/jquery.slider.min',
     'underscore': 'bower_components/underscore/underscore-min',
+    'lodash': 'bower_components/lodash/lodash.min',
     'angular': 'bower_components/angular/angular',
     'angular-resource': 'bower_components/angular-resource/angular-resource',
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
@@ -63,6 +64,9 @@ require.config({
       exports: 'nv'
     },
     'underscore': {
+      exports: '_'
+    },
+    'lodash': {
       exports: '_'
     },
     'foundation': {
