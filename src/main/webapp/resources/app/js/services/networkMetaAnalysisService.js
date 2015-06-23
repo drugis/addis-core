@@ -1,8 +1,8 @@
 'use strict';
 define(['angular'], function() {
-  var dependencies = [];
+  var dependencies = ['NetworkPlotService'];
 
-  var NetworkMetaAnalysisService = function() {
+  var NetworkMetaAnalysisService = function(NetworkPlotService) {
 
     function findInterventionOptionForDrug(drugInstanceUid, interventionOptions) {
       return _.find(interventionOptions, function(intervention) {
@@ -158,20 +158,7 @@ define(['angular'], function() {
       return interventionSum;
     }
 
-    function generateEdges(interventions) {
-      var edges = [];
-      _.each(interventions, function(rowIntervention, index) {
-        var rest = interventions.slice(index + 1, interventions.length);
-        _.each(rest, function(colIntervention) {
-          edges.push({
-            from: rowIntervention,
-            to: colIntervention
-          });
-        });
-      });
 
-      return edges;
-    }
 
     function findArmForIntervention(trialdataArms, trialDataIntervention) {
       return _.find(trialdataArms, function(trialdataArm) {
@@ -206,7 +193,7 @@ define(['angular'], function() {
     function transformTrialDataToNetwork(trialData, interventions, excludedArms) {
       var network = {
         interventions: [],
-        edges: generateEdges(interventions)
+        edges: NetworkPlotService.generateEdges(interventions)
       };
       var validTrialData = filterExcludedArms(trialData.trialDataStudies, excludedArms);
       validTrialData = filterStudiesHavingLessThanTwoMatchedInterventions(validTrialData);

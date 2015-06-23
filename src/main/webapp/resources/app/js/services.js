@@ -4,5 +4,7 @@ define(function(require) {
   return angular.module('addis.services', [])
     .factory('Select2UtilService', require('services/select2UtilService'))
     .factory('SingleStudyBenefitRiskAnalysisService', require('services/singleStudyBenefitRiskAnalysisService'))
-    .factory('NetworkMetaAnalysisService', require('services/networkMetaAnalysisService'));
+    .factory('NetworkMetaAnalysisService', require('services/networkMetaAnalysisService'))
+    .factory('NetworkPlotService', require('gemtc-web/analyses/networkPlotService'))
+    ;
 });
