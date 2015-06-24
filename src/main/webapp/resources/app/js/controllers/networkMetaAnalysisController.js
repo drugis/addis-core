@@ -24,7 +24,7 @@ define(['d3'], function(d3) {
     $scope.hasModel = true;
 
     function checkCanCreateModel() {
-      return $scope.editMode.disableEditing ||
+      return ($scope.editMode && $scope.editMode.disableEditing) ||
         $scope.tableHasAmbiguousArm ||
         $scope.interventions.length < 2 || 
         $scope.isNetworkDisconnected ||
