@@ -20,8 +20,8 @@ public class ModelRepositoryImpl implements org.drugis.addis.models.repository.M
   EntityManager em;
 
   @Override
-  public Model create(Integer analysisId) {
-    Model model = new Model(analysisId);
+  public Model create(Integer analysisId, String modelTitle) {
+    Model model = new Model(analysisId, modelTitle);
     em.persist(model);
     return model;
   }
@@ -32,15 +32,9 @@ public class ModelRepositoryImpl implements org.drugis.addis.models.repository.M
   }
 
   @Override
-  public Model findByAnalysis(Integer networkMetaAnalysisId) {
+  public List<Model> findByAnalysis(Integer networkMetaAnalysisId) {
     TypedQuery<Model> query = em.createQuery("FROM Model m WHERE m.analysisId = :analysisId", Model.class);
     query.setParameter("analysisId", networkMetaAnalysisId);
-    List<Model> resultList = query.getResultList();
-    if (resultList.isEmpty()) {
-      // no model found for given analysis
-      return null;
-    } else {
-      return resultList.get(0);
-    }
+    return query.getResultList();
   }
 }

@@ -15,6 +15,10 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -83,7 +87,7 @@ public class AnalysisServiceTest {
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, wrongProject, "new name", outcome);
     NetworkMetaAnalysis oldAnalysis = mock(NetworkMetaAnalysis.class);
 
-    when(modelRepository.findByAnalysis(analysis.getId())).thenReturn(null);
+    when(modelRepository.findByAnalysis(analysis.getId())).thenReturn(new ArrayList<Model>());
     when(oldAnalysis.getProjectId()).thenReturn(projectId);
     when(analysisRepository.get(wrongProject, analysisId)).thenReturn(oldAnalysis);
 
@@ -98,8 +102,8 @@ public class AnalysisServiceTest {
     Outcome outcome = mock(Outcome.class);
     Integer modelId = 83473458;
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "new name", outcome);
-    Model model = mock(Model.class);
-    when(modelRepository.findByAnalysis(analysis.getId())).thenReturn(model);
+    List<Model> models = Arrays.asList(new Model(modelId, analysisId, "modelTitle"));
+    when(modelRepository.findByAnalysis(analysis.getId())).thenReturn(models);
     when(modelRepository.find(modelId)).thenReturn(null);
     analysisService.updateNetworkMetaAnalysis(user, analysis);
   }

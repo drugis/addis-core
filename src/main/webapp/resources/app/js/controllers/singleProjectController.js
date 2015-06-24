@@ -99,6 +99,7 @@ define([], function() {
       var analysisType = _.find(ANALYSIS_TYPES, function(type) {
         return type.label === analysisTypeLabel;
       });
+      //todo if analysis is gemtc type and has a problem go to models view
       $state.go(analysisType.stateName, {
         projectId: $scope.project.id,
         analysisId: analysisId

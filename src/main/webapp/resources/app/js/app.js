@@ -76,7 +76,7 @@ define(
     app.constant('DEFAULT_VIEW', 'overview');
     app.constant('ANALYSIS_TYPES', [{
       label: 'Network meta-analysis',
-      stateName: 'analysis.networkMetaAnalysis'
+      stateName: 'networkMetaAnalysis'
     }, {
       label: 'Single-study Benefit-Risk',
       stateName: 'analysis.singleStudyBenefitRisk'
@@ -126,7 +126,7 @@ define(
       function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider, $animateProvider, MCDARouteProvider) {
         var baseTemplatePath = 'app/views/';
         var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
-        var gemtcWebBaseTemplatePath = 'app/js/bower_components/gemtc-web/app/views/';
+        var gemtcWebBaseTemplatePath = 'app/js/bower_components/gemtc-web/app/';
 
         $httpProvider.interceptors.push('SessionExpiredInterceptor');
         $animateProvider.classNameFilter(/sidepanel/);
@@ -181,13 +181,40 @@ define(
             templateUrl: baseTemplatePath + 'singleStudyBenefitRiskAnalysisView.html',
             controller: 'SingleStudyBenefitRiskAnalysisController'
           })
-          .state('analysis.networkMetaAnalysis', {
-            templateUrl: baseTemplatePath + 'networkMetaAnalysisView.html',
+          .state('networkMetaAnalysisContainer', {
+            parent: 'analysis',
+            abstract: true,
+            templateUrl:  baseTemplatePath +  'networkMetaAnalysisContainer.html',
             controller: 'NetworkMetaAnalysisController'
           })
-          .state('analysis.model', {
+          .state('networkMetaAnalysis', {
+            parent: 'networkMetaAnalysisContainer',
+            views: {
+              'networkMetaAnalysis': {
+                 templateUrl: baseTemplatePath + 'networkMetaAnalysisView.html'
+              },
+              'models': {
+                templateUrl: gemtcWebBaseTemplatePath + '/js/models/models.html',
+                controller: 'ModelsController'
+              },
+              'network': {
+                templateUrl: baseTemplatePath + 'network.html'
+              },
+              'evidenceTable': {
+                templateUrl: baseTemplatePath + 'evidenceTable.html'
+              }
+            }
+          })
+          .state('createModel', {
+            parent: 'analysis',
+            url: '/models/createModel',
+            templateUrl: gemtcWebBaseTemplatePath + 'js/models/createModel.html',
+            controller: 'CreateModelController'
+          })
+          .state('model', {
+            parent: 'analysis',
             url: '/models/:modelId',
-            templateUrl: gemtcWebBaseTemplatePath + 'modelView.html',
+            templateUrl: gemtcWebBaseTemplatePath + 'views/modelView.html',
             controller: 'ModelController'
           });
 

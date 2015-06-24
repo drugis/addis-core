@@ -19,8 +19,8 @@ public class ModelServiceImpl implements ModelService {
   ModelRepository modelRepository;
 
   @Override
-  public Model createModel(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
-    return modelRepository.create(analysisId);
+  public Model createModel(Integer projectId, Integer analysisId, String modelTitle) throws ResourceDoesNotExistException {
+    return modelRepository.create(analysisId, modelTitle);
   }
 
   @Override
@@ -30,11 +30,6 @@ public class ModelServiceImpl implements ModelService {
 
   @Override
   public List<Model> query(Integer analysisId) {
-    List<Model> resultList = new ArrayList<>(1);
-    Model model = modelRepository.findByAnalysis(analysisId);
-    if (model != null) {
-      resultList.add(model);
-    }
-    return resultList;
+    return modelRepository.findByAnalysis(analysisId);
   }
 }

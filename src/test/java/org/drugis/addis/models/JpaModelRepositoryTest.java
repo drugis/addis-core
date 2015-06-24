@@ -13,6 +13,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
+import java.lang.reflect.Array;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -29,7 +32,8 @@ public class JpaModelRepositoryTest {
   @Test
   public void testCreate() throws Exception {
     Integer analysisId = -5; // from test-data/sql
-    Model model = modelRepository.create(analysisId);
+    String modelTitle = "model title";
+    Model model = modelRepository.create(analysisId, modelTitle);
     assertEquals(analysisId, model.getAnalysisId());
     assertNotNull(model.getId());
   }
@@ -46,12 +50,12 @@ public class JpaModelRepositoryTest {
   @Test
   public void testFindByAnalysis() {
     NetworkMetaAnalysis networkMetaAnalysisWithModel = em.find(NetworkMetaAnalysis.class, -5);
-    Model model = modelRepository.findByAnalysis(networkMetaAnalysisWithModel.getId());
-    assertNotNull(model);
-    assertEquals(networkMetaAnalysisWithModel.getId(), model.getAnalysisId());
+    List<Model> models = modelRepository.findByAnalysis(networkMetaAnalysisWithModel.getId());
+    assertNotNull(models);
+    assertEquals(networkMetaAnalysisWithModel.getId(), models.get(0).getAnalysisId());
 
     NetworkMetaAnalysis networkMetaAnalysisWithWithOutModel = em.find(NetworkMetaAnalysis.class, -6);
-    model = modelRepository.findByAnalysis(networkMetaAnalysisWithWithOutModel.getId());
-    assertNull(model);
+    models = modelRepository.findByAnalysis(networkMetaAnalysisWithWithOutModel.getId());
+    assertTrue(models.isEmpty());
   }
 }

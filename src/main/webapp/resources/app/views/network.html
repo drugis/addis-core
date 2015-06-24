@@ -1,0 +1,21 @@
+<label>Network graph</label>
+<div class="addis-graph">
+    <div class="row">
+        <div class="columns large-8 large-centered ">
+            <div ng-show="!analysis.outcome">
+                <p>No outcome selected.</p>
+            </div>
+            <network-plot network="networkGraph.network" ng-show="analysis.outcome"></network-plot>
+        </div>
+    </div>
+    <div class="row">
+        <div class="columns large-12">
+            <div class="graph-legend text-smaller">
+                <p>The network graph shows the evidence network for all selected interventions. The size
+                    of an intervention's circle reflects the total number of participants for that
+                    intervention. Lines signify that interventions are connected through at least one
+                study, with thicker lines indicating more connecting studies.</p>
+            </div>
+        </div>
+    </div>
+</div>
