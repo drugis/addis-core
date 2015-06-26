@@ -215,8 +215,17 @@ public class TriplestoreServiceTest {
     List<Study> result = triplestoreService.queryStudies(namespaceUid, "version");
     assertEquals(5, result.size()); // epar example
     assertEquals(3, result.get(0).getTreatmentArms().size());
-    // this one should have a multi drug arm
-    assertEquals(2, ((StudyTreatmentArm) result.get(0).getTreatmentArms().toArray()[2]).getInterventionUids().size());
+
+    for(Study study : result) {
+      if(study.getTitle().equals("TAK491-301 / NCT00846365")){
+        for(StudyTreatmentArm arm : study.getTreatmentArms()) {
+          if(arm.getArmUid().equals("http://trials.drugis.org/instances/5b9bb252-59d3-4936-a005-7ee443878c43")) {
+            // this one should have a multi drug arm
+            arm.getInterventionUids().size();
+          }
+        }
+      }
+    }
   }
 
   @Test
