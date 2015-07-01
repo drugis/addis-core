@@ -30,7 +30,7 @@
     "d3": "~3.2.2",
     "nvd3": "~1.1.15-beta",
     "mcda-web": "https://github.com/drugis/mcda-elicitation-web.git#0.9.3",
-    "gemtc-web": "https://github.com/ConnorStroomberg/gemtc-web.git#develop",
+    "gemtc-web": "https://github.com/drugis/gemtc-web.git#develop",
     "moment": "~2.8.1",
     "angular-ui-select": "~0.8.0",
     "angular-sanitize": "~1.2.26",
