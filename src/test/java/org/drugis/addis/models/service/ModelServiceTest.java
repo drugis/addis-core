@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -36,18 +38,19 @@ public class ModelServiceTest {
   @Test
   public void testQueryModelIsPresent() throws Exception {
     Integer analysisId = -1;
-    Model model = new Model(-10, analysisId);
-    when(modelRepository.findByAnalysis(analysisId)).thenReturn(model);
+    String modelTitle = "modelTitle";
+    List<Model> models = Arrays.asList(new Model(-10, analysisId, modelTitle));
+    when(modelRepository.findByAnalysis(analysisId)).thenReturn(models);
     List<Model> resultList = modelService.query(analysisId);
     assertEquals(1, resultList.size());
-    assertEquals(model, resultList.get(0));
+    assertEquals(models.get(0), resultList.get(0));
   }
 
 
   @Test
   public void testQueryModelIsNotPresent() throws Exception {
     Integer analysisId = -1;
-    when(modelRepository.findByAnalysis(analysisId)).thenReturn(null);
+    when(modelRepository.findByAnalysis(analysisId)).thenReturn(new ArrayList<Model>());
     List<Model> resultList = modelService.query(analysisId);
     assertEquals(0, resultList.size());
   }

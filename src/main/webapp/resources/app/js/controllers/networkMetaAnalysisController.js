@@ -8,8 +8,6 @@ define(['d3'], function(d3) {
     InterventionResource, TrialverseTrialDataResource, NetworkMetaAnalysisService, ModelResource) {
     $scope.networkGraph = {};
     $scope.isNetworkDisconnected = true;
-    $scope.analysis = $scope.$parent.analysis;
-    $scope.project = $scope.$parent.project;
     $scope.models = ModelResource.query({
       projectId: $stateParams.projectId,
       analysisId: $stateParams.analysisId
@@ -24,6 +22,15 @@ define(['d3'], function(d3) {
     $scope.tableHasAmbiguousArm = false;
     $scope.hasLessThanTwoInterventions = false;
     $scope.hasModel = true;
+
+    function checkCanCreateModel() {
+      return ($scope.editMode && $scope.editMode.disableEditing) ||
+        $scope.tableHasAmbiguousArm ||
+        $scope.interventions.length < 2 || 
+        $scope.isNetworkDisconnected ||
+        $scope.hasLessThanTwoInterventions; 
+    }
+    $scope.isModelCreationBlocked = checkCanCreateModel();
 
     $q
       .all([
@@ -83,6 +90,7 @@ define(['d3'], function(d3) {
           $scope.tableHasAmbiguousArm =
             NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
           $scope.hasLessThanTwoInterventions = getIncludedInterventions($scope.interventions).length < 2;
+          $scope.isModelCreationBlocked = checkCanCreateModel();
         });
     }
 
@@ -94,6 +102,7 @@ define(['d3'], function(d3) {
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
         $scope.tableHasAmbiguousArm =
           NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
+        $scope.isModelCreationBlocked = checkCanCreateModel();
       });
     };
 
@@ -128,20 +137,10 @@ define(['d3'], function(d3) {
       });
     };
 
-    $scope.createModelAndGoToModel = function() {
-      var model = ModelResource.save($stateParams, {});
-      model.$promise.then(function(model) {
-        $state.go('analysis.model', {
-          modelId: model.id
-        });
-      });
-    };
-
-    $scope.goToModel = function() {
-      $state.go('analysis.model', {
-        modelId: $scope.models[0].id
-      });
-    };
+    $scope.gotoCreateModel = function () {
+       $state.go('createModel', 
+        {projectId: $stateParams.projectId, analysisId: $stateParams.analysisId});
+    }
 
     $scope.doesInterventionHaveAmbiguousArms = function(drugId, studyUid) {
       return NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, studyUid, $scope.trialverseData, $scope.analysis);

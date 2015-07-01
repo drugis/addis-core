@@ -75,10 +75,9 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       mockTrialData.$promise = trialverseTrailDataDeferred.promise;
 
       scope = $rootScope;
-      scope.$parent = {
-        analysis: mockAnalysis,
-        project: mockProject
-      };
+      scope.analysis = mockAnalysis;
+      scope.project = mockProject;
+
       outcomeResource = jasmine.createSpyObj('OutcomeResource', ['query']);
       outcomeResource.query.and.returnValue(mockOutcomes);
 
@@ -133,22 +132,11 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
     }));
 
     describe('when first initialised', function() {
-      it('should inherit the parent\'s analysis and project', function() {
-        expect(scope.analysis).toEqual(scope.$parent.analysis);
-        expect(scope.project).toEqual(scope.$parent.project);
-      });
-
       it('should place the list of selectable outcomes on the scope', function() {
         expect(outcomeResource.query).toHaveBeenCalledWith({
           projectId: mockProject.id
         });
         expect(scope.outcomes).toEqual(mockOutcomes);
-      });
-
-      it('should place a createModelAndGoToModel function on the scope that navigates to the analysis.model state', function() {
-        expect(scope.createModelAndGoToModel).toBeDefined();
-        scope.createModelAndGoToModel();
-        expect(modelResource.save).toHaveBeenCalledWith(mockStateParams, {});
       });
 
       it('should set isNetworkDisconnected to true', function() {
@@ -193,29 +181,6 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
           expect(networkMetaAnalysisService.transformTrialDataToTableRows).toHaveBeenCalled();
           expect(networkMetaAnalysisService.isNetworkDisconnected).toHaveBeenCalled();
           expect(networkMetaAnalysisService.transformTrialDataToNetwork).toHaveBeenCalled();
-        });
-      });
-
-      describe('and the create model button is clicked', function() {
-
-        it('should create a model and go to the model view', function() {
-          scope.createModelAndGoToModel();
-          expect(modelResource.save).toHaveBeenCalledWith(mockStateParams, {});
-          modelDeferred.resolve(mockModel);
-          scope.$apply();
-          expect(state.go).toHaveBeenCalledWith('analysis.model', {
-            modelId: mockModel.id
-          });
-        });
-      });
-
-      describe('and the go to model button is clicked', function() {
-
-        it('should go to the model view', function() {
-          scope.goToModel();
-          expect(state.go).toHaveBeenCalledWith('analysis.model', {
-            modelId: mockModel.id
-          });
         });
       });
 

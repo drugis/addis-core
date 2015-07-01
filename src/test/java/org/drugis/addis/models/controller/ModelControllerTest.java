@@ -1,9 +1,11 @@
 package org.drugis.addis.models.controller;
 
+import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.models.ModelCommand;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.util.WebConstants;
@@ -83,10 +85,15 @@ public class ModelControllerTest {
   public void testCreate() throws Exception {
     Integer projectId = 45;
     Integer analysisId = 55;
-    Model model = new Model(1, 2);
+    String modelTitle = "model title";
+    Model model = new Model(1, 2, modelTitle);
+    String body = TestUtils.createJson(new ModelCommand(modelTitle));
 
-    when(modelService.createModel(projectId, analysisId)).thenReturn(model);
-    mockMvc.perform(post("/projects/45/analyses/55/models").principal(user))
+    when(modelService.createModel(projectId, analysisId, modelTitle)).thenReturn(model);
+    mockMvc.perform(post("/projects/45/analyses/55/models")
+              .content(body)
+              .principal(user)
+              .contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.id", notNullValue()))
@@ -94,14 +101,16 @@ public class ModelControllerTest {
 
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
-    verify(modelService).createModel(projectId, analysisId);
+
+    verify(modelService).createModel(projectId, analysisId, modelTitle);
   }
 
   @Test
   public void testGet() throws Exception {
     Integer analysisId = 55;
     Integer modelId = 12;
-    Model model = new Model(modelId, analysisId);
+    String modelTitle = "model title";
+    Model model = new Model(modelId, analysisId, modelTitle);
 
     when(modelService.getModel(analysisId, model.getId())).thenReturn(model);
     mockMvc.perform(get("/projects/45/analyses/55/models/12").principal(user))
@@ -117,7 +126,8 @@ public class ModelControllerTest {
   @Test
   public void testQueryWithModelResult() throws Exception {
     Integer analysisId = 55;
-    Model model = new Model(-1, analysisId);
+    String modelTitle = "model title";
+    Model model = new Model(-1, analysisId, modelTitle);
     List<Model> models = Arrays.asList(model);
     when(modelService.query(analysisId)).thenReturn(models);
     mockMvc.perform(get("/projects/45/analyses/55/models").principal(user))
