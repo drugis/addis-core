@@ -62,7 +62,8 @@ public class PataviTaskServiceTest {
     Integer projectId = -6;
     Integer analysisId = -7;
     String modelTitle = "modelTitle";
-    Model model = new Model(modelId, analysisId, modelTitle);
+    String linearModel = "fixed";
+    Model model = new Model(modelId, analysisId, modelTitle, linearModel);
     NetworkMetaAnalysisProblem networkMetaAnalysisProblem = mock(NetworkMetaAnalysisProblem.class);
     PataviTask pataviTask = new PataviTask(PataviTaskRepositoryImpl.GEMTC_METHOD, problem);
     when(networkMetaAnalysisProblem.toString()).thenReturn(problem);
@@ -87,7 +88,8 @@ public class PataviTaskServiceTest {
     Integer projectId = -6;
     Integer analysisId = -7;
     String modelTitle = "modelTitle";
-    Model model = new Model(taskId, modelId, analysisId, modelTitle);
+    String linearModel = "fixed";
+    Model model = new Model(taskId, modelId, analysisId, modelTitle, linearModel);
     PataviTask pataviTask = new PataviTask(PataviTaskRepositoryImpl.GEMTC_METHOD, problem);
     when(modelRepository.find(modelId)).thenReturn(model);
 

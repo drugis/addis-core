@@ -6,16 +6,22 @@ package org.drugis.addis.models;
 public class ModelCommand {
 
     String title;
+    String linearModel;
 
     public ModelCommand() {
     }
 
-    public ModelCommand(String title) {
+    public ModelCommand(String title, String linearModel) {
         this.title = title;
+        this.linearModel = linearModel;
     }
 
     public String getTitle() {
         return title;
+    }
+
+    public String getLinearModel() {
+        return linearModel;
     }
 
     @Override
@@ -25,12 +31,15 @@ public class ModelCommand {
 
         ModelCommand that = (ModelCommand) o;
 
-        return !(title != null ? !title.equals(that.title) : that.title != null);
+        if (!title.equals(that.title)) return false;
+        return linearModel.equals(that.linearModel);
 
     }
 
     @Override
     public int hashCode() {
-        return title != null ? title.hashCode() : 0;
+        int result = title.hashCode();
+        result = 31 * result + linearModel.hashCode();
+        return result;
     }
 }

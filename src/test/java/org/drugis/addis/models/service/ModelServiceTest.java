@@ -39,7 +39,8 @@ public class ModelServiceTest {
   public void testQueryModelIsPresent() throws Exception {
     Integer analysisId = -1;
     String modelTitle = "modelTitle";
-    List<Model> models = Arrays.asList(new Model(-10, analysisId, modelTitle));
+    String linearModel = "fixed";
+    List<Model> models = Arrays.asList(new Model(-10, analysisId, modelTitle, linearModel));
     when(modelRepository.findByAnalysis(analysisId)).thenReturn(models);
     List<Model> resultList = modelService.query(analysisId);
     assertEquals(1, resultList.size());

@@ -16,26 +16,30 @@ public class Model {
   private Integer analysisId;
   private Integer taskId;
   private String title;
+  private String linearModel;
 
   public Model() {
   }
 
-  public Model(Integer taskId, Integer id, Integer analysisId, String title) {
+  public Model(Integer taskId, Integer id, Integer analysisId, String title, String linearModel) {
     this.taskId = taskId;
     this.id = id;
     this.analysisId = analysisId;
     this.title = title;
+    this.linearModel = linearModel;
   }
 
-  public Model(Integer id, Integer analysisId, String title) {
+  public Model(Integer id, Integer analysisId, String title, String linearModel) {
     this.id = id;
     this.analysisId = analysisId;
     this.title = title;
+    this.linearModel = linearModel;
   }
 
-  public Model(Integer analysisId, String title) {
+  public Model(Integer analysisId, String title, String linearModel) {
     this.analysisId = analysisId;
     this.title = title;
+    this.linearModel = linearModel;
   }
 
   public Integer getId() {
@@ -54,6 +58,10 @@ public class Model {
     return title;
   }
 
+  public String getLinearModel() {
+    return linearModel;
+  }
+
   public void setTaskId(Integer taskId) {
     this.taskId = taskId;
   }
@@ -65,19 +73,21 @@ public class Model {
 
     Model model = (Model) o;
 
-    if (id != null ? !id.equals(model.id) : model.id != null) return false;
+    if (!id.equals(model.id)) return false;
     if (!analysisId.equals(model.analysisId)) return false;
     if (taskId != null ? !taskId.equals(model.taskId) : model.taskId != null) return false;
-    return title.equals(model.title);
+    if (!title.equals(model.title)) return false;
+    return linearModel.equals(model.linearModel);
 
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
+    int result = id.hashCode();
     result = 31 * result + analysisId.hashCode();
     result = 31 * result + (taskId != null ? taskId.hashCode() : 0);
     result = 31 * result + title.hashCode();
+    result = 31 * result + linearModel.hashCode();
     return result;
   }
 }

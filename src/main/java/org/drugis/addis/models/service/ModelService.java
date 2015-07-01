@@ -9,7 +9,7 @@ import java.util.List;
  * Created by daan on 22-5-14.
  */
 public interface ModelService {
-  public Model createModel(Integer projectId, Integer analysisId, String modelTitle) throws ResourceDoesNotExistException;
+  public Model createModel(Integer projectId, Integer analysisId, String modelTitle, String linearModel) throws ResourceDoesNotExistException;
 
   public Model getModel(Integer analysisId, Integer modelId) throws ResourceDoesNotExistException;
 

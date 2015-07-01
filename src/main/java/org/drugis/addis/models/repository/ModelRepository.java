@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface ModelRepository {
 
-  public Model create(Integer analysisId, String modelTitle);
+  public Model create(Integer analysisId, String modelTitle, String linearModel);
 
   public Model find(Integer modelId);
 

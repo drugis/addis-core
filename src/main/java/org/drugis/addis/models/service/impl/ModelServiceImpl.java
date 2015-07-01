@@ -7,7 +7,6 @@ import org.drugis.addis.models.service.ModelService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,8 +18,8 @@ public class ModelServiceImpl implements ModelService {
   ModelRepository modelRepository;
 
   @Override
-  public Model createModel(Integer projectId, Integer analysisId, String modelTitle) throws ResourceDoesNotExistException {
-    return modelRepository.create(analysisId, modelTitle);
+  public Model createModel(Integer projectId, Integer analysisId, String modelTitle, String linearModel) throws ResourceDoesNotExistException {
+    return modelRepository.create(analysisId, modelTitle, linearModel);
   }
 
   @Override

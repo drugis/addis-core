@@ -13,7 +13,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
-import java.lang.reflect.Array;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -33,7 +32,8 @@ public class JpaModelRepositoryTest {
   public void testCreate() throws Exception {
     Integer analysisId = -5; // from test-data/sql
     String modelTitle = "model title";
-    Model model = modelRepository.create(analysisId, modelTitle);
+    String linearModel = "fixed";
+    Model model = modelRepository.create(analysisId, modelTitle, linearModel);
     assertEquals(analysisId, model.getAnalysisId());
     assertNotNull(model.getId());
   }

@@ -86,10 +86,11 @@ public class ModelControllerTest {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
-    Model model = new Model(1, 2, modelTitle);
-    String body = TestUtils.createJson(new ModelCommand(modelTitle));
+    String linearModel = "fixed";
+    Model model = new Model(1, 2, modelTitle, linearModel);
+    String body = TestUtils.createJson(new ModelCommand(modelTitle, linearModel));
 
-    when(modelService.createModel(projectId, analysisId, modelTitle)).thenReturn(model);
+    when(modelService.createModel(projectId, analysisId, modelTitle, linearModel)).thenReturn(model);
     mockMvc.perform(post("/projects/45/analyses/55/models")
               .content(body)
               .principal(user)
@@ -102,7 +103,7 @@ public class ModelControllerTest {
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
 
-    verify(modelService).createModel(projectId, analysisId, modelTitle);
+    verify(modelService).createModel(projectId, analysisId, modelTitle, linearModel);
   }
 
   @Test
@@ -110,7 +111,8 @@ public class ModelControllerTest {
     Integer analysisId = 55;
     Integer modelId = 12;
     String modelTitle = "model title";
-    Model model = new Model(modelId, analysisId, modelTitle);
+    String linearModel = "fixed";
+    Model model = new Model(modelId, analysisId, modelTitle, linearModel);
 
     when(modelService.getModel(analysisId, model.getId())).thenReturn(model);
     mockMvc.perform(get("/projects/45/analyses/55/models/12").principal(user))
@@ -127,7 +129,8 @@ public class ModelControllerTest {
   public void testQueryWithModelResult() throws Exception {
     Integer analysisId = 55;
     String modelTitle = "model title";
-    Model model = new Model(-1, analysisId, modelTitle);
+    String linearModel = "fixed";
+    Model model = new Model(-1, analysisId, modelTitle, linearModel);
     List<Model> models = Arrays.asList(model);
     when(modelService.query(analysisId)).thenReturn(models);
     mockMvc.perform(get("/projects/45/analyses/55/models").principal(user))
