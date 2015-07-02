@@ -3,6 +3,7 @@ package org.drugis.addis.models.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.PataviTaskUriHolder;
 import org.drugis.addis.models.repository.ModelRepository;
@@ -56,14 +57,15 @@ public class PataviTaskServiceTest {
   }
 
   @Test
-  public void testFindTaskWhenThereIsNoTask() throws ResourceDoesNotExistException, IOException, SQLException {
+  public void testFindTaskWhenThereIsNoTask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException {
     Integer modelId = -2;
     String problem = "Yo";
     Integer projectId = -6;
     Integer analysisId = -7;
     String modelTitle = "modelTitle";
     String linearModel = "fixed";
-    Model model = new Model(modelId, analysisId, modelTitle, linearModel);
+    String modelType = "{'type': 'network'}";
+    Model model = new Model(modelId, analysisId, modelTitle, linearModel, modelType);
     NetworkMetaAnalysisProblem networkMetaAnalysisProblem = mock(NetworkMetaAnalysisProblem.class);
     PataviTask pataviTask = new PataviTask(PataviTaskRepositoryImpl.GEMTC_METHOD, problem);
     when(networkMetaAnalysisProblem.toString()).thenReturn(problem);
@@ -80,7 +82,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test
-  public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException, IOException, SQLException {
+  public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException {
     Integer modelId = -2;
     String uri = "uri";
     String problem = "Yo";
@@ -89,7 +91,8 @@ public class PataviTaskServiceTest {
     Integer analysisId = -7;
     String modelTitle = "modelTitle";
     String linearModel = "fixed";
-    Model model = new Model(taskId, modelId, analysisId, modelTitle, linearModel);
+    String modelType = "{'type': 'network'}";
+    Model model = new Model(taskId, modelId, analysisId, modelTitle, linearModel, modelType);
     PataviTask pataviTask = new PataviTask(PataviTaskRepositoryImpl.GEMTC_METHOD, problem);
     when(modelRepository.find(modelId)).thenReturn(model);
 
@@ -99,7 +102,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
-  public void testFindTaskForInvalidModel() throws ResourceDoesNotExistException, IOException, SQLException {
+  public void testFindTaskForInvalidModel() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException {
     Integer projectId = -6;
     Integer analysisId = -7;
     Integer invalidModelId = -2;

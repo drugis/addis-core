@@ -20,8 +20,8 @@ public class ModelRepositoryImpl implements org.drugis.addis.models.repository.M
   EntityManager em;
 
   @Override
-  public Model create(Integer analysisId, String modelTitle, String linearModel) {
-    Model model = new Model(analysisId, modelTitle, linearModel);
+  public Model create(Integer analysisId, String modelTitle, String linearModel, String modelType) {
+    Model model = new Model(analysisId, modelTitle, linearModel, modelType);
     em.persist(model);
     return model;
   }

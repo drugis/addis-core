@@ -40,7 +40,8 @@ public class ModelServiceTest {
     Integer analysisId = -1;
     String modelTitle = "modelTitle";
     String linearModel = "fixed";
-    List<Model> models = Arrays.asList(new Model(-10, analysisId, modelTitle, linearModel));
+    String modelType = "{'type': 'network'}";
+    List<Model> models = Arrays.asList(new Model(-10, analysisId, modelTitle, linearModel, modelType));
     when(modelRepository.findByAnalysis(analysisId)).thenReturn(models);
     List<Model> resultList = modelService.query(analysisId);
     assertEquals(1, resultList.size());

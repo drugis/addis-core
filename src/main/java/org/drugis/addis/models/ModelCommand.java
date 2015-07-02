@@ -7,13 +7,15 @@ public class ModelCommand {
 
     String title;
     String linearModel;
+    String modelType;
 
     public ModelCommand() {
     }
 
-    public ModelCommand(String title, String linearModel) {
+    public ModelCommand(String title, String linearModel, String modelType) {
         this.title = title;
         this.linearModel = linearModel;
+        this.modelType = modelType;
     }
 
     public String getTitle() {
@@ -24,6 +26,10 @@ public class ModelCommand {
         return linearModel;
     }
 
+    public String getModelType() {
+        return modelType;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -32,7 +38,8 @@ public class ModelCommand {
         ModelCommand that = (ModelCommand) o;
 
         if (!title.equals(that.title)) return false;
-        return linearModel.equals(that.linearModel);
+        if (!linearModel.equals(that.linearModel)) return false;
+        return modelType.equals(that.modelType);
 
     }
 
@@ -40,6 +47,7 @@ public class ModelCommand {
     public int hashCode() {
         int result = title.hashCode();
         result = 31 * result + linearModel.hashCode();
+        result = 31 * result + modelType.hashCode();
         return result;
     }
 }

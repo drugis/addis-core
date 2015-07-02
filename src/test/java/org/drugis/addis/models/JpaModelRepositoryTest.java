@@ -33,7 +33,8 @@ public class JpaModelRepositoryTest {
     Integer analysisId = -5; // from test-data/sql
     String modelTitle = "model title";
     String linearModel = "fixed";
-    Model model = modelRepository.create(analysisId, modelTitle, linearModel);
+    String modelType = "{'type': 'network'}";
+    Model model = modelRepository.create(analysisId, modelTitle, linearModel, modelType);
     assertEquals(analysisId, model.getAnalysisId());
     assertNotNull(model.getId());
   }

@@ -41,7 +41,7 @@ public class ModelController extends AbstractAddisCoreController {
   public Model create(HttpServletResponse response, Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody ModelCommand modelCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkOwnership(projectId, principal);
     analysisService.checkCoordinates(projectId, analysisId);
-    Model createdModel = modelService.createModel(projectId, analysisId, modelCommand.getTitle(), modelCommand.getLinearModel());
+    Model createdModel = modelService.createModel(projectId, analysisId, modelCommand.getTitle(), modelCommand.getLinearModel(), modelCommand.getModelType());
     response.setStatus(HttpServletResponse.SC_CREATED);
     response.addHeader(HttpHeaders.LOCATION, "/projects/" + projectId + "/analyses/" + analysisId + "/models/" + createdModel.getId());
     return createdModel;

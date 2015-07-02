@@ -2,6 +2,7 @@ package org.drugis.addis.patavitask.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.patavitask.PataviTaskUriHolder;
 import org.drugis.addis.patavitask.service.PataviTaskService;
 import org.springframework.stereotype.Controller;
@@ -27,7 +28,7 @@ public class PataviTaskController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/task", method = RequestMethod.GET)
   @ResponseBody
-  public PataviTaskUriHolder get(@PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException {
+  public PataviTaskUriHolder get(@PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException {
     return pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId);
   }
 

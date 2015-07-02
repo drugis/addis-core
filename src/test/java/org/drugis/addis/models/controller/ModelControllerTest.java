@@ -87,10 +87,11 @@ public class ModelControllerTest {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = "fixed";
-    Model model = new Model(1, 2, modelTitle, linearModel);
-    String body = TestUtils.createJson(new ModelCommand(modelTitle, linearModel));
+    String modelType = "{'type': 'network'}";
+    Model model = new Model(1, 2, modelTitle, linearModel, modelType);
+    String body = TestUtils.createJson(new ModelCommand(modelTitle, linearModel, "{'type': 'network'}"));
 
-    when(modelService.createModel(projectId, analysisId, modelTitle, linearModel)).thenReturn(model);
+    when(modelService.createModel(projectId, analysisId, modelTitle, linearModel, modelType)).thenReturn(model);
     mockMvc.perform(post("/projects/45/analyses/55/models")
               .content(body)
               .principal(user)
@@ -103,7 +104,7 @@ public class ModelControllerTest {
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
 
-    verify(modelService).createModel(projectId, analysisId, modelTitle, linearModel);
+    verify(modelService).createModel(projectId, analysisId, modelTitle, linearModel, modelType);
   }
 
   @Test
@@ -112,7 +113,8 @@ public class ModelControllerTest {
     Integer modelId = 12;
     String modelTitle = "model title";
     String linearModel = "fixed";
-    Model model = new Model(modelId, analysisId, modelTitle, linearModel);
+    String modelType = "{'type': 'network'}";
+    Model model = new Model(modelId, analysisId, modelTitle, linearModel, modelType);
 
     when(modelService.getModel(analysisId, model.getId())).thenReturn(model);
     mockMvc.perform(get("/projects/45/analyses/55/models/12").principal(user))
@@ -130,7 +132,8 @@ public class ModelControllerTest {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = "fixed";
-    Model model = new Model(-1, analysisId, modelTitle, linearModel);
+    String modelType = "{'type': 'network'}";
+    Model model = new Model(-1, analysisId, modelTitle, linearModel, modelType);
     List<Model> models = Arrays.asList(model);
     when(modelService.query(analysisId)).thenReturn(models);
     mockMvc.perform(get("/projects/45/analyses/55/models").principal(user))

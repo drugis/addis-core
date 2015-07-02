@@ -1,5 +1,6 @@
 package org.drugis.addis.models.service.impl;
 
+import net.minidev.json.JSONObject;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.repository.ModelRepository;
@@ -18,8 +19,8 @@ public class ModelServiceImpl implements ModelService {
   ModelRepository modelRepository;
 
   @Override
-  public Model createModel(Integer projectId, Integer analysisId, String modelTitle, String linearModel) throws ResourceDoesNotExistException {
-    return modelRepository.create(analysisId, modelTitle, linearModel);
+  public Model createModel(Integer projectId, Integer analysisId, String modelTitle, String linearModel, String modelType) throws ResourceDoesNotExistException {
+    return modelRepository.create(analysisId, modelTitle, linearModel, modelType);
   }
 
   @Override
