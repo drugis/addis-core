@@ -1,8 +1,8 @@
 'use strict';
 define(['angular'], function() {
-  var dependencies = ['NetworkPlotService'];
+  var dependencies = ['AnalysisService'];
 
-  var NetworkMetaAnalysisService = function(NetworkPlotService) {
+  var NetworkMetaAnalysisService = function(AnalysisService) {
 
     function findInterventionOptionForDrug(drugInstanceUid, interventionOptions) {
       return _.find(interventionOptions, function(intervention) {
@@ -193,7 +193,7 @@ define(['angular'], function() {
     function transformTrialDataToNetwork(trialData, interventions, excludedArms) {
       var network = {
         interventions: [],
-        edges: NetworkPlotService.generateEdges(interventions)
+        edges: AnalysisService.generateEdges(interventions)
       };
       var validTrialData = filterExcludedArms(trialData.trialDataStudies, excludedArms);
       validTrialData = filterStudiesHavingLessThanTwoMatchedInterventions(validTrialData);

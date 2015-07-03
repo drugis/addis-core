@@ -1,8 +1,8 @@
 package org.drugis.addis.models.service.impl;
 
-import net.minidev.json.JSONObject;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.springframework.stereotype.Service;
@@ -19,8 +19,8 @@ public class ModelServiceImpl implements ModelService {
   ModelRepository modelRepository;
 
   @Override
-  public Model createModel(Integer projectId, Integer analysisId, String modelTitle, String linearModel, String modelType) throws ResourceDoesNotExistException {
-    return modelRepository.create(analysisId, modelTitle, linearModel, modelType);
+  public Model createModel(Integer projectId, Integer analysisId, String modelTitle, String linearModel, String modelType, String from, String to) throws ResourceDoesNotExistException, InvalidModelTypeException {
+    return modelRepository.create(analysisId, modelTitle, linearModel, modelType, from, to);
   }
 
   @Override

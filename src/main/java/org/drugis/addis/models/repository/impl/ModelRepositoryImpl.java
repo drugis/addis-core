@@ -1,6 +1,7 @@
 package org.drugis.addis.models.repository.impl;
 
 import org.drugis.addis.models.Model;
+import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
@@ -20,8 +21,8 @@ public class ModelRepositoryImpl implements org.drugis.addis.models.repository.M
   EntityManager em;
 
   @Override
-  public Model create(Integer analysisId, String modelTitle, String linearModel, String modelType) {
-    Model model = new Model(analysisId, modelTitle, linearModel, modelType);
+  public Model create(Integer analysisId, String modelTitle, String linearModel, String modelType, String from, String to) throws InvalidModelTypeException {
+    Model model = new Model(analysisId, modelTitle, linearModel, modelType, from, to);
     em.persist(model);
     return model;
   }

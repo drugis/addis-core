@@ -8,6 +8,7 @@ define(['d3'], function(d3) {
     InterventionResource, TrialverseTrialDataResource, NetworkMetaAnalysisService, ModelResource) {
     $scope.networkGraph = {};
     $scope.isNetworkDisconnected = true;
+    $scope.isAnalysisLocked = true;
     $scope.models = ModelResource.query({
       projectId: $stateParams.projectId,
       analysisId: $stateParams.analysisId
@@ -23,14 +24,14 @@ define(['d3'], function(d3) {
     $scope.hasLessThanTwoInterventions = false;
     $scope.hasModel = true;
 
-    function checkCanCreateModel() {
+    function checkCanNotCreateModel() {
       return ($scope.editMode && $scope.editMode.disableEditing) ||
         $scope.tableHasAmbiguousArm ||
         $scope.interventions.length < 2 || 
         $scope.isNetworkDisconnected ||
-        $scope.hasLessThanTwoInterventions; 
+        $scope.hasLessThanTwoInterventions;
     }
-    $scope.isModelCreationBlocked = checkCanCreateModel();
+    $scope.isModelCreationBlocked = checkCanNotCreateModel();
 
     $q
       .all([
@@ -90,7 +91,7 @@ define(['d3'], function(d3) {
           $scope.tableHasAmbiguousArm =
             NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
           $scope.hasLessThanTwoInterventions = getIncludedInterventions($scope.interventions).length < 2;
-          $scope.isModelCreationBlocked = checkCanCreateModel();
+          $scope.isModelCreationBlocked = checkCanNotCreateModel();
         });
     }
 
@@ -102,7 +103,7 @@ define(['d3'], function(d3) {
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
         $scope.tableHasAmbiguousArm =
           NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
-        $scope.isModelCreationBlocked = checkCanCreateModel();
+        $scope.isModelCreationBlocked = checkCanNotCreateModel();
       });
     };
 
@@ -140,6 +141,10 @@ define(['d3'], function(d3) {
     $scope.gotoCreateModel = function () {
        $state.go('createModel', 
         {projectId: $stateParams.projectId, analysisId: $stateParams.analysisId});
+    }
+
+    $scope.lockAnalysis = function () {
+
     }
 
     $scope.doesInterventionHaveAmbiguousArms = function(drugId, studyUid) {

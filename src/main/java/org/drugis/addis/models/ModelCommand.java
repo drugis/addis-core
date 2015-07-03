@@ -1,5 +1,11 @@
 package org.drugis.addis.models;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
+import net.minidev.json.parser.JSONParser;
+
 /**
  * Created by connor on 6/24/15.
  */
@@ -7,12 +13,12 @@ public class ModelCommand {
 
     String title;
     String linearModel;
-    String modelType;
+    ModelTypeCommand modelType;
 
     public ModelCommand() {
     }
 
-    public ModelCommand(String title, String linearModel, String modelType) {
+    public ModelCommand(String title, String linearModel, ModelTypeCommand modelType) {
         this.title = title;
         this.linearModel = linearModel;
         this.modelType = modelType;
@@ -26,7 +32,7 @@ public class ModelCommand {
         return linearModel;
     }
 
-    public String getModelType() {
+    public ModelTypeCommand getModelType() {
         return modelType;
     }
 

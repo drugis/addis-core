@@ -49,10 +49,10 @@ public class PataviTaskServiceImpl implements PataviTaskService {
       NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
       PataviTask pataviTask = null;
-      if(Model.PAIRWISE_MODEL_TYPE.equals(model.getModelType())) {
+      if(Model.PAIRWISE_MODEL_TYPE.equals(model.getModelTypeAsTypeString())) {
         PairwiseNetworkProblem  pairwiseProblem = new PairwiseNetworkProblem(problem, model.getPairwiseDetails());
         pataviTask = pataviTaskRepository.createPataviTask(pairwiseProblem);
-      } else if (Model.NETWORK_MODEL_TYPE.equals(model.getModelType())) {
+      } else if (Model.NETWORK_MODEL_TYPE.equals(model.getModelTypeAsTypeString())) {
         pataviTask = pataviTaskRepository.createPataviTask(problem);
       } else {
         throw new InvalidModelTypeException("Invalid model type");

@@ -1,9 +1,11 @@
 package org.drugis.addis.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import net.minidev.json.parser.JSONParser;
 import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -45,8 +47,16 @@ public class Model {
     this(null, id, analysisId, title, linearModel, modelType);
   }
 
-  public Model(Integer analysisId, String title, String linearModel, String modelType) {
-    this(null, analysisId, title, linearModel, modelType);
+  public Model(Integer analysisId, String title, String linearModel, String modelType, String from, String to) throws InvalidModelTypeException {
+    this(null, null, analysisId, title, linearModel, modelType);
+
+    if(Model.PAIRWISE_MODEL_TYPE.equals(modelType)) {
+      this.modelType = String.format("{'type': '%s', 'details': {'from': '%s', 'to': '%s'}}", modelType, from, to);
+    } else if (Model.NETWORK_MODEL_TYPE.equals(modelType)){
+      this.modelType = String.format("{'type': '%s'}", modelType);
+    }else {
+      throw new InvalidModelTypeException("not a valid model type");
+    }
   }
 
   public Integer getId() {
@@ -69,18 +79,29 @@ public class Model {
     return linearModel;
   }
 
-  public String getModelType() {
+  @JsonIgnore
+  public String getModelTypeAsTypeString() {
     JSONObject jsonObject = (JSONObject) JSONValue.parse(modelType);
     return (String) jsonObject.get("type");
   }
 
+  public ModelType getModelType() {
+    Pair<String, String> typeDetails = getPairwiseDetails();
+    TypeDetails details = null;
+    if(typeDetails != null) {
+       details = new TypeDetails(typeDetails.getLeft(), typeDetails.getRight());
+    }
+    return new ModelType(getModelTypeAsTypeString(), details);
+  }
+
+  @JsonIgnore
   public Pair<String, String> getPairwiseDetails() {
-    if(PAIRWISE_MODEL_TYPE.equals(getModelType())){
+    if(PAIRWISE_MODEL_TYPE.equals(getModelTypeAsTypeString())){
       JSONObject jsonObject = (JSONObject) JSONValue.parse(modelType);
       JSONObject pairwiseDetails = (JSONObject) jsonObject.get("details");
       String to = (String) pairwiseDetails.get("to");
       String from = (String) pairwiseDetails.get("from");
-      return Pair.of(to, from);
+      return Pair.of(from, to);
     }
     else {
       return null;
@@ -116,5 +137,47 @@ public class Model {
     result = 31 * result + modelType.hashCode();
     result = 31 * result + (taskId != null ? taskId.hashCode() : 0);
     return result;
+  }
+
+  public class ModelType {
+    private String type;
+    private TypeDetails details;
+
+    public ModelType() {
+    }
+
+    public ModelType(String type, TypeDetails details) {
+      this.type = type;
+      this.details = details;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public TypeDetails getDetails() {
+      return details;
+    }
+  }
+
+  public class TypeDetails {
+    String to;
+    String from;
+
+    public TypeDetails() {
+    }
+
+    public TypeDetails(String from, String to) {
+      this.to = to;
+      this.from = from;
+    }
+
+    public String getTo() {
+      return to;
+    }
+
+    public String getFrom() {
+      return from;
+    }
   }
 }

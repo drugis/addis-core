@@ -3,6 +3,7 @@ package org.drugis.addis.models;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
+import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,15 +33,15 @@ public class JpaModelRepositoryTest {
   private Integer analysisId = -5;
 
   @Test
-  public void testCreate() throws Exception {
+  public void testCreate() throws Exception, InvalidModelTypeException {
     String modelTitle = "model title";
     String linearModel = "fixed";
-    String modelType = "{'type': 'network'}";
-    Model model = modelRepository.create(analysisId, modelTitle, linearModel, modelType);
+    String modelType = "network";
+    Model model = modelRepository.create(analysisId, modelTitle, linearModel, modelType, null, null);
     assertEquals(analysisId, model.getAnalysisId());
     assertNotNull(model.getId());
     assertEquals("fixed", model.getLinearModel());
-    assertEquals(Model.NETWORK_MODEL_TYPE, model.getModelType());
+    assertEquals(Model.NETWORK_MODEL_TYPE, model.getModelTypeAsTypeString());
     assertNull(model.getPairwiseDetails());
   }
 
@@ -60,11 +61,11 @@ public class JpaModelRepositoryTest {
     assertEquals(analysisId, result.getAnalysisId());
     assertNotNull(result.getId());
     assertEquals("fixed", result.getLinearModel());
-    assertEquals(Model.PAIRWISE_MODEL_TYPE, result.getModelType());
+    assertEquals(Model.PAIRWISE_MODEL_TYPE, result.getModelTypeAsTypeString());
     assertNotNull(result.getPairwiseDetails());
     Pair details = result.getPairwiseDetails();
-    assertEquals(details.getLeft(), "study1");
-    assertEquals(details.getRight(), "study2");
+    assertEquals(details.getLeft(), "study2");
+    assertEquals(details.getRight(), "study1");
   }
 
   @Test

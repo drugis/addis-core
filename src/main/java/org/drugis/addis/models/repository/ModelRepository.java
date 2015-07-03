@@ -1,6 +1,7 @@
 package org.drugis.addis.models.repository;
 
 import org.drugis.addis.models.Model;
+import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  */
 public interface ModelRepository {
 
-  public Model create(Integer analysisId, String modelTitle, String linearModel, String modelType);
+  public Model create(Integer analysisId, String modelTitle, String linearModel, String modelType, String from, String to) throws InvalidModelTypeException;
 
   public Model find(Integer modelId);
 

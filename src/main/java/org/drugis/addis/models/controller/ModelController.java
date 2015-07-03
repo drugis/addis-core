@@ -1,5 +1,6 @@
 package org.drugis.addis.models.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.http.HttpHeaders;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
@@ -7,6 +8,8 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.ModelCommand;
+import org.drugis.addis.models.ModelTypeCommand;
+import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.projects.service.ProjectService;
 import org.springframework.stereotype.Controller;
@@ -15,8 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URI;
-import java.net.URL;
 import java.security.Principal;
 import java.util.List;
 
@@ -38,10 +39,11 @@ public class ModelController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.POST)
   @ResponseBody
-  public Model create(HttpServletResponse response, Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody ModelCommand modelCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public Model create(HttpServletResponse response, Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody ModelCommand modelCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, JsonProcessingException, InvalidModelTypeException {
     projectService.checkOwnership(projectId, principal);
     analysisService.checkCoordinates(projectId, analysisId);
-    Model createdModel = modelService.createModel(projectId, analysisId, modelCommand.getTitle(), modelCommand.getLinearModel(), modelCommand.getModelType());
+    ModelTypeCommand modelTypeCommand = modelCommand.getModelType();
+    Model createdModel = modelService.createModel(projectId, analysisId, modelCommand.getTitle(), modelCommand.getLinearModel(), modelTypeCommand.getType(), modelTypeCommand.getDetails().getFrom() , modelTypeCommand.getDetails().getTo());
     response.setStatus(HttpServletResponse.SC_CREATED);
     response.addHeader(HttpHeaders.LOCATION, "/projects/" + projectId + "/analyses/" + analysisId + "/models/" + createdModel.getId());
     return createdModel;
