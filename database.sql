@@ -215,9 +215,13 @@ ALTER TABLE model ADD COLUMN title VARCHAR NOT NULL DEFAULT 'model 1 (generated 
 --rollback ALTER TABLE model DROP COLUMN title;
 
 --changeset reidd:19
-ALTER TABLE MODEL ADD COLUMN linearModel VARCHAR NOT NULL DEFAULT 'fixed';
+ALTER TABLE model ADD COLUMN linearModel VARCHAR NOT NULL DEFAULT 'fixed';
 --rollback ALTER TABLE model DROP COLUMN linearModel;
 
 --changeset stroombergc:20
-ALTER TABLE MODEL ADD COLUMN modelType VARCHAR NOT NULL DEFAULT '{"type": "network"}';
+ALTER TABLE model ADD COLUMN modelType VARCHAR NOT NULL DEFAULT '{"type": "network"}';
 --rollback ALTER TABLE model DROP COLUMN modelType;
+
+--changeset stroombergc:21
+ALTER TABLE model ALTER COLUMN linearModel SET DEFAULT 'random';
+--rollback ALTER TABLE model ALTER COLUMN linearModel SET DEFAULT 'fixed';
