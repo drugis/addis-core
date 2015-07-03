@@ -74,12 +74,12 @@ public class Model {
     return (String) jsonObject.get("type");
   }
 
-  public Pair<String, String> getPairwiseDetials() {
+  public Pair<String, String> getPairwiseDetails() {
     if(PAIRWISE_MODEL_TYPE.equals(getModelType())){
       JSONObject jsonObject = (JSONObject) JSONValue.parse(modelType);
-      JSONObject pairwiseDetials = (JSONObject) jsonObject.get("details");
-      String to = (String) pairwiseDetials.get("to");
-      String from = (String) pairwiseDetials.get("from");
+      JSONObject pairwiseDetails = (JSONObject) jsonObject.get("details");
+      String to = (String) pairwiseDetails.get("to");
+      String from = (String) pairwiseDetails.get("from");
       return Pair.of(to, from);
     }
     else {

@@ -10,8 +10,8 @@ import java.util.List;
  */
 public class NetworkMetaAnalysisProblem extends AbstractProblem {
 
-  private List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
-  private List<TreatmentEntry> treatments = new ArrayList<>();
+  protected List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
+  protected List<TreatmentEntry> treatments = new ArrayList<>();
 
   public NetworkMetaAnalysisProblem() {
   }

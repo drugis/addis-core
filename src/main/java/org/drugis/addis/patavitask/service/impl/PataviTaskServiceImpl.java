@@ -1,6 +1,5 @@
 package org.drugis.addis.patavitask.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
@@ -10,6 +9,7 @@ import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.service.PataviTaskService;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
+import org.drugis.addis.problems.model.PairwiseNetworkProblem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +48,10 @@ public class PataviTaskServiceImpl implements PataviTaskService {
     if(pataviTaskId == null) {
       NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
-      PataviTask pataviTask;
-      if(Model.NETWORK_MODEL_TYPE.equals(model.getModelType())) {
-        pataviTask = pataviTaskRepository.createPataviTask(problem);
+      PataviTask pataviTask = null;
+      if(Model.PAIRWISE_MODEL_TYPE.equals(model.getModelType())) {
+        PairwiseNetworkProblem  pairwiseProblem = new PairwiseNetworkProblem(problem, model.getPairwiseDetails());
+        pataviTask = pataviTaskRepository.createPataviTask(pairwiseProblem);
       } else if (Model.NETWORK_MODEL_TYPE.equals(model.getModelType())) {
         pataviTask = pataviTaskRepository.createPataviTask(problem);
       } else {
