@@ -16,7 +16,7 @@ require.config({
     'foundation': 'bower_components/foundation/js/foundation.min',
     'modernizr': 'bower_components/modernizr/modernizr',
     'd3': 'bower_components/d3/d3.min',
-    'nvd3': 'bower_components/nvd3/nv.d3.min',
+    'nvd3': 'bower_components/nvd3/build/nv.d3.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
     'moment': 'bower_components/moment/min/moment.min',
     'mmfoundation': 'bower_components/angular-foundation/mm-foundation',

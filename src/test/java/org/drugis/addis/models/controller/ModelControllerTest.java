@@ -95,7 +95,7 @@ public class ModelControllerTest {
 
 
     Model model = new Model(1, 2, modelTitle, linearModel, "{'type': 'network'}");
-    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", new DetailsCommand());
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
 
     //  "{\"linearModel\":\"random\",\"modelType\":{\"type\":\"pairwise\",\"details\":{\"from\":\"Paroxetine\",\"to\":\"Fluoxetine\"}},\"title\":\"asdf\"}";
     String body = TestUtils.createJson(new ModelCommand(modelTitle, linearModel, modelTypeCommand));
