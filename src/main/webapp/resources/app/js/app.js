@@ -79,7 +79,7 @@ define(
       stateName: 'networkMetaAnalysis'
     }, {
       label: 'Single-study Benefit-Risk',
-      stateName: 'analysis.singleStudyBenefitRisk'
+      stateName: 'singleStudyBenefitRisk'
     }]);
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.run(['$rootScope', '$window', '$http',
@@ -113,10 +113,6 @@ define(
         });
       }
     ]);
-
-    // app.config(function(uiSelectConfig) {
-    //   uiSelectConfig.theme = 'selectize';
-    // });
 
     app.config(function(uiSelectConfig) {
       uiSelectConfig.theme = 'select2';
@@ -157,9 +153,8 @@ define(
             templateUrl: baseTemplatePath + 'project.html',
             controller: 'SingleProjectController'
           })
-          .state('analysis', {
-            url: '/projects/:projectId/analyses/:analysisId',
-            templateUrl: baseTemplatePath + 'analysisContainer.html',
+          .state('singleStudyBenefitRisk', {
+            url: '/projects/:projectId/ssbr/:analysisId',
             resolve: {
               currentAnalysis: ['$stateParams', 'AnalysisResource',
                 function($stateParams, AnalysisResource) {
@@ -174,24 +169,34 @@ define(
                 }
               ]
             },
-            // AnalysisController does routing to correct type of analysis view
-            controller: 'AnalysisController'
-          })
-          .state('analysis.singleStudyBenefitRisk', {
             templateUrl: baseTemplatePath + 'singleStudyBenefitRiskAnalysisView.html',
             controller: 'SingleStudyBenefitRiskAnalysisController'
           })
           .state('networkMetaAnalysisContainer', {
-            parent: 'analysis',
-            abstract: true,
-            templateUrl:  baseTemplatePath +  'networkMetaAnalysisContainer.html',
-            controller: 'NetworkMetaAnalysisController'
+            templateUrl: baseTemplatePath + 'networkMetaAnalysisContainer.html',
+            abstract:true
           })
           .state('networkMetaAnalysis', {
             parent: 'networkMetaAnalysisContainer',
+            url: '/projects/:projectId/nma/:analysisId',
+            resolve: {
+              currentAnalysis: ['$stateParams', 'AnalysisResource',
+                function($stateParams, AnalysisResource) {
+                  return AnalysisResource.get($stateParams).$promise;
+                }
+              ],
+              currentProject: ['$stateParams', 'ProjectResource',
+                function($stateParams, ProjectResource) {
+                  return ProjectResource.get({
+                    projectId: $stateParams.projectId
+                  }).$promise;
+                }
+              ]
+            },
             views: {
               'networkMetaAnalysis': {
-                 templateUrl: baseTemplatePath + 'networkMetaAnalysisView.html'
+                templateUrl: baseTemplatePath + 'networkMetaAnalysisView.html',
+                controller: 'NetworkMetaAnalysisController'
               },
               'models': {
                 templateUrl: gemtcWebBaseTemplatePath + '/js/models/models.html',
@@ -206,21 +211,19 @@ define(
             }
           })
           .state('createModel', {
-            parent: 'analysis',
-            url: '/models/createModel',
+            url: '/projects/:projectId/nma/:analysisId/models/createModel',
             templateUrl: gemtcWebBaseTemplatePath + 'js/models/createModel.html',
             controller: 'CreateModelController'
           })
           .state('model', {
-            parent: 'analysis',
-            url: '/models/:modelId',
+            url: '/projects/:projectId/nma/:analysisId/models/:modelId',
             templateUrl: gemtcWebBaseTemplatePath + 'views/modelView.html',
             controller: 'ModelController'
           });
 
         // Default route
         $urlRouterProvider.otherwise('/projects');
-        MCDARouteProvider.buildRoutes($stateProvider, 'analysis', mcdaBaseTemplatePath);
+        MCDARouteProvider.buildRoutes($stateProvider, 'singleStudyBenefitRisk', mcdaBaseTemplatePath);
       }
     ]);
 

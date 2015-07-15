@@ -1,13 +1,22 @@
 'use strict';
 define(['d3'], function(d3) {
-  var dependencies = ['$scope', '$q', '$state', '$stateParams', 'OutcomeResource', 'InterventionResource',
+  var dependencies = ['$window', '$scope', '$q', '$state', '$stateParams', 'currentAnalysis', 'currentProject', 'OutcomeResource', 'InterventionResource',
     'TrialverseTrialDataResource', 'NetworkMetaAnalysisService', 'ModelResource'
   ];
 
-  var NetworkMetaAnalysisController = function($scope, $q, $state, $stateParams, OutcomeResource,
+  var NetworkMetaAnalysisController = function($window, $scope, $q, $state, $stateParams, currentAnalysis, currentProject, OutcomeResource,
     InterventionResource, TrialverseTrialDataResource, NetworkMetaAnalysisService, ModelResource) {
-    $scope.networkGraph = {};
-    $scope.isNetworkDisconnected = true;
+    $scope.$parent.analysis = currentAnalysis;
+    $scope.$parent.project = currentProject;
+    $scope.editMode = {
+      isUserOwner: $window.config.user.id === currentProject.owner.id,
+    };
+    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined;
+    $scope.$parent.networkGraph = {};
+    $scope.loading = {
+      loaded: true
+    };
+    $scope.$parent.isNetworkDisconnected = true;
     $scope.isAnalysisLocked = true;
     $scope.models = ModelResource.query({
       projectId: $stateParams.projectId,
@@ -27,8 +36,8 @@ define(['d3'], function(d3) {
     function checkCanNotCreateModel() {
       return ($scope.editMode && $scope.editMode.disableEditing) ||
         $scope.tableHasAmbiguousArm ||
-        $scope.interventions.length < 2 || 
-        $scope.isNetworkDisconnected ||
+        $scope.interventions.length < 2 ||
+        $scope.$parent.isNetworkDisconnected ||
         $scope.hasLessThanTwoInterventions;
     }
     $scope.isModelCreationBlocked = checkCanNotCreateModel();
@@ -69,8 +78,8 @@ define(['d3'], function(d3) {
 
     function updateNetwork() {
       var includedInterventions = getIncludedInterventions($scope.interventions);
-      $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis.excludedArms);
-      $scope.isNetworkDisconnected = NetworkMetaAnalysisService.isNetworkDisconnected($scope.networkGraph.network);
+      $scope.$parent.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis.excludedArms);
+      $scope.$parent.isNetworkDisconnected = NetworkMetaAnalysisService.isNetworkDisconnected($scope.$parent.networkGraph.network);
     }
 
     function reloadModel() {
@@ -87,11 +96,10 @@ define(['d3'], function(d3) {
           $scope.trialverseData = trialverseData;
           updateNetwork();
           var includedInterventions = getIncludedInterventions($scope.interventions);
-          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis.excludedArms);
-          $scope.tableHasAmbiguousArm =
-            NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
-          $scope.hasLessThanTwoInterventions = getIncludedInterventions($scope.interventions).length < 2;
-          $scope.isModelCreationBlocked = checkCanNotCreateModel();
+          $scope.$parent.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis.excludedArms);
+          $scope.$parent.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.$parent.trialverseData, $scope.interventions, $scope.analysis);
+          $scope.$parent.hasLessThanTwoInterventions = getIncludedInterventions($scope.interventions).length < 2;
+          $scope.$parent.isModelCreationBlocked = checkCanNotCreateModel();
         });
     }
 
@@ -101,8 +109,7 @@ define(['d3'], function(d3) {
       updateNetwork();
       $scope.analysis.$save(function() {
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
-        $scope.tableHasAmbiguousArm =
-          NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
+        $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
         $scope.isModelCreationBlocked = checkCanNotCreateModel();
       });
     };
@@ -116,15 +123,13 @@ define(['d3'], function(d3) {
     };
 
     $scope.changeInterventionInclusion = function(intervention) {
-      $scope.analysis.includedInterventions =
-        NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);
+      $scope.analysis.includedInterventions = NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);
       if ($scope.trialverseData && !intervention.isIncluded) {
         $scope.analysis.excludedArms = NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, $scope.analysis, $scope.trialverseData);
       }
       $scope.analysis.$save(function() {
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
-        $scope.tableHasAmbiguousArm =
-          NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
+        $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
         reloadModel();
       });
     };
@@ -138,14 +143,15 @@ define(['d3'], function(d3) {
       });
     };
 
-    $scope.gotoCreateModel = function () {
-       $state.go('createModel', 
-        {projectId: $stateParams.projectId, analysisId: $stateParams.analysisId});
+    $scope.gotoCreateModel = function() {
+      $state.go('createModel',
+        {
+          projectId: $stateParams.projectId,
+          analysisId: $stateParams.analysisId
+        });
     }
 
-    $scope.lockAnalysis = function () {
-
-    }
+    $scope.lockAnalysis = function() {}
 
     $scope.doesInterventionHaveAmbiguousArms = function(drugId, studyUid) {
       return NetworkMetaAnalysisService.doesInterventionHaveAmbiguousArms(drugId, studyUid, $scope.trialverseData, $scope.analysis);

@@ -1,13 +1,19 @@
 'use strict';
 define(['underscore'], function() {
   var dependencies = ['$scope', '$stateParams', '$state', '$q', '$window',
+    'currentAnalysis', 'currentProject',
     'OutcomeResource', 'InterventionResource', 'TrialverseStudyResource', 'ProblemResource',
     'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW', 'AnalysisResource'
   ];
   var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $q, $window,
-    OutcomeResource, InterventionResource, TrialverseStudyResource, ProblemResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW, AnalysisResource) {
+   currentAnalysis, currentProject, OutcomeResource, InterventionResource, TrialverseStudyResource, ProblemResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW, AnalysisResource) {
 
     var deregisterOutcomeWatch, deregisterInterventionWatch;
+    $scope.$parent.analysis = currentAnalysis;
+    $scope.$parent.project = currentProject;
+    // for mcda use
+    $scope.workspace = $scope.analysis;
+    $scope.project = currentProject;
 
     $scope.studies = [];
     $scope.outcomes = $scope.analysis.selectedOutcomes;
@@ -15,6 +21,13 @@ define(['underscore'], function() {
     $scope.studyModel = {
       selectedStudy: {}
     };
+    if (currentAnalysis.problem) {
+      $scope.isProblemDefined = true;
+    }
+    $scope.editMode = {
+      isUserOwner: $window.config.user.id === currentProject.owner.id,
+    };
+    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined;
 
     var projectIdParam = {
       projectId: $stateParams.projectId

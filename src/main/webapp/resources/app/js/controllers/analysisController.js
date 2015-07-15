@@ -18,13 +18,6 @@ define([], function() {
       return type.label === currentAnalysis.analysisType;
     });
 
-    if ($state.current && $state.current.name === 'analysis') {
-      $state.go(analysisType.stateName, {
-        type: currentAnalysis.analysisType,
-        analysisId: currentAnalysis.id
-      });
-    }
-
     if (currentAnalysis.problem) {
       $scope.isProblemDefined = true;
     }
