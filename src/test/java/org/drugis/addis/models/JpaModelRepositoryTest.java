@@ -41,7 +41,7 @@ public class JpaModelRepositoryTest {
     assertEquals(analysisId, model.getAnalysisId());
     assertNotNull(model.getId());
     assertEquals("fixed", model.getLinearModel());
-    assertEquals(Model.NETWORK_MODEL_TYPE, model.getModelTypeAsTypeString());
+    assertEquals(Model.NETWORK_MODEL_TYPE, model.getModelTypeTypeAsString());
     assertNull(model.getPairwiseDetails());
   }
 
@@ -61,7 +61,7 @@ public class JpaModelRepositoryTest {
     assertEquals(analysisId, result.getAnalysisId());
     assertNotNull(result.getId());
     assertEquals("fixed", result.getLinearModel());
-    assertEquals(Model.PAIRWISE_MODEL_TYPE, result.getModelTypeAsTypeString());
+    assertEquals(Model.PAIRWISE_MODEL_TYPE, result.getModelTypeTypeAsString());
     assertNotNull(result.getPairwiseDetails());
     Pair details = result.getPairwiseDetails();
     assertEquals(details.getLeft(), "study2");

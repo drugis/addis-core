@@ -3,7 +3,6 @@ package org.drugis.addis.models;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -31,13 +30,13 @@ public class ModelTest {
 
     @Test
     public void testGetNetworkModelType() {
-        String type = networkModel.getModelTypeAsTypeString();
+        String type = networkModel.getModelTypeTypeAsString();
         assertEquals(Model.NETWORK_MODEL_TYPE, type);
     }
 
     @Test
     public void testGetPairwiseModelType() {
-        String type = pairwiseModel.getModelTypeAsTypeString();
+        String type = pairwiseModel.getModelTypeTypeAsString();
         assertEquals(Model.PAIRWISE_MODEL_TYPE, type);
     }
 

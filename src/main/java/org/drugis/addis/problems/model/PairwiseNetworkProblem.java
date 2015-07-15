@@ -24,12 +24,14 @@ public class PairwiseNetworkProblem extends NetworkMetaAnalysisProblem {
         Set<AbstractNetworkMetaAnalysisProblemEntry> pairwiseEntries = new HashSet<>();
         for (AbstractNetworkMetaAnalysisProblemEntry entry : problem.getEntries()) {
             Integer treatmentId = entry.getTreatment();
+            assert left != null;
+            assert right != null;
             if(treatmentId.equals(left.getId()) || treatmentId.equals(right.getId()) ) {
                 pairwiseEntries.add(entry);
             }
         }
 
-        List entries = new ArrayList();
+        List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
         entries.addAll(pairwiseEntries);
         this.treatments = Arrays.asList(left, right);
         this.entries = entries;

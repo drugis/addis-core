@@ -1,6 +1,5 @@
 package org.drugis.addis.models.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
@@ -71,14 +70,14 @@ public class PataviTaskServiceTest {
     when(networkMetaAnalysisProblem.toString()).thenReturn(problem);
     when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
     when(modelRepository.find(modelId)).thenReturn(model);
-    when(pataviTaskRepository.createPataviTask(networkMetaAnalysisProblem)).thenReturn(pataviTask);
+    when(pataviTaskRepository.createPataviTask(networkMetaAnalysisProblem, model)).thenReturn(pataviTask);
 
     PataviTaskUriHolder result = pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId);
 
     assertTrue(!result.getUri().isEmpty());
     verify(modelRepository).find(modelId);
     verify(problemService).getProblem(projectId, analysisId);
-    verify(pataviTaskRepository).createPataviTask(networkMetaAnalysisProblem);
+    verify(pataviTaskRepository).createPataviTask(networkMetaAnalysisProblem, model);
   }
 
   @Test

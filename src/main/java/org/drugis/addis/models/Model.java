@@ -3,7 +3,6 @@ package org.drugis.addis.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
-import net.minidev.json.parser.JSONParser;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 
@@ -80,7 +79,7 @@ public class Model {
   }
 
   @JsonIgnore
-  public String getModelTypeAsTypeString() {
+  public String getModelTypeTypeAsString() {
     JSONObject jsonObject = (JSONObject) JSONValue.parse(modelType);
     return (String) jsonObject.get("type");
   }
@@ -91,12 +90,12 @@ public class Model {
     if(typeDetails != null) {
        details = new TypeDetails(typeDetails.getLeft(), typeDetails.getRight());
     }
-    return new ModelType(getModelTypeAsTypeString(), details);
+    return new ModelType(getModelTypeTypeAsString(), details);
   }
 
   @JsonIgnore
   public Pair<String, String> getPairwiseDetails() {
-    if(PAIRWISE_MODEL_TYPE.equals(getModelTypeAsTypeString())){
+    if(PAIRWISE_MODEL_TYPE.equals(getModelTypeTypeAsString())){
       JSONObject jsonObject = (JSONObject) JSONValue.parse(modelType);
       JSONObject pairwiseDetails = (JSONObject) jsonObject.get("details");
       String to = (String) pairwiseDetails.get("to");

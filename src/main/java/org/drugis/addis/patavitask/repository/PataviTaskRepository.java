@@ -1,6 +1,7 @@
 package org.drugis.addis.patavitask.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.drugis.addis.models.Model;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 
@@ -13,5 +14,5 @@ import java.sql.SQLException;
 
 public interface PataviTaskRepository {
 
-  public PataviTask createPataviTask(NetworkMetaAnalysisProblem problem) throws JsonProcessingException, IOException, SQLException;
+  public PataviTask createPataviTask(NetworkMetaAnalysisProblem problem, Model model) throws JsonProcessingException, IOException, SQLException;
 }
