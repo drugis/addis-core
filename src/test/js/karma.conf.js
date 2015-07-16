@@ -48,7 +48,8 @@ module.exports = function(config) {
     // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
     reporters: ['progress', 'junit', 'coverage'],
     junitReporter :{
-      outputFile: '../../../test/karma-test-results.xml'
+      outputFile: '../../../test/karma-test-results.xml',
+      outputDir: '../../../test'
     },
 
     coverageReporter: {
