@@ -5,7 +5,6 @@ define(function (require) {
     .controller('ProjectsController', require('controllers/projectsController'))
     .controller('CreateProjectController', require('controllers/createProjectController'))
     .controller('SingleProjectController', require('controllers/singleProjectController'))
-    .controller('AnalysisController', require('controllers/analysisController'))
     .controller('SingleStudyBenefitRiskAnalysisController', require('controllers/singleStudyBenefitRiskAnalysisController'))
     .controller('NetworkMetaAnalysisController', require('controllers/networkMetaAnalysisController'))
     .controller('NamespaceController', require('controllers/namespaceController'))
