@@ -97,7 +97,7 @@ define(['d3'], function(d3) {
           updateNetwork();
           var includedInterventions = getIncludedInterventions($scope.interventions);
           $scope.$parent.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis.excludedArms);
-          $scope.$parent.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.$parent.trialverseData, $scope.interventions, $scope.analysis);
+          $scope.$parent.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
           $scope.$parent.hasLessThanTwoInterventions = getIncludedInterventions($scope.interventions).length < 2;
           $scope.$parent.isModelCreationBlocked = checkCanNotCreateModel();
         });
