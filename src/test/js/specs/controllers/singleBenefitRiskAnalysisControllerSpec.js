@@ -1,9 +1,13 @@
 define(['angular', 'angular-mocks', 'controllers'], function() {
-  describe("The NEW Single Study Benefit-Risk AnalysisController", function() {
+  describe("The Single Study Benefit-Risk AnalysisController", function() {
     var scope;
     var mockStateParams = {};
     var state = jasmine.createSpyObj('state', ['go']);
-    var mockWindow = {};
+    var mockWindow = {
+      config: {
+        user: 'user'
+      }
+    };
     var outcomeResource = jasmine.createSpyObj('outcomeResource', ['query']);
     var interventionResource = jasmine.createSpyObj('InterventionResource', ['query']);
     var analysisResource = jasmine.createSpyObj('AnalysisResource', ['save']);
@@ -31,9 +35,14 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
     var q;
     var mockProject = {
       namespaceUid: 456,
-      datasetVersion: 'version'
+      datasetVersion: 'version',
+      owner: 'user'
     };
-
+    var mockAnalysis = {
+      selectedOutcomes : {},
+      selectedInterventions: {},
+      studyGraphUid: 'uid'
+    };
 
     beforeEach(module('addis.controllers'));
     beforeEach(module('addis.services'));
@@ -42,6 +51,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
       q = $q;
       scope = $rootScope;
+      scope.$parent = {};
 
       // set the mock state params
       mockStateParams.projectId = 1;
@@ -91,6 +101,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         $state: state,
         $q: $q,
         $window: mockWindow,
+        'currentAnalysis': mockAnalysis,
+        'currentProject': mockProject,
         'OutcomeResource': outcomeResource,
         'InterventionResource': interventionResource,
         'TrialverseStudyResource': trialverseStudyResource,
