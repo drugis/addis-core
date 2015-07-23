@@ -32,7 +32,7 @@ define(['d3'], function(d3) {
     });
     $scope.tableHasAmbiguousArm = false;
     $scope.hasLessThanTwoInterventions = false;
-    $scope.hasModel = true;
+    $scope.$parent.hasModel = true;
 
     function checkCanNotCreateModel() {
       return ($scope.$parent.editMode && $scope.$parent.editMode.disableEditing) ||
@@ -52,7 +52,7 @@ define(['d3'], function(d3) {
         $scope.interventions.$promise
       ])
       .then(function() {
-        $scope.hasModel = $scope.models.length > 0;
+        $scope.$parent.hasModel = $scope.models.length > 0;
         $scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.includedInterventions);
         $scope.analysis.outcome = _.find($scope.outcomes, matchOutcome);
         if ($scope.analysis.outcome) {
