@@ -1,6 +1,5 @@
 package org.drugis.addis.analyses;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.drugis.addis.outcomes.Outcome;
 
 import javax.persistence.*;
