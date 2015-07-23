@@ -8,10 +8,11 @@ define(['d3'], function(d3) {
     InterventionResource, TrialverseTrialDataResource, NetworkMetaAnalysisService, ModelResource) {
     $scope.$parent.analysis = currentAnalysis;
     $scope.$parent.project = currentProject;
-    $scope.editMode = {
+    $scope.$parent.editMode = {
       isUserOwner: $window.config.user.id === currentProject.owner.id,
     };
-    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined;
+    $scope.isProblemDefined = !!currentAnalysis.problem;
+    $scope.$parent.editMode.disableEditing = !$scope.$parent.editMode.isUserOwner || $scope.isProblemDefined;
     $scope.$parent.networkGraph = {};
     $scope.loading = {
       loaded: true
@@ -34,7 +35,7 @@ define(['d3'], function(d3) {
     $scope.hasModel = true;
 
     function checkCanNotCreateModel() {
-      return ($scope.editMode && $scope.editMode.disableEditing) ||
+      return ($scope.$parent.editMode && $scope.$parent.editMode.disableEditing) ||
         $scope.tableHasAmbiguousArm ||
         $scope.interventions.length < 2 ||
         $scope.$parent.isNetworkDisconnected ||
@@ -103,7 +104,7 @@ define(['d3'], function(d3) {
         });
     }
 
-    $scope.changeArmExclusion = function(dataRow) {
+    $scope.$parent.changeArmExclusion = function(dataRow) {
       $scope.tableHasAmbiguousArm = false;
       $scope.analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, $scope.analysis);
       updateNetwork();
