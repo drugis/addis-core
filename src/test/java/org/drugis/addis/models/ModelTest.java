@@ -24,8 +24,8 @@ public class ModelTest {
 
     @Before
     public void setup() throws InvalidModelTypeException {
-        networkModel = new Model(analysisId, title, linearModel, networkType, null, null);
-        pairwiseModel = new Model(analysisId, title, linearModel, pairwiseType, "treatment1", "treatment2");
+        networkModel = new Model(analysisId, title, linearModel, networkType, null, null, 5000, 20000, 10);
+        pairwiseModel = new Model(analysisId, title, linearModel, pairwiseType, "treatment1", "treatment2", 5000, 20000, 10);
     }
 
     @Test

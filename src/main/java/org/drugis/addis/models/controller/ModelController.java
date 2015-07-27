@@ -48,7 +48,8 @@ public class ModelController extends AbstractAddisCoreController {
     if(details == null) {
       details = new DetailsCommand();
     }
-    Model createdModel = modelService.createModel(projectId, analysisId, modelCommand.getTitle(), modelCommand.getLinearModel(), modelTypeCommand.getType(), details.getFrom(), details.getTo());
+    Model createdModel = modelService.createModel(projectId, analysisId, modelCommand.getTitle(), modelCommand.getLinearModel(), modelTypeCommand.getType(),
+        details.getFrom(), details.getTo(), modelCommand.getBurnInIterations(), modelCommand.getInferenceIterations(), modelCommand.getThinningFactor());
     response.setStatus(HttpServletResponse.SC_CREATED);
     response.addHeader(HttpHeaders.LOCATION, "/projects/" + projectId + "/analyses/" + analysisId + "/models/" + createdModel.getId());
     return createdModel;

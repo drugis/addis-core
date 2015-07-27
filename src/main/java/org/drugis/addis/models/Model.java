@@ -22,32 +22,37 @@ public class Model {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer taskId;
   private Integer id;
   private Integer analysisId;
   private String title;
   private String linearModel;
   private String modelType;
-
-  private Integer taskId;
+  private Integer burnInIterations;
+  private Integer inferenceIterations;
+  private Integer thinningFactor;
 
   public Model() {
   }
 
-  public Model(Integer taskId, Integer id, Integer analysisId, String title, String linearModel, String modelType) {
+  public Model(Integer taskId, Integer id, Integer analysisId, String title, String linearModel, String modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor) {
     this.taskId = taskId;
     this.id = id;
     this.analysisId = analysisId;
     this.title = title;
     this.linearModel = linearModel;
     this.modelType = modelType;
+    this.burnInIterations = burnInIterations;
+    this.inferenceIterations = inferenceIterations;
+    this.thinningFactor = thinningFactor;
   }
 
-  public Model(Integer id, Integer analysisId, String title, String linearModel, String modelType) {
-    this(null, id, analysisId, title, linearModel, modelType);
+  public Model(Integer id, Integer analysisId, String title, String linearModel, String modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor) {
+    this(null, id, analysisId, title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor);
   }
 
-  public Model(Integer analysisId, String title, String linearModel, String modelType, String from, String to) throws InvalidModelTypeException {
-    this(null, null, analysisId, title, linearModel, modelType);
+  public Model(Integer analysisId, String title, String linearModel, String modelType, String from, String to, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor) throws InvalidModelTypeException {
+    this(null, null, analysisId, title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor);
 
     if(Model.PAIRWISE_MODEL_TYPE.equals(modelType)) {
       this.modelType = String.format("{'type': '%s', 'details': {'from': '%s', 'to': '%s'}}", modelType, from, to);
@@ -76,6 +81,18 @@ public class Model {
 
   public String getLinearModel() {
     return linearModel;
+  }
+
+  public Integer getBurnInIterations() {
+    return burnInIterations;
+  }
+
+  public Integer getInferenceIterations() {
+    return inferenceIterations;
+  }
+
+  public Integer getThinningFactor() {
+    return thinningFactor;
   }
 
   @JsonIgnore
@@ -118,23 +135,29 @@ public class Model {
 
     Model model = (Model) o;
 
-    if (!id.equals(model.id)) return false;
+    if (taskId != null ? !taskId.equals(model.taskId) : model.taskId != null) return false;
+    if (id != null ? !id.equals(model.id) : model.id != null) return false;
     if (!analysisId.equals(model.analysisId)) return false;
     if (!title.equals(model.title)) return false;
     if (!linearModel.equals(model.linearModel)) return false;
     if (!modelType.equals(model.modelType)) return false;
-    return !(taskId != null ? !taskId.equals(model.taskId) : model.taskId != null);
+    if (!burnInIterations.equals(model.burnInIterations)) return false;
+    if (!inferenceIterations.equals(model.inferenceIterations)) return false;
+    return thinningFactor.equals(model.thinningFactor);
 
   }
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
+    int result = taskId != null ? taskId.hashCode() : 0;
+    result = 31 * result + (id != null ? id.hashCode() : 0);
     result = 31 * result + analysisId.hashCode();
     result = 31 * result + title.hashCode();
     result = 31 * result + linearModel.hashCode();
     result = 31 * result + modelType.hashCode();
-    result = 31 * result + (taskId != null ? taskId.hashCode() : 0);
+    result = 31 * result + burnInIterations.hashCode();
+    result = 31 * result + inferenceIterations.hashCode();
+    result = 31 * result + thinningFactor.hashCode();
     return result;
   }
 

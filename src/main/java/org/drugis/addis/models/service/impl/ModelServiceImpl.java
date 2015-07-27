@@ -19,8 +19,9 @@ public class ModelServiceImpl implements ModelService {
   ModelRepository modelRepository;
 
   @Override
-  public Model createModel(Integer projectId, Integer analysisId, String modelTitle, String linearModel, String modelType, String from, String to) throws ResourceDoesNotExistException, InvalidModelTypeException {
-    return modelRepository.create(analysisId, modelTitle, linearModel, modelType, from, to);
+  public Model createModel(Integer projectId, Integer analysisId, String modelTitle, String linearModel, String modelType, String from, String to,
+                           Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor) throws ResourceDoesNotExistException, InvalidModelTypeException {
+    return modelRepository.create(analysisId, modelTitle, linearModel, modelType, from, to, burnInIterations, inferenceIterations, thinningFactor);
   }
 
   @Override

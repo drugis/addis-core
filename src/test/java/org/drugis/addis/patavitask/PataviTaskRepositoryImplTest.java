@@ -64,7 +64,10 @@ public class PataviTaskRepositoryImplTest {
     Integer treatment = 123;
     String study = "study";
     String linearModel = "random";
-    Model model = new Model(analysisId, "title", linearModel, "network", null, null);
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    Model model = new Model(analysisId, "title", linearModel, "network", null, null, burnInIterations, inferenceIterations, thinningFactor);
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
     entries.add(new RateNetworkMetaAnalysisProblemEntry(study, treatment, samplesize, responders));
@@ -91,7 +94,10 @@ public class PataviTaskRepositoryImplTest {
     String linearModel = "random";
     String treatment1 = "treatment 1";
     String treatment2 = "treatment 2";
-    Model model = new Model(analysisId, "title", linearModel, "pairwise", treatment1, treatment2);
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    Model model = new Model(analysisId, "title", linearModel, "pairwise", treatment1, treatment2, burnInIterations, inferenceIterations, thinningFactor);
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
     entries.add(new RateNetworkMetaAnalysisProblemEntry(study, treatment, samplesize, responders));

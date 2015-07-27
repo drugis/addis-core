@@ -225,3 +225,11 @@ ALTER TABLE model ADD COLUMN modelType VARCHAR NOT NULL DEFAULT '{"type": "netwo
 --changeset stroombergc:21
 ALTER TABLE model ALTER COLUMN linearModel SET DEFAULT 'random';
 --rollback ALTER TABLE model ALTER COLUMN linearModel SET DEFAULT 'fixed';
+
+--changeset reidd:22
+ALTER TABLE model ADD COLUMN burnInIterations NOT NULL DEFAULT 5000;
+ALTER TABLE model ADD COLUMN inferenceIterations NOT NULL DEFAULT 20000;
+ALTER TABLE model ADD COLUMN thinningFactor NOT NULL DEFAULT 10;
+--rollback ALTER TABLE model DROP COLUMN burnInIterations;
+--rollback ALTER TABLE model DROP COLUMN inferenceIterations;
+--rollback ALTER TABLE model DROP COLUMN thinningFactor;

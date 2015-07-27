@@ -37,11 +37,17 @@ public class JpaModelRepositoryTest {
     String modelTitle = "model title";
     String linearModel = "fixed";
     String modelType = "network";
-    Model model = modelRepository.create(analysisId, modelTitle, linearModel, modelType, null, null);
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    Model model = modelRepository.create(analysisId, modelTitle, linearModel, modelType, null, null, burnInIterations, inferenceIterations, thinningFactor);
     assertEquals(analysisId, model.getAnalysisId());
     assertNotNull(model.getId());
     assertEquals("fixed", model.getLinearModel());
     assertEquals(Model.NETWORK_MODEL_TYPE, model.getModelTypeTypeAsString());
+    assertEquals(burnInIterations, model.getBurnInIterations());
+    assertEquals(inferenceIterations, model.getInferenceIterations());
+    assertEquals(thinningFactor, model.getThinningFactor());
     assertNull(model.getPairwiseDetails());
   }
 
@@ -73,6 +79,7 @@ public class JpaModelRepositoryTest {
     NetworkMetaAnalysis networkMetaAnalysisWithModel = em.find(NetworkMetaAnalysis.class, analysisId);
     List<Model> models = modelRepository.findByAnalysis(networkMetaAnalysisWithModel.getId());
     assertNotNull(models);
+    assertEquals(2, models.size());
     assertEquals(networkMetaAnalysisWithModel.getId(), models.get(0).getAnalysisId());
 
     NetworkMetaAnalysis networkMetaAnalysisWithWithOutModel = em.find(NetworkMetaAnalysis.class, -6);

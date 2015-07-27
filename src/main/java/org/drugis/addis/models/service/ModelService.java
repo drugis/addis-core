@@ -11,7 +11,8 @@ import java.util.List;
  * Created by daan on 22-5-14.
  */
 public interface ModelService {
-  public Model createModel(Integer projectId, Integer analysisId, String modelTitle, String linearModel, String modelType, String from, String to) throws ResourceDoesNotExistException, InvalidModelTypeException;
+  public Model createModel(Integer projectId, Integer analysisId, String modelTitle, String linearModel, String modelType, String from, String to,
+                           Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor) throws ResourceDoesNotExistException, InvalidModelTypeException;
 
   public Model getModel(Integer analysisId, Integer modelId) throws ResourceDoesNotExistException;
 

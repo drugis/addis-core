@@ -102,8 +102,9 @@ public class AnalysisServiceTest {
     Outcome outcome = mock(Outcome.class);
     Integer modelId = 83473458;
     String modelType = "{'type': 'network'}";
+
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "new name", outcome);
-    List<Model> models = Arrays.asList(new Model(modelId, analysisId, "modelTitle", "fixedModel", modelType));
+    List<Model> models = Arrays.asList(new Model(modelId, analysisId, "modelTitle", "fixedModel", modelType, 5000, 20000, 10));
     when(modelRepository.findByAnalysis(analysis.getId())).thenReturn(models);
     when(modelRepository.find(modelId)).thenReturn(null);
     analysisService.updateNetworkMetaAnalysis(user, analysis);

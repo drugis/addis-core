@@ -1,11 +1,5 @@
 package org.drugis.addis.models;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import net.minidev.json.JSONObject;
-import net.minidev.json.JSONValue;
-import net.minidev.json.parser.JSONParser;
-
 /**
  * Created by connor on 6/24/15.
  */
@@ -14,17 +8,35 @@ public class ModelCommand {
     String title;
     String linearModel;
     ModelTypeCommand modelType;
+    Integer burnInIterations;
+    Integer inferenceIterations;
+    Integer thinningFactor;
 
     public ModelCommand() {
     }
 
-    public ModelCommand(String title, String linearModel, ModelTypeCommand modelType) {
+    public ModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor) {
         this.title = title;
         this.linearModel = linearModel;
         this.modelType = modelType;
+      this.burnInIterations = burnInIterations;
+      this.inferenceIterations = inferenceIterations;
+      this.thinningFactor = thinningFactor;
     }
 
-    public String getTitle() {
+  public Integer getBurnInIterations() {
+    return burnInIterations;
+  }
+
+  public Integer getInferenceIterations() {
+    return inferenceIterations;
+  }
+
+  public Integer getThinningFactor() {
+    return thinningFactor;
+  }
+
+  public String getTitle() {
         return title;
     }
 
@@ -36,24 +48,30 @@ public class ModelCommand {
         return modelType;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
 
-        ModelCommand that = (ModelCommand) o;
+    ModelCommand that = (ModelCommand) o;
 
-        if (!title.equals(that.title)) return false;
-        if (!linearModel.equals(that.linearModel)) return false;
-        return modelType.equals(that.modelType);
+    if (!title.equals(that.title)) return false;
+    if (!linearModel.equals(that.linearModel)) return false;
+    if (!modelType.equals(that.modelType)) return false;
+    if (!burnInIterations.equals(that.burnInIterations)) return false;
+    if (!inferenceIterations.equals(that.inferenceIterations)) return false;
+    return thinningFactor.equals(that.thinningFactor);
 
-    }
+  }
 
-    @Override
-    public int hashCode() {
-        int result = title.hashCode();
-        result = 31 * result + linearModel.hashCode();
-        result = 31 * result + modelType.hashCode();
-        return result;
-    }
+  @Override
+  public int hashCode() {
+    int result = title.hashCode();
+    result = 31 * result + linearModel.hashCode();
+    result = 31 * result + modelType.hashCode();
+    result = 31 * result + burnInIterations.hashCode();
+    result = 31 * result + inferenceIterations.hashCode();
+    result = 31 * result + thinningFactor.hashCode();
+    return result;
+  }
 }

@@ -92,15 +92,16 @@ public class ModelControllerTest {
     String linearModel = "fixed";
     String modelType = "network";
 
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
 
-
-    Model model = new Model(1, 2, modelTitle, linearModel, "{'type': 'network'}");
+    Model model = new Model(1, 2, modelTitle, linearModel, "{'type': 'network'}", burnInIterations, inferenceIterations, thinningFactor);
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
 
-    //  "{\"linearModel\":\"random\",\"modelType\":{\"type\":\"pairwise\",\"details\":{\"from\":\"Paroxetine\",\"to\":\"Fluoxetine\"}},\"title\":\"asdf\"}";
-    String body = TestUtils.createJson(new ModelCommand(modelTitle, linearModel, modelTypeCommand));
+    String body = TestUtils.createJson(new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor));
 
-    when(modelService.createModel(projectId, analysisId, modelTitle, linearModel, modelType, null, null)).thenReturn(model);
+    when(modelService.createModel(projectId, analysisId, modelTitle, linearModel, modelType, null, null, burnInIterations, inferenceIterations, thinningFactor)).thenReturn(model);
     mockMvc.perform(post("/projects/45/analyses/55/models")
               .content(body)
               .principal(user)
@@ -113,7 +114,7 @@ public class ModelControllerTest {
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
 
-    verify(modelService).createModel(projectId, analysisId, modelTitle, linearModel, modelType, null, null);
+    verify(modelService).createModel(projectId, analysisId, modelTitle, linearModel, modelType, null, null, burnInIterations, inferenceIterations, thinningFactor);
   }
 
   @Test
@@ -124,12 +125,16 @@ public class ModelControllerTest {
     String linearModel = "fixed";
     String modelType = "pairwise";
 
-    Model model = new Model(1, 2, modelTitle, linearModel, "{'type': 'pairwise', 'details':{ 'from': 't1', 'to': 't2'}}");
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+
+    Model model = new Model(1, 2, modelTitle, linearModel, "{'type': 'pairwise', 'details':{ 'from': 't1', 'to': 't2'}}", burnInIterations, inferenceIterations, thinningFactor);
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand(modelType, new DetailsCommand("t1", "t2"));
 
-    String body = TestUtils.createJson(new ModelCommand(modelTitle, linearModel, modelTypeCommand));
+    String body = TestUtils.createJson(new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor));
 
-    when(modelService.createModel(projectId, analysisId, modelTitle, linearModel, modelType, "t1", "t2")).thenReturn(model);
+    when(modelService.createModel(projectId, analysisId, modelTitle, linearModel, modelType, "t1", "t2", burnInIterations, inferenceIterations, thinningFactor)).thenReturn(model);
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
@@ -142,7 +147,7 @@ public class ModelControllerTest {
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
 
-    verify(modelService).createModel(projectId, analysisId, modelTitle, linearModel, modelType, "t1", "t2");
+    verify(modelService).createModel(projectId, analysisId, modelTitle, linearModel, modelType, "t1", "t2", burnInIterations, inferenceIterations, thinningFactor);
   }
 
   @Test
@@ -152,7 +157,12 @@ public class ModelControllerTest {
     String modelTitle = "model title";
     String linearModel = "fixed";
     String modelType = "{'type': 'network'}";
-    Model model = new Model(modelId, analysisId, modelTitle, linearModel, modelType);
+
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+
+    Model model = new Model(modelId, analysisId, modelTitle, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor);
 
     when(modelService.getModel(analysisId, model.getId())).thenReturn(model);
     mockMvc.perform(get("/projects/45/analyses/55/models/12").principal(user))
@@ -171,7 +181,12 @@ public class ModelControllerTest {
     String modelTitle = "model title";
     String linearModel = "fixed";
     String modelType = "{'type': 'network'}";
-    Model model = new Model(-1, analysisId, modelTitle, linearModel, modelType);
+
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+
+    Model model = new Model(-1, analysisId, modelTitle, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor);
     List<Model> models = Arrays.asList(model);
     when(modelService.query(analysisId)).thenReturn(models);
     mockMvc.perform(get("/projects/45/analyses/55/models").principal(user))
