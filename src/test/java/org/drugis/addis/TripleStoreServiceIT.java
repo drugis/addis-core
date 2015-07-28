@@ -8,6 +8,7 @@ import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -23,6 +24,7 @@ import static org.junit.Assert.*;
 /**
  * Created by connor on 16-4-15.
  */
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TrialverseServiceIntegrationTestConfig.class})
 public class TripleStoreServiceIT {
