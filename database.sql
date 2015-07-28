@@ -227,9 +227,9 @@ ALTER TABLE model ALTER COLUMN linearModel SET DEFAULT 'random';
 --rollback ALTER TABLE model ALTER COLUMN linearModel SET DEFAULT 'fixed';
 
 --changeset reidd:22
-ALTER TABLE model ADD COLUMN burnInIterations NOT NULL DEFAULT 5000;
-ALTER TABLE model ADD COLUMN inferenceIterations NOT NULL DEFAULT 20000;
-ALTER TABLE model ADD COLUMN thinningFactor NOT NULL DEFAULT 10;
+ALTER TABLE model ADD COLUMN burnInIterations INT NOT NULL DEFAULT 5000;
+ALTER TABLE model ADD COLUMN inferenceIterations INT NOT NULL DEFAULT 20000;
+ALTER TABLE model ADD COLUMN thinningFactor INT NOT NULL DEFAULT 10;
 --rollback ALTER TABLE model DROP COLUMN burnInIterations;
 --rollback ALTER TABLE model DROP COLUMN inferenceIterations;
 --rollback ALTER TABLE model DROP COLUMN thinningFactor;
