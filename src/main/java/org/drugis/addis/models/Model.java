@@ -22,8 +22,9 @@ public class Model {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer taskId;
   private Integer id;
+
+  private Integer taskId;
   private Integer analysisId;
   private String title;
   private String linearModel;
