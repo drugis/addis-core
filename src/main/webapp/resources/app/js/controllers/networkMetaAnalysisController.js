@@ -11,10 +11,9 @@ define(['d3'], function(d3) {
     $scope.$parent.editMode = {
       isUserOwner: $window.config.user.id === currentProject.owner.id,
     };
-    $scope.isProblemDefined = !!currentAnalysis.problem;
-    $scope.$parent.editMode.disableEditing = !$scope.$parent.editMode.isUserOwner || $scope.isProblemDefined;
+    $scope.$parent.editMode.disableEditing = !$scope.$parent.editMode.isUserOwner;
     $scope.$parent.networkGraph = {};
-    $scope.loading = {
+    $scope.$parent.loading = {
       loaded: true
     };
     $scope.$parent.isNetworkDisconnected = true;
