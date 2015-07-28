@@ -82,6 +82,7 @@ define(
       stateName: 'singleStudyBenefitRisk'
     }]);
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
+    app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');
     app.run(['$rootScope', '$window', '$http',
       function($rootScope, $window, $http) {
         var csrfToken = $window.config._csrf_token;

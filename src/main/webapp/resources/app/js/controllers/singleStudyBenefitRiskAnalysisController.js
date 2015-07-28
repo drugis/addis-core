@@ -9,6 +9,9 @@ define(['underscore'], function() {
    currentAnalysis, currentProject, OutcomeResource, InterventionResource, TrialverseStudyResource, ProblemResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW, AnalysisResource) {
 
     var deregisterOutcomeWatch, deregisterInterventionWatch;
+    $scope.$parent.loading = {
+      loaded: true
+    };
     $scope.$parent.analysis = currentAnalysis;
     $scope.$parent.project = currentProject;
     // for mcda use
@@ -21,9 +24,7 @@ define(['underscore'], function() {
     $scope.studyModel = {
       selectedStudy: {}
     };
-    if (currentAnalysis.problem) {
-      $scope.isProblemDefined = true;
-    }
+    $scope.isProblemDefined = !!currentAnalysis.problem;
     $scope.editMode = {
       isUserOwner: $window.config.user.id === currentProject.owner.id,
     };

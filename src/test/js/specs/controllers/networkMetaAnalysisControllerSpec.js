@@ -5,7 +5,7 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       q,
       analysisDeferred,
       interventionDeferred,
-      trialverseTrailDataDeferred,
+      trialverseTrialDataDeferred,
       mockAnalysis = {
         $save: function () {},
         outcome: {
@@ -72,8 +72,8 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       mockOutcomes.$promise = outcomesDeferred.promise;
       interventionDeferred = $q.defer();
       mockInterventions.$promise = interventionDeferred.promise;
-      trialverseTrailDataDeferred = $q.defer();
-      mockTrialData.$promise = trialverseTrailDataDeferred.promise;
+      trialverseTrialDataDeferred = $q.defer();
+      mockTrialData.$promise = trialverseTrialDataDeferred.promise;
       scope = $rootScope;
       scope.$parent = {};
       scope.analysis = mockAnalysis;
@@ -129,7 +129,7 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
         expect(scope.$parent.isNetworkDisconnected).toBeTruthy();
       });
       it('should query the model to see if the analyis is used in a model', function () {
-        expect(scope.hasModel).toBeDefined();
+        expect(scope.$parent.hasModel).toBeDefined();
         expect(modelResource.query).toHaveBeenCalledWith(mockStateParams);
       });
     });
@@ -155,7 +155,7 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
             interventionUris: [],
             version: mockProject.datasetVersion
           });
-          trialverseTrailDataDeferred.resolve();
+          trialverseTrialDataDeferred.resolve();
           scope.$apply();
           expect(networkMetaAnalysisService.transformTrialDataToTableRows).toHaveBeenCalled();
           expect(networkMetaAnalysisService.isNetworkDisconnected).toHaveBeenCalled();
@@ -166,7 +166,7 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
         beforeEach(function () {
           var dataRow = {};
           scope.tableHasAmbiguousArm = true;
-          scope.changeArmExclusion(dataRow);
+          scope.$parent.changeArmExclusion(dataRow);
         });
         it('should set tableHasAmbiguousArm to false', function () {
           expect(scope.tableHasAmbiguousArm).toBeFalsy();

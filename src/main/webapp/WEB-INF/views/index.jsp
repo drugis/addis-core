@@ -34,7 +34,7 @@
       <ul class="title-area">
         <li class="name">
           <h1>
-            <a id="addis-logo" href="#">addis.drugis.org</a>
+            <a id="addis-logo" href="/" target="_self">addis.drugis.org</a>
           </h1>
         </li>
       </ul>

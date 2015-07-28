@@ -69,12 +69,14 @@
     <div class="row">
       <div class="columns large-6 ">
         <div ng-switch on="isProblemDefined">
-          <button ng-disabled="analysis.selectedOutcomes.length < 2 ||
-                               analysis.selectedInterventions.length < 2 ||
-                               !studyModel.selectedStudy ||
-                               studyModel.selectedStudy.missingInterventions.length > 0 ||
-                               studyModel.selectedStudy.missingOutcomes.length > 0 ||
-                               studyModel.selectedStudy.hasMatchedMixedTreatmentArm" ng-switch-when="false" ng-click="createProblem()">Perform MCDA Analysis
+          <button ng-switch-when="false"
+            ng-disabled="analysis.selectedOutcomes.length < 2 ||
+                         analysis.selectedInterventions.length < 2 ||
+                         !studyModel.selectedStudy ||
+                         studyModel.selectedStudy.missingInterventions.length > 0 ||
+                         studyModel.selectedStudy.missingOutcomes.length > 0 ||
+                         studyModel.selectedStudy.hasMatchedMixedTreatmentArm"
+            ng-click="createProblem()">Perform MCDA Analysis
           </button>
           <button ng-switch-when="true" ng-click="goToDefaultScenarioView()">Go to MCDA Analysis</button>
         </div>
