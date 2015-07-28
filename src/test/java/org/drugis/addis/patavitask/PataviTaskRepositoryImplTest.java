@@ -81,6 +81,9 @@ public class PataviTaskRepositoryImplTest {
     JSONObject parsedProblem = new JSONObject(task.getProblem());
     assertEquals(linearModel, parsedProblem.get("linearModel"));
     assertEquals("network", JsonPath.read(task.getProblem(), "$.modelType.type"));
+    assertEquals(burnInIterations, JsonPath.read(task.getProblem(), "$.burnInIterations"));
+    assertEquals(inferenceIterations, JsonPath.read(task.getProblem(), "$.inferenceIterations"));
+    assertEquals(thinningFactor, JsonPath.read(task.getProblem(), "$.thinningFactor"));
   }
 
   @Test
