@@ -2,26 +2,26 @@
 
 require.config({
   paths: {
-    'jQuery': 'bower_components/jquery/dist/jquery.min',
-    'mcda': 'bower_components/mcda-web/app/js',
-    'gemtc-web': 'bower_components/gemtc-web/app/js',
-    'jquery-slider': 'bower_components/jslider/dist/jquery.slider.min',
-    'underscore': 'bower_components/underscore/underscore-min',
-    'lodash': 'bower_components/lodash/lodash.min',
     'angular': 'bower_components/angular/angular',
     'angular-resource': 'bower_components/angular-resource/angular-resource',
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
     'angular-select': 'bower_components/angular-ui-select/dist/select.min',
+    'angularanimate': 'bower_components/angular-animate/angular-animate.min',
+    'd3': 'bower_components/d3/d3.min',
     'domReady': 'bower_components/requirejs-domready/domReady',
     'foundation': 'bower_components/foundation/js/foundation.min',
-    'modernizr': 'bower_components/modernizr/modernizr',
-    'd3': 'bower_components/d3/d3.min',
-    'nvd3': 'bower_components/nvd3/build/nv.d3.min',
+    'gemtc-web': 'bower_components/gemtc-web/app/js',
+    'jQuery': 'bower_components/jquery/dist/jquery.min',
+    'jquery-slider': 'bower_components/jslider/dist/jquery.slider.min',
+    'lodash': 'bower_components/lodash/lodash.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
-    'moment': 'bower_components/moment/min/moment.min',
+    'mcda': 'bower_components/mcda-web/app/js',
     'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
-    'angularanimate': 'bower_components/angular-animate/angular-animate.min',
-    'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize.min'
+    'modernizr': 'bower_components/modernizr/modernizr',
+    'moment': 'bower_components/moment/min/moment.min',
+    'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize.min',
+    'nvd3': 'bower_components/nvd3/build/nv.d3.min',
+    'underscore': 'bower_components/underscore/underscore-min'
   },
   baseUrl: 'app/js',
   shim: {
