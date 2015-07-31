@@ -40,7 +40,7 @@ define(['d3'], function(d3) {
         $scope.$parent.isNetworkDisconnected ||
         $scope.hasLessThanTwoInterventions;
     }
-    $scope.isModelCreationBlocked = checkCanNotCreateModel();
+    $scope.$parent.isModelCreationBlocked = checkCanNotCreateModel();
 
     $q
       .all([

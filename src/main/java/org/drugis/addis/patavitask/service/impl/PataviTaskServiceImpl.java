@@ -52,7 +52,8 @@ public class PataviTaskServiceImpl implements PataviTaskService {
       if(Model.PAIRWISE_MODEL_TYPE.equals(model.getModelTypeTypeAsString())) {
         PairwiseNetworkProblem  pairwiseProblem = new PairwiseNetworkProblem(problem, model.getPairwiseDetails());
         pataviTask = pataviTaskRepository.createPataviTask(pairwiseProblem, model);
-      } else if (Model.NETWORK_MODEL_TYPE.equals(model.getModelTypeTypeAsString())) {
+      } else if (Model.NETWORK_MODEL_TYPE.equals(model.getModelTypeTypeAsString())
+              || Model.NODE_SPLITTING_MODEL_TYPE.equals(model.getModelTypeTypeAsString())) {
         pataviTask = pataviTaskRepository.createPataviTask(problem, model);
       } else {
         throw new InvalidModelTypeException("Invalid model type");

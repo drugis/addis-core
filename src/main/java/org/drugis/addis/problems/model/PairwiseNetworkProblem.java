@@ -10,7 +10,6 @@ import java.util.*;
  */
 public class PairwiseNetworkProblem extends NetworkMetaAnalysisProblem {
     public PairwiseNetworkProblem(NetworkMetaAnalysisProblem problem, Pair<Model.DetailNode, Model.DetailNode> pairwiseDetails) {
-
         TreatmentEntry left = null;
         TreatmentEntry right = null;
         for(TreatmentEntry treatment : problem.getTreatments()){

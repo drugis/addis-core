@@ -81,11 +81,11 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreate() throws Exception, InvalidModelTypeException {
+  public void testCreateNetwork() throws Exception, InvalidModelTypeException {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
-    String linearModel = "fixed";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
 
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;

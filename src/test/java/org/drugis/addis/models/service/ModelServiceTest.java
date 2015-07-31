@@ -1,6 +1,7 @@
 package org.drugis.addis.models.service;
 
-import org.drugis.addis.models.Model;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.models.*;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.impl.ModelServiceImpl;
@@ -15,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -35,6 +38,77 @@ public class ModelServiceTest {
     modelService = new ModelServiceImpl();
     MockitoAnnotations.initMocks(this);
   }
+
+  @Test
+  public void testCreateNetwork() throws InvalidModelTypeException, ResourceDoesNotExistException {
+    Integer analysisId = 55;
+    String modelTitle = "model title";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor);
+    Model expectedModel = mock(Model.class);
+
+    Model internalModel = new Model.ModelBuilder()
+            .analysisId(analysisId)
+            .title(modelTitle)
+            .linearModel(linearModel)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .build();
+
+    when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
+    Model createdModel = modelService.createModel(analysisId, modelCommand);
+
+    assertEquals(expectedModel, createdModel);
+    verify(modelRepository).persist(internalModel);
+  }
+
+
+  @Test
+  public void testCreatePairwise() throws InvalidModelTypeException, ResourceDoesNotExistException {
+    Integer analysisId = 55;
+    String modelTitle = "model title";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+
+    int fromId = -1;
+    String fromName = "fromName";
+    NodeCommand from = new NodeCommand(fromId, fromName);
+    int toId = -2;
+    String toName = "toName";
+    NodeCommand to = new NodeCommand(toId, toName);
+    DetailsCommand details = new DetailsCommand(from, to);
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", details);
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor);
+    Model expectedModel = mock(Model.class);
+
+    Model internalModel = new Model.ModelBuilder()
+            .analysisId(analysisId)
+            .title(modelTitle)
+            .linearModel(linearModel)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .from(new Model.DetailNode(fromId, fromName))
+            .to(new Model.DetailNode(toId, toName))
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .build();
+
+    when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
+    Model createdModel = modelService.createModel(analysisId, modelCommand);
+
+    assertEquals(expectedModel, createdModel);
+    verify(modelRepository).persist(internalModel);
+  }
+
 
   @Test
   public void testQueryModelIsPresent() throws Exception, InvalidModelTypeException {

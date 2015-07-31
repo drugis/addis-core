@@ -108,7 +108,8 @@ public class Model {
 
   @JsonIgnore
   public Pair<Model.DetailNode, Model.DetailNode> getPairwiseDetails() {
-    if (PAIRWISE_MODEL_TYPE.equals(getModelTypeTypeAsString())) {
+    if (PAIRWISE_MODEL_TYPE.equals(getModelTypeTypeAsString())
+            || NODE_SPLITTING_MODEL_TYPE.equals(getModelTypeTypeAsString())) {
       JSONObject jsonObject = (JSONObject) JSONValue.parse(modelType);
       JSONObject pairwiseDetails = (JSONObject) jsonObject.get("details");
       JSONObject from = (JSONObject) pairwiseDetails.get("from");

@@ -5,24 +5,24 @@ package org.drugis.addis.models;
  */
 public class ModelCommand {
 
-    String title;
-    String linearModel;
-    ModelTypeCommand modelType;
-    Integer burnInIterations;
-    Integer inferenceIterations;
-    Integer thinningFactor;
+  String title;
+  String linearModel;
+  ModelTypeCommand modelType;
+  Integer burnInIterations;
+  Integer inferenceIterations;
+  Integer thinningFactor;
 
-    public ModelCommand() {
-    }
+  public ModelCommand() {
+  }
 
-    public ModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor) {
-        this.title = title;
-        this.linearModel = linearModel;
-        this.modelType = modelType;
-      this.burnInIterations = burnInIterations;
-      this.inferenceIterations = inferenceIterations;
-      this.thinningFactor = thinningFactor;
-    }
+  public ModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor) {
+    this.title = title;
+    this.linearModel = linearModel;
+    this.modelType = modelType;
+    this.burnInIterations = burnInIterations;
+    this.inferenceIterations = inferenceIterations;
+    this.thinningFactor = thinningFactor;
+  }
 
   public Integer getBurnInIterations() {
     return burnInIterations;
@@ -37,16 +37,16 @@ public class ModelCommand {
   }
 
   public String getTitle() {
-        return title;
-    }
+    return title;
+  }
 
-    public String getLinearModel() {
-        return linearModel;
-    }
+  public String getLinearModel() {
+    return linearModel;
+  }
 
-    public ModelTypeCommand getModelType() {
-        return modelType;
-    }
+  public ModelTypeCommand getModelType() {
+    return modelType;
+  }
 
   @Override
   public boolean equals(Object o) {

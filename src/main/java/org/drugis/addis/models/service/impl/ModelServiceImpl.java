@@ -24,21 +24,23 @@ public class ModelServiceImpl implements ModelService {
   @Override
   public Model createModel(Integer analysisId, ModelCommand command) throws ResourceDoesNotExistException, InvalidModelTypeException {
     ModelTypeCommand modelTypeCommand = command.getModelType();
-    DetailsCommand details = modelTypeCommand.getDetails();
-    if (details == null) {
-      details = new DetailsCommand();
-    }
-    Model model = new Model.ModelBuilder()
+    Model.ModelBuilder modelBuilder = new Model.ModelBuilder()
             .analysisId(analysisId)
             .title(command.getTitle())
             .linearModel(command.getLinearModel())
             .modelType(modelTypeCommand.getType())
-            .from(new Model.DetailNode(details.getFrom().getId(), details.getFrom().getName()))
-            .to(new Model.DetailNode(details.getTo().getId(), details.getTo().getName()))
             .burnInIterations(command.getBurnInIterations())
             .inferenceIterations(command.getInferenceIterations())
-            .thinningFactor(command.getThinningFactor())
-            .build();
+            .thinningFactor(command.getThinningFactor());
+
+    DetailsCommand details = modelTypeCommand.getDetails();
+    if (details != null) {
+      modelBuilder = modelBuilder
+              .from(new Model.DetailNode(details.getFrom().getId(), details.getFrom().getName()))
+              .to(new Model.DetailNode(details.getTo().getId(), details.getTo().getName()));
+    }
+
+    Model model = modelBuilder.build();
     return modelRepository.persist(model);
   }
 
