@@ -302,7 +302,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
         "semanticInterventionLabel": "Olmesartan",
         "semanticInterventionUri": "http://trials.drugis.org/namespaces/2/drug/d7d7c477b89a5e4e5a57318743ccc87e"
       },
-      "numberOfStudies": 2
+      "studies" : [exampleNetworkStudies[0], exampleNetworkStudies[2]]
     }]
   };
 
