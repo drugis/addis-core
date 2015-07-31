@@ -21,7 +21,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -49,7 +49,7 @@ public class PataviTaskRepositoryImplTest {
     when(jdbcTemplate.getDataSource()).thenReturn(datasource);
     simpleJdbcInsertPataviTaskFactory = mock(SimpleJdbcInsertPataviTaskFactory.class);
     SimpleJdbcInsert mockSimpleJdbcInsert = mock(SimpleJdbcInsert.class);
-    when(mockSimpleJdbcInsert.executeAndReturnKey(any(MapSqlParameterSource.class))).thenReturn(new Integer(123));
+    when(mockSimpleJdbcInsert.executeAndReturnKey(any(MapSqlParameterSource.class))).thenReturn(123);
     when(simpleJdbcInsertPataviTaskFactory.build(jdbcTemplate)).thenReturn(mockSimpleJdbcInsert);
     pataviTaskRepository = new PataviTaskRepositoryImpl();
     initMocks(this);
@@ -67,13 +67,21 @@ public class PataviTaskRepositoryImplTest {
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
-    Model model = new Model(analysisId, "title", linearModel, "network", null, null, burnInIterations, inferenceIterations, thinningFactor);
+    Model model = new Model.ModelBuilder()
+            .analysisId(analysisId)
+            .title("title")
+            .linearModel(linearModel)
+            .modelType("network")
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .build();
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
     entries.add(new RateNetworkMetaAnalysisProblemEntry(study, treatment, samplesize, responders));
     String entryName = "entry name";
     Integer entryId = 456;
-    List<TreatmentEntry> treatments = Arrays.asList(new TreatmentEntry(entryId, entryName));
+    List<TreatmentEntry> treatments = Collections.singletonList(new TreatmentEntry(entryId, entryName));
     NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments);
 
     PataviTask task = pataviTaskRepository.createPataviTask(problem, model);
@@ -95,18 +103,28 @@ public class PataviTaskRepositoryImplTest {
     Integer treatment = 123;
     String study = "study";
     String linearModel = "random";
-    String treatment1 = "treatment 1";
-    String treatment2 = "treatment 2";
+    String fromTreatment = "fromTreatment";
+    String toTreatment = "toTreatment";
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
-    Model model = new Model(analysisId, "title", linearModel, "pairwise", treatment1, treatment2, burnInIterations, inferenceIterations, thinningFactor);
+    Model model = new Model.ModelBuilder()
+            .analysisId(analysisId)
+            .title("title")
+            .linearModel(linearModel)
+            .modelType("pairwise")
+            .from(new Model.DetailNode(-1, fromTreatment))
+            .to(new Model.DetailNode(-2, toTreatment))
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .build();
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
     entries.add(new RateNetworkMetaAnalysisProblemEntry(study, treatment, samplesize, responders));
     String entryName = "entry name";
     Integer entryId = 456;
-    List<TreatmentEntry> treatments = Arrays.asList(new TreatmentEntry(entryId, entryName));
+    List<TreatmentEntry> treatments = Collections.singletonList(new TreatmentEntry(entryId, entryName));
     NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments);
 
     PataviTask task = pataviTaskRepository.createPataviTask(problem, model);
@@ -114,8 +132,8 @@ public class PataviTaskRepositoryImplTest {
     JSONObject parsedProblem = new JSONObject(task.getProblem());
     assertEquals(linearModel, parsedProblem.get("linearModel"));
     assertEquals("pairwise", JsonPath.read(task.getProblem(), "$.modelType.type"));
-    assertEquals(treatment1, JsonPath.read(task.getProblem(), "$.modelType.details.from"));
-    assertEquals(treatment2, JsonPath.read(task.getProblem(), "$.modelType.details.to"));
+    assertEquals(fromTreatment, JsonPath.read(task.getProblem(), "$.modelType.details.from.name"));
+    assertEquals(toTreatment, JsonPath.read(task.getProblem(), "$.modelType.details.to.name"));
   }
 
 

@@ -6,6 +6,7 @@ import org.drugis.addis.analyses.service.impl.AnalysisServiceImpl;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.service.ProjectService;
@@ -16,7 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -95,16 +96,25 @@ public class AnalysisServiceTest {
   }
 
   @Test(expected = MethodNotAllowedException.class)
-  public void testUpdateLockedAnalysisFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void testUpdateLockedAnalysisFails() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelTypeException {
     Integer analysisId = -6;
     Account user = mock(Account.class);
     Integer projectId = 1;
     Outcome outcome = mock(Outcome.class);
     Integer modelId = 83473458;
-    String modelType = "{'type': 'network'}";
 
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "new name", outcome);
-    List<Model> models = Arrays.asList(new Model(modelId, analysisId, "modelTitle", "fixedModel", modelType, 5000, 20000, 10));
+    Model model = new Model.ModelBuilder()
+            .id(-10)
+            .analysisId(analysisId)
+            .title("modelTitle")
+            .linearModel("fixedModel")
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .burnInIterations(5000)
+            .inferenceIterations(20000)
+            .thinningFactor(10)
+            .build();
+    List<Model> models = Collections.singletonList(model);
     when(modelRepository.findByAnalysis(analysis.getId())).thenReturn(models);
     when(modelRepository.find(modelId)).thenReturn(null);
     analysisService.updateNetworkMetaAnalysis(user, analysis);

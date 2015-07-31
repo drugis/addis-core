@@ -1,6 +1,7 @@
 package org.drugis.addis.models.service;
 
 import org.drugis.addis.models.Model;
+import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.impl.ModelServiceImpl;
 import org.junit.Before;
@@ -10,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -36,16 +37,26 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testQueryModelIsPresent() throws Exception {
+  public void testQueryModelIsPresent() throws Exception, InvalidModelTypeException {
     Integer analysisId = -1;
     String modelTitle = "modelTitle";
     String linearModel = "fixed";
-    String modelType = "{'type': 'network'}";
+    String modelType = "network";
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
+    Model model = new Model.ModelBuilder()
+            .id(-10)
+            .analysisId(analysisId)
+            .title(modelTitle)
+            .linearModel(linearModel)
+            .modelType(modelType)
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .build();
 
-    List<Model> models = Arrays.asList(new Model(-10, analysisId, modelTitle, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor));
+    List<Model> models = Collections.singletonList(model);
     when(modelRepository.findByAnalysis(analysisId)).thenReturn(models);
     List<Model> resultList = modelService.query(analysisId);
     assertEquals(1, resultList.size());

@@ -1,15 +1,13 @@
 package org.drugis.addis.problems.model;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.models.Model;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by connor on 7/3/15.
@@ -45,7 +43,7 @@ public class PairwiseNetworkProblemTest {
 
         NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments);
 
-        Pair details = Pair.of("treatment1", "treatment3");
+        Pair details = Pair.of(new Model.DetailNode(-1, "treatment1"), new Model.DetailNode(-1, "treatment3"));
         PairwiseNetworkProblem pairwiseNetworkProblem = new PairwiseNetworkProblem(problem, details);
 
         assertNotNull(pairwiseNetworkProblem);

@@ -6,10 +6,8 @@ import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.models.DetailsCommand;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.ModelCommand;
-import org.drugis.addis.models.ModelTypeCommand;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.projects.service.ProjectService;
@@ -43,13 +41,7 @@ public class ModelController extends AbstractAddisCoreController {
   public Model create(HttpServletResponse response, Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody ModelCommand modelCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, JsonProcessingException, InvalidModelTypeException {
     projectService.checkOwnership(projectId, principal);
     analysisService.checkCoordinates(projectId, analysisId);
-    ModelTypeCommand modelTypeCommand = modelCommand.getModelType();
-    DetailsCommand details = modelTypeCommand.getDetails();
-    if(details == null) {
-      details = new DetailsCommand();
-    }
-    Model createdModel = modelService.createModel(projectId, analysisId, modelCommand.getTitle(), modelCommand.getLinearModel(), modelTypeCommand.getType(),
-        details.getFrom(), details.getTo(), modelCommand.getBurnInIterations(), modelCommand.getInferenceIterations(), modelCommand.getThinningFactor());
+    Model createdModel = modelService.createModel(analysisId, modelCommand);
     response.setStatus(HttpServletResponse.SC_CREATED);
     response.addHeader(HttpHeaders.LOCATION, "/projects/" + projectId + "/analyses/" + analysisId + "/models/" + createdModel.getId());
     return createdModel;

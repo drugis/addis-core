@@ -22,9 +22,7 @@ public class ModelRepositoryImpl implements ModelRepository {
   EntityManager em;
 
   @Override
-  public Model create(Integer analysisId, String modelTitle, String linearModel, String modelType, String from, String to,
-                      Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor) throws InvalidModelTypeException {
-    Model model = new Model(analysisId, modelTitle, linearModel, modelType, from, to, burnInIterations, inferenceIterations, thinningFactor);
+  public Model persist(Model model) throws InvalidModelTypeException {
     em.persist(model);
     return model;
   }

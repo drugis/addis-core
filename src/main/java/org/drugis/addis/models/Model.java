@@ -19,6 +19,9 @@ public class Model {
 
   public final static String NETWORK_MODEL_TYPE = "network";
   public final static String PAIRWISE_MODEL_TYPE = "pairwise";
+  public final static String NODE_SPLITTING_MODEL_TYPE = "node-split";
+  public final static String LINEAR_MODEL_FIXED = "fixed";
+  public final static String LINEAR_MODEL_RANDOM = "random";
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,30 +39,22 @@ public class Model {
   public Model() {
   }
 
-  public Model(Integer taskId, Integer id, Integer analysisId, String title, String linearModel, String modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor) {
-    this.taskId = taskId;
-    this.id = id;
-    this.analysisId = analysisId;
-    this.title = title;
-    this.linearModel = linearModel;
-    this.modelType = modelType;
-    this.burnInIterations = burnInIterations;
-    this.inferenceIterations = inferenceIterations;
-    this.thinningFactor = thinningFactor;
-  }
+  private Model(ModelBuilder builder) throws InvalidModelTypeException {
+    this.id = builder.id;
+    this.taskId = builder.taskId;
+    this.analysisId = builder.analysisId;
+    this.title = builder.title;
+    this.linearModel = builder.linearModel;
+    this.burnInIterations = builder.burnInIterations;
+    this.inferenceIterations = builder.inferenceIterations;
+    this.thinningFactor = builder.thinningFactor;
 
-  public Model(Integer id, Integer analysisId, String title, String linearModel, String modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor) {
-    this(null, id, analysisId, title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor);
-  }
-
-  public Model(Integer analysisId, String title, String linearModel, String modelType, String from, String to, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor) throws InvalidModelTypeException {
-    this(null, null, analysisId, title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor);
-
-    if(Model.PAIRWISE_MODEL_TYPE.equals(modelType)) {
-      this.modelType = String.format("{'type': '%s', 'details': {'from': '%s', 'to': '%s'}}", modelType, from, to);
-    } else if (Model.NETWORK_MODEL_TYPE.equals(modelType)){
-      this.modelType = String.format("{'type': '%s'}", modelType);
-    }else {
+    if (Model.PAIRWISE_MODEL_TYPE.equals(builder.modelType) || Model.NODE_SPLITTING_MODEL_TYPE.equals(builder.modelType)) {
+      this.modelType = String.format("{'type': '%s', 'details': {'from': {'id' : %s, 'name': '%s'}, 'to': {'id': %s, 'name': '%s'}}}",
+              builder.modelType, builder.from.getId(), builder.from.getName(), builder.to.getId(), builder.to.getName());
+    } else if (Model.NETWORK_MODEL_TYPE.equals(builder.modelType)) {
+      this.modelType = String.format("{'type': '%s'}", builder.modelType);
+    } else {
       throw new InvalidModelTypeException("not a valid model type");
     }
   }
@@ -103,24 +98,27 @@ public class Model {
   }
 
   public ModelType getModelType() {
-    Pair<String, String> typeDetails = getPairwiseDetails();
+    Pair<Model.DetailNode, Model.DetailNode> typeDetails = getPairwiseDetails();
     TypeDetails details = null;
-    if(typeDetails != null) {
-       details = new TypeDetails(typeDetails.getLeft(), typeDetails.getRight());
+    if (typeDetails != null) {
+      details = new TypeDetails(typeDetails.getLeft(), typeDetails.getRight());
     }
     return new ModelType(getModelTypeTypeAsString(), details);
   }
 
   @JsonIgnore
-  public Pair<String, String> getPairwiseDetails() {
-    if(PAIRWISE_MODEL_TYPE.equals(getModelTypeTypeAsString())){
+  public Pair<Model.DetailNode, Model.DetailNode> getPairwiseDetails() {
+    if (PAIRWISE_MODEL_TYPE.equals(getModelTypeTypeAsString())) {
       JSONObject jsonObject = (JSONObject) JSONValue.parse(modelType);
       JSONObject pairwiseDetails = (JSONObject) jsonObject.get("details");
-      String to = (String) pairwiseDetails.get("to");
-      String from = (String) pairwiseDetails.get("from");
-      return Pair.of(from, to);
-    }
-    else {
+      JSONObject from = (JSONObject) pairwiseDetails.get("from");
+      JSONObject to = (JSONObject) pairwiseDetails.get("to");
+      Integer fromId = (Integer) from.get("id");
+      String fromName = (String) from.get("name");
+      Integer toId = (Integer) to.get("id");
+      String toName = (String) to.get("name");
+      return Pair.of(new DetailNode(fromId, fromName), new DetailNode(toId, toName));
+    } else {
       return null;
     }
   }
@@ -184,23 +182,118 @@ public class Model {
   }
 
   public class TypeDetails {
-    String to;
-    String from;
+    DetailNode from;
+    DetailNode to;
 
     public TypeDetails() {
     }
 
-    public TypeDetails(String from, String to) {
-      this.to = to;
+    public TypeDetails(DetailNode from, DetailNode to) {
       this.from = from;
+      this.to = to;
     }
 
-    public String getTo() {
+    public DetailNode getFrom() {
+      return from;
+    }
+
+    public DetailNode getTo() {
       return to;
     }
+  }
 
-    public String getFrom() {
-      return from;
+  public static class DetailNode {
+    Integer id;
+    String name;
+
+    public DetailNode() {
+    }
+
+    public DetailNode(Integer id, String name) {
+      this.id = id;
+      this.name = name;
+    }
+
+    public Integer getId() {
+      return id;
+    }
+
+    public String getName() {
+      return name;
+    }
+  }
+
+
+  public static class ModelBuilder {
+    private Integer taskId = null;
+    private Integer id;
+    private Integer analysisId;
+    private String title;
+    private String linearModel;
+    private String modelType;
+    private Integer burnInIterations;
+    private Integer inferenceIterations;
+    private Integer thinningFactor;
+    private DetailNode from;
+    private DetailNode to;
+
+    public ModelBuilder taskId(Integer taskId) {
+      this.taskId = taskId;
+      return this;
+    }
+
+    public ModelBuilder id(Integer id) {
+      this.id = id;
+      return this;
+    }
+
+    public ModelBuilder analysisId(Integer analysisId) {
+      this.analysisId = analysisId;
+      return this;
+    }
+
+    public ModelBuilder title(String title) {
+      this.title = title;
+      return this;
+    }
+
+    public ModelBuilder linearModel(String linearModel) {
+      this.linearModel = linearModel;
+      return this;
+    }
+
+    public ModelBuilder modelType(String modelType) {
+      this.modelType = modelType;
+      return this;
+    }
+
+    public ModelBuilder burnInIterations(Integer burnInIterations) {
+      this.burnInIterations = burnInIterations;
+      return this;
+    }
+
+    public ModelBuilder inferenceIterations(Integer inferenceIterations) {
+      this.inferenceIterations = inferenceIterations;
+      return this;
+    }
+
+    public ModelBuilder thinningFactor(Integer thinningFactor) {
+      this.thinningFactor = thinningFactor;
+      return this;
+    }
+
+    public ModelBuilder from(DetailNode from) {
+      this.from = from;
+      return this;
+    }
+
+    public ModelBuilder to(DetailNode to) {
+      this.to = to;
+      return this;
+    }
+
+    public Model build() throws InvalidModelTypeException {
+      return new Model(this);
     }
   }
 }

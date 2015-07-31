@@ -10,8 +10,7 @@ import java.util.List;
  */
 public interface ModelRepository {
 
-  public Model create(Integer analysisId, String modelTitle, String linearModel, String modelType, String from, String to,
-                      Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor) throws InvalidModelTypeException;
+  public Model persist(Model model) throws InvalidModelTypeException;
 
   public Model find(Integer modelId);
 

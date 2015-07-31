@@ -182,13 +182,13 @@ define(['angular'], function() {
 
     function attachStudiesForEdges(edges, trialData) {
       return _.map(edges, function(edge) {
-        var studiesMeasuringEdge = _.filter(trialData, function(trialDataStudy) {
+        edge.studies = _.filter(trialData, function(trialDataStudy) {
           return studyMeasuresBothInterventions(trialDataStudy, edge.from, edge.to);
         });
-        edge.numberOfStudies = studiesMeasuringEdge ? studiesMeasuringEdge.length : 0;
         return edge;
       });
     }
+
 
     function transformTrialDataToNetwork(trialData, interventions, excludedArms) {
       var network = {
@@ -206,7 +206,7 @@ define(['angular'], function() {
       });
       network.edges = attachStudiesForEdges(network.edges, validTrialData);
       network.edges = _.filter(network.edges, function(edge) {
-        return edge.numberOfStudies > 0;
+        return edge.studies.length > 0;
       });
       return network;
     }

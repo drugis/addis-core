@@ -3,13 +3,13 @@ package org.drugis.addis.models.service;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.PataviTaskUriHolder;
-import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.repository.impl.PataviTaskRepositoryImpl;
-import org.drugis.addis.patavitask.service.impl.PataviTaskServiceImpl;
 import org.drugis.addis.patavitask.service.PataviTaskService;
+import org.drugis.addis.patavitask.service.impl.PataviTaskServiceImpl;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -62,14 +62,23 @@ public class PataviTaskServiceTest {
     Integer projectId = -6;
     Integer analysisId = -7;
     String modelTitle = "modelTitle";
-    String linearModel = "fixed";
-    String modelType = "{'type': 'network'}";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    String modelType = Model.NETWORK_MODEL_TYPE;
 
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
 
-    Model model = new Model(modelId, analysisId, modelTitle, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor);
+    Model model = new Model.ModelBuilder()
+            .id(modelId)
+            .analysisId(analysisId)
+            .title(modelTitle)
+            .linearModel(linearModel)
+            .modelType(modelType)
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .build();
     NetworkMetaAnalysisProblem networkMetaAnalysisProblem = mock(NetworkMetaAnalysisProblem.class);
     PataviTask pataviTask = new PataviTask(PataviTaskRepositoryImpl.GEMTC_METHOD, problem);
     when(networkMetaAnalysisProblem.toString()).thenReturn(problem);
@@ -88,20 +97,26 @@ public class PataviTaskServiceTest {
   @Test
   public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException {
     Integer modelId = -2;
-    String uri = "uri";
-    String problem = "Yo";
-    Integer taskId = -8;
     Integer projectId = -6;
     Integer analysisId = -7;
     String modelTitle = "modelTitle";
-    String linearModel = "fixed";
-    String modelType = "{'type': 'network'}";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    String modelType = Model.NETWORK_MODEL_TYPE;
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
 
-    Model model = new Model(taskId, modelId, analysisId, modelTitle, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor);
-    PataviTask pataviTask = new PataviTask(PataviTaskRepositoryImpl.GEMTC_METHOD, problem);
+    Model model = new Model.ModelBuilder()
+            .id(modelId)
+            .taskId(-7)
+            .analysisId(analysisId)
+            .title(modelTitle)
+            .linearModel(linearModel)
+            .modelType(modelType)
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .build();
     when(modelRepository.find(modelId)).thenReturn(model);
 
     PataviTaskUriHolder result = pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId);

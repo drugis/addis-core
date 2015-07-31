@@ -4,10 +4,7 @@ import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.config.TestConfig;
-import org.drugis.addis.models.DetailsCommand;
-import org.drugis.addis.models.Model;
-import org.drugis.addis.models.ModelCommand;
-import org.drugis.addis.models.ModelTypeCommand;
+import org.drugis.addis.models.*;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.projects.service.ProjectService;
@@ -29,7 +26,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -90,18 +86,27 @@ public class ModelControllerTest {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = "fixed";
-    String modelType = "network";
 
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
 
-    Model model = new Model(1, 2, modelTitle, linearModel, "{'type': 'network'}", burnInIterations, inferenceIterations, thinningFactor);
+    Model model = new Model.ModelBuilder()
+            .id(1)
+            .analysisId(analysisId)
+            .title(modelTitle)
+            .linearModel(linearModel)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .build();
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
 
-    String body = TestUtils.createJson(new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor));
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor);
+    String body = TestUtils.createJson(modelCommand);
 
-    when(modelService.createModel(projectId, analysisId, modelTitle, linearModel, modelType, null, null, burnInIterations, inferenceIterations, thinningFactor)).thenReturn(model);
+    when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);
     mockMvc.perform(post("/projects/45/analyses/55/models")
               .content(body)
               .principal(user)
@@ -114,7 +119,7 @@ public class ModelControllerTest {
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
 
-    verify(modelService).createModel(projectId, analysisId, modelTitle, linearModel, modelType, null, null, burnInIterations, inferenceIterations, thinningFactor);
+    verify(modelService).createModel(analysisId, modelCommand);
   }
 
   @Test
@@ -123,18 +128,30 @@ public class ModelControllerTest {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = "fixed";
-    String modelType = "pairwise";
+    String modelType = Model.PAIRWISE_MODEL_TYPE;
 
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
 
-    Model model = new Model(1, 2, modelTitle, linearModel, "{'type': 'pairwise', 'details':{ 'from': 't1', 'to': 't2'}}", burnInIterations, inferenceIterations, thinningFactor);
-    ModelTypeCommand modelTypeCommand = new ModelTypeCommand(modelType, new DetailsCommand("t1", "t2"));
+    Model model = new Model.ModelBuilder()
+            .id(1)
+            .analysisId(analysisId)
+            .title(modelTitle)
+            .linearModel(linearModel)
+            .modelType(modelType)
+            .from(new Model.DetailNode(-1, "t1"))
+            .to(new Model.DetailNode(-2, "t2"))
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .build();
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand(modelType, new DetailsCommand(new NodeCommand(-1, "t1"), new NodeCommand(-2, "t2")));
 
-    String body = TestUtils.createJson(new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor));
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor);
+    String body = TestUtils.createJson(modelCommand);
 
-    when(modelService.createModel(projectId, analysisId, modelTitle, linearModel, modelType, "t1", "t2", burnInIterations, inferenceIterations, thinningFactor)).thenReturn(model);
+    when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
@@ -147,22 +164,31 @@ public class ModelControllerTest {
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
 
-    verify(modelService).createModel(projectId, analysisId, modelTitle, linearModel, modelType, "t1", "t2", burnInIterations, inferenceIterations, thinningFactor);
+    verify(modelService).createModel(analysisId, modelCommand);
   }
 
   @Test
-  public void testGet() throws Exception {
+  public void testGet() throws Exception, InvalidModelTypeException {
     Integer analysisId = 55;
     Integer modelId = 12;
     String modelTitle = "model title";
     String linearModel = "fixed";
-    String modelType = "{'type': 'network'}";
+    String modelType = Model.NETWORK_MODEL_TYPE;
 
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
 
-    Model model = new Model(modelId, analysisId, modelTitle, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor);
+    Model model = new Model.ModelBuilder()
+            .id(modelId)
+            .analysisId(analysisId)
+            .title(modelTitle)
+            .linearModel(linearModel)
+            .modelType(modelType)
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .build();
 
     when(modelService.getModel(analysisId, model.getId())).thenReturn(model);
     mockMvc.perform(get("/projects/45/analyses/55/models/12").principal(user))
@@ -171,23 +197,31 @@ public class ModelControllerTest {
             .andExpect(jsonPath("$.id", is(modelId)))
             .andExpect(jsonPath("$.analysisId", is(analysisId)));
 
-
     verify(modelService).getModel(analysisId, modelId);
   }
 
   @Test
-  public void testQueryWithModelResult() throws Exception {
+  public void testQueryWithModelResult() throws Exception, InvalidModelTypeException {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = "fixed";
-    String modelType = "{'type': 'network'}";
+    String modelType = Model.NETWORK_MODEL_TYPE;
 
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
 
-    Model model = new Model(-1, analysisId, modelTitle, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor);
-    List<Model> models = Arrays.asList(model);
+    Model model = new Model.ModelBuilder()
+            .id(-1)
+            .analysisId(analysisId)
+            .title(modelTitle)
+            .linearModel(linearModel)
+            .modelType(modelType)
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .build();
+    List<Model> models = Collections.singletonList(model);
     when(modelService.query(analysisId)).thenReturn(models);
     mockMvc.perform(get("/projects/45/analyses/55/models").principal(user))
             .andExpect(status().isOk())
@@ -200,7 +234,7 @@ public class ModelControllerTest {
   @Test
   public void testQueryWithNoModelResult() throws Exception {
     Integer analysisId = 55;
-    when(modelService.query(analysisId)).thenReturn(Collections.EMPTY_LIST);
+    when(modelService.query(analysisId)).thenReturn(Collections.<Model>emptyList());
     ResultActions resultActions = mockMvc.perform(get("/projects/45/analyses/55/models").principal(user));
     resultActions
             .andExpect(status().isOk())

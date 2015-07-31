@@ -4,22 +4,41 @@ package org.drugis.addis.models;
  * Created by connor on 7/3/15.
  */
 public class DetailsCommand {
-    private String from;
-    private String to;
+  private NodeCommand from;
+  private NodeCommand to;
 
-    public DetailsCommand() {
-    }
+  public DetailsCommand() {
+  }
 
-    public DetailsCommand(String from, String to) {
-        this.from = from;
-        this.to = to;
-    }
+  public DetailsCommand(NodeCommand from, NodeCommand to) {
+    this.from = from;
+    this.to = to;
+  }
 
-    public String getFrom() {
-        return from;
-    }
+  public NodeCommand getFrom() {
+    return from;
+  }
 
-    public String getTo() {
-        return to;
-    }
+  public NodeCommand getTo() {
+    return to;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    DetailsCommand that = (DetailsCommand) o;
+
+    if (!from.equals(that.from)) return false;
+    return to.equals(that.to);
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = from.hashCode();
+    result = 31 * result + to.hashCode();
+    return result;
+  }
 }

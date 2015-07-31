@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -40,7 +39,16 @@ public class JpaModelRepositoryTest {
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
-    Model model = modelRepository.create(analysisId, modelTitle, linearModel, modelType, null, null, burnInIterations, inferenceIterations, thinningFactor);
+    Model toPersist = new Model.ModelBuilder()
+            .analysisId(analysisId)
+            .title(modelTitle)
+            .linearModel(linearModel)
+            .modelType(modelType)
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .build();
+    Model model = modelRepository.persist(toPersist);
     assertEquals(analysisId, model.getAnalysisId());
     assertNotNull(model.getId());
     assertEquals("fixed", model.getLinearModel());
@@ -69,9 +77,9 @@ public class JpaModelRepositoryTest {
     assertEquals("fixed", result.getLinearModel());
     assertEquals(Model.PAIRWISE_MODEL_TYPE, result.getModelTypeTypeAsString());
     assertNotNull(result.getPairwiseDetails());
-    Pair details = result.getPairwiseDetails();
-    assertEquals(details.getLeft(), "study2");
-    assertEquals(details.getRight(), "study1");
+    Pair<Model.DetailNode, Model.DetailNode> details = result.getPairwiseDetails();
+    assertEquals("study2", details.getLeft().getName());
+    assertEquals("study1", details.getRight().getName());
   }
 
   @Test
