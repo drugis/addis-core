@@ -11,17 +11,22 @@ public class ModelCommand {
   Integer burnInIterations;
   Integer inferenceIterations;
   Integer thinningFactor;
+  String likelihood;
+  String link;
 
   public ModelCommand() {
   }
 
-  public ModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor) {
+  public ModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations,
+                      Integer inferenceIterations, Integer thinningFactor, String likelihood, String link) {
     this.title = title;
     this.linearModel = linearModel;
     this.modelType = modelType;
     this.burnInIterations = burnInIterations;
     this.inferenceIterations = inferenceIterations;
     this.thinningFactor = thinningFactor;
+    this.likelihood = likelihood;
+    this.link = link;
   }
 
   public Integer getBurnInIterations() {
@@ -48,6 +53,14 @@ public class ModelCommand {
     return modelType;
   }
 
+  public String getLikelihood() {
+    return likelihood;
+  }
+
+  public String getLink() {
+    return link;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -60,7 +73,9 @@ public class ModelCommand {
     if (!modelType.equals(that.modelType)) return false;
     if (!burnInIterations.equals(that.burnInIterations)) return false;
     if (!inferenceIterations.equals(that.inferenceIterations)) return false;
-    return thinningFactor.equals(that.thinningFactor);
+    if (!thinningFactor.equals(that.thinningFactor)) return false;
+    if (!likelihood.equals(that.likelihood)) return false;
+    return link.equals(that.link);
 
   }
 
@@ -72,6 +87,8 @@ public class ModelCommand {
     result = 31 * result + burnInIterations.hashCode();
     result = 31 * result + inferenceIterations.hashCode();
     result = 31 * result + thinningFactor.hashCode();
+    result = 31 * result + likelihood.hashCode();
+    result = 31 * result + link.hashCode();
     return result;
   }
 }

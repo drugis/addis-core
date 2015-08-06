@@ -39,6 +39,8 @@ public class JpaModelRepositoryTest {
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
     Model toPersist = new Model.ModelBuilder()
             .analysisId(analysisId)
             .title(modelTitle)
@@ -47,6 +49,8 @@ public class JpaModelRepositoryTest {
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
+            .likelihood(likelihood)
+            .link(link)
             .build();
     Model model = modelRepository.persist(toPersist);
     assertEquals(analysisId, model.getAnalysisId());
@@ -56,6 +60,8 @@ public class JpaModelRepositoryTest {
     assertEquals(burnInIterations, model.getBurnInIterations());
     assertEquals(inferenceIterations, model.getInferenceIterations());
     assertEquals(thinningFactor, model.getThinningFactor());
+    assertEquals(likelihood, model.getLikelihood());
+    assertEquals(link, model.getLink());
     assertNull(model.getPairwiseDetails());
   }
 

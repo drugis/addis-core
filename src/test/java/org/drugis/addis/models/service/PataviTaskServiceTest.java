@@ -64,10 +64,11 @@ public class PataviTaskServiceTest {
     String modelTitle = "modelTitle";
     String linearModel = Model.LINEAR_MODEL_FIXED;
     String modelType = Model.NETWORK_MODEL_TYPE;
-
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
 
     Model model = new Model.ModelBuilder()
             .id(modelId)
@@ -78,6 +79,8 @@ public class PataviTaskServiceTest {
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
+            .likelihood(likelihood)
+            .link(link)
             .build();
     NetworkMetaAnalysisProblem networkMetaAnalysisProblem = mock(NetworkMetaAnalysisProblem.class);
     PataviTask pataviTask = new PataviTask(PataviTaskRepositoryImpl.GEMTC_METHOD, problem);
@@ -105,6 +108,8 @@ public class PataviTaskServiceTest {
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
 
     Model model = new Model.ModelBuilder()
             .id(modelId)
@@ -116,6 +121,8 @@ public class PataviTaskServiceTest {
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
+            .likelihood(likelihood)
+            .link(link)
             .build();
     when(modelRepository.find(modelId)).thenReturn(model);
 

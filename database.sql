@@ -233,3 +233,11 @@ ALTER TABLE model ADD COLUMN thinningFactor INT NOT NULL DEFAULT 10;
 --rollback ALTER TABLE model DROP COLUMN burnInIterations;
 --rollback ALTER TABLE model DROP COLUMN inferenceIterations;
 --rollback ALTER TABLE model DROP COLUMN thinningFactor;
+
+--changeset stroombergc:23
+BEGIN;
+ALTER TABLE model ADD COLUMN likelihood VARCHAR(255);
+ALTER TABLE model ADD COLUMN link VARCHAR(255);
+ALTER TABLE model ALTER likelihood SET NOT NULL;
+ALTER TABLE model ALTER link SET NOT NULL;
+COMMIT;

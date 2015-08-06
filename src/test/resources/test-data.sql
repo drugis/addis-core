@@ -25,8 +25,8 @@ INSERT INTO public.scenario (id, workspace, title, state) VALUES (1, -1, 'Defaul
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (2, -1, 'Scenario title', 'problem state modified');
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (3, -2, 'Default for different analysis', 'problem state modified');
 
-INSERT INTO public.model(id, analysisId, title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor) VALUES (1, -5, 'model title', 'fixed', '{"type": "network"}', 5000, 20000, 10);
-INSERT INTO public.model(id, analysisId, title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor) VALUES (2, -5, 'model title', 'fixed', '{"type": "pairwise", "details": {"to": {id: -1, "name" : "study1"}, "from": {"id": -2, "name": "study2"}}}', 5000, 20000, 10);
+INSERT INTO public.model(id, analysisId, title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor, likelihood, link) VALUES (1, -5, 'model title', 'fixed', '{"type": "network"}', 5000, 20000, 10, 'binom', 'logit');
+INSERT INTO public.model(id, analysisId, title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor, likelihood, link) VALUES (2, -5, 'model title', 'fixed', '{"type": "pairwise", "details": {"to": {id: -1, "name" : "study1"}, "from": {"id": -2, "name": "study2"}}}', 5000, 20000, 10,  'binom', 'logit');
 
 INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-1, '-101', -6);
 INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-2, '-102', -6);

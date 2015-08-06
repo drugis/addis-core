@@ -23,6 +23,16 @@ public class Model {
   public final static String LINEAR_MODEL_FIXED = "fixed";
   public final static String LINEAR_MODEL_RANDOM = "random";
 
+  public final static String LIKELIHOOD_NORMAL = "normal";
+  public final static String LIKELIHOOD_BINOM = "binom";
+  public final static String LIKELIHOOD_POISSON = "poisson";
+
+  public final static String LINK_IDENTITY = "identity";
+  public final static String LINK_LOGIT = "logit";
+  public final static String LINK_LOG = "log";
+  public final static String LINK_CLOGLOG = "cloglog";
+
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -35,6 +45,8 @@ public class Model {
   private Integer burnInIterations;
   private Integer inferenceIterations;
   private Integer thinningFactor;
+  private String likelihood;
+  private String link;
 
   public Model() {
   }
@@ -48,6 +60,8 @@ public class Model {
     this.burnInIterations = builder.burnInIterations;
     this.inferenceIterations = builder.inferenceIterations;
     this.thinningFactor = builder.thinningFactor;
+    this.likelihood = builder.likelihood;
+    this.link = builder.link;
 
     if (Model.PAIRWISE_MODEL_TYPE.equals(builder.modelType) || Model.NODE_SPLITTING_MODEL_TYPE.equals(builder.modelType)) {
       this.modelType = String.format("{'type': '%s', 'details': {'from': {'id' : %s, 'name': '%s'}, 'to': {'id': %s, 'name': '%s'}}}",
@@ -89,6 +103,14 @@ public class Model {
 
   public Integer getThinningFactor() {
     return thinningFactor;
+  }
+
+  public String getLikelihood() {
+    return likelihood;
+  }
+
+  public String getLink() {
+    return link;
   }
 
   @JsonIgnore
@@ -135,22 +157,24 @@ public class Model {
 
     Model model = (Model) o;
 
-    if (taskId != null ? !taskId.equals(model.taskId) : model.taskId != null) return false;
     if (id != null ? !id.equals(model.id) : model.id != null) return false;
+    if (taskId != null ? !taskId.equals(model.taskId) : model.taskId != null) return false;
     if (!analysisId.equals(model.analysisId)) return false;
     if (!title.equals(model.title)) return false;
     if (!linearModel.equals(model.linearModel)) return false;
     if (!modelType.equals(model.modelType)) return false;
     if (!burnInIterations.equals(model.burnInIterations)) return false;
     if (!inferenceIterations.equals(model.inferenceIterations)) return false;
-    return thinningFactor.equals(model.thinningFactor);
+    if (!thinningFactor.equals(model.thinningFactor)) return false;
+    if (!likelihood.equals(model.likelihood)) return false;
+    return link.equals(model.link);
 
   }
 
   @Override
   public int hashCode() {
-    int result = taskId != null ? taskId.hashCode() : 0;
-    result = 31 * result + (id != null ? id.hashCode() : 0);
+    int result = id != null ? id.hashCode() : 0;
+    result = 31 * result + (taskId != null ? taskId.hashCode() : 0);
     result = 31 * result + analysisId.hashCode();
     result = 31 * result + title.hashCode();
     result = 31 * result + linearModel.hashCode();
@@ -158,6 +182,8 @@ public class Model {
     result = 31 * result + burnInIterations.hashCode();
     result = 31 * result + inferenceIterations.hashCode();
     result = 31 * result + thinningFactor.hashCode();
+    result = 31 * result + likelihood.hashCode();
+    result = 31 * result + link.hashCode();
     return result;
   }
 
@@ -237,6 +263,8 @@ public class Model {
     private Integer thinningFactor;
     private DetailNode from;
     private DetailNode to;
+    private String likelihood;
+    private String link;
 
     public ModelBuilder taskId(Integer taskId) {
       this.taskId = taskId;
@@ -290,6 +318,16 @@ public class Model {
 
     public ModelBuilder to(DetailNode to) {
       this.to = to;
+      return this;
+    }
+
+    public ModelBuilder likelihood(String likelihood) {
+      this.likelihood = likelihood;
+      return this;
+    }
+
+    public ModelBuilder link(String link) {
+      this.link = link;
       return this;
     }
 

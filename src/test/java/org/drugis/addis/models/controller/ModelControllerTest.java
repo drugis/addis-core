@@ -86,10 +86,11 @@ public class ModelControllerTest {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_FIXED;
-
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
 
     Model model = new Model.ModelBuilder()
             .id(1)
@@ -103,7 +104,7 @@ public class ModelControllerTest {
             .build();
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
 
-    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor);
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     String body = TestUtils.createJson(modelCommand);
 
     when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);
@@ -129,10 +130,11 @@ public class ModelControllerTest {
     String modelTitle = "model title";
     String linearModel = "fixed";
     String modelType = Model.PAIRWISE_MODEL_TYPE;
-
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
 
     Model model = new Model.ModelBuilder()
             .id(1)
@@ -148,7 +150,7 @@ public class ModelControllerTest {
             .build();
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand(modelType, new DetailsCommand(new NodeCommand(-1, "t1"), new NodeCommand(-2, "t2")));
 
-    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor);
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     String body = TestUtils.createJson(modelCommand);
 
     when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);

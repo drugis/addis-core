@@ -47,9 +47,11 @@ public class ModelServiceTest {
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
 
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
-    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor);
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     Model expectedModel = mock(Model.class);
 
     Model internalModel = new Model.ModelBuilder()
@@ -60,6 +62,8 @@ public class ModelServiceTest {
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
+            .likelihood(likelihood)
+            .link(link)
             .build();
 
     when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
@@ -78,6 +82,8 @@ public class ModelServiceTest {
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
 
     int fromId = -1;
     String fromName = "fromName";
@@ -87,7 +93,7 @@ public class ModelServiceTest {
     NodeCommand to = new NodeCommand(toId, toName);
     DetailsCommand details = new DetailsCommand(from, to);
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", details);
-    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor);
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     Model expectedModel = mock(Model.class);
 
     Model internalModel = new Model.ModelBuilder()
@@ -100,6 +106,8 @@ public class ModelServiceTest {
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
+            .likelihood(likelihood)
+            .link(link)
             .build();
 
     when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
