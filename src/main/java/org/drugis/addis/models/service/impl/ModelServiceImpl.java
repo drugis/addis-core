@@ -31,7 +31,9 @@ public class ModelServiceImpl implements ModelService {
             .modelType(modelTypeCommand.getType())
             .burnInIterations(command.getBurnInIterations())
             .inferenceIterations(command.getInferenceIterations())
-            .thinningFactor(command.getThinningFactor());
+            .thinningFactor(command.getThinningFactor())
+            .likelihood(command.getLikelihood())
+            .link(command.getLink());
 
     DetailsCommand details = modelTypeCommand.getDetails();
     if (details != null) {
