@@ -67,6 +67,8 @@ public class PataviTaskRepositoryImplTest {
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
     Model model = new Model.ModelBuilder()
             .analysisId(analysisId)
             .title("title")
@@ -75,6 +77,8 @@ public class PataviTaskRepositoryImplTest {
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
+            .likelihood(likelihood)
+            .link(link)
             .build();
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
@@ -92,6 +96,8 @@ public class PataviTaskRepositoryImplTest {
     assertEquals(burnInIterations, JsonPath.read(task.getProblem(), "$.burnInIterations"));
     assertEquals(inferenceIterations, JsonPath.read(task.getProblem(), "$.inferenceIterations"));
     assertEquals(thinningFactor, JsonPath.read(task.getProblem(), "$.thinningFactor"));
+    assertEquals(likelihood, JsonPath.read(task.getProblem(), "$.likelihood"));
+    assertEquals(link, JsonPath.read(task.getProblem(), "$.link"));
   }
 
   @Test
@@ -108,6 +114,8 @@ public class PataviTaskRepositoryImplTest {
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
     Model model = new Model.ModelBuilder()
             .analysisId(analysisId)
             .title("title")
@@ -118,6 +126,8 @@ public class PataviTaskRepositoryImplTest {
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
+            .likelihood(likelihood)
+            .link(link)
             .build();
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
@@ -134,6 +144,8 @@ public class PataviTaskRepositoryImplTest {
     assertEquals("pairwise", JsonPath.read(task.getProblem(), "$.modelType.type"));
     assertEquals(fromTreatment, JsonPath.read(task.getProblem(), "$.modelType.details.from.name"));
     assertEquals(toTreatment, JsonPath.read(task.getProblem(), "$.modelType.details.to.name"));
+    assertEquals(likelihood, JsonPath.read(task.getProblem(), "$.likelihood"));
+    assertEquals(link, JsonPath.read(task.getProblem(), "$.link"));
   }
 
 

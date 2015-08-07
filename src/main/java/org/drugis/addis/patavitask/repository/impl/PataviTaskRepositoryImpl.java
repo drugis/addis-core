@@ -49,6 +49,8 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     jsonProblem.put("burnInIterations", model.getBurnInIterations());
     jsonProblem.put("inferenceIterations", model.getInferenceIterations());
     jsonProblem.put("thinningFactor", model.getThinningFactor());
+    jsonProblem.put("likelihood", model.getLikelihood());
+    jsonProblem.put("link", model.getLink());
 
     PGobject postgresJsonObject = new PGobject();
     postgresJsonObject.setType("json");
