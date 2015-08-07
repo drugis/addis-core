@@ -1,5 +1,6 @@
 package org.drugis.addis.patavitask;
 
+import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
@@ -146,6 +147,82 @@ public class PataviTaskRepositoryImplTest {
     assertEquals(toTreatment, JsonPath.read(task.getProblem(), "$.modelType.details.to.name"));
     assertEquals(likelihood, JsonPath.read(task.getProblem(), "$.likelihood"));
     assertEquals(link, JsonPath.read(task.getProblem(), "$.link"));
+  }
+
+  @Test
+  public void testCreateWithFixedOutcomeScale() throws Exception, InvalidModelTypeException {
+    Integer analysisId = -5; // from test-data/sql
+
+    Long responders = 1L;
+    Long samplesize = 30L;
+    Integer treatment = 123;
+    String study = "study";
+    String linearModel = "random";
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+    Double outcomeScale = 2.2;
+    Model model = new Model.ModelBuilder()
+            .analysisId(analysisId)
+            .title("title")
+            .linearModel(linearModel)
+            .modelType("network")
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .likelihood(likelihood)
+            .link(link)
+            .outcomeScale(outcomeScale)
+            .build();
+
+    List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
+    entries.add(new RateNetworkMetaAnalysisProblemEntry(study, treatment, samplesize, responders));
+    String entryName = "entry name";
+    Integer entryId = 456;
+    List<TreatmentEntry> treatments = Collections.singletonList(new TreatmentEntry(entryId, entryName));
+    NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments);
+
+    PataviTask task = pataviTaskRepository.createPataviTask(problem, model);
+    assertEquals(outcomeScale, JsonPath.read(task.getProblem(), "$.outcomeScale"));
+  }
+
+  @Test(expected = InvalidPathException.class)
+  public void testCreateWithoutFixedOutcomeScale() throws Exception, InvalidModelTypeException {
+    Integer analysisId = -5; // from test-data/sql
+
+    Long responders = 1L;
+    Long samplesize = 30L;
+    Integer treatment = 123;
+    String study = "study";
+    String linearModel = "random";
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+    Model model = new Model.ModelBuilder()
+            .analysisId(analysisId)
+            .title("title")
+            .linearModel(linearModel)
+            .modelType("network")
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .likelihood(likelihood)
+            .link(link)
+            .build();
+
+    List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
+    entries.add(new RateNetworkMetaAnalysisProblemEntry(study, treatment, samplesize, responders));
+    String entryName = "entry name";
+    Integer entryId = 456;
+    List<TreatmentEntry> treatments = Collections.singletonList(new TreatmentEntry(entryId, entryName));
+    NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments);
+
+    PataviTask task = pataviTaskRepository.createPataviTask(problem, model);
+    JsonPath.read(task.getProblem(), "$.outcomeScale");
   }
 
 

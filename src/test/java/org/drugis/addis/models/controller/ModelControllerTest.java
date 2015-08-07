@@ -124,6 +124,46 @@ public class ModelControllerTest {
   }
 
   @Test
+  public void testCreateModelWithFixedOutcomeScale() throws Exception, InvalidModelTypeException {
+    Integer projectId = 45;
+    Integer analysisId = 55;
+    String modelTitle = "model title";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+    Double outcomeScale = 2.2;
+
+    Model model = new Model.ModelBuilder()
+            .id(1)
+            .analysisId(analysisId)
+            .title(modelTitle)
+            .linearModel(linearModel)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .build();
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
+
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale);
+    String body = TestUtils.createJson(modelCommand);
+
+    when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);
+    mockMvc.perform(post("/projects/45/analyses/55/models")
+            .content(body)
+            .principal(user)
+            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(status().isCreated());
+
+    verify(analysisService).checkCoordinates(projectId, analysisId);
+    verify(projectService).checkOwnership(projectId, user);
+    verify(modelService).createModel(analysisId, modelCommand);
+  }
+
+  @Test
   public void testCreatePairwise() throws Exception, InvalidModelTypeException {
     Integer projectId = 45;
     Integer analysisId = 55;

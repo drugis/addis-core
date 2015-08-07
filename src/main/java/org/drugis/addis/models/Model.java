@@ -47,6 +47,7 @@ public class Model {
   private Integer thinningFactor;
   private String likelihood;
   private String link;
+  private Double outcomeScale;
 
   public Model() {
   }
@@ -62,6 +63,7 @@ public class Model {
     this.thinningFactor = builder.thinningFactor;
     this.likelihood = builder.likelihood;
     this.link = builder.link;
+    this.outcomeScale = builder.outcomeScale;
 
     if (Model.PAIRWISE_MODEL_TYPE.equals(builder.modelType) || Model.NODE_SPLITTING_MODEL_TYPE.equals(builder.modelType)) {
       this.modelType = String.format("{'type': '%s', 'details': {'from': {'id' : %s, 'name': '%s'}, 'to': {'id': %s, 'name': '%s'}}}",
@@ -111,6 +113,10 @@ public class Model {
 
   public String getLink() {
     return link;
+  }
+
+  public Double getOutcomeScale() {
+    return outcomeScale;
   }
 
   @JsonIgnore
@@ -167,7 +173,8 @@ public class Model {
     if (!inferenceIterations.equals(model.inferenceIterations)) return false;
     if (!thinningFactor.equals(model.thinningFactor)) return false;
     if (!likelihood.equals(model.likelihood)) return false;
-    return link.equals(model.link);
+    if (!link.equals(model.link)) return false;
+    return !(outcomeScale != null ? !outcomeScale.equals(model.outcomeScale) : model.outcomeScale != null);
 
   }
 
@@ -184,6 +191,7 @@ public class Model {
     result = 31 * result + thinningFactor.hashCode();
     result = 31 * result + likelihood.hashCode();
     result = 31 * result + link.hashCode();
+    result = 31 * result + (outcomeScale != null ? outcomeScale.hashCode() : 0);
     return result;
   }
 
@@ -265,6 +273,7 @@ public class Model {
     private DetailNode to;
     private String likelihood;
     private String link;
+    private Double outcomeScale;
 
     public ModelBuilder taskId(Integer taskId) {
       this.taskId = taskId;
@@ -330,6 +339,12 @@ public class Model {
       this.link = link;
       return this;
     }
+
+    public ModelBuilder outcomeScale(Double outcomeScale) {
+      this.outcomeScale = outcomeScale;
+      return this;
+    }
+
 
     public Model build() throws InvalidModelTypeException {
       return new Model(this);

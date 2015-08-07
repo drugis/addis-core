@@ -241,3 +241,7 @@ ALTER TABLE model ADD COLUMN link VARCHAR(255);
 ALTER TABLE model ALTER likelihood SET NOT NULL;
 ALTER TABLE model ALTER link SET NOT NULL;
 COMMIT;
+
+--changeset stroombergc:24
+ALTER TABLE model ADD COLUMN outcomeScale DOUBLE PRECISION;
+--rollback ALTER TABLE model DROP COLUMN outcomeScale;

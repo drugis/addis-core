@@ -245,3 +245,7 @@ ALTER TABLE model ALTER likelihood SET NOT NULL;
 ALTER TABLE model ALTER link SET NOT NULL;
 --rollback ALTER TABLE model DROP COLUMN likelihood;
 --rollback ALTER TABLE model DROP COLUMN link;
+
+--changeset stroombergc:24
+ALTER TABLE model ADD COLUMN outcomeScale DOUBLE PRECISION;
+--rollback ALTER TABLE model DROP COLUMN outcomeScale;

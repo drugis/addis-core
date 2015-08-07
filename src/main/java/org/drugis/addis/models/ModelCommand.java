@@ -14,11 +14,16 @@ public class ModelCommand {
   String likelihood;
   String link;
 
+  Double outcomeScale;
+
   public ModelCommand() {
   }
 
-  public ModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations,
-                      Integer inferenceIterations, Integer thinningFactor, String likelihood, String link) {
+  public ModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link) {
+    this(title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, null);
+  }
+
+  public ModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link, Double outcomeScale) {
     this.title = title;
     this.linearModel = linearModel;
     this.modelType = modelType;
@@ -27,6 +32,7 @@ public class ModelCommand {
     this.thinningFactor = thinningFactor;
     this.likelihood = likelihood;
     this.link = link;
+    this.outcomeScale = outcomeScale;
   }
 
   public Integer getBurnInIterations() {
@@ -61,6 +67,10 @@ public class ModelCommand {
     return link;
   }
 
+  public Double getOutcomeScale() {
+    return outcomeScale;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -75,7 +85,8 @@ public class ModelCommand {
     if (!inferenceIterations.equals(that.inferenceIterations)) return false;
     if (!thinningFactor.equals(that.thinningFactor)) return false;
     if (!likelihood.equals(that.likelihood)) return false;
-    return link.equals(that.link);
+    if (!link.equals(that.link)) return false;
+    return !(outcomeScale != null ? !outcomeScale.equals(that.outcomeScale) : that.outcomeScale != null);
 
   }
 
@@ -89,6 +100,7 @@ public class ModelCommand {
     result = 31 * result + thinningFactor.hashCode();
     result = 31 * result + likelihood.hashCode();
     result = 31 * result + link.hashCode();
+    result = 31 * result + (outcomeScale != null ? outcomeScale.hashCode() : 0);
     return result;
   }
 }

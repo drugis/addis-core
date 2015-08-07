@@ -52,6 +52,10 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     jsonProblem.put("likelihood", model.getLikelihood());
     jsonProblem.put("link", model.getLink());
 
+    if(model.getOutcomeScale() != null) {
+      jsonProblem.put("outcomeScale", model.getOutcomeScale());
+    }
+
     PGobject postgresJsonObject = new PGobject();
     postgresJsonObject.setType("json");
     postgresJsonObject.setValue(jsonProblem.toString());
