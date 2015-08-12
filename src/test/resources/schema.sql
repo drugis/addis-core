@@ -249,3 +249,9 @@ ALTER TABLE model ALTER link SET NOT NULL;
 --changeset stroombergc:24
 ALTER TABLE model ADD COLUMN outcomeScale DOUBLE PRECISION;
 --rollback ALTER TABLE model DROP COLUMN outcomeScale;
+
+--changeset stroombergc:25
+ALTER TABLE SingleStudyBenefitRiskAnalysis ALTER COLUMN name RENAME TO title;
+--rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ALTER COLUMN title RENAME TO name;
+ALTER TABLE NetworkMetaAnalysis ALTER COLUMN name RENAME TO title;
+--rollback ALTER TABLE NetworkMetaAnalysis ALTER COLUMN title RENAME TO name;

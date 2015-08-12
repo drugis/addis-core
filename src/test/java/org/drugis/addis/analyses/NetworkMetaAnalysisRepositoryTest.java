@@ -66,7 +66,7 @@ public class NetworkMetaAnalysisRepositoryTest {
     NetworkMetaAnalysis updatedAnalysis = networkMetaAnalysisRepository.update(analysis);
     assertEquals(analysis.getId(), updatedAnalysis.getId());
     assertEquals(analysis.getProjectId(), updatedAnalysis.getProjectId());
-    assertEquals(analysis.getName(), updatedAnalysis.getName());
+    assertEquals(analysis.getTitle(), updatedAnalysis.getTitle());
     assertEquals(outcome, updatedAnalysis.getOutcome());
   }
 

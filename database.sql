@@ -245,3 +245,10 @@ COMMIT;
 --changeset stroombergc:24
 ALTER TABLE model ADD COLUMN outcomeScale DOUBLE PRECISION;
 --rollback ALTER TABLE model DROP COLUMN outcomeScale;
+
+--changeset stroombergc:25
+ALTER TABLE SingleStudyBenefitRiskAnalysis RENAME COLUMN name TO title;
+--rollback ALTER TABLE SingleStudyBenefitRiskAnalysis RENAME COLUMN title TO name;
+ALTER TABLE NetworkMetaAnalysis RENAME COLUMN name TO title;
+--rollback ALTER TABLE NetworkMetaAnalysis RENAME COLUMN title TO name;
+

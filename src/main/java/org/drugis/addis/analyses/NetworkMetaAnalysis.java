@@ -16,7 +16,7 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")
   private Integer id;
   private Integer projectId;
-  private String name;
+  private String title;
 
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis", orphanRemoval = true)
   private List<ArmExclusion> excludedArms = new ArrayList<>();
@@ -31,26 +31,26 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   public NetworkMetaAnalysis() {
   }
 
-  public NetworkMetaAnalysis(Integer id, Integer projectId, String name, Outcome outcome) {
+  public NetworkMetaAnalysis(Integer id, Integer projectId, String title, Outcome outcome) {
     this.id = id;
     this.projectId = projectId;
-    this.name = name;
+    this.title = title;
     this.outcome = outcome;
   }
 
-  public NetworkMetaAnalysis(Integer projectId, String name) {
+  public NetworkMetaAnalysis(Integer projectId, String title) {
     this.projectId = projectId;
-    this.name = name;
+    this.title = title;
   }
 
-  public NetworkMetaAnalysis(Integer id, Integer projectId, String name) {
-    this(id, projectId, name, null);
+  public NetworkMetaAnalysis(Integer id, Integer projectId, String title) {
+    this(id, projectId, title, null);
   }
 
-  public NetworkMetaAnalysis(Integer id, Integer projectId, String name, List<ArmExclusion> excludedArms, List<InterventionInclusion> includedInterventions, Outcome outcome) {
+  public NetworkMetaAnalysis(Integer id, Integer projectId, String title, List<ArmExclusion> excludedArms, List<InterventionInclusion> includedInterventions, Outcome outcome) {
     this.id = id;
     this.projectId = projectId;
-    this.name = name;
+    this.title = title;
     this.excludedArms = excludedArms == null ? new ArrayList<ArmExclusion>() : excludedArms;
     this.includedInterventions = includedInterventions == null ? new ArrayList<InterventionInclusion>() : includedInterventions;
     this.outcome = outcome;
@@ -64,8 +64,8 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     return projectId;
   }
 
-  public String getName() {
-    return name;
+  public String getTitle() {
+    return title;
   }
 
   public List<ArmExclusion> getExcludedArms() {
@@ -89,7 +89,7 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
 
     if (!excludedArms.equals(that.excludedArms)) return false;
     if (id != null ? !id.equals(that.id) : that.id != null) return false;
-    if (!name.equals(that.name)) return false;
+    if (!title.equals(that.title)) return false;
     if (outcome != null ? !outcome.equals(that.outcome) : that.outcome != null) return false;
     if (!projectId.equals(that.projectId)) return false;
 
@@ -100,7 +100,7 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   public int hashCode() {
     int result = id != null ? id.hashCode() : 0;
     result = 31 * result + projectId.hashCode();
-    result = 31 * result + name.hashCode();
+    result = 31 * result + title.hashCode();
     result = 31 * result + excludedArms.hashCode();
     result = 31 * result + (outcome != null ? outcome.hashCode() : 0);
     return result;

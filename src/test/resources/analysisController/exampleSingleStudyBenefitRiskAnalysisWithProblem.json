@@ -1,7 +1,7 @@
 {
   "id": 1,
   "projectId": 1,
-  "name": "Analysis name",
+  "title": "Analysis name",
   "problem": {
     "title": "Analysis name",
     "alternatives": {

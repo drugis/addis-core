@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class AnalysisCommand {
   private Integer projectId;
-  private String name;
+  private String title;
   private String type;
 
   private List<Integer> selectedOutcomeIds = new ArrayList<>();
@@ -19,25 +19,25 @@ public class AnalysisCommand {
   public AnalysisCommand() {
   }
 
-  public AnalysisCommand(Integer projectId, String name, String type) {
+  public AnalysisCommand(Integer projectId, String title, String type) {
     this.projectId = projectId;
-    this.name = name;
+    this.title = title;
     this.type = type;
   }
 
-  public AnalysisCommand(Integer projectId, String name, String type, List<Integer> selectedOutcomeIds) {
+  public AnalysisCommand(Integer projectId, String title, String type, List<Integer> selectedOutcomeIds) {
     this.projectId = projectId;
-    this.name = name;
+    this.title = title;
     this.type = type;
     if (selectedOutcomeIds != null) {
       this.selectedOutcomeIds = selectedOutcomeIds;
     }
   }
 
-  public AnalysisCommand(Integer id, Integer projectId, String name, String type, List<Integer> selectedOutcomeIds) {
+  public AnalysisCommand(Integer id, Integer projectId, String title, String type, List<Integer> selectedOutcomeIds) {
     this.id = id;
     this.projectId = projectId;
-    this.name = name;
+    this.title = title;
     this.type = type;
     if (selectedOutcomeIds != null) {
       this.selectedOutcomeIds = selectedOutcomeIds;
@@ -48,8 +48,8 @@ public class AnalysisCommand {
     return projectId;
   }
 
-  public String getName() {
-    return name;
+  public String getTitle() {
+    return title;
   }
 
   public String getType() {
@@ -71,7 +71,7 @@ public class AnalysisCommand {
 
     AnalysisCommand that = (AnalysisCommand) o;
 
-    if (!name.equals(that.name)) return false;
+    if (!title.equals(that.title)) return false;
     if (!projectId.equals(that.projectId)) return false;
     if (!selectedOutcomeIds.equals(that.selectedOutcomeIds)) return false;
     if (!type.equals(that.type)) return false;
@@ -82,7 +82,7 @@ public class AnalysisCommand {
   @Override
   public int hashCode() {
     int result = projectId.hashCode();
-    result = 31 * result + name.hashCode();
+    result = 31 * result + title.hashCode();
     result = 31 * result + type.hashCode();
     result = 31 * result + selectedOutcomeIds.hashCode();
     return result;

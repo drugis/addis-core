@@ -112,7 +112,7 @@
       <tbody>
         <tr class="clickable on-hover" ng-repeat="analysis in analyses"
         ng-click="goToAnalysis(analysis.id, analysis.analysisType)" ng-switch="analysis.analysisType">
-        <td>{{analysis.name}}</td>
+        <td>{{analysis.title}}</td>
         <td>{{analysis.analysisType}}</td>
         <td ng-switch-when="Single-study Benefit-Risk">{{(studies | filter:{studyUid:
           analysis.studyGraphUid}:true)[0].name}}
@@ -218,8 +218,8 @@
   <form name="analysisForm">
     <div class="row">
       <div class="large-10 columns">
-        <label>Name
-          <input type="text" ng-model="model.name">
+        <label>Title
+          <input type="text" ng-model="model.title">
         </label>
       </div>
     </div>
@@ -237,7 +237,7 @@
           <button class="button small secondary" ng-click="createAnalysisModal.close()">Cancel</button>
         </li>
         <li>
-          <button class="button small success" ng-disabled="!model.name || !model.type"
+          <button class="button small success" ng-disabled="!model.title || !model.type"
           ng-click="addAnalysis(model)">Add analysis
         </button>
       </li>

@@ -1,7 +1,7 @@
 {
   "id": 1,
   "projectId": 1,
-  "name": "Analysis name",
+  "title": "Analysis name",
   "problem":  [{
      "study": "Aberg-Wistedt et al., 2000",
      "treatment": "Sertraline",

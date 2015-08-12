@@ -2,7 +2,6 @@ package org.drugis.addis.analyses.repository.impl;
 
 import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
-import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
@@ -38,7 +37,7 @@ public class SingleStudyBenefitRiskAnalysisRepositoryImpl implements org.drugis.
 
   @Override
   public SingleStudyBenefitRiskAnalysis create(AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    SingleStudyBenefitRiskAnalysis newAnalysis = new SingleStudyBenefitRiskAnalysis(analysisCommand.getProjectId(), analysisCommand.getName(), Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    SingleStudyBenefitRiskAnalysis newAnalysis = new SingleStudyBenefitRiskAnalysis(analysisCommand.getProjectId(), analysisCommand.getTitle(), Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     em.persist(newAnalysis);
     return newAnalysis;
   }

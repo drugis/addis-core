@@ -1,7 +1,7 @@
 <ul ng-show="loading.loaded" class="breadcrumbs">
   <li><a href="#/projects">Projects</a></li>
   <li><a href="#/projects/{{project.id}}">{{project.name}}</a></li>
-  <li class="current active">{{analysis.name}}</li>
+  <li class="current active">{{analysis.title}}</li>
 </ul>
 <div>
   <div class="project-header row">
@@ -9,7 +9,7 @@
       <div ng-if="error" ng-cloak>
         <alert type="alert" close="error.close()">Computation failed: {{error.code}} <span ng-show="error.error">&mdash; {{error.error}}</span></alert>
       </div>
-      <h1 class="inline-header" title="Analysis title">{{analysis.name}}</h1>
+      <h1 class="inline-header" title="Analysis title">{{analysis.title}}</h1>
       <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.analysisType}}</h3>
     </div>
   </div>

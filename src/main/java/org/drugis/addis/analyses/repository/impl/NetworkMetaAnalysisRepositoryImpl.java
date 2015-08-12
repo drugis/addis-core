@@ -13,9 +13,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by connor on 6-5-14.
@@ -28,7 +26,7 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
 
   @Override
   public NetworkMetaAnalysis create(AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisCommand.getProjectId(), analysisCommand.getName());
+    NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisCommand.getProjectId(), analysisCommand.getTitle());
     em.persist(networkMetaAnalysis);
 
     TypedQuery<Intervention> query = em.createQuery("FROM Intervention i where i.project = :projectId", Intervention.class);

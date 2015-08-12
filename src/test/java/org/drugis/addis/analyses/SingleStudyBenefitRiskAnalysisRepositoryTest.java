@@ -66,7 +66,7 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
     SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
     assertEquals(analysis.getProjectId(), updatedAnalysis.getProjectId());
-    assertEquals(analysis.getName(), updatedAnalysis.getName());
+    assertEquals(analysis.getTitle(), updatedAnalysis.getTitle());
     assertEquals(analysis.getSelectedOutcomes(), updatedAnalysis.getSelectedOutcomes());
   }
 
@@ -83,7 +83,7 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
     SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
     SingleStudyBenefitRiskAnalysis result = em.find(SingleStudyBenefitRiskAnalysis.class, analysisId);
     assertEquals(analysis.getProjectId(), updatedAnalysis.getProjectId());
-    assertEquals(analysis.getName(), updatedAnalysis.getName());
+    assertEquals(analysis.getTitle(), updatedAnalysis.getTitle());
     assertEquals(analysis.getSelectedOutcomes(), updatedAnalysis.getSelectedOutcomes());
     assertEquals(updatedAnalysis, result);
   }

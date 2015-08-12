@@ -104,7 +104,7 @@ public class ProblemServiceTest {
 
     SingleStudyBenefitRiskAnalysis analysis = mock(SingleStudyBenefitRiskAnalysis.class);
     when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
-    when(analysis.getName()).thenReturn("analysisName");
+    when(analysis.getTitle()).thenReturn("analysisName");
 
     Outcome outcome1 = mock(Outcome.class);
     Outcome outcome2 = mock(Outcome.class);
@@ -153,7 +153,7 @@ public class ProblemServiceTest {
 
     assertNotNull(actualProblem);
     assertNotNull(actualProblem.getTitle());
-    assertEquals(analysis.getName(), actualProblem.getTitle());
+    assertEquals(analysis.getTitle(), actualProblem.getTitle());
     assertNotNull(actualProblem.getAlternatives());
     assertNotNull(actualProblem.getCriteria());
 

@@ -21,7 +21,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")
   private Integer id;
   private Integer projectId;
-  private String name;
+  private String title;
 
   @JsonRawValue
   private String problem;
@@ -43,25 +43,25 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
   public SingleStudyBenefitRiskAnalysis() {
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String name, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions, String problem) {
+  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions, String problem) {
     this.id = id;
     this.projectId = projectId;
-    this.name = name;
+    this.title = title;
     this.selectedOutcomes = selectedOutcomes == null ? this.selectedOutcomes : selectedOutcomes;
     this.selectedInterventions = selectedInterventions == null ? this.selectedInterventions : selectedInterventions;
     this.problem = problem;
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String name, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
-    this(id, projectId, name, selectedOutcomes, selectedInterventions, null);
+  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
+    this(id, projectId, title, selectedOutcomes, selectedInterventions, null);
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer projectId, String name, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
-    this(null, projectId, name, selectedOutcomes, selectedInterventions, null);
+  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
+    this(null, projectId, title, selectedOutcomes, selectedInterventions, null);
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer projectId, String name, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions, String problem) {
-    this(null, projectId, name, selectedOutcomes, selectedInterventions, problem);
+  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions, String problem) {
+    this(null, projectId, title, selectedOutcomes, selectedInterventions, problem);
   }
 
   public Integer getId() {
@@ -73,8 +73,8 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     return projectId;
   }
 
-  public String getName() {
-    return name;
+  public String getTitle() {
+    return title;
   }
 
   public String getStudyGraphUid() {
@@ -111,7 +111,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     SingleStudyBenefitRiskAnalysis analysis = (SingleStudyBenefitRiskAnalysis) o;
 
     if (id != null ? !id.equals(analysis.id) : analysis.id != null) return false;
-    if (!name.equals(analysis.name)) return false;
+    if (!title.equals(analysis.title)) return false;
     if (problem != null ? !problem.equals(analysis.problem) : analysis.problem != null) return false;
     if (!projectId.equals(analysis.projectId)) return false;
     if (!selectedInterventions.equals(analysis.selectedInterventions)) return false;
@@ -125,7 +125,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
   public int hashCode() {
     int result = id != null ? id.hashCode() : 0;
     result = 31 * result + projectId.hashCode();
-    result = 31 * result + name.hashCode();
+    result = 31 * result + title.hashCode();
     result = 31 * result + (problem != null ? problem.hashCode() : 0);
     result = 31 * result + (studyGraphUid != null ? studyGraphUid.hashCode() : 0);
     result = 31 * result + selectedOutcomes.hashCode();

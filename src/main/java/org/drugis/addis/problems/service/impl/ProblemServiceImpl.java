@@ -201,7 +201,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     List<AbstractMeasurementEntry> performanceTable = performanceTableBuilder.build(measurementNodes);
-    return new SingleStudyBenefitRiskProblem(analysis.getName(), alternatives, criteria, performanceTable);
+    return new SingleStudyBenefitRiskProblem(analysis.getTitle(), alternatives, criteria, performanceTable);
   }
 
   private CriterionEntry createCriterionEntry(TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow measurementRow) throws EnumConstantNotPresentException {
