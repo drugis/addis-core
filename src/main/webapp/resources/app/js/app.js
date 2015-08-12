@@ -216,6 +216,11 @@ define(
             templateUrl: gemtcWebBaseTemplatePath + 'js/models/createModel.html',
             controller: 'CreateModelController'
           })
+          .state('nmaModelContainer', {
+            url: '/projects/:projectId/nma/:analysisId/models/:modelId',
+            templateUrl: baseTemplatePath + 'nmaModelContainer.html'
+            controller: 'nmaModelContainer'
+          });
           .state('model', {
             url: '/projects/:projectId/nma/:analysisId/models/:modelId',
             templateUrl: gemtcWebBaseTemplatePath + 'views/modelView.html',
