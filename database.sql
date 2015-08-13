@@ -252,3 +252,7 @@ ALTER TABLE SingleStudyBenefitRiskAnalysis RENAME COLUMN name TO title;
 ALTER TABLE NetworkMetaAnalysis RENAME COLUMN name TO title;
 --rollback ALTER TABLE NetworkMetaAnalysis RENAME COLUMN title TO name;
 
+--changeset stroomberg:26
+ALTER TABLE Account ADD COLUMN email VARCHAR(255);
+--rollback ALTER TABLE Account DROP COLUMN email;
+

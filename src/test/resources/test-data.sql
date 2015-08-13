@@ -1,5 +1,5 @@
-INSERT INTO public.account (id, username, firstname, lastname, password) VALUES (1, 'foo@bar.com', 'Connor', 'Bonnor', null);
-INSERT INTO public.account (id, username, firstname, lastname, password) VALUES (2, 'test@bla.com', 'Daan', 'Baan', null);
+INSERT INTO public.account (id, username, firstname, lastname, email) VALUES (1, '1000123', 'Connor', 'Bonnor', 'connor@test.com');
+INSERT INTO public.account (id, username, firstname, lastname, email) VALUES (2, '2000123', 'Daan', 'Baan', null);
 
 INSERT INTO public.project (id, owner, name, description, namespaceUid, datasetversion) VALUES (1, 1, 'testname 1', 'testdescription 1', 'namespaceUid-1', 'version-1');
 INSERT INTO public.project (id, owner, name, description, namespaceUid, datasetversion) VALUES (2, 2, 'testname 2', 'testdescription 2', 'namespaceUid-1', 'version-1');

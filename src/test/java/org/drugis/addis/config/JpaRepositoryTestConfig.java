@@ -49,7 +49,8 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.analyses",
         "org.drugis.addis.scenarios",
         "org.drugis.addis.models",
-        "org.drugis.addis.remarks"
+        "org.drugis.addis.remarks",
+        "org.drugis.addis.security"
 })
 public class JpaRepositoryTestConfig {
 
@@ -76,7 +77,7 @@ public class JpaRepositoryTestConfig {
             .build();
   }
 
-  @Bean
+  @Bean(name = "ptmAddisCore")
   public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
     JpaTransactionManager transactionManager = new JpaTransactionManager();
     transactionManager.setEntityManagerFactory(entityManagerFactory);
