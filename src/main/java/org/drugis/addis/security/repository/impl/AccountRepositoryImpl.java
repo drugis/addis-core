@@ -38,7 +38,7 @@ public class AccountRepositoryImpl implements AccountRepository {
 
   private RowMapper<Account> rowMapper = new RowMapper<Account>() {
     public Account mapRow(ResultSet rs, int rowNum) throws SQLException {
-      return new Account(rs.getInt("id"), rs.getString("username"), rs.getString("firstName"), rs.getString("lastName"));
+      return new Account(rs.getInt("id"), rs.getString("username"), rs.getString("firstName"), rs.getString("lastName"), rs.getString("email"));
     }
   };
 
@@ -46,8 +46,8 @@ public class AccountRepositoryImpl implements AccountRepository {
   public void createAccount(Account user) throws UsernameAlreadyInUseException {
     try {
       jdbcTemplate.update(
-              "insert into Account (firstName, lastName, username) values (?, ?, ?)",
-              user.getFirstName(), user.getLastName(), user.getUsername());
+              "insert into Account (firstName, lastName, username, email) values (?, ?, ?, ?)",
+              user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail());
     } catch (DuplicateKeyException e) {
       throw new UsernameAlreadyInUseException(user.getUsername());
     }
@@ -55,13 +55,13 @@ public class AccountRepositoryImpl implements AccountRepository {
 
   public Account findAccountByUsername(String username) {
     return jdbcTemplate.queryForObject(
-            "select id, username, firstName, lastName from Account where username = ?",
+            "select id, username, firstName, lastName, email from Account where username = ?",
             rowMapper, username);
   }
 
   public Account findAccountById(int id) {
     return jdbcTemplate.queryForObject(
-            "select id, username, firstName, lastName from Account where id = ?",
+            "select id, username, firstName, lastName, email from Account where id = ?",
             rowMapper, id);
   }
 

@@ -40,7 +40,7 @@ public class ProjectsRepositoryTest {
 
   @Test
   public void testCreate() {
-    Account account = new Account(1, "foo@bar.com", "Connor", "Bonnor");
+    Account account = new Account(1, "1000012345", "Connor", "Bonnor", "connor@test.com");
     assertEquals(3, projectRepository.query().size());
     Project project = projectRepository.create(account, new ProjectCommand("newProjectName", "newProjectDesc", "uid1", "version 1"));
     assertEquals(project.getOwner(), account);

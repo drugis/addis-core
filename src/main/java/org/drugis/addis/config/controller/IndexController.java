@@ -16,6 +16,7 @@ package org.drugis.addis.config.controller;
  * limitations under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.slf4j.Logger;
@@ -73,8 +74,11 @@ public class IndexController {
       } else {
         Account account = accountRepository.findAccountByUsername(currentUser.getName());
         model.addAttribute(account);
-        String md5String = DigestUtils.md5DigestAsHex(account.getUsername().getBytes());
-        model.addAttribute("userMD5", md5String); // user email MD5 hash needed to retrieve gravatar image
+        if(StringUtils.isNotEmpty(account.getEmail())) {
+          String md5String = DigestUtils.md5DigestAsHex(account.getEmail().getBytes());
+          model.addAttribute("userMD5", md5String); // user email MD5 hash needed to retrieve gravatar image
+        }
+
         model.addAttribute("pataviMcdaWsUri", ADDIS_CORE_PATAVI_MCDA_WS_URI);
       }
     } catch (org.springframework.dao.EmptyResultDataAccessException e) {

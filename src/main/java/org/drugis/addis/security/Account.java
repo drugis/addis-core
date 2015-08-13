@@ -29,51 +29,41 @@ public class Account {
   private String username;
   private String firstName;
   private String lastName;
+  private String email;
 
   protected Account() {
   }
 
-  public Account(String username, String firstName, String lastName) {
-    this(-1, username, firstName, lastName);
+  public Account(String username, String firstName, String lastName, String email) {
+    this(-1, username, firstName, lastName, email);
   }
 
-  public Account(int id, String username, String firstName, String lastName) {
+  public Account(int id, String username, String firstName, String lastName, String email) {
     this.id = id;
     this.username = username;
     this.firstName = firstName;
     this.lastName = lastName;
+    this.email = email;
   }
 
   public Integer getId() {
     return id;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
   public String getUsername() {
     return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
   }
 
   public String getFirstName() {
     return firstName;
   }
 
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
-
   public String getLastName() {
     return lastName;
   }
 
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
+  public String getEmail() {
+    return email;
   }
 
   @Override
@@ -83,20 +73,21 @@ public class Account {
 
     Account account = (Account) o;
 
-    if (!firstName.equals(account.firstName)) return false;
-    if (!id.equals(account.id)) return false;
-    if (!lastName.equals(account.lastName)) return false;
+    if (id != null ? !id.equals(account.id) : account.id != null) return false;
     if (!username.equals(account.username)) return false;
+    if (firstName != null ? !firstName.equals(account.firstName) : account.firstName != null) return false;
+    if (lastName != null ? !lastName.equals(account.lastName) : account.lastName != null) return false;
+    return !(email != null ? !email.equals(account.email) : account.email != null);
 
-    return true;
   }
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
+    int result = id != null ? id.hashCode() : 0;
     result = 31 * result + username.hashCode();
-    result = 31 * result + firstName.hashCode();
-    result = 31 * result + lastName.hashCode();
+    result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+    result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+    result = 31 * result + (email != null ? email.hashCode() : 0);
     return result;
   }
 }

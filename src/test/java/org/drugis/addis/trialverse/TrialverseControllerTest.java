@@ -57,7 +57,7 @@ public class TrialverseControllerTest {
 
   private Principal user;
 
-  private Account gert = new Account(3, "gert", "Gert", "van Valkenhoef");
+  private Account gert = new Account(3, "gert", "Gert", "van Valkenhoef", "gert@test.com");
 
   @Before
   public void setUp() {

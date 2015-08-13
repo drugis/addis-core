@@ -53,9 +53,7 @@ public class InterventionControllerTest {
 
   private Principal user;
 
-  private Account john = new Account(1, "a", "john", "lennon"),
-    paul = new Account(2, "a", "paul", "mc cartney"),
-    gert = new Account(3, "gert", "Gert", "van Valkenhoef");
+  private Account gert = new Account(3, "gert", "Gert", "van Valkenhoef", "gert@test.com");
 
 
   @Before
