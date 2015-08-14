@@ -57,9 +57,12 @@ define([], function() {
         version: $scope.project.datasetVersion
       });
 
+      $scope.analysesLoaded = false;
       $scope.studies.$promise.then(function() {
         $scope.analyses = AnalysisResource.query({
           projectId: $scope.project.id
+        }, function(){
+        $scope.analysesLoaded = true;
         });
       });
 
