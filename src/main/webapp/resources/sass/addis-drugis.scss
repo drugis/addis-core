@@ -1,14 +1,18 @@
 @import"settings";
 @import"addis-settings";
-@import"foundation";
+@import"../app/js/bower_components/foundation/scss/foundation.scss";
 @import"drugis";
-@import"main";
-@import"../js/bower_components/mcda-web/app/css/mcda-drugis.css";
+@import"../app/js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss";
+@import"addis-base";
+@import"../app/js/bower_components/mcda-web/sass/_mcda-drugis-base.scss";
 
-$addis-grey : $crumb-bg;
-$addis-grey-border : $crumb-border-color;
+// load addis style settings //
  .alert {
   color: $alert-color;
+}
+.error-message {
+  display: block;
+  color: $drugis-color;
 }
 .warning {
   color: $warning-color;
@@ -23,18 +27,12 @@ $addis-grey-border : $crumb-border-color;
 .alert-box-message {
   padding-right: 1.25rem;
 }
+
+// addis style //
 label {
   margin-top: 0.5rem;
 }
-.inline-header {
-  display: inline;
-}
-.project-header {
-  margin-bottom: 1.25rem;
-}
-.project-description {
-  padding: 10px 0px;
-}
+
 .nested-view {
   min-height: 4rem;
 }
@@ -52,14 +50,19 @@ label {
   padding: 0.5rem 0.25rem 0.5rem 0.5rem;
 }
 
+// project //
+
+.project-header {
+  margin-bottom: 1.25rem;
+}
+
+.project-description {
+  padding: 10px 0px;
+}
+
 .checkbox-group {
   padding-left: 0.5rem;
   padding-bottom: 1rem;
-}
-
-.error-message {
-  display: block;
-  color: $drugis-color;
 }
 
 // header ////
@@ -69,7 +72,6 @@ label {
   height: 32px;
   border-radius: 15px;
 }
-
 
 /////////// property lists /////////////////
 
