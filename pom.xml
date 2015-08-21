@@ -4,7 +4,7 @@
     <groupId>org.drugis</groupId>
     <artifactId>addis-core</artifactId>
     <packaging>war</packaging>
-    <version>0.2.5</version>
+    <version>0.3.0</version>
     <name>ADDIS Core</name>
     <properties>
         <org.springframework.social-version>1.1.0.RELEASE</org.springframework.social-version>
