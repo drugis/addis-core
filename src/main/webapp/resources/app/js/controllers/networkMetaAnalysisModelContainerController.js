@@ -1,10 +1,11 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$scope', '$stateParams', 'currentAnalysis', 'currentProject'];
+  var dependencies = ['$scope', '$state', 'ProjectResource', 'AnalysisResource'];
 
-  var NetworkMetaAnalysisModelContainerController = function($scope, $stateParams, currentAnalysis, currentProject) {
-       $scope.project = currentProject;
-       $scope.analysis = currentAnalysis;
+  var NetworkMetaAnalysisModelContainerController = function($scope, $state, ProjectResource, AnalysisResource) {
+
+       $scope.project = ProjectResource.get({ projectId: $state.params.projectId});
+       $scope.analysis = AnalysisResource.get($state.params);
   };
 
   return dependencies.concat(NetworkMetaAnalysisModelContainerController);

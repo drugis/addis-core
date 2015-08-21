@@ -219,9 +219,14 @@ define(
           .state('nmaModelContainer', {
             templateUrl: baseTemplatePath + 'networkMetaAnalysisModelContainerView.html',
             controller: 'NetworkMetaAnalysisModelContainerController',
-            url: '/projects/:projectId/nma/:analysisId/models/:modelId',
             abstract:true,
-            resolve: {
+          })
+          .state('model', {
+            url: '/projects/:projectId/nma/:analysisId/models/:modelId',
+            parent: 'nmaModelContainer',
+            templateUrl: gemtcWebBaseTemplatePath + 'views/modelView.html',
+            controller: 'ModelController',
+                        resolve: {
               currentAnalysis: ['$stateParams', 'AnalysisResource',
                 function($stateParams, AnalysisResource) {
                   return AnalysisResource.get($stateParams).$promise;
@@ -235,11 +240,6 @@ define(
                 }
               ]
             },
-          })
-          .state('model', {
-            parent: 'nmaModelContainer',
-            templateUrl: gemtcWebBaseTemplatePath + 'views/modelView.html',
-            controller: 'ModelController'
           });
 
         // Default route
