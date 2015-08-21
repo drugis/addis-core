@@ -3,6 +3,11 @@
   </li>
   <li class="current active">{{project.name}}</li>
 </ul>
+<div ng-if="error" class="row" ng-cloak>
+    <div class="columns">
+        <app-alert type="alert" close="error.close()" error="error"></span></app-alert>
+    </div>
+</div>
 <div class="project-header row">
   <div class="columns large-12">
     <h1 class="inline-header" title="Project title">{{project.name}}</h1>

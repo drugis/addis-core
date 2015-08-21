@@ -4,6 +4,12 @@
     <li class="current active">{{namespace.name}}</li>
 </ul>
 
+<div ng-if="error" class="row" ng-cloak>
+    <div class="columns">
+        <app-alert type="alert" close="error.close()" error="error"></span></app-alert>
+    </div>
+</div>
+
 <div class="row">
     <div class="column large-10">
         <h2>Overview for the {{namespace.name}} dataset</h2>

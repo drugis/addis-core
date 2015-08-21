@@ -102,11 +102,11 @@ define(
           }
         };
 
-        $rootScope.$on('patavi.error', function(e, message) {
+        $rootScope.$on('error', function(e, message) {
           $rootScope.$safeApply($rootScope, function() {
             $rootScope.error = _.extend(message, {
               close: function() {
-                delete $rootScope.errors;
+                delete $rootScope.error;
               }
             });
           });
