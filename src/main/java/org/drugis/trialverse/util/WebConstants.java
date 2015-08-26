@@ -38,6 +38,9 @@ public class WebConstants {
   public static final String COMMIT_TITLE_PARAM = "commitTitle";
   public static final String COMMIT_DESCRIPTION_PARAM = "commitDescription";
 
+  public static final String GRAPH_QUERY_PARAM = "graph";
+  public static final String COPY_OF = "copyOf";
+
   private static String loadSystemEnvTripleStoreBaseURI() {
     String tripleStoreBaseURI = System.getenv("TRIPLESTORE_BASE_URI");
     if (tripleStoreBaseURI == null || tripleStoreBaseURI.isEmpty()) {

@@ -34,6 +34,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -125,20 +126,6 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     return result;
   }
 
-  private Graph addDatasetType(String trialverseDatasetUrl, Graph sourceGraph) {
-    Graph graph = GraphFactory.createGraphMem();
-    GraphUtil.addInto(graph, sourceGraph);
-    graph.add(new Triple(NodeFactory.createURI(trialverseDatasetUrl), RDF.Nodes.type, CLASS_VOID_DATASET));
-    return graph;
-  }
-
-  private Graph addCreator(String trialverseDatasetUrl, String creatorUuid, Graph sourceGraph) {
-    Graph graph = GraphFactory.createGraphMem();
-    GraphUtil.addInto(graph, sourceGraph);
-    graph.add(new Triple(NodeFactory.createURI(trialverseDatasetUrl), DCTerms.creator.asNode(), NodeFactory.createLiteral(creatorUuid)));
-    return graph;
-  }
-
   @Override
   public Model queryDatasets(Account currentUserAccount) {
     List<VersionMapping> mappings = versionMappingRepository.findMappingsByUsername(currentUserAccount.getUsername());
@@ -209,14 +196,23 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public byte[] getHistory(URI trialverseDatasetUri) throws IOException {
+  public Model getHistory(URI trialverseDatasetUri) throws IOException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
+    URI uri = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(WebConstants.HISTORY_ENDPOINT)
-            .build();
-    HttpGet request = new HttpGet(uriComponents.toUri());
-    request.addHeader(ACCEPT, WebContent.contentTypeJSONLD);
-    return executeRequestAndCloseResponse(request);
+            .build()
+            .toUri();
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
+    HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
+
+    ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
+    return ModelFactory.createModelForGraph(responseEntity.getBody());
+  }
+
+  @Override
+  public void copyGraph(URI targetDataset, URI targetGraph, URI sourceRevision) {
+    throw new NotImplementedException();
   }
 
   private byte[] executeRequestAndCloseResponse(HttpGet request) throws IOException {
@@ -226,5 +222,19 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
       EntityUtils.consume(response.getEntity());
       return content;
     }
+  }
+
+  private Graph addDatasetType(String trialverseDatasetUrl, Graph sourceGraph) {
+    Graph graph = GraphFactory.createGraphMem();
+    GraphUtil.addInto(graph, sourceGraph);
+    graph.add(new Triple(NodeFactory.createURI(trialverseDatasetUrl), RDF.Nodes.type, CLASS_VOID_DATASET));
+    return graph;
+  }
+
+  private Graph addCreator(String trialverseDatasetUrl, String creatorUuid, Graph sourceGraph) {
+    Graph graph = GraphFactory.createGraphMem();
+    GraphUtil.addInto(graph, sourceGraph);
+    graph.add(new Triple(NodeFactory.createURI(trialverseDatasetUrl), DCTerms.creator.asNode(), NodeFactory.createLiteral(creatorUuid)));
+    return graph;
   }
 }

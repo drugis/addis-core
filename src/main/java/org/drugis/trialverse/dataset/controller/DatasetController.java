@@ -10,7 +10,10 @@ import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
+import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.exception.CreateDatasetException;
+import org.drugis.trialverse.exception.ReadGraphException;
+import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.Namespaces;
@@ -38,6 +41,9 @@ import java.security.Principal;
 public class DatasetController extends AbstractTrialverseController {
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetController.class);
+
+  @Inject
+  private DatasetService datasetService;
 
   @Inject
   private DatasetWriteRepository datasetWriteRepository;
@@ -123,10 +129,10 @@ public class DatasetController extends AbstractTrialverseController {
   public void queryHistory(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException {
     logger.trace("executing queryHistory");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    byte[] response = datasetReadRepository.getHistory(trialverseDatasetUri);
+    Model historyModel = datasetReadRepository.getHistory(trialverseDatasetUri);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.JSONLD.getContentType().getContentType());
-    trialverseIOUtilsService.writeContentToServletResponse(response, httpServletResponse);
+    trialverseIOUtilsService.writeModelToServletResponse(historyModel, httpServletResponse);
   }
 
   @RequestMapping(value = "/{datasetUUID}/versions/{versionUuid}", method = RequestMethod.GET)
@@ -138,5 +144,19 @@ public class DatasetController extends AbstractTrialverseController {
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     trialverseIOUtilsService.writeModelToServletResponse(datasetModel, httpServletResponse);
+  }
+
+  @RequestMapping(value = "/{datasetUUID}/copy", method = RequestMethod.POST)
+  public void copyGraph(HttpServletResponse httpServletResponse,
+                        @PathVariable String datasetUuid,
+                        @RequestParam(value = "targetGraph") String targetGraph,
+                        @RequestParam(value = "sourceGraph") String sourceGraph,
+                        @RequestParam(value = "sourceVersion") String sourceVersion) throws URISyntaxException {
+    URI targetDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    URI targetGraphUri = new URI(targetGraph);
+    URI sourceGraphUri = new URI(sourceGraph);
+    URI sourceVersionUri = new URI(sourceVersion);
+    URI newVersion = datasetService.copy(targetDatasetUri, targetGraphUri, sourceGraphUri, sourceVersionUri);
+
   }
 }
