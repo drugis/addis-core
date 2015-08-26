@@ -1,6 +1,8 @@
 package org.drugis.trialverse.dataset.model;
 
 import javax.persistence.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Created by connor on 10-3-15.
@@ -40,6 +42,10 @@ public class VersionMapping {
 
     public String getVersionedDatasetUrl() {
         return versionedDatasetUrl;
+    }
+
+    public URI getVersionedDatasetUri() throws URISyntaxException {
+        return new URI(versionedDatasetUrl);
     }
 
     public String getOwnerUuid() {

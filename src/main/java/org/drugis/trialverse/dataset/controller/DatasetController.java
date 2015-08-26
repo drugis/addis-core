@@ -142,15 +142,17 @@ public class DatasetController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/{datasetUUID}/copy", method = RequestMethod.POST)
   public void copyGraph(HttpServletResponse httpServletResponse,
-                        @PathVariable String datasetUuid,
+                        @PathVariable String targetDatasetUuid,
                         @RequestParam(value = "targetGraph") String targetGraph,
                         @RequestParam(value = "sourceGraph") String sourceGraph,
+                        @RequestParam(value = "sourceDatasetUuid") String sourceDatasetUuid,
                         @RequestParam(value = "sourceVersion") String sourceVersion) throws URISyntaxException {
-    URI targetDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    URI targetDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + targetDatasetUuid);
+    URI sourceDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + sourceDatasetUuid);
     URI targetGraphUri = new URI(targetGraph);
     URI sourceGraphUri = new URI(sourceGraph);
     URI sourceVersionUri = new URI(sourceVersion);
-    URI newVersion = datasetService.copy(targetDatasetUri, targetGraphUri, sourceGraphUri, sourceVersionUri);
+    URI newVersion = datasetService.copy(targetDatasetUri, targetGraphUri, sourceDatasetUri, sourceGraphUri, sourceVersionUri);
 
   }
 }
