@@ -1,11 +1,6 @@
 package org.drugis.trialverse.dataset.repository;
 
 
-import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.sparql.graph.GraphFactory;
-import com.sun.jndi.toolkit.url.Uri;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -17,8 +12,12 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
+import org.apache.jena.sparql.graph.GraphFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.impl.DatasetReadRepositoryImpl;
@@ -218,7 +217,7 @@ public class DatasetReadRepositoryTest {
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
     URI uri = new URI(versionMapping.getVersionedDatasetUrl() + WebConstants.HISTORY_ENDPOINT);
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(ACCEPT, WebContent.contentTypeJSONLD);
+    httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     ResponseEntity<Graph> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), HttpStatus.OK);
 

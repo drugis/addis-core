@@ -14,8 +14,14 @@ define([], function() {
           'Accept': 'application/ld+json'
         },
         transformResponse: function(data) {
-          return _.filter(JSON.parse(data)['@graph'], function(graphItem) {
+          var versionItems = _.filter(JSON.parse(data)['@graph'], function(graphItem) {
             return graphItem['@id'].indexOf('/versions/') > 0; // filter to only contain actual history nodes
+          });
+          return _.map(versionItems, function(versionItem) {
+            return _.extend(versionItem, {
+              title: versionItem['http://purl.org/dc/terms/title'],
+              description: versionItem['http://purl.org/dc/terms/description']
+            });
           });
         }
       }

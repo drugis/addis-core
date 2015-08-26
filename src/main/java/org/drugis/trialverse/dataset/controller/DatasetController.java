@@ -1,19 +1,14 @@
 package org.drugis.trialverse.dataset.controller;
 
-import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpException;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-
-import org.apache.http.message.BasicHeader;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.exception.CreateDatasetException;
-import org.drugis.trialverse.exception.ReadGraphException;
-import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.Namespaces;
@@ -26,7 +21,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
@@ -132,7 +126,7 @@ public class DatasetController extends AbstractTrialverseController {
     Model historyModel = datasetReadRepository.getHistory(trialverseDatasetUri);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.JSONLD.getContentType().getContentType());
-    trialverseIOUtilsService.writeModelToServletResponse(historyModel, httpServletResponse);
+    trialverseIOUtilsService.writeModelToServletResponseJson(historyModel, httpServletResponse);
   }
 
   @RequestMapping(value = "/{datasetUUID}/versions/{versionUuid}", method = RequestMethod.GET)

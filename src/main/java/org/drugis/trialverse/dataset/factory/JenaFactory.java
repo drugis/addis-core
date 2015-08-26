@@ -1,7 +1,8 @@
 package org.drugis.trialverse.dataset.factory;
 
-import com.hp.hpl.jena.query.DatasetAccessor;
-import com.hp.hpl.jena.rdf.model.Model;
+
+import org.apache.jena.query.DatasetAccessor;
+import org.apache.jena.rdf.model.Model;
 
 /**
  * Created by daan on 6-11-14.

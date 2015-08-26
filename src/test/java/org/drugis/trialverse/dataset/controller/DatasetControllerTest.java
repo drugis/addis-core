@@ -1,11 +1,11 @@
 package org.drugis.trialverse.dataset.controller;
 
-import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -214,7 +214,7 @@ public class DatasetControllerTest {
             .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType() ));
 
     verify(datasetReadRepository).getHistory(datasetUri);
-    verify(trialverseIOUtilsService).writeModelToServletResponse(any(Model.class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeModelToServletResponseJson(any(Model.class), Matchers.any(HttpServletResponse.class));
   }
 
   @Test
