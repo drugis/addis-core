@@ -1,19 +1,22 @@
+#!/usr/bin/env bash
+function extractLocation {
+  str=$(grep "Location: " | sed 's/Location: //')
+  if [ -z "$str" ]; then
+    >&2 echo "NULL location"
+    exit 1
+  fi
+  echo "$str" | tr -d '\r'
+}
+
 INPUT=$1
-STUDIES=`grep "^study:.*" $INPUT | sed 's/study://' | sed 's/ {//'`
+SERVER=$2
+MESSAGE=`echo -n "Create dataset" | base64`
 
-DATASET=http://fuseki-test.drugis.org:3030/datasets/466ab6cd-0962-49fd-bfd3-e034b9942a1d
+curl -s -D 00-headers -X POST -H "X-EventSource-Creator: mailto:gert@gertvv.nl" -H "X-EventSource-Title: $MESSAGE" $SERVER/datasets > 00-body
 
-for s in $STUDIES; do
-  grep '@prefix' $INPUT > $s.ttl
-  awk "/^}/{flag=0}flag;/^study:$s {/{flag=1}" $INPUT >> $s.ttl
-  echo $s
-  curl -X PUT "$DATASET/data?graph=http://trials.drugis.org/graphs/$s" \
-	  -H "Content-Type: text/turtle" \
-      --data-binary "@$s.ttl"
-done
+DATASET=$(extractLocation < 00-headers)
 
-grep '@prefix' $INPUT > concepts.ttl
-awk "/^}/{flag=0}flag;/^dataset:.* {/{flag=1}" $INPUT >> concepts.ttl
-curl -X PUT "$DATASET/data?graph=http://trials.drugis.org/graphs/concepts" \
-  -H "Content-Type: text/turtle" \
-  --data-binary "@concepts.ttl"
+echo "Created" $DATASET
+
+MESSAGE=`echo -n "Import ADDIS 1.16 dataset" | base64`
+curl -D 01-headers -X PUT -H "X-EventSource-Creator: mailto:gert@gertvv.nl" -H "X-EventSource-Title: $MESSAGE" -H "Content-Type: text/trig" --data-binary "@$INPUT" "$DATASET/dump"

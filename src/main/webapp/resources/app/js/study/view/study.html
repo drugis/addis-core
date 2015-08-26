@@ -6,13 +6,19 @@
           Commit changes
         </a>
       </li>
-      
+
       <li id="top-bar-commit-cancel" ng-show="navSettings.isHidden && isEditingAllowed" class="has-form">
           <a class="button secondary" ng-click="resetStudy()" ng-class="{'disabled' : !isStudyModified()}">
             Undo changes
           </a>
       </li>
-      
+
+      <li id="top-bar-copy-study" ng-show="navSettings.isHidden && canCopyStudy">
+        <a class="button secondary" ng-click="copyStudy()" ng-class="{'disabled' : !isStudyModified()}">
+          Copy study
+        </a>
+      </li>
+
       <li class="name">
         <h1 class="topbar-text">
           <a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">

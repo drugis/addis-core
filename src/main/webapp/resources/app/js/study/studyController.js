@@ -14,8 +14,19 @@ define([],
       $scope.datasetUUID = $stateParams.datasetUUID;
       $scope.studyGraphUuid = $stateParams.studyGraphUuid;
       $scope.versionUuid = $stateParams.versionUuid;
+      $scope.resetStudy = resetStudy;
+      $scope.saveStudy = saveStudy;
+      $scope.isStudyModified = StudyService.isStudyModified;
+      $scope.sideNavClick = sideNavClick;
+
+      $scope.canCopyStudy = true;
 
       $scope.study = {};
+      $scope.navSettings = {
+        isCompact: false,
+        isHidden: false
+      };
+
       $scope.categorySettings = {
         studyInformation: {
           service: 'StudyInformationService',
@@ -120,7 +131,6 @@ define([],
           editItemController: 'ActivityController',
         }
       };
-
       $scope.conceptSettings = {
         drugs: {
           label: 'Drugs',
@@ -144,36 +154,6 @@ define([],
         }
       };
 
-      function reloadStudyModel() {
-        VersionedGraphResource.get({
-          userUid: $stateParams.userUid,
-          datasetUUID: $stateParams.datasetUUID,
-          graphUuid: $stateParams.studyGraphUuid,
-          versionUuid: $stateParams.versionUuid
-        }, function(response) {
-          StudyService.loadStore(response.data)
-            .then(function() {
-              console.log('loading study-store success');
-              StudyService.queryStudyData().then(function(queryResult) {
-                $scope.study = queryResult;
-                $scope.studyUuid = $filter('stripFrontFilter')(queryResult.studyUri, 'http://trials.drugis.org/studies/');
-                $scope.$broadcast('refreshStudyDesign');
-                $scope.$broadcast('refreshResults');
-                StudyService.studySaved();
-              });
-            }, function() {
-              console.error('failed loading study-store');
-            });
-        });
-      }
-
-      $scope.resetStudy = function() {
-        // skip reset check in controller as ng-disabled does not work with a <a> tag needed by foundation menu item
-        if(StudyService.isStudyModified()) {
-           reloadStudyModel();
-        }
-      };
-
       reloadStudyModel();
 
       $scope.$on('updateStudyDesign', function() {
@@ -187,11 +167,7 @@ define([],
         });
       });
 
-      $scope.isStudyModified = function() {
-        return StudyService.isStudyModified();
-      };
-
-      $scope.sideNavClick = function(anchor) {
+      function sideNavClick(anchor) {
         var newHash = anchor;
         $anchorScroll.yOffset = 73;
         if ($location.hash() !== newHash) {
@@ -201,7 +177,7 @@ define([],
         }
       };
 
-      $scope.saveStudy = function() {
+      function saveStudy() {
         // skip save check in controller as ng-disabled does not work with a <a> tag needed by foundation menu item
         if(!StudyService.isStudyModified()) {
            return;
@@ -239,9 +215,34 @@ define([],
         $scope.$apply();
       });
 
-      $scope.navSettings = {
-        isCompact: false,
-        isHidden: false
+      function reloadStudyModel() {
+        VersionedGraphResource.get({
+          userUid: $stateParams.userUid,
+          datasetUUID: $stateParams.datasetUUID,
+          graphUuid: $stateParams.studyGraphUuid,
+          versionUuid: $stateParams.versionUuid
+        }, function(response) {
+          StudyService.loadStore(response.data)
+            .then(function() {
+              console.log('loading study-store success');
+              StudyService.queryStudyData().then(function(queryResult) {
+                $scope.study = queryResult;
+                $scope.studyUuid = $filter('stripFrontFilter')(queryResult.studyUri, 'http://trials.drugis.org/studies/');
+                $scope.$broadcast('refreshStudyDesign');
+                $scope.$broadcast('refreshResults');
+                StudyService.studySaved();
+              });
+            }, function() {
+              console.error('failed loading study-store');
+            });
+        });
+      }
+
+      function resetStudy() {
+        // skip reset check in controller as ng-disabled does not work with a <a> tag needed by foundation menu item
+        if(StudyService.isStudyModified()) {
+           reloadStudyModel();
+        }
       };
 
       function calculateNavSettings() {

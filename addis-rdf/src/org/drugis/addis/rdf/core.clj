@@ -19,7 +19,7 @@
                (= unit-name "gram") (trig/spo uri [(trig/iri :owl "sameAs") (trig/iri :qudt "Gram")])
                (= unit-name "liter") (trig/spo uri [(trig/iri :owl "sameAs") (trig/iri :qudt "Liter")])
                :else uri)]
-    (trig/spo subj
+    (trig/spo subj 
               [(trig/iri :rdf "type") (trig/iri :owl "Class")]
               [(trig/iri :rdfs "label") (trig/lit unit-name)]
               [(trig/iri :qudt "symbol") (trig/lit unit-symbol)])))
@@ -38,7 +38,7 @@
         subj (if (or (nil? snomedCode) (blank? snomedCode))
                uri
                (trig/spo uri [(trig/iri :owl "sameAs") (trig/iri :snomed snomedCode)]))]
-    (trig/spo subj
+    (trig/spo subj 
          [(trig/iri :rdf "type") (trig/iri :ontology "Indication")]
          [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))])))
 
@@ -47,7 +47,7 @@
                      "continuous" "continuous"
                      "categorical" "categorical" }
         m-type (vtd/first-child xml)
-        subj (trig/spo uri
+        subj (trig/spo uri 
                        [(trig/iri :rdf "type") (trig/iri :ontology "Variable")]
                        [(trig/iri :rdfs "label") (trig/lit (vtd/attr xml :name))]
                        [(trig/iri :rdfs "comment") (trig/lit (vtd/attr xml :description))]
@@ -78,8 +78,8 @@
   (vtd/text (vtd/at xml (str "./characteristics/" charName "/value"))))
 
 (def allocationTypeUri
-  {"RANDOMIZED" (trig/iri :ontology "AllocationRandomized")
-   "NONRANDOMIZED" (trig/iri :ontology "AllocationNonRandomized")})
+  {"RANDOMIZED" (trig/iri :ontology "allocationRandomized")
+   "NONRANDOMIZED" (trig/iri :ontology "allocationNonRandomized")})
 
 (defn allocation-rdf [subj xml]
   (let [allocation (allocationTypeUri (studyCharVal xml "allocation"))]
@@ -100,14 +100,15 @@
       subj)))
 
 (def statusTypeUri
-  {"NOT_YET_RECRUITING" (trig/iri :ontology "StatusNotYetRecruiting")
-   "RECRUITING" (trig/iri :ontology "StatusRecruiting")
-   "ENROLLING" (trig/iri :ontology "StatusEnrolling")
-   "ACTIVE" (trig/iri :ontology "StatusActive")
-   "COMPLETED" (trig/iri :ontology "StatusCompleted")
-   "SUSPENDED" (trig/iri :ontogogy "StatusSuspended")
-   "TERMINATED" (trig/iri :ontology "StatusTerminated")
-   "WITHDRAWN" (trig/iri :ontology "StatusWithdrawn")})
+  {"NOT_YET_RECRUITING" (trig/iri :ontology "statusNotYetRecruiting")
+   "RECRUITING" (trig/iri :ontology "statusRecruiting")
+   "ENROLLING" (trig/iri :ontology "statusEnrolling")
+   "ACTIVE" (trig/iri :ontology "statusActive")
+   "COMPLETED" (trig/iri :ontology "statusCompleted")
+   "SUSPENDED" (trig/iri :ontogogy "statusSuspended")
+   "TERMINATED" (trig/iri :ontology "statusTerminated")
+   "WITHDRAWN" (trig/iri :ontology "statusWithdrawn")
+   "UNKNOWN" (trig/iri :ontology "statusUnknown")})
 
 (defn status-rdf [subj xml]
   (let [status (statusTypeUri (studyCharVal xml "status"))]
@@ -125,13 +126,13 @@
 
 (defn date-start-rdf [subj xml]
   (let [start-date (studyCharVal xml "study_start")]
-    (if start-date
+    (if start-date 
       (trig/spo subj [(trig/iri :ontology "has_start_date") (trig/lit start-date (trig/iri :xsd "date"))])
       subj)))
 
 (defn date-end-rdf [subj xml]
   (let [end-date (studyCharVal xml "study_end")]
-    (if end-date
+    (if end-date 
       (trig/spo subj [(trig/iri :ontology "has_end_date") (trig/lit end-date (trig/iri :xsd "date"))])
       subj)))
 
@@ -184,7 +185,7 @@
         entity-uri ((entity-uris (keyword entity-type)) entity-name)
         entity-xml (vtd/at xml (str "//addis-data/" entity-type "s/*[@name='" entity-name "']"))
         mms (map #(measurement-moment-uris (when-taken-key %)) (vtd/search xml "./whenTaken"))]
-    (->
+    (-> 
       (trig/spo instance-uri
                 [(trig/iri :rdf "type") (trig/iri :ontology (capitalize entity-type))]
                 [(trig/iri :rdfs "label") entity-name]
@@ -233,7 +234,7 @@
         subj (if duration
                (trig/spo instance-uri [(trig/iri :ontology "duration") (trig/lit duration (trig/iri :xsd "duration"))])
                instance-uri)]
-  (trig/spo subj
+  (trig/spo subj 
             [(trig/iri :rdfs "label") (trig/lit epoch-name)]
             [(trig/iri :rdf "type") (trig/iri :ontology "Epoch")])))
 
@@ -322,7 +323,7 @@
 (defn study-measurement-moment-rdf
   [xml instance-uri epoch-uris]
   (let [mm (when-taken-key xml)]
-    (trig/spo instance-uri
+    (trig/spo instance-uri 
               [(trig/iri :rdfs "label") (str (:howLong mm) " " (:relativeTo mm) " " (:epochName mm))]
               [(trig/iri :ontology "relative_to_epoch") (epoch-uris (:epochName mm))]
               [(trig/iri :ontology "relative_to_anchor") (anchorUri (:relativeTo mm))]
@@ -345,11 +346,11 @@
         rate (vtd/at xml "./rateMeasurement")
         catg (vtd/at xml "./categoricalMeasurement")]
     (cond
-      cont (trig/spo measurement
+      cont (trig/spo measurement 
                      [(trig/iri :ontology "mean") (trig/lit (Double. (vtd/attr cont :mean)))]
                      [(trig/iri :ontology "standard_deviation") (trig/lit (Double. (vtd/attr cont :stdDev)))]
                      [(trig/iri :ontology "sample_size") (trig/lit (Integer. (vtd/attr cont :sampleSize)))])
-      rate (trig/spo measurement
+      rate (trig/spo measurement 
                      [(trig/iri :ontology "count") (trig/lit (Integer. (vtd/attr rate :rate)))]
                      [(trig/iri :ontology "sample_size") (trig/lit (Integer. (vtd/attr rate :sampleSize)))])
       catg (reduce (fn [subj cat] (trig/spo subj [(trig/iri :ontology "category_count")
@@ -487,15 +488,16 @@
                                    [(trig/iri :rdfs "comment") description])
                          (spo-each (trig/iri :ontology "contains_study") (vals studies-uri-map))
                          (dataset-source-doc source-doc-uri))]
-        meta-graph (concat
-                     units-rdf
-                     indications-rdf
-                     drugs-rdf
-                     endpoints-rdf
-                     adverseEvents-rdf
-                     populationCharacteristics-rdf
-                     dataset-rdf)]
-    (trig/write-trig prefixes (cons (trig/graph (trig/iri :dataset dataset-id) meta-graph) studies-graphs))))
+	concepts-graph (trig/graph (trig/iri (str (:dataset prefixes) dataset-id "/concepts"))
+			(concat 
+			 units-rdf
+			 indications-rdf
+			 drugs-rdf
+			 endpoints-rdf
+			 adverseEvents-rdf
+			 populationCharacteristics-rdf))
+	default-graph (trig/graph (trig/default-graph) dataset-rdf)]
+    (trig/write-trig prefixes (concat [default-graph concepts-graph] studies-graphs))))
 
 (defn -main
   [& args]
