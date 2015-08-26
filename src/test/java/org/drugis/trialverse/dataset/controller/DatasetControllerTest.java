@@ -206,14 +206,15 @@ public class DatasetControllerTest {
     HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1,1), HttpStatus.OK.value(), "reason"));
     String test = "test";
     httpResponse.setEntity(new StringEntity(test));
-    when(datasetReadRepository.getHistory(datasetUri)).thenReturn(test.getBytes());
+    Model historyModel = null;
+    when(datasetReadRepository.getHistory(datasetUri)).thenReturn(historyModel);
 
     mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/versions")).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType() ));
 
     verify(datasetReadRepository).getHistory(datasetUri);
-    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeModelToServletResponse(any(Model.class), Matchers.any(HttpServletResponse.class));
   }
 
   @Test

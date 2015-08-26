@@ -41,6 +41,15 @@ public class TrialverseIOUtilsServiceImpl implements TrialverseIOUtilsService {
       logger.error("Error writing jena model response to client response");
       logger.error(e.toString());
     }
+  }
 
+  @Override
+  public void writeModelToServletResponse(Model model, HttpServletResponse httpServletResponse) {
+    try (ServletOutputStream outputStream = httpServletResponse.getOutputStream()) {
+      model.write(outputStream, "TURTLE"); // RDFDataMgr.write causes broken pipe in mocha test
+    } catch (IOException e) {
+      logger.error("Error writing jena model response to client response");
+      logger.error(e.toString());
+    }
   }
 }
