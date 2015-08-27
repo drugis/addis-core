@@ -10,7 +10,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicStatusLine;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.exception.ReadGraphException;
+import org.drugis.trialverse.graph.exception.ReadGraphException;
 import org.drugis.trialverse.graph.repository.impl.GraphReadRepositoryImpl;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;

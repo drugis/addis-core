@@ -10,7 +10,7 @@ import org.apache.http.message.BasicStatusLine;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.exception.UpdateGraphException;
+import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.impl.GraphWriteRepositoryImpl;
 import org.drugis.trialverse.security.AuthenticationService;
 import org.drugis.trialverse.util.Namespaces;

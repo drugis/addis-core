@@ -1,13 +1,10 @@
 package org.drugis.trialverse.graph.repository;
 
 import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.drugis.trialverse.exception.UpdateGraphException;
-import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.graph.exception.UpdateGraphException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 
 /**

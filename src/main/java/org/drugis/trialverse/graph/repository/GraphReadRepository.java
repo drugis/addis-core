@@ -1,7 +1,6 @@
 package org.drugis.trialverse.graph.repository;
 
-import org.apache.http.HttpResponse;
-import org.drugis.trialverse.exception.ReadGraphException;
+import org.drugis.trialverse.graph.exception.ReadGraphException;
 
 
 import java.io.IOException;

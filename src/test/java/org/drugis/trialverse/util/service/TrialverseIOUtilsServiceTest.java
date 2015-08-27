@@ -63,8 +63,16 @@ public class TrialverseIOUtilsServiceTest {
     Model model = ModelFactory.createModelForGraph(graph);
     trialverseIOUtilsService.writeModelToServletResponseJson(model, httpServletResponse);
 
-    String expected = "<http://test.com/asd>\n" +
-            "        <http://something>  \"c\" .";
+    String expected = "{\n" +
+            "  \"@id\" : \"http://test.com/asd\",\n" +
+            "  \"http://something\" : \"c\",\n" +
+            "  \"@context\" : {\n" +
+            "    \"something\" : {\n" +
+            "      \"@id\" : \"http://something\",\n" +
+            "      \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n" +
+            "    }\n" +
+            "  }\n" +
+            "}";
 
     assertEquals(expected.trim(), httpServletResponse.getContentAsString().trim());
   }

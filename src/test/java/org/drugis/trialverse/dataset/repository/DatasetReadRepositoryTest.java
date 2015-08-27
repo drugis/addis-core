@@ -79,15 +79,10 @@ public class DatasetReadRepositoryTest {
 
   @Before
   public void init() throws IOException {
-
-    webConstants = mock(WebConstants.class);
-    jenaFactory = mock(JenaFactory.class);
-
     datasetReadRepository = new DatasetReadRepositoryImpl();
     MockitoAnnotations.initMocks(this);
 
     when(webConstants.getTriplestoreBaseUri()).thenReturn("baseUri/");
-
   }
 
   @Test

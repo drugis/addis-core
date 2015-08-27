@@ -5,13 +5,15 @@ import org.apache.http.client.HttpClient;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
+import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.dataset.service.DatasetService;
-import org.drugis.trialverse.exception.CreateDatasetException;
+import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.Namespaces;
+import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
@@ -61,11 +63,11 @@ public class DatasetController extends AbstractTrialverseController {
           throws URISyntaxException, CreateDatasetException, HttpException {
     logger.trace("createDataset");
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-    if(currentUserAccount.getuserNameHash().equals(userUid)) {
+    if (currentUserAccount.getuserNameHash().equals(userUid)) {
       URI datasetUri = datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), currentUserAccount);
       response.setStatus(HttpServletResponse.SC_CREATED);
       response.setHeader("Location", datasetUri.toString());
-    }else {
+    } else {
       logger.error("attempted to created database for user that is not the login-user ");
       response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
@@ -140,19 +142,27 @@ public class DatasetController extends AbstractTrialverseController {
     trialverseIOUtilsService.writeModelToServletResponse(datasetModel, httpServletResponse);
   }
 
-  @RequestMapping(value = "/{datasetUUID}/copy", method = RequestMethod.POST)
-  public void copyGraph(HttpServletResponse httpServletResponse,
+  @RequestMapping(value = "/{targetDatasetUuid}/copy", method = RequestMethod.POST)
+  public void copyGraph(HttpServletResponse httpServletResponse, Principal currentUser,
+                        @PathVariable String userUid,
                         @PathVariable String targetDatasetUuid,
                         @RequestParam(value = "targetGraph") String targetGraph,
                         @RequestParam(value = "sourceGraph") String sourceGraph,
                         @RequestParam(value = "sourceDatasetUuid") String sourceDatasetUuid,
-                        @RequestParam(value = "sourceVersion") String sourceVersion) throws URISyntaxException {
+                        @RequestParam(value = "sourceVersion") String sourceVersion) throws URISyntaxException, IOException, RevisionNotFoundException {
     URI targetDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + targetDatasetUuid);
     URI sourceDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + sourceDatasetUuid);
     URI targetGraphUri = new URI(targetGraph);
     URI sourceGraphUri = new URI(sourceGraph);
     URI sourceVersionUri = new URI(sourceVersion);
-    URI newVersion = datasetService.copy(targetDatasetUri, targetGraphUri, sourceDatasetUri, sourceGraphUri, sourceVersionUri);
-
+    Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
+    if (currentUserAccount.getuserNameHash().equals(userUid)) {
+      URI newVersion = datasetService.copy(targetDatasetUri, targetGraphUri, sourceDatasetUri, sourceVersionUri, sourceGraphUri);
+      httpServletResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion.toString());
+      httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+    } else {
+      logger.error("attempted to copy graph to dataset that is not owned by the logged-in user");
+      httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
   }
 }

@@ -10,6 +10,7 @@ import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
+import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.testutils.TestUtils;
@@ -25,6 +26,7 @@ import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -60,6 +62,9 @@ public class DatasetControllerTest {
 
   @Mock
   private TrialverseIOUtilsService trialverseIOUtilsService;
+
+  @Mock
+  private DatasetService datasetService;
 
   @Mock
   private WebConstants webConstants;
@@ -203,7 +208,7 @@ public class DatasetControllerTest {
   public void testGetHistory() throws Exception {
     String uuid = "uuuuiiid-yeswecan";
     URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
-    HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1,1), HttpStatus.OK.value(), "reason"));
+    HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1, 1), HttpStatus.OK.value(), "reason"));
     String test = "test";
     httpResponse.setEntity(new StringEntity(test));
     Model historyModel = null;
@@ -211,7 +216,7 @@ public class DatasetControllerTest {
 
     mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/versions")).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType() ));
+            .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType()));
 
     verify(datasetReadRepository).getHistory(datasetUri);
     verify(trialverseIOUtilsService).writeModelToServletResponseJson(any(Model.class), Matchers.any(HttpServletResponse.class));
@@ -222,7 +227,7 @@ public class DatasetControllerTest {
     String uuid = "uuuuiiid-yeswecan";
     String query = "Select * where { ?a ?b ?c}";
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
-    HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1,1), HttpStatus.OK.value(), "reason"));
+    HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1, 1), HttpStatus.OK.value(), "reason"));
     String acceptValue = "c/d";
     httpResponse.setHeader("Content-Type", acceptValue);
 
@@ -236,7 +241,7 @@ public class DatasetControllerTest {
             .andExpect(content().contentType(acceptValue));
 
     verify(datasetReadRepository).executeQuery(query, trialverseDatasetUri, null, acceptValue);
-    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte [].class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), Matchers.any(HttpServletResponse.class));
 
   }
 
@@ -257,7 +262,36 @@ public class DatasetControllerTest {
             .andExpect(content().contentType(acceptValue));
 
     verify(datasetReadRepository).executeQuery(query, trialverseDatasetUri, version, acceptValue);
-    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte [].class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), Matchers.any(HttpServletResponse.class));
 
+  }
+
+  @Test
+  public void testCopy() throws Exception {
+    String datasetUuid = "datasetuuid";
+    String targetGraph = "targetGraph";
+    String sourceGraph = "sourceGraph";
+    String sourceDatasetUuid = "sourceDatasetUuid";
+    String sourceVersion = "sourceVersion";
+    String newDatasetVersion = "newVersion";
+    URI targetDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    URI sourceDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + sourceDatasetUuid);
+    URI targetGraphUri = new URI(targetGraph);
+    URI sourceGraphUri = new URI(sourceGraph);
+    URI sourceVersionUri = new URI(sourceVersion);
+
+
+    when(datasetService.copy(targetDatasetUri, targetGraphUri, sourceDatasetUri, sourceVersionUri, sourceGraphUri)).thenReturn(new URI(newDatasetVersion));
+
+    mockMvc.perform((post("/users/hash/datasets/" + datasetUuid + "/copy"))
+            .param("targetDatasetUuid", datasetUuid)
+            .param("targetGraph", targetGraph)
+            .param("sourceGraph", sourceGraph)
+            .param("sourceDatasetUuid", sourceDatasetUuid)
+            .param("sourceVersion", sourceVersion)
+            .principal(user))
+            .andExpect(status().isOk())
+            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, newDatasetVersion));
+    verify(accountRepository).findAccountByUsername(john.getUsername());
   }
 }

@@ -1,11 +1,9 @@
 package org.drugis.trialverse.dataset.repository;
 
 import org.apache.http.HttpException;
-import org.apache.http.HttpResponse;
-import org.drugis.trialverse.exception.CreateDatasetException;
+import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.security.Account;
 
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 

@@ -1,0 +1,68 @@
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix es:    <http://drugis.org/eventSourcing/es#> .
+
+<http://localhost:8080/revisions/35e4e588-6a24-4c33-a9a6-bfce0adbe3cd>
+        a              es:Revision ;
+        es:assertions  <http://localhost:8080/assert/35e4e588-6a24-4c33-a9a6-bfce0adbe3cd> .
+
+<http://localhost:8080/datasets/48fe36cf-fbb8-45eb-81cd-cecbe422ae0a>
+        a        es:Dataset ;
+        es:head  <http://localhost:8080/versions/90e7a2fd-d688-48d3-bcd4-006e8a8312af> ;
+        <http://purl.org/dc/terms/creator>
+                <mailto:osmosisch@gmail.com> ;
+        <http://purl.org/dc/terms/date>
+                "2015-08-25T13:32:19Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+
+<http://localhost:8080/revisions/e1c234b3-2f54-48a3-82e0-d52b50dd0d69>
+        a              es:Revision ;
+        es:assertions  <http://localhost:8080/assert/e1c234b3-2f54-48a3-82e0-d52b50dd0d69> .
+
+<http://localhost:8080/versions/90e7a2fd-d688-48d3-bcd4-006e8a8312af>
+        a                          es:DatasetVersion ;
+        es:dataset                 <http://localhost:8080/datasets/48fe36cf-fbb8-45eb-81cd-cecbe422ae0a> ;
+        es:default_graph_revision  [ es:revision  <http://localhost:8080/revisions/e1c234b3-2f54-48a3-82e0-d52b50dd0d69> ] ;
+        es:graph_revision          [ es:graph     <http://trials.drugis.org/graphs/246b53de-2884-42be-ae18-e431976c1987> ;
+                                     es:revision  <http://localhost:8080/revisions/f589745e-47c4-4fcd-aadd-ce88551080d7>
+                                   ] ;
+        es:graph_revision          [ es:graph     <http://trials.drugis.org/graphs/concepts> ;
+                                     es:revision  <http://localhost:8080/revisions/35e4e588-6a24-4c33-a9a6-bfce0adbe3cd>
+                                   ] ;
+        es:previous                <http://localhost:8080/versions/deb3a48e-fce8-4a23-b4ee-645758d51bea> ;
+        <http://purl.org/dc/terms/creator>
+                <mailto:osmosisch@gmail.com> ;
+        <http://purl.org/dc/terms/date>
+                "2015-08-26T14:27:25Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://purl.org/dc/terms/description>
+                "it's gotta be done" ;
+        <http://purl.org/dc/terms/title>
+                "add concepts" .
+
+<http://localhost:8080/revisions/f589745e-47c4-4fcd-aadd-ce88551080d7>
+        a              es:Revision ;
+        es:assertions  <http://localhost:8080/assert/f589745e-47c4-4fcd-aadd-ce88551080d7> .
+
+<http://localhost:8080/versions/7deb9db9-60b4-4ae0-8618-4d623a462ff0>
+        a                          es:DatasetVersion ;
+        es:dataset                 <http://localhost:8080/datasets/48fe36cf-fbb8-45eb-81cd-cecbe422ae0a> ;
+        es:default_graph_revision  [ es:revision  <http://localhost:8080/revisions/e1c234b3-2f54-48a3-82e0-d52b50dd0d69> ] ;
+        <http://purl.org/dc/terms/creator>
+                <mailto:osmosisch@gmail.com> ;
+        <http://purl.org/dc/terms/date>
+                "2015-08-25T13:32:19Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://purl.org/dc/terms/title>
+                "Dataset created through Trialverse" .
+
+<http://localhost:8080/versions/deb3a48e-fce8-4a23-b4ee-645758d51bea>
+        a                          es:DatasetVersion ;
+        es:dataset                 <http://localhost:8080/datasets/48fe36cf-fbb8-45eb-81cd-cecbe422ae0a> ;
+        es:default_graph_revision  [ es:revision  <http://localhost:8080/revisions/e1c234b3-2f54-48a3-82e0-d52b50dd0d69> ] ;
+        es:graph_revision          [ es:graph     <http://trials.drugis.org/graphs/246b53de-2884-42be-ae18-e431976c1987> ;
+                                     es:revision  <http://localhost:8080/revisions/f589745e-47c4-4fcd-aadd-ce88551080d7>
+                                   ] ;
+        es:previous                <http://localhost:8080/versions/7deb9db9-60b4-4ae0-8618-4d623a462ff0> ;
+        <http://purl.org/dc/terms/creator>
+                <mailto:osmosisch@gmail.com> ;
+        <http://purl.org/dc/terms/date>
+                "2015-08-25T13:34:47Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://purl.org/dc/terms/title>
+                "Initial study creation: study 1" .

@@ -13,7 +13,7 @@ import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.exception.CreateDatasetException;
+import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.util.WebConstants;
 import org.slf4j.Logger;
@@ -38,7 +38,6 @@ import java.net.URISyntaxException;
 @Repository
 public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
 
-  public static final String HOST = "Host";
   public static final String PATH = "/datasets";
   public static final String INITIAL_COMMIT_MESSAGE = "Dataset created through Trialverse";
 

@@ -1,9 +1,9 @@
 package org.drugis.trialverse.util.controller;
 
-import org.drugis.trialverse.exception.MethodNotAllowedException;
-import org.drugis.trialverse.exception.ReadGraphException;
-import org.drugis.trialverse.exception.ResourceDoesNotExistException;
-import org.drugis.trialverse.exception.UpdateGraphException;
+import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
+import org.drugis.trialverse.exception.*;
+import org.drugis.trialverse.graph.exception.ReadGraphException;
+import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -68,6 +68,14 @@ public class AbstractTrialverseController {
   @ResponseBody
   public ErrorResponse handleGraphReadException(HttpServletRequest request) {
     logger.error("Error reading graph \n{}", request.getQueryString());
+    return new ErrorResponse(500, "Internal server error");
+  }
+
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ExceptionHandler(RevisionNotFoundException.class)
+  @ResponseBody
+  public ErrorResponse handleRevisionNotFoundException(HttpServletRequest request) {
+    logger.error("Error retrieving revision \n{}", request.getQueryString());
     return new ErrorResponse(500, "Internal server error");
   }
 

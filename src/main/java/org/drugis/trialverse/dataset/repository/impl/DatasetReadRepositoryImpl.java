@@ -158,11 +158,11 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     if(StringUtils.isNotEmpty(versionUuid)) {
       httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, webConstants.buildVersionUri(versionUuid).toString());
     }
-
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     String uri = versionMapping.getVersionedDatasetUrl() + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
 
     ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
+
     Graph typedGraph = addDatasetType(versionMapping.getTrialverseDatasetUrl(), responseEntity.getBody());
     Graph graph = addCreator(versionMapping.getTrialverseDatasetUrl(), versionMapping.getOwnerUuid(), typedGraph);
     return ModelFactory.createModelForGraph(graph);

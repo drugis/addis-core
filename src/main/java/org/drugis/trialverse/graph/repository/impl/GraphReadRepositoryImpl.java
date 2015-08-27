@@ -10,7 +10,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.exception.ReadGraphException;
+import org.drugis.trialverse.graph.exception.ReadGraphException;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
