@@ -1,0 +1,19 @@
+<form novalidate ng-submit="copyStudy()">
+  <div class="row">
+    <div class="large-9 columns">
+      <h3>Copy study</h3>
+      <label>Choose target dataset
+        <select
+        ng-options="dataset.label for dataset in datasets"
+        ng-model="targetDataset">
+        </select>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <button class="success" ng-click="copyStudy">Copy</button>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>

@@ -1,15 +1,23 @@
-<div class="row">
-  <div class="column large-12">
-    <div class="panel">
-      <span ng-show="currentRevision.idx === 0" class="right">
-              <span><i class="fa fa-check"></i> This is the current version</span> (
-      <a style="text-decoration: underline;" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>)
-      </span>
-      <a class="right" style="text-decoration: underline;" ng-show="currentRevision.idx !== 0" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>
-      <em>{{currentRevision.date | date:'medium'}}</em>
-      <p>
-        {{currentRevision.title}}, created by {{currentRevision.creator | stripFrontFilter:'mailto:'}}
-      </p>
+<div class="panel">
+  <div class="row">
+    <div class="column large-6">
+        <em>{{currentRevision.date | date:'medium'}}</em>
+        <div>
+          {{currentRevision.title}}
+        </div>
+        <div>
+          Created by {{currentRevision.creator | stripFrontFilter:'mailto:'}}
+        </div>
+    </div>
+    <div class="columns large-6 text-right">
+        <span ng-show="currentRevision.idx === 0">
+                <span><i class="fa fa-check"></i> This is the current version</span> (
+        <a style="text-decoration: underline;" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>)
+        </span>
+        <a style="text-decoration: underline;" ng-show="currentRevision.idx !== 0" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>
+        <div>
+          <ng-transclude></ng-transclude>
+        </div>
     </div>
   </div>
 </div>

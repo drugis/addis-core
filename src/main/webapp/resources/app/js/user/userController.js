@@ -2,10 +2,10 @@
 define([],
   function() {
     var dependencies = ['$scope', '$location', '$q', '$modal', '$filter', '$window',
-      '$stateParams', 'DatasetResource', 'DatasetService', 'UserResource', 'md5'
+      '$stateParams', 'DatasetResource', 'DatasetOverviewService', 'UserResource', 'md5'
     ];
     var UserController = function($scope, $location, $q, $modal, $filter, $window,
-      $stateParams, DatasetResource, DatasetService, UserResource, md5) {
+      $stateParams, DatasetResource, DatasetOverviewService, UserResource, md5) {
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.otherUsers = [];
       $scope.userUid = $stateParams.userUid;
@@ -29,11 +29,11 @@ define([],
       }
 
       function loadDatasets() {
-        DatasetService.reset();
+        DatasetOverviewService.reset();
         DatasetResource.query($stateParams, function(response) {
-          DatasetService.loadStore(response.data).then(function() {
+          DatasetOverviewService.loadStore(response.data).then(function() {
             console.log('loading dataset-store success');
-            DatasetService.queryDatasetsOverview().then(function(datasets) {
+            DatasetOverviewService.queryDatasetsOverview().then(function(datasets) {
               $scope.datasets = datasets;
               $scope.datasetsLoaded = true;
               if (datasets.length > 0) {

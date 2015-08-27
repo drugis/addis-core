@@ -2,12 +2,12 @@
 define([],
   function() {
     var dependencies = ['$scope', '$q', '$window', '$stateParams', '$modal', '$filter',
-      'DatasetService', 'DatasetVersionedResource', 'StudiesWithDetailsService',
+      'SingleDatasetService', 'DatasetVersionedResource', 'StudiesWithDetailsService',
       'RemoteRdfStoreService', 'HistoryResource', 'HistoryService',
       'ConceptService', 'VersionedGraphResource'
     ];
     var DatasetController = function($scope, $q, $window, $stateParams, $modal, $filter,
-      DatasetService, DatasetVersionedResource, StudiesWithDetailsService,
+      SingleDatasetService, DatasetVersionedResource, StudiesWithDetailsService,
       RemoteRdfStoreService, HistoryResource, HistoryService, ConceptService, VersionedGraphResource) {
 
       $scope.userUid = $stateParams.userUid;
@@ -25,9 +25,9 @@ define([],
       $scope.isEditingAllowed = false;
 
       DatasetVersionedResource.get($stateParams, function(response) {
-        DatasetService.reset();
-        DatasetService.loadStore(response.data).then(function() {
-          DatasetService.queryDataset().then(function(queryResult) {
+        SingleDatasetService.reset();
+        SingleDatasetService.loadStore(response.data).then(function() {
+          SingleDatasetService.queryDataset().then(function(queryResult) {
             $scope.dataset = queryResult[0];
             $scope.dataset.uuid = $stateParams.datasetUUID;
             $scope.isEditingAllowed = isEditingAllowed();

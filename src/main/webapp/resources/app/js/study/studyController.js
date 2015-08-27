@@ -14,7 +14,7 @@ define([],
       $scope.datasetUUID = $stateParams.datasetUUID;
       $scope.studyGraphUuid = $stateParams.studyGraphUuid;
       $scope.versionUuid = $stateParams.versionUuid;
-
+      $scope.openCopyDialog = openCopyDialog;
       $scope.study = {};
       $scope.categorySettings = {
         studyInformation: {
@@ -143,6 +143,34 @@ define([],
           typeUri: 'http://trials.drugis.org/ontology#Variable'
         }
       };
+
+      function openCopyDialog() {
+
+        $modal.open({
+          templateUrl: 'app/js/study/copyStudy.html',
+          controller: 'CopyStudyController',
+          resolve: {
+            callback: function() {
+              return function(newVersion) {
+                StudyService.studySaved();
+                $location.path('/users/' + $stateParams.userId + '/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);
+              };
+            },
+            datasets: function() {
+              return $scope.datasets;
+            },
+            datasetUuid: function() {
+              return $stateParams.datasetUUID;
+            },
+            graphUuid: function() {
+              return $stateParams.studyGraphUuid;
+            },
+            itemServiceName: function() {
+              return 'StudyService';
+            }
+          }
+        });
+      }
 
       function reloadStudyModel() {
         VersionedGraphResource.get({
