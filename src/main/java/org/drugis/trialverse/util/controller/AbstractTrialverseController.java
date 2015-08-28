@@ -74,8 +74,9 @@ public class AbstractTrialverseController {
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ExceptionHandler(RevisionNotFoundException.class)
   @ResponseBody
-  public ErrorResponse handleRevisionNotFoundException(HttpServletRequest request) {
+  public ErrorResponse handleRevisionNotFoundException(HttpServletRequest request, Exception e) {
     logger.error("Error retrieving revision \n{}", request.getQueryString());
+    logger.error("Exception: ", e.toString());
     return new ErrorResponse(500, "Internal server error");
   }
 

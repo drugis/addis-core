@@ -1,16 +1,15 @@
 'use strict';
 define([], function() {
 
-  var dependencies = ['$resource'];
-  var copyStudyResource = function($resource) {
+  var dependencies = ['$resource', '$stateParams'];
+  var copyStudyResource = function($resource, $stateParams) {
     return $resource(
       '/users/:userUid/datasets/:datasetUUID/copy', {
-        userUid: '@userUid',
-        datasetUUID: '@datasetUUID',
-        targetDatasetUuid: '@targetDatasetUuid',
+        userUid: $stateParams.userUid,
+        datasetUUID: $stateParams.datasetUUID,
         targetGraph: '@targetGraph',
         sourceGraph: '@sourceGraph',
-        sourceDatasetUuid: '@sourceDatasetUuid',
+        sourceDatasetUri: '@sourceDatasetUri',
         sourceVersion: '@sourceVersion'
       });
   };

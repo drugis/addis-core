@@ -33,9 +33,6 @@ public class DatasetServiceTest {
   DatasetService datasetService;
 
   @Mock
-  VersionMappingRepository versionMappingRepository;
-
-  @Mock
   DatasetReadRepository datasetReadRepository;
 
   @Mock
@@ -52,14 +49,10 @@ public class DatasetServiceTest {
     URI targetDatasetUri = new URI("http://target.dataset");
     URI targetGraphUri = new URI("http://target.graph.uri");
     URI sourceDatasetUri = new URI("http://source.dataset.uri");
-    URI sourceGraphUri = new URI("http://trials.drugis.org/graphs/246b53de-2884-42be-ae18-e431976c1987");
-    URI sourceVersionUri = new URI("http://localhost:8080/versions/90e7a2fd-d688-48d3-bcd4-006e8a8312af");
-    URI revisionUri = new URI("http://localhost:8080/revisions/f589745e-47c4-4fcd-aadd-ce88551080d7");
+    URI sourceGraphUri = new URI("http://trials.drugis.org/graphs/0ef5c6e8-a5fb-4ac0-953b-d1a75fdf9312");
+    URI sourceVersionUri = new URI("http://localhost:8080/versions/e53caa0d-c0df-46db-977e-37f48fecb042");
+    URI revisionUri = new URI("http://localhost:8080/revisions/e37ee2a8-14c7-4b22-87c6-fe43ac0273fe");
 
-    String versionedDatasetUri = "tmp";
-    String ownerUuid = "ownerUuid";
-
-    VersionMapping versionMapping = new VersionMapping(versionedDatasetUri, ownerUuid, sourceDatasetUri.toString());
     Model historyModel = ModelFactory.createDefaultModel();
     InputStream historyStream = new ClassPathResource("mockHistory.ttl").getInputStream();
     historyModel.read(historyStream, null, "TTL");
@@ -67,8 +60,7 @@ public class DatasetServiceTest {
     httpHeaders.add(WebConstants.X_EVENT_SOURCE_VERSION, "newVersion");
     ResponseEntity responseEntity = new ResponseEntity(httpHeaders, HttpStatus.OK);
 
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(sourceDatasetUri)).thenReturn(versionMapping);
-    when(datasetReadRepository.getHistory(versionMapping.getVersionedDatasetUri())).thenReturn(historyModel);
+    when(datasetReadRepository.getHistory(sourceDatasetUri)).thenReturn(historyModel);
     URI uri = UriComponentsBuilder.fromHttpUrl(targetDatasetUri.toString())
             .path(WebConstants.DATA_ENDPOINT)
             .queryParam(WebConstants.COPY_OF_QUERY_PARAM, revisionUri.toString())

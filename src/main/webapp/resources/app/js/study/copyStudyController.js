@@ -1,13 +1,18 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$modalInstance', 'datasets', 'CopyStudyResource'];
-    var CopyStudyController = function($scope, $modalInstance, datasets, CopyStudyResource) {
+    var dependencies = ['$scope', '$modalInstance', 'datasets', 'datasetUuid', 'graphUuid', 'versionUuid', 'CopyStudyResource', 'UUIDService'];
+    var CopyStudyController = function($scope, $modalInstance, datasets, datasetUuid, graphUuid, versionUuid, CopyStudyResource, UUIDService) {
 
       $scope.datasets = datasets;
 
-      $scope.copyStudy = function () {
-        CopyStudyResource.save($scope.targetDataset).then(function() {
+      $scope.copyStudy = function (targetDataset) {
+        var copyToPost = angular.copy(targetDataset);
+        copyToPost.targetGraph = UUIDService.generateGraphUri();
+        copyToPost.sourceGraph = UUIDService.buildGraphUri(graphUuid);
+        copyToPost.sourceDatasetUri = UUIDService.buildDatasetUri(datasetUuid);
+        copyToPost.sourceVersion = UUIDService.buildVersionUri(versionUuid);
+        CopyStudyResource.save(copyToPost).$promise.then(function() {
           $modalInstance.close();
         },
         function() {

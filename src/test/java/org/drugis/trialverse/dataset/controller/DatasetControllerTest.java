@@ -268,14 +268,13 @@ public class DatasetControllerTest {
 
   @Test
   public void testCopy() throws Exception {
-    String datasetUuid = "datasetuuid";
+    String datasetUuid = "datasetUuid";
     String targetGraph = "targetGraph";
     String sourceGraph = "sourceGraph";
-    String sourceDatasetUuid = "sourceDatasetUuid";
+    URI sourceDatasetUri = new URI("http://sourceDatasetUri");
     String sourceVersion = "sourceVersion";
     String newDatasetVersion = "newVersion";
     URI targetDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    URI sourceDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + sourceDatasetUuid);
     URI targetGraphUri = new URI(targetGraph);
     URI sourceGraphUri = new URI(sourceGraph);
     URI sourceVersionUri = new URI(sourceVersion);
@@ -287,11 +286,12 @@ public class DatasetControllerTest {
             .param("targetDatasetUuid", datasetUuid)
             .param("targetGraph", targetGraph)
             .param("sourceGraph", sourceGraph)
-            .param("sourceDatasetUuid", sourceDatasetUuid)
+            .param("sourceDatasetUri", sourceDatasetUri.toString())
             .param("sourceVersion", sourceVersion)
             .principal(user))
             .andExpect(status().isOk())
             .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, newDatasetVersion));
     verify(accountRepository).findAccountByUsername(john.getUsername());
   }
+
 }

@@ -150,12 +150,6 @@ define([],
           templateUrl: 'app/js/study/copyStudy.html',
           controller: 'CopyStudyController',
           resolve: {
-            callback: function() {
-              return function(newVersion) {
-                StudyService.studySaved();
-                $location.path('/users/' + $stateParams.userId + '/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);
-              };
-            },
             datasets: function() {
               return $scope.datasets;
             },
@@ -165,8 +159,8 @@ define([],
             graphUuid: function() {
               return $stateParams.studyGraphUuid;
             },
-            itemServiceName: function() {
-              return 'StudyService';
+            versionUuid: function() {
+              return $stateParams.versionUuid;
             }
           }
         });

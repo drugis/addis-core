@@ -148,16 +148,15 @@ public class DatasetController extends AbstractTrialverseController {
                         @PathVariable String targetDatasetUuid,
                         @RequestParam(value = "targetGraph") String targetGraph,
                         @RequestParam(value = "sourceGraph") String sourceGraph,
-                        @RequestParam(value = "sourceDatasetUuid") String sourceDatasetUuid,
+                        @RequestParam(value = "sourceDatasetUri") String sourceDatasetUri,
                         @RequestParam(value = "sourceVersion") String sourceVersion) throws URISyntaxException, IOException, RevisionNotFoundException {
     URI targetDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + targetDatasetUuid);
-    URI sourceDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + sourceDatasetUuid);
     URI targetGraphUri = new URI(targetGraph);
     URI sourceGraphUri = new URI(sourceGraph);
     URI sourceVersionUri = new URI(sourceVersion);
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
     if (currentUserAccount.getuserNameHash().equals(userUid)) {
-      URI newVersion = datasetService.copy(targetDatasetUri, targetGraphUri, sourceDatasetUri, sourceVersionUri, sourceGraphUri);
+      URI newVersion = datasetService.copy(targetDatasetUri, targetGraphUri, new URI(sourceDatasetUri), sourceVersionUri, sourceGraphUri);
       httpServletResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion.toString());
       httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     } else {

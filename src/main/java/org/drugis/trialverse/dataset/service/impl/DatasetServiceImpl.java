@@ -43,8 +43,7 @@ public class DatasetServiceImpl implements DatasetService {
 
   @Override
   public URI copy(URI targetDatasetUri, URI targetGraphUri, URI sourceDatasetUri, URI sourceVersionUri, URI sourceGraphUri) throws URISyntaxException, IOException, RevisionNotFoundException {
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(sourceDatasetUri);
-    Model historyModel = datasetReadRepository.getHistory(versionMapping.getVersionedDatasetUri());
+    Model historyModel = datasetReadRepository.getHistory(sourceDatasetUri);
     URI revisionUri = getRevisionUri(historyModel, sourceVersionUri, sourceGraphUri);
 
     URI uri = UriComponentsBuilder.fromHttpUrl(targetDatasetUri.toString())
@@ -53,8 +52,9 @@ public class DatasetServiceImpl implements DatasetService {
             .queryParam(WebConstants.GRAPH_QUERY_PARAM, targetGraphUri.toString())
             .build()
             .toUri();
+    HttpEntity requestEntity = new HttpEntity<>(null);
 
-    ResponseEntity response = restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(null), String.class);
+    ResponseEntity response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
     List<String> newVersion = response.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION);
 
     return new URI(newVersion.get(0));
@@ -76,7 +76,9 @@ public class DatasetServiceImpl implements DatasetService {
     }
     QuerySolution solution = resultSet.nextSolution();
     RDFNode revision = solution.get(REVISION);
-
+    if(resultSet.hasNext()) {
+      throw new RevisionNotFoundException("Too many revisions found" + sourceVersionUri.toString() + ", graph " + sourceGraphUri.toString());
+    }
     queryExecution.close();
     return new URI(revision.asNode().getURI());
   }
