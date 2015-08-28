@@ -5,15 +5,12 @@ import org.apache.http.client.HttpClient;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
-import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
+import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
-import org.drugis.trialverse.dataset.service.DatasetService;
-import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
@@ -37,9 +34,6 @@ import java.security.Principal;
 public class DatasetController extends AbstractTrialverseController {
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetController.class);
-
-  @Inject
-  private DatasetService datasetService;
 
   @Inject
   private DatasetWriteRepository datasetWriteRepository;
@@ -140,28 +134,5 @@ public class DatasetController extends AbstractTrialverseController {
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     trialverseIOUtilsService.writeModelToServletResponse(datasetModel, httpServletResponse);
-  }
-
-  @RequestMapping(value = "/{targetDatasetUuid}/copy", method = RequestMethod.POST)
-  public void copyGraph(HttpServletResponse httpServletResponse, Principal currentUser,
-                        @PathVariable String userUid,
-                        @PathVariable String targetDatasetUuid,
-                        @RequestParam(value = "targetGraph") String targetGraph,
-                        @RequestParam(value = "sourceGraph") String sourceGraph,
-                        @RequestParam(value = "sourceDatasetUri") String sourceDatasetUri,
-                        @RequestParam(value = "sourceVersionUuid") String sourceVersionUuid) throws URISyntaxException, IOException, RevisionNotFoundException {
-    URI targetDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + targetDatasetUuid);
-    URI targetGraphUri = new URI(targetGraph);
-    URI sourceGraphUri = new URI(sourceGraph);
-    URI sourceVersionUri = new URI(null + sourceVersionUuid);
-    Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-    if (currentUserAccount.getuserNameHash().equals(userUid)) {
-      URI newVersion = datasetService.copy(targetDatasetUri, targetGraphUri, new URI(sourceDatasetUri), sourceVersionUri, sourceGraphUri);
-      httpServletResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion.toString());
-      httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-    } else {
-      logger.error("attempted to copy graph to dataset that is not owned by the logged-in user");
-      httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-    }
   }
 }

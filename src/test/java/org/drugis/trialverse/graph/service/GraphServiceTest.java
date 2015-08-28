@@ -1,12 +1,12 @@
-package org.drugis.trialverse.dataset.service;
+package org.drugis.trialverse.graph.service;
 
-import org.apache.commons.io.IOUtils;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.dataset.service.impl.DatasetServiceImpl;
+import org.drugis.trialverse.graph.service.impl.GraphServiceImpl;
 import org.drugis.trialverse.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,10 +27,13 @@ import static org.mockito.Mockito.when;
 /**
  * Created by daan on 26-8-15.
  */
-public class DatasetServiceTest {
+public class GraphServiceTest {
 
   @InjectMocks
-  DatasetService datasetService;
+  GraphService graphService;
+
+  @Mock
+  VersionMappingRepository versionMappingRepository;
 
   @Mock
   DatasetReadRepository datasetReadRepository;
@@ -40,7 +43,7 @@ public class DatasetServiceTest {
 
   @Before
   public void setUp() {
-    datasetService = new DatasetServiceImpl();
+    graphService = new GraphServiceImpl();
     MockitoAnnotations.initMocks(this);
   }
 
@@ -59,9 +62,12 @@ public class DatasetServiceTest {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(WebConstants.X_EVENT_SOURCE_VERSION, "newVersion");
     ResponseEntity responseEntity = new ResponseEntity(httpHeaders, HttpStatus.OK);
+    String targetDatasetVersionedUri = "http://versionedURI";
+    VersionMapping versionMapping = new VersionMapping(targetDatasetVersionedUri, null, targetDatasetUri.toString());
 
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(targetDatasetUri)).thenReturn(versionMapping);
     when(datasetReadRepository.getHistory(sourceDatasetUri)).thenReturn(historyModel);
-    URI uri = UriComponentsBuilder.fromHttpUrl(targetDatasetUri.toString())
+    URI uri = UriComponentsBuilder.fromHttpUrl(targetDatasetVersionedUri)
             .path(WebConstants.DATA_ENDPOINT)
             .queryParam(WebConstants.COPY_OF_QUERY_PARAM, revisionUri.toString())
             .queryParam(WebConstants.GRAPH_QUERY_PARAM, targetGraphUri.toString())
@@ -69,8 +75,28 @@ public class DatasetServiceTest {
             .toUri();
     when(restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(null), String.class)).thenReturn(responseEntity);
 
-    URI newVersion = datasetService.copy(targetDatasetUri, targetGraphUri, sourceDatasetUri, sourceVersionUri, sourceGraphUri);
+    URI newVersion = graphService.copy(targetDatasetUri, targetGraphUri, sourceDatasetUri, sourceVersionUri, sourceGraphUri);
 
     assertEquals("newVersion", newVersion.toString());
   }
+
+  @Test
+  public void testExtractDatasetUuid() {
+    String uri = "https://www.trialverse123.org/datasets/333-av-3222/versions/434334/graphs/44334";
+    String datasetUuid = graphService.extractDatasetUuid(uri);
+    assertEquals("333-av-3222", datasetUuid);
+  }
+  @Test
+  public void testExtractVersionUuid() {
+    String uri = "https://www.trialverse123.org/datasets/333-av-3222/versions/434334/graphs/44334";
+    String versionUuid = graphService.extractVersionUuid(uri);
+    assertEquals("434334", versionUuid);
+  }
+  @Test
+  public void testExtractGraphUuid() {
+    String uri = "https://www.trialverse123.org/datasets/333-av-3222/versions/434334/graphs/44334";
+    String graphUuid = graphService.extractGraphUuid(uri);
+    assertEquals("44334", graphUuid);
+  }
+
 }

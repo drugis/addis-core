@@ -1,4 +1,4 @@
-package org.drugis.trialverse.dataset.service.impl;
+package org.drugis.trialverse.graph.service.impl;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.query.*;
@@ -8,7 +8,7 @@ import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.dataset.service.DatasetService;
+import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.util.WebConstants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
@@ -23,12 +23,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by daan on 26-8-15.
  */
 @Service
-public class DatasetServiceImpl implements DatasetService {
+public class GraphServiceImpl implements GraphService {
 
   public static final String REVISION = "revision";
 
@@ -40,6 +42,27 @@ public class DatasetServiceImpl implements DatasetService {
 
   @Inject
   private RestTemplate restTemplate;
+
+  private Pattern graphUriPattern = Pattern.compile(".*://[a-zA-z0-9\\.]*/datasets/([a-zA-z0-9\\.\\-]*)/versions/([a-zA-z0-9\\.\\-]*)/graphs/([a-zA-z0-9\\.\\-]*)");
+
+  @Override
+  public String extractDatasetUuid(String sourceGraphUri) {
+    Matcher matcher = graphUriPattern.matcher(sourceGraphUri);
+    matcher.matches();
+    return matcher.group(1);
+  }
+  @Override
+  public String extractVersionUuid(String sourceGraphUri) {
+    Matcher matcher = graphUriPattern.matcher(sourceGraphUri);
+    matcher.matches();
+    return matcher.group(2);
+  }
+  @Override
+  public String extractGraphUuid(String sourceGraphUri) {
+    Matcher matcher = graphUriPattern.matcher(sourceGraphUri);
+    matcher.matches();
+    return matcher.group(3);
+  }
 
   @Override
   public URI copy(URI targetDatasetUri, URI targetGraphUri, URI sourceDatasetUri, URI sourceVersionUri, URI sourceGraphUri) throws URISyntaxException, IOException, RevisionNotFoundException {

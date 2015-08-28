@@ -10,7 +10,7 @@ import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
-import org.drugis.trialverse.dataset.service.DatasetService;
+import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.testutils.TestUtils;
@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -64,7 +63,7 @@ public class DatasetControllerTest {
   private TrialverseIOUtilsService trialverseIOUtilsService;
 
   @Mock
-  private DatasetService datasetService;
+  private GraphService graphService;
 
   @Mock
   private WebConstants webConstants;
@@ -280,7 +279,7 @@ public class DatasetControllerTest {
     URI sourceVersionUri = new URI(sourceVersion);
 
 
-    when(datasetService.copy(targetDatasetUri, targetGraphUri, sourceDatasetUri, sourceVersionUri, sourceGraphUri)).thenReturn(new URI(newDatasetVersion));
+    when(graphService.copy(targetDatasetUri, targetGraphUri, sourceDatasetUri, sourceVersionUri, sourceGraphUri)).thenReturn(new URI(newDatasetVersion));
 
     mockMvc.perform((post("/users/hash/datasets/" + datasetUuid + "/copy"))
             .param("targetDatasetUuid", datasetUuid)
