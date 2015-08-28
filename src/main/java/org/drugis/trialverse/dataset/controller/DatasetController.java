@@ -149,11 +149,11 @@ public class DatasetController extends AbstractTrialverseController {
                         @RequestParam(value = "targetGraph") String targetGraph,
                         @RequestParam(value = "sourceGraph") String sourceGraph,
                         @RequestParam(value = "sourceDatasetUri") String sourceDatasetUri,
-                        @RequestParam(value = "sourceVersion") String sourceVersion) throws URISyntaxException, IOException, RevisionNotFoundException {
+                        @RequestParam(value = "sourceVersionUuid") String sourceVersionUuid) throws URISyntaxException, IOException, RevisionNotFoundException {
     URI targetDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + targetDatasetUuid);
     URI targetGraphUri = new URI(targetGraph);
     URI sourceGraphUri = new URI(sourceGraph);
-    URI sourceVersionUri = new URI(sourceVersion);
+    URI sourceVersionUri = new URI(null + sourceVersionUuid);
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
     if (currentUserAccount.getuserNameHash().equals(userUid)) {
       URI newVersion = datasetService.copy(targetDatasetUri, targetGraphUri, new URI(sourceDatasetUri), sourceVersionUri, sourceGraphUri);

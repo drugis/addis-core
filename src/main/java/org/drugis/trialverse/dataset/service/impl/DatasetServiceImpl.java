@@ -4,11 +4,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
+import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.DatasetService;
-import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.util.WebConstants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
@@ -43,10 +43,11 @@ public class DatasetServiceImpl implements DatasetService {
 
   @Override
   public URI copy(URI targetDatasetUri, URI targetGraphUri, URI sourceDatasetUri, URI sourceVersionUri, URI sourceGraphUri) throws URISyntaxException, IOException, RevisionNotFoundException {
+    VersionMapping targetDatasetMapping = versionMappingRepository.getVersionMappingByDatasetUrl(targetDatasetUri);
     Model historyModel = datasetReadRepository.getHistory(sourceDatasetUri);
     URI revisionUri = getRevisionUri(historyModel, sourceVersionUri, sourceGraphUri);
 
-    URI uri = UriComponentsBuilder.fromHttpUrl(targetDatasetUri.toString())
+    URI uri = UriComponentsBuilder.fromHttpUrl(targetDatasetMapping.getVersionedDatasetUrl())
             .path(WebConstants.DATA_ENDPOINT)
             .queryParam(WebConstants.COPY_OF_QUERY_PARAM, revisionUri.toString())
             .queryParam(WebConstants.GRAPH_QUERY_PARAM, targetGraphUri.toString())

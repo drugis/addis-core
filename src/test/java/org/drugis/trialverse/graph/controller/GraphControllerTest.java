@@ -146,6 +146,30 @@ public class GraphControllerTest {
   }
 
   @Test
+  public void testCopyGraph() throws Exception {
+    String updateContent = "updateContent";
+    String datasetUUID = "datasetUUID";
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    String graphUUID = "graphUUID";
+
+    when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
+    Header versionHeader = new BasicHeader(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion");
+    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(HttpServletRequest.class))).thenReturn(versionHeader);
+
+    mockMvc.perform(
+            put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
+                    .content(updateContent)
+                    .param(WebConstants.COPY_OF_QUERY_PARAM, "http://somethjing")
+                    .principal(user))
+            .andExpect(status().isOk())
+            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion"));
+
+    verify(datasetReadRepository).isOwner(datasetUrl, user);
+    verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(HttpServletRequest.class));
+  }
+
+
+  @Test
   public void testUpdateGraphUserNotDatasetOwner() throws Exception {
     String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
     String datasetUUID = "datasetUUID";

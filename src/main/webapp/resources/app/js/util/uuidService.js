@@ -5,7 +5,6 @@ define(['angular'], function() {
   function UUIDService() {
     var graphPrefix = 'http://trials.drugis.org/graphs/';
     var datasetPrefix = 'http://trials.drugis.org/datasets/';
-    var versionPrefix = 'http://trials.drugis.org/versions/';
 
     // see: http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
     // This means a block-formatted string like \'abcdefgh-ijkl-4mno-$pqr-stuvwxyz1234\'
@@ -29,15 +28,11 @@ define(['angular'], function() {
     function buildDatasetUri(uuid) {
       return datasetPrefix + uuid;
     }
-    function buildVersionUri(uuid) {
-      return versionPrefix + uuid;
-    }
     return {
       generate: generate,
       generateGraphUri: generateGraphUri,
       buildDatasetUri: buildDatasetUri,
-      buildGraphUri: buildGraphUri,
-      buildVersionUri: buildVersionUri
+      buildGraphUri: buildGraphUri
     };
   }
   return dependencies.concat(UUIDService);

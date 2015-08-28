@@ -6,18 +6,20 @@ define([],
 
       $scope.datasets = datasets;
 
-      $scope.copyStudy = function (targetDataset) {
-        var copyToPost = angular.copy(targetDataset);
-        copyToPost.targetGraph = UUIDService.generateGraphUri();
-        copyToPost.sourceGraph = UUIDService.buildGraphUri(graphUuid);
-        copyToPost.sourceDatasetUri = UUIDService.buildDatasetUri(datasetUuid);
-        copyToPost.sourceVersion = UUIDService.buildVersionUri(versionUuid);
-        CopyStudyResource.save(copyToPost).$promise.then(function() {
-          $modalInstance.close();
-        },
-        function() {
-          $modalInstance.dismiss('cancel');
-        });
+      $scope.copyStudy = function(targetDataset) {
+        var copyMessage = {
+          targetDatasetUuid: targetDataset.datasetUri.split('/')[targetDataset.datasetUri.split('/').length - 1],
+          targetGraph: UUIDService.generateGraphUri(),
+          sourceGraph: UUIDService.buildGraphUri(graphUuid),
+          sourceDatasetUri: UUIDService.buildDatasetUri(datasetUuid),
+          sourceVersionUuid: versionUuid
+        };
+        CopyStudyResource.save(copyMessage).$promise.then(function() {
+            $modalInstance.close();
+          },
+          function() {
+            $modalInstance.dismiss('cancel');
+          });
       };
 
       $scope.cancel = function() {

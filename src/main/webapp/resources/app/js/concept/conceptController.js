@@ -48,7 +48,7 @@ define([],
             callback: function() {
               return function(newVersion) {
                 ConceptService.conceptsSaved();
-                $location.path('/users/' + $stateParams.userId + '/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/concepts');
+                $location.path('/users/' + $stateParams.userUid + '/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/concepts');
               };
             },
             userUid: function() {

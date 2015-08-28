@@ -63,9 +63,24 @@ public class GraphController extends AbstractTrialverseController {
     trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
   }
 
-  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT)
+  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, params={WebConstants.COMMIT_TITLE_PARAM})
   public void setGraph(HttpServletRequest request, HttpServletResponse trialversResponse, Principal currentUser,
                        @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle, // here because it's required
+                       @PathVariable String datasetUuid, @PathVariable String graphUuid)
+          throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
+    logger.trace("set graph");
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
+      Header versionHeader = graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, request);
+      trialversResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
+      trialversResponse.setStatus(HttpStatus.OK.value());
+    } else {
+      throw new MethodNotAllowedException();
+    }
+  }
+  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, params={WebConstants.COPY_OF_QUERY_PARAM})
+  public void copyGraph(HttpServletRequest request, HttpServletResponse trialversResponse, Principal currentUser,
+                       @RequestParam(WebConstants.COPY_OF_QUERY_PARAM) String sourceGraphUri,
                        @PathVariable String datasetUuid, @PathVariable String graphUuid)
           throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
     logger.trace("set graph");

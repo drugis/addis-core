@@ -6,7 +6,7 @@ define([], function() {
     return $resource(
       '/users/:userUid/datasets/:datasetUUID/copy', {
         userUid: $stateParams.userUid,
-        datasetUUID: $stateParams.datasetUUID,
+        datasetUUID: '@targetDatasetUuid',
         targetGraph: '@targetGraph',
         sourceGraph: '@sourceGraph',
         sourceDatasetUri: '@sourceDatasetUri',
