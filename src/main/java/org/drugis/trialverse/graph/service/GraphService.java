@@ -5,7 +5,6 @@ import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.regex.Matcher;
 
 /**
  * Created by daan on 26-8-15.

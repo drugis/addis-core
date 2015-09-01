@@ -1,8 +1,6 @@
 package org.drugis.trialverse.dataset.repository;
 
 import org.drugis.trialverse.dataset.model.VersionMapping;
-import org.drugis.trialverse.security.Account;
-import org.drugis.trialverse.security.UsernameAlreadyInUseException;
 
 import java.net.URI;
 import java.util.List;
@@ -15,6 +13,8 @@ public interface VersionMappingRepository {
     void save(VersionMapping versionMapping);
 
     List<VersionMapping> findMappingsByUsername(String username);
+
+  List<VersionMapping> getVersionMappings();
 
     VersionMapping getVersionMappingByDatasetUrl(URI trialverseDatasetUrl);
 }

@@ -40,6 +40,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.List;
 
@@ -105,13 +106,13 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
 
   private Boolean doAskQuery(URI trialverseDatasetUri, String query) {
-    ResponseEntity<JsonObject> responseEntity = doRequest(trialverseDatasetUri, query, RDFLanguages.JSONLD.getContentType().getContentType(), JsonObject.class);
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
+    ResponseEntity<JsonObject> responseEntity = doRequest(versionMapping, query, RDFLanguages.JSONLD.getContentType().getContentType(), JsonObject.class);
     JsonObject jsonObject = responseEntity.getBody();
     return Boolean.TRUE.equals(new Boolean(jsonObject.get("boolean").toString()));
   }
 
-  private <T> ResponseEntity<T> doRequest(URI trialverseDatasetUri, String query, String acceptType, Class responseType) {
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
+  private <T> ResponseEntity<T> doRequest(VersionMapping versionMapping, String query, String acceptType, Class responseType) {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
     httpHeaders.add(ACCEPT, acceptType);
@@ -213,6 +214,13 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   @Override
   public void copyGraph(URI targetDataset, URI targetGraph, URI sourceRevision) {
     throw new NotImplementedException();
+  }
+
+  @Override
+  public JsonObject executeHeadQuery(String sparqlQuery, VersionMapping versionMapping) throws URISyntaxException {
+    ResponseEntity<JsonObject> responseEntity = doRequest(versionMapping, sparqlQuery, RDFLanguages.JSONLD.getContentType().getContentType(), JsonObject.class);
+    JsonObject jsonObject = responseEntity.getBody();
+    return jsonObject;
   }
 
   private byte[] executeRequestAndCloseResponse(HttpGet request) throws IOException {
