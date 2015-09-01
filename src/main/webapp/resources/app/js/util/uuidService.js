@@ -22,8 +22,8 @@ define(['angular'], function() {
     function generateGraphUri() {
       return graphPrefix + generate();
     }
-    function buildGraphUri(uuid) {
-      return graphPrefix + uuid;
+    function buildGraphUri(datasetUuid, versionUuid, graphUuid) {
+      return datasetPrefix + datasetUuid + '/versions/' + versionUuid + '/graphs/' + graphUuid;
     }
     function buildDatasetUri(uuid) {
       return datasetPrefix + uuid;
