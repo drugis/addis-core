@@ -11,11 +11,11 @@ import java.util.regex.Matcher;
  * Created by daan on 26-8-15.
  */
 public interface GraphService {
-  URI copy(URI targetDatasetUri, URI targetGraphUri, URI sourceDatasetUri, URI sourceVersionUri, URI sourceGraphUri) throws URISyntaxException, IOException, RevisionNotFoundException;
+  URI extractGraphUri(URI sourceGraphUri);
 
-  String extractDatasetUuid(String sourceGraphUri);
+  URI copy(URI targetDatasetUri, URI targetGraphUri, URI copyOfUri) throws URISyntaxException, IOException, RevisionNotFoundException;
 
-  String extractVersionUuid(String sourceGraphUri);
+  URI extractDatasetUri(URI sourceGraphUri);
 
-  String extractGraphUuid(String sourceGraphUri);
+  URI extractVersionUri(URI sourceGraphUri);
 }

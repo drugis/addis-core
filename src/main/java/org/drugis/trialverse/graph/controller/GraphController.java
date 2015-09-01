@@ -29,8 +29,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by daan on 19-11-14.
@@ -41,9 +39,6 @@ public class GraphController extends AbstractTrialverseController {
 
   @Inject
   private GraphService graphService;
-
-  @Inject
-  private WebConstants webConstants;
 
   @Inject
   private GraphReadRepository graphReadRepository;
@@ -90,23 +85,17 @@ public class GraphController extends AbstractTrialverseController {
   }
 
   @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, params = {WebConstants.COPY_OF_QUERY_PARAM})
-  public void copyGraph(HttpServletRequest request, HttpServletResponse trialversResponse, Principal currentUser,
+  public void copyGraph(HttpServletRequest request, HttpServletResponse trialverseResponse, Principal currentUser,
                         @RequestParam(WebConstants.COPY_OF_QUERY_PARAM) String copyOfUri,
                         @PathVariable String datasetUuid, @PathVariable String graphUuid)
           throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException, RevisionNotFoundException {
     logger.trace("copy graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      String sourceVersionUuid = graphService.extractVersionUuid(copyOfUri);
-      String sourceDatasetUuid = graphService.extractDatasetUuid(copyOfUri);
-      String sourceGraphUuid = graphService.extractGraphUuid(copyOfUri);
-      URI targetGraphUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid + "/graphs/" + graphUuid);
-      URI sourceDatasetUri = URI.create(Namespaces.DATASET_NAMESPACE + sourceDatasetUuid);
-      URI sourceVersionUri = new URI(webConstants.getTriplestoreBaseUri() + sourceVersionUuid);
-      URI sourceGraphUri = new URI(webConstants.getTriplestoreBaseUri() + sourceGraphUuid);
-      URI newVersion = graphService.copy(trialverseDatasetUri, targetGraphUri, sourceDatasetUri, sourceVersionUri, sourceGraphUri);
-      trialversResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion.toString());
-      trialversResponse.setStatus(HttpStatus.OK.value());
+      URI targetGraphUri = new URI(Namespaces.GRAPH_NAMESPACE + graphUuid);
+      URI newVersion = graphService.copy(trialverseDatasetUri, targetGraphUri, URI.create(copyOfUri));
+      trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion.toString());
+      trialverseResponse.setStatus(HttpStatus.OK.value());
     } else {
       throw new MethodNotAllowedException();
     }

@@ -9,6 +9,7 @@ import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.service.GraphService;
+import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
@@ -43,32 +44,43 @@ public class GraphServiceImpl implements GraphService {
   @Inject
   private RestTemplate restTemplate;
 
-  private Pattern graphUriPattern = Pattern.compile(".*://[a-zA-z0-9\\.]*/datasets/([a-zA-z0-9\\.\\-]*)/versions/([a-zA-z0-9\\.\\-]*)/graphs/([a-zA-z0-9\\.\\-]*)");
+  @Inject
+  private WebConstants webConstants;
+
+  private Pattern graphUriPattern = Pattern.compile("/datasets/([a-zA-z0-9\\.\\-]*)/versions/([a-zA-z0-9\\.\\-]*)/graphs/([a-zA-z0-9\\.\\-]*)");
 
   @Override
-  public String extractDatasetUuid(String sourceGraphUri) {
-    Matcher matcher = graphUriPattern.matcher(sourceGraphUri);
+  public URI extractDatasetUri(URI sourceGraphUri) {
+    Matcher matcher = graphUriPattern.matcher(sourceGraphUri.getPath());
     matcher.matches();
-    return matcher.group(1);
-  }
-  @Override
-  public String extractVersionUuid(String sourceGraphUri) {
-    Matcher matcher = graphUriPattern.matcher(sourceGraphUri);
-    matcher.matches();
-    return matcher.group(2);
-  }
-  @Override
-  public String extractGraphUuid(String sourceGraphUri) {
-    Matcher matcher = graphUriPattern.matcher(sourceGraphUri);
-    matcher.matches();
-    return matcher.group(3);
+    String datasetUuid = matcher.group(1);
+    return URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
   }
 
   @Override
-  public URI copy(URI targetDatasetUri, URI targetGraphUri, URI sourceDatasetUri, URI sourceVersionUri, URI sourceGraphUri) throws URISyntaxException, IOException, RevisionNotFoundException {
+  public URI extractVersionUri(URI sourceGraphUri) {
+    Matcher matcher = graphUriPattern.matcher(sourceGraphUri.getPath());
+    matcher.matches();
+    String versionUuid = matcher.group(2);
+    return URI.create(webConstants.getTriplestoreBaseUri() + "/versions/" + versionUuid);
+  }
+
+  @Override
+  public URI extractGraphUri(URI sourceGraphUri) {
+    Matcher matcher = graphUriPattern.matcher(sourceGraphUri.getPath());
+    matcher.matches();
+    String graphUuid = matcher.group(3);
+    return URI.create(Namespaces.GRAPH_NAMESPACE + graphUuid);
+  }
+
+  @Override
+  public URI copy(URI targetDatasetUri, URI targetGraphUri, URI copyOfUri) throws URISyntaxException, IOException, RevisionNotFoundException {
+
     VersionMapping targetDatasetMapping = versionMappingRepository.getVersionMappingByDatasetUrl(targetDatasetUri);
-    Model historyModel = datasetReadRepository.getHistory(sourceDatasetUri);
-    URI revisionUri = getRevisionUri(historyModel, sourceVersionUri, sourceGraphUri);
+
+    Model historyModel = datasetReadRepository.getHistory(extractDatasetUri(copyOfUri));
+
+    URI revisionUri = getRevisionUri(historyModel, copyOfUri);
 
     URI uri = UriComponentsBuilder.fromHttpUrl(targetDatasetMapping.getVersionedDatasetUrl())
             .path(WebConstants.DATA_ENDPOINT)
@@ -76,32 +88,33 @@ public class GraphServiceImpl implements GraphService {
             .queryParam(WebConstants.GRAPH_QUERY_PARAM, targetGraphUri.toString())
             .build()
             .toUri();
-    HttpEntity requestEntity = new HttpEntity<>(null);
 
-    ResponseEntity response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+    ResponseEntity response = restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(null), String.class);
     List<String> newVersion = response.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION);
 
     return new URI(newVersion.get(0));
   }
 
-  private URI getRevisionUri(Model historyModel, URI sourceVersionUri, URI sourceGraphUri) throws URISyntaxException, RevisionNotFoundException, IOException {
+  private URI getRevisionUri(Model historyModel, URI sourceGraphUri) throws URISyntaxException, RevisionNotFoundException, IOException {
     String revisionSparqlTemplate = IOUtils.toString(new ClassPathResource("getRevision.sparql").getInputStream(), "UTF-8");
 
+    String sourceVersion = extractVersionUri(sourceGraphUri).toString();
+    String sourceGraph = extractGraphUri(sourceGraphUri).toString();
     revisionSparqlTemplate = revisionSparqlTemplate
-            .replace("$sourceVersion", sourceVersionUri.toString())
-            .replace("$sourceGraph", sourceGraphUri.toString());
+            .replace("$sourceVersion", sourceVersion)
+            .replace("$sourceGraph", sourceGraph);
 
     Query query = QueryFactory.create(revisionSparqlTemplate);
     QueryExecution queryExecution = QueryExecutionFactory.create(query, historyModel);
     ResultSet resultSet = queryExecution.execSelect();
 
     if (!resultSet.hasNext()) {
-      throw new RevisionNotFoundException("Unable to find revision for version " + sourceVersionUri.toString() + ", graph " + sourceGraphUri.toString());
+      throw new RevisionNotFoundException("Unable to find revision for version " + sourceVersion + ", graph " + sourceGraph);
     }
     QuerySolution solution = resultSet.nextSolution();
     RDFNode revision = solution.get(REVISION);
     if(resultSet.hasNext()) {
-      throw new RevisionNotFoundException("Too many revisions found" + sourceVersionUri.toString() + ", graph " + sourceGraphUri.toString());
+      throw new RevisionNotFoundException("Too many revisions found" + sourceVersion + ", graph " + sourceGraph);
     }
     queryExecution.close();
     return new URI(revision.asNode().getURI());

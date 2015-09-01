@@ -264,33 +264,4 @@ public class DatasetControllerTest {
     verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), Matchers.any(HttpServletResponse.class));
 
   }
-
-  @Test
-  public void testCopy() throws Exception {
-    String datasetUuid = "datasetUuid";
-    String targetGraph = "targetGraph";
-    String sourceGraph = "sourceGraph";
-    URI sourceDatasetUri = new URI("http://sourceDatasetUri");
-    String sourceVersion = "sourceVersion";
-    String newDatasetVersion = "newVersion";
-    URI targetDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    URI targetGraphUri = new URI(targetGraph);
-    URI sourceGraphUri = new URI(sourceGraph);
-    URI sourceVersionUri = new URI(sourceVersion);
-
-
-    when(graphService.copy(targetDatasetUri, targetGraphUri, sourceDatasetUri, sourceVersionUri, sourceGraphUri)).thenReturn(new URI(newDatasetVersion));
-
-    mockMvc.perform((post("/users/hash/datasets/" + datasetUuid + "/copy"))
-            .param("targetDatasetUuid", datasetUuid)
-            .param("targetGraph", targetGraph)
-            .param("sourceGraph", sourceGraph)
-            .param("sourceDatasetUri", sourceDatasetUri.toString())
-            .param("sourceVersion", sourceVersion)
-            .principal(user))
-            .andExpect(status().isOk())
-            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, newDatasetVersion));
-    verify(accountRepository).findAccountByUsername(john.getUsername());
-  }
-
 }
