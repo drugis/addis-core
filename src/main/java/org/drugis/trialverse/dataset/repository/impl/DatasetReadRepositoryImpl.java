@@ -2,12 +2,13 @@ package org.drugis.trialverse.dataset.repository.impl;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.graph.*;
+import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -196,9 +197,8 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public Model getHistory(URI trialverseDatasetUri) throws IOException {
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
-    URI uri = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
+  public Model getHistory(URI datasetUri) throws IOException {
+    URI uri = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
             .path(WebConstants.HISTORY_ENDPOINT)
             .build()
             .toUri();
@@ -216,7 +216,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   private byte[] executeRequestAndCloseResponse(HttpGet request) throws IOException {
-    CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(request);
+    HttpResponse response = httpClient.execute(request);
     try (InputStream contentStream = response.getEntity().getContent()) {
       byte[] content = IOUtils.toByteArray(contentStream);
       EntityUtils.consume(response.getEntity());

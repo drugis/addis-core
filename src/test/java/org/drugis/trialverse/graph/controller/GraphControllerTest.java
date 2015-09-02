@@ -3,7 +3,9 @@ package org.drugis.trialverse.graph.controller;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.apache.jena.riot.RDFLanguages;
+import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
+import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.graph.service.GraphService;
@@ -67,6 +69,9 @@ public class GraphControllerTest {
   @Mock
   private GraphService graphService;
 
+  @Mock
+  private VersionMappingRepository versionMappingRepository;
+
   @InjectMocks
   private GraphController graphController;
 
@@ -85,6 +90,7 @@ public class GraphControllerTest {
     mockMvc = MockMvcBuilders.standaloneSetup(graphController).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn(john.getUsername());
+    when(accountRepository.findAccountByUsername(john.getUsername())).thenReturn(john);
   }
 
   @After
@@ -94,18 +100,21 @@ public class GraphControllerTest {
 
   @Test
   public void testGetGraph() throws Exception {
-    String datasetUUID = "datasetUUID";
+    String datasetUuid = "datasetUUID";
     String graphUUID = "graphUUID";
     String versionUuid = "versionUuid";
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+   String versionedDatasetUrl = "http://myversiondDatasetUrl";
     String responce = "responce";
-    when(graphReadRepository.getGraph(trialverseDatasetUri, versionUuid, graphUUID)).thenReturn(responce.getBytes());
+    URI trialverseDatasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    VersionMapping versionMapping = new VersionMapping(versionedDatasetUrl, "anyOwner", trialverseDatasetUrl.toString());
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl)).thenReturn(versionMapping);
+    when(graphReadRepository.getGraph(versionedDatasetUrl, versionUuid, graphUUID)).thenReturn(responce.getBytes());
 
-    mockMvc.perform(get("/users/" + userHash + "/datasets/" + datasetUUID + "/versions/" + versionUuid + "/graphs/" + graphUUID).principal(user))
+    mockMvc.perform(get("/users/" + userHash + "/datasets/" + datasetUuid + "/versions/" + versionUuid + "/graphs/" + graphUUID).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
-    verify(graphReadRepository).getGraph(trialverseDatasetUri, versionUuid, graphUUID);
+    verify(graphReadRepository).getGraph(versionedDatasetUrl, versionUuid, graphUUID);
     verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), any(HttpServletResponse.class));
   }
 
@@ -164,7 +173,7 @@ public class GraphControllerTest {
     URI targetGraphUri = URI.create(Namespaces.GRAPH_NAMESPACE + graphUuid);
 
     when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(true);
-    when(graphService.copy(targetDatasetUri, targetGraphUri, sourceGraphUri)).thenReturn(URI.create(newVersion));
+    when(graphService.copy(targetDatasetUri, targetGraphUri, sourceGraphUri, john)).thenReturn(URI.create(newVersion));
 
     mockMvc.perform(
             put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid)

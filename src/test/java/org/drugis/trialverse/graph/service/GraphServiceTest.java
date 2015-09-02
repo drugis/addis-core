@@ -1,11 +1,13 @@
 package org.drugis.trialverse.graph.service;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.service.impl.GraphServiceImpl;
+import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.junit.Before;
@@ -55,6 +57,7 @@ public class GraphServiceTest {
 
   @Test
   public void testCopy() throws Exception {
+    Account owner = new Account("my-owner", "fn", "ln", "unh");
     URI targetDatasetUri = new URI("http://target.dataset");
     URI targetGraphUri = new URI("http://target.graph.uri");
     String sourceDatasetUuid = "sourceDatasetUuid";
@@ -79,9 +82,12 @@ public class GraphServiceTest {
 
     when(versionMappingRepository.getVersionMappingByDatasetUrl(targetDatasetUri)).thenReturn(versionMapping);
     when(datasetReadRepository.getHistory(sourceDatasetUri)).thenReturn(historyModel);
-    when(restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(null), String.class)).thenReturn(responseEntity);
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + owner.getUsername());
+    headers.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String("Study copied from other dataset".getBytes()));
+    when(restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(headers), String.class)).thenReturn(responseEntity);
 
-    URI newVersion = graphService.copy(targetDatasetUri, targetGraphUri, sourceGraphUri);
+    URI newVersion = graphService.copy(targetDatasetUri, targetGraphUri, sourceGraphUri, owner);
 
     assertEquals("newVersion", newVersion.toString());
   }

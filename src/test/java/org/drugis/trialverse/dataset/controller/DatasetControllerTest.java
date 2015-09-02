@@ -6,6 +6,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -24,6 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -32,6 +34,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
 
@@ -210,7 +213,9 @@ public class DatasetControllerTest {
     HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1, 1), HttpStatus.OK.value(), "reason"));
     String test = "test";
     httpResponse.setEntity(new StringEntity(test));
-    Model historyModel = null;
+    Model historyModel = ModelFactory.createDefaultModel();
+    InputStream historyStream = new ClassPathResource("mockMergeHistory.ttl").getInputStream();
+    historyModel.read(historyStream, null, "TTL");
     when(datasetReadRepository.getHistory(datasetUri)).thenReturn(historyModel);
 
     mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/versions")).principal(user))

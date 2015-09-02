@@ -1,6 +1,7 @@
 package org.drugis.trialverse.graph.service;
 
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
+import org.drugis.trialverse.security.Account;
 
 import java.io.IOException;
 import java.net.URI;
@@ -13,7 +14,7 @@ import java.util.regex.Matcher;
 public interface GraphService {
   URI extractGraphUri(URI sourceGraphUri);
 
-  URI copy(URI targetDatasetUri, URI targetGraphUri, URI copyOfUri) throws URISyntaxException, IOException, RevisionNotFoundException;
+  URI copy(URI targetDatasetUri, URI targetGraphUri, URI copyOfUri, Account owner) throws URISyntaxException, IOException, RevisionNotFoundException;
 
   URI extractDatasetUri(URI sourceGraphUri);
 

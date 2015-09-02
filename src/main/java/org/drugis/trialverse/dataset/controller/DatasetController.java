@@ -6,8 +6,13 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
+import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
+import org.drugis.trialverse.dataset.model.VersionMapping;
+import org.drugis.trialverse.dataset.model.VersionNode;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
+import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
+import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.Namespaces;
@@ -25,6 +30,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
+import java.util.List;
 
 /**
  * Created by connor on 6-11-14.
@@ -42,7 +48,13 @@ public class DatasetController extends AbstractTrialverseController {
   private DatasetReadRepository datasetReadRepository;
 
   @Inject
+  private HistoryService historyService;
+
+  @Inject
   private TrialverseIOUtilsService trialverseIOUtilsService;
+
+  @Inject
+  private VersionMappingRepository versionMappingRepository;
 
   @Inject
   private AccountRepository accountRepository;
@@ -116,13 +128,12 @@ public class DatasetController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/{datasetUUID}/versions", method = RequestMethod.GET)
   @ResponseBody
-  public void queryHistory(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException {
+  public List<VersionNode> queryHistory(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException, RevisionNotFoundException {
     logger.trace("executing queryHistory");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    Model historyModel = datasetReadRepository.getHistory(trialverseDatasetUri);
+    List<VersionNode> history = historyService.createHistory(trialverseDatasetUri);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-    httpServletResponse.setHeader("Content-Type", RDFLanguages.JSONLD.getContentType().getContentType());
-    trialverseIOUtilsService.writeModelToServletResponseJson(historyModel, httpServletResponse);
+    return history;
   }
 
   @RequestMapping(value = "/{datasetUUID}/versions/{versionUuid}", method = RequestMethod.GET)

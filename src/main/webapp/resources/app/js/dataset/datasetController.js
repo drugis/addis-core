@@ -37,7 +37,10 @@ define([],
 
       HistoryResource.query($stateParams).$promise.then(function(historyItems) {
         // sort to know it curentRevission is head
-        var indexedHistoryItems = HistoryService.addOrderIndex(historyItems);
+        var historyNodes = _.filter(historyItems, function(item) {
+          return item['@id'].indexOf('/versions/') > 0;
+        });
+        var indexedHistoryItems = HistoryService.addOrderIndex(historyNodes);
         $scope.currentRevision = _.find(indexedHistoryItems, function(item) {
           return item['@id'].lastIndexOf($stateParams.versionUuid) > 0;
         });
