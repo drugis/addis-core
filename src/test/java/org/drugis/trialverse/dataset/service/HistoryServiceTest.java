@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -64,15 +66,15 @@ public class HistoryServiceTest {
 
     when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri)).thenReturn(mapping);
     when(datasetReadRepository.getHistory(mapping.getVersionedDatasetUri())).thenReturn(historyModel);
-    when(datasetReadRepository.getHistory(URI.create("http://localhost:8080/datasets/be177e27-7978-41de-b4f9-9267ddd1cc41"))).thenReturn(historyModel);
-    when(datasetReadRepository.getHistory(URI.create("http://localhost:8080/datasets/a06d83d2-5819-402f-b6f3-e2682766a723"))).thenReturn(historyModel);
     List<VersionNode> history = historyService.createHistory(trialverseDatasetUri);
 
     assertTrue(history.size() > 0);
-    assertEquals("http://testhost/versions/e53caa0d-c0df-46db-977e-37f48fecb042", history.get(0).getUri());
-    assertEquals("Added an arm", history.get(0).getVersionTitle());
-    assertEquals("because I could", history.get(0).getDescription());
+    VersionNode versionNode = history.get(2);
+    assertEquals("http://testhost/versions/e53caa0d-c0df-46db-977e-37f48fecb042", versionNode.getUri());
+    assertEquals("Added an arm", versionNode.getVersionTitle());
+    assertEquals("because I could", versionNode.getDescription());
     assertEquals(null, history.get(1).getDescription());
+    assertEquals(new Date(1440672031000L), history.get(1).getVersionDate());
   }
 
 }

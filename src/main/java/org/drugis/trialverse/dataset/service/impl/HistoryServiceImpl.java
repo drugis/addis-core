@@ -1,8 +1,10 @@
 package org.drugis.trialverse.dataset.service.impl;
 
 import com.jayway.jsonpath.JsonPath;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.datatypes.xsd.XSDDateTime;
 import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
@@ -61,11 +63,14 @@ public class HistoryServiceImpl implements HistoryService {
   private static final String DC_TITLE = "http://purl.org/dc/terms/title";
   private static final String DC_DESCRIPTION = "http://purl.org/dc/terms/description";
   private static final String DC_CREATOR = "http://purl.org/dc/terms/creator";
+  private static final String DC_DATE = "http://purl.org/dc/terms/date";
+
 
   private static final Model defaultModel = ModelFactory.createDefaultModel();
   private static final String esPrefix = "http://drugis.org/eventSourcing/es#";
   private static final Property typeProperty = defaultModel.getProperty(RDF_TYPE_URI);
   private static final Property DESCRIPTION_PROPERTY = defaultModel.getProperty(DC_DESCRIPTION);
+  private static final Property DATE_PROPERTY = defaultModel.getProperty(DC_DATE);
   private static final Property titleProperty = defaultModel.getProperty(DC_TITLE);
   private static final Property creatorProperty = defaultModel.getProperty(DC_CREATOR);
   private static final Property datasetVersionObject = defaultModel.getProperty(esPrefix, DATASET_VERSION);
@@ -75,7 +80,6 @@ public class HistoryServiceImpl implements HistoryService {
   private static final Property revisionProperty = defaultModel.getProperty(esPrefix, REVISION);
   private static final Property datasetProperty = defaultModel.getProperty(esPrefix, DATASET);
 
-  private Map<String, VersionNode> versionNodes = new HashMap<>();
 
   @Override
   public List<VersionNode> createHistory(URI trialverseDatasetUri) throws URISyntaxException, IOException, RevisionNotFoundException {
@@ -98,11 +102,11 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     // sort the versions
-    List<Resource> sortedVersions = sortVersions(versionMap, headVersion);
+    List<VersionNode> sortedVersions = createSortedVersionList(versionMap, headVersion);
 
     Set<RDFNode> seenRevisions = new HashSet<>();
-    for (Resource version : sortedVersions) {
-      StmtIterator graphRevisionBlankNodes = historyModel.listStatements(version, graphRevisionProperty, (RDFNode) null);
+    for (VersionNode version : sortedVersions) {
+      StmtIterator graphRevisionBlankNodes = historyModel.listStatements(historyModel.getResource(version.getUri()), graphRevisionProperty, (RDFNode) null);
 
       while (graphRevisionBlankNodes.hasNext()) {
         Resource graphRevisionBlankNode = graphRevisionBlankNodes.nextStatement().getObject().asResource();
@@ -116,31 +120,36 @@ public class HistoryServiceImpl implements HistoryService {
             StmtIterator datasetReference = historyModel.listStatements(mergedRevision.getResource(), datasetProperty, (RDFNode) null);
             RDFNode sourceDataset = datasetReference.next().getObject();
             Merge merge = resolveMerge(mergedRevision.getObject().toString(), sourceDataset.toString());
-            versionNodes.get(version.getURI()).setMerge(merge);
+            version.setMerge(merge);
           }
         }
       }
     }
-    return new ArrayList<>(versionNodes.values());
+    return sortedVersions;
   }
 
-  private List<Resource> sortVersions(Map<String, Resource> versionMap, Resource headVersion) {
-    List<Resource> sortedVersions = new ArrayList<>();
+  private List<VersionNode> createSortedVersionList(Map<String, Resource> versionMap, Resource headVersion) {
+    List<VersionNode> sortedVersions = new ArrayList<>();
     Resource current = headVersion;
-    for (int i = 0; i < versionMap.size(); ++i) {
-      sortedVersions.add(current);
-      RDFNode title = current.getProperty(titleProperty).getObject();
-      String versionTitle = title == null ? "" : title.toString();
-      Resource creatorProp = current.getPropertyResourceValue(creatorProperty);
-      String creator = creatorProp == null ? "unknown creator" : creatorProp.toString();
-      Statement descriptionStatement = current.getProperty(DESCRIPTION_PROPERTY);
-      String description = descriptionStatement == null ? null : descriptionStatement.getObject().toString();
-      versionNodes.put(current.getURI(), new VersionNode(current.getURI(), versionTitle, description, creator, i));
+    for (int historyOrder = 0; historyOrder < versionMap.size(); ++historyOrder) {
+      sortedVersions.add(buildNewVersionNode(current, historyOrder));
       Resource next = current.getPropertyResourceValue(previousProperty);
       current = next;
     }
     sortedVersions = Lists.reverse(sortedVersions);
     return sortedVersions;
+  }
+
+  private VersionNode buildNewVersionNode(Resource current, int historyOrder) {
+    Statement title = current.getProperty(titleProperty);
+    String versionTitle = title == null ? "" : title.getObject().toString();
+    Resource creatorProp = current.getPropertyResourceValue(creatorProperty);
+    String creator = creatorProp == null ? "unknown creator" : creatorProp.toString();
+    Statement descriptionStatement = current.getProperty(DESCRIPTION_PROPERTY);
+    String description = descriptionStatement == null ? null : descriptionStatement.getObject().toString();
+    Statement dateProp = current.getProperty(DATE_PROPERTY);
+    Date versionDate = ((XSDDateTime) dateProp.getObject().asLiteral().getValue()).asCalendar().getTime();
+    return new VersionNode(current.getURI(), versionTitle, versionDate, description, creator, historyOrder);
   }
 
   private void populateVersionMaps(ResIterator stmtIterator, Map<String, Resource> versionMap, Map<String, Boolean> referencedMap) {
@@ -156,14 +165,15 @@ public class HistoryServiceImpl implements HistoryService {
   }
 
   private Merge resolveMerge(String revisionUri, String sourceDatasetUri) throws IOException, URISyntaxException, RevisionNotFoundException {
+    VersionMapping mapping = versionMappingRepository.getVersionMappingByVersionedURl(URI.create(sourceDatasetUri));
     Model history = datasetReadRepository.getHistory(URI.create(sourceDatasetUri));
     Pair<String, String> versionAndGraph = getVersionAndGraph(history, revisionUri);
+    String userUuid = DigestUtils.sha256Hex(mapping.getOwnerUuid());
     String version = versionAndGraph.getLeft();
     String graph = versionAndGraph.getRight();
     String title = getStudyTitle(sourceDatasetUri, version, graph);
-
     // find graph and version for the merge revision
-    return new Merge(revisionUri, sourceDatasetUri, version, graph, title);
+    return new Merge(revisionUri, mapping.getTrialverseDatasetUrl(), version, graph, title, userUuid);
   }
 
   private String getStudyTitle(String sourceDatasetUri, String version, String graph) throws IOException {

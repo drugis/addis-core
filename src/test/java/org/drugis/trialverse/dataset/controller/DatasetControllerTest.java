@@ -11,6 +11,7 @@ import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
+import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
@@ -70,6 +71,9 @@ public class DatasetControllerTest {
 
   @Mock
   private WebConstants webConstants;
+
+  @Mock
+  private HistoryService historyService;
 
   @Inject
   private WebApplicationContext webApplicationContext;
@@ -216,14 +220,11 @@ public class DatasetControllerTest {
     Model historyModel = ModelFactory.createDefaultModel();
     InputStream historyStream = new ClassPathResource("mockMergeHistory.ttl").getInputStream();
     historyModel.read(historyStream, null, "TTL");
-    when(datasetReadRepository.getHistory(datasetUri)).thenReturn(historyModel);
 
     mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/versions")).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType()));
+            .andExpect(content().contentType("application/json;charset=UTF-8"));
 
-    verify(datasetReadRepository).getHistory(datasetUri);
-    verify(trialverseIOUtilsService).writeModelToServletResponseJson(any(Model.class), Matchers.any(HttpServletResponse.class));
   }
 
   @Test

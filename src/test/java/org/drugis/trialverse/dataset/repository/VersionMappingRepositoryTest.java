@@ -45,7 +45,6 @@ public class VersionMappingRepositoryTest {
 
   @Test
   public void testCreateMapping() {
-
     String datasetLocation = "datasetLocation";
     String ownerUuid = "ownerUuid";
     String trialverseDataset = "versionKey";
@@ -60,8 +59,6 @@ public class VersionMappingRepositoryTest {
 
   @Test
   public void testFindMappingsByUserName() {
-
-
     List<VersionMapping> mockResult = Arrays.asList(new VersionMapping(1, "datasetUui1", userName, "trialverseDataset"));
     when(jdbcTemplate.query(anyString(), any(Object[].class), any(RowMapper.class))).thenReturn(mockResult);
 
@@ -79,4 +76,15 @@ public class VersionMappingRepositoryTest {
 
     assertEquals(mockResult, versionMapping);
   }
+
+  @Test
+  public void getVersionMappingByVersionedUrl() throws URISyntaxException {
+    URI datasetUrl = new URI("datasetUrl");
+    VersionMapping mockResult = new VersionMapping(1, "datasetUui1", userName, "trialverseDataset");
+    when(jdbcTemplate.queryForObject(anyString(), any(RowMapper.class), anyObject())).thenReturn(mockResult);
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByVersionedURl(datasetUrl);
+
+    assertEquals(mockResult, versionMapping);
+  }
+
 }

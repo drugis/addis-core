@@ -1,5 +1,7 @@
 package org.drugis.trialverse.dataset.model;
 
+import java.util.Date;
+
 /**
  * Created by daan on 1-9-15.
  */
@@ -7,19 +9,21 @@ public class VersionNode {
   private String uri;
   private String versionTitle;
   private String creator;
-  private int i;
+  private int historyOrder;
   private Merge merge;
+  private Date versionDate;
   private String description;
 
   public VersionNode() {
   }
 
-  public VersionNode(String uri, String versionTitle, String description, String creator, int i) {
+  public VersionNode(String uri, String versionTitle, Date versionDate, String description, String creator, int historyOrder) {
     this.uri = uri;
     this.versionTitle = versionTitle;
+    this.versionDate = versionDate;
     this.description = description;
     this.creator = creator;
-    this.i = i;
+    this.historyOrder = historyOrder;
   }
 
   public void setMerge(Merge merge) {
@@ -42,12 +46,16 @@ public class VersionNode {
     return creator;
   }
 
-  public int getI() {
-    return i;
+  public int getHistoryOrder() {
+    return historyOrder;
   }
 
   public String getDescription() {
     return description;
+  }
+
+  public Date getVersionDate() {
+    return versionDate;
   }
 
   @Override
@@ -57,11 +65,12 @@ public class VersionNode {
 
     VersionNode that = (VersionNode) o;
 
-    if (i != that.i) return false;
+    if (historyOrder != that.historyOrder) return false;
     if (!uri.equals(that.uri)) return false;
     if (!versionTitle.equals(that.versionTitle)) return false;
     if (!creator.equals(that.creator)) return false;
     if (merge != null ? !merge.equals(that.merge) : that.merge != null) return false;
+    if (!versionDate.equals(that.versionDate)) return false;
     return !(description != null ? !description.equals(that.description) : that.description != null);
 
   }
@@ -71,8 +80,9 @@ public class VersionNode {
     int result = uri.hashCode();
     result = 31 * result + versionTitle.hashCode();
     result = 31 * result + creator.hashCode();
-    result = 31 * result + i;
+    result = 31 * result + historyOrder;
     result = 31 * result + (merge != null ? merge.hashCode() : 0);
+    result = 31 * result + versionDate.hashCode();
     result = 31 * result + (description != null ? description.hashCode() : 0);
     return result;
   }

@@ -64,4 +64,10 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository {
     String sql = "Select * FROM VersionMapping WHERE trialverseDatasetUrl = ?";
     return jdbcTemplate.queryForObject(sql, rowMapper, trialverseDatsetUrl.toString());
   }
+
+  @Override
+  public VersionMapping getVersionMappingByVersionedURl(URI versionedUri) {
+    String sql = "Select * FROM VersionMapping WHERE versioneddataseturl = ?";
+    return jdbcTemplate.queryForObject(sql, rowMapper, versionedUri.toString());
+  }
 }

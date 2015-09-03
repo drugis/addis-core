@@ -39,7 +39,7 @@ define([],
         $scope.currentRevision = _.find(historyItems, function(item) {
           return item.uri.lastIndexOf($stateParams.versionUuid) > 0;
         });
-        $scope.currentRevision.isHead = $scope.currentRevision.i === 0;
+        $scope.currentRevision.isHead = $scope.currentRevision.historyOrder === 0;
         $scope.isEditingAllowed = isEditingAllowed();
       });
 
