@@ -8,7 +8,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       mockRemoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['deFusekify']),
       studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get']),
       historyResource = jasmine.createSpyObj('HistoryResource', ['query']),
-      historyService = jasmine.createSpyObj('HistoryService', ['addOrderIndex']),
       conceptService = jasmine.createSpyObj('ConceptService', ['loadStore', 'queryItems']),
       versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get']),
       mockLoadStoreDeferred,
@@ -63,10 +62,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       historyResource.query.and.returnValue({
         $promise: queryHistoryDeferred.promise
       });
-      historyService.addOrderIndex.and.returnValue([{
-        '@id': 'http://host/versions/' + versionUuid,
-        idx: 0
-      }]);
 
       mockModal.open.calls.reset();
       httpBackend.expectGET('/users/' + userUid + '/datasets/' + datasetUUID + '/versions/' + versionUuid).respond('dataset');
@@ -89,7 +84,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         StudiesWithDetailsService: studiesWithDetailsService,
         RemoteRdfStoreService: mockRemoteRdfStoreService,
         HistoryResource: historyResource,
-        HistoryService: historyService,
         ConceptService: conceptService,
         VersionedGraphResource: versionedGraphResource
       });
@@ -129,7 +123,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should place the current revision on the scope', function() {
         var historyItems = [{
-          '@id': 'http://host/versions/' + versionUuid
+          'uri': 'http://uri/version-1',
+          i: 0
         }];
         queryHistoryDeferred.resolve(historyItems);
         scope.$digest();

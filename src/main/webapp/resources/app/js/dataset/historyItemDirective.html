@@ -1,6 +1,6 @@
 <div class="panel clearfix">
   <h5>{{item.creator | stripFrontFilter:'mailto:'}} <span>({{item.date | date:'medium'}})</span></h5>
-  <p><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">{{item.title}}</a></p>
+  <p><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">{{item.versionTitle}}</a></p>
   <p style="white-space: pre-wrap;">{{item.description}}</p>
   <div ng-show="item.merge">
     Study copied to this dataset. Source: <a href="item.merge.graph">{{item.merge.title}}</a>

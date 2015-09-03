@@ -3,12 +3,11 @@ define([],
   function() {
     var dependencies = ['$scope', '$q', '$window', '$stateParams', '$modal', '$filter',
       'SingleDatasetService', 'DatasetVersionedResource', 'StudiesWithDetailsService',
-      'RemoteRdfStoreService', 'HistoryResource', 'HistoryService',
-      'ConceptService', 'VersionedGraphResource'
+      'RemoteRdfStoreService', 'HistoryResource', 'ConceptService', 'VersionedGraphResource'
     ];
     var DatasetController = function($scope, $q, $window, $stateParams, $modal, $filter,
       SingleDatasetService, DatasetVersionedResource, StudiesWithDetailsService,
-      RemoteRdfStoreService, HistoryResource, HistoryService, ConceptService, VersionedGraphResource) {
+      RemoteRdfStoreService, HistoryResource, ConceptService, VersionedGraphResource) {
 
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUUID = $stateParams.datasetUUID;

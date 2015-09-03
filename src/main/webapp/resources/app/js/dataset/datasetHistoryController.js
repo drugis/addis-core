@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', 'HistoryResource', 'HistoryService', 'DatasetResource', 'SingleDatasetService'];
-    var DatasetHistoryController = function($scope, $stateParams, HistoryResource, HistoryService, DatasetResource, SingleDatasetService) {
+    var dependencies = ['$scope', '$stateParams', 'HistoryResource', 'DatasetResource', 'SingleDatasetService'];
+    var DatasetHistoryController = function($scope, $stateParams, HistoryResource, DatasetResource, SingleDatasetService) {
 
       $scope.datasetUUID = $stateParams.datasetUUID;
       $scope.userUid = $stateParams.userUid;
