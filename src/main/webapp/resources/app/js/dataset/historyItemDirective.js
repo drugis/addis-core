@@ -9,9 +9,9 @@ define([], function() {
         item: '='
       },
       link: function(scope) {
-        var itemId = scope.item['@id'];
+        var uri = scope.item.uri;
         scope.userUid = $stateParams.userUid;
-        scope.versionUuid = itemId.substr(itemId.lastIndexOf('/') + 1);
+        scope.versionUuid = uri.substr(uri.lastIndexOf('/') + 1);
         scope.datasetUUID = $stateParams.datasetUUID;
       }
     };

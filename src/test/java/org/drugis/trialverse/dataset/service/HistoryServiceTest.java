@@ -22,7 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -71,6 +71,8 @@ public class HistoryServiceTest {
     assertTrue(history.size() > 0);
     assertEquals("http://testhost/versions/e53caa0d-c0df-46db-977e-37f48fecb042", history.get(0).getUri());
     assertEquals("Added an arm", history.get(0).getVersionTitle());
+    assertEquals("because I could", history.get(0).getDescription());
+    assertEquals(null, history.get(1).getDescription());
   }
 
 }

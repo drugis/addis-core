@@ -18,7 +18,7 @@ define([],
 
       function isEditingAllowed() {
         return !!($scope.dataset && $scope.dataset.creator === $window.config.user.userEmail &&
-          $scope.currentRevision && $scope.currentRevision.i === 0);
+          $scope.currentRevision && $scope.currentRevision.isHead);
       }
 
       $scope.isEditingAllowed = false;
@@ -39,6 +39,7 @@ define([],
         $scope.currentRevision = _.find(historyItems, function(item) {
           return item.uri.lastIndexOf($stateParams.versionUuid) > 0;
         });
+        $scope.currentRevision.isHead = $scope.currentRevision.i === 0;
         $scope.isEditingAllowed = isEditingAllowed();
       });
 

@@ -59,11 +59,13 @@ public class HistoryServiceImpl implements HistoryService {
   private static final String PREVIOUS = "previous";
   private static final String RDF_TYPE_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
   private static final String DC_TITLE = "http://purl.org/dc/terms/title";
+  private static final String DC_DESCRIPTION = "http://purl.org/dc/terms/description";
   private static final String DC_CREATOR = "http://purl.org/dc/terms/creator";
 
   private static final Model defaultModel = ModelFactory.createDefaultModel();
   private static final String esPrefix = "http://drugis.org/eventSourcing/es#";
   private static final Property typeProperty = defaultModel.getProperty(RDF_TYPE_URI);
+  private static final Property DESCRIPTION_PROPERTY = defaultModel.getProperty(DC_DESCRIPTION);
   private static final Property titleProperty = defaultModel.getProperty(DC_TITLE);
   private static final Property creatorProperty = defaultModel.getProperty(DC_CREATOR);
   private static final Property datasetVersionObject = defaultModel.getProperty(esPrefix, DATASET_VERSION);
@@ -131,7 +133,9 @@ public class HistoryServiceImpl implements HistoryService {
       String versionTitle = title == null ? "" : title.toString();
       Resource creatorProp = current.getPropertyResourceValue(creatorProperty);
       String creator = creatorProp == null ? "unknown creator" : creatorProp.toString();
-      versionNodes.put(current.getURI(), new VersionNode(current.getURI(), versionTitle, creator, i));
+      Statement descriptionStatement = current.getProperty(DESCRIPTION_PROPERTY);
+      String description = descriptionStatement == null ? null : descriptionStatement.getObject().toString();
+      versionNodes.put(current.getURI(), new VersionNode(current.getURI(), versionTitle, description, creator, i));
       Resource next = current.getPropertyResourceValue(previousProperty);
       current = next;
     }
