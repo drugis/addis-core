@@ -19,7 +19,7 @@ define([],
 
       function isEditingAllowed() {
         return !!($scope.dataset && $scope.dataset.creator === $window.config.user.userEmail &&
-          $scope.currentRevision && $scope.currentRevision.idx === 0);
+          $scope.currentRevision && $scope.currentRevision.i === 0);
       }
 
       $scope.isEditingAllowed = false;
@@ -37,12 +37,8 @@ define([],
 
       HistoryResource.query($stateParams).$promise.then(function(historyItems) {
         // sort to know it curentRevission is head
-        var historyNodes = _.filter(historyItems, function(item) {
-          return item['@id'].indexOf('/versions/') > 0;
-        });
-        var indexedHistoryItems = HistoryService.addOrderIndex(historyNodes);
-        $scope.currentRevision = _.find(indexedHistoryItems, function(item) {
-          return item['@id'].lastIndexOf($stateParams.versionUuid) > 0;
+        $scope.currentRevision = _.find(historyItems, function(item) {
+          return item.uri.lastIndexOf($stateParams.versionUuid) > 0;
         });
         $scope.isEditingAllowed = isEditingAllowed();
       });

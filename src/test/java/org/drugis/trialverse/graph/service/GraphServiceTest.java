@@ -25,6 +25,7 @@ import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Created by daan on 26-8-15.
@@ -51,7 +52,7 @@ public class GraphServiceTest {
   @Before
   public void setUp() {
     graphService = new GraphServiceImpl();
-    MockitoAnnotations.initMocks(this);
+    initMocks(this);
     when(webConstants.getTriplestoreBaseUri()).thenReturn(testHost);
   }
 

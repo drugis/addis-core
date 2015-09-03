@@ -20,29 +20,13 @@ define([],
       $scope.historyItems = HistoryResource.query($stateParams);
 
       function oldToNew(a, b) {
-        return b.idx - a.idx;
+        return b.i - a.i;
       }
 
       $scope.historyItems.$promise.then(function(historyResult) {
-      var historyNodes = _.filter(historyResult, function(item) {
-        return item['@id'].indexOf('/versions/') > 0;
-      });
-        var otherNodes = _.filter(historyResult, function(item) {
-          return item['@id'].indexOf('/versions/') <= 0;
-        });
-
-        historyNodes = _.map(historyNodes, function(item) {
-          return _.extend(item, {
-            title: item['http://purl.org/dc/terms/title'],
-            description: item['http://purl.org/dc/terms/description']
-          });
-        });
-
-        $scope.historyItems = HistoryService.addOrderIndex(historyNodes);
         $scope.historyItems.sort(oldToNew);
-        $scope.historyItems = HistoryService.addMergeIndicators($scope.historyItems, historyResult);
-        var headItemId = ($scope.historyItems[0])['@id'];
-        $scope.headVersion = headItemId.substr(headItemId.lastIndexOf('/') + 1);
+        var headItemUri = ($scope.historyItems[0].uri);
+        $scope.headVersion = headItemUri.substr(headItemUri.lastIndexOf('/') + 1);
       });
     };
     return dependencies.concat(DatasetHistoryController);
