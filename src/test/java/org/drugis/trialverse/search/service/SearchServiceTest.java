@@ -56,21 +56,23 @@ public class SearchServiceTest {
     when(versionMappingRepository.getVersionMappings()).thenReturn(versionMappings);
 
     String searchQuery = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-            "PREFIX ontology: <http://trials.drugis.org/ontology#>\n" +
+            "prefix ontology: <http://trials.drugis.org/ontology#>\n" +
             "\n" +
-            "SELECT * WHERE {\n" +
+            "SELECT ?study ?label ?comment WHERE {\n" +
             "  graph ?graph {\n" +
             "    {\n" +
             "      ?study\n" +
             "        a ontology:Study ;\n" +
-            "        rdfs:label ?label .\n" +
-            "      FILTER regex(?label, \"my term\", \"i\") .\n" +
+            "        rdfs:label ?labelSearchResult .\n" +
+            "        FILTER regex(?labelSearchResult, \"my term\", \"i\") .\n" +
             "    } UNION {\n" +
             "      ?study\n" +
             "        a ontology:Study ;\n" +
-            "        rdfs:comment ?comment\n" +
-            "      FILTER regex(?comment, \"my term\", \"i\")\n" +
-            "    }\n" +
+            "        rdfs:comment ?commentSearchResult\n" +
+            "      FILTER regex(?commentSearchResult, \"my term\", \"i\")\n" +
+            "    }.\n" +
+            "    ?study rdfs:label ?label .\n" +
+            "    OPTIONAL {?study rdfs:comment ?comment .}\n" +
             "  }\n" +
             "}";
     InputStream inputStream = new ClassPathResource("mockSearchResults.json").getInputStream();

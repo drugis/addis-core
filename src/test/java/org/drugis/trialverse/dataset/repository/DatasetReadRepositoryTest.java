@@ -267,10 +267,6 @@ public class DatasetReadRepositoryTest {
     verify(httpClient).execute(any(HttpGet.class));
   }
 
-  public void testFun(Object o) {
-    System.out.println(o);
-  }
-
   @Test
   public void testTextQuery() throws Exception {
 
@@ -285,7 +281,7 @@ public class DatasetReadRepositoryTest {
     model1.read(mockStudyGraph2, null, "TTL");
     dataset.addNamedModel("http://study2", model2);
 
-    String template = IOUtils.toString(new ClassPathResource("testFindStudiesByTerms.sparql")
+    String template = IOUtils.toString(new ClassPathResource("findStudiesByTerms.sparql")
             .getInputStream(), "UTF-8");
     CharSequence searchTerm = "Depress";
     String queryStr = template.replace("$searchTerm", searchTerm);

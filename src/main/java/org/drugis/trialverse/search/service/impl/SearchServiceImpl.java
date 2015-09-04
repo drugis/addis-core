@@ -52,7 +52,7 @@ public class SearchServiceImpl implements SearchService {
       JSONObject queryResult = datasetReadRepository.executeHeadQuery(queryString, mapping);
       Object result =  new ObjectMapper().readValue(queryResult.toJSONString(), SearchResult.class);
       List<SearchResult> searchResults = (ArrayList<SearchResult>) result;
-//      searchResults.stream().map((aThing) -> aThing.setDatasetUrl(mapping.getTrialverseDatasetUrl()))
+      searchResults.stream().forEach((streamResult) -> streamResult.addMetaData(mapping));
       System.out.println(queryResult);
       aggregateResults.addAll(searchResults);
     }
