@@ -1,30 +1,20 @@
 package org.drugis.trialverse.util.service;
 
-import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.sparql.graph.GraphFactory;
-import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolVersion;
-
-import org.apache.http.entity.BasicHttpEntity;
-import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.message.BasicStatusLine;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.graph.GraphFactory;
 import org.drugis.trialverse.util.service.impl.TrialverseIOUtilsServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 /**
  * Created by connor on 12-11-14.
@@ -60,6 +50,29 @@ public class TrialverseIOUtilsServiceTest {
 
     String expected = "<http://test.com/asd>\n" +
             "        <http://something>  \"c\" .";
+
+    assertEquals(expected.trim(), httpServletResponse.getContentAsString().trim());
+  }
+
+  @Test
+  public void testWriteModelToServletResponseJson() throws UnsupportedEncodingException {
+    MockHttpServletResponse httpServletResponse = new MockHttpServletResponse();
+    Graph graph = GraphFactory.createGraphMem();
+    Triple triple = new Triple(NodeFactory.createURI("http://test.com/asd"), NodeFactory.createURI("http://something"), NodeFactory.createLiteral("c"));
+    graph.add(triple);
+    Model model = ModelFactory.createModelForGraph(graph);
+    trialverseIOUtilsService.writeModelToServletResponseJson(model, httpServletResponse);
+
+    String expected = "{\n" +
+            "  \"@id\" : \"http://test.com/asd\",\n" +
+            "  \"http://something\" : \"c\",\n" +
+            "  \"@context\" : {\n" +
+            "    \"something\" : {\n" +
+            "      \"@id\" : \"http://something\",\n" +
+            "      \"@type\" : \"http://www.w3.org/2001/XMLSchema#string\"\n" +
+            "    }\n" +
+            "  }\n" +
+            "}";
 
     assertEquals(expected.trim(), httpServletResponse.getContentAsString().trim());
   }

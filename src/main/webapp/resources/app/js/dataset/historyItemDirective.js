@@ -9,10 +9,23 @@ define([], function() {
         item: '='
       },
       link: function(scope) {
-        var itemId = scope.item['@id'];
+        function segmentAfterLastSlash(str) {
+          return str.substr(str.lastIndexOf('/') + 1);
+        }
+        var uri = scope.item.uri;
         scope.userUid = $stateParams.userUid;
-        scope.versionUuid = itemId.substr(itemId.lastIndexOf('/') + 1);
+        scope.versionUuid = segmentAfterLastSlash(uri);
         scope.datasetUUID = $stateParams.datasetUUID;
+        if(scope.item.merge) {
+          var sourceUserUuid = scope.item.merge.sourceUserUuid;
+          var sourceDatasetUri = scope.item.merge.sourceDatasetUri;
+          var sourceVersionUri = scope.item.merge.version;
+          var sourceGraphUri = scope.item.merge.graph;
+          scope.sourceUserUuid = sourceUserUuid;
+          scope.sourceDatasetUuid = segmentAfterLastSlash(sourceDatasetUri);
+          scope.sourceVersionUuid = segmentAfterLastSlash(sourceVersionUri);
+          scope.sourceGraphUuid = segmentAfterLastSlash(sourceGraphUri);
+        }
       }
     };
   };

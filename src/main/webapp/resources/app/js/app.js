@@ -90,17 +90,20 @@ define(
             controller: 'UserController'
           })
           .state('create-dataset', {
-            url: '/users/:userUid/create-dataset',
+            parent: 'user',
+            url: '/create-dataset',
             templateUrl: 'app/js/user/createDataset.html',
             controller: 'CreateDatasetController'
           })
           .state('versionedDataset', {
-            url: '/users/:userUid/datasets/:datasetUUID/versions/:versionUuid',
+            parent: 'user',
+            url: '/datasets/:datasetUUID/versions/:versionUuid',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
           })
           .state('datasetHistory', {
-            url: '/users/:userUid/datasets/:datasetUUID/history',
+            parent: 'user',
+            url: '/datasets/:datasetUUID/history',
             templateUrl: 'app/js/dataset/datasetHistory.html',
             controller: 'DatasetHistoryController'
           })

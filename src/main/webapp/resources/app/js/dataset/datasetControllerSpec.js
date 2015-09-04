@@ -4,11 +4,10 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     var scope, httpBackend,
       mockModal = jasmine.createSpyObj('$mock', ['open']),
-      mockDatasetService = jasmine.createSpyObj('DatasetService', ['loadStore', 'queryDataset', 'reset']),
+      mockSingleDatasetService = jasmine.createSpyObj('SingleDatasetService', ['loadStore', 'queryDataset', 'reset']),
       mockRemoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['deFusekify']),
       studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get']),
       historyResource = jasmine.createSpyObj('HistoryResource', ['query']),
-      historyService = jasmine.createSpyObj('HistoryService', ['addOrderIndex']),
       conceptService = jasmine.createSpyObj('ConceptService', ['loadStore', 'queryItems']),
       versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get']),
       mockLoadStoreDeferred,
@@ -52,8 +51,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       queryHistoryDeferred = $q.defer();
       getConceptsDeferred = $q.defer();
 
-      mockDatasetService.loadStore.and.returnValue(mockLoadStoreDeferred.promise);
-      mockDatasetService.queryDataset.and.returnValue(mockQueryDatasetDeferred.promise);
+      mockSingleDatasetService.loadStore.and.returnValue(mockLoadStoreDeferred.promise);
+      mockSingleDatasetService.queryDataset.and.returnValue(mockQueryDatasetDeferred.promise);
       studiesWithDetailsService.get.and.returnValue(studiesWithDetailsGetDeferred.promise);
       mockRemoteRdfStoreService.deFusekify.and.returnValue(mockStudiesWithDetail);
       conceptService.loadStore.and.returnValue({then: function(){}});
@@ -63,10 +62,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       historyResource.query.and.returnValue({
         $promise: queryHistoryDeferred.promise
       });
-      historyService.addOrderIndex.and.returnValue([{
-        '@id': 'http://host/versions/' + versionUuid,
-        idx: 0
-      }]);
 
       mockModal.open.calls.reset();
       httpBackend.expectGET('/users/' + userUid + '/datasets/' + datasetUUID + '/versions/' + versionUuid).respond('dataset');
@@ -84,12 +79,11 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         $window: windowMock,
         $stateParams: stateParams,
         $modal: mockModal,
-        DatasetService: mockDatasetService,
+        SingleDatasetService: mockSingleDatasetService,
         DatasetVersionedResource: DatasetVersionedResource,
         StudiesWithDetailsService: studiesWithDetailsService,
         RemoteRdfStoreService: mockRemoteRdfStoreService,
         HistoryResource: historyResource,
-        HistoryService: historyService,
         ConceptService: conceptService,
         VersionedGraphResource: versionedGraphResource
       });
@@ -102,11 +96,11 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           mock: 'object'
         }];
         httpBackend.flush();
-        expect(mockDatasetService.reset).toHaveBeenCalled();
-        expect(mockDatasetService.loadStore).toHaveBeenCalled();
+        expect(mockSingleDatasetService.reset).toHaveBeenCalled();
+        expect(mockSingleDatasetService.loadStore).toHaveBeenCalled();
         mockLoadStoreDeferred.resolve();
         scope.$digest();
-        expect(mockDatasetService.queryDataset).toHaveBeenCalled();
+        expect(mockSingleDatasetService.queryDataset).toHaveBeenCalled();
         mockQueryDatasetDeferred.resolve(mockDataset);
         scope.$digest();
         expect(scope.dataset).toEqual({
@@ -129,7 +123,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should place the current revision on the scope', function() {
         var historyItems = [{
-          '@id': 'http://host/versions/' + versionUuid
+          'uri': 'http://uri/version-1',
+          i: 0
         }];
         queryHistoryDeferred.resolve(historyItems);
         scope.$digest();

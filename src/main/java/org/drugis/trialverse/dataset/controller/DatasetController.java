@@ -1,16 +1,18 @@
 package org.drugis.trialverse.dataset.controller;
 
-import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpException;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-
-import org.apache.http.message.BasicHeader;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
+import org.drugis.trialverse.dataset.exception.CreateDatasetException;
+import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
+import org.drugis.trialverse.dataset.model.VersionMapping;
+import org.drugis.trialverse.dataset.model.VersionNode;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
-import org.drugis.trialverse.exception.CreateDatasetException;
+import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
+import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.Namespaces;
@@ -23,12 +25,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
+import java.util.List;
 
 /**
  * Created by connor on 6-11-14.
@@ -46,7 +48,13 @@ public class DatasetController extends AbstractTrialverseController {
   private DatasetReadRepository datasetReadRepository;
 
   @Inject
+  private HistoryService historyService;
+
+  @Inject
   private TrialverseIOUtilsService trialverseIOUtilsService;
+
+  @Inject
+  private VersionMappingRepository versionMappingRepository;
 
   @Inject
   private AccountRepository accountRepository;
@@ -61,11 +69,11 @@ public class DatasetController extends AbstractTrialverseController {
           throws URISyntaxException, CreateDatasetException, HttpException {
     logger.trace("createDataset");
     Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-    if(currentUserAccount.getuserNameHash().equals(userUid)) {
+    if (currentUserAccount.getuserNameHash().equals(userUid)) {
       URI datasetUri = datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), currentUserAccount);
       response.setStatus(HttpServletResponse.SC_CREATED);
       response.setHeader("Location", datasetUri.toString());
-    }else {
+    } else {
       logger.error("attempted to created database for user that is not the login-user ");
       response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
@@ -120,13 +128,12 @@ public class DatasetController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/{datasetUUID}/versions", method = RequestMethod.GET)
   @ResponseBody
-  public void queryHistory(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException {
+  public List<VersionNode> queryHistory(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws URISyntaxException, IOException, RevisionNotFoundException {
     logger.trace("executing queryHistory");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    byte[] response = datasetReadRepository.getHistory(trialverseDatasetUri);
+    List<VersionNode> history = historyService.createHistory(trialverseDatasetUri);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-    httpServletResponse.setHeader("Content-Type", RDFLanguages.JSONLD.getContentType().getContentType());
-    trialverseIOUtilsService.writeContentToServletResponse(response, httpServletResponse);
+    return history;
   }
 
   @RequestMapping(value = "/{datasetUUID}/versions/{versionUuid}", method = RequestMethod.GET)

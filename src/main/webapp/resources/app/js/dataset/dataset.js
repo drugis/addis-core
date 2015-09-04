@@ -9,7 +9,8 @@ define(function (require) {
 
     //services
     .factory('DatasetService', require('dataset/datasetService'))
-    .factory('HistoryService', require('dataset/historyService'))
+    .factory('DatasetOverviewService', require('dataset/datasetOverviewService'))
+    .factory('SingleDatasetService', require('dataset/singleDatasetService'))
     .factory('StudiesWithDetailsService', require('dataset/studiesWithDetailsService'))
 
     //resources

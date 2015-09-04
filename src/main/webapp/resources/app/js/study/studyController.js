@@ -14,19 +14,8 @@ define([],
       $scope.datasetUUID = $stateParams.datasetUUID;
       $scope.studyGraphUuid = $stateParams.studyGraphUuid;
       $scope.versionUuid = $stateParams.versionUuid;
-      $scope.resetStudy = resetStudy;
-      $scope.saveStudy = saveStudy;
-      $scope.isStudyModified = StudyService.isStudyModified;
-      $scope.sideNavClick = sideNavClick;
-
-      $scope.canCopyStudy = true;
-
+      $scope.openCopyDialog = openCopyDialog;
       $scope.study = {};
-      $scope.navSettings = {
-        isCompact: false,
-        isHidden: false
-      };
-
       $scope.categorySettings = {
         studyInformation: {
           service: 'StudyInformationService',
@@ -131,6 +120,7 @@ define([],
           editItemController: 'ActivityController',
         }
       };
+
       $scope.conceptSettings = {
         drugs: {
           label: 'Drugs',
@@ -154,47 +144,14 @@ define([],
         }
       };
 
-      reloadStudyModel();
-
-      $scope.$on('updateStudyDesign', function() {
-        console.log('update design');
-        ResultsService.cleanUpMeasurements().then(function() {
-          $scope.$broadcast('refreshResults');
-        });
-        StudyDesignService.cleanupCoordinates($stateParams.studyUUID).then(function() {
-          console.log('after cleanup coord');
-          $scope.$broadcast('refreshStudyDesign');
-        });
-      });
-
-      function sideNavClick(anchor) {
-        var newHash = anchor;
-        $anchorScroll.yOffset = 73;
-        if ($location.hash() !== newHash) {
-          $location.hash(anchor);
-        } else {
-          $anchorScroll();
-        }
-      };
-
-      function saveStudy() {
-        // skip save check in controller as ng-disabled does not work with a <a> tag needed by foundation menu item
-        if(!StudyService.isStudyModified()) {
-           return;
-        }
+      function openCopyDialog() {
 
         $modal.open({
-          templateUrl: 'app/js/commit/commit.html',
-          controller: 'CommitController',
+          templateUrl: 'app/js/study/copyStudy.html',
+          controller: 'CopyStudyController',
           resolve: {
-            callback: function() {
-              return function(newVersion) {
-                StudyService.studySaved();
-                $location.path('/users/' + $stateParams.userId + '/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);
-              };
-            },
-            userUid: function() {
-              return $stateParams.userUid;
+            datasets: function() {
+              return $scope.datasets;
             },
             datasetUuid: function() {
               return $stateParams.datasetUUID;
@@ -202,18 +159,12 @@ define([],
             graphUuid: function() {
               return $stateParams.studyGraphUuid;
             },
-            itemServiceName: function() {
-              return 'StudyService';
+            versionUuid: function() {
+              return $stateParams.versionUuid;
             }
           }
         });
-      };
-
-      var navbar = document.getElementsByClassName('side-nav');
-      angular.element($window).bind('scroll', function() {
-        $(navbar[0]).css('margin-top', this.pageYOffset - 20);
-        $scope.$apply();
-      });
+      }
 
       function reloadStudyModel() {
         VersionedGraphResource.get({
@@ -238,11 +189,81 @@ define([],
         });
       }
 
-      function resetStudy() {
+      $scope.resetStudy = function() {
         // skip reset check in controller as ng-disabled does not work with a <a> tag needed by foundation menu item
         if(StudyService.isStudyModified()) {
            reloadStudyModel();
         }
+      };
+
+      reloadStudyModel();
+
+      $scope.$on('updateStudyDesign', function() {
+        console.log('update design');
+        ResultsService.cleanUpMeasurements().then(function() {
+          $scope.$broadcast('refreshResults');
+        });
+        StudyDesignService.cleanupCoordinates($stateParams.studyUUID).then(function() {
+          console.log('after cleanup coord');
+          $scope.$broadcast('refreshStudyDesign');
+        });
+      });
+
+      $scope.isStudyModified = function() {
+        return StudyService.isStudyModified();
+      };
+
+      $scope.sideNavClick = function(anchor) {
+        var newHash = anchor;
+        $anchorScroll.yOffset = 73;
+        if ($location.hash() !== newHash) {
+          $location.hash(anchor);
+        } else {
+          $anchorScroll();
+        }
+      };
+
+      $scope.saveStudy = function() {
+        // skip save check in controller as ng-disabled does not work with a <a> tag needed by foundation menu item
+        if(!StudyService.isStudyModified()) {
+           return;
+        }
+
+        $modal.open({
+          templateUrl: 'app/js/commit/commit.html',
+          controller: 'CommitController',
+          resolve: {
+            callback: function() {
+              return function(newVersion) {
+                StudyService.studySaved();
+                $location.path('/users/' + $stateParams.userUid + '/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);
+              };
+            },
+            userUid: function() {
+              return $stateParams.userUid;
+            },
+            datasetUuid: function() {
+              return $stateParams.datasetUUID;
+            },
+            graphUuid: function() {
+              return $stateParams.studyGraphUuid;
+            },
+            itemServiceName: function() {
+              return 'StudyService';
+            }
+          }
+        });
+      };
+
+      var navbar = document.getElementsByClassName('side-nav');
+      angular.element($window).bind('scroll', function() {
+        $(navbar[0]).css('margin-top', this.pageYOffset - 20);
+        $scope.$apply();
+      });
+
+      $scope.navSettings = {
+        isCompact: false,
+        isHidden: false
       };
 
       function calculateNavSettings() {

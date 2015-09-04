@@ -1,9 +1,6 @@
 package org.drugis.trialverse.dataset.repository;
 
 
-import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.sparql.graph.GraphFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -15,8 +12,12 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
+import org.apache.jena.sparql.graph.GraphFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.impl.DatasetReadRepositoryImpl;
@@ -50,6 +51,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
+import static org.apache.http.HttpHeaders.ACCEPT;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -77,15 +79,10 @@ public class DatasetReadRepositoryTest {
 
   @Before
   public void init() throws IOException {
-
-    webConstants = mock(WebConstants.class);
-    jenaFactory = mock(JenaFactory.class);
-
     datasetReadRepository = new DatasetReadRepositoryImpl();
     MockitoAnnotations.initMocks(this);
 
     when(webConstants.getTriplestoreBaseUri()).thenReturn("baseUri/");
-
   }
 
   @Test
@@ -124,7 +121,7 @@ public class DatasetReadRepositoryTest {
     when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl)).thenReturn(mapping);
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, webConstants.getTriplestoreBaseUri() + WebConstants.VERSION_PATH + versionUuid);
-    httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
+    httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     ResponseEntity<Graph> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), HttpStatus.OK);
     String uri = versionedUri + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
@@ -188,7 +185,7 @@ public class DatasetReadRepositoryTest {
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
-    httpHeaders.add(org.apache.http.HttpHeaders.ACCEPT, acceptType);
+    httpHeaders.add(ACCEPT, acceptType);
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     ResponseEntity responseEntity = new ResponseEntity<>(JSON.parse("{\"boolean\":true}"), HttpStatus.OK);
     String containsStudyWithShortNameTemplate = IOUtils.toString(new ClassPathResource("askContainsStudyWithLabel.sparql").getInputStream(), "UTF-8");
@@ -207,26 +204,19 @@ public class DatasetReadRepositoryTest {
 
   @Test
   public void testGetHistory() throws URISyntaxException, IOException {
-    String user1 = "user1";
-    URI datasetUrl = new URI("uuid-1");
     String versionedDatasetUrl = "http://whatever";
+    URI uri = new URI(versionedDatasetUrl + WebConstants.HISTORY_ENDPOINT);
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
+    HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
+    ResponseEntity<Graph> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), HttpStatus.OK);
+    when(restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class)).thenReturn(responseEntity);
 
-    HttpResponse mockResponse = mock(CloseableHttpResponse.class);
-    org.apache.http.HttpEntity entity = mock(org.apache.http.HttpEntity.class);
-    when(mockResponse.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, org.apache.http.HttpStatus.SC_OK, "FINE!"));
-    String responceString = "check me out";
-    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString));
-    when(mockResponse.getEntity()).thenReturn(entity);
-    when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
+    Model historyModel = datasetReadRepository.getHistory(URI.create(versionedDatasetUrl));
 
-    VersionMapping versionMapping = new VersionMapping(1, versionedDatasetUrl, user1, datasetUrl.toString());
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
-    when(httpClient.execute(any(HttpGet.class))).thenReturn(mockResponse);
-    byte[] actualHttpResponseContent = datasetReadRepository.getHistory(datasetUrl);
-
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
-    verify(httpClient).execute(any(HttpGet.class));
-    assertEquals(new String(responceString.getBytes()), new String(actualHttpResponseContent));
+    verify(restTemplate).exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
+    assertNotNull(historyModel);
+    assertEquals(ModelFactory.createModelForGraph(responseEntity.getBody()), historyModel);
   }
 
   @Test

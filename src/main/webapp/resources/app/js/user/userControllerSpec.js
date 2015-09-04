@@ -5,7 +5,7 @@ define(['angular', 'angular-mocks'], function() {
     var scope, httpBackend,
       userHash = 'userHash',
       mockModal = jasmine.createSpyObj('$mock', ['open']),
-      mockDatasetService = jasmine.createSpyObj('DatasetService', ['loadStore', 'queryDatasetsOverview', 'reset']),
+      mockDatasetOverviewService = jasmine.createSpyObj('DatasetOverviewService', ['loadStore', 'queryDatasetsOverview', 'reset']),
       md5Mock = jasmine.createSpyObj('md5', ['createHash']),
       mockLoadStoreDeferred,
       mockQueryDatasetsDeferred,
@@ -22,8 +22,8 @@ define(['angular', 'angular-mocks'], function() {
       mockLoadStoreDeferred = $q.defer();
       mockQueryDatasetsDeferred = $q.defer();
 
-      mockDatasetService.loadStore.and.returnValue(mockLoadStoreDeferred.promise);
-      mockDatasetService.queryDatasetsOverview.and.returnValue(mockQueryDatasetsDeferred.promise);
+      mockDatasetOverviewService.loadStore.and.returnValue(mockLoadStoreDeferred.promise);
+      mockDatasetOverviewService.queryDatasetsOverview.and.returnValue(mockQueryDatasetsDeferred.promise);
       md5Mock.createHash.and.returnValue(userHash);
 
       httpBackend.expectGET('/users').respond(users);
@@ -35,7 +35,7 @@ define(['angular', 'angular-mocks'], function() {
         $stateParams: {userUid: userHash},
         $window: {config: {user: {userNameHash: userHash}}},
         DatasetResource: DatasetResource,
-        DatasetService: mockDatasetService,
+        DatasetOverviewService: mockDatasetOverviewService,
         md5: md5Mock
       });
 
@@ -49,10 +49,10 @@ define(['angular', 'angular-mocks'], function() {
 
       httpBackend.flush();
 
-      expect(mockDatasetService.loadStore).toHaveBeenCalled();
+      expect(mockDatasetOverviewService.loadStore).toHaveBeenCalled();
       mockLoadStoreDeferred.resolve(101);
       scope.$digest();
-      expect(mockDatasetService.queryDatasetsOverview).toHaveBeenCalled();
+      expect(mockDatasetOverviewService.queryDatasetsOverview).toHaveBeenCalled();
       mockQueryDatasetsDeferred.resolve(datasets);
       scope.$digest();
       expect(scope.datasets).toBe(datasets);

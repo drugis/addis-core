@@ -8,9 +8,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.apache.jena.riot.RDFLanguages;
-import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.exception.ReadGraphException;
+import org.drugis.trialverse.graph.exception.ReadGraphException;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
@@ -23,7 +22,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 /**
  * Created by connor on 28-11-14.
@@ -45,10 +43,8 @@ public class GraphReadRepositoryImpl implements GraphReadRepository {
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
   @Override
-  public byte[] getGraph(URI trialverseDatasetUri, String versionUuid, String graphUUID) throws IOException, ReadGraphException {
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
-
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
+  public byte[] getGraph(String versionedDatasetUrl, String versionUuid, String graphUUID) throws IOException, ReadGraphException {
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionedDatasetUrl)
             .path(DATA_ENDPOINT)
             .queryParam(GRAPH, Namespaces.GRAPH_NAMESPACE + graphUUID)
             .build();

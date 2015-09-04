@@ -12,11 +12,6 @@ define([], function() {
         method: 'get',
         headers: {
           'Accept': 'application/ld+json'
-        },
-        transformResponse: function(data) {
-          return _.filter(JSON.parse(data)['@graph'], function(graphItem) {
-            return graphItem['@id'].indexOf('/versions/') > 0; // filter to only contain actual history nodes
-          });
         }
       }
     });

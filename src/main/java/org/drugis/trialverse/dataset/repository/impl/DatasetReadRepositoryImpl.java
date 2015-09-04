@@ -1,21 +1,22 @@
 package org.drugis.trialverse.dataset.repository.impl;
 
-import com.hp.hpl.jena.graph.*;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.hp.hpl.jena.sparql.graph.GraphFactory;
-import com.hp.hpl.jena.vocabulary.DCTerms;
-import com.hp.hpl.jena.vocabulary.RDF;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.apache.jena.atlas.json.JsonObject;
+import org.apache.jena.graph.*;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
+import org.apache.jena.sparql.graph.GraphFactory;
+import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.RDF;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -125,20 +127,6 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     return result;
   }
 
-  private Graph addDatasetType(String trialverseDatasetUrl, Graph sourceGraph) {
-    Graph graph = GraphFactory.createGraphMem();
-    GraphUtil.addInto(graph, sourceGraph);
-    graph.add(new Triple(NodeFactory.createURI(trialverseDatasetUrl), RDF.Nodes.type, CLASS_VOID_DATASET));
-    return graph;
-  }
-
-  private Graph addCreator(String trialverseDatasetUrl, String creatorUuid, Graph sourceGraph) {
-    Graph graph = GraphFactory.createGraphMem();
-    GraphUtil.addInto(graph, sourceGraph);
-    graph.add(new Triple(NodeFactory.createURI(trialverseDatasetUrl), DCTerms.creator.asNode(), NodeFactory.createLiteral(creatorUuid)));
-    return graph;
-  }
-
   @Override
   public Model queryDatasets(Account currentUserAccount) {
     List<VersionMapping> mappings = versionMappingRepository.findMappingsByUsername(currentUserAccount.getUsername());
@@ -171,11 +159,11 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
     if(StringUtils.isNotEmpty(versionUuid)) {
       httpHeaders.add(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, webConstants.buildVersionUri(versionUuid).toString());
     }
-
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     String uri = versionMapping.getVersionedDatasetUrl() + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
 
     ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
+
     Graph typedGraph = addDatasetType(versionMapping.getTrialverseDatasetUrl(), responseEntity.getBody());
     Graph graph = addCreator(versionMapping.getTrialverseDatasetUrl(), versionMapping.getOwnerUuid(), typedGraph);
     return ModelFactory.createModelForGraph(graph);
@@ -209,22 +197,44 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public byte[] getHistory(URI trialverseDatasetUri) throws IOException {
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
-    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
+  public Model getHistory(URI datasetUri) throws IOException {
+    URI uri = UriComponentsBuilder.fromHttpUrl(datasetUri.toString())
             .path(WebConstants.HISTORY_ENDPOINT)
-            .build();
-    HttpGet request = new HttpGet(uriComponents.toUri());
-    request.addHeader(ACCEPT, WebContent.contentTypeJSONLD);
-    return executeRequestAndCloseResponse(request);
+            .build()
+            .toUri();
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
+    HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
+
+    ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
+    return ModelFactory.createModelForGraph(responseEntity.getBody());
+  }
+
+  @Override
+  public void copyGraph(URI targetDataset, URI targetGraph, URI sourceRevision) {
+    throw new NotImplementedException();
   }
 
   private byte[] executeRequestAndCloseResponse(HttpGet request) throws IOException {
-    CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(request);
+    HttpResponse response = httpClient.execute(request);
     try (InputStream contentStream = response.getEntity().getContent()) {
       byte[] content = IOUtils.toByteArray(contentStream);
       EntityUtils.consume(response.getEntity());
       return content;
     }
+  }
+
+  private Graph addDatasetType(String trialverseDatasetUrl, Graph sourceGraph) {
+    Graph graph = GraphFactory.createGraphMem();
+    GraphUtil.addInto(graph, sourceGraph);
+    graph.add(new Triple(NodeFactory.createURI(trialverseDatasetUrl), RDF.Nodes.type, CLASS_VOID_DATASET));
+    return graph;
+  }
+
+  private Graph addCreator(String trialverseDatasetUrl, String creatorUuid, Graph sourceGraph) {
+    Graph graph = GraphFactory.createGraphMem();
+    GraphUtil.addInto(graph, sourceGraph);
+    graph.add(new Triple(NodeFactory.createURI(trialverseDatasetUrl), DCTerms.creator.asNode(), NodeFactory.createLiteral(creatorUuid)));
+    return graph;
   }
 }

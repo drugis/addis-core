@@ -1,15 +1,18 @@
 package org.drugis.trialverse.dataset.controller;
 
-import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
+import org.drugis.trialverse.dataset.service.HistoryService;
+import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.testutils.TestUtils;
@@ -23,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -31,6 +35,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
 
@@ -62,7 +67,13 @@ public class DatasetControllerTest {
   private TrialverseIOUtilsService trialverseIOUtilsService;
 
   @Mock
+  private GraphService graphService;
+
+  @Mock
   private WebConstants webConstants;
+
+  @Mock
+  private HistoryService historyService;
 
   @Inject
   private WebApplicationContext webApplicationContext;
@@ -203,17 +214,17 @@ public class DatasetControllerTest {
   public void testGetHistory() throws Exception {
     String uuid = "uuuuiiid-yeswecan";
     URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
-    HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1,1), HttpStatus.OK.value(), "reason"));
+    HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1, 1), HttpStatus.OK.value(), "reason"));
     String test = "test";
     httpResponse.setEntity(new StringEntity(test));
-    when(datasetReadRepository.getHistory(datasetUri)).thenReturn(test.getBytes());
+    Model historyModel = ModelFactory.createDefaultModel();
+    InputStream historyStream = new ClassPathResource("mockMergeHistory.ttl").getInputStream();
+    historyModel.read(historyStream, null, "TTL");
 
     mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/versions")).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType() ));
+            .andExpect(content().contentType("application/json;charset=UTF-8"));
 
-    verify(datasetReadRepository).getHistory(datasetUri);
-    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), Matchers.any(HttpServletResponse.class));
   }
 
   @Test
@@ -221,7 +232,7 @@ public class DatasetControllerTest {
     String uuid = "uuuuiiid-yeswecan";
     String query = "Select * where { ?a ?b ?c}";
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
-    HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1,1), HttpStatus.OK.value(), "reason"));
+    HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1, 1), HttpStatus.OK.value(), "reason"));
     String acceptValue = "c/d";
     httpResponse.setHeader("Content-Type", acceptValue);
 
@@ -235,7 +246,7 @@ public class DatasetControllerTest {
             .andExpect(content().contentType(acceptValue));
 
     verify(datasetReadRepository).executeQuery(query, trialverseDatasetUri, null, acceptValue);
-    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte [].class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), Matchers.any(HttpServletResponse.class));
 
   }
 
@@ -256,7 +267,7 @@ public class DatasetControllerTest {
             .andExpect(content().contentType(acceptValue));
 
     verify(datasetReadRepository).executeQuery(query, trialverseDatasetUri, version, acceptValue);
-    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte [].class), Matchers.any(HttpServletResponse.class));
+    verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), Matchers.any(HttpServletResponse.class));
 
   }
 }

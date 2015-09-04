@@ -4,6 +4,7 @@ define([], function() {
   var VersionInfoDirective = function($stateParams) {
     return {
       restrict: 'E',
+      transclude: true,
       templateUrl: 'app/js/dataset/versionInfoDirective.html'
     };
   };

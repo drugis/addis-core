@@ -15,9 +15,13 @@ define(function (require) {
     'trialverse.activity'])
     // controllers
     .controller('StudyController', require('study/studyController'))
+    .controller('CopyStudyController', require('study/copyStudyController'))
 
     //services
     .factory('StudyService', require('study/studyService'))
+
+    //resources
+    .factory('CopyStudyResource', require('study/copyStudyResource'))
 
     //directives
     .directive('studyCategory', require('study/categoryDirective'))

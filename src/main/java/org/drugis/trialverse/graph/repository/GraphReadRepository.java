@@ -1,7 +1,6 @@
 package org.drugis.trialverse.graph.repository;
 
-import org.apache.http.HttpResponse;
-import org.drugis.trialverse.exception.ReadGraphException;
+import org.drugis.trialverse.graph.exception.ReadGraphException;
 
 
 import java.io.IOException;
@@ -12,5 +11,5 @@ import java.net.URI;
  */
 public interface GraphReadRepository {
 
-  public byte[] getGraph(URI trialverseDatasetUri, String versionUuid, String graphUUID) throws IOException, ReadGraphException;
+  public byte[] getGraph(String versionedDatasetUrl, String versionUuid, String graphUUID) throws IOException, ReadGraphException;
 }

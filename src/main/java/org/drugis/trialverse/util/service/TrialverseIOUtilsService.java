@@ -1,12 +1,10 @@
 package org.drugis.trialverse.util.service;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import org.apache.http.HttpResponse;
 
+import org.apache.jena.rdf.model.Model;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Created by connor on 12-11-14.
@@ -16,5 +14,6 @@ public interface TrialverseIOUtilsService {
 
   void writeModelToServletResponse(Model model, HttpServletResponse httpServletResponse);
 
+  void writeModelToServletResponseJson(Model model, HttpServletResponse httpServletResponse);
 
 }
