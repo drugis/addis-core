@@ -1,6 +1,9 @@
 package org.drugis.trialverse.dataset.repository;
 
 
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -13,6 +16,7 @@ import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.graph.Graph;
+import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
@@ -39,10 +43,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import sun.security.acl.PrincipalImpl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -99,12 +100,11 @@ public class DatasetReadRepositoryTest {
     when(webConstants.getTriplestoreBaseUri()).thenReturn("http://mockserver/");
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(WebConstants.X_EVENT_SOURCE_VERSION, "http://myhost/myversion");
-    ResponseEntity<Graph> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), httpHeaders, HttpStatus.OK);
+    ResponseEntity<Object> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), httpHeaders, HttpStatus.OK);
     List<HttpMessageConverter<?>> convertorList = new ArrayList<>();
     convertorList.add(new JenaGraphMessageConverter());
     when(restTemplate.getMessageConverters()).thenReturn(convertorList);
     when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), any(Class.class))).thenReturn(responseEntity);
-
 
     Model model = datasetReadRepository.queryDatasets(account);
 
@@ -242,7 +242,7 @@ public class DatasetReadRepositoryTest {
   }
 
   @Test
-  public void testExecuteHeadQuery() throws URISyntaxException, IOException {
+  public void testExecuteQueryOnHead() throws URISyntaxException, IOException {
     String datasetUUID = "datasetUUID";
     String query = "SELECT * WHERE { ?s ?p ?o }";
     String versionUuid = "myVersion";
@@ -265,6 +265,63 @@ public class DatasetReadRepositoryTest {
 
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
     verify(httpClient).execute(any(HttpGet.class));
+  }
+
+  public void testFun(Object o) {
+    System.out.println(o);
+  }
+
+  @Test
+  public void testTextQuery() throws Exception {
+
+    Model model1 = ModelFactory.createDefaultModel();
+    InputStream mockStudyGraph1 = new ClassPathResource("despressionStudyExample1.ttl").getInputStream();
+    model1.read(mockStudyGraph1, null, "TTL");
+    Dataset dataset = DatasetFactory.createMem();
+    dataset.addNamedModel("http://study1", model1);
+
+    Model model2 = ModelFactory.createDefaultModel();
+    InputStream mockStudyGraph2 = new ClassPathResource("despressionStudyExample2.ttl").getInputStream();
+    model1.read(mockStudyGraph2, null, "TTL");
+    dataset.addNamedModel("http://study2", model2);
+
+    String template = IOUtils.toString(new ClassPathResource("testFindStudiesByTerms.sparql")
+            .getInputStream(), "UTF-8");
+    CharSequence searchTerm = "Depress";
+    String queryStr = template.replace("$searchTerm", searchTerm);
+
+    Query query = QueryFactory.create(queryStr);
+    QueryExecution queryExecution = QueryExecutionFactory.create(query, dataset);
+    ResultSet resultSet = queryExecution.execSelect();
+
+    List<Object> results = new ArrayList<>();
+
+    resultSet.forEachRemaining(results::add);
+
+    assertEquals(2, results.size());
+  }
+
+  @Test
+  public void testExecuteHeadQuery() throws URISyntaxException, ParseException {
+    VersionMapping versionMapping = new VersionMapping("http://versionUrl", "owner", "trialverseUrl");
+    String sparqlQuery = "sparqlQuery";
+
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(org.apache.http.HttpHeaders.CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
+    String acceptType = WebConstants.APPLICATION_SPARQL_RESULTS_JSON;
+    httpHeaders.add(ACCEPT, acceptType);
+    HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
+    ResponseEntity responseEntity = new ResponseEntity<>(new JSONParser(JSONParser.MODE_JSON_SIMPLE).parse("{\"study\":\"bla\"}"), HttpStatus.OK);
+
+    UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
+            .path("/query")
+            .queryParam("query", sparqlQuery)
+            .build();
+    when(restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, JSONObject.class)).thenReturn(responseEntity);
+
+
+    JSONObject object = datasetReadRepository.executeHeadQuery(sparqlQuery, versionMapping);
+    assertNotNull(object);
   }
 
   @After

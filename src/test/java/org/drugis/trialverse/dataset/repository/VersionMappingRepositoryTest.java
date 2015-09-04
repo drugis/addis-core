@@ -57,7 +57,7 @@ public class VersionMappingRepositoryTest {
 
   @Test
   public void testFindMappingsByUserName() {
-    List<VersionMapping> mockResult = Arrays.asList(new VersionMapping(1, "datasetUui1", userName, "trialverseDataset"));
+    List<Object> mockResult = Arrays.asList(new VersionMapping(1, "datasetUui1", userName, "trialverseDataset"));
     when(jdbcTemplate.query(anyString(), any(Object[].class), any(RowMapper.class))).thenReturn(mockResult);
 
     List<VersionMapping> mappings = versionMappingRepository.findMappingsByUsername(userName);
@@ -78,7 +78,7 @@ public class VersionMappingRepositoryTest {
 
   @Test
   public void testGetVersionMappings() {
-    List<VersionMapping> mockResult = Arrays.asList(new VersionMapping(1, "datasetUui1", userName, "trialverseDataset"));
+    List<Object> mockResult = Arrays.asList(new VersionMapping(1, "datasetUui1", userName, "trialverseDataset"));
     when(jdbcTemplate.query(anyString(), any(Object[].class), any(RowMapper.class))).thenReturn(mockResult);
 
     List<VersionMapping> mappings = versionMappingRepository.getVersionMappings();

@@ -1,5 +1,6 @@
 package org.drugis.trialverse.search.controller;
 
+import org.drugis.trialverse.search.model.SearchResult;
 import org.drugis.trialverse.search.service.SearchService;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.springframework.stereotype.Controller;
@@ -25,7 +26,7 @@ public class SearchController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/search", method = RequestMethod.GET)
   @ResponseBody
-  public List<StudySearchResult> searchStudy(@RequestParam(value = "searchTerm", required = false) String searchTerm) throws IOException, URISyntaxException {
+  public List<SearchResult> searchStudy(@RequestParam(value = "searchTerm", required = false) String searchTerm) throws IOException, URISyntaxException {
     return searchService.searchStudy(searchTerm);
   }
 }

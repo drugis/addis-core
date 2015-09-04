@@ -1,7 +1,7 @@
 package org.drugis.trialverse.search.service;
 
 
-import org.drugis.trialverse.search.controller.StudySearchResult;
+import org.drugis.trialverse.search.model.SearchResult;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -12,5 +12,5 @@ import java.util.List;
  */
 public interface SearchService {
 
-  public List<StudySearchResult> searchStudy(String searchTerm) throws IOException, URISyntaxException;
+  public List<SearchResult> searchStudy(String searchTerm) throws IOException, URISyntaxException;
 }

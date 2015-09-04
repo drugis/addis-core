@@ -1,5 +1,6 @@
 package org.drugis.trialverse.dataset.repository.impl;
 
+import net.minidev.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
@@ -8,7 +9,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.graph.*;
-import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -217,9 +217,9 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   }
 
   @Override
-  public JsonObject executeHeadQuery(String sparqlQuery, VersionMapping versionMapping) throws URISyntaxException {
-    ResponseEntity<JsonObject> responseEntity = doRequest(versionMapping, sparqlQuery, RDFLanguages.JSONLD.getContentType().getContentType(), JsonObject.class);
-    JsonObject jsonObject = responseEntity.getBody();
+  public JSONObject executeHeadQuery(String sparqlQuery, VersionMapping versionMapping) throws URISyntaxException {
+    ResponseEntity<JSONObject> responseEntity = doRequest(versionMapping, sparqlQuery, WebConstants.APPLICATION_SPARQL_RESULTS_JSON, JSONObject.class);
+    JSONObject jsonObject = responseEntity.getBody();
     return jsonObject;
   }
 

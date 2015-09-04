@@ -1,0 +1,38 @@
+{
+  "head": {
+    "vaars": ["study", "label", "comment", "graph"]
+  },
+  "results": {
+    "bindings": [{
+      "study": {
+        "type": "uri",
+        "value": "http:\/\/trials.drugis.org\/studies\/a6ea0804-7de4-4071-bca3-ebe9f4816228"
+      },
+      "label": {
+        "type": "literal",
+        "value": "study 1"
+      },
+      "graph": {
+        "type": "uri",
+        "value": "http:\/\/trials.drugis.org\/graphs\/47dd7258-d6a2-4691-893f-43f01bf6b393"
+      }
+    }, {
+      "study": {
+        "type": "uri",
+        "value": "http:\/\/trials.drugis.org\/studies\/b6ea0804-7de4-4071-bca3-ebe9f4816228"
+      },
+      "label": {
+        "type": "literal",
+        "value": "study 2"
+      },
+      "comment": {
+        "type": "literal",
+        "value": "een study"
+      },
+      "graph": {
+        "type": "uri",
+        "value": "http:\/\/trials.drugis.org\/graphs\/47dd7258-d6a2-4691-893f-43f01bf6b393"
+      }
+    }]
+  }
+}

@@ -1,16 +1,21 @@
 package org.drugis.trialverse.search.service.impl;
 
-import org.apache.jena.atlas.json.JsonObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import net.minidev.json.JSONObject;
+import org.apache.commons.io.IOUtils;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.search.controller.StudySearchResult;
+import org.drugis.trialverse.search.model.SearchResult;
 import org.drugis.trialverse.search.service.SearchService;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,20 +24,38 @@ import java.util.List;
 @Service
 public class SearchServiceImpl implements SearchService {
 
+  private static final String FIND_STUDIES_BY_TERMS_SPARQL = "findStudiesByTerms.sparql";
+  private static final String SEARCH_QUERY_TEMPLATE = readQueryTemplate();
+
   @Inject
   VersionMappingRepository versionMappingRepository;
 
   @Inject
   DatasetReadRepository datasetReadRepository;
 
+  private static String readQueryTemplate() {
+    try {
+      return IOUtils.toString(new ClassPathResource(FIND_STUDIES_BY_TERMS_SPARQL).getInputStream(), "UTF-8");
+    } catch (IOException e) {
+      throw new RuntimeException("could not load find queryTemplate with name " + FIND_STUDIES_BY_TERMS_SPARQL);
+    }
+  }
+
+
   @Override
-  public List<StudySearchResult> searchStudy(String searchTerm) throws IOException, URISyntaxException {
+  public List<SearchResult> searchStudy(String searchTerm) throws IOException, URISyntaxException {
     List<VersionMapping> mappings = versionMappingRepository.getVersionMappings();
+    String queryString = SEARCH_QUERY_TEMPLATE.replace("$searchTerm", searchTerm);
+    List<SearchResult> aggregateResults = new ArrayList<>();
     for (VersionMapping mapping : mappings) {
       mapping.getVersionedDatasetUrl();
-      JsonObject queryResult = datasetReadRepository.executeHeadQuery(searchTerm, mapping);
-      // create result object
+      JSONObject queryResult = datasetReadRepository.executeHeadQuery(queryString, mapping);
+      Object result =  new ObjectMapper().readValue(queryResult.toJSONString(), SearchResult.class);
+      List<SearchResult> searchResults = (ArrayList<SearchResult>) result;
+//      searchResults.stream().map((aThing) -> aThing.setDatasetUrl(mapping.getTrialverseDatasetUrl()))
+      System.out.println(queryResult);
+      aggregateResults.addAll(searchResults);
     }
-    return null;
+    return aggregateResults;
   }
 }

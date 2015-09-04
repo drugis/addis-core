@@ -11,7 +11,7 @@ import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
-import org.drugis.trialverse.testutils.TestUtils;
+import org.drugis.trialverse.util.Utils;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
@@ -120,7 +120,7 @@ public class GraphControllerTest {
 
   @Test
   public void testCreateGraphUserIsNotDatasetOwner() throws Exception {
-    String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
+    String jsonContent = Utils.loadResource(this.getClass(), "/mockStudy.json");
     String datasetUUID = "datasetUUID";
     URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     String graphUUID = "graphUUID";
@@ -189,7 +189,7 @@ public class GraphControllerTest {
 
   @Test
   public void testUpdateGraphUserNotDatasetOwner() throws Exception {
-    String jsonContent = TestUtils.loadResource(this.getClass(), "/mockStudy.json");
+    String jsonContent = Utils.loadResource(this.getClass(), "/mockStudy.json");
     String datasetUUID = "datasetUUID";
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
     String graphUUID = "graphUUID";

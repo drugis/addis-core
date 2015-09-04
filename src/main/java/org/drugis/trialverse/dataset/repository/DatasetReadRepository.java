@@ -1,5 +1,6 @@
 package org.drugis.trialverse.dataset.repository;
 
+import net.minidev.json.JSONObject;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.rdf.model.Model;
 import org.drugis.trialverse.dataset.model.VersionMapping;
@@ -27,7 +28,7 @@ public interface DatasetReadRepository {
 
   public byte[] executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException;
 
-  public JsonObject executeHeadQuery(String sparqlQuery, VersionMapping versionMapping) throws URISyntaxException;
+  public JSONObject executeHeadQuery(String sparqlQuery, VersionMapping versionMapping) throws URISyntaxException;
 
   public void copyGraph(URI targetDataset, URI targetGraph, URI sourceRevision);
 }

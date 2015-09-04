@@ -15,7 +15,7 @@ import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
-import org.drugis.trialverse.testutils.TestUtils;
+import org.drugis.trialverse.util.Utils;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
@@ -110,7 +110,7 @@ public class DatasetControllerTest {
     String newDatasetUri = "http://some.thing.like/this/asd123";
     URI uri = new URI(newDatasetUri);
     DatasetCommand datasetCommand = new DatasetCommand("dataset title");
-    String jsonContent = TestUtils.createJson(datasetCommand);
+    String jsonContent = Utils.createJson(datasetCommand);
     when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john)).thenReturn(uri);
     mockMvc
             .perform(post("/users/some-user-uid/datasets")
@@ -129,7 +129,7 @@ public class DatasetControllerTest {
     String newDatasetUri = "http://some.thing.like/this/asd123";
     URI uri = new URI(newDatasetUri);
     DatasetCommand datasetCommand = new DatasetCommand("dataset title");
-    String jsonContent = TestUtils.createJson(datasetCommand);
+    String jsonContent = Utils.createJson(datasetCommand);
     when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john)).thenReturn(uri);
     String userhash = john.getuserNameHash();
     mockMvc

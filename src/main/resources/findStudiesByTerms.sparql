@@ -1,0 +1,18 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+
+SELECT * WHERE {
+  graph ?graph {
+    {
+      ?study
+        a ontology:Study ;
+        rdfs:label ?label .
+      FILTER regex(?label, "$searchTerm", "i") .
+    } UNION {
+      ?study
+        a ontology:Study ;
+        rdfs:comment ?comment
+      FILTER regex(?comment, "$searchTerm", "i")
+    }
+  }
+}
