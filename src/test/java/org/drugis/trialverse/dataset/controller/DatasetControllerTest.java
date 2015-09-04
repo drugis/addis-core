@@ -6,10 +6,12 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
+import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
@@ -24,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -32,6 +35,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
 
@@ -67,6 +71,9 @@ public class DatasetControllerTest {
 
   @Mock
   private WebConstants webConstants;
+
+  @Mock
+  private HistoryService historyService;
 
   @Inject
   private WebApplicationContext webApplicationContext;
@@ -210,15 +217,14 @@ public class DatasetControllerTest {
     HttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1, 1), HttpStatus.OK.value(), "reason"));
     String test = "test";
     httpResponse.setEntity(new StringEntity(test));
-    Model historyModel = null;
-    when(datasetReadRepository.getHistory(datasetUri)).thenReturn(historyModel);
+    Model historyModel = ModelFactory.createDefaultModel();
+    InputStream historyStream = new ClassPathResource("mockMergeHistory.ttl").getInputStream();
+    historyModel.read(historyStream, null, "TTL");
 
     mockMvc.perform((get("/users/user-name-hash/datasets/" + uuid + "/versions")).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType()));
+            .andExpect(content().contentType("application/json;charset=UTF-8"));
 
-    verify(datasetReadRepository).getHistory(datasetUri);
-    verify(trialverseIOUtilsService).writeModelToServletResponseJson(any(Model.class), Matchers.any(HttpServletResponse.class));
   }
 
   @Test
@@ -264,33 +270,4 @@ public class DatasetControllerTest {
     verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), Matchers.any(HttpServletResponse.class));
 
   }
-
-  @Test
-  public void testCopy() throws Exception {
-    String datasetUuid = "datasetUuid";
-    String targetGraph = "targetGraph";
-    String sourceGraph = "sourceGraph";
-    URI sourceDatasetUri = new URI("http://sourceDatasetUri");
-    String sourceVersion = "sourceVersion";
-    String newDatasetVersion = "newVersion";
-    URI targetDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    URI targetGraphUri = new URI(targetGraph);
-    URI sourceGraphUri = new URI(sourceGraph);
-    URI sourceVersionUri = new URI(sourceVersion);
-
-
-    when(graphService.copy(targetDatasetUri, targetGraphUri, sourceDatasetUri, sourceVersionUri, sourceGraphUri)).thenReturn(new URI(newDatasetVersion));
-
-    mockMvc.perform((post("/users/hash/datasets/" + datasetUuid + "/copy"))
-            .param("targetDatasetUuid", datasetUuid)
-            .param("targetGraph", targetGraph)
-            .param("sourceGraph", sourceGraph)
-            .param("sourceDatasetUri", sourceDatasetUri.toString())
-            .param("sourceVersion", sourceVersion)
-            .principal(user))
-            .andExpect(status().isOk())
-            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, newDatasetVersion));
-    verify(accountRepository).findAccountByUsername(john.getUsername());
-  }
-
 }

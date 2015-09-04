@@ -3,12 +3,11 @@ define([],
   function() {
     var dependencies = ['$scope', '$q', '$window', '$stateParams', '$modal', '$filter',
       'SingleDatasetService', 'DatasetVersionedResource', 'StudiesWithDetailsService',
-      'RemoteRdfStoreService', 'HistoryResource', 'HistoryService',
-      'ConceptService', 'VersionedGraphResource'
+      'RemoteRdfStoreService', 'HistoryResource', 'ConceptService', 'VersionedGraphResource'
     ];
     var DatasetController = function($scope, $q, $window, $stateParams, $modal, $filter,
       SingleDatasetService, DatasetVersionedResource, StudiesWithDetailsService,
-      RemoteRdfStoreService, HistoryResource, HistoryService, ConceptService, VersionedGraphResource) {
+      RemoteRdfStoreService, HistoryResource, ConceptService, VersionedGraphResource) {
 
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUUID = $stateParams.datasetUUID;
@@ -19,7 +18,7 @@ define([],
 
       function isEditingAllowed() {
         return !!($scope.dataset && $scope.dataset.creator === $window.config.user.userEmail &&
-          $scope.currentRevision && $scope.currentRevision.idx === 0);
+          $scope.currentRevision && $scope.currentRevision.isHead);
       }
 
       $scope.isEditingAllowed = false;
@@ -37,10 +36,10 @@ define([],
 
       HistoryResource.query($stateParams).$promise.then(function(historyItems) {
         // sort to know it curentRevission is head
-        var indexedHistoryItems = HistoryService.addOrderIndex(historyItems);
-        $scope.currentRevision = _.find(indexedHistoryItems, function(item) {
-          return item['@id'].lastIndexOf($stateParams.versionUuid) > 0;
+        $scope.currentRevision = _.find(historyItems, function(item) {
+          return item.uri.lastIndexOf($stateParams.versionUuid) > 0;
         });
+        $scope.currentRevision.isHead = $scope.currentRevision.historyOrder === 0;
         $scope.isEditingAllowed = isEditingAllowed();
       });
 

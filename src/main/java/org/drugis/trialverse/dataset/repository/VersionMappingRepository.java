@@ -17,4 +17,6 @@ public interface VersionMappingRepository {
   List<VersionMapping> getVersionMappings();
 
     VersionMapping getVersionMappingByDatasetUrl(URI trialverseDatasetUrl);
+
+    VersionMapping getVersionMappingByVersionedURl(URI sourceDatasetUri);
 }

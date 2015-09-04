@@ -52,6 +52,7 @@
 
 (defn iri-str [prefixes resource]
   (case (first resource)
+    :default-graph ""
     :uri (str "<" (second resource) ">")
     :qname 
     (let [prefix (second resource)
@@ -132,6 +133,11 @@
   "Generate an RDF IRI."
   ([uri] [:uri uri])
   ([prefix resource] [:qname prefix resource]))
+
+(defn default-graph
+  "Generate a pseudo-iri for the default graph"
+  []
+  [:default-graph])
 
 (defn lit
   "Generate an RDF literal of the given value."

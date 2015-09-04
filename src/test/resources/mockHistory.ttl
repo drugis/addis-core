@@ -1,15 +1,15 @@
 prefix owl:   <http://www.w3.org/2002/07/owl#>
 prefix es:    <http://drugis.org/eventSourcing/es#>
 
-<http://localhost:8080/revisions/e37ee2a8-14c7-4b22-87c6-fe43ac0273fe>
+<http://testhost/revisions/e37ee2a8-14c7-4b22-87c6-fe43ac0273fe>
         a              es:Revision ;
-        es:assertions  <http://localhost:8080/assert/e37ee2a8-14c7-4b22-87c6-fe43ac0273fe> ;
-        es:previous    <http://localhost:8080/revisions/98e18613-3089-4c68-a245-82815f7f7dce> .
+        es:assertions  <http://testhost/assert/e37ee2a8-14c7-4b22-87c6-fe43ac0273fe> ;
+        es:previous    <http://testhost/revisions/98e18613-3089-4c68-a245-82815f7f7dce> .
 
-<http://localhost:8080/versions/e6936ceb-874a-4aec-b78c-41b6f5351dff>
+<http://testhost/versions/e6936ceb-874a-4aec-b78c-41b6f5351dff>
         a                          es:DatasetVersion ;
-        es:dataset                 <http://localhost:8080/datasets/be177e27-7978-41de-b4f9-9267ddd1cc41> ;
-        es:default_graph_revision  [ es:revision  <http://localhost:8080/revisions/d6a3c487-bab4-43b9-ad4c-69cfc0019053> ] ;
+        es:dataset                 <http://testhost/datasets/be177e27-7978-41de-b4f9-9267ddd1cc41> ;
+        es:default_graph_revision  [ es:revision  <http://testhost/revisions/d6a3c487-bab4-43b9-ad4c-69cfc0019053> ] ;
         <http://purl.org/dc/terms/creator>
                 <mailto:osmosisch@gmail.com> ;
         <http://purl.org/dc/terms/date>
@@ -17,30 +17,30 @@ prefix es:    <http://drugis.org/eventSourcing/es#>
         <http://purl.org/dc/terms/title>
                 "Dataset created through Trialverse" .
 
-<http://localhost:8080/revisions/98e18613-3089-4c68-a245-82815f7f7dce>
+<http://testhost/revisions/98e18613-3089-4c68-a245-82815f7f7dce>
         a              es:Revision ;
-        es:assertions  <http://localhost:8080/assert/98e18613-3089-4c68-a245-82815f7f7dce> .
+        es:assertions  <http://testhost/assert/98e18613-3089-4c68-a245-82815f7f7dce> .
 
-<http://localhost:8080/datasets/be177e27-7978-41de-b4f9-9267ddd1cc41>
+<http://testhost/datasets/be177e27-7978-41de-b4f9-9267ddd1cc41>
         a        es:Dataset ;
-        es:head  <http://localhost:8080/versions/e53caa0d-c0df-46db-977e-37f48fecb042> ;
+        es:head  <http://testhost/versions/e53caa0d-c0df-46db-977e-37f48fecb042> ;
         <http://purl.org/dc/terms/creator>
                 <mailto:osmosisch@gmail.com> ;
         <http://purl.org/dc/terms/date>
                 "2015-08-27T10:40:10Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
 
-<http://localhost:8080/revisions/d6a3c487-bab4-43b9-ad4c-69cfc0019053>
+<http://testhost/revisions/d6a3c487-bab4-43b9-ad4c-69cfc0019053>
         a              es:Revision ;
-        es:assertions  <http://localhost:8080/assert/d6a3c487-bab4-43b9-ad4c-69cfc0019053> .
+        es:assertions  <http://testhost/assert/d6a3c487-bab4-43b9-ad4c-69cfc0019053> .
 
-<http://localhost:8080/versions/e53caa0d-c0df-46db-977e-37f48fecb042>
+<http://testhost/versions/e53caa0d-c0df-46db-977e-37f48fecb042>
         a                          es:DatasetVersion ;
-        es:dataset                 <http://localhost:8080/datasets/be177e27-7978-41de-b4f9-9267ddd1cc41> ;
-        es:default_graph_revision  [ es:revision  <http://localhost:8080/revisions/d6a3c487-bab4-43b9-ad4c-69cfc0019053> ] ;
+        es:dataset                 <http://testhost/datasets/be177e27-7978-41de-b4f9-9267ddd1cc41> ;
+        es:default_graph_revision  [ es:revision  <http://testhost/revisions/d6a3c487-bab4-43b9-ad4c-69cfc0019053> ] ;
         es:graph_revision          [ es:graph     <http://trials.drugis.org/graphs/0ef5c6e8-a5fb-4ac0-953b-d1a75fdf9312> ;
-                                     es:revision  <http://localhost:8080/revisions/e37ee2a8-14c7-4b22-87c6-fe43ac0273fe>
+                                     es:revision  <http://testhost/revisions/e37ee2a8-14c7-4b22-87c6-fe43ac0273fe>
                                    ] ;
-        es:previous                <http://localhost:8080/versions/32d444fc-f8bf-4511-a279-aaa247890bd4> ;
+        es:previous                <http://testhost/versions/32d444fc-f8bf-4511-a279-aaa247890bd4> ;
         <http://purl.org/dc/terms/creator>
                 <mailto:osmosisch@gmail.com> ;
         <http://purl.org/dc/terms/date>
@@ -50,14 +50,14 @@ prefix es:    <http://drugis.org/eventSourcing/es#>
         <http://purl.org/dc/terms/title>
                 "Added an arm" .
 
-<http://localhost:8080/versions/32d444fc-f8bf-4511-a279-aaa247890bd4>
+<http://testhost/versions/32d444fc-f8bf-4511-a279-aaa247890bd4>
         a                          es:DatasetVersion ;
-        es:dataset                 <http://localhost:8080/datasets/be177e27-7978-41de-b4f9-9267ddd1cc41> ;
-        es:default_graph_revision  [ es:revision  <http://localhost:8080/revisions/d6a3c487-bab4-43b9-ad4c-69cfc0019053> ] ;
+        es:dataset                 <http://testhost/datasets/be177e27-7978-41de-b4f9-9267ddd1cc41> ;
+        es:default_graph_revision  [ es:revision  <http://testhost/revisions/d6a3c487-bab4-43b9-ad4c-69cfc0019053> ] ;
         es:graph_revision          [ es:graph     <http://trials.drugis.org/graphs/0ef5c6e8-a5fb-4ac0-953b-d1a75fdf9312> ;
-                                     es:revision  <http://localhost:8080/revisions/98e18613-3089-4c68-a245-82815f7f7dce>
+                                     es:revision  <http://testhost/revisions/98e18613-3089-4c68-a245-82815f7f7dce>
                                    ] ;
-        es:previous                <http://localhost:8080/versions/e6936ceb-874a-4aec-b78c-41b6f5351dff> ;
+        es:previous                <http://testhost/versions/e6936ceb-874a-4aec-b78c-41b6f5351dff> ;
         <http://purl.org/dc/terms/creator>
                 <mailto:osmosisch@gmail.com> ;
         <http://purl.org/dc/terms/date>

@@ -3,10 +3,13 @@ package org.drugis.trialverse.graph.controller;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.apache.jena.riot.RDFLanguages;
+import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
-import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
+import org.drugis.trialverse.graph.service.GraphService;
+import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.testutils.TestUtils;
 import org.drugis.trialverse.util.Namespaces;
@@ -34,9 +37,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Configuration
 @EnableWebMvc
@@ -47,6 +48,9 @@ public class GraphControllerTest {
   @Inject
   private WebApplicationContext webApplicationContext;
 
+  @Mock
+  private WebConstants webConstants;
+  
   @Mock
   private GraphWriteRepository graphWriteRepository;
 
@@ -61,6 +65,12 @@ public class GraphControllerTest {
 
   @Mock
   private AccountRepository accountRepository;
+
+  @Mock
+  private GraphService graphService;
+
+  @Mock
+  private VersionMappingRepository versionMappingRepository;
 
   @InjectMocks
   private GraphController graphController;
@@ -80,6 +90,7 @@ public class GraphControllerTest {
     mockMvc = MockMvcBuilders.standaloneSetup(graphController).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn(john.getUsername());
+    when(accountRepository.findAccountByUsername(john.getUsername())).thenReturn(john);
   }
 
   @After
@@ -89,18 +100,21 @@ public class GraphControllerTest {
 
   @Test
   public void testGetGraph() throws Exception {
-    String datasetUUID = "datasetUUID";
+    String datasetUuid = "datasetUUID";
     String graphUUID = "graphUUID";
     String versionUuid = "versionUuid";
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+   String versionedDatasetUrl = "http://myversiondDatasetUrl";
     String responce = "responce";
-    when(graphReadRepository.getGraph(trialverseDatasetUri, versionUuid, graphUUID)).thenReturn(responce.getBytes());
+    URI trialverseDatasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    VersionMapping versionMapping = new VersionMapping(versionedDatasetUrl, "anyOwner", trialverseDatasetUrl.toString());
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUrl)).thenReturn(versionMapping);
+    when(graphReadRepository.getGraph(versionedDatasetUrl, versionUuid, graphUUID)).thenReturn(responce.getBytes());
 
-    mockMvc.perform(get("/users/" + userHash + "/datasets/" + datasetUUID + "/versions/" + versionUuid + "/graphs/" + graphUUID).principal(user))
+    mockMvc.perform(get("/users/" + userHash + "/datasets/" + datasetUuid + "/versions/" + versionUuid + "/graphs/" + graphUUID).principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
-    verify(graphReadRepository).getGraph(trialverseDatasetUri, versionUuid, graphUUID);
+    verify(graphReadRepository).getGraph(versionedDatasetUrl, versionUuid, graphUUID);
     verify(trialverseIOUtilsService).writeContentToServletResponse(any(byte[].class), any(HttpServletResponse.class));
   }
 
@@ -147,25 +161,29 @@ public class GraphControllerTest {
 
   @Test
   public void testCopyGraph() throws Exception {
-    String updateContent = "updateContent";
-    String datasetUUID = "datasetUUID";
-    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    String graphUUID = "graphUUID";
+    String datasetUuid = "datasetUuid";
+    String versionUuid = "versionUuid";
+    String graphUuid = "graphUuid";
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    URI sourceGraphUri = URI.create("http://testhost/datasets/sourceDatasetUuid/versions/sourceVersionUuid/graphs/sourceGraphUuid");
+    String newVersion = "http://myVersion";
 
-    when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
-    Header versionHeader = new BasicHeader(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion");
-    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(HttpServletRequest.class))).thenReturn(versionHeader);
+    URI targetDatasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    String testHost = "http://testhost";
+    URI targetGraphUri = URI.create(Namespaces.GRAPH_NAMESPACE + graphUuid);
+
+    when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(true);
+    when(graphService.copy(targetDatasetUri, targetGraphUri, sourceGraphUri, john)).thenReturn(URI.create(newVersion));
 
     mockMvc.perform(
-            put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
-                    .content(updateContent)
-                    .param(WebConstants.COPY_OF_QUERY_PARAM, "http://somethjing")
+            put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid)
+                    .content("")
+                    .param(WebConstants.COPY_OF_QUERY_PARAM, sourceGraphUri.toString())
                     .principal(user))
             .andExpect(status().isOk())
-            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion"));
+            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, newVersion));
 
-    verify(datasetReadRepository).isOwner(datasetUrl, user);
-    verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(HttpServletRequest.class));
+    verify(datasetReadRepository).isOwner(datasetUri, user);
   }
 
 

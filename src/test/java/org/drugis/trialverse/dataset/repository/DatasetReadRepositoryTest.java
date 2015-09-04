@@ -204,23 +204,16 @@ public class DatasetReadRepositoryTest {
 
   @Test
   public void testGetHistory() throws URISyntaxException, IOException {
-    String user1 = "user1";
-    URI datasetUrl = new URI("uuid-1");
     String versionedDatasetUrl = "http://whatever";
-
-    VersionMapping versionMapping = new VersionMapping(1, versionedDatasetUrl, user1, datasetUrl.toString());
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
-    URI uri = new URI(versionMapping.getVersionedDatasetUrl() + WebConstants.HISTORY_ENDPOINT);
+    URI uri = new URI(versionedDatasetUrl + WebConstants.HISTORY_ENDPOINT);
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
     ResponseEntity<Graph> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), HttpStatus.OK);
-
     when(restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class)).thenReturn(responseEntity);
 
-    Model historyModel = datasetReadRepository.getHistory(datasetUrl);
+    Model historyModel = datasetReadRepository.getHistory(URI.create(versionedDatasetUrl));
 
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
     verify(restTemplate).exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
     assertNotNull(historyModel);
     assertEquals(ModelFactory.createModelForGraph(responseEntity.getBody()), historyModel);

@@ -9,12 +9,10 @@ define([],
       $scope.copyStudy = function(targetDataset) {
         var copyMessage = {
           targetDatasetUuid: targetDataset.datasetUri.split('/')[targetDataset.datasetUri.split('/').length - 1],
-          targetGraph: UUIDService.generateGraphUri(),
-          sourceGraph: UUIDService.buildGraphUri(graphUuid),
-          sourceDatasetUri: UUIDService.buildDatasetUri(datasetUuid),
-          sourceVersionUuid: versionUuid
+          targetGraphUuid: UUIDService.generate(),
+          copyOf: UUIDService.buildGraphUri(datasetUuid, versionUuid, graphUuid)
         };
-        CopyStudyResource.save(copyMessage).$promise.then(function() {
+        CopyStudyResource.copy(copyMessage).$promise.then(function() {
             $modalInstance.close();
           },
           function() {

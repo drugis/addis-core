@@ -1,12 +1,14 @@
 package org.drugis.trialverse.graph.service;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.service.impl.GraphServiceImpl;
+import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +25,7 @@ import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Created by daan on 26-8-15.
@@ -41,20 +44,27 @@ public class GraphServiceTest {
   @Mock
   RestTemplate restTemplate;
 
+  @Mock
+  WebConstants webConstants;
+
+  String testHost = "http://testhost";
+
   @Before
   public void setUp() {
     graphService = new GraphServiceImpl();
-    MockitoAnnotations.initMocks(this);
+    initMocks(this);
+    when(webConstants.getTriplestoreBaseUri()).thenReturn(testHost);
   }
 
   @Test
   public void testCopy() throws Exception {
+    Account owner = new Account("my-owner", "fn", "ln", "unh");
     URI targetDatasetUri = new URI("http://target.dataset");
     URI targetGraphUri = new URI("http://target.graph.uri");
-    URI sourceDatasetUri = new URI("http://source.dataset.uri");
-    URI sourceGraphUri = new URI("http://trials.drugis.org/graphs/0ef5c6e8-a5fb-4ac0-953b-d1a75fdf9312");
-    URI sourceVersionUri = new URI("http://localhost:8080/versions/e53caa0d-c0df-46db-977e-37f48fecb042");
-    URI revisionUri = new URI("http://localhost:8080/revisions/e37ee2a8-14c7-4b22-87c6-fe43ac0273fe");
+    String sourceDatasetUuid = "sourceDatasetUuid";
+    URI sourceGraphUri = new URI(testHost + "/datasets/" + sourceDatasetUuid + "/versions/e53caa0d-c0df-46db-977e-37f48fecb042/graphs/0ef5c6e8-a5fb-4ac0-953b-d1a75fdf9312");
+    URI sourceDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + sourceDatasetUuid);
+    URI revisionUri = new URI("http://testhost/revisions/e37ee2a8-14c7-4b22-87c6-fe43ac0273fe");
 
     Model historyModel = ModelFactory.createDefaultModel();
     InputStream historyStream = new ClassPathResource("mockHistory.ttl").getInputStream();
@@ -64,39 +74,44 @@ public class GraphServiceTest {
     ResponseEntity responseEntity = new ResponseEntity(httpHeaders, HttpStatus.OK);
     String targetDatasetVersionedUri = "http://versionedURI";
     VersionMapping versionMapping = new VersionMapping(targetDatasetVersionedUri, null, targetDatasetUri.toString());
-
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(targetDatasetUri)).thenReturn(versionMapping);
-    when(datasetReadRepository.getHistory(sourceDatasetUri)).thenReturn(historyModel);
     URI uri = UriComponentsBuilder.fromHttpUrl(targetDatasetVersionedUri)
             .path(WebConstants.DATA_ENDPOINT)
             .queryParam(WebConstants.COPY_OF_QUERY_PARAM, revisionUri.toString())
             .queryParam(WebConstants.GRAPH_QUERY_PARAM, targetGraphUri.toString())
             .build()
             .toUri();
-    when(restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(null), String.class)).thenReturn(responseEntity);
 
-    URI newVersion = graphService.copy(targetDatasetUri, targetGraphUri, sourceDatasetUri, sourceVersionUri, sourceGraphUri);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(targetDatasetUri)).thenReturn(versionMapping);
+    when(datasetReadRepository.getHistory(sourceDatasetUri)).thenReturn(historyModel);
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + owner.getUsername());
+    headers.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String("Study copied from other dataset".getBytes()));
+    when(restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(headers), String.class)).thenReturn(responseEntity);
+
+    URI newVersion = graphService.copy(targetDatasetUri, targetGraphUri, sourceGraphUri, owner);
 
     assertEquals("newVersion", newVersion.toString());
   }
 
   @Test
-  public void testExtractDatasetUuid() {
-    String uri = "https://www.trialverse123.org/datasets/333-av-3222/versions/434334/graphs/44334";
-    String datasetUuid = graphService.extractDatasetUuid(uri);
-    assertEquals("333-av-3222", datasetUuid);
+  public void testExtractDatasetUri() {
+    URI uri = URI.create("https://www.trialverse123.org/datasets/333-av-3222/versions/434-334/graphs/44334");
+    URI datasetUri = graphService.extractDatasetUri(uri);
+    assertEquals(Namespaces.DATASET_NAMESPACE + "333-av-3222", datasetUri.toString());
   }
+
   @Test
-  public void testExtractVersionUuid() {
-    String uri = "https://www.trialverse123.org/datasets/333-av-3222/versions/434334/graphs/44334";
-    String versionUuid = graphService.extractVersionUuid(uri);
-    assertEquals("434334", versionUuid);
+  public void testExtractVersionUri() {
+    URI uri = URI.create("https://www.trialverse123.org/datasets/333-av-3222/versions/434-334/graphs/44334");
+    URI versionUri = graphService.extractVersionUri(uri);
+    assertEquals("http://testhost/versions/" + "434-334", versionUri.toString());
   }
+
   @Test
-  public void testExtractGraphUuid() {
-    String uri = "https://www.trialverse123.org/datasets/333-av-3222/versions/434334/graphs/44334";
-    String graphUuid = graphService.extractGraphUuid(uri);
-    assertEquals("44334", graphUuid);
+  public void testExtractGraphUri() {
+    URI uri = URI.create("https://www.trialverse123.org/datasets/333-av-3222/versions/434-334/graphs/443-34");
+    URI graphUri = graphService.extractGraphUri(uri);
+    assertEquals(Namespaces.GRAPH_NAMESPACE + "443-34", graphUri.toString());
   }
 
 }

@@ -19,6 +19,7 @@ public class WebConstants {
           Charset.forName("utf8"));
 
   private final static String APPLICATION_JSON_UTF8_VALUE = "application/json; charset=UTF-8";
+  public static final String APPLICATION_SPARQL_RESULTS_JSON = "application/sparql-results+json";
   private final static String TRIPLESTORE_BASE_URI = loadSystemEnvTripleStoreBaseURI();
   private final static String TRIPLESTORE_DATA_URI = TRIPLESTORE_BASE_URI + "/current";
 
@@ -40,6 +41,7 @@ public class WebConstants {
 
   public static final String COMMIT_TITLE_PARAM = "commitTitle";
   public static final String COMMIT_DESCRIPTION_PARAM = "commitDescription";
+  public static final String ACCEPT_HEADER = "Accept";
 
   private static String loadSystemEnvTripleStoreBaseURI() {
     String tripleStoreBaseURI = System.getenv("TRIPLESTORE_BASE_URI");
