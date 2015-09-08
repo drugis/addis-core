@@ -4,6 +4,7 @@ import org.apache.http.HttpException;
 import org.apache.http.client.HttpClient;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.WebContent;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
@@ -16,6 +17,7 @@ import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.Namespaces;
+import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
@@ -79,9 +81,10 @@ public class DatasetController extends AbstractTrialverseController {
     }
   }
 
-  @RequestMapping(method = RequestMethod.GET)
+  @RequestMapping(method = RequestMethod.GET, headers = WebConstants.ACCEPT_TURTLE_HEADER)
   @ResponseBody
-  public void queryDatasetsByUser(HttpServletResponse httpServletResponse, @PathVariable String userUid) {
+  public void queryDatasetsByUser(HttpServletResponse httpServletResponse,
+                                  @PathVariable String userUid) {
     logger.trace("retrieving datasets");
     Account user = accountRepository.findAccountByHash(userUid);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());

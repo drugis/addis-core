@@ -1,5 +1,6 @@
 package org.drugis.trialverse.util;
 
+import org.apache.jena.riot.WebContent;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -42,6 +43,8 @@ public class WebConstants {
   public static final String COMMIT_TITLE_PARAM = "commitTitle";
   public static final String COMMIT_DESCRIPTION_PARAM = "commitDescription";
   public static final String ACCEPT_HEADER = "Accept";
+
+  public static final String ACCEPT_TURTLE_HEADER = "Accept=" + WebContent.contentTypeTurtle;
 
   private static String loadSystemEnvTripleStoreBaseURI() {
     String tripleStoreBaseURI = System.getenv("TRIPLESTORE_BASE_URI");

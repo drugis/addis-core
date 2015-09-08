@@ -146,13 +146,14 @@ public class DatasetControllerTest {
   }
 
   @Test
-  public void queryDatasetsRequestPath() throws Exception {
+  public void queryDatasetsRequestPathTurtleType() throws Exception {
     Model model = mock(Model.class);
     when(datasetReadRepository.queryDatasets(john)).thenReturn(model);
     String userNameHash = "userNameHash";
     when(accountRepository.findAccountByHash(userNameHash)).thenReturn(john);
 
-    mockMvc.perform(get("/users/" + userNameHash + "/datasets").principal(user))
+    mockMvc.perform(get("/users/" + userNameHash + "/datasets").principal(user)
+            .accept(RDFLanguages.TURTLE.getHeaderString()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
