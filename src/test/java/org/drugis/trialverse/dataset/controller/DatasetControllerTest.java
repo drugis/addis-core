@@ -1,5 +1,7 @@
 package org.drugis.trialverse.dataset.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jdk.nashorn.internal.parser.JSONParser;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.entity.StringEntity;
@@ -9,8 +11,10 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
+import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
+import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.Account;
@@ -38,7 +42,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -74,6 +82,9 @@ public class DatasetControllerTest {
 
   @Mock
   private HistoryService historyService;
+
+  @Mock
+  private DatasetService datasetService;
 
   @Inject
   private WebApplicationContext webApplicationContext;
@@ -163,14 +174,31 @@ public class DatasetControllerTest {
   }
 
   @Test
-  public void queryDatasets() throws Exception {
+  public void queryDatasetsRequestPathJsonType() throws Exception {
+    List<Dataset> datasets = Arrays.asList(new Dataset("uri", john, "title", "description"));
+    when(datasetService.findDatasets(john)).thenReturn(datasets);
+    String userNameHash = "userNameHash";
+    when(accountRepository.findAccountByHash(userNameHash)).thenReturn(john);
+
+    mockMvc.perform(get("/users/" + userNameHash + "/datasets").principal(user)
+            .accept(WebConstants.getApplicationJsonUtf8()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8()))
+            .andExpect(jsonPath("$", hasSize(datasets.size())));
+
+    verify(accountRepository).findAccountByHash(userNameHash);
+    verify(datasetService).findDatasets(john);
+  }
+
+  @Test
+  public void queryDatasetsGraphs() throws Exception {
     Model model = mock(Model.class);
     HttpServletResponse mockServletResponse = mock(HttpServletResponse.class);
     when(datasetReadRepository.queryDatasets(john)).thenReturn(model);
     String userNameHash = "userNameHash";
     when(accountRepository.findAccountByHash(userNameHash)).thenReturn(john);
 
-    datasetController.queryDatasetsByUser(mockServletResponse, userNameHash);
+    datasetController.queryDatasetsGraphsByUser(mockServletResponse, userNameHash);
 
     verify(accountRepository).findAccountByHash(userNameHash);
     verify(datasetReadRepository).queryDatasets(john);

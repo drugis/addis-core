@@ -2,10 +2,10 @@
 define([],
   function() {
     var dependencies = ['$scope', '$stateParams', '$window', '$filter', 'VersionedGraphResource', '$location', '$anchorScroll',
-      '$modal', 'StudyService', 'ResultsService', 'StudyDesignService'
+      '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource'
     ];
     var StudyController = function($scope, $stateParams, $window, $filter, VersionedGraphResource, $location, $anchorScroll,
-      $modal, StudyService, ResultsService, StudyDesignService) {
+      $modal, StudyService, ResultsService, StudyDesignService, DatasetResource) {
 
       // onload
       StudyService.reset();
@@ -151,7 +151,7 @@ define([],
           controller: 'CopyStudyController',
           resolve: {
             datasets: function() {
-              return $scope.datasets;
+              return DatasetResource.queryForJson({userUid: $scope.loginUser.userNameHash});
             },
             datasetUuid: function() {
               return $stateParams.datasetUUID;

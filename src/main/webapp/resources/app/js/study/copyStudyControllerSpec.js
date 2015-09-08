@@ -43,7 +43,7 @@ define(['angular', 'angular-mocks'], function() {
       });
       it('should create a copy message and pass it to the copystudyresource', function() {
         var targetDataset = {
-          datasetUri: 'http://testhost/datasets/datasetUuid'
+          uri: 'http://testhost/datasets/datasetUuid'
         };
         var sourceGraphUri = 'http://testhost/datasets/datasetUuid/versions/versionUuid/graphs/graphUuid';
         var targetGraphUuid = 'targetGraphUuid';

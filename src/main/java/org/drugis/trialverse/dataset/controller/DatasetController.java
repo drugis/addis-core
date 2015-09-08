@@ -8,11 +8,13 @@ import org.apache.jena.riot.WebContent;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
+import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.model.VersionNode;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
+import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
@@ -62,6 +64,9 @@ public class DatasetController extends AbstractTrialverseController {
   private AccountRepository accountRepository;
 
   @Inject
+  private DatasetService datasetService;
+
+  @Inject
   private HttpClient httpClient;
 
   @RequestMapping(method = RequestMethod.POST)
@@ -83,8 +88,8 @@ public class DatasetController extends AbstractTrialverseController {
 
   @RequestMapping(method = RequestMethod.GET, headers = WebConstants.ACCEPT_TURTLE_HEADER)
   @ResponseBody
-  public void queryDatasetsByUser(HttpServletResponse httpServletResponse,
-                                  @PathVariable String userUid) {
+  public void queryDatasetsGraphsByUser(HttpServletResponse httpServletResponse,
+                                        @PathVariable String userUid) {
     logger.trace("retrieving datasets");
     Account user = accountRepository.findAccountByHash(userUid);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
@@ -95,8 +100,18 @@ public class DatasetController extends AbstractTrialverseController {
       httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
     trialverseIOUtilsService.writeModelToServletResponse(model, httpServletResponse);
-    logger.trace("datasets retrieved");
   }
+
+  @RequestMapping(method = RequestMethod.GET,
+          headers = WebConstants.ACCEPT_JSON_HEADER,
+          produces = WebConstants.APPLICATION_JSON_UTF8_VALUE)
+  @ResponseBody
+  public List<Dataset> queryDatasetsByUser(@PathVariable String userUid) {
+    logger.trace("retrieving datasets");
+    Account user = accountRepository.findAccountByHash(userUid);
+    return datasetService.findDatasets(user);
+  }
+
 
   @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.GET)
   @ResponseBody

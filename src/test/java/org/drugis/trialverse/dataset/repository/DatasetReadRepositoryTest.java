@@ -99,7 +99,7 @@ public class DatasetReadRepositoryTest {
     when(webConstants.getTriplestoreBaseUri()).thenReturn("http://mockserver/");
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(WebConstants.X_EVENT_SOURCE_VERSION, "http://myhost/myversion");
-    ResponseEntity<Graph> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), httpHeaders, HttpStatus.OK);
+    ResponseEntity<Object> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), httpHeaders, HttpStatus.OK);
     List<HttpMessageConverter<?>> convertorList = new ArrayList<>();
     convertorList.add(new JenaGraphMessageConverter());
     when(restTemplate.getMessageConverters()).thenReturn(convertorList);

@@ -8,7 +8,7 @@ define([],
 
       $scope.copyStudy = function(targetDataset) {
         var copyMessage = {
-          targetDatasetUuid: targetDataset.datasetUri.split('/')[targetDataset.datasetUri.split('/').length - 1],
+          targetDatasetUuid: targetDataset.uri.split('/')[targetDataset.uri.split('/').length - 1],
           targetGraphUuid: UUIDService.generate(),
           copyOf: UUIDService.buildGraphUri(datasetUuid, versionUuid, graphUuid)
         };

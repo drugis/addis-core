@@ -1,5 +1,6 @@
 package org.drugis.trialverse.dataset.repository.impl;
 
+import arq.cmdline.ModFormat;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
@@ -15,6 +16,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.graph.GraphFactory;
+import org.apache.jena.sparql.util.ModelUtils;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
@@ -42,7 +44,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.apache.http.HttpHeaders.ACCEPT;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
@@ -130,25 +134,28 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   @Override
   public Model queryDatasets(Account currentUserAccount) {
     List<VersionMapping> mappings = versionMappingRepository.findMappingsByUsername(currentUserAccount.getUsername());
-    Graph graph = GraphFactory.createGraphMem();
+    Model resultModel = ModelFactory.createDefaultModel();
+    mappings.stream()
+            .map(this::queryDataset)
+            .forEach((model) -> resultModel.add(model));
 
-    for (VersionMapping mapping : mappings) {
+    return resultModel;
+  }
 
-      HttpHeaders httpHeaders = new HttpHeaders();
-      httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
-      HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-      String uri = mapping.getVersionedDatasetUrl() + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
+  @Override
+  public Model queryDataset(VersionMapping mapping) {
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
+    HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
+    String uri = mapping.getVersionedDatasetUrl() + WebConstants.DATA_ENDPOINT + WebConstants.QUERY_STRING_DEFAULT_GRAPH;
 
-      ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
-      final String version  = responseEntity.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION).get(0);
-      Graph datasetGraph = responseEntity.getBody();
-      graph.getPrefixMapping().setNsPrefix("es", HTTP_DRUGIS_ORG_EVENT_SOURCING_ES);
-      datasetGraph.add(new Triple(NodeFactory.createURI(mapping.getTrialverseDatasetUrl()), headProperty, NodeFactory.createURI(version)));
-      GraphUtil.addInto(graph, datasetGraph);
-      graph = addDatasetType(mapping.getTrialverseDatasetUrl(), graph);
-    }
-
-    return ModelFactory.createModelForGraph(graph);
+    ResponseEntity<Graph> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Graph.class);
+    final String version  = responseEntity.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION).get(0);
+    Graph datasetGraph = responseEntity.getBody();
+    datasetGraph.getPrefixMapping().setNsPrefix("es", HTTP_DRUGIS_ORG_EVENT_SOURCING_ES);
+    datasetGraph.add(new Triple(NodeFactory.createURI(mapping.getTrialverseDatasetUrl()), headProperty, NodeFactory.createURI(version)));
+    datasetGraph.add(new Triple(NodeFactory.createURI(mapping.getTrialverseDatasetUrl()), RDF.Nodes.type, CLASS_VOID_DATASET));
+    return  ModelFactory.createModelForGraph(datasetGraph);
   }
 
   @Override
