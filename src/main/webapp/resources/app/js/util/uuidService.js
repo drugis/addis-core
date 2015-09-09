@@ -28,7 +28,7 @@ define(['angular'], function() {
     function buildDatasetUri(uuid) {
       return datasetPrefix + uuid;
     }
-    function getDatasetUuid(url) {
+    function getUuidFromNamespaceUrl(url) {
       return url.split('/')[4];
     }
     return {
@@ -36,7 +36,7 @@ define(['angular'], function() {
       generateGraphUri: generateGraphUri,
       buildDatasetUri: buildDatasetUri,
       buildGraphUri: buildGraphUri,
-      getDatasetUuid: getDatasetUuid
+      getUuidFromNamespaceUrl: getUuidFromNamespaceUrl
     };
   }
   return dependencies.concat(UUIDService);

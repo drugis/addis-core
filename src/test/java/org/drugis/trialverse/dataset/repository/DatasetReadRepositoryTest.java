@@ -307,8 +307,10 @@ public class DatasetReadRepositoryTest {
     String acceptType = WebConstants.APPLICATION_SPARQL_RESULTS_JSON;
     httpHeaders.add(ACCEPT, acceptType);
     HttpEntity<String> requestEntity = new HttpEntity<>(httpHeaders);
-    ResponseEntity responseEntity = new ResponseEntity<>(new JSONParser(JSONParser.MODE_JSON_SIMPLE).parse("{\"study\":\"bla\"}"), HttpStatus.OK);
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.add(WebConstants.X_EVENT_SOURCE_VERSION, "http://localhost:8080/versions/versionUuid");
 
+    ResponseEntity responseEntity = new ResponseEntity<>(new JSONParser(JSONParser.MODE_JSON_SIMPLE).parse("{\"study\":\"bla\"}"), responseHeaders, HttpStatus.OK);
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path("/query")
             .queryParam("query", sparqlQuery)

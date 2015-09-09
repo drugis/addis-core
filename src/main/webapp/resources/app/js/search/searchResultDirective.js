@@ -1,7 +1,7 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$window', '$state', '$stateParams', 'md5'];
-  var searchResultDirective = function($window, $state, $stateParams, md5) {
+  var dependencies = ['UUIDService'];
+  var searchResultDirective = function(UUIDService) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/search/searchResultDirective.html',
@@ -9,9 +9,11 @@ define([], function() {
         result: '='
       },
       link: function(scope) {
-        var studyRefParams = {
+        scope.studyRefParams = {
           userUid: scope.result.ownerUuid,
-          datasetUUID: UUIDService.getUuid(scope.result.datasetUrl)
+          datasetUUID: UUIDService.getUuidFromNamespaceUrl(scope.result.datasetUrl),
+          versionUuid: scope.result.versionUuid,
+          studyGraphUuid: UUIDService.getUuidFromNamespaceUrl(scope.result.graphUri),
         };
       }
     };

@@ -1,6 +1,6 @@
 {
   "head": {
-    "vaars": ["study", "label", "comment", "graph"]
+    "vars": ["study", "label", "comment", "graph"]
   },
   "results": {
     "bindings": [{

@@ -8,5 +8,9 @@ define(function(require) {
 		.controller('SearchController', require('search/searchController'))
 
 		// services
-		.factory('SearchService', require('search/searchService'));
+		.factory('SearchService', require('search/searchService'))
+
+    //directives
+    .directive('searchResult', require('search/searchResultDirective'))
+    ;
 });

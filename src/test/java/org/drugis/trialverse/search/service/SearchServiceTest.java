@@ -10,6 +10,7 @@ import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.search.model.SearchResult;
 import org.drugis.trialverse.search.service.impl.SearchServiceImpl;
+import org.drugis.trialverse.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -58,7 +60,7 @@ public class SearchServiceTest {
     String searchQuery = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
             "prefix ontology: <http://trials.drugis.org/ontology#>\n" +
             "\n" +
-            "SELECT ?study ?label ?comment WHERE {\n" +
+            "SELECT ?graph ?label ?comment WHERE {\n" +
             "  graph ?graph {\n" +
             "    {\n" +
             "      ?study\n" +
@@ -77,12 +79,12 @@ public class SearchServiceTest {
             "}";
     InputStream inputStream = new ClassPathResource("mockSearchResults.json").getInputStream();
     JSONObject result = (JSONObject) new JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(inputStream);
-
+    result.put(WebConstants.VERSION_UUID, "versionUri");
 
     when(datasetReadRepository.executeHeadQuery(searchQuery, versionMapping)).thenReturn(result);
 
-    searchService.searchStudy("my term");
-
+    List<SearchResult> searchResults = searchService.searchStudy("my term");
+    assertEquals(2, searchResults.size());
   }
 
 

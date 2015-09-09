@@ -223,6 +223,8 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   public JSONObject executeHeadQuery(String sparqlQuery, VersionMapping versionMapping) throws URISyntaxException {
     ResponseEntity<JSONObject> responseEntity = doRequest(versionMapping, sparqlQuery, WebConstants.APPLICATION_SPARQL_RESULTS_JSON, JSONObject.class);
     JSONObject jsonObject = responseEntity.getBody();
+    String versionUri = responseEntity.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION).get(0);
+    jsonObject.put(WebConstants.VERSION_UUID, versionUri.split("/")[4]);
     return jsonObject;
   }
 
