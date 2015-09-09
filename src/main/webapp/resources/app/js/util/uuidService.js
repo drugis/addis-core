@@ -28,11 +28,15 @@ define(['angular'], function() {
     function buildDatasetUri(uuid) {
       return datasetPrefix + uuid;
     }
+    function getDatasetUuid(url) {
+      return url.split('/')[4];
+    }
     return {
       generate: generate,
       generateGraphUri: generateGraphUri,
       buildDatasetUri: buildDatasetUri,
-      buildGraphUri: buildGraphUri
+      buildGraphUri: buildGraphUri,
+      getDatasetUuid: getDatasetUuid
     };
   }
   return dependencies.concat(UUIDService);

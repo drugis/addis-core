@@ -91,8 +91,7 @@ public class SearchResult {
   public void addMetaData(VersionMapping mapping) {
     this.setDatasetUrl(mapping.getTrialverseDatasetUrl());
     this.setOwner(mapping.getOwnerUuid());
-    String userUuid = DigestUtils.sha256Hex(mapping.getOwnerUuid());
-
+    this.setOwnerUuid(DigestUtils.sha256Hex(mapping.getOwnerUuid()));
   }
 
 }
