@@ -1,3 +1,4 @@
+
 'use strict';
 define(['angular', 'angular-mocks'], function() {
   describe('create study controller', function() {
@@ -20,7 +21,6 @@ define(['angular', 'angular-mocks'], function() {
       mockDatasetsResult = {
         promise: mockDatasetsDeferred.promise,
       };
-      //datasetService.addStudyToDatasetGraph.and.returnValue(mockDatasetsResult);
 
       $controller('CreateStudyController', {
         $scope: scope,
@@ -28,6 +28,7 @@ define(['angular', 'angular-mocks'], function() {
         $modalInstance: modalMock,
         DatasetService: datasetServiceMock,
         DatasetVersionedResource: datasetVersionedResourceMock,
+        successCallback: function() {},
         UUIDService: uuidServiceMock,
         StudyService: studyServiceMock,
         GraphResource: graphResourceMock

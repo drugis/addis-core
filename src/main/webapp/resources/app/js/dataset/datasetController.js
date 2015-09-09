@@ -1,11 +1,11 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$q', '$window', '$stateParams', '$modal', '$filter',
+    var dependencies = ['$scope', '$q', '$window', '$location', '$stateParams', '$modal', '$filter',
       'SingleDatasetService', 'DatasetVersionedResource', 'StudiesWithDetailsService',
       'RemoteRdfStoreService', 'HistoryResource', 'ConceptService', 'VersionedGraphResource'
     ];
-    var DatasetController = function($scope, $q, $window, $stateParams, $modal, $filter,
+    var DatasetController = function($scope, $q, $window, $location, $stateParams, $modal, $filter,
       SingleDatasetService, DatasetVersionedResource, StudiesWithDetailsService,
       RemoteRdfStoreService, HistoryResource, ConceptService, VersionedGraphResource) {
 
@@ -82,7 +82,16 @@ define([],
         $modal.open({
           templateUrl: 'app/js/dataset/createStudy.html',
           scope: $scope,
-          controller: 'CreateStudyController'
+          controller: 'CreateStudyController',
+          resolve: {
+            successCallback: function() {
+              return function(newVersion) {
+                $location.path('/users/' + $stateParams.userUid + '/datasets/' +
+                  $stateParams.datasetUUID + '/versions/' + newVersion);
+                $scope.reloadDatasets();
+              }
+            }
+          }
         });
       };
 

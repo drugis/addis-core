@@ -2,8 +2,9 @@
   <div class="row">
     <div class="large-9 columns">
       <h3>Copy study</h3>
-      <label>Choose target dataset test
+      <label>Choose target dataset
         <select
+        ng-disabled="copyComplete"
         ng-options="dataset.title for dataset in datasets"
         ng-model="targetDataset">
         </select>
@@ -11,8 +12,11 @@
     </div>
   </div>
   <div class="row">
-    <div class="large-9 columns">
-      <button class="success" ng-click="copyStudy">Copy</button>
+    <div class="large-9 columns" ng-if="!copyComplete">
+      <button class="success" type="submit">Copy</button>
+    </div>
+    <div class="large-9 columns" ng-if="copyComplete">
+      <button ng-click="cancel()">Close</button> <a ng-click="cancel()" style="margin-left:1rem; text-decoration: underline;" ui-sref="versionedDataset.study({userUid: userUuid, datasetUUID: targetDatasetUuid, versionUuid: newVersionUuid, studyGraphUuid: targetGraphUuid})">Go to new copy</a>
     </div>
   </div>
   <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>

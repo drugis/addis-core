@@ -5,6 +5,7 @@ define(['angular', 'angular-mocks'], function() {
     var scope,
       modalInstanceMock = jasmine.createSpyObj('$mockInstance', ['close', 'dismiss']),
       datasetsMock = ['dataset 1'],
+      userUuidMock = 'userUuidMock',
       datasetUuidMock = 'datasetUuid',
       graphUuidMock = 'graphUuid',
       versionUuidMock = 'versionUuid',
@@ -28,6 +29,7 @@ define(['angular', 'angular-mocks'], function() {
         $scope: scope,
         $modalInstance: modalInstanceMock,
         datasets: datasetsMock,
+        userUuid: userUuidMock,
         datasetUuid: datasetUuidMock,
         graphUuid: graphUuidMock,
         versionUuid: versionUuidMock,
@@ -56,7 +58,6 @@ define(['angular', 'angular-mocks'], function() {
         expect(copyStudyResourceMock.copy).toHaveBeenCalled();
         copyDefer.resolve();
         scope.$apply();
-        expect(modalInstanceMock.close).toHaveBeenCalled();
       });
     });
   });

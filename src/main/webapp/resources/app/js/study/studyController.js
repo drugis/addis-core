@@ -151,7 +151,14 @@ define([],
           controller: 'CopyStudyController',
           resolve: {
             datasets: function() {
-              return DatasetResource.queryForJson({userUid: $scope.loginUser.userNameHash});
+              return DatasetResource.queryForJson({userUid: $scope.loginUser.userNameHash}).$promise.then(function(result){
+                return _.filter(result, function(dataset) {
+                  return dataset.uri !== 'http://trials.drugis.org/datasets/' + $scope.datasetUUID;
+                });
+              });
+            },
+            userUuid: function() {
+              return $scope.loginUser.userNameHash;
             },
             datasetUuid: function() {
               return $stateParams.datasetUUID;
@@ -161,6 +168,9 @@ define([],
             },
             versionUuid: function() {
               return $stateParams.versionUuid;
+            },
+            successCallback: function() {
+              return $scope.reloadDatasets;
             }
           }
         });
@@ -235,6 +245,8 @@ define([],
           resolve: {
             callback: function() {
               return function(newVersion) {
+                $scope.reloadDatasets();
+                $scope.loadStudiesWithDetail();
                 StudyService.studySaved();
                 $location.path('/users/' + $stateParams.userUid + '/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);
               };
