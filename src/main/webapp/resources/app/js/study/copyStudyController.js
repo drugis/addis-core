@@ -1,19 +1,26 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$modalInstance', 'datasets', 'datasetUuid', 'graphUuid', 'versionUuid', 'CopyStudyResource', 'UUIDService'];
-    var CopyStudyController = function($scope, $modalInstance, datasets, datasetUuid, graphUuid, versionUuid, CopyStudyResource, UUIDService) {
+    var dependencies = ['$scope', '$modalInstance', 'datasets', 'userUuid', 'datasetUuid', 'graphUuid', 'versionUuid', 'CopyStudyResource', 'UUIDService'];
+    var CopyStudyController = function($scope, $modalInstance, datasets, userUuid, datasetUuid, graphUuid, versionUuid, CopyStudyResource, UUIDService) {
 
       $scope.datasets = datasets;
 
       $scope.copyStudy = function(targetDataset) {
+        $scope.targetDatasetUuid = targetDataset.uri.split('/')[targetDataset.uri.split('/').length - 1];
+        $scope.targetGraphUuid = UUIDService.generate();
+        $scope.userUuid = userUuid;
+
         var copyMessage = {
-          targetDatasetUuid: targetDataset.datasetUri.split('/')[targetDataset.datasetUri.split('/').length - 1],
-          targetGraphUuid: UUIDService.generate(),
+          targetDatasetUuid: $scope.targetDatasetUuid,
+          targetGraphUuid: $scope.targetGraphUuid,
           copyOf: UUIDService.buildGraphUri(datasetUuid, versionUuid, graphUuid)
         };
-        CopyStudyResource.copy(copyMessage).$promise.then(function() {
-            $modalInstance.close();
+        CopyStudyResource.copy(copyMessage, function(newVersion, responseHeaders) {
+            var newVersion = responseHeaders('X-EventSource-Version');
+            newVersion = newVersion.split('/')[4];
+            $scope.newVersionUuid = newVersion;
+            $scope.copyComplete = true;
           },
           function() {
             $modalInstance.dismiss('cancel');

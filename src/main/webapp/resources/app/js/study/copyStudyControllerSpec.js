@@ -5,6 +5,7 @@ define(['angular', 'angular-mocks'], function() {
     var scope,
       modalInstanceMock = jasmine.createSpyObj('$mockInstance', ['close', 'dismiss']),
       datasetsMock = ['dataset 1'],
+      userUuidMock = 'userUuidMock',
       datasetUuidMock = 'datasetUuid',
       graphUuidMock = 'graphUuid',
       versionUuidMock = 'versionUuid',
@@ -28,6 +29,7 @@ define(['angular', 'angular-mocks'], function() {
         $scope: scope,
         $modalInstance: modalInstanceMock,
         datasets: datasetsMock,
+        userUuid: userUuidMock,
         datasetUuid: datasetUuidMock,
         graphUuid: graphUuidMock,
         versionUuid: versionUuidMock,
@@ -43,7 +45,7 @@ define(['angular', 'angular-mocks'], function() {
       });
       it('should create a copy message and pass it to the copystudyresource', function() {
         var targetDataset = {
-          datasetUri: 'http://testhost/datasets/datasetUuid'
+          uri: 'http://testhost/datasets/datasetUuid'
         };
         var sourceGraphUri = 'http://testhost/datasets/datasetUuid/versions/versionUuid/graphs/graphUuid';
         var targetGraphUuid = 'targetGraphUuid';
@@ -56,7 +58,6 @@ define(['angular', 'angular-mocks'], function() {
         expect(copyStudyResourceMock.copy).toHaveBeenCalled();
         copyDefer.resolve();
         scope.$apply();
-        expect(modalInstanceMock.close).toHaveBeenCalled();
       });
     });
   });

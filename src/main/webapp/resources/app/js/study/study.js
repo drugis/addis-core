@@ -22,6 +22,7 @@ define(function (require) {
 
     //resources
     .factory('CopyStudyResource', require('study/copyStudyResource'))
+    .factory('DatasetResource', require('dataset/datasetResource'))
 
     //directives
     .directive('studyCategory', require('study/categoryDirective'))

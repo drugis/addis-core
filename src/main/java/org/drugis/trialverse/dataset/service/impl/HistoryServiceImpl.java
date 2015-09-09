@@ -16,7 +16,7 @@ import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
-import org.drugis.trialverse.util.WebConstants;
+import org.drugis.trialverse.util.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -51,42 +51,12 @@ public class HistoryServiceImpl implements HistoryService {
   @Inject
   private RestTemplate restTemplate;
 
-  private static final String GRAPH_REVISION = "graph_revision";
-  private static final String MERGED_REVISION = "merged_revision";
-  private static final String REVISION = "revision";
-  private static final String VERSION = "version";
-  private static final String GRAPH = "graph";
-  private static final String DATASET = "dataset";
-  private static final String DATASET_VERSION = "DatasetVersion";
-  private static final String PREVIOUS = "previous";
-  private static final String RDF_TYPE_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-  private static final String DC_TITLE = "http://purl.org/dc/terms/title";
-  private static final String DC_DESCRIPTION = "http://purl.org/dc/terms/description";
-  private static final String DC_CREATOR = "http://purl.org/dc/terms/creator";
-  private static final String DC_DATE = "http://purl.org/dc/terms/date";
-
-
-  private static final Model defaultModel = ModelFactory.createDefaultModel();
-  private static final String esPrefix = "http://drugis.org/eventSourcing/es#";
-  private static final Property typeProperty = defaultModel.getProperty(RDF_TYPE_URI);
-  private static final Property DESCRIPTION_PROPERTY = defaultModel.getProperty(DC_DESCRIPTION);
-  private static final Property DATE_PROPERTY = defaultModel.getProperty(DC_DATE);
-  private static final Property titleProperty = defaultModel.getProperty(DC_TITLE);
-  private static final Property creatorProperty = defaultModel.getProperty(DC_CREATOR);
-  private static final Property datasetVersionObject = defaultModel.getProperty(esPrefix, DATASET_VERSION);
-  private static final Property previousProperty = defaultModel.getProperty(esPrefix, PREVIOUS);
-  private static final Property mergedRevisionProperty = defaultModel.getProperty(esPrefix, MERGED_REVISION);
-  private static final Property graphRevisionProperty = defaultModel.getProperty(esPrefix, GRAPH_REVISION);
-  private static final Property revisionProperty = defaultModel.getProperty(esPrefix, REVISION);
-  private static final Property datasetProperty = defaultModel.getProperty(esPrefix, DATASET);
-
-
   @Override
   public List<VersionNode> createHistory(URI trialverseDatasetUri) throws URISyntaxException, IOException, RevisionNotFoundException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
     Model historyModel = datasetReadRepository.getHistory(versionMapping.getVersionedDatasetUri());
 
-    ResIterator stmtIterator = historyModel.listSubjectsWithProperty(typeProperty, datasetVersionObject);
+    ResIterator stmtIterator = historyModel.listSubjectsWithProperty(JenaProperties.typeProperty, JenaProperties.datasetVersionObject);
 
     Map<String, Resource> versionMap = new HashMap<>();
     Map<String, Boolean> referencedMap = new HashMap<>();
@@ -106,18 +76,18 @@ public class HistoryServiceImpl implements HistoryService {
 
     Set<RDFNode> seenRevisions = new HashSet<>();
     for (VersionNode version : sortedVersions) {
-      StmtIterator graphRevisionBlankNodes = historyModel.listStatements(historyModel.getResource(version.getUri()), graphRevisionProperty, (RDFNode) null);
+      StmtIterator graphRevisionBlankNodes = historyModel.listStatements(historyModel.getResource(version.getUri()), JenaProperties.graphRevisionProperty, (RDFNode) null);
 
       while (graphRevisionBlankNodes.hasNext()) {
         Resource graphRevisionBlankNode = graphRevisionBlankNodes.nextStatement().getObject().asResource();
-        StmtIterator revisionItr = historyModel.listStatements(graphRevisionBlankNode, revisionProperty, (RDFNode) null);
+        StmtIterator revisionItr = historyModel.listStatements(graphRevisionBlankNode, JenaProperties.revisionProperty, (RDFNode) null);
         Resource revisionSubject = revisionItr.next().getObject().asResource();
-        StmtIterator stmtIterator1 = historyModel.listStatements(revisionSubject, mergedRevisionProperty, (RDFNode) null);
+        StmtIterator stmtIterator1 = historyModel.listStatements(revisionSubject, JenaProperties.mergedRevisionProperty, (RDFNode) null);
         if (stmtIterator1.hasNext()) { // it's a merge revision
           Statement mergedRevision = stmtIterator1.next();
           if (!seenRevisions.contains(mergedRevision.getObject())) { // that hasn't been seen before
             seenRevisions.add(mergedRevision.getObject());
-            StmtIterator datasetReference = historyModel.listStatements(mergedRevision.getResource(), datasetProperty, (RDFNode) null);
+            StmtIterator datasetReference = historyModel.listStatements(mergedRevision.getResource(), JenaProperties.datasetProperty, (RDFNode) null);
             RDFNode sourceDataset = datasetReference.next().getObject();
             Merge merge = resolveMerge(mergedRevision.getObject().toString(), sourceDataset.toString());
             version.setMerge(merge);
@@ -133,7 +103,7 @@ public class HistoryServiceImpl implements HistoryService {
     Resource current = headVersion;
     for (int historyOrder = 0; historyOrder < versionMap.size(); ++historyOrder) {
       sortedVersions.add(buildNewVersionNode(current, historyOrder));
-      Resource next = current.getPropertyResourceValue(previousProperty);
+      Resource next = current.getPropertyResourceValue(JenaProperties.previousProperty);
       current = next;
     }
     sortedVersions = Lists.reverse(sortedVersions);
@@ -141,13 +111,13 @@ public class HistoryServiceImpl implements HistoryService {
   }
 
   private VersionNode buildNewVersionNode(Resource current, int historyOrder) {
-    Statement title = current.getProperty(titleProperty);
+    Statement title = current.getProperty(JenaProperties.TITLE_PROPERTY);
     String versionTitle = title == null ? "" : title.getObject().toString();
-    Resource creatorProp = current.getPropertyResourceValue(creatorProperty);
+    Resource creatorProp = current.getPropertyResourceValue(JenaProperties.creatorProperty);
     String creator = creatorProp == null ? "unknown creator" : creatorProp.toString();
-    Statement descriptionStatement = current.getProperty(DESCRIPTION_PROPERTY);
+    Statement descriptionStatement = current.getProperty(JenaProperties.DESCRIPTION_PROPERTY);
     String description = descriptionStatement == null ? null : descriptionStatement.getObject().toString();
-    Statement dateProp = current.getProperty(DATE_PROPERTY);
+    Statement dateProp = current.getProperty(JenaProperties.DATE_PROPERTY);
     Date versionDate = ((XSDDateTime) dateProp.getObject().asLiteral().getValue()).asCalendar().getTime();
     return new VersionNode(current.getURI(), versionTitle, versionDate, description, creator, historyOrder);
   }
@@ -157,7 +127,7 @@ public class HistoryServiceImpl implements HistoryService {
       Resource resource = stmtIterator.nextResource();
       versionMap.put(resource.getURI(), resource);
 
-      Resource previous = resource.getPropertyResourceValue(previousProperty);
+      Resource previous = resource.getPropertyResourceValue(JenaProperties.previousProperty);
       if (previous != null) {
         referencedMap.put(previous.getURI(), true);
       }
@@ -210,8 +180,8 @@ public class HistoryServiceImpl implements HistoryService {
       throw new RevisionNotFoundException("Unable to find version and graph for revision " + revisionUri);
     }
     QuerySolution solution = resultSet.nextSolution();
-    String version = solution.get(VERSION).toString();
-    String graph = solution.get(GRAPH).toString();
+    String version = solution.get(JenaProperties.VERSION).toString();
+    String graph = solution.get(JenaProperties.GRAPH).toString();
     queryExecution.close();
     return Pair.of(version, graph);
   }

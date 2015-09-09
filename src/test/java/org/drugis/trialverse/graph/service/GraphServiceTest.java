@@ -73,7 +73,9 @@ public class GraphServiceTest {
     httpHeaders.add(WebConstants.X_EVENT_SOURCE_VERSION, "newVersion");
     ResponseEntity responseEntity = new ResponseEntity(httpHeaders, HttpStatus.OK);
     String targetDatasetVersionedUri = "http://versionedURI";
-    VersionMapping versionMapping = new VersionMapping(targetDatasetVersionedUri, null, targetDatasetUri.toString());
+    VersionMapping targetMapping = new VersionMapping(targetDatasetVersionedUri, null, targetDatasetUri.toString());
+    String sourceDatasetVersionedUrl =  "http://sourceDatasetUrl";
+    VersionMapping sourceMapping = new VersionMapping(sourceDatasetVersionedUrl, null, sourceDatasetUri.toString());
     URI uri = UriComponentsBuilder.fromHttpUrl(targetDatasetVersionedUri)
             .path(WebConstants.DATA_ENDPOINT)
             .queryParam(WebConstants.COPY_OF_QUERY_PARAM, revisionUri.toString())
@@ -81,8 +83,10 @@ public class GraphServiceTest {
             .build()
             .toUri();
 
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(targetDatasetUri)).thenReturn(versionMapping);
-    when(datasetReadRepository.getHistory(sourceDatasetUri)).thenReturn(historyModel);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(targetDatasetUri)).thenReturn(targetMapping);
+    when(versionMappingRepository.getVersionMappingByDatasetUrl(sourceDatasetUri)).thenReturn(sourceMapping);
+
+    when(datasetReadRepository.getHistory(sourceMapping.getVersionedDatasetUri())).thenReturn(historyModel);
     HttpHeaders headers = new HttpHeaders();
     headers.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + owner.getUsername());
     headers.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String("Study copied from other dataset".getBytes()));

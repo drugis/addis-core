@@ -11,8 +11,7 @@
     </div>
     <div class="columns large-6 text-right">
         <span ng-show="currentRevision.historyOrder === 0">
-                <span><i class="fa fa-check"></i> This is the current version</span> (
-        <a style="text-decoration: underline;" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>)
+                <span><i class="fa fa-check"></i> This is the current version</span> (<a style="text-decoration: underline;" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>)
         </span>
         <a style="text-decoration: underline;" ng-show="currentRevision.historyOrder !== 0" ui-sref="datasetHistory({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">View History</a>
         <div>

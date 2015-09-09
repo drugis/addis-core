@@ -82,7 +82,9 @@ public class GraphServiceImpl implements GraphService {
 
     VersionMapping targetDatasetMapping = versionMappingRepository.getVersionMappingByDatasetUrl(targetDatasetUri);
 
-    Model historyModel = datasetReadRepository.getHistory(extractDatasetUri(copyOfUri));
+    URI trialverseDatasetUri = extractDatasetUri(copyOfUri);
+    VersionMapping sourceDatasetMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
+    Model historyModel = datasetReadRepository.getHistory(sourceDatasetMapping.getVersionedDatasetUri());
 
     URI revisionUri = getRevisionUri(historyModel, copyOfUri);
 

@@ -19,6 +19,13 @@ define([], function() {
           };
         }
       },
+      'queryForJson': {
+        method: 'GET',
+        isArray: true,
+        headers: {
+          'Accept': 'application/json; charset=UTF-8'
+        }
+      },
       'get': {
         method: 'get',
         headers: {

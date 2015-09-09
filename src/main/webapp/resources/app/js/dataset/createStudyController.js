@@ -1,10 +1,11 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$scope', '$stateParams', '$location', '$modalInstance',
+  var dependencies = ['$scope', '$stateParams', '$modalInstance',
+    'successCallback',
     'UUIDService', 'StudyService', 'GraphResource'
   ];
-  var CreateStudyController = function($scope, $stateParams, $location, $modalInstance,
-    UUIDService, StudyService, GraphResource) {
+  var CreateStudyController = function($scope, $stateParams, $modalInstance,
+    successCallback, UUIDService, StudyService, GraphResource) {
 
     $scope.isCreatingStudy = false;
 
@@ -28,9 +29,8 @@ define([], function() {
           }, queryResult.data, function(value, responseHeaders) {
             var newVersion = responseHeaders('X-EventSource-Version');
             newVersion = newVersion.split('/')[4];
-            $location.path('/users/' + $stateParams.userUid + '/datasets/' +
-              $stateParams.datasetUUID + '/versions/' + newVersion);
-            $scope.isCreatingStudy = true;
+            successCallback(newVersion);
+            $scope.isCreatingStudy = false;
             $modalInstance.close();
           }, function(error) {
             console.log('error' + error);

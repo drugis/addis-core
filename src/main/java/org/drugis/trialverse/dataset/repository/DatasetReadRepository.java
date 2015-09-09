@@ -1,7 +1,7 @@
 package org.drugis.trialverse.dataset.repository;
 
 import net.minidev.json.JSONObject;
-import org.apache.jena.atlas.json.JsonObject;
+import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.security.Account;
@@ -17,6 +17,8 @@ import java.security.Principal;
 public interface DatasetReadRepository {
 
   public Model queryDatasets(Account currentUserAccount);
+
+  public Model queryDataset(VersionMapping mapping);
 
   public Boolean isOwner(URI trialverseDatasetUri, Principal principal);
 
