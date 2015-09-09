@@ -1,0 +1,31 @@
+<div ui-view>
+  <navbar-directive>
+  </navbar-directive>
+
+   <div class="row nav-bar-spacer" style="margin-bottom: 2rem;">
+    <div class="columns large-12">
+    <form ng-submit="search(searchTerm)">
+      <h1 class="text-center">Search</h1>
+
+        <input type="text" autofocus="true" placeholder="Search for studies by title or description" ng-model="searchTerm"/>
+        <button type="submit" ng-disabled = "!searchTerm">Search</button>
+  </form>
+    </div>
+  </div>
+
+   <div class="row" ng-show="searchResults">
+    <div class="columns large-12">
+
+      <h1>Results</h1>
+      <ul class="no-bullet">
+        <li ng-repeat="search in searchResults" style="padding: 1rem">
+          <div><strong>study</strong> <a href="search.study">{{search.title}}</a> </div>
+          <div><strong>description</strong> {{search.comment}} </div>
+          <div><strong>owner</strong> {{search.owner}} </div>
+          <div><strong>datasetUrl</strong> <a href="search.datasetUrl">{{search.datasetUrl}}</a> </div>
+        </li>
+        <li ng-show="!searchResults.length">No studies found for {{searchTerm}}</li>
+      </ul>
+    </div>
+  </div>
+</div>  

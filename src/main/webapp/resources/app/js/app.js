@@ -6,6 +6,7 @@ define(
     'foundation',
     'mmfoundation',
     'angular-ui-router',
+    'search/search',
     'user/user',
     'dataset/dataset',
     'util/util',
@@ -36,6 +37,7 @@ define(
       'mm.foundation.modal',
       'mm.foundation.typeahead',
       'angular-md5',
+      'trialverse.search',
       'trialverse.user',
       'trialverse.dataset',
       'trialverse.util',
@@ -84,6 +86,11 @@ define(
         $httpProvider.interceptors.push('SessionExpiredInterceptor');
 
         $stateProvider
+          .state('search', {
+            url: '/search',
+            templateUrl: 'app/js/search/search.html',
+            controller: 'SearchController'
+          })
           .state('user', {
             url: '/users/:userUid',
             templateUrl: 'app/js/user/user.html',
