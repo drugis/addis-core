@@ -78,8 +78,8 @@
   (vtd/text (vtd/at xml (str "./characteristics/" charName "/value"))))
 
 (def allocationTypeUri
-  {"RANDOMIZED" (trig/iri :ontology "allocationRandomized")
-   "NONRANDOMIZED" (trig/iri :ontology "allocationNonRandomized")})
+  {"RANDOMIZED" (trig/iri :ontology "AllocationRandomized")
+   "NONRANDOMIZED" (trig/iri :ontology "AllocationNonRandomized")})
 
 (defn allocation-rdf [subj xml]
   (let [allocation (allocationTypeUri (studyCharVal xml "allocation"))]
@@ -100,15 +100,15 @@
       subj)))
 
 (def statusTypeUri
-  {"NOT_YET_RECRUITING" (trig/iri :ontology "statusNotYetRecruiting")
-   "RECRUITING" (trig/iri :ontology "statusRecruiting")
-   "ENROLLING" (trig/iri :ontology "statusEnrolling")
-   "ACTIVE" (trig/iri :ontology "statusActive")
-   "COMPLETED" (trig/iri :ontology "statusCompleted")
-   "SUSPENDED" (trig/iri :ontogogy "statusSuspended")
-   "TERMINATED" (trig/iri :ontology "statusTerminated")
-   "WITHDRAWN" (trig/iri :ontology "statusWithdrawn")
-   "UNKNOWN" (trig/iri :ontology "statusUnknown")})
+  {"NOT_YET_RECRUITING" (trig/iri :ontology "StatusNotYetRecruiting")
+   "RECRUITING" (trig/iri :ontology "StatusRecruiting")
+   "ENROLLING" (trig/iri :ontology "StatusEnrolling")
+   "ACTIVE" (trig/iri :ontology "StatusActive")
+   "COMPLETED" (trig/iri :ontology "StatusCompleted")
+   "SUSPENDED" (trig/iri :ontogogy "StatusSuspended")
+   "TERMINATED" (trig/iri :ontology "StatusTerminated")
+   "WITHDRAWN" (trig/iri :ontology "StatusWithdrawn")
+   "UNKNOWN" (trig/iri :ontology "StatusUnknown")})
 
 (defn status-rdf [subj xml]
   (let [status (statusTypeUri (studyCharVal xml "status"))]
@@ -440,10 +440,11 @@
 
 
 (defn import-study [xml entity-uris]
-  (let [uri (trig/iri :study (uuid))]
+  (let [graph-uri (trig/iri :graph (uuid))
+        study-uri (trig/iri :study (uuid))]
     {:id (vtd/attr xml :name)
-     :uri uri
-     :rdf (trig/graph uri (study-rdf xml uri entity-uris))}))
+     :uri study-uri
+     :rdf (trig/graph graph-uri (study-rdf xml study-uri entity-uris))}))
 
 (defn import-studies [xml xpath entity-uris]
   (let [studies (map #(import-study % entity-uris) (vtd/search xml xpath))]
@@ -464,11 +465,13 @@
                   :ontology "http://trials.drugis.org/ontology#"
                   :dataset "http://trials.drugis.org/datasets/"
                   :study "http://trials.drugis.org/studies/"
+                  :graph "http://trials.drugis.org/graphs/"
                   :instance "http://trials.drugis.org/instances/"
                   :entity "http://trials.drugis.org/concepts/"
                   :atc "http://www.whocc.no/ATC2011/"
                   :snomed "http://www.ihtsdo.org/SCT_"
-                  :dc "http://purl.org/dc/elements/1.1/" }
+                  :dc "http://purl.org/dc/elements/1.1/" 
+                  :dcterms "http://purl.org/dc/terms/" }
         [unit-uri-map units-rdf] (import-entities xml "/addis-data/units/unit" unit-rdf)
         [indication-uri-map indications-rdf] (import-entities xml "/addis-data/indications/indication" indication-rdf)
         [drug-uri-map drugs-rdf] (import-entities xml "/addis-data/drugs/drug" drug-rdf)
@@ -485,10 +488,12 @@
         dataset-rdf [(-> (trig/iri :dataset dataset-id)
                          (trig/spo [(trig/iri :rdf "type") (trig/iri :ontology "Dataset")]
                                    [(trig/iri :rdfs "label") label]
-                                   [(trig/iri :rdfs "comment") description])
+                                   [(trig/iri :dcterms "title") label]
+                                   [(trig/iri :rdfs "comment") description]
+                                   [(trig/iri :dcterms "description") description])
                          (spo-each (trig/iri :ontology "contains_study") (vals studies-uri-map))
                          (dataset-source-doc source-doc-uri))]
-	concepts-graph (trig/graph (trig/iri (str (:dataset prefixes) dataset-id "/concepts"))
+	concepts-graph (trig/graph (trig/iri :graph "concepts")
 			(concat 
 			 units-rdf
 			 indications-rdf
