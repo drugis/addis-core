@@ -42,3 +42,16 @@ CREATE TABLE VersionMapping (id SERIAL NOT NULL,
 
 ALTER TABLE Account ADD userNameHash VARCHAR NOT NULL;
 --rollback ALTER TABLE Account DROP COLUMN userNameHash;
+
+-- changeset stroombergc:4
+
+CREATE TABLE ApplicationKey (id SERIAL NOT NULL,
+            secretKey VARCHAR UNIQUE,
+            accountId INT NOT NULL,
+            applicationName VARCHAR NOT NULL,
+            creationDate DATE NOT NULL,
+            revocationDate DATE NOT NULL,
+            PRIMARY KEY (id),
+            FOREIGN KEY (accountId) REFERENCES Account(id)
+);
+--rollback DROP TABLE ApplicationKey;

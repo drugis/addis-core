@@ -1,26 +1,15 @@
-/*
- * Copyright 2013 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.drugis.trialverse.config;
 
+import org.drugis.trialverse.security.AuthenticationFilter;
 import org.drugis.trialverse.security.SimpleSocialUsersDetailService;
+import org.drugis.trialverse.security.ApplicationKeyAuthenticationProvider;
+import org.drugis.trialverse.security.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -28,18 +17,24 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
 import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.social.security.SpringSocialConfigurer;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+  @Inject
+  private AccountRepository accountRepository;
 
   @Autowired
   private ApplicationContext context;
@@ -56,6 +51,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authoritiesByUsernameQuery("SELECT Account.username, COALESCE(AccountRoles.role, 'ROLE_USER') FROM Account" +
                     " LEFT OUTER JOIN AccountRoles ON Account.id = AccountRoles.accountId WHERE Account.username = ?")
             .passwordEncoder(passwordEncoder());
+
+    auth.authenticationProvider(tokenAuthenticationProvider());
   }
 
   @Override
@@ -88,6 +85,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .postLoginUrl("/")
                     .alwaysUsePostLoginUrl(true))
             .and().setSharedObject(ApplicationContext.class, context);
+
+    http.addFilterBefore(new AuthenticationFilter(authenticationManager()), BasicAuthenticationFilter.class);
+
+  }
+
+  @Bean
+  public AuthenticationProvider tokenAuthenticationProvider() {
+    return new ApplicationKeyAuthenticationProvider(accountRepository);
+  }
+
+  @Bean
+  public AuthenticationEntryPoint unauthorizedEntryPoint() {
+    return (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
   }
 
   @Bean

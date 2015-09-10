@@ -17,6 +17,7 @@ package org.drugis.trialverse.security.repository.impl;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.security.TooManyAccountsException;
 import org.drugis.trialverse.security.UsernameAlreadyInUseException;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -81,5 +82,22 @@ public class AccountRepositoryImpl implements AccountRepository {
   @Override
   public List<Account> getUsers() {
     return jdbcTemplate.query("select id, username, firstName, lastName, userNameHash from Account", rowMapper);
+  }
+
+  @Override
+  public Account findAccountByActiveApplicationKey(String applicationKey) throws TooManyAccountsException {
+
+    List<Account> result = jdbcTemplate.query(
+            "select id, username, firstName, lastName, userNameHash from Account where id = (" +
+                    "select accountId from ApplicationKey where secretkey = ? " +
+                    "AND revocationDate > now() " +
+                    "AND creationDate < now() )",
+            rowMapper, applicationKey);
+
+    if(result.size() > 1) {
+      throw new TooManyAccountsException();
+    }
+
+    return result.size() == 0 ? null : result.get(0);
   }
 }
