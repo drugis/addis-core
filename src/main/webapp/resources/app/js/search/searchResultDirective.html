@@ -1,6 +1,10 @@
 <div class="panel">
-  <div><strong>study</strong> <a ui-sref="versionedDataset.study(studyRefParams)">{{result.title}}</a> </div>
-  <div><strong>description</strong> {{result.comment}} </div>
-  <div><strong>owner</strong> {{result.owner}} </div>
-  <div><strong>datasetUrl</strong> <a ui-sref="versionedDataset(studyRefParams)">{{result.datasetUrl}}</a> </div>
+  <div>
+    <a ui-sref="versionedDataset.study(studyRefParams)">{{result.title}}</a>
+  </div>
+  <div>
+    <span ng-show="result.comment">{{result.comment}}</span>
+  </div>
+  <div>Created by {{result.owner}} </div>
+  <div><a ui-sref="versionedDataset(studyRefParams)">Go to source dataset</a> </div>
 </div>

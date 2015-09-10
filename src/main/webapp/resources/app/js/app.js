@@ -87,7 +87,7 @@ define(
 
         $stateProvider
           .state('search', {
-            url: '/search',
+            url: '/search?searchTerm',
             templateUrl: 'app/js/search/search.html',
             controller: 'SearchController'
           })

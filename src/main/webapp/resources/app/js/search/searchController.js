@@ -1,15 +1,22 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', 'SearchService'];
-    var SearchController = function($scope, SearchService) {
+    var dependencies = ['$scope', '$location', '$stateParams', 'SearchService'];
+    var SearchController = function($scope, $location, $stateParams, SearchService) {
 
       $scope.search = search;
 
-      function search(searchTerm) {
-        $scope.searchResults = undefined;
-        SearchService.search(searchTerm).then(function (results){
+      if ($stateParams.searchTerm) {
+        $scope.searchTerm = $stateParams.searchTerm;
+        SearchService.search($stateParams.searchTerm).then(function(results) {
+          $scope.lastSearchTerm = $stateParams.searchTerm;
           $scope.searchResults = results.data;
+        });
+      }
+
+      function search(searchTerm) {
+        $location.search({
+          searchTerm: searchTerm
         });
       }
     };
