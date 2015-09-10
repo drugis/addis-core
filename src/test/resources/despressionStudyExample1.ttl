@@ -1,0 +1,19 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix study: <http://trials.drugis.org/studies/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ontology: <http://trials.drugis.org/ontology#> .
+
+  study:3e6794f1-c95c-486e-ac8d-55e9259d0f4a
+    rdf:type ontology:Study ;
+    rdfs:label "McPartlin et al, 1998" ;
+    rdfs:comment "A comparison of once-daily venlafaxine XR and paroxetine in depressed outpatients treated in general practice. Primary Care Psychiatry 1998; 4: 127-132" ;
+    ontology:has_allocation ontology:AllocationRandomized ;
+    ontology:has_blinding ontology:DoubleBlind ;
+    ontology:has_number_of_centers 43 ;
+    ontology:has_objective [
+      rdfs:comment "To evaluate the efficacy and safety of venlafaxine XR and paroxetine for the treatment of depression in general practice in the UK."
+    ] ;
+    ontology:has_eligibility_criteria [
+      rdfs:comment "Inclusion criteria:\n\nMale or female outpatients at least 18 years of age were eligible if they satisfied DSM-IV criteria for major depression, had symptoms of depression for at least 14 days, and had a minimum baseline score of 19 on the MADRS scale.\n\nExclusion criteria:\n\nPatients hypersensitive to or previously treated with the study drugs were excluded. Female patients of childbearing potential were excluded unless they had a negative urine beta-human chorionic gonadotropin (beta-hCG) test at screening and maintained an acceptable form of contraception throughout the trial. Patients with a history of clinically significant abnormalities on a screening physical examination, electrocardiogram (ECG) or laboratory tests were excluded. In addition, patients were excluded if they had acute suicidal tendencies, seizure disorder, presence of an organic mental disorder, bipolar disorder or a history of any psychotic disorder not associated with depression. The use of any investigational drug, antipsychotic drug, electroconvulsive therapy (ECT), sumatriptan, monoamine oxidase inhibitor or other antidepressant drug, anxiolytic or sedative-hypnotic drug (except temazepam or zopiclone) or any other psychotropic drug or substance within 30 days of baseline were reasons for exclusion. A history of drug or alcohol abuse within two years of the start of the study were also reasons for exclusion."
+    ] ;
+    ontology:status ontology:StatusCompleted .

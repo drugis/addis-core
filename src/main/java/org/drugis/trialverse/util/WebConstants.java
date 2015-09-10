@@ -46,6 +46,7 @@ public class WebConstants {
 
   public static final String ACCEPT_TURTLE_HEADER = "Accept=" + WebContent.contentTypeTurtle;
   public static final String ACCEPT_JSON_HEADER = "Accept=" + APPLICATION_JSON_UTF8_VALUE;
+  public static final String VERSION_UUID = "versionUuid";
 
   private static String loadSystemEnvTripleStoreBaseURI() {
     String tripleStoreBaseURI = System.getenv("TRIPLESTORE_BASE_URI");

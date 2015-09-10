@@ -9,6 +9,13 @@
       <h1>{{::user.firstName}} {{::user.lastName}}</h1>
     </div>
   </div>
+
+  <div class="row">
+    <div class="column center large-12">
+      <h5> <a ui-sref="search" style="text-decoration: underline;"><i class="fa fa-search"></i> Go to Search</a> <h5> 
+    </div>
+  </div>
+
   <div ng-show="!datasetsLoaded" class="row">
     <div class="column center large-12">
       <i class="fa fa-spinner fa-spin fa-3x"></i>

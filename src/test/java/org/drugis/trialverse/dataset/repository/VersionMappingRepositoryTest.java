@@ -15,12 +15,10 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.junit.Assert.*;
 
 /**
  * Created by connor on 11-3-15.
@@ -59,7 +57,7 @@ public class VersionMappingRepositoryTest {
 
   @Test
   public void testFindMappingsByUserName() {
-    List<VersionMapping> mockResult = Arrays.asList(new VersionMapping(1, "datasetUui1", userName, "trialverseDataset"));
+    List<Object> mockResult = Arrays.asList(new VersionMapping(1, "datasetUui1", userName, "trialverseDataset"));
     when(jdbcTemplate.query(anyString(), any(Object[].class), any(RowMapper.class))).thenReturn(mockResult);
 
     List<VersionMapping> mappings = versionMappingRepository.findMappingsByUsername(userName);
@@ -72,9 +70,21 @@ public class VersionMappingRepositoryTest {
     URI datasetUrl = new URI("datasetUrl");
     VersionMapping mockResult = new VersionMapping(1, "datasetUui1", userName, "trialverseDataset");
     when(jdbcTemplate.queryForObject(anyString(), any(RowMapper.class), anyObject())).thenReturn(mockResult);
+
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl);
 
     assertEquals(mockResult, versionMapping);
+  }
+
+  @Test
+  public void testGetVersionMappings() {
+    List<Object> mockResult = Arrays.asList(new VersionMapping(1, "datasetUui1", userName, "trialverseDataset"));
+    when(jdbcTemplate.query(anyString(), any(Object[].class), any(RowMapper.class))).thenReturn(mockResult);
+
+    List<VersionMapping> mappings = versionMappingRepository.getVersionMappings();
+
+    assertEquals(mockResult, mappings);
+    versionMappingRepository.getVersionMappings();
   }
 
   @Test

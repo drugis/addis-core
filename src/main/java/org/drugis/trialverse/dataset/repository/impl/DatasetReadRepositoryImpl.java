@@ -1,6 +1,6 @@
 package org.drugis.trialverse.dataset.repository.impl;
 
-import arq.cmdline.ModFormat;
+import net.minidev.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
@@ -9,14 +9,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.graph.*;
-import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.graph.GraphFactory;
-import org.apache.jena.sparql.util.ModelUtils;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
@@ -43,10 +41,9 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.apache.http.HttpHeaders.ACCEPT;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
@@ -110,13 +107,13 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
 
   private Boolean doAskQuery(URI trialverseDatasetUri, String query) {
-    ResponseEntity<JsonObject> responseEntity = doRequest(trialverseDatasetUri, query, RDFLanguages.JSONLD.getContentType().getContentType(), JsonObject.class);
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
+    ResponseEntity<JsonObject> responseEntity = doRequest(versionMapping, query, RDFLanguages.JSONLD.getContentType().getContentType(), JsonObject.class);
     JsonObject jsonObject = responseEntity.getBody();
     return Boolean.TRUE.equals(new Boolean(jsonObject.get("boolean").toString()));
   }
 
-  private <T> ResponseEntity<T> doRequest(URI trialverseDatasetUri, String query, String acceptType, Class responseType) {
-    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
+  private <T> ResponseEntity<T> doRequest(VersionMapping versionMapping, String query, String acceptType, Class responseType) {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(CONTENT_TYPE, WebContent.contentTypeSPARQLQuery);
     httpHeaders.add(ACCEPT, acceptType);
@@ -220,6 +217,15 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
   @Override
   public void copyGraph(URI targetDataset, URI targetGraph, URI sourceRevision) {
     throw new NotImplementedException();
+  }
+
+  @Override
+  public JSONObject executeHeadQuery(String sparqlQuery, VersionMapping versionMapping) throws URISyntaxException {
+    ResponseEntity<JSONObject> responseEntity = doRequest(versionMapping, sparqlQuery, WebConstants.APPLICATION_SPARQL_RESULTS_JSON, JSONObject.class);
+    JSONObject jsonObject = responseEntity.getBody();
+    String versionUri = responseEntity.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION).get(0);
+    jsonObject.put(WebConstants.VERSION_UUID, versionUri.split("/")[4]);
+    return jsonObject;
   }
 
   private byte[] executeRequestAndCloseResponse(HttpGet request) throws IOException {
