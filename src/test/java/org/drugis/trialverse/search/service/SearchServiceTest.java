@@ -60,7 +60,7 @@ public class SearchServiceTest {
     String searchQuery = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
             "prefix ontology: <http://trials.drugis.org/ontology#>\n" +
             "\n" +
-            "SELECT ?graph ?label ?comment WHERE {\n" +
+            "SELECT ?graph ?study ?label ?comment WHERE {\n" +
             "  graph ?graph {\n" +
             "    {\n" +
             "      ?study\n" +
