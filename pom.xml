@@ -320,7 +320,7 @@
                             <url>${env.TRIALVERSE_DB_URL}</url>
                             <username>${env.TRIALVERSE_DB_USERNAME}</username>
                             <password>${env.TRIALVERSE_DB_PASSWORD}</password>
-                            <promptOnNonLocalDatabase>true</promptOnNonLocalDatabase>
+                            <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                         </configuration>
                         <goals>
                             <goal>update</goal>
