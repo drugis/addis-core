@@ -51,7 +51,7 @@ public class ScratchController {
     }
   }
 
-  @RequestMapping(value = "/query", method = RequestMethod.POST, produces = WebConstants.APPLICATION_JSON_UTF8_VALUE)
+  @RequestMapping(value = "/query", method = RequestMethod.POST)
   @ResponseBody
   public void proxyQuery(HttpServletRequest request, HttpServletResponse response,
                          @RequestHeader(value = "Content-type") String contentTypeStr,
