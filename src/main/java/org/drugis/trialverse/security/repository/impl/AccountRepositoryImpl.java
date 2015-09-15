@@ -25,7 +25,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
@@ -46,7 +45,6 @@ public class AccountRepositoryImpl implements AccountRepository {
   };
 
   @Override
-  @Transactional()
   public void createAccount(String email, String firstName, String lastName) throws UsernameAlreadyInUseException {
     String userNameHash = DigestUtils.sha256Hex(email);
     try {

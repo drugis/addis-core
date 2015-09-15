@@ -1,8 +1,9 @@
 package org.drugis.trialverse.config;
 
+import org.apache.jena.ext.com.google.common.base.Optional;
+import org.drugis.trialverse.security.ApplicationKeyAuthenticationProvider;
 import org.drugis.trialverse.security.AuthenticationFilter;
 import org.drugis.trialverse.security.SimpleSocialUsersDetailService;
-import org.drugis.trialverse.security.ApplicationKeyAuthenticationProvider;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,14 +21,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.util.AntPathRequestMatcher;
+import org.springframework.security.web.util.RequestMatcher;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
 import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.social.security.SpringSocialConfigurer;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.net.URI;
 
 @Configuration
 @EnableWebSecurity
@@ -84,7 +89,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             new SpringSocialConfigurer()
                     .postLoginUrl("/")
                     .alwaysUsePostLoginUrl(true))
-            .and().setSharedObject(ApplicationContext.class, context);
+            .and().csrf().requireCsrfProtectionMatcher(request ->
+                    !"/".equals(URI.create(request.getRequestURI()).getPath())
+                    || !Optional.fromNullable(request.getHeader("X-Auth-Application-Key")).isPresent())
+            .and().setSharedObject(ApplicationContext.class, context)
+    ;
 
     http.addFilterBefore(new AuthenticationFilter(authenticationManager()), BasicAuthenticationFilter.class);
 

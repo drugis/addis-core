@@ -48,7 +48,6 @@ import java.util.Properties;
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
         "org.drugis.trialverse"})
-@EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {"org.drugis.trialverse.security"})
 public class MainConfig {
 
@@ -87,12 +86,6 @@ public class MainConfig {
     return ds;
   }
 
-  @Bean(name = "ptmTrialverse")
-  public PlatformTransactionManager transactionManager(@Qualifier("emTrialverse") EntityManagerFactory entityManagerFactory) {
-    JpaTransactionManager transactionManager = new JpaTransactionManager();
-    transactionManager.setEntityManagerFactory(entityManagerFactory);
-    return transactionManager;
-  }
 
   @Bean(name = "jtTrialverse")
   public JdbcTemplate jdbcTemplate() {
@@ -104,31 +97,6 @@ public class MainConfig {
     return new PersistenceExceptionTranslationPostProcessor();
   }
 
-  @Bean(name = "emTrialverse")
-  public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-    HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-    vendorAdapter.setGenerateDdl(false);
-    vendorAdapter.setShowSql(false);
-    LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-    em.setJpaProperties(additionalProperties());
-    em.setJpaVendorAdapter(vendorAdapter);
-    em.setPackagesToScan("org.drugis.trialverse.security");
-    em.setDataSource(dataSource());
-    em.setPersistenceUnitName("trialverse");
-    em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
 
-    em.afterPropertiesSet();
-    return em;
-  }
-
-  Properties additionalProperties() {
-    return new Properties() {
-      {
-        setProperty("hibernate.hbm2ddl.auto", "validate");
-        setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        setProperty("hibernate.current_session_context_class", "thread");
-      }
-    };
-  }
 
 }

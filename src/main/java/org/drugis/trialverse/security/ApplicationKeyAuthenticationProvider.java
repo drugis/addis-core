@@ -2,16 +2,25 @@ package org.drugis.trialverse.security;
 
 import org.apache.jena.ext.com.google.common.base.Optional;
 import org.drugis.trialverse.security.repository.AccountRepository;
+import org.drugis.trialverse.security.repository.ApiKeyRepository;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+
+import javax.inject.Inject;
+import java.util.Arrays;
 
 /**
  * Created by connor on 9/10/15.
  */
 public class ApplicationKeyAuthenticationProvider implements AuthenticationProvider {
+
+  @Inject
+  private ApiKeyRepository apiKeyRepository;
 
   private AccountRepository accountRepository;
 
@@ -25,7 +34,6 @@ public class ApplicationKeyAuthenticationProvider implements AuthenticationProvi
     if (!applicationKey.isPresent() || applicationKey.get().isEmpty()) {
       throw new BadCredentialsException("Invalid applicationKey");
     }
-
     Account account = null;
     try {
       account = accountRepository.findAccountByActiveApplicationKey(applicationKey.get());
@@ -38,9 +46,10 @@ public class ApplicationKeyAuthenticationProvider implements AuthenticationProvi
       throw new BadCredentialsException("Invalid token or token expired");
     }
 
-    PreAuthenticatedAuthenticationToken token= new PreAuthenticatedAuthenticationToken(account, null);
-    token.setAuthenticated(true);
-    return token;
+    ApiKey apiKey = apiKeyRepository.getKeyBySecretCode(applicationKey.get());
+
+    GrantedAuthority auth = new SimpleGrantedAuthority("ROLE_USER");
+    return new PreAuthenticatedAuthenticationToken(account, apiKey, Arrays.asList(auth));
 
   }
 

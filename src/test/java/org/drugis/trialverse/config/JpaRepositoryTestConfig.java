@@ -27,7 +27,6 @@ import java.util.Properties;
 @Configuration
 @ComponentScan(excludeFilters = {@ComponentScan.Filter(Configuration.class)},
         basePackages = {"org.drugis.trialverse.security"})
-@EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {})
 public class JpaRepositoryTestConfig {
 
@@ -45,13 +44,6 @@ public class JpaRepositoryTestConfig {
             .build();
   }
 
-  @Bean
-  public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
-    JpaTransactionManager transactionManager = new JpaTransactionManager();
-    transactionManager.setEntityManagerFactory(entityManagerFactory);
-    return transactionManager;
-  }
-
   @Bean(name = "jtTrialverse")
   public JdbcTemplate jdbcTemplate() {
     return new JdbcTemplate(dataSource());
@@ -60,22 +52,6 @@ public class JpaRepositoryTestConfig {
   @Bean
   public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
     return new PersistenceExceptionTranslationPostProcessor();
-  }
-
-  @Bean
-  public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-    HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-    vendorAdapter.setGenerateDdl(false);
-    vendorAdapter.setShowSql(true);
-    LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-    em.setJpaVendorAdapter(vendorAdapter);
-    em.setPackagesToScan("org.drugis.trialverse.security");
-    em.setDataSource(dataSource());
-    em.setPersistenceUnitName("trialverse");
-    em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
-    em.setJpaProperties(additionalProperties());
-    em.afterPropertiesSet();
-    return em;
   }
 
   Properties additionalProperties() {
