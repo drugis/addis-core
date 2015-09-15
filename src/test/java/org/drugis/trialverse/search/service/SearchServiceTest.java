@@ -50,8 +50,8 @@ public class SearchServiceTest {
   @Test
   public void testSearchStudy() throws URISyntaxException, IOException, ParseException {
     String trialverseDatasetUrl = "trialverseDatasetUrl";
-    String versiondDatasetUrl = "versiondDatasetUrl";
-    VersionMapping versionMapping = new VersionMapping(versiondDatasetUrl, "ovnerUid", trialverseDatasetUrl);
+    String versionedDatasetUrl = "versiondDatasetUrl";
+    VersionMapping versionMapping = new VersionMapping(versionedDatasetUrl, "ownerUid", trialverseDatasetUrl);
     List<VersionMapping> versionMappings = Arrays.asList(versionMapping);
     when(versionMappingRepository.getVersionMappings()).thenReturn(versionMappings);
 
