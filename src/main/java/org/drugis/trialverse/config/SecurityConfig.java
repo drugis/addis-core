@@ -33,6 +33,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableWebSecurity
@@ -69,6 +73,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+    String[] whitelist = {"/", "/favicon.ico", "/favicon.png", "/app/**", "/auth/**", "/signin", "/signup", "/**/modal/*.html"};
+    // Disable CSFR protection on the following urls:
+    List<AntPathRequestMatcher> requestMatchers = Arrays.asList(whitelist)
+            .stream()
+            .map(AntPathRequestMatcher::new)
+            .collect(Collectors.toList());
     http
             .formLogin()
             .loginPage("/signin")
@@ -79,7 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .logoutUrl("/signout")
             .deleteCookies("JSESSIONID")
             .and().authorizeRequests()
-            .antMatchers("/", "/favicon.ico", "/favicon.png", "/app/**", "/auth/**", "/signin", "/signup", "/**/modal/*.html").permitAll()
+            .antMatchers(whitelist).permitAll()
             .antMatchers("/monitoring").hasRole("MONITORING")
             .antMatchers("/**").authenticated()
             .and().rememberMe()
@@ -90,8 +100,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .postLoginUrl("/")
                     .alwaysUsePostLoginUrl(true))
             .and().csrf().requireCsrfProtectionMatcher(request ->
-                    !"/".equals(URI.create(request.getRequestURI()).getPath())
-                    || !Optional.fromNullable(request.getHeader("X-Auth-Application-Key")).isPresent())
+            !(requestMatchers.stream().anyMatch(matcher -> matcher.matches(request))
+                    || Optional.fromNullable(request.getHeader("X-Auth-Application-Key")).isPresent()))
             .and().setSharedObject(ApplicationContext.class, context)
     ;
 
