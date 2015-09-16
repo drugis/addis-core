@@ -17,6 +17,7 @@ package org.drugis.trialverse.security.repository.impl;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.security.TooManyAccountsException;
 import org.drugis.trialverse.security.UsernameAlreadyInUseException;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,7 +25,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
@@ -45,7 +45,6 @@ public class AccountRepositoryImpl implements AccountRepository {
   };
 
   @Override
-  @Transactional()
   public void createAccount(String email, String firstName, String lastName) throws UsernameAlreadyInUseException {
     String userNameHash = DigestUtils.sha256Hex(email);
     try {
@@ -65,7 +64,7 @@ public class AccountRepositoryImpl implements AccountRepository {
   }
 
   @Override
-  public Account findAccountById(int id) {
+  public Account get(int id) {
     return jdbcTemplate.queryForObject(
             "select id, username, firstName, lastName, userNameHash from Account where id = ?",
             rowMapper, id);
@@ -81,5 +80,22 @@ public class AccountRepositoryImpl implements AccountRepository {
   @Override
   public List<Account> getUsers() {
     return jdbcTemplate.query("select id, username, firstName, lastName, userNameHash from Account", rowMapper);
+  }
+
+  @Override
+  public Account findAccountByActiveApplicationKey(String applicationKey) throws TooManyAccountsException {
+
+    List<Account> result = jdbcTemplate.query(
+            "select id, username, firstName, lastName, userNameHash from Account where id = (" +
+                    "select accountId from ApplicationKey where secretkey = ? " +
+                    "AND revocationDate > now() " +
+                    "AND creationDate < now() )",
+            rowMapper, applicationKey);
+
+    if(result.size() > 1) {
+      throw new TooManyAccountsException();
+    }
+
+    return result.size() == 0 ? null : result.get(0);
   }
 }

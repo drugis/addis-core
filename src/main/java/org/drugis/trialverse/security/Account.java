@@ -15,21 +15,22 @@
  */
 package org.drugis.trialverse.security;
 
-import javax.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.Collections;
 
-@Entity
-@Table
-public class Account {
+public class Account implements UserDetails {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   private String username;
   private String firstName;
   private String lastName;
   private String userNameHash;
+  private GrantedAuthority userRole = new SimpleGrantedAuthority("ROLE_USER");
 
   protected Account() {
   }
@@ -54,8 +55,38 @@ public class Account {
     this.id = id;
   }
 
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return Collections.singletonList(userRole);
+  }
+
+  @Override
+  public String getPassword() {
+    return null;
+  }
+
   public String getUsername() {
     return username;
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return false;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return false;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return false;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return false;
   }
 
   public void setUsername(String username) {

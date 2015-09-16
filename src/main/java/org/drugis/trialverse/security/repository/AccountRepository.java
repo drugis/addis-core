@@ -16,6 +16,7 @@
 package org.drugis.trialverse.security.repository;
 
 import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.security.TooManyAccountsException;
 import org.drugis.trialverse.security.UsernameAlreadyInUseException;
 
 import java.util.List;
@@ -26,9 +27,11 @@ public interface AccountRepository {
 
   Account findAccountByUsername(String username);
 
-  Account findAccountById(int id);
+  Account get(int id);
 
   Account findAccountByHash(String hash);
+
+  Account findAccountByActiveApplicationKey(String applicationKey) throws TooManyAccountsException;
 
   List<Account> getUsers();
 }

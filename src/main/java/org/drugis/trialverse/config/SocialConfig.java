@@ -51,7 +51,6 @@ import javax.sql.DataSource;
 public class SocialConfig extends SocialConfigurerAdapter {
 
   @Inject
-  @Qualifier("dsTrialverse")
   private DataSource dataSource;
 
   @Override

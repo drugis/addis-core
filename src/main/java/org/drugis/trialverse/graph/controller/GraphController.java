@@ -101,7 +101,7 @@ public class GraphController extends AbstractTrialverseController {
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
       Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
       URI targetGraphUri = new URI(Namespaces.GRAPH_NAMESPACE + graphUuid);
-      URI newVersion = graphService.copy(trialverseDatasetUri, targetGraphUri, URI.create(copyOfUri), currentUserAccount);
+      URI newVersion = graphService.copy(trialverseDatasetUri, targetGraphUri, URI.create(copyOfUri));
       trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion.toString());
       trialverseResponse.setStatus(HttpStatus.OK.value());
     } else {

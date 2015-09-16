@@ -9,7 +9,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.net.URI;
@@ -38,7 +37,6 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository {
   private JdbcTemplate jdbcTemplate;
 
   @Override
-  @Transactional()
   public void save(VersionMapping versionMapping) {
     try {
       jdbcTemplate.update("insert into VersionMapping (versionedDatasetUrl, ownerUuid, trialverseDatasetUrl) values (?, ?, ?)",

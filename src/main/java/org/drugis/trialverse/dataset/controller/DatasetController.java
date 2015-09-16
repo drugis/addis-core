@@ -1,15 +1,14 @@
 package org.drugis.trialverse.dataset.controller;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.HttpException;
 import org.apache.http.client.HttpClient;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.riot.WebContent;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.model.Dataset;
-import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.model.VersionNode;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
@@ -17,6 +16,8 @@ import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.security.ApiKey;
+import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
@@ -25,6 +26,9 @@ import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -75,9 +79,9 @@ public class DatasetController extends AbstractTrialverseController {
                             @RequestBody DatasetCommand datasetCommand, @PathVariable String userUid)
           throws URISyntaxException, CreateDatasetException, HttpException {
     logger.trace("createDataset");
-    Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
-    if (currentUserAccount.getuserNameHash().equals(userUid)) {
-      URI datasetUri = datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), currentUserAccount);
+    TrialversePrincipal trialversePrincipal = new TrialversePrincipal(currentUser);
+    if (DigestUtils.sha256Hex(trialversePrincipal.getUserName()).equals(userUid)) {
+      URI datasetUri = datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), trialversePrincipal);
       response.setStatus(HttpServletResponse.SC_CREATED);
       response.setHeader("Location", datasetUri.toString());
     } else {
