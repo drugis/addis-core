@@ -14,7 +14,7 @@ import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
-import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.WebConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,9 +57,13 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   private final static Logger logger = LoggerFactory.getLogger(DatasetWriteRepositoryImpl.class);
 
   @Override
-  public URI createDataset(String title, String description, Account owner) throws URISyntaxException, CreateDatasetException {
+  public URI createDataset(String title, String description, TrialversePrincipal owner) throws URISyntaxException, CreateDatasetException {
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + owner.getUsername());
+    if(owner.hasApiKey()) {
+      httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "https://trialverse.org/apikeys/" + owner.getApiKey().getId());
+    } else {
+      httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + owner.getUserName());
+    }
     httpHeaders.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(INITIAL_COMMIT_MESSAGE.getBytes()));
     httpHeaders.add(HTTP.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
     String datasetUri = jenaFactory.createDatasetURI();
@@ -75,7 +79,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
       }
       URI location = response.getHeaders().getLocation();
       //store link from uri to location
-      versionMappingRepository.save(new VersionMapping(location.toString(), owner.getUsername(), datasetUri));
+      versionMappingRepository.save(new VersionMapping(location.toString(), owner.getUserName(), datasetUri));
     } catch (RestClientException e) {
       logger.error(e.toString());
       throw new CreateDatasetException();

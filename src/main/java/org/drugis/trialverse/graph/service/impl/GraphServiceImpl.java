@@ -10,7 +10,8 @@ import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.service.GraphService;
-import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.security.AuthenticationService;
+import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.springframework.core.io.ClassPathResource;
@@ -38,6 +39,9 @@ public class GraphServiceImpl implements GraphService {
 
   public static final String REVISION = "revision";
   private static final String COPY_MESSAGE = "Study copied from other dataset";
+
+  @Inject
+  private AuthenticationService authenticationService;
 
   @Inject
   private DatasetReadRepository datasetReadRepository;
@@ -78,7 +82,7 @@ public class GraphServiceImpl implements GraphService {
   }
 
   @Override
-  public URI copy(URI targetDatasetUri, URI targetGraphUri, URI copyOfUri, Account owner) throws URISyntaxException, IOException, RevisionNotFoundException {
+  public URI copy(URI targetDatasetUri, URI targetGraphUri, URI copyOfUri) throws URISyntaxException, IOException, RevisionNotFoundException {
 
     VersionMapping targetDatasetMapping = versionMappingRepository.getVersionMappingByDatasetUrl(targetDatasetUri);
 
@@ -96,7 +100,12 @@ public class GraphServiceImpl implements GraphService {
             .toUri();
 
     HttpHeaders headers = new HttpHeaders();
-    headers.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + owner.getUsername());
+    TrialversePrincipal owner = authenticationService.getAuthentication();
+    if(owner.hasApiKey()) {
+      headers.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "https://trialverse.org/apikeys/" + owner.getApiKey().getId());
+    } else {
+      headers.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + owner.getUserName());
+    }
     headers.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(COPY_MESSAGE.getBytes()));
     ResponseEntity response = restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(headers), String.class);
     List<String> newVersion = response.getHeaders().get(WebConstants.X_EVENT_SOURCE_VERSION);

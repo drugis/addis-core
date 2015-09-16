@@ -38,4 +38,12 @@ public class ApiKeyRepositoryImpl implements ApiKeyRepository {
                     "FROM ApplicationKey where secretkey = ?", rowMapper, secretCode);
 
   }
+
+  @Override
+  public ApiKey get(Integer id) {
+    return jdbcTemplate.queryForObject(
+            "SELECT id, secretKey, accountId, applicationname, creationDate, revocationDate " +
+                    "FROM ApplicationKey where id = ?", rowMapper, id);
+
+  }
 }

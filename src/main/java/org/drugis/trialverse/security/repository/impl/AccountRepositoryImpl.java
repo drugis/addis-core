@@ -64,7 +64,7 @@ public class AccountRepositoryImpl implements AccountRepository {
   }
 
   @Override
-  public Account findAccountById(int id) {
+  public Account get(int id) {
     return jdbcTemplate.queryForObject(
             "select id, username, firstName, lastName, userNameHash from Account where id = ?",
             rowMapper, id);

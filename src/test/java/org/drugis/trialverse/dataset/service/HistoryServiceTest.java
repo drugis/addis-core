@@ -9,6 +9,10 @@ import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.impl.HistoryServiceImpl;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
+import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.security.ApiKey;
+import org.drugis.trialverse.security.repository.AccountRepository;
+import org.drugis.trialverse.security.repository.ApiKeyRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -26,6 +30,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -33,6 +38,12 @@ import static org.mockito.MockitoAnnotations.initMocks;
  * Created by daan on 3-9-15.
  */
 public class HistoryServiceTest {
+
+  @Mock
+  private AccountRepository accountRepository;
+
+  @Mock
+  private ApiKeyRepository apiKeyRepository;
 
   @Mock
   private VersionMappingRepository versionMappingRepository;
@@ -66,6 +77,12 @@ public class HistoryServiceTest {
 
     when(versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri)).thenReturn(mapping);
     when(datasetReadRepository.getHistory(mapping.getVersionedDatasetUri())).thenReturn(historyModel);
+    Integer apiKeyId = 1;
+    ApiKey apiKey = mock(ApiKey.class);
+    when(apiKeyRepository.get(apiKeyId)).thenReturn(apiKey);
+    String userName = "osmosisch@gmail.com";
+    Account account = new Account(userName, "firstName", "lastName", "hash");
+    when(accountRepository.findAccountByUsername(userName)).thenReturn(account);
     List<VersionNode> history = historyService.createHistory(trialverseDatasetUri);
 
     assertTrue(history.size() > 0);

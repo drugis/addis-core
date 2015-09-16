@@ -173,7 +173,7 @@ public class GraphControllerTest {
     URI targetGraphUri = URI.create(Namespaces.GRAPH_NAMESPACE + graphUuid);
 
     when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(true);
-    when(graphService.copy(targetDatasetUri, targetGraphUri, sourceGraphUri, john)).thenReturn(URI.create(newVersion));
+    when(graphService.copy(targetDatasetUri, targetGraphUri, sourceGraphUri)).thenReturn(URI.create(newVersion));
 
     mockMvc.perform(
             put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid)

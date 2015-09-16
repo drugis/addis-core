@@ -7,4 +7,6 @@ import org.drugis.trialverse.security.ApiKey;
  */
 public interface ApiKeyRepository {
   ApiKey getKeyBySecretCode(String secretCode);
+
+  ApiKey get(Integer id);
 }

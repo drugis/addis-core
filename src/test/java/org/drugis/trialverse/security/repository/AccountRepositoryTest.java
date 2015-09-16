@@ -56,7 +56,7 @@ public class AccountRepositoryTest {
   @Test
   public void testFindAccountByActiveApplicationKeyExpectResult() throws Exception {
     String applicationKey = "supersecretkey";
-    Account expectedAccount = accountRepository.findAccountById(1);
+    Account expectedAccount = accountRepository.get(1);
     Account account = accountRepository.findAccountByActiveApplicationKey(applicationKey);
     assertEquals(expectedAccount, account);
   }

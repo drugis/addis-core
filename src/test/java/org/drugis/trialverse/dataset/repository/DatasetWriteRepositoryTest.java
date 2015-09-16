@@ -3,6 +3,8 @@ package org.drugis.trialverse.dataset.repository;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.impl.DatasetWriteRepositoryImpl;
 import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.security.ApiKey;
+import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
@@ -14,9 +16,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.security.Principal;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -61,7 +65,10 @@ public class DatasetWriteRepositoryTest {
 
   @Test
   public void testCreateDataset() throws Exception {
-    Account owner = new Account("my-owner", "fn", "ln", "unh");
+    ApiKey apiKey = mock(ApiKey.class);
+    Account account = mock(Account.class);
+    Principal principalMock = new PreAuthenticatedAuthenticationToken(account, apiKey);
+    TrialversePrincipal owner = new TrialversePrincipal(principalMock);
     String title = "my-title";
     String description = "description";
     HttpHeaders httpHeaders = new HttpHeaders();
@@ -77,7 +84,10 @@ public class DatasetWriteRepositoryTest {
 
   @Test
   public void testCreateDatasetWithNullDescription() throws Exception {
-    Account owner = new Account("my-owner", "fn", "ln", "unh");
+    Account account = mock(Account.class);
+    ApiKey apiKey = mock(ApiKey.class);
+    Principal principalMock = new PreAuthenticatedAuthenticationToken(account, apiKey);
+    TrialversePrincipal owner = new TrialversePrincipal(principalMock);
     String title = "my-title";
     String description = null;
     HttpHeaders httpHeaders = new HttpHeaders();

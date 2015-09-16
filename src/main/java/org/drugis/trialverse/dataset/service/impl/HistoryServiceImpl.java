@@ -12,11 +12,17 @@ import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.model.Merge;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.model.VersionNode;
+import org.drugis.trialverse.dataset.model.VersionNodeBuilder;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
-import org.drugis.trialverse.util.*;
+import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.security.ApiKey;
+import org.drugis.trialverse.security.repository.AccountRepository;
+import org.drugis.trialverse.security.repository.ApiKeyRepository;
+import org.drugis.trialverse.util.JenaProperties;
+import org.drugis.trialverse.util.WebConstants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +44,12 @@ import java.util.*;
  */
 @Service
 public class HistoryServiceImpl implements HistoryService {
+
+  @Inject
+  private ApiKeyRepository apiKeyRepository;
+
+  @Inject
+  private AccountRepository accountRepository;
 
   @Inject
   private VersionMappingRepository versionMappingRepository;
@@ -112,14 +124,29 @@ public class HistoryServiceImpl implements HistoryService {
 
   private VersionNode buildNewVersionNode(Resource current, int historyOrder) {
     Statement title = current.getProperty(JenaProperties.TITLE_PROPERTY);
-    String versionTitle = title == null ? "" : title.getObject().toString();
     Resource creatorProp = current.getPropertyResourceValue(JenaProperties.creatorProperty);
     String creator = creatorProp == null ? "unknown creator" : creatorProp.toString();
+    ApiKey apiKey = null;
+    Account account;
+    if (creator.startsWith(WebConstants.API_KEY_PREFIX)) {
+      apiKey = apiKeyRepository.get(Integer.valueOf(creator.substring(WebConstants.API_KEY_PREFIX.length())));
+      account = accountRepository.get(apiKey.getAccountId());
+    } else {
+      account = accountRepository.findAccountByUsername(creator.substring("mailto:".length()));
+    }
+    creator = account.getFirstName() + " " + account.getLastName();
     Statement descriptionStatement = current.getProperty(JenaProperties.DESCRIPTION_PROPERTY);
-    String description = descriptionStatement == null ? null : descriptionStatement.getObject().toString();
     Statement dateProp = current.getProperty(JenaProperties.DATE_PROPERTY);
-    Date versionDate = ((XSDDateTime) dateProp.getObject().asLiteral().getValue()).asCalendar().getTime();
-    return new VersionNode(current.getURI(), versionTitle, versionDate, description, creator, historyOrder);
+    return new VersionNodeBuilder()
+            .setUri(current.getURI())
+            .setVersionTitle(title == null ? "" : title.getObject().toString())
+            .setVersionDate(((XSDDateTime) dateProp.getObject().asLiteral().getValue()).asCalendar().getTime())
+            .setDescription(descriptionStatement == null ? null : descriptionStatement.getObject().toString())
+            .setHistoryOrder(historyOrder)
+            .setCreator(creator)
+            .setUserHash(account.getuserNameHash())
+            .setApplicationName(apiKey == null ? null : apiKey.getApplicationName())
+            .build();
   }
 
   private void populateVersionMaps(ResIterator stmtIterator, Map<String, Resource> versionMap, Map<String, Boolean> referencedMap) {

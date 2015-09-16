@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class AuthenticationService {
-  public Authentication getAuthentication() {
-    return SecurityContextHolder.getContext().getAuthentication();
+  public TrialversePrincipal getAuthentication() {
+    return new TrialversePrincipal(SecurityContextHolder.getContext().getAuthentication());
   }
 }
