@@ -32,10 +32,10 @@ public class ApiKeyRepositoryImpl implements ApiKeyRepository {
   };
 
   @Override
-  public ApiKey getKeyBySecretCode(String s) {
+  public ApiKey getKeyBySecretCode(String secretCode) {
     return jdbcTemplate.queryForObject(
             "SELECT id, secretKey, accountId, applicationname, creationDate, revocationDate " +
-                    "FROM ApplicationKey where secretkey = ?", rowMapper, s);
+                    "FROM ApplicationKey where secretkey = ?", rowMapper, secretCode);
 
   }
 }

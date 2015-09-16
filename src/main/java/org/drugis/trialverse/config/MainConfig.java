@@ -74,7 +74,7 @@ public class MainConfig {
             .build();
   }
 
-  @Bean(name = "dsTrialverse")
+  @Bean
   public DataSource dataSource() {
     DataSource ds;
     JndiTemplate jndi = new JndiTemplate();

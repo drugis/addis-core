@@ -4,9 +4,7 @@ import org.apache.jena.ext.com.google.common.base.Optional;
 import org.drugis.trialverse.security.ApplicationKeyAuthenticationProvider;
 import org.drugis.trialverse.security.AuthenticationFilter;
 import org.drugis.trialverse.security.SimpleSocialUsersDetailService;
-import org.drugis.trialverse.security.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,39 +19,31 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.util.AntPathRequestMatcher;
-import org.springframework.security.web.util.RequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
 import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.social.security.SpringSocialConfigurer;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-  @Inject
-  private AccountRepository accountRepository;
-
   @Autowired
   private ApplicationContext context;
 
   @Inject
-  @Qualifier("dsTrialverse")
   private DataSource dataSource;
 
   @Override
-  protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     auth.jdbcAuthentication()
             .dataSource(dataSource)
             .usersByUsernameQuery("SELECT username, password, TRUE FROM Account WHERE username = ?")
@@ -111,7 +101,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Bean
   public AuthenticationProvider tokenAuthenticationProvider() {
-    return new ApplicationKeyAuthenticationProvider(accountRepository);
+    return new ApplicationKeyAuthenticationProvider();
   }
 
   @Bean

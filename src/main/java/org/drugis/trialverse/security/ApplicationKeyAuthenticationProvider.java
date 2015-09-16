@@ -22,10 +22,11 @@ public class ApplicationKeyAuthenticationProvider implements AuthenticationProvi
   @Inject
   private ApiKeyRepository apiKeyRepository;
 
+  @Inject
   private AccountRepository accountRepository;
 
-  public ApplicationKeyAuthenticationProvider(AccountRepository accountRepository) {
-    this.accountRepository = accountRepository;
+  public ApplicationKeyAuthenticationProvider( ) {
+
   }
 
   @Override

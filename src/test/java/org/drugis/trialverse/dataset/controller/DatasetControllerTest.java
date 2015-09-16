@@ -1,7 +1,5 @@
 package org.drugis.trialverse.dataset.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jdk.nashorn.internal.parser.JSONParser;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.entity.StringEntity;
@@ -19,8 +17,8 @@ import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.repository.AccountRepository;
-import org.drugis.trialverse.util.Utils;
 import org.drugis.trialverse.util.Namespaces;
+import org.drugis.trialverse.util.Utils;
 import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.junit.After;
@@ -34,10 +32,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.net.URI;
@@ -46,7 +42,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -85,9 +80,6 @@ public class DatasetControllerTest {
 
   @Mock
   private DatasetService datasetService;
-
-  @Inject
-  private WebApplicationContext webApplicationContext;
 
   @InjectMocks
   private DatasetController datasetController;
