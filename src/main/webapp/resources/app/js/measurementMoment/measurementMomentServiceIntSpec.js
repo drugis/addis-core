@@ -38,7 +38,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       // mock stub services
       var queryEpochsDeferred = $q.defer();
       var mockEpochs = [{
-        uri: 'epochUri1'
+        uri: 'http://trials.drugis.org/instances/4be1f8d0-7d6c-45f0-a651-69bb9d4df948'
       }];
       queryEpochsDeferred.resolve(mockEpochs);
       epochServiceStub.queryItems.and.returnValue(queryEpochsDeferred.promise);
@@ -82,7 +82,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
       it('should return the measurements', function(done) {
         measurementMomentService.queryItems().then(function(result) {
-          expect(result.length).toBe(1);
+          expect(result.length).toBe(2);
           var measurementMoment = result[0];
           expect(measurementMoment.label).toEqual('At start of epoch 1');
           expect(measurementMoment.epochLabel).toEqual('epoch 1');
@@ -120,6 +120,29 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             expect(measurementMoment.epochLabel).toEqual('epoch 1');
             expect(measurementMoment.relativeToAnchor).toEqual('http://trials.drugis.org/ontology#anchorEpochStart');
             expect(measurementMoment.offset).toEqual('PT0S');
+            done();
+          });
+        });
+        rootScope.$digest();
+      });
+    });
+
+    describe('delete measurement moment', function() {
+      beforeEach(function(done) {
+        testUtils.loadTestGraph('queryMeasurementMomentsGraph.ttl', graphUri);
+        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
+        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
+        done();
+      });
+
+      it('should remove the measurementmoment', function(done) {
+        var mmToRemove = {
+          label: 'At start of new epoch',
+          uri: 'http://trials.drugis.org/instances/2634b5b6-d557-4b38-8c48-ec08fa12d435'
+        };
+        measurementMomentService.deleteItem(mmToRemove).then(function() {
+          measurementMomentService.queryItems().then(function(result) {
+            expect(result.length).toBe(1);
             done();
           });
         });

@@ -6,6 +6,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 INSERT DATA {
   GRAPH <$graphUri> {
     instance:$newItemUuid
+      a ontology:MeasurementMoment;
       rdfs:label "$newLabel" ;
       ontology:relative_to_epoch <$epochUri> ;
       ontology:relative_to_anchor <$anchorMoment> ;
