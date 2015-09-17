@@ -37,6 +37,22 @@ define([],
 
       function sortByEpochAnchorAndDuration(unsorted) {
         return unsorted.sort(function(a, b) {
+
+          // item contains a properties to be sorted
+          function isSortable(item) {
+            return item.epoch && item.relativeToAnchor && item.offset
+          }
+
+          // move un-sortable items to the back
+          if(!isSortable(a) && !isSortable(b)) {
+            return 0;
+          } else if(!isSortable(a)) {
+            return 1;
+          } else if(!isSortable(b)){
+            return -1;
+          }
+          
+          // sort only the sortable items
           if (a.epoch.pos === b.epoch.pos) {
             if (a.relativeToAnchor === b.relativeToAnchor) {
               if (a.offset === b.offset) {

@@ -3,7 +3,9 @@ prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?uri ?label ?epochUri ?epochLabel ?relativeToAnchor ?offset ?outcome ?outcomeLabel WHERE {
   GRAPH <$graphUri> {
-    ?uri rdfs:label ?label .
+    ?uri 
+      a ontology:MeasurementMoment ;
+      rdfs:label ?label .
     OPTIONAL {
       ?uri ontology:relative_to_epoch ?epochUri .
       ?epochUri rdfs:label ?epochLabel .

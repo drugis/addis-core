@@ -20,6 +20,7 @@ INSERT {
 }
 WHERE {
   <$itemUri>
+    a ontology:MeasurementMoment;
     rdfs:label ?oldLabel ;
     ontology:relative_to_epoch ?oldEpoch ;
     ontology:relative_to_anchor ?oldAnchor ;

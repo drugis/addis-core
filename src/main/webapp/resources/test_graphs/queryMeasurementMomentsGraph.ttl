@@ -30,6 +30,7 @@
                 <http://trials.drugis.org/instances/2ab7dcf2-7ada-4441-a72c-048ee91b4c4d> .
 
 <http://trials.drugis.org/instances/2634b5b6-d557-4b38-8c48-ec08fa12d434>
+        a <http://trials.drugis.org/ontology#MeasurementMoment> ;
         <http://www.w3.org/2000/01/rdf-schema#label>
                 "At start of epoch 1" ;
         <http://trials.drugis.org/ontology#relative_to_anchor>
@@ -38,6 +39,11 @@
                 <http://trials.drugis.org/instances/4be1f8d0-7d6c-45f0-a651-69bb9d4df948> ;
         <http://trials.drugis.org/ontology#time_offset>
                 "PT0S"^^<http://www.w3.org/2001/XMLSchema#duration> .
+
+<http://trials.drugis.org/instances/2634b5b6-d557-4b38-8c48-ec08fa12d435>
+        a <http://trials.drugis.org/ontology#MeasurementMoment> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Sparse mm" .
 
 <http://localhost:8080/.well-known/genid/0000014ceb9f4e207afe979900000000>
         <http://www.w3.org/1999/02/22-rdf-syntax-ns#value>
