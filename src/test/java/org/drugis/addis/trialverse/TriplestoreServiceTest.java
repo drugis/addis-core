@@ -51,14 +51,13 @@ public class TriplestoreServiceTest {
   @Test
   public void testQueryNamespaces() throws ParseException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleQueryNamespacesResult.json");
-    ResponseEntity<String> resultEntity = new ResponseEntity<String>(mockResult, HttpStatus.OK);
+    ResponseEntity<String> resultEntity = new ResponseEntity<>(mockResult, HttpStatus.OK);
 
     UriComponents uriComponents = UriComponentsBuilder
             .fromHttpUrl(TriplestoreService.TRIPLESTORE_BASE_URI)
             .path("datasets/")
             .build();
 
-    when(restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptJsonRequest, String.class)).thenReturn(resultEntity);
     String datasetUuid = "d1";
     String query = TriplestoreServiceImpl.NAMESPACE;
     UriComponents uriComponents2 = UriComponentsBuilder.fromHttpUrl(TriplestoreService.TRIPLESTORE_BASE_URI)
@@ -69,8 +68,10 @@ public class TriplestoreServiceTest {
     String mockResult2 = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleGetNamespaceResult.json");
     MultiValueMap<String, String> responceHeaders = new HttpHeaders();
     responceHeaders.add(TriplestoreServiceImpl.X_EVENT_SOURCE_VERSION, "version");
-    ResponseEntity<String> resultEntity2 = new ResponseEntity<String>(mockResult2, responceHeaders, HttpStatus.OK);
-    when(restTemplate.exchange(uriComponents2.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptSpaqlResultsRequest, String.class)).thenReturn(resultEntity2);
+    ResponseEntity<String> resultEntity2 = new ResponseEntity<>(mockResult2, responceHeaders, HttpStatus.OK);
+
+    when(restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptJsonRequest, String.class)).thenReturn(resultEntity);
+    when(restTemplate.exchange(uriComponents2.toUri(), HttpMethod.GET, TriplestoreServiceImpl.acceptSparqlResultsRequest, String.class)).thenReturn(resultEntity2);
 
     Collection<Namespace> namespaces = triplestoreService.queryNameSpaces();
 
