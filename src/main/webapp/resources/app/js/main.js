@@ -11,7 +11,7 @@ require.config({
     'foundation': 'bower_components/foundation/js/foundation.min',
     'lodash': 'bower_components/lodash/dist/lodash.min',
     'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
-    'moment': 'bower_components/moment/min/moment.min',
+    'moment': 'bower_components/moment/min/moment.min'
   },
   baseUrl: 'app/js',
   shim: {

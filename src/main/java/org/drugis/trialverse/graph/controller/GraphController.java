@@ -1,7 +1,6 @@
 package org.drugis.trialverse.graph.controller;
 
 import org.apache.http.Header;
-
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
@@ -68,7 +67,7 @@ public class GraphController extends AbstractTrialverseController {
   public void getGraph(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid,
                        @PathVariable String versionUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
     logger.trace("get graph");
-    VersionMapping versionMapping =versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
     byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());

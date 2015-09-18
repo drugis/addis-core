@@ -28,7 +28,7 @@
     "rdfstore-js": "https://raw.githubusercontent.com/ConnorStroomberg/rdfstore-js/fixes/dist/browser/rdf_store.js",
     "jquery": "~2.1.1",
     "angular-resource": "~1.3.2",
-    "lodash": "2.4.1",
+    "lodash": "3.10.1",
     "jquery-rdfquery": "~1.0.0",
     "moment": "~2.8.1",
     "angular-md5": "~0.1.7"
