@@ -9,7 +9,7 @@ require.config({
     'jQuery': 'bower_components/jquery/dist/jquery.min',
     'domReady': 'bower_components/requirejs-domready/domReady',
     'foundation': 'bower_components/foundation/js/foundation.min',
-    'lodash': 'bower_components/lodash/dist/lodash.min',
+    'lodash': 'bower_components/lodash/lodash.min',
     'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
     'moment': 'bower_components/moment/min/moment.min'
   },

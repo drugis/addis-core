@@ -62,17 +62,30 @@ public class GraphController extends AbstractTrialverseController {
 
   Logger logger = LoggerFactory.getLogger(getClass());
 
-  @RequestMapping(value = "/versions/{versionUuid}/graphs/{graphUuid}", method = RequestMethod.GET)
+  @RequestMapping(value = "/versions/{versionUuid}/graphs/{graphUuid}", method = RequestMethod.GET, produces = WebConstants.TURTLE)
   @ResponseBody
-  public void getGraph(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid,
+  public void getGraphTurtle(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid,
                        @PathVariable String versionUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
     logger.trace("get graph");
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
-    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid);
+    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.TURTLE);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
     trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
   }
+
+  @RequestMapping(value = "/versions/{versionUuid}/graphs/{graphUuid}", method = RequestMethod.GET, produces = WebConstants.JSON_LD)
+  @ResponseBody
+  public void getGraphJsonLD(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid,
+                       @PathVariable String versionUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
+    logger.trace("get graph");
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
+    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.JSON_LD);
+    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+    httpServletResponse.setHeader("Content-Type", WebConstants.JSON_LD);
+    trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
+  }
+
 
   @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, params = {WebConstants.COMMIT_TITLE_PARAM})
   public void setGraph(HttpServletRequest request, HttpServletResponse trialversResponse, Principal currentUser,

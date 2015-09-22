@@ -16,6 +16,14 @@ define([],
       $scope.versionUuid = $stateParams.versionUuid;
       $scope.openCopyDialog = openCopyDialog;
       $scope.study = {};
+      $scope.resetStudy = resetStudy;
+      $scope.jsonStudy = VersionedGraphResource.getJson({
+          userUid: $stateParams.userUid,
+          datasetUUID: $stateParams.datasetUUID,
+          graphUuid: $stateParams.studyGraphUuid,
+          versionUuid: $stateParams.versionUuid
+        });
+
       $scope.categorySettings = {
         studyInformation: {
           service: 'StudyInformationService',
@@ -199,7 +207,7 @@ define([],
         });
       }
 
-      $scope.resetStudy = function() {
+      function resetStudy() {
         // skip reset check in controller as ng-disabled does not work with a <a> tag needed by foundation menu item
         if(StudyService.isStudyModified()) {
            reloadStudyModel();
