@@ -141,15 +141,6 @@ table {
 td.empty-cell {
   background-color: $addis-grey-border;
 }
-// lighten the darken on hover
-tr.on-hover:hover {
-  background: darken($secondary-color, 0.5%);
-  cursor: pointer;
-  text-decoration: none;
-}
-tr.clickable td {
-  color: $primary-color;
-}
 table.network-meta-analysis-table {
   border: none;
   border-spacing: 0px;
