@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -69,7 +70,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public static final String ACCEPT_HEADER = "Accept";
   public static final String APPLICATION_SPARQL_RESULTS_JSON = "application/sparql-results+json";
   public static final HttpEntity<String> acceptJsonRequest = new HttpEntity<>(getJsonHeaders);
-  public static final HttpEntity<String> acceptSpaqlResultsRequest = new HttpEntity<>(getSparqlResultsHeaders);
+  public static final HttpEntity<String> acceptSparqlResultsRequest = new HttpEntity<>(getSparqlResultsHeaders);
 
   @Inject
   RestTemplate restTemplate;
@@ -108,11 +109,13 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     final ResponseEntity<String> response = restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, acceptJsonRequest, String.class);
     List<Namespace> namespaces = new ArrayList<>();
 
-    JSONArray namespaceUris = (JSONArray) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(response.getBody());
+    JSONArray namespacesResponse = (JSONArray) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(response.getBody());
 
-    for (Object datasetUri : namespaceUris) {
-      logger.debug("query namespaces; URI: " + datasetUri.toString());
-      namespaces.add(getNamespaceHead(datasetUri.toString()));
+    for (Object namespaceNode : namespacesResponse) {
+      JSONObject jsonNode = (JSONObject) namespaceNode;
+      String namespaceUri = jsonNode.get("id").toString();
+      logger.debug("query namespaces; URI: " + namespaceUri);
+      namespaces.add(getNamespaceHead(namespaceUri));
     }
 
     return namespaces;
@@ -595,7 +598,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             .queryParam(QUERY_PARAM_QUERY, query)
             .build();
 
-    return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, acceptSpaqlResultsRequest, String.class);
+    return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, acceptSparqlResultsRequest, String.class);
   }
 
 
