@@ -9743,31 +9743,16 @@ code {
 }
 
 /* line 1, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.row.application-link {
-  margin: 1rem 0;
-}
-
-/* line 5, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 .inline {
   display: inline;
 }
 
-/* line 9, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.block {
-  display: block;
-}
-
-/* line 13, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 5, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 label.form-item-header {
   font-size: 1.2rem;
 }
 
-/* line 17, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.inline-form-item {
-  display: inline;
-}
-
-/* line 21, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 9, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 a.next {
   display: block;
   position: absolute;
@@ -9775,7 +9760,7 @@ a.next {
   left: 494pt;
 }
 
-/* line 28, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 16, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 a.previous {
   display: block;
   position: absolute;
@@ -9783,192 +9768,37 @@ a.previous {
   left: 10pt;
 }
 
-/* line 35, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 23, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 img.paged-png {
   position: relative;
   left: 60pt;
 }
 
-/* line 40, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 28, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 .indent-one {
   margin-left: 2rem;
 }
 
-/* line 44, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.application-link a {
-  text-decoration: underline;
-}
-
-/* line 49, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-input[type="number"],
-input[type="text"],
-select,
-select option {
-  line-height: 1.1rem;
-}
-
-/* line 56, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 32, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 table.layout-table {
   border: none;
 }
-/* line 58, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 34, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 table.layout-table td {
   border: none;
   background-color: #F3F0FA;
 }
 
-/* line 64, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 40, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 .main-category-header {
   color: #008CBA;
   font-weight: bold;
 }
 
-/* line 70, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.top-bar-section .has-form {
-  height: 44px;
-}
-
-/* line 74, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.topbar-text {
-  color: white;
-  padding: 0;
-  margin: 0;
-}
-
-/* line 80, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 46, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 .top-bar-section ul.top-bar-content {
   padding-top: 5px;
   margin-left: 4rem;
-}
-
-/* line 85, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-body.f-topbar-fixed {
-  padding-top: 4rem;
-}
-
-/* line 93, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.side-nav .button {
-  margin-bottom: 0.5rem;
-}
-
-/* line 97, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.modified-warning {
-  font-size: 14px;
-  font-style: italic;
-  text-align: center;
-  margin-bottom: 0.5rem;
-}
-
-/* line 104, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-ul.side-nav {
-  margin-top: -20px;
-  padding: 2rem 1rem;
-  background-color: #f4f4f4;
-}
-
-/* line 110, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-ul.side-nav li.heading {
-  color: #008CBA;
-  font-size: 0.77778rem;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-/* line 119, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.study-item {
-  margin: 0 0 3rem 0;
-}
-
-/* line 123, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.study-main-category-header {
-  color: #008CBA;
-  font-weight: bold;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-/* line 134, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.form-input-group {
-  padding-bottom: 16px;
-}
-
-/* line 138, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-ul.form-list li {
-  font-size: 0.875rem;
-  cursor: pointer;
-  font-weight: normal;
-  line-height: 1.5;
-  margin-bottom: 0;
-}
-
-/* line 146, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-div.row.bottom-button-bar {
-  margin-top: 2rem;
-}
-
-/* line 153, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.y-head {
-  font-weight: bold;
-}
-
-/* line 159, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-table caption {
-  text-align: left;
-  font-weight: lighter;
-}
-/* line 163, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-table tr {
-  height: 1rem;
-}
-/* line 165, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-table tr th, table tr .y-head {
-  text-align: center;
-  background-color: #F5F5F5;
-}
-/* line 169, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-table tr td.input-cell {
-  padding: 0;
-}
-/* line 171, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-table tr td.input-cell select,
-table tr td.input-cell input[type="number"] {
-  margin: 0;
-  border: 0;
-  text-align: center;
-}
-/* line 177, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-table tr td.input-cell select {
-  padding-right: 1rem;
-}
-/* line 180, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-table tr td.input-cell input[type="number"].ng-invalid,
-table tr td.input-cell input[type="number"].ng-invalid-number,
-table tr td.input-cell input[type="number"].invalid-trialverse-number {
-  background-color: #ed9090;
-}
-
-/* line 193, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.cell-with-single-btn {
-  display: inline;
-}
-/* line 195, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.cell-with-single-btn select {
-  width: 66%;
-  margin: 0;
-  margin-right: 1rem;
-  padding-right: 1rem;
-}
-/* line 201, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.cell-with-single-btn button {
-  margin: 0;
-  padding-top: 0.7rem;
-  padding-bottom: 0.7rem;
-}
-
-/* line 211, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.scrollable-wrapper {
-  overflow-y: auto;
-  margin-top: 1.5rem;
 }
 
 /* Tabs */
@@ -11270,36 +11100,24 @@ td.empty-cell {
   background-color: gainsboro;
 }
 
-/* line 145, ../../sass/addis-drugis.scss */
-tr.on-hover:hover {
-  background: #e6e6e6;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-/* line 150, ../../sass/addis-drugis.scss */
-tr.clickable td {
-  color: #452F8C;
-}
-
-/* line 153, ../../sass/addis-drugis.scss */
+/* line 144, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table {
   border: none;
   border-spacing: 0px;
 }
-/* line 156, ../../sass/addis-drugis.scss */
+/* line 147, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td {
   border-bottom: solid 1px gainsboro;
   vertical-align: top;
 }
-/* line 159, ../../sass/addis-drugis.scss */
+/* line 150, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td label {
   display: block;
   padding-left: 15px;
   text-indent: -15px;
   margin: 0;
 }
-/* line 165, ../../sass/addis-drugis.scss */
+/* line 156, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td input[type="checkbox"] {
   width: 13px;
   height: 13px;
@@ -11310,32 +11128,32 @@ table.network-meta-analysis-table tbody tr td input[type="checkbox"] {
   top: -3px;
   *overflow: hidden;
 }
-/* line 175, ../../sass/addis-drugis.scss */
+/* line 166, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tbody tr td .alert-message {
   color: #E66464;
   padding-top: 1px;
 }
-/* line 180, ../../sass/addis-drugis.scss */
+/* line 171, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table thead tr th {
   border-bottom: solid 1px gainsboro;
 }
-/* line 183, ../../sass/addis-drugis.scss */
+/* line 174, ../../sass/addis-drugis.scss */
 table.network-meta-analysis-table tr.topborder td {
   border-top: solid 1px gainsboro;
 }
 
-/* line 187, ../../sass/addis-drugis.scss */
+/* line 178, ../../sass/addis-drugis.scss */
 .undefined {
   color: #757575;
 }
 
-/* line 190, ../../sass/addis-drugis.scss */
+/* line 181, ../../sass/addis-drugis.scss */
 .table-cell-label {
   font-weight: bold;
   text-align: center;
 }
 
-/* line 198, ../../sass/addis-drugis.scss */
+/* line 189, ../../sass/addis-drugis.scss */
 .table-title {
   margin-left: 2px;
   font-size: 14px;
@@ -11344,24 +11162,24 @@ table.network-meta-analysis-table tr.topborder td {
   margin-bottom: 4px;
 }
 
-/* line 205, ../../sass/addis-drugis.scss */
+/* line 196, ../../sass/addis-drugis.scss */
 .addis-graph {
   background-color: white;
   border: solid 1px gainsboro;
   margin-bottom: 10px;
 }
 
-/* line 210, ../../sass/addis-drugis.scss */
+/* line 201, ../../sass/addis-drugis.scss */
 .graph-legend {
   padding: 0.5rem 1rem;
 }
 
-/* line 215, ../../sass/addis-drugis.scss */
+/* line 206, ../../sass/addis-drugis.scss */
 .addis-select2.select2-container-multi .select2-choices .select2-search-choice {
   margin-top: 8px;
 }
 
-/* line 219, ../../sass/addis-drugis.scss */
+/* line 210, ../../sass/addis-drugis.scss */
 .addis-select2.select2-container .select2-choice {
   height: 34px;
   filter: none;
@@ -11373,7 +11191,7 @@ table.network-meta-analysis-table tr.topborder td {
   line-height: normal;
   padding: 8px;
 }
-/* line 230, ../../sass/addis-drugis.scss */
+/* line 221, ../../sass/addis-drugis.scss */
 .addis-select2.select2-container .select2-choice .select2-arrow {
   background: #fff;
   border-left: none;
@@ -11383,12 +11201,12 @@ table.network-meta-analysis-table tr.topborder td {
   background-image: linear-gradient(to bottom, #eee 1%, #fff 15%);
 }
 
-/* line 240, ../../sass/addis-drugis.scss */
+/* line 231, ../../sass/addis-drugis.scss */
 .addis-select2.ui-select-multiple.select2.select2-container.select2-container-multi {
   margin-bottom: 1.6rem;
 }
 
-/* line 244, ../../sass/addis-drugis.scss */
+/* line 235, ../../sass/addis-drugis.scss */
 .ssbr-warning-information {
   color: rgba(41, 62, 163, 0.85);
 }
