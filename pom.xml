@@ -11,7 +11,7 @@
         <spring-social-google-version>1.0.0.RELEASE</spring-social-google-version>
         <org.springframework-version>4.0.1.RELEASE</org.springframework-version>
         <org.springframework.security-version>3.2.0.RC1</org.springframework.security-version>
-        <java-version>1.7</java-version>
+        <java-version>1.8</java-version>
         <hibernate-version>4.3.1.Final</hibernate-version>
     </properties>
     <dependencies>
@@ -327,7 +327,6 @@
                         <ADDIS_CORE_DB_HOST>${env.ADDIS_CORE_DB_HOST}</ADDIS_CORE_DB_HOST>
                         <ADDIS_CORE_DB_USERNAME>${env.ADDIS_CORE_DB_USERNAME}</ADDIS_CORE_DB_USERNAME>
                         <ADDIS_CORE_DB_PASSWORD>${env.ADDIS_CORE_DB_PASSWORD}</ADDIS_CORE_DB_PASSWORD>
-                        <TRIPLESTORE_URI>${env.TRIPLESTORE_URI}</TRIPLESTORE_URI>
                         <PATAVI_TASK_DB_DRIVER>${env.PATAVI_TASK_DB_DRIVER}</PATAVI_TASK_DB_DRIVER>
                         <PATAVI_TASK_DB>${env.PATAVI_TASK_DB}</PATAVI_TASK_DB>
                         <PATAVI_TASK_DB_HOST>${env.PATAVI_TASK_DB_HOST}</PATAVI_TASK_DB_HOST>

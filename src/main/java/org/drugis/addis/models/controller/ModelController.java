@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -55,7 +56,7 @@ public class ModelController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.GET)
   @ResponseBody
-  public List<Model> query(@PathVariable Integer analysisId) {
+  public List<Model> query(@PathVariable Integer analysisId) throws SQLException {
     return modelService.query(analysisId);
   }
 }

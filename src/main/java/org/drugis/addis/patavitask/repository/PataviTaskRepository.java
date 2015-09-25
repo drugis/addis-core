@@ -7,6 +7,7 @@ import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Created by connor on 26-6-14.
@@ -15,4 +16,6 @@ import java.sql.SQLException;
 public interface PataviTaskRepository {
 
   public PataviTask createPataviTask(NetworkMetaAnalysisProblem problem, Model model) throws JsonProcessingException, IOException, SQLException;
+
+  public List<PataviTask> findByIds(List<Integer> ids) throws SQLException;
 }

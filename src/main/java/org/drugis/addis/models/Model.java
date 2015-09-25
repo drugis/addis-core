@@ -6,10 +6,7 @@ import net.minidev.json.JSONValue;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by daan on 22-5-14.
@@ -48,6 +45,8 @@ public class Model {
   private String likelihood;
   private String link;
   private Double outcomeScale;
+
+  private @Transient boolean hasResult = false;
 
   public Model() {
   }
@@ -119,6 +118,14 @@ public class Model {
     return outcomeScale;
   }
 
+  public boolean isHasResult() {
+    return hasResult;
+  }
+
+  public void setHasResult() {
+    this.hasResult = true;
+  }
+
   @JsonIgnore
   public String getModelTypeTypeAsString() {
     JSONObject jsonObject = (JSONObject) JSONValue.parse(modelType);
@@ -163,6 +170,7 @@ public class Model {
 
     Model model = (Model) o;
 
+    if (hasResult != model.hasResult) return false;
     if (id != null ? !id.equals(model.id) : model.id != null) return false;
     if (taskId != null ? !taskId.equals(model.taskId) : model.taskId != null) return false;
     if (!analysisId.equals(model.analysisId)) return false;
@@ -192,6 +200,7 @@ public class Model {
     result = 31 * result + likelihood.hashCode();
     result = 31 * result + link.hashCode();
     result = 31 * result + (outcomeScale != null ? outcomeScale.hashCode() : 0);
+    result = 31 * result + (hasResult ? 1 : 0);
     return result;
   }
 

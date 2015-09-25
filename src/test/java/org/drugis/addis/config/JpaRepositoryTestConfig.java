@@ -68,7 +68,7 @@ public class JpaRepositoryTestConfig {
             .build();
   }
 
-  @Bean
+  @Bean(name = "dsPataviTask")
   public DataSource pataviDataSource() {
     return new EmbeddedDatabaseBuilder()
             .setType(EmbeddedDatabaseType.HSQL)

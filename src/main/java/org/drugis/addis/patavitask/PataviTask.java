@@ -18,7 +18,16 @@ public class PataviTask {
 
   private String problem;
 
+  private boolean hasResult = false;
+
   public PataviTask() {
+  }
+
+  public PataviTask(Integer id, String method, String problem, boolean hasResult) {
+    this.id = id;
+    this.method = method;
+    this.problem = problem;
+    this.hasResult = hasResult;
   }
 
   public PataviTask(Integer id, String method, String problem) {
@@ -44,18 +53,22 @@ public class PataviTask {
     return problem;
   }
 
+  public boolean isHasResult() {
+    return hasResult;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof PataviTask)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     PataviTask that = (PataviTask) o;
 
+    if (hasResult != that.hasResult) return false;
     if (id != null ? !id.equals(that.id) : that.id != null) return false;
     if (!method.equals(that.method)) return false;
-    if (!problem.equals(that.problem)) return false;
+    return problem.equals(that.problem);
 
-    return true;
   }
 
   @Override
@@ -63,6 +76,7 @@ public class PataviTask {
     int result = id != null ? id.hashCode() : 0;
     result = 31 * result + method.hashCode();
     result = 31 * result + problem.hashCode();
+    result = 31 * result + (hasResult ? 1 : 0);
     return result;
   }
 }

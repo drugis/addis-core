@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -80,7 +81,7 @@ public class AnalysisServiceTest {
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
-  public void testUpdateWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void testUpdateWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException {
     Integer analysisId = -6;
     Account user = mock(Account.class);
     Integer wrongProject = 2;
@@ -96,7 +97,7 @@ public class AnalysisServiceTest {
   }
 
   @Test(expected = MethodNotAllowedException.class)
-  public void testUpdateLockedAnalysisFails() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelTypeException {
+  public void testUpdateLockedAnalysisFails() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelTypeException, SQLException {
     Integer analysisId = -6;
     Account user = mock(Account.class);
     Integer projectId = 1;
@@ -121,7 +122,7 @@ public class AnalysisServiceTest {
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
-  public void testUpdateWithOutcomeInWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void testUpdateWithOutcomeInWrongProjectFails() throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException {
     Account user = mock(Account.class);
     Outcome outcome = mock(Outcome.class);
     when(outcome.getProject()).thenReturn(projectId + 1);

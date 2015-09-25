@@ -11,6 +11,7 @@ import org.drugis.addis.models.service.ModelService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -53,7 +54,7 @@ public class ModelServiceImpl implements ModelService {
   }
 
   @Override
-  public List<Model> query(Integer analysisId) {
+  public List<Model> query(Integer analysisId) throws SQLException {
     return modelRepository.findByAnalysis(analysisId);
   }
 }

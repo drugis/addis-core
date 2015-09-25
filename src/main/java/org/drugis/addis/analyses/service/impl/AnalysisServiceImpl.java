@@ -13,6 +13,7 @@ import org.drugis.addis.security.Account;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.sql.SQLException;
 
 /**
  * Created by daan on 22-5-14.
@@ -44,7 +45,7 @@ public class AnalysisServiceImpl implements AnalysisService {
   }
 
   @Override
-  public NetworkMetaAnalysis updateNetworkMetaAnalysis(Account user, NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public NetworkMetaAnalysis updateNetworkMetaAnalysis(Account user, NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException {
     Integer analysisProjectId = analysis.getProjectId();
     projectService.checkProjectExistsAndModifiable(user, analysisProjectId);
 

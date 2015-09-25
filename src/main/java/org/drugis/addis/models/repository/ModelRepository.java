@@ -3,6 +3,7 @@ package org.drugis.addis.models.repository;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -14,5 +15,5 @@ public interface ModelRepository {
 
   public Model find(Integer modelId);
 
-  public List<Model> findByAnalysis(Integer networkMetaAnalysisId);
+  public List<Model> findByAnalysis(Integer networkMetaAnalysisId) throws SQLException;
 }

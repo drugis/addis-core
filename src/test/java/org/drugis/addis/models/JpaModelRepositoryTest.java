@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -89,7 +90,7 @@ public class JpaModelRepositoryTest {
   }
 
   @Test
-  public void testFindByAnalysis() {
+  public void testFindByAnalysis() throws SQLException {
     NetworkMetaAnalysis networkMetaAnalysisWithModel = em.find(NetworkMetaAnalysis.class, analysisId);
     List<Model> models = modelRepository.findByAnalysis(networkMetaAnalysisWithModel.getId());
     assertNotNull(models);
