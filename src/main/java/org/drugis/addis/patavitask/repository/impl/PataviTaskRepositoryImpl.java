@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -62,8 +63,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
 
   @Override
   public PataviTask get(Integer id) {
-    Object [] queryArgs = {id};
-    return jdbcTemplate.queryForObject(SELECTOR_PART + " FROM patavitask where id = ?", queryArgs, rowMapper);
+    return jdbcTemplate.queryForObject(SELECTOR_PART + " FROM patavitask where id = ?", new Object[]{id}, rowMapper);
   }
 
   @Override
@@ -112,19 +112,18 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
       query = SELECTOR_PART + " FROM patavitask WHERE id IN(select(UNNEST(?))) ";
     }
 
+    try (Connection connection = dataSource.getConnection()) {
+      final PreparedStatement statement = connection.prepareStatement(query);
+      statement.setArray(1, connection.createArrayOf("int", ids.toArray()));
 
-    Connection connection = dataSource.getConnection();
-    final PreparedStatement statement = connection.prepareStatement(query);
-    statement.setArray(1, connection.createArrayOf("int", ids.toArray()));
-
-    List<PataviTask> result = new ArrayList<>();
-    int i = 0;
-    try (ResultSet rs = statement.executeQuery()) {
+      List<PataviTask> result = new ArrayList<>();
+      int i = 0;
+      ResultSet rs = statement.executeQuery();
       while (rs.next()) {
         result.add(rowMapper.mapRow(rs, i));
         i++;
       }
+      return result;
     }
-    return result;
   }
 }
