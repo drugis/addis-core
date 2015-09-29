@@ -75,7 +75,6 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       trialverseTrialDataDeferred = $q.defer();
       mockTrialData.$promise = trialverseTrialDataDeferred.promise;
       scope = $rootScope;
-      scope.$parent = {};
       scope.analysis = mockAnalysis;
       scope.project = mockProject;
       outcomeResource = jasmine.createSpyObj('OutcomeResource', ['query']);
@@ -103,7 +102,7 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       modelResource.save.and.returnValue(mockModel);
       modelResource.query.and.returnValue([mockModel]);
       state = jasmine.createSpyObj('$state', ['go']);
-      $controller('NetworkMetaAnalysisController', {
+      $controller('NetworkMetaAnalysisContainerController', {
         $window: mockWindow,
         $scope: scope,
         $q: q,
@@ -126,10 +125,10 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
         expect(scope.outcomes).toEqual(mockOutcomes);
       });
       it('should set the parent\'s isNetworkDisconnected to true', function () {
-        expect(scope.$parent.isNetworkDisconnected).toBeTruthy();
+        expect(scope.isNetworkDisconnected).toBeTruthy();
       });
       it('should query the model to see if the analyis is used in a model', function () {
-        expect(scope.$parent.hasModel).toBeDefined();
+        expect(scope.hasModel).toBeDefined();
         expect(modelResource.query).toHaveBeenCalledWith(mockStateParams);
       });
     });
@@ -166,7 +165,7 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
         beforeEach(function () {
           var dataRow = {};
           scope.tableHasAmbiguousArm = true;
-          scope.$parent.changeArmExclusion(dataRow);
+          scope.changeArmExclusion(dataRow);
         });
         it('should set tableHasAmbiguousArm to false', function () {
           expect(scope.tableHasAmbiguousArm).toBeFalsy();

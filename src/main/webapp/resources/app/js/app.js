@@ -175,10 +175,7 @@ define(
           })
           .state('networkMetaAnalysisContainer', {
             templateUrl: baseTemplatePath + 'networkMetaAnalysisContainer.html',
-            abstract:true
-          })
-          .state('networkMetaAnalysis', {
-            parent: 'networkMetaAnalysisContainer',
+            controller: 'NetworkMetaAnalysisContainerController',
             url: '/projects/:projectId/nma/:analysisId',
             resolve: {
               currentAnalysis: ['$stateParams', 'AnalysisResource',
@@ -194,10 +191,14 @@ define(
                 }
               ]
             },
+            abstract:true
+          })
+          .state('networkMetaAnalysis', {
+            parent: 'networkMetaAnalysisContainer',
+            url: "",
             views: {
               'networkMetaAnalysis': {
-                templateUrl: baseTemplatePath + 'networkMetaAnalysisView.html',
-                controller: 'NetworkMetaAnalysisController'
+                templateUrl: baseTemplatePath + 'networkMetaAnalysisView.html'
               },
               'models': {
                 templateUrl: gemtcWebBaseTemplatePath + '/js/models/models.html',
