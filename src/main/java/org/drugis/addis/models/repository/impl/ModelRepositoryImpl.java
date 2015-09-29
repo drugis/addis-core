@@ -1,5 +1,6 @@
 package org.drugis.addis.models.repository.impl;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
@@ -13,7 +14,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -29,6 +33,17 @@ public class ModelRepositoryImpl implements ModelRepository {
   @Inject
   PataviTaskRepository pataviTaskRepository;
 
+
+  private Model setHasRunStatus(Model model, PataviTask pataviTask) {
+      if (model.getTaskId() != null) {
+        if (pataviTask != null && pataviTask.isHasResult()) {
+          model.setHasResult();
+        }
+      }
+      return model;
+  }
+
+
   @Override
   public Model persist(Model model) throws InvalidModelTypeException {
     em.persist(model);
@@ -37,7 +52,13 @@ public class ModelRepositoryImpl implements ModelRepository {
 
   @Override
   public Model find(Integer modelId) {
-    return em.find(Model.class, modelId);
+    Model model = em.find(Model.class, modelId);
+    if (model.getTaskId() != null) {
+      PataviTask pataviTask = pataviTaskRepository.get(model.getTaskId());
+      return setHasRunStatus(model, pataviTask);
+    }
+
+    return model;
   }
 
   @Override
@@ -45,10 +66,16 @@ public class ModelRepositoryImpl implements ModelRepository {
     TypedQuery<Model> query = em.createQuery("FROM Model m WHERE m.analysisId = :analysisId", Model.class);
     query.setParameter("analysisId", networkMetaAnalysisId);
     List<Model> models = query.getResultList();
-    List<Integer> modelIds = models.stream().map(Model::getId).collect(Collectors.toList());
-    List<PataviTask> pataviTasks = pataviTaskRepository.findByIds(modelIds);
+    List<Integer> taskIds = models.stream().map(Model::getTaskId).collect(Collectors.toList());
+    List<PataviTask> pataviTasks = pataviTaskRepository.findByIds(taskIds);
 
-    //todo join tasks  this models to indicate hasRun on models;
-    return models;
+    Map<Integer, PataviTask> taskMap = pataviTasks.stream()
+            .collect(Collectors.toMap(PataviTask::getId, Function.identity()));
+
+    List<Model> modelsWithTask = models.stream()
+            .map(model -> setHasRunStatus(model, taskMap.get(model.getTaskId())))
+            .collect(Collectors.toList());
+
+    return modelsWithTask;
   }
 }

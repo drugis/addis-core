@@ -8,6 +8,7 @@ import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -27,9 +28,20 @@ import static org.junit.Assert.assertTrue;
 public class PataviTaskRepositoryImplIntergrationTest {
 
 
-    @Inject
-    private PataviTaskRepository pataviTaskRepository;
+  @Inject
+  private PataviTaskRepository pataviTaskRepository;
 
+  @Test
+  public void testGet(){
+    PataviTask pataviTask = pataviTaskRepository.get(1);
+    assertNotNull(pataviTask);
+  }
+
+  @Test(expected = EmptyResultDataAccessException.class)
+  public void testGetNonExistent(){
+    PataviTask emptyResult = pataviTaskRepository.get(-999);
+    assertNotNull(emptyResult);
+  }
 
   @Test()
   public void testFindByIds() throws SQLException {

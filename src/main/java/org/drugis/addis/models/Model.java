@@ -45,7 +45,6 @@ public class Model {
   private String likelihood;
   private String link;
   private Double outcomeScale;
-
   private @Transient boolean hasResult = false;
 
   public Model() {

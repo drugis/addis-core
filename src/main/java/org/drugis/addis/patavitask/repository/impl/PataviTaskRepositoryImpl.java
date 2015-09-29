@@ -14,6 +14,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
@@ -24,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -39,6 +43,8 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   @Qualifier("dsPataviTask")
   private DataSource dataSource;
 
+
+
   @Inject
   @Qualifier("jtPataviTask")
   private JdbcTemplate jdbcTemplate;
@@ -46,11 +52,19 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   @Inject
   private SimpleJdbcInsertPataviTaskFactory simpleJdbcInsertPataviTaskFactory;
 
+  private final static String SELECTOR_PART = "SELECT id, method, problem, result IS NOT NULL as hasResult";
+
   private RowMapper<PataviTask> rowMapper = new RowMapper<PataviTask>() {
     public PataviTask mapRow(ResultSet rs, int rowNum) throws SQLException {
       return new PataviTask(rs.getInt("id"), rs.getString("method"), rs.getString("problem"), rs.getBoolean("hasResult"));
     }
   };
+
+  @Override
+  public PataviTask get(Integer id) {
+    Object [] queryArgs = {id};
+    return jdbcTemplate.queryForObject(SELECTOR_PART + " FROM patavitask where id = ?", queryArgs, rowMapper);
+  }
 
   @Override
   public PataviTask createPataviTask(NetworkMetaAnalysisProblem problem, Model model) throws IOException, SQLException {
@@ -88,7 +102,16 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
 
   @Override
   public List<PataviTask> findByIds(List<Integer> ids) throws SQLException {
-    String query = "SELECT id, method, problem,  result IS NOT NULL as hasResult FROM patavitask WHERE id IN(UNNEST(?)) ";
+
+    // Use different query for live psql db as psql does accept a set as part of the in clause
+    boolean isHsqlDrive = dataSource instanceof EmbeddedDatabase;
+    String query;
+    if(isHsqlDrive) {
+      query = SELECTOR_PART + " FROM patavitask WHERE id IN(UNNEST(?)) ";
+    } else {
+      query = SELECTOR_PART + " FROM patavitask WHERE id IN(select(UNNEST(?))) ";
+    }
+
 
     Connection connection = dataSource.getConnection();
     final PreparedStatement statement = connection.prepareStatement(query);

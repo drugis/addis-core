@@ -15,6 +15,8 @@ import java.util.List;
 
 public interface PataviTaskRepository {
 
+  public PataviTask get(Integer id);
+
   public PataviTask createPataviTask(NetworkMetaAnalysisProblem problem, Model model) throws JsonProcessingException, IOException, SQLException;
 
   public List<PataviTask> findByIds(List<Integer> ids) throws SQLException;

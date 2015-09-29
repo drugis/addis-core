@@ -1,8 +1,9 @@
-package org.drugis.addis.models;
+package org.drugis.addis.models.repository;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
+import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.junit.Test;
@@ -30,10 +31,9 @@ public class JpaModelRepositoryTest {
   @Inject
   private ModelRepository modelRepository;
 
-  private Integer analysisId = -5;
-
   @Test
   public void testCreate() throws Exception, InvalidModelTypeException {
+    Integer analysisId = -5;
     String modelTitle = "model title";
     String linearModel = "fixed";
     String modelType = "network";
@@ -68,6 +68,7 @@ public class JpaModelRepositoryTest {
 
   @Test
   public void testGet() {
+    Integer analysisId = -5;
     Integer modelId = 1;
     Model result = modelRepository.find(modelId);
     assertNotNull(result);
@@ -76,6 +77,7 @@ public class JpaModelRepositoryTest {
 
   @Test
   public void getPairwiseTypeModel() {
+    Integer analysisId = -5;
     Integer modelId = 2;
     Model result = modelRepository.find(modelId);
     assertNotNull(result);
@@ -91,14 +93,30 @@ public class JpaModelRepositoryTest {
 
   @Test
   public void testFindByAnalysis() throws SQLException {
+    Integer analysisId = -5;
     NetworkMetaAnalysis networkMetaAnalysisWithModel = em.find(NetworkMetaAnalysis.class, analysisId);
     List<Model> models = modelRepository.findByAnalysis(networkMetaAnalysisWithModel.getId());
     assertNotNull(models);
     assertEquals(2, models.size());
     assertEquals(networkMetaAnalysisWithModel.getId(), models.get(0).getAnalysisId());
+    assertFalse(models.get(0).isHasResult());
+    assertFalse(models.get(1).isHasResult());
 
-    NetworkMetaAnalysis networkMetaAnalysisWithWithOutModel = em.find(NetworkMetaAnalysis.class, -6);
+    Integer analysisIdWithoutModel = -6;
+    NetworkMetaAnalysis networkMetaAnalysisWithWithOutModel = em.find(NetworkMetaAnalysis.class, analysisIdWithoutModel);
     models = modelRepository.findByAnalysis(networkMetaAnalysisWithWithOutModel.getId());
     assertTrue(models.isEmpty());
+  }
+
+  @Test
+  public void testFindByAnalysisWithTask() throws SQLException {
+    Integer analysisId = -7;
+    NetworkMetaAnalysis nmaTaskTest = em.find(NetworkMetaAnalysis.class, analysisId);
+    List<Model> models = modelRepository.findByAnalysis(nmaTaskTest.getId());
+    assertNotNull(models);
+    assertEquals(2, models.size());
+    assertTrue(models.get(0).isHasResult());
+    assertFalse(models.get(1).isHasResult());
+
   }
 }
