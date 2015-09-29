@@ -369,7 +369,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <karmaExecutable>${user.home}/npm-global/bin/karma</karmaExecutable>
                     <configFile>src/test/js/karma.conf.js</configFile>
                     <junitReportFile>src/test/karma-test-results.xml</junitReportFile>
                     <autoWatch>false</autoWatch>
