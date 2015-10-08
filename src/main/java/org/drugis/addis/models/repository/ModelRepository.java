@@ -11,9 +11,11 @@ import java.util.List;
  */
 public interface ModelRepository {
 
-  public Model persist(Model model) throws InvalidModelTypeException;
+  Model persist(Model model) throws InvalidModelTypeException;
 
-  public Model find(Integer modelId);
+  Model find(Integer modelId);
 
-  public List<Model> findByAnalysis(Integer networkMetaAnalysisId) throws SQLException;
+  Model get(Integer modelId);
+
+  List<Model> findByAnalysis(Integer networkMetaAnalysisId) throws SQLException;
 }

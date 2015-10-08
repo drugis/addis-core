@@ -10,6 +10,7 @@ import org.drugis.addis.models.Model;
 import org.drugis.addis.models.CreateModelCommand;
 import org.drugis.addis.models.UpdateModelCommand;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.projects.service.ProjectService;
 import org.springframework.stereotype.Controller;
@@ -38,6 +39,9 @@ public class ModelController extends AbstractAddisCoreController {
   @Inject
   ModelService modelService;
 
+  @Inject
+  ModelRepository modelRepository;
+
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.POST)
   @ResponseBody
   public Model create(HttpServletResponse response, Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody CreateModelCommand createModelCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, JsonProcessingException, InvalidModelTypeException {
@@ -51,8 +55,8 @@ public class ModelController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}", method = RequestMethod.GET)
   @ResponseBody
-  public Model get(@PathVariable Integer analysisId, @PathVariable Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    return modelService.getModel(analysisId, modelId);
+  public Model get(@PathVariable Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    return modelRepository.get(modelId);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.GET)
@@ -62,7 +66,7 @@ public class ModelController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}", method = RequestMethod.POST)
-  public void update(Principal principal, @RequestBody UpdateModelCommand updateModelCommand) throws MethodNotAllowedException {
+  public void update(Principal principal, @RequestBody UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidModelTypeException {
     modelService.checkOwnership(updateModelCommand.getId(), principal);
     modelService.increaseRunLength(updateModelCommand);
   }

@@ -8,11 +8,14 @@ import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.dao.DataAccessException;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.sql.SQLException;
@@ -67,7 +70,7 @@ public class JpaModelRepositoryTest {
   }
 
   @Test
-  public void testGet() {
+  public void testFind() {
     Integer analysisId = -5;
     Integer modelId = 1;
     Model result = modelRepository.find(modelId);
@@ -117,6 +120,18 @@ public class JpaModelRepositoryTest {
     assertEquals(2, models.size());
     assertTrue(models.get(0).isHasResult());
     assertFalse(models.get(1).isHasResult());
+  }
 
+  @Test
+  public void testGet() throws SQLException {
+    Integer modelId = 1;
+    Model result = modelRepository.get(modelId);
+    assertNotNull(result);
+  }
+
+  @Test(expected = DataAccessException.class)
+  public void testGetNonExistentModel() throws SQLException {
+    Integer modelId = -999;
+    modelRepository.get(modelId);
   }
 }

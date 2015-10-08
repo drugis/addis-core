@@ -34,11 +34,10 @@ public class AnalysisRepositoryImpl implements AnalysisRepository {
   SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
 
   @Override
-  public AbstractAnalysis get(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
+  public AbstractAnalysis get(Integer analysisId) throws ResourceDoesNotExistException {
     TypedQuery<SingleStudyBenefitRiskAnalysis> singleStudyQuery = em.createQuery(
-      "FROM SingleStudyBenefitRiskAnalysis a WHERE a.id = :analysisId AND a.projectId = :projectId", SingleStudyBenefitRiskAnalysis.class);
+      "FROM SingleStudyBenefitRiskAnalysis a WHERE a.id = :analysisId", SingleStudyBenefitRiskAnalysis.class);
     singleStudyQuery.setParameter("analysisId", analysisId);
-    singleStudyQuery.setParameter("projectId", projectId);
     List<SingleStudyBenefitRiskAnalysis> singleStudyResults = singleStudyQuery.getResultList();
 
     if (singleStudyResults.size() == 1) {
@@ -46,9 +45,8 @@ public class AnalysisRepositoryImpl implements AnalysisRepository {
     }
 
     TypedQuery<NetworkMetaAnalysis> networkMetaAnalysisQuery = em.createQuery(
-      "FROM NetworkMetaAnalysis a WHERE a.id = :analysisId AND a.projectId = :projectId", NetworkMetaAnalysis.class);
+      "FROM NetworkMetaAnalysis a WHERE a.id = :analysisId", NetworkMetaAnalysis.class);
     networkMetaAnalysisQuery.setParameter("analysisId", analysisId);
-    networkMetaAnalysisQuery.setParameter("projectId", projectId);
     List<NetworkMetaAnalysis> networkMetaAnalysisResults = networkMetaAnalysisQuery.getResultList();
 
     if(networkMetaAnalysisResults.size() == 1) {

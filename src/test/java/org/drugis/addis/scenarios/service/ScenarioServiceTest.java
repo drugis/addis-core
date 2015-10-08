@@ -52,7 +52,7 @@ public class ScenarioServiceTest {
     when(analysis.getProjectId()).thenReturn(projectId);
 
     when(projectRepository.get(projectId)).thenReturn(project);
-    when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
+    when(analysisRepository.get(analysisId)).thenReturn(analysis);
   }
 
   @Test

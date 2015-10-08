@@ -53,7 +53,7 @@ public class ProblemServiceImpl implements ProblemService {
   @Override
   public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
     Project project = projectRepository.get(projectId);
-    AbstractAnalysis analysis = analysisRepository.get(projectId, analysisId);
+    AbstractAnalysis analysis = analysisRepository.get(analysisId);
     if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
       return getSingleStudyBenefitRiskProblem(project, (SingleStudyBenefitRiskAnalysis) analysis);
     } else if (analysis instanceof NetworkMetaAnalysis) {

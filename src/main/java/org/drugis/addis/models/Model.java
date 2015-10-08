@@ -73,6 +73,18 @@ public class Model {
     }
   }
 
+  public void setBurnInIterations(Integer burnInIterations) {
+    this.burnInIterations = burnInIterations;
+  }
+
+  public void setInferenceIterations(Integer inferenceIterations) {
+    this.inferenceIterations = inferenceIterations;
+  }
+
+  public void setThinningFactor(Integer thinningFactor) {
+    this.thinningFactor = thinningFactor;
+  }
+
   public Integer getId() {
     return id;
   }

@@ -9,7 +9,7 @@ import java.util.List;
  * Created by daan on 7-5-14.
  */
 public interface AnalysisRepository {
-  public AbstractAnalysis get(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException;
+  AbstractAnalysis get(Integer analysisId) throws ResourceDoesNotExistException;
 
   List<AbstractAnalysis> query(Integer projectId);
 }

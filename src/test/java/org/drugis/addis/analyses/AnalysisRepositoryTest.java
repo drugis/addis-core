@@ -34,9 +34,8 @@ public class AnalysisRepositoryTest {
 
   @Test
   public void testGetSingleStudyBenefitRiskAnalysis() throws ResourceDoesNotExistException {
-    Integer projectId = 1;
     Integer analysisId = -4;
-    AbstractAnalysis analysis = analysisRepository.get(projectId, analysisId);
+    AbstractAnalysis analysis = analysisRepository.get(analysisId);
     SingleStudyBenefitRiskAnalysis castAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
     SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = em.find(SingleStudyBenefitRiskAnalysis.class, analysisId);
     assertEquals(singleStudyBenefitRiskAnalysis, castAnalysis);
@@ -44,9 +43,8 @@ public class AnalysisRepositoryTest {
 
   @Test
   public void testGetNetworkMetaAnalysis() throws ResourceDoesNotExistException {
-    Integer projectId = 1;
     Integer analysisId = -5;
-    AbstractAnalysis analysis = analysisRepository.get(projectId, analysisId);
+    AbstractAnalysis analysis = analysisRepository.get(analysisId);
     NetworkMetaAnalysis castAnalysis = (NetworkMetaAnalysis) analysis;
     NetworkMetaAnalysis networkMetaAnalysis = em.find(NetworkMetaAnalysis.class, analysisId);
     assertEquals(networkMetaAnalysis, castAnalysis);
@@ -54,9 +52,8 @@ public class AnalysisRepositoryTest {
 
   @Test
   public void testGetNetworkMetaAnalysisWithExcludedArms() throws ResourceDoesNotExistException {
-    Integer projectId = 1;
     Integer analysisId = -6;
-    AbstractAnalysis analysis = analysisRepository.get(projectId, analysisId);
+    AbstractAnalysis analysis = analysisRepository.get(analysisId);
     NetworkMetaAnalysis castAnalysis = (NetworkMetaAnalysis) analysis;
     NetworkMetaAnalysis networkMetaAnalysis = em.find(NetworkMetaAnalysis.class, analysisId);
     assertEquals(networkMetaAnalysis, castAnalysis);
@@ -64,7 +61,7 @@ public class AnalysisRepositoryTest {
 
   @Test(expected = ResourceDoesNotExistException.class)
   public void testGetNonexistentAnalysisFails() throws ResourceDoesNotExistException {
-    analysisRepository.get(1, 12345);
+    analysisRepository.get(12345);
   }
 
   @Test

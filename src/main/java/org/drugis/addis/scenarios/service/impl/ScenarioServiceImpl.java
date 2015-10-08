@@ -20,7 +20,7 @@ public class ScenarioServiceImpl implements ScenarioService {
 
   @Override
   public void checkCoordinates(Integer projectId, Integer analysisId, Scenario scenario) throws ResourceDoesNotExistException {
-    SingleStudyBenefitRiskAnalysis analysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(projectId, analysisId);
+    SingleStudyBenefitRiskAnalysis analysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysisId);
 
     if (!analysis.getProjectId().equals(projectId) || !analysisId.equals(scenario.getWorkspace())) {
       throw new ResourceDoesNotExistException();

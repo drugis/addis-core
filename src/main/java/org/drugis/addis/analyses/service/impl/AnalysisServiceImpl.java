@@ -38,7 +38,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
   @Override
   public void checkCoordinates(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
-    AbstractAnalysis analysis = analysisRepository.get(projectId, analysisId);
+    AbstractAnalysis analysis = analysisRepository.get(analysisId);
     if (!analysis.getProjectId().equals(projectId)) {
       throw new ResourceDoesNotExistException();
     }
@@ -55,7 +55,7 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
     // do not allow changing of project ID
-    NetworkMetaAnalysis oldAnalysis = (NetworkMetaAnalysis) analysisRepository.get(analysis.getProjectId(), analysis.getId());
+    NetworkMetaAnalysis oldAnalysis = (NetworkMetaAnalysis) analysisRepository.get(analysis.getId());
     if (!oldAnalysis.getProjectId().equals(analysisProjectId)) {
       throw new ResourceDoesNotExistException();
     }

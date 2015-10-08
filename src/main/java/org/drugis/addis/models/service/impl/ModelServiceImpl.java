@@ -1,10 +1,16 @@
 package org.drugis.addis.models.service.impl;
 
+import org.drugis.addis.analyses.AbstractAnalysis;
+import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.repository.impl.AnalysisRepositoryImpl;
+import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.*;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
+import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.projects.service.ProjectService;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +26,12 @@ import java.util.List;
 public class ModelServiceImpl implements ModelService {
   @Inject
   ModelRepository modelRepository;
+
+  @Inject
+  AnalysisRepository analysisRepository;
+
+  @Inject
+  ProjectService projectService;
 
   @Override
   public Model createModel(Integer analysisId, CreateModelCommand command) throws ResourceDoesNotExistException, InvalidModelTypeException {
@@ -48,22 +60,36 @@ public class ModelServiceImpl implements ModelService {
   }
 
   @Override
-  public Model getModel(Integer analysisId, Integer modelId) throws ResourceDoesNotExistException {
-    return modelRepository.find(modelId);
-  }
-
-  @Override
   public List<Model> query(Integer analysisId) throws SQLException {
     return modelRepository.findByAnalysis(analysisId);
   }
 
   @Override
-  public void checkOwnership(Integer modelId, Principal principal) {
-    throw new NotYetImplementedException();
+  public void checkOwnership(Integer modelId, Principal principal) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    Model model = modelRepository.get(modelId);
+    AbstractAnalysis analysis = analysisRepository.get(model.getAnalysisId());
+
+    projectService.checkOwnership(analysis.getProjectId(), principal);
+  }
+
+  private void checkIncrease(Model persistendModel, UpdateModelCommand updateModelCommand) throws MethodNotAllowedException {
+    if(persistendModel.getBurnInIterations() <= updateModelCommand.getBurnInIterations() ||
+            persistendModel.getInferenceIterations() <= updateModelCommand.getInferenceIterations()) {
+      throw new MethodNotAllowedException();
+    }
   }
 
   @Override
-  public void increaseRunLength(UpdateModelCommand updateModelCommand) {
-    throw new NotYetImplementedException();
+  public void increaseRunLength(UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, InvalidModelTypeException {
+    Model oldModel = modelRepository.get(updateModelCommand.getId());
+
+    // check that increase is not a decrease
+    checkIncrease(oldModel, updateModelCommand);
+
+    oldModel.setBurnInIterations(updateModelCommand.getBurnInIterations());
+    oldModel.setInferenceIterations(updateModelCommand.getInferenceIterations());
+    oldModel.setThinningFactor(updateModelCommand.getThinningFactor());
+
+    modelRepository.persist(oldModel);
   }
 }

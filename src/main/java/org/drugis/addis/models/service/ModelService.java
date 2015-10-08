@@ -1,5 +1,6 @@
 package org.drugis.addis.models.service;
 
+import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.CreateModelCommand;
@@ -14,13 +15,11 @@ import java.util.List;
  * Created by daan on 22-5-14.
  */
 public interface ModelService {
-  public Model createModel(Integer analysisId, CreateModelCommand createModelCommand) throws ResourceDoesNotExistException, InvalidModelTypeException;
+  Model createModel(Integer analysisId, CreateModelCommand createModelCommand) throws ResourceDoesNotExistException, InvalidModelTypeException;
 
-  public Model getModel(Integer analysisId, Integer modelId) throws ResourceDoesNotExistException;
+  List<Model> query(Integer analysisId) throws SQLException;
 
-  public List<Model> query(Integer analysisId) throws SQLException;
+  void checkOwnership(Integer modelId, Principal principal) throws ResourceDoesNotExistException, MethodNotAllowedException;
 
-  public void checkOwnership(Integer modelId, Principal principal);
-
-  public void increaseRunLength(UpdateModelCommand updateModelCommand);
+  void increaseRunLength(UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, InvalidModelTypeException;
 }

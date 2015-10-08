@@ -1,16 +1,22 @@
 package org.drugis.addis.models.service;
 
+import org.drugis.addis.analyses.AbstractAnalysis;
+import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.*;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.impl.ModelServiceImpl;
+import org.drugis.addis.projects.service.ProjectService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +34,12 @@ public class ModelServiceTest {
 
   @Mock
   private ModelRepository modelRepository;
+
+  @Mock
+  private AnalysisRepository analysisRepository;
+
+  @Mock
+  private ProjectService projectService;
 
   @InjectMocks
   private ModelService modelService;
@@ -152,6 +164,49 @@ public class ModelServiceTest {
     when(modelRepository.findByAnalysis(analysisId)).thenReturn(new ArrayList<Model>());
     List<Model> resultList = modelService.query(analysisId);
     assertEquals(0, resultList.size());
+  }
+
+  @Test
+  public void testCheckOwnership() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelTypeException {
+    Integer modelId = 1;
+    Integer analysisId = 2;
+    Integer projectId = 3;
+    Principal pricipal = mock(Principal.class);
+    Model model = mock(Model.class);
+    AbstractAnalysis analysis= mock(AbstractAnalysis.class);
+
+    when(model.getAnalysisId()).thenReturn(analysisId);
+    when(analysis.getProjectId()).thenReturn(projectId);
+    when(modelRepository.get(modelId)).thenReturn(model);
+    when(analysisRepository.get(analysisId)).thenReturn(analysis).thenReturn(analysis);
+
+    modelService.checkOwnership(modelId, pricipal);
+
+    verify(modelRepository).get(modelId);
+    verify(analysisRepository).get(analysisId);
+    verify(projectService).checkOwnership(projectId, pricipal);
+  }
+
+  @Test(expected = MethodNotAllowedException.class)
+  public void testCheckOwnershipOnNonOwnedModel() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelTypeException {
+    Integer modelId = 1;
+    Integer analysisId = 2;
+    Integer projectId = 3;
+    Principal pricipal = mock(Principal.class);
+    Model model = mock(Model.class);
+    AbstractAnalysis analysis= mock(AbstractAnalysis.class);
+
+    when(model.getAnalysisId()).thenReturn(analysisId);
+    when(analysis.getProjectId()).thenReturn(projectId);
+    when(modelRepository.get(modelId)).thenReturn(model);
+    when(analysisRepository.get(analysisId)).thenReturn(analysis).thenReturn(analysis);
+    Mockito.doThrow(new MethodNotAllowedException()).when(projectService).checkOwnership(projectId, pricipal);
+
+    modelService.checkOwnership(modelId, pricipal);
+
+    verify(modelRepository).get(modelId);
+    verify(analysisRepository).get(analysisId);
+    verify(projectService).checkOwnership(projectId, pricipal);
   }
 
 }

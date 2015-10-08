@@ -52,11 +52,11 @@ public class AnalysisServiceTest {
   public void testCheckCoordinatesSSBR() throws ResourceDoesNotExistException {
     SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = mock(SingleStudyBenefitRiskAnalysis.class);
     when(singleStudyBenefitRiskAnalysis.getProjectId()).thenReturn(projectId);
-    when(analysisRepository.get(projectId, analysisId)).thenReturn(singleStudyBenefitRiskAnalysis);
+    when(analysisRepository.get(analysisId)).thenReturn(singleStudyBenefitRiskAnalysis);
 
     analysisService.checkCoordinates(projectId, analysisId);
 
-    verify(analysisRepository).get(projectId, analysisId);
+    verify(analysisRepository).get(analysisId);
     verifyNoMoreInteractions(analysisRepository);
   }
 
@@ -64,18 +64,18 @@ public class AnalysisServiceTest {
   public void testCheckCoordinatesNMA() throws ResourceDoesNotExistException {
     NetworkMetaAnalysis networkMetaAnalysis = mock(NetworkMetaAnalysis.class);
     when(networkMetaAnalysis.getProjectId()).thenReturn(projectId);
-    when(analysisRepository.get(projectId, analysisId)).thenReturn(networkMetaAnalysis);
+    when(analysisRepository.get(analysisId)).thenReturn(networkMetaAnalysis);
 
     analysisService.checkCoordinates(projectId, analysisId);
 
-    verify(analysisRepository).get(projectId, analysisId);
+    verify(analysisRepository).get(analysisId);
     verifyNoMoreInteractions(analysisRepository);
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
   public void testCheckAnalysisNotInProject() throws ResourceDoesNotExistException {
     NetworkMetaAnalysis networkMetaAnalysis = mock(NetworkMetaAnalysis.class);
-    when(analysisRepository.get(projectId, analysisId)).thenReturn(networkMetaAnalysis);
+    when(analysisRepository.get(analysisId)).thenReturn(networkMetaAnalysis);
 
     analysisService.checkCoordinates(projectId, analysisId);
   }
@@ -91,7 +91,7 @@ public class AnalysisServiceTest {
 
     when(modelRepository.findByAnalysis(analysis.getId())).thenReturn(new ArrayList<Model>());
     when(oldAnalysis.getProjectId()).thenReturn(projectId);
-    when(analysisRepository.get(wrongProject, analysisId)).thenReturn(oldAnalysis);
+    when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
 
     analysisService.updateNetworkMetaAnalysis(user, analysis);
   }
@@ -129,7 +129,7 @@ public class AnalysisServiceTest {
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "new name", outcome);
     AbstractAnalysis oldAnalysis = mock(NetworkMetaAnalysis.class);
     when(oldAnalysis.getProjectId()).thenReturn(projectId);
-    when(analysisRepository.get(projectId, analysisId)).thenReturn(oldAnalysis);
+    when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
     analysisService.updateNetworkMetaAnalysis(user, analysis);
   }
 

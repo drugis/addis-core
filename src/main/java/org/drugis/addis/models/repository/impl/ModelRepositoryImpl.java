@@ -7,10 +7,12 @@ import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.sql.SQLException;
@@ -53,11 +55,20 @@ public class ModelRepositoryImpl implements ModelRepository {
   @Override
   public Model find(Integer modelId) {
     Model model = em.find(Model.class, modelId);
-    if (model.getTaskId() != null) {
+    if (model != null && model.getTaskId() != null) {
       PataviTask pataviTask = pataviTaskRepository.get(model.getTaskId());
       return setHasRunStatus(model, pataviTask);
     }
 
+    return model;
+  }
+
+  @Override
+  public Model get(Integer modelId) {
+    Model model = find(modelId);
+    if (model == null) {
+      throw new ObjectRetrievalFailureException("model not found", modelId);
+    }
     return model;
   }
 

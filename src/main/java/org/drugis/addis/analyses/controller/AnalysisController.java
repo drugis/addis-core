@@ -62,10 +62,10 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractAnalysis get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer analysisId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public AbstractAnalysis get(Principal currentUser, @PathVariable Integer analysisId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      return analysisRepository.get(projectId, analysisId);
+      return analysisRepository.get(analysisId);
     } else {
       throw new MethodNotAllowedException();
     }
@@ -114,7 +114,7 @@ public class AnalysisController extends AbstractAddisCoreController {
   }
 
   public SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user, SingleStudyBenefitRiskAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    SingleStudyBenefitRiskAnalysis oldAnalysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysis.getProjectId(), analysis.getId());
+    SingleStudyBenefitRiskAnalysis oldAnalysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysis.getId());
     if (oldAnalysis.getProblem() != null) {
       throw new MethodNotAllowedException();
     }

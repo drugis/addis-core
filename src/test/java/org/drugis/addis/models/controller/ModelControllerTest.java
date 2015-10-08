@@ -6,6 +6,7 @@ import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.models.*;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.util.WebConstants;
@@ -51,6 +52,9 @@ public class ModelControllerTest {
 
   @Mock
   private ModelService modelService;
+
+  @Mock
+  private ModelRepository modelRepository;
 
   @Inject
   private WebApplicationContext webApplicationContext;
@@ -232,14 +236,14 @@ public class ModelControllerTest {
             .thinningFactor(thinningFactor)
             .build();
 
-    when(modelService.getModel(analysisId, model.getId())).thenReturn(model);
+    when(modelRepository.get(model.getId())).thenReturn(model);
     mockMvc.perform(get("/projects/45/analyses/55/models/12").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.id", is(modelId)))
             .andExpect(jsonPath("$.analysisId", is(analysisId)));
 
-    verify(modelService).getModel(analysisId, modelId);
+    verify(modelRepository).get(modelId);
   }
 
   @Test
@@ -285,7 +289,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testUpdate() throws Exception {
+  public void testUpdate() throws Exception, InvalidModelTypeException {
 
     String modelTitle = "model title";
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);

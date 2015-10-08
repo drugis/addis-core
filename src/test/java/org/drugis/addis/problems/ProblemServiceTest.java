@@ -103,7 +103,7 @@ public class ProblemServiceTest {
     String armName2 = "an2";
 
     SingleStudyBenefitRiskAnalysis analysis = mock(SingleStudyBenefitRiskAnalysis.class);
-    when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
+    when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(analysis.getTitle()).thenReturn("analysisName");
 
     Outcome outcome1 = mock(Outcome.class);
@@ -147,7 +147,7 @@ public class ProblemServiceTest {
     SingleStudyBenefitRiskProblem actualProblem = (SingleStudyBenefitRiskProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
-    verify(analysisRepository).get(projectId, analysisId);
+    verify(analysisRepository).get(analysisId);
     verify(triplestoreService).getSingleStudyMeasurements(namespaceUid, studyUid, projectVersion, outcomeUids, interventionUids);
     verify(performanceTablebuilder).build(measurementRows);
 
@@ -202,14 +202,14 @@ public class ProblemServiceTest {
     when(project.getId()).thenReturn(projectId);
     when(project.getNamespaceUid()).thenReturn(namespaceUid);
     when(projectRepository.get(projectId)).thenReturn(project);
-    when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
+    when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(trialverseService.getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"))).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
-    verify(analysisRepository).get(projectId, analysisId);
+    verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
     verify(trialverseService).getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"));
 
@@ -259,14 +259,14 @@ public class ProblemServiceTest {
       trialDataNode.add(mapper.convertValue(trialDataStudy, ObjectNode.class));
     }
     when(projectRepository.get(projectId)).thenReturn(project);
-    when(analysisRepository.get(projectId, analysisId)).thenReturn(analysis);
+    when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(trialverseService.getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"))).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
-    verify(analysisRepository).get(projectId, analysisId);
+    verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
     verify(trialverseService).getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"));
 
