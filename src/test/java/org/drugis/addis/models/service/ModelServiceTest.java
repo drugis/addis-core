@@ -22,9 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by daan on 24-6-14.
@@ -207,6 +205,79 @@ public class ModelServiceTest {
     verify(modelRepository).get(modelId);
     verify(analysisRepository).get(analysisId);
     verify(projectService).checkOwnership(projectId, pricipal);
+  }
+
+  @Test
+  public void testyIncreaseRunLength() throws InvalidModelTypeException, MethodNotAllowedException {
+    Integer modelId = 1;
+    String modelTitle = "new title";
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 2;
+    Integer inferenceIterations = 2;
+    Integer thinningFactor = 2;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+    Double outcomeScale = 1D;
+
+    UpdateModelCommand updateModelCommand = new UpdateModelCommand(modelId, modelTitle, linearModel, modelTypeCommand,
+            burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale);
+
+    Model oldModel = new Model.ModelBuilder()
+            .analysisId(2)
+            .title("old title")
+            .linearModel(Model.LINEAR_MODEL_RANDOM)
+            .modelType(modelTypeCommand.getType())
+            .burnInIterations(burnInIterations - 1)
+            .inferenceIterations(inferenceIterations -1 )
+            .thinningFactor(999)
+            .likelihood(Model.LIKELIHOOD_NORMAL)
+            .link(Model.LINK_CLOGLOG)
+            .build();
+    when(modelRepository.get(modelId)).thenReturn(oldModel);
+
+    modelService.increaseRunLength(updateModelCommand);
+
+    verify(modelRepository).get(modelId);
+
+    oldModel.setBurnInIterations(updateModelCommand.getBurnInIterations());
+    oldModel.setInferenceIterations(updateModelCommand.getInferenceIterations());
+    oldModel.setThinningFactor(updateModelCommand.getThinningFactor());
+    verify(modelRepository).persist(oldModel);
+  }
+
+  @Test(expected = MethodNotAllowedException.class)
+  public void testyIncreaseRunLengthWithInvalidSettings() throws InvalidModelTypeException, MethodNotAllowedException {
+    Integer modelId = 1;
+    String modelTitle = "new title";
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 2;
+    Integer inferenceIterations = 2;
+    Integer thinningFactor = 2;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+    Double outcomeScale = 1D;
+
+    UpdateModelCommand updateModelCommand = new UpdateModelCommand(modelId, modelTitle, linearModel, modelTypeCommand,
+            burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale);
+
+    Model oldModel = new Model.ModelBuilder()
+            .analysisId(2)
+            .title("old title")
+            .linearModel(Model.LINEAR_MODEL_RANDOM)
+            .modelType(modelTypeCommand.getType())
+            .burnInIterations(burnInIterations + 1)
+            .inferenceIterations(inferenceIterations + 1 )
+            .thinningFactor(999)
+            .likelihood(Model.LIKELIHOOD_NORMAL)
+            .link(Model.LINK_CLOGLOG)
+            .build();
+    when(modelRepository.get(modelId)).thenReturn(oldModel);
+
+    modelService.increaseRunLength(updateModelCommand);
+
+    verify(modelRepository).get(modelId);
   }
 
 }

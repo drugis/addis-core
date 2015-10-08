@@ -73,8 +73,8 @@ public class ModelServiceImpl implements ModelService {
   }
 
   private void checkIncrease(Model persistendModel, UpdateModelCommand updateModelCommand) throws MethodNotAllowedException {
-    if(persistendModel.getBurnInIterations() <= updateModelCommand.getBurnInIterations() ||
-            persistendModel.getInferenceIterations() <= updateModelCommand.getInferenceIterations()) {
+    if(persistendModel.getBurnInIterations() > updateModelCommand.getBurnInIterations() ||
+            persistendModel.getInferenceIterations() > updateModelCommand.getInferenceIterations()) {
       throw new MethodNotAllowedException();
     }
   }
