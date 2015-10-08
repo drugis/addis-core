@@ -104,10 +104,10 @@ public class ModelControllerTest {
             .build();
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
 
-    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
-    String body = TestUtils.createJson(modelCommand);
+    CreateModelCommand createModelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    String body = TestUtils.createJson(createModelCommand);
 
-    when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);
+    when(modelService.createModel(analysisId, createModelCommand)).thenReturn(model);
     mockMvc.perform(post("/projects/45/analyses/55/models")
               .content(body)
               .principal(user)
@@ -120,7 +120,7 @@ public class ModelControllerTest {
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
 
-    verify(modelService).createModel(analysisId, modelCommand);
+    verify(modelService).createModel(analysisId, createModelCommand);
   }
 
   @Test
@@ -148,10 +148,10 @@ public class ModelControllerTest {
             .build();
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
 
-    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale);
-    String body = TestUtils.createJson(modelCommand);
+    CreateModelCommand createModelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale);
+    String body = TestUtils.createJson(createModelCommand);
 
-    when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);
+    when(modelService.createModel(analysisId, createModelCommand)).thenReturn(model);
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
@@ -160,7 +160,7 @@ public class ModelControllerTest {
 
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
-    verify(modelService).createModel(analysisId, modelCommand);
+    verify(modelService).createModel(analysisId, createModelCommand);
   }
 
   @Test
@@ -190,10 +190,10 @@ public class ModelControllerTest {
             .build();
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand(modelType, new DetailsCommand(new NodeCommand(-1, "t1"), new NodeCommand(-2, "t2")));
 
-    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
-    String body = TestUtils.createJson(modelCommand);
+    CreateModelCommand createModelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    String body = TestUtils.createJson(createModelCommand);
 
-    when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);
+    when(modelService.createModel(analysisId, createModelCommand)).thenReturn(model);
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
@@ -206,7 +206,7 @@ public class ModelControllerTest {
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
 
-    verify(modelService).createModel(analysisId, modelCommand);
+    verify(modelService).createModel(analysisId, createModelCommand);
   }
 
   @Test

@@ -51,7 +51,7 @@ public class ModelServiceTest {
     String link = Model.LINK_LOG;
 
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
-    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    CreateModelCommand createModelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     Model expectedModel = mock(Model.class);
 
     Model internalModel = new Model.ModelBuilder()
@@ -67,7 +67,7 @@ public class ModelServiceTest {
             .build();
 
     when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
-    Model createdModel = modelService.createModel(analysisId, modelCommand);
+    Model createdModel = modelService.createModel(analysisId, createModelCommand);
 
     assertEquals(expectedModel, createdModel);
     verify(modelRepository).persist(internalModel);
@@ -93,7 +93,7 @@ public class ModelServiceTest {
     NodeCommand to = new NodeCommand(toId, toName);
     DetailsCommand details = new DetailsCommand(from, to);
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", details);
-    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    CreateModelCommand createModelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     Model expectedModel = mock(Model.class);
 
     Model internalModel = new Model.ModelBuilder()
@@ -111,7 +111,7 @@ public class ModelServiceTest {
             .build();
 
     when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
-    Model createdModel = modelService.createModel(analysisId, modelCommand);
+    Model createdModel = modelService.createModel(analysisId, createModelCommand);
 
     assertEquals(expectedModel, createdModel);
     verify(modelRepository).persist(internalModel);

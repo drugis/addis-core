@@ -3,7 +3,7 @@ package org.drugis.addis.models;
 /**
  * Created by connor on 6/24/15.
  */
-public class ModelCommand {
+public class CreateModelCommand {
 
   String title;
   String linearModel;
@@ -16,14 +16,14 @@ public class ModelCommand {
 
   Double outcomeScale;
 
-  public ModelCommand() {
+  public CreateModelCommand() {
   }
 
-  public ModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link) {
+  public CreateModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link) {
     this(title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, null);
   }
 
-  public ModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link, Double outcomeScale) {
+  public CreateModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link, Double outcomeScale) {
     this.title = title;
     this.linearModel = linearModel;
     this.modelType = modelType;
@@ -76,7 +76,7 @@ public class ModelCommand {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    ModelCommand that = (ModelCommand) o;
+    CreateModelCommand that = (CreateModelCommand) o;
 
     if (!title.equals(that.title)) return false;
     if (!linearModel.equals(that.linearModel)) return false;

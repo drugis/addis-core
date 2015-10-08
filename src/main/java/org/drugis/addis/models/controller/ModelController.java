@@ -7,7 +7,8 @@ import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.ModelCommand;
+import org.drugis.addis.models.CreateModelCommand;
+import org.drugis.addis.models.UpdateModelCommand;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.projects.service.ProjectService;
@@ -39,10 +40,10 @@ public class ModelController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.POST)
   @ResponseBody
-  public Model create(HttpServletResponse response, Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody ModelCommand modelCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, JsonProcessingException, InvalidModelTypeException {
+  public Model create(HttpServletResponse response, Principal principal, @PathVariable Integer projectId, @PathVariable Integer analysisId, @RequestBody CreateModelCommand createModelCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, JsonProcessingException, InvalidModelTypeException {
     projectService.checkOwnership(projectId, principal);
     analysisService.checkCoordinates(projectId, analysisId);
-    Model createdModel = modelService.createModel(analysisId, modelCommand);
+    Model createdModel = modelService.createModel(analysisId, createModelCommand);
     response.setStatus(HttpServletResponse.SC_CREATED);
     response.addHeader(HttpHeaders.LOCATION, "/projects/" + projectId + "/analyses/" + analysisId + "/models/" + createdModel.getId());
     return createdModel;
@@ -58,5 +59,12 @@ public class ModelController extends AbstractAddisCoreController {
   @ResponseBody
   public List<Model> query(@PathVariable Integer analysisId) throws SQLException {
     return modelService.query(analysisId);
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}", method = RequestMethod.POST)
+  @ResponseBody
+  public void update(Principal principal, @PathVariable Integer analysisId, @RequestBody UpdateModelCommand updateModelCommand) throws MethodNotAllowedException {
+    modelService.checkOwnership(updateModelCommand.getId(), principal);
+    modelService.increaseRunLength(updateModelCommand);
   }
 }
