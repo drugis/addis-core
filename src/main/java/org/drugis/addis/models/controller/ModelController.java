@@ -62,8 +62,7 @@ public class ModelController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}", method = RequestMethod.POST)
-  @ResponseBody
-  public void update(Principal principal, @PathVariable Integer analysisId, @RequestBody UpdateModelCommand updateModelCommand) throws MethodNotAllowedException {
+  public void update(Principal principal, @RequestBody UpdateModelCommand updateModelCommand) throws MethodNotAllowedException {
     modelService.checkOwnership(updateModelCommand.getId(), principal);
     modelService.increaseRunLength(updateModelCommand);
   }

@@ -283,4 +283,32 @@ public class ModelControllerTest {
             .andExpect(jsonPath("$", empty()));
     verify(modelService).query(analysisId);
   }
+
+  @Test
+  public void testUpdate() throws Exception {
+
+    String modelTitle = "model title";
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 2;
+    Integer inferenceIterations = 2;
+    Integer thinningFactor = 2;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+    Double outcomeScale = 1D;
+    Integer modelId = 1;
+
+    UpdateModelCommand updateModelCommand = new UpdateModelCommand(modelId, modelTitle, linearModel, modelTypeCommand,
+            burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale);
+    String postBodyStr = TestUtils.createJson(updateModelCommand);
+
+    mockMvc.perform(post("/projects/45/analyses/55/models/1")
+            .content(postBodyStr)
+            .principal(user)
+            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk());
+
+    verify(modelService).checkOwnership(modelId, user);
+    verify(modelService).increaseRunLength(updateModelCommand);
+  }
 }
