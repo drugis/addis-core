@@ -18,9 +18,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
@@ -43,11 +41,17 @@ public class PataviTaskRepositoryImplIntergrationTest {
     assertNotNull(emptyResult);
   }
 
-  @Test()
+  @Test
   public void testFindByIds() throws SQLException {
     List<Integer> ids = Arrays.asList(1, 2);
     List<PataviTask> tasks = pataviTaskRepository.findByIds(ids);
     assertTrue(tasks.get(0).isHasResult());
     assertFalse(tasks.get(1).isHasResult());
+  }
+
+  @Test(expected = EmptyResultDataAccessException.class)
+  public void testDelete() throws SQLException {
+    pataviTaskRepository.delete(1);
+    pataviTaskRepository.get(1);
   }
 }

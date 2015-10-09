@@ -14,9 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
@@ -27,8 +25,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,25 +32,18 @@ import java.util.List;
  */
 @Repository
 public class PataviTaskRepositoryImpl implements PataviTaskRepository {
-  final static Logger logger = LoggerFactory.getLogger(PataviTaskRepositoryImpl.class);
-  private ObjectMapper objectMapper = new ObjectMapper();
   public final static String GEMTC_METHOD = "gemtc";
-
+  final static Logger logger = LoggerFactory.getLogger(PataviTaskRepositoryImpl.class);
+  private final static String SELECTOR_PART = "SELECT id, method, problem, result IS NOT NULL as hasResult";
+  private ObjectMapper objectMapper = new ObjectMapper();
   @Inject
   @Qualifier("dsPataviTask")
   private DataSource dataSource;
-
-
-
   @Inject
   @Qualifier("jtPataviTask")
   private JdbcTemplate jdbcTemplate;
-
   @Inject
   private SimpleJdbcInsertPataviTaskFactory simpleJdbcInsertPataviTaskFactory;
-
-  private final static String SELECTOR_PART = "SELECT id, method, problem, result IS NOT NULL as hasResult";
-
   private RowMapper<PataviTask> rowMapper = new RowMapper<PataviTask>() {
     public PataviTask mapRow(ResultSet rs, int rowNum) throws SQLException {
       return new PataviTask(rs.getInt("id"), rs.getString("method"), rs.getString("problem"), rs.getBoolean("hasResult"));
@@ -125,5 +114,10 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
       }
       return result;
     }
+  }
+
+  @Override
+  public void delete(Integer id) {
+    jdbcTemplate.update("DELETE FROM patavitask WHERE id = ?", id);
   }
 }

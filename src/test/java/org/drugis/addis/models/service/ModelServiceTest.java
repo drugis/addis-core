@@ -8,6 +8,7 @@ import org.drugis.addis.models.*;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.impl.ModelServiceImpl;
+import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +39,9 @@ public class ModelServiceTest {
 
   @Mock
   private ProjectService projectService;
+
+  @Mock
+  private PataviTaskRepository pataviTaskRepository;
 
   @InjectMocks
   private ModelService modelService;
@@ -229,7 +233,7 @@ public class ModelServiceTest {
             .linearModel(Model.LINEAR_MODEL_RANDOM)
             .modelType(modelTypeCommand.getType())
             .burnInIterations(burnInIterations - 1)
-            .inferenceIterations(inferenceIterations -1 )
+            .inferenceIterations(inferenceIterations - 1)
             .thinningFactor(999)
             .likelihood(Model.LIKELIHOOD_NORMAL)
             .link(Model.LINK_CLOGLOG)
@@ -244,6 +248,7 @@ public class ModelServiceTest {
     oldModel.setInferenceIterations(updateModelCommand.getInferenceIterations());
     oldModel.setThinningFactor(updateModelCommand.getThinningFactor());
     verify(modelRepository).persist(oldModel);
+    verify(pataviTaskRepository).delete(oldModel.getTaskId());
   }
 
   @Test(expected = MethodNotAllowedException.class)
@@ -268,7 +273,7 @@ public class ModelServiceTest {
             .linearModel(Model.LINEAR_MODEL_RANDOM)
             .modelType(modelTypeCommand.getType())
             .burnInIterations(burnInIterations + 1)
-            .inferenceIterations(inferenceIterations + 1 )
+            .inferenceIterations(inferenceIterations + 1)
             .thinningFactor(999)
             .likelihood(Model.LIKELIHOOD_NORMAL)
             .link(Model.LINK_CLOGLOG)
@@ -278,6 +283,8 @@ public class ModelServiceTest {
     modelService.increaseRunLength(updateModelCommand);
 
     verify(modelRepository).get(modelId);
+    verifyNoMoreInteractions(modelRepository);
+    verifyZeroInteractions(pataviTaskRepository);
   }
 
 }

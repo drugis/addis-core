@@ -1,6 +1,5 @@
 package org.drugis.addis.patavitask.repository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
@@ -15,9 +14,13 @@ import java.util.List;
 
 public interface PataviTaskRepository {
 
-  public PataviTask get(Integer id);
+  PataviTask get(Integer id);
 
-  public PataviTask createPataviTask(NetworkMetaAnalysisProblem problem, Model model) throws JsonProcessingException, IOException, SQLException;
+  PataviTask createPataviTask(NetworkMetaAnalysisProblem problem, Model model) throws IOException, SQLException;
 
-  public List<PataviTask> findByIds(List<Integer> ids) throws SQLException;
+  List<PataviTask> findByIds(List<Integer> ids) throws SQLException;
+
+  void delete(Integer id);
+
+
 }

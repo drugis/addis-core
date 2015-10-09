@@ -1,8 +1,11 @@
 package org.drugis.addis.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Created by connor on 07/10/15.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UpdateModelCommand extends CreateModelCommand {
 
   private Integer id;
@@ -28,9 +31,8 @@ public class UpdateModelCommand extends CreateModelCommand {
 
     UpdateModelCommand that = (UpdateModelCommand) o;
 
-    if (!id.equals(that.id)) return false;
+    return id.equals(that.id);
 
-    return true;
   }
 
   @Override

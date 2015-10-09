@@ -2,16 +2,14 @@ package org.drugis.addis.models.service.impl;
 
 import org.drugis.addis.analyses.AbstractAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
-import org.drugis.addis.analyses.repository.impl.AnalysisRepositoryImpl;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.*;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
-import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.projects.service.ProjectService;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -32,6 +30,9 @@ public class ModelServiceImpl implements ModelService {
 
   @Inject
   ProjectService projectService;
+
+  @Inject
+  PataviTaskRepository pataviTaskRepository;
 
   @Override
   public Model createModel(Integer analysisId, CreateModelCommand command) throws ResourceDoesNotExistException, InvalidModelTypeException {
@@ -89,7 +90,10 @@ public class ModelServiceImpl implements ModelService {
     oldModel.setBurnInIterations(updateModelCommand.getBurnInIterations());
     oldModel.setInferenceIterations(updateModelCommand.getInferenceIterations());
     oldModel.setThinningFactor(updateModelCommand.getThinningFactor());
+    pataviTaskRepository.delete(oldModel.getTaskId());
+    oldModel.setTaskId(null);
 
     modelRepository.persist(oldModel);
+
   }
 }

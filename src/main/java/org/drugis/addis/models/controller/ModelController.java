@@ -6,8 +6,8 @@ import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.models.Model;
 import org.drugis.addis.models.CreateModelCommand;
+import org.drugis.addis.models.Model;
 import org.drugis.addis.models.UpdateModelCommand;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
@@ -66,6 +66,7 @@ public class ModelController extends AbstractAddisCoreController {
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}", method = RequestMethod.POST)
+  @ResponseBody
   public void update(Principal principal, @RequestBody UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidModelTypeException {
     modelService.checkOwnership(updateModelCommand.getId(), principal);
     modelService.increaseRunLength(updateModelCommand);
