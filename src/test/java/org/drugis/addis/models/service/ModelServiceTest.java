@@ -2,6 +2,7 @@ package org.drugis.addis.models.service;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.*;
+import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.impl.ModelServiceImpl;
@@ -16,9 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by daan on 24-6-14.
@@ -40,7 +39,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testCreateNetwork() throws InvalidModelTypeException, ResourceDoesNotExistException {
+  public void testCreateNetwork() throws InvalidModelTypeException, ResourceDoesNotExistException, InvalidHeterogeneityTypeException {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_FIXED;
@@ -51,7 +50,9 @@ public class ModelServiceTest {
     String link = Model.LINK_LOG;
 
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
-    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, null);
+
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     Model expectedModel = mock(Model.class);
 
     Model internalModel = new Model.ModelBuilder()
@@ -59,6 +60,7 @@ public class ModelServiceTest {
             .title(modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
@@ -75,7 +77,7 @@ public class ModelServiceTest {
 
 
   @Test
-  public void testCreatePairwise() throws InvalidModelTypeException, ResourceDoesNotExistException {
+  public void testCreatePairwise() throws InvalidModelTypeException, ResourceDoesNotExistException, InvalidHeterogeneityTypeException {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_FIXED;
@@ -93,7 +95,8 @@ public class ModelServiceTest {
     NodeCommand to = new NodeCommand(toId, toName);
     DetailsCommand details = new DetailsCommand(from, to);
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", details);
-    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, null);
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     Model expectedModel = mock(Model.class);
 
     Model internalModel = new Model.ModelBuilder()
@@ -101,6 +104,7 @@ public class ModelServiceTest {
             .title(modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .from(new Model.DetailNode(fromId, fromName))
             .to(new Model.DetailNode(toId, toName))
             .burnInIterations(burnInIterations)
@@ -119,7 +123,7 @@ public class ModelServiceTest {
 
 
   @Test
-  public void testQueryModelIsPresent() throws Exception, InvalidModelTypeException {
+  public void testQueryModelIsPresent() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer analysisId = -1;
     String modelTitle = "modelTitle";
     String linearModel = "fixed";
@@ -132,7 +136,8 @@ public class ModelServiceTest {
             .analysisId(analysisId)
             .title(modelTitle)
             .linearModel(linearModel)
-            .modelType(modelType)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)

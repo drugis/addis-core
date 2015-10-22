@@ -5,6 +5,7 @@ import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.models.*;
+import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.projects.service.ProjectService;
@@ -81,7 +82,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreateNetwork() throws Exception, InvalidModelTypeException {
+  public void testCreateNetwork() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -98,13 +99,14 @@ public class ModelControllerTest {
             .title(modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
             .build();
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
-
-    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, null);
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     String body = TestUtils.createJson(modelCommand);
 
     when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);
@@ -124,7 +126,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreateModelWithFixedOutcomeScale() throws Exception, InvalidModelTypeException {
+  public void testCreateModelWithFixedOutcomeScale() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -142,13 +144,15 @@ public class ModelControllerTest {
             .title(modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
             .build();
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, null);
 
-    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale);
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale);
     String body = TestUtils.createJson(modelCommand);
 
     when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);
@@ -164,12 +168,11 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreatePairwise() throws Exception, InvalidModelTypeException {
+  public void testCreatePairwise() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = "fixed";
-    String modelType = Model.PAIRWISE_MODEL_TYPE;
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
@@ -181,16 +184,18 @@ public class ModelControllerTest {
             .analysisId(analysisId)
             .title(modelTitle)
             .linearModel(linearModel)
-            .modelType(modelType)
+            .modelType(Model.PAIRWISE_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .from(new Model.DetailNode(-1, "t1"))
             .to(new Model.DetailNode(-2, "t2"))
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
             .build();
-    ModelTypeCommand modelTypeCommand = new ModelTypeCommand(modelType, new DetailsCommand(new NodeCommand(-1, "t1"), new NodeCommand(-2, "t2")));
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand(Model.PAIRWISE_MODEL_TYPE, new DetailsCommand(new NodeCommand(-1, "t1"), new NodeCommand(-2, "t2")));
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, null);
 
-    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     String body = TestUtils.createJson(modelCommand);
 
     when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);
@@ -210,7 +215,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testGet() throws Exception, InvalidModelTypeException {
+  public void testGet() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer analysisId = 55;
     Integer modelId = 12;
     String modelTitle = "model title";
@@ -227,6 +232,7 @@ public class ModelControllerTest {
             .title(modelTitle)
             .linearModel(linearModel)
             .modelType(modelType)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
@@ -243,7 +249,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testQueryWithModelResult() throws Exception, InvalidModelTypeException {
+  public void testQueryWithModelResult() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = "fixed";
@@ -259,6 +265,7 @@ public class ModelControllerTest {
             .title(modelTitle)
             .linearModel(linearModel)
             .modelType(modelType)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)

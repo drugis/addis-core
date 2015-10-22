@@ -1,10 +1,8 @@
 package org.drugis.addis.models.service.impl;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.models.DetailsCommand;
-import org.drugis.addis.models.Model;
-import org.drugis.addis.models.ModelCommand;
-import org.drugis.addis.models.ModelTypeCommand;
+import org.drugis.addis.models.*;
+import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
@@ -23,13 +21,15 @@ public class ModelServiceImpl implements ModelService {
   ModelRepository modelRepository;
 
   @Override
-  public Model createModel(Integer analysisId, ModelCommand command) throws ResourceDoesNotExistException, InvalidModelTypeException {
+  public Model createModel(Integer analysisId, ModelCommand command) throws ResourceDoesNotExistException, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     ModelTypeCommand modelTypeCommand = command.getModelType();
+    HeterogeneityPriorCommand heterogeneityPrior = command.getHeterogeneityPrior();
     Model.ModelBuilder modelBuilder = new Model.ModelBuilder()
             .analysisId(analysisId)
             .title(command.getTitle())
             .linearModel(command.getLinearModel())
             .modelType(modelTypeCommand.getType())
+            .heterogeneityPriorType(heterogeneityPrior.getType())
             .burnInIterations(command.getBurnInIterations())
             .inferenceIterations(command.getInferenceIterations())
             .thinningFactor(command.getThinningFactor())

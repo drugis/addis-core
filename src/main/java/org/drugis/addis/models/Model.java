@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 
 import javax.persistence.*;
@@ -29,6 +30,10 @@ public class Model {
   public final static String LINK_LOG = "log";
   public final static String LINK_CLOGLOG = "cloglog";
 
+  public final static String AUTOMATIC_HETEROGENEITY_PRIOR_TYPE = "automatic";
+  public final static String STD_DEV_HETEROGENEITY_PRIOR_TYPE = "standard-deviation";
+  public final static String VARIANCE_HETEROGENEITY_PRIOR_TYPE = "variance";
+  public final static String PRECISION_HETEROGENEITY_PRIOR_TYPE = "precision";
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,18 +44,21 @@ public class Model {
   private String title;
   private String linearModel;
   private String modelType;
+  private String heterogeneityPrior;
   private Integer burnInIterations;
   private Integer inferenceIterations;
   private Integer thinningFactor;
   private String likelihood;
   private String link;
   private Double outcomeScale;
-  private @Transient boolean hasResult = false;
+  private
+  @Transient
+  boolean hasResult = false;
 
   public Model() {
   }
 
-  private Model(ModelBuilder builder) throws InvalidModelTypeException {
+  private Model(ModelBuilder builder) throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
     this.id = builder.id;
     this.taskId = builder.taskId;
     this.analysisId = builder.analysisId;
@@ -71,6 +79,18 @@ public class Model {
     } else {
       throw new InvalidModelTypeException("not a valid model type");
     }
+    if (Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE.equals(builder.heterogeneityPriorType)) {
+      this.heterogeneityPrior = String.format("{'type': '%s' }", builder.heterogeneityPriorType);
+    } else if (Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE.equals(builder.heterogeneityPriorType)) {
+      this.heterogeneityPrior = String.format("{'type': '%s', values: {'lower': %s, 'upper': %s} }", builder.heterogeneityPriorType, builder.lower, builder.upper);
+    } else if (Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE.equals(builder.heterogeneityPriorType)) {
+      this.heterogeneityPrior = String.format("{'type': '%s', values: {'mean': %s, 'stdDev': %s} }", builder.heterogeneityPriorType, builder.mean, builder.stdDev);
+    } else if (Model.PRECISION_HETEROGENEITY_PRIOR_TYPE.equals(builder.heterogeneityPriorType)) {
+      this.heterogeneityPrior = String.format("{'type': '%s', values: {'rate': %s, 'shape': %s} }", builder.heterogeneityPriorType, builder.rate, builder.shape);
+    } else {
+      throw new InvalidHeterogeneityTypeException("not a valid heterogeneity prior type");
+    }
+
   }
 
   public Integer getId() {
@@ -140,6 +160,30 @@ public class Model {
     return new ModelType(getModelTypeTypeAsString(), details);
   }
 
+
+  public HeterogeneityPrior getHeterogeneityPrior() {
+    JSONObject heterogeneityObject = (JSONObject) JSONValue.parse(heterogeneityPrior);
+    String priorType = (String) heterogeneityObject.get("type");
+    HeterogeneityValues values = null;
+    if (Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE.equals(priorType)) {
+      JSONObject values1 = (JSONObject) heterogeneityObject.get("values");
+      Double lower = (Double) values1.get("lower");
+      Double upper = (Double) values1.get("upper");
+      values = new HeterogeneityStdDevValues(lower, upper);
+    } else if (Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE.equals(priorType)) {
+      JSONObject values1 = (JSONObject) heterogeneityObject.get("values");
+      Double mean = (Double) values1.get("mean");
+      Double stdDev = (Double) values1.get("stdDev");
+      values = new HeterogeneityVarianceValues(mean, stdDev);
+    } else if (Model.PRECISION_HETEROGENEITY_PRIOR_TYPE.equals(priorType)) {
+      JSONObject values1 = (JSONObject) heterogeneityObject.get("values");
+      Double rate = (Double) values1.get("rate");
+      Double shape = (Double) values1.get("shape");
+      values = new HeterogeneityPrecisionValues(rate, shape);
+    }
+    return new HeterogeneityPrior(priorType, values);
+  }
+
   @JsonIgnore
   public Pair<Model.DetailNode, Model.DetailNode> getPairwiseDetails() {
     if (PAIRWISE_MODEL_TYPE.equals(getModelTypeTypeAsString())
@@ -201,6 +245,93 @@ public class Model {
     result = 31 * result + (outcomeScale != null ? outcomeScale.hashCode() : 0);
     result = 31 * result + (hasResult ? 1 : 0);
     return result;
+  }
+
+  public class HeterogeneityPrior {
+    private String type;
+    private HeterogeneityValues values;
+
+    public HeterogeneityPrior() {
+    }
+
+    public HeterogeneityPrior(String type, HeterogeneityValues values) {
+      this.type = type;
+      this.values = values;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public HeterogeneityValues getValues() {
+      return values;
+    }
+  }
+
+  public abstract class HeterogeneityValues {
+  }
+
+  public class HeterogeneityStdDevValues extends HeterogeneityValues {
+    private Double lower;
+    private Double upper;
+
+    public HeterogeneityStdDevValues() {
+    }
+
+    public HeterogeneityStdDevValues(Double lower, Double upper) {
+      this.lower = lower;
+      this.upper = upper;
+    }
+
+    public Double getLower() {
+      return lower;
+    }
+
+    public Double getUpper() {
+      return upper;
+    }
+  }
+
+  public class HeterogeneityVarianceValues extends HeterogeneityValues {
+    private Double mean;
+    private Double stdDev;
+
+    public HeterogeneityVarianceValues() {
+    }
+
+    public HeterogeneityVarianceValues(Double mean, Double stdDev) {
+      this.mean = mean;
+      this.stdDev = stdDev;
+    }
+
+    public Double getMean() {
+      return mean;
+    }
+
+    public Double getStdDev() {
+      return stdDev;
+    }
+  }
+
+  public class HeterogeneityPrecisionValues extends HeterogeneityValues {
+    private Double rate;
+    private Double shape;
+
+    public HeterogeneityPrecisionValues() {
+    }
+
+    public HeterogeneityPrecisionValues(Double rate, Double shape) {
+      this.rate = rate;
+      this.shape = shape;
+    }
+
+    public Double getRate() {
+      return rate;
+    }
+
+    public Double getShape() {
+      return shape;
+    }
   }
 
   public class ModelType {
@@ -274,6 +405,7 @@ public class Model {
     private String title;
     private String linearModel;
     private String modelType;
+    private String heterogeneityPriorType;
     private Integer burnInIterations;
     private Integer inferenceIterations;
     private Integer thinningFactor;
@@ -282,6 +414,12 @@ public class Model {
     private String likelihood;
     private String link;
     private Double outcomeScale;
+    private Double lower;
+    private Double upper;
+    private Double mean;
+    private Double stdDev;
+    private Double rate;
+    private Double shape;
 
     public ModelBuilder taskId(Integer taskId) {
       this.taskId = taskId;
@@ -310,6 +448,41 @@ public class Model {
 
     public ModelBuilder modelType(String modelType) {
       this.modelType = modelType;
+      return this;
+    }
+
+    public ModelBuilder heterogeneityPriorType(String heterogeneityPriorType) {
+      this.heterogeneityPriorType = heterogeneityPriorType;
+      return this;
+    }
+
+    public ModelBuilder lower(Double lower) {
+      this.lower = lower;
+      return this;
+    }
+
+    public ModelBuilder upper(Double upper) {
+      this.upper = upper;
+      return this;
+    }
+
+    public ModelBuilder mean(Double mean) {
+      this.mean = mean;
+      return this;
+    }
+
+    public ModelBuilder stdDev(Double stdDev) {
+      this.stdDev = stdDev;
+      return this;
+    }
+
+    public ModelBuilder rate(Double rate) {
+      this.rate = rate;
+      return this;
+    }
+
+    public ModelBuilder shape(Double shape) {
+      this.shape = shape;
       return this;
     }
 
@@ -354,7 +527,7 @@ public class Model {
     }
 
 
-    public Model build() throws InvalidModelTypeException {
+    public Model build() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
       return new Model(this);
     }
   }

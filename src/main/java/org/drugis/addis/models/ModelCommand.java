@@ -5,28 +5,30 @@ package org.drugis.addis.models;
  */
 public class ModelCommand {
 
-  String title;
-  String linearModel;
-  ModelTypeCommand modelType;
-  Integer burnInIterations;
-  Integer inferenceIterations;
-  Integer thinningFactor;
-  String likelihood;
-  String link;
+  private String title;
+  private String linearModel;
+  private ModelTypeCommand modelType;
+  private HeterogeneityPriorCommand heterogeneityPrior;
+  private Integer burnInIterations;
+  private Integer inferenceIterations;
+  private Integer thinningFactor;
+  private String likelihood;
+  private String link;
 
-  Double outcomeScale;
+  private Double outcomeScale;
 
   public ModelCommand() {
   }
 
-  public ModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link) {
-    this(title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, null);
+  public ModelCommand(String title, String linearModel, ModelTypeCommand modelType, HeterogeneityPriorCommand heterogeneityPriorCommand, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link) {
+    this(title, linearModel, modelType, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, null);
   }
 
-  public ModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link, Double outcomeScale) {
+  public ModelCommand(String title, String linearModel, ModelTypeCommand modelType, HeterogeneityPriorCommand heterogeneityPriorCommand, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link, Double outcomeScale) {
     this.title = title;
     this.linearModel = linearModel;
     this.modelType = modelType;
+    this.heterogeneityPrior = heterogeneityPriorCommand;
     this.burnInIterations = burnInIterations;
     this.inferenceIterations = inferenceIterations;
     this.thinningFactor = thinningFactor;
@@ -59,6 +61,10 @@ public class ModelCommand {
     return modelType;
   }
 
+  public HeterogeneityPriorCommand getHeterogeneityPrior() {
+    return heterogeneityPrior;
+  }
+
   public String getLikelihood() {
     return likelihood;
   }
@@ -81,6 +87,7 @@ public class ModelCommand {
     if (!title.equals(that.title)) return false;
     if (!linearModel.equals(that.linearModel)) return false;
     if (!modelType.equals(that.modelType)) return false;
+    if (!heterogeneityPrior.equals(that.heterogeneityPrior)) return false;
     if (!burnInIterations.equals(that.burnInIterations)) return false;
     if (!inferenceIterations.equals(that.inferenceIterations)) return false;
     if (!thinningFactor.equals(that.thinningFactor)) return false;
@@ -95,6 +102,7 @@ public class ModelCommand {
     int result = title.hashCode();
     result = 31 * result + linearModel.hashCode();
     result = 31 * result + modelType.hashCode();
+    result = 31 * result + heterogeneityPrior.hashCode();
     result = 31 * result + burnInIterations.hashCode();
     result = 31 * result + inferenceIterations.hashCode();
     result = 31 * result + thinningFactor.hashCode();

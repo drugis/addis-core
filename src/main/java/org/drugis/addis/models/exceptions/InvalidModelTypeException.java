@@ -5,6 +5,6 @@ package org.drugis.addis.models.exceptions;
  */
 public class InvalidModelTypeException extends Throwable {
     public InvalidModelTypeException(String s) {
-        super();
+        super(s);
     }
 }

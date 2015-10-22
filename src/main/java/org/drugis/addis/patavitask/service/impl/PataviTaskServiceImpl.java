@@ -3,9 +3,9 @@ package org.drugis.addis.patavitask.service.impl;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.PataviTaskUriHolder;
-import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.service.PataviTaskService;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
@@ -41,7 +41,7 @@ public class PataviTaskServiceImpl implements PataviTaskService {
     logger.trace("PataviTaskServiceImpl.getPataviTaskUriHolder, projectId = " + projectId + " analysisId = " + analysisId + "modelId = " + modelId);
     Model model = modelRepository.find(modelId);
     if(model == null) {
-      throw new ResourceDoesNotExistException();
+      throw new ResourceDoesNotExistException("Could not find model" + modelId);
     }
 
     Integer pataviTaskId = model.getTaskId();

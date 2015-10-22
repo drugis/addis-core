@@ -1,6 +1,5 @@
 package org.drugis.addis.trialverse.service.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -677,7 +676,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       return sampleSize;
     }
 
-    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;

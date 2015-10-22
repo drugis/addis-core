@@ -14,9 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
@@ -27,8 +25,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -76,6 +72,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     JSONObject jsonProblem = new JSONObject(problemString);
     jsonProblem.put("linearModel", model.getLinearModel());
     jsonProblem.put("modelType", new JSONObject(objectMapper.writeValueAsString(model.getModelType())));
+    jsonProblem.put("heterogeneityPrior", new JSONObject(objectMapper.writeValueAsString(model.getHeterogeneityPrior())));
     jsonProblem.put("burnInIterations", model.getBurnInIterations());
     jsonProblem.put("inferenceIterations", model.getInferenceIterations());
     jsonProblem.put("thinningFactor", model.getThinningFactor());

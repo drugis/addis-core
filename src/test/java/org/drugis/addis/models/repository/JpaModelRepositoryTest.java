@@ -4,8 +4,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
-import org.drugis.addis.models.repository.ModelRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -32,11 +32,10 @@ public class JpaModelRepositoryTest {
   private ModelRepository modelRepository;
 
   @Test
-  public void testCreate() throws Exception, InvalidModelTypeException {
+  public void testCreate() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer analysisId = -5;
     String modelTitle = "model title";
     String linearModel = "fixed";
-    String modelType = "network";
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
@@ -46,7 +45,8 @@ public class JpaModelRepositoryTest {
             .analysisId(analysisId)
             .title(modelTitle)
             .linearModel(linearModel)
-            .modelType(modelType)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)

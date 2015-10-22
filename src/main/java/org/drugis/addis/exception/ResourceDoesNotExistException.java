@@ -10,4 +10,8 @@ public class ResourceDoesNotExistException extends Exception {
   public ResourceDoesNotExistException(Throwable t) {
     super(t);
   }
+
+  public ResourceDoesNotExistException(String s) {
+    super(s);
+  }
 }

@@ -3,6 +3,7 @@ package org.drugis.addis.patavitask;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.repository.impl.PataviTaskRepositoryImpl;
@@ -57,7 +58,7 @@ public class PataviTaskRepositoryImplTest {
   }
 
   @Test
-  public void testCreateNetwork() throws Exception, InvalidModelTypeException {
+  public void testCreateNetwork() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer analysisId = -5; // from test-data/sql
 
     Long responders = 1L;
@@ -74,7 +75,8 @@ public class PataviTaskRepositoryImplTest {
             .analysisId(analysisId)
             .title("title")
             .linearModel(linearModel)
-            .modelType("network")
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
@@ -102,7 +104,7 @@ public class PataviTaskRepositoryImplTest {
   }
 
   @Test
-  public void testCreatePairwise() throws Exception, InvalidModelTypeException {
+  public void testCreatePairwise() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer analysisId = -5; // from test-data/sql
 
     Long responders = 1L;
@@ -121,7 +123,8 @@ public class PataviTaskRepositoryImplTest {
             .analysisId(analysisId)
             .title("title")
             .linearModel(linearModel)
-            .modelType("pairwise")
+            .modelType(Model.PAIRWISE_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .from(new Model.DetailNode(-1, fromTreatment))
             .to(new Model.DetailNode(-2, toTreatment))
             .burnInIterations(burnInIterations)
@@ -150,7 +153,7 @@ public class PataviTaskRepositoryImplTest {
   }
 
   @Test
-  public void testCreateWithFixedOutcomeScale() throws Exception, InvalidModelTypeException {
+  public void testCreateWithFixedOutcomeScale() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer analysisId = -5; // from test-data/sql
 
     Long responders = 1L;
@@ -168,7 +171,8 @@ public class PataviTaskRepositoryImplTest {
             .analysisId(analysisId)
             .title("title")
             .linearModel(linearModel)
-            .modelType("network")
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
@@ -189,7 +193,7 @@ public class PataviTaskRepositoryImplTest {
   }
 
   @Test(expected = InvalidPathException.class)
-  public void testCreateWithoutFixedOutcomeScale() throws Exception, InvalidModelTypeException {
+  public void testCreateWithoutFixedOutcomeScale() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer analysisId = -5; // from test-data/sql
 
     Long responders = 1L;
@@ -206,7 +210,8 @@ public class PataviTaskRepositoryImplTest {
             .analysisId(analysisId)
             .title("title")
             .linearModel(linearModel)
-            .modelType("network")
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)

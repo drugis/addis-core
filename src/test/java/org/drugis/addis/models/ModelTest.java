@@ -1,6 +1,7 @@
 package org.drugis.addis.models;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,21 +16,60 @@ public class ModelTest {
   private Integer analysisId = 1;
   private String title = "title";
   private Model networkModel;
+  private Model stdDevHeterogeneityPriorNetworkModel;
+  private Model varianceHeterogeneityPriorNetworkModel;
+  private Model precisionHeterogeneityPriorNetworkModel;
   private Model pairwiseModel;
   private Model nodeSplitModel;
+  private Double lower = 0.5;
+  private Double upper = 1.0;
+  private Double mean = 1.1;
+  private Double stdDev = 0.1;
+  private Double rate = 2.2;
+  private Double shape = 3.3;
+
   @Before
-  public void setup() throws InvalidModelTypeException {
+  public void setup() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
     networkModel = new Model.ModelBuilder()
             .analysisId(analysisId)
             .title(title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
+            .build();
+    stdDevHeterogeneityPriorNetworkModel = new Model.ModelBuilder()
+            .analysisId(analysisId)
+            .title(title)
+            .linearModel(Model.LINEAR_MODEL_FIXED)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE)
+            .lower(lower)
+            .upper(upper)
+            .build();
+    varianceHeterogeneityPriorNetworkModel = new Model.ModelBuilder()
+            .analysisId(analysisId)
+            .title(title)
+            .linearModel(Model.LINEAR_MODEL_FIXED)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE)
+            .mean(mean)
+            .stdDev(stdDev)
+            .build();
+    precisionHeterogeneityPriorNetworkModel = new Model.ModelBuilder()
+            .analysisId(analysisId)
+            .title(title)
+            .linearModel(Model.LINEAR_MODEL_FIXED)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.PRECISION_HETEROGENEITY_PRIOR_TYPE)
+            .rate(rate)
+            .shape(shape)
             .build();
     pairwiseModel = new Model.ModelBuilder()
             .analysisId(analysisId)
             .title(title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.PAIRWISE_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .from(new Model.DetailNode(-1, "treatment1"))
             .to(new Model.DetailNode(-2, "treatment2"))
             .build();
@@ -38,6 +78,7 @@ public class ModelTest {
             .title(title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.NODE_SPLITTING_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .from(new Model.DetailNode(-1, "treatment1"))
             .to(new Model.DetailNode(-2, "treatment2"))
             .build();
@@ -81,5 +122,36 @@ public class ModelTest {
     assertNotNull(details);
     assertEquals("treatment1", details.getLeft().getName());
     assertEquals("treatment2", details.getRight().getName());
+  }
+
+  @Test
+  public void testGetAutomaticHeterogeneityPriorType() {
+    assertEquals(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, networkModel.getHeterogeneityPrior().getType());
+  }
+
+  @Test
+  public void testeGetNonAutomaticHeterogeneityPriorType() {
+    assertEquals(Model.PRECISION_HETEROGENEITY_PRIOR_TYPE, precisionHeterogeneityPriorNetworkModel.getHeterogeneityPrior().getType());
+  }
+
+  @Test
+  public void getStdDevValuesFromNetwork() {
+    Model.HeterogeneityStdDevValues values = (Model.HeterogeneityStdDevValues) stdDevHeterogeneityPriorNetworkModel.getHeterogeneityPrior().getValues();
+    assertEquals(lower, values.getLower());
+    assertEquals(upper, values.getUpper());
+  }
+
+  @Test
+  public void getVarianceValuesFromNetwork() {
+    Model.HeterogeneityVarianceValues values = (Model.HeterogeneityVarianceValues) varianceHeterogeneityPriorNetworkModel.getHeterogeneityPrior().getValues();
+    assertEquals(mean, values.getMean());
+    assertEquals(stdDev, values.getStdDev());
+  }
+
+  @Test
+  public void getPrecisionValuesFromNetwork() {
+    Model.HeterogeneityPrecisionValues values = (Model.HeterogeneityPrecisionValues) precisionHeterogeneityPriorNetworkModel.getHeterogeneityPrior().getValues();
+    assertEquals(rate, values.getRate());
+    assertEquals(shape, values.getShape());
   }
 }
