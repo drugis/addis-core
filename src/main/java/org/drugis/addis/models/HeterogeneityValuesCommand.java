@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         include = JsonTypeInfo.As.PROPERTY,
         property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = StdDevValueCommand.class, name = "standard-deviation"),
-        @JsonSubTypes.Type(value = VarianceCommand.class, name = "variance"),
+        @JsonSubTypes.Type(value = StdDevValuesCommand.class, name = "standard-deviation"),
+        @JsonSubTypes.Type(value = VarianceValuesCommand.class, name = "variance"),
         @JsonSubTypes.Type(value = PrecisionValuesCommand.class, name = "precision")})
 public abstract class HeterogeneityValuesCommand {
 }

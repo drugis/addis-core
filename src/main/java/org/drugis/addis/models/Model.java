@@ -220,6 +220,7 @@ public class Model {
     if (!title.equals(model.title)) return false;
     if (!linearModel.equals(model.linearModel)) return false;
     if (!modelType.equals(model.modelType)) return false;
+    if (!heterogeneityPrior.equals(model.heterogeneityPrior)) return false;
     if (!burnInIterations.equals(model.burnInIterations)) return false;
     if (!inferenceIterations.equals(model.inferenceIterations)) return false;
     if (!thinningFactor.equals(model.thinningFactor)) return false;
@@ -237,6 +238,7 @@ public class Model {
     result = 31 * result + title.hashCode();
     result = 31 * result + linearModel.hashCode();
     result = 31 * result + modelType.hashCode();
+    result = 31 * result + heterogeneityPrior.hashCode();
     result = 31 * result + burnInIterations.hashCode();
     result = 31 * result + inferenceIterations.hashCode();
     result = 31 * result + thinningFactor.hashCode();

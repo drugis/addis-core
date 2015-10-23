@@ -75,6 +75,129 @@ public class ModelServiceTest {
     verify(modelRepository).persist(internalModel);
   }
 
+  @Test
+  public void testCreateHeterogeneityStdDevNetwork() throws InvalidModelTypeException, ResourceDoesNotExistException, InvalidHeterogeneityTypeException {
+    Integer analysisId = 55;
+    String modelTitle = "model title";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
+    Double lower = 0.5;
+    Double upper = 1.0;
+    HeterogeneityValuesCommand values = new StdDevValuesCommand(lower, upper);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE, values);
+
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    Model expectedModel = mock(Model.class);
+
+    Model internalModel = new Model.ModelBuilder()
+        .analysisId(analysisId)
+        .title(modelTitle)
+        .linearModel(linearModel)
+        .modelType(Model.NETWORK_MODEL_TYPE)
+        .heterogeneityPriorType(Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE)
+        .lower(lower)
+        .upper(upper)
+        .burnInIterations(burnInIterations)
+        .inferenceIterations(inferenceIterations)
+        .thinningFactor(thinningFactor)
+        .likelihood(likelihood)
+        .link(link)
+        .build();
+
+    when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
+    Model createdModel = modelService.createModel(analysisId, modelCommand);
+
+    assertEquals(expectedModel, createdModel);
+    verify(modelRepository).persist(internalModel);
+  }
+  @Test
+  public void testCreateHeterogeneityVarianceNetwork() throws InvalidModelTypeException, ResourceDoesNotExistException, InvalidHeterogeneityTypeException {
+    Integer analysisId = 55;
+    String modelTitle = "model title";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
+    Double mean = 2.3;
+    Double stdDev = 0.3;
+    HeterogeneityValuesCommand values = new VarianceValuesCommand(mean, stdDev);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE, values);
+
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    Model expectedModel = mock(Model.class);
+
+    Model internalModel = new Model.ModelBuilder()
+        .analysisId(analysisId)
+        .title(modelTitle)
+        .linearModel(linearModel)
+        .modelType(Model.NETWORK_MODEL_TYPE)
+        .heterogeneityPriorType(Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE)
+        .mean(mean)
+        .stdDev(stdDev)
+        .burnInIterations(burnInIterations)
+        .inferenceIterations(inferenceIterations)
+        .thinningFactor(thinningFactor)
+        .likelihood(likelihood)
+        .link(link)
+        .build();
+
+    when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
+    Model createdModel = modelService.createModel(analysisId, modelCommand);
+
+    assertEquals(expectedModel, createdModel);
+    verify(modelRepository).persist(internalModel);
+  }
+  @Test
+  public void testCreateHeterogeneityPrecisionNetwork() throws InvalidModelTypeException, ResourceDoesNotExistException, InvalidHeterogeneityTypeException {
+    Integer analysisId = 55;
+    String modelTitle = "model title";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
+    Double rate = 0.9;
+    Double shape = 1.3;
+    HeterogeneityValuesCommand values = new PrecisionValuesCommand(rate, shape);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.PRECISION_HETEROGENEITY_PRIOR_TYPE, values);
+
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    Model expectedModel = mock(Model.class);
+
+    Model internalModel = new Model.ModelBuilder()
+        .analysisId(analysisId)
+        .title(modelTitle)
+        .linearModel(linearModel)
+        .modelType(Model.NETWORK_MODEL_TYPE)
+        .heterogeneityPriorType(Model.PRECISION_HETEROGENEITY_PRIOR_TYPE)
+        .rate(rate)
+        .shape(shape)
+        .burnInIterations(burnInIterations)
+        .inferenceIterations(inferenceIterations)
+        .thinningFactor(thinningFactor)
+        .likelihood(likelihood)
+        .link(link)
+        .build();
+
+    when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
+    Model createdModel = modelService.createModel(analysisId, modelCommand);
+
+    assertEquals(expectedModel, createdModel);
+    verify(modelRepository).persist(internalModel);
+  }
 
   @Test
   public void testCreatePairwise() throws InvalidModelTypeException, ResourceDoesNotExistException, InvalidHeterogeneityTypeException {

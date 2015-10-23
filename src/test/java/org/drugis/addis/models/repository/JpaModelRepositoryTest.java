@@ -58,6 +58,7 @@ public class JpaModelRepositoryTest {
     assertNotNull(model.getId());
     assertEquals("fixed", model.getLinearModel());
     assertEquals(Model.NETWORK_MODEL_TYPE, model.getModelTypeTypeAsString());
+    assertEquals(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, model.getHeterogeneityPrior().getType());
     assertEquals(burnInIterations, model.getBurnInIterations());
     assertEquals(inferenceIterations, model.getInferenceIterations());
     assertEquals(thinningFactor, model.getThinningFactor());
@@ -79,6 +80,8 @@ public class JpaModelRepositoryTest {
   public void getPairwiseTypeModel() {
     Integer analysisId = -5;
     Integer modelId = 2;
+    Double mean = 2.3;
+    Double stdDev = 0.3;
     Model result = modelRepository.find(modelId);
     assertNotNull(result);
     assertEquals(analysisId, result.getAnalysisId());
@@ -89,6 +92,10 @@ public class JpaModelRepositoryTest {
     Pair<Model.DetailNode, Model.DetailNode> details = result.getPairwiseDetails();
     assertEquals("study2", details.getLeft().getName());
     assertEquals("study1", details.getRight().getName());
+    assertEquals(Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE, result.getHeterogeneityPrior().getType());
+    Model.HeterogeneityVarianceValues values = (Model.HeterogeneityVarianceValues) result.getHeterogeneityPrior().getValues();
+    assertEquals(mean, values.getMean());
+    assertEquals(stdDev, values.getStdDev());
   }
 
   @Test
