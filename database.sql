@@ -256,3 +256,6 @@ ALTER TABLE NetworkMetaAnalysis RENAME COLUMN name TO title;
 ALTER TABLE Account ADD COLUMN email VARCHAR(255);
 --rollback ALTER TABLE Account DROP COLUMN email;
 
+--changeset reidd:27
+ALTER TABLE model ADD COLUMN heterogeneityPrior VARCHAR NOT NULL DEFAULT '{"type": "automatic"}';
+--rollback ALTER TABLE model DROP COLUMN heterogeneityPrior;

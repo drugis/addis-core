@@ -2,6 +2,7 @@ package org.drugis.addis.models.service;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.patavitask.PataviTask;
@@ -56,14 +57,13 @@ public class PataviTaskServiceTest {
   }
 
   @Test
-  public void testFindTaskWhenThereIsNoTask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException {
+  public void testFindTaskWhenThereIsNoTask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer modelId = -2;
     String problem = "Yo";
     Integer projectId = -6;
     Integer analysisId = -7;
     String modelTitle = "modelTitle";
     String linearModel = Model.LINEAR_MODEL_FIXED;
-    String modelType = Model.NETWORK_MODEL_TYPE;
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
@@ -75,7 +75,8 @@ public class PataviTaskServiceTest {
             .analysisId(analysisId)
             .title(modelTitle)
             .linearModel(linearModel)
-            .modelType(modelType)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
@@ -98,7 +99,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test
-  public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException {
+  public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer modelId = -2;
     Integer projectId = -6;
     Integer analysisId = -7;
@@ -118,6 +119,7 @@ public class PataviTaskServiceTest {
             .title(modelTitle)
             .linearModel(linearModel)
             .modelType(modelType)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)

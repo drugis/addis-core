@@ -1,9 +1,7 @@
 package org.drugis.addis.trialverse.model;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by connor on 21-8-14.

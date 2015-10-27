@@ -1,6 +1,5 @@
 package org.drugis.addis.trialverse.service.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -45,11 +44,6 @@ import java.util.*;
 public class TriplestoreServiceImpl implements TriplestoreService {
 
   public final static String STUDY_DATE_FORMAT = "yyyy-MM-dd";
-
-  private final static Logger logger = LoggerFactory.getLogger(TriplestoreServiceImpl.class);
-  private static final HttpHeaders getJsonHeaders = createGetJsonHeader();
-  private static final HttpHeaders getSparqlResultsHeaders = createGetSparqlResultHeader();
-
   public final static String NAMESPACE = loadResource("sparql/namespace.sparql");
   public final static String STUDY_QUERY = loadResource("sparql/studyQuery.sparql");
   public final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
@@ -62,14 +56,16 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public final static String TRIAL_DATA = loadResource("sparql/trialData.sparql");
   public final static String OUTCOME_QUERY = loadResource("sparql/outcomes.sparql");
   public final static String INTERVENTION_QUERY = loadResource("sparql/interventions.sparql");
-
   public static final String QUERY_ENDPOINT = "/query";
   public static final String QUERY_PARAM_QUERY = "query";
   public static final String X_ACCEPT_EVENT_SOURCE_VERSION = "X-Accept-EventSource-Version";
   public static final String X_EVENT_SOURCE_VERSION = "X-EventSource-Version";
   public static final String ACCEPT_HEADER = "Accept";
   public static final String APPLICATION_SPARQL_RESULTS_JSON = "application/sparql-results+json";
+  private final static Logger logger = LoggerFactory.getLogger(TriplestoreServiceImpl.class);
+  private static final HttpHeaders getJsonHeaders = createGetJsonHeader();
   public static final HttpEntity<String> acceptJsonRequest = new HttpEntity<>(getJsonHeaders);
+  private static final HttpHeaders getSparqlResultsHeaders = createGetSparqlResultHeader();
   public static final HttpEntity<String> acceptSparqlResultsRequest = new HttpEntity<>(getSparqlResultsHeaders);
 
   @Inject
@@ -677,7 +673,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       return sampleSize;
     }
 
-    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;

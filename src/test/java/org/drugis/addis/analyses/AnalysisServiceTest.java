@@ -6,6 +6,7 @@ import org.drugis.addis.analyses.service.impl.AnalysisServiceImpl;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
@@ -97,7 +98,7 @@ public class AnalysisServiceTest {
   }
 
   @Test(expected = MethodNotAllowedException.class)
-  public void testUpdateLockedAnalysisFails() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelTypeException, SQLException {
+  public void testUpdateLockedAnalysisFails() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelTypeException, SQLException, InvalidHeterogeneityTypeException {
     Integer analysisId = -6;
     Account user = mock(Account.class);
     Integer projectId = 1;
@@ -111,6 +112,7 @@ public class AnalysisServiceTest {
             .title("modelTitle")
             .linearModel("fixedModel")
             .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(5000)
             .inferenceIterations(20000)
             .thinningFactor(10)

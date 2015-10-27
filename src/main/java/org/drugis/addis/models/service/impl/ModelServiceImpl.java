@@ -4,7 +4,9 @@ import org.drugis.addis.analyses.AbstractAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.models.*;
+import org.drugis.addis.models.Model;
+import org.drugis.addis.models.controller.command.*;
+import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
@@ -35,13 +37,17 @@ public class ModelServiceImpl implements ModelService {
   PataviTaskRepository pataviTaskRepository;
 
   @Override
-  public Model createModel(Integer analysisId, CreateModelCommand command) throws ResourceDoesNotExistException, InvalidModelTypeException {
+
+  public Model createModel(Integer analysisId, CreateModelCommand command) throws ResourceDoesNotExistException, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     ModelTypeCommand modelTypeCommand = command.getModelType();
-    Model.ModelBuilder modelBuilder = new Model.ModelBuilder()
+    HeterogeneityPriorCommand heterogeneityPrior = command.getHeterogeneityPrior();
+    String heterogeneityPriorType = determineHeterogeneityPriorType(heterogeneityPrior);
+    Model.ModelBuilder builder = new Model.ModelBuilder()
             .analysisId(analysisId)
             .title(command.getTitle())
             .linearModel(command.getLinearModel())
             .modelType(modelTypeCommand.getType())
+            .heterogeneityPriorType(heterogeneityPriorType)
             .burnInIterations(command.getBurnInIterations())
             .inferenceIterations(command.getInferenceIterations())
             .thinningFactor(command.getThinningFactor())
@@ -49,15 +55,44 @@ public class ModelServiceImpl implements ModelService {
             .link(command.getLink())
             .outcomeScale(command.getOutcomeScale());
 
+    if (Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE.equals(heterogeneityPriorType)) {
+      StdDevValuesCommand heterogeneityValuesCommand = ((StdDevHeterogeneityPriorCommand) heterogeneityPrior).getValues();
+      builder = builder
+              .lower(heterogeneityValuesCommand.getLower())
+              .upper(heterogeneityValuesCommand.getUpper());
+    } else if (Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE.equals(heterogeneityPriorType)) {
+      VarianceValuesCommand heterogeneityValuesCommand = ((VarianceHeterogeneityPriorCommand) heterogeneityPrior).getValues();
+      builder = builder
+              .mean(heterogeneityValuesCommand.getMean())
+              .stdDev(heterogeneityValuesCommand.getStdDev());
+    } else if (Model.PRECISION_HETEROGENEITY_PRIOR_TYPE.equals(heterogeneityPriorType)) {
+      PrecisionValuesCommand heterogeneityValuesCommand = ((PrecisionHeterogeneityPriorCommand) heterogeneityPrior).getValues();
+      builder = builder
+              .rate(heterogeneityValuesCommand.getRate())
+              .shape(heterogeneityValuesCommand.getShape());
+    }
+
     DetailsCommand details = modelTypeCommand.getDetails();
     if (details != null) {
-      modelBuilder = modelBuilder
+      builder = builder
               .from(new Model.DetailNode(details.getFrom().getId(), details.getFrom().getName()))
               .to(new Model.DetailNode(details.getTo().getId(), details.getTo().getName()));
     }
 
-    Model model = modelBuilder.build();
+    Model model = builder.build();
     return modelRepository.persist(model);
+  }
+
+  private String determineHeterogeneityPriorType(HeterogeneityPriorCommand heterogeneityPriorCommand) {
+    if (heterogeneityPriorCommand instanceof StdDevHeterogeneityPriorCommand) {
+      return Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE;
+    } else if (heterogeneityPriorCommand instanceof VarianceHeterogeneityPriorCommand) {
+      return Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE;
+    } else if (heterogeneityPriorCommand instanceof PrecisionHeterogeneityPriorCommand) {
+      return Model.PRECISION_HETEROGENEITY_PRIOR_TYPE;
+    } else {
+      return Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE;
+    }
   }
 
   @Override

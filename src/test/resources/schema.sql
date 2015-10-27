@@ -259,3 +259,7 @@ ALTER TABLE NetworkMetaAnalysis ALTER COLUMN name RENAME TO title;
 --changeset stroomberg 26:
 ALTER TABLE Account ADD COLUMN email VARCHAR(255);
 --rollback ALTER TABLE Account DROP COLUMN email;
+
+--changeset reidd:27
+ALTER TABLE model ADD COLUMN heterogeneityPrior VARCHAR NOT NULL DEFAULT '{"type": "automatic"}';
+--rollback ALTER TABLE model DROP COLUMN heterogeneityPrior;

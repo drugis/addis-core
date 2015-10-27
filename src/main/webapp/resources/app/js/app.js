@@ -241,6 +241,31 @@ define(
                 }
               ]
             },
+          })
+          .state('nodeSplitOverview', {
+            parent: 'model',
+            url: '/nodeSplitOverview',
+            templateUrl: gemtcWebBaseTemplatePath + 'js/models/nodeSplitOverview.html',
+            controller: 'NodeSplitOverviewController',
+            resolve: {
+              models: ['$stateParams', 'ModelResource',
+                function($stateParams, ModelResource) {
+                  return ModelResource.query({
+                    projectId: $stateParams.projectId,
+                    analysisId: $stateParams.analysisId
+                  }).$promise;
+                }
+              ],
+              problem: ['$stateParams', 'ProblemResource',
+                function($stateParams, ProblemResource) {
+                  return ProblemResource.get({
+                    projectId: $stateParams.projectId,
+                    analysisId: $stateParams.analysisId
+                  }).$promise;
+                }
+              ]
+
+            }
           });
 
         // Default route

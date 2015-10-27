@@ -4,18 +4,16 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.models.Model;
+import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
-import org.drugis.addis.models.repository.ModelRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.dao.DataAccessException;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.sql.SQLException;
@@ -35,11 +33,10 @@ public class JpaModelRepositoryTest {
   private ModelRepository modelRepository;
 
   @Test
-  public void testCreate() throws Exception, InvalidModelTypeException {
+  public void testCreate() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer analysisId = -5;
     String modelTitle = "model title";
     String linearModel = "fixed";
-    String modelType = "network";
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
@@ -49,7 +46,8 @@ public class JpaModelRepositoryTest {
             .analysisId(analysisId)
             .title(modelTitle)
             .linearModel(linearModel)
-            .modelType(modelType)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
@@ -61,6 +59,7 @@ public class JpaModelRepositoryTest {
     assertNotNull(model.getId());
     assertEquals("fixed", model.getLinearModel());
     assertEquals(Model.NETWORK_MODEL_TYPE, model.getModelTypeTypeAsString());
+    assertEquals(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, model.getHeterogeneityPrior().getType());
     assertEquals(burnInIterations, model.getBurnInIterations());
     assertEquals(inferenceIterations, model.getInferenceIterations());
     assertEquals(thinningFactor, model.getThinningFactor());
@@ -82,6 +81,8 @@ public class JpaModelRepositoryTest {
   public void getPairwiseTypeModel() {
     Integer analysisId = -5;
     Integer modelId = 2;
+    Double mean = 2.3;
+    Double stdDev = 0.3;
     Model result = modelRepository.find(modelId);
     assertNotNull(result);
     assertEquals(analysisId, result.getAnalysisId());
@@ -92,6 +93,10 @@ public class JpaModelRepositoryTest {
     Pair<Model.DetailNode, Model.DetailNode> details = result.getPairwiseDetails();
     assertEquals("study2", details.getLeft().getName());
     assertEquals("study1", details.getRight().getName());
+    assertEquals(Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE, result.getHeterogeneityPrior().getType());
+    Model.HeterogeneityVarianceValues values = (Model.HeterogeneityVarianceValues) result.getHeterogeneityPrior().getValues();
+    assertEquals(mean, values.getMean());
+    assertEquals(stdDev, values.getStdDev());
   }
 
   @Test
