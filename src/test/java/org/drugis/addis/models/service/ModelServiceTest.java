@@ -1,7 +1,8 @@
 package org.drugis.addis.models.service;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.models.*;
+import org.drugis.addis.models.Model;
+import org.drugis.addis.models.controller.command.*;
 import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
@@ -24,18 +25,41 @@ import static org.mockito.Mockito.*;
  */
 public class ModelServiceTest {
 
-
   @Mock
   private ModelRepository modelRepository;
 
   @InjectMocks
   private ModelService modelService;
 
+  private Model.ModelBuilder modelBuilder;
 
   @Before
   public void setUp() throws Exception {
     modelService = new ModelServiceImpl();
     MockitoAnnotations.initMocks(this);
+
+    // some default values to use as a basis for tests
+    Integer analysisId = 55;
+    String modelTitle = "model title";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+
+    modelBuilder = new Model.ModelBuilder()
+            .analysisId(analysisId)
+            .title(modelTitle)
+            .linearModel(linearModel)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .likelihood(likelihood)
+            .link(link);
+
   }
 
   @Test
@@ -50,23 +74,12 @@ public class ModelServiceTest {
     String link = Model.LINK_LOG;
 
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
-    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, null);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = null;
 
     ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     Model expectedModel = mock(Model.class);
 
-    Model internalModel = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title(modelTitle)
-            .linearModel(linearModel)
-            .modelType(Model.NETWORK_MODEL_TYPE)
-            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
-            .burnInIterations(burnInIterations)
-            .inferenceIterations(inferenceIterations)
-            .thinningFactor(thinningFactor)
-            .likelihood(likelihood)
-            .link(link)
-            .build();
+    Model internalModel = modelBuilder.build();
 
     when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
     Model createdModel = modelService.createModel(analysisId, modelCommand);
@@ -79,7 +92,7 @@ public class ModelServiceTest {
   public void testCreateHeterogeneityStdDevNetwork() throws InvalidModelTypeException, ResourceDoesNotExistException, InvalidHeterogeneityTypeException {
     Integer analysisId = 55;
     String modelTitle = "model title";
-    String linearModel = Model.LINEAR_MODEL_FIXED;
+    String linearModel = Model.LINEAR_MODEL_RANDOM;
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
@@ -89,26 +102,17 @@ public class ModelServiceTest {
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
     Double lower = 0.5;
     Double upper = 1.0;
-    HeterogeneityValuesCommand values = new StdDevValuesCommand(lower, upper);
-    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE, values);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new StdDevHeterogeneityPriorCommand(new StdDevValuesCommand(lower, upper));
 
     ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     Model expectedModel = mock(Model.class);
 
-    Model internalModel = new Model.ModelBuilder()
-        .analysisId(analysisId)
-        .title(modelTitle)
-        .linearModel(linearModel)
-        .modelType(Model.NETWORK_MODEL_TYPE)
-        .heterogeneityPriorType(Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE)
-        .lower(lower)
-        .upper(upper)
-        .burnInIterations(burnInIterations)
-        .inferenceIterations(inferenceIterations)
-        .thinningFactor(thinningFactor)
-        .likelihood(likelihood)
-        .link(link)
-        .build();
+    Model internalModel = modelBuilder
+            .linearModel(linearModel)
+            .heterogeneityPriorType(Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE)
+            .lower(lower)
+            .upper(upper)
+            .build();
 
     when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
     Model createdModel = modelService.createModel(analysisId, modelCommand);
@@ -130,25 +134,16 @@ public class ModelServiceTest {
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
     Double mean = 2.3;
     Double stdDev = 0.3;
-    HeterogeneityValuesCommand values = new VarianceValuesCommand(mean, stdDev);
-    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE, values);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new VarianceHeterogeneityPriorCommand(new VarianceValuesCommand(mean, stdDev));
 
     ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     Model expectedModel = mock(Model.class);
 
-    Model internalModel = new Model.ModelBuilder()
-        .analysisId(analysisId)
-        .title(modelTitle)
-        .linearModel(linearModel)
+    Model internalModel = modelBuilder
         .modelType(Model.NETWORK_MODEL_TYPE)
         .heterogeneityPriorType(Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE)
         .mean(mean)
         .stdDev(stdDev)
-        .burnInIterations(burnInIterations)
-        .inferenceIterations(inferenceIterations)
-        .thinningFactor(thinningFactor)
-        .likelihood(likelihood)
-        .link(link)
         .build();
 
     when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
@@ -171,25 +166,15 @@ public class ModelServiceTest {
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
     Double rate = 0.9;
     Double shape = 1.3;
-    HeterogeneityValuesCommand values = new PrecisionValuesCommand(rate, shape);
-    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.PRECISION_HETEROGENEITY_PRIOR_TYPE, values);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new PrecisionHeterogeneityPriorCommand(new PrecisionValuesCommand(rate, shape));
 
     ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     Model expectedModel = mock(Model.class);
 
-    Model internalModel = new Model.ModelBuilder()
-        .analysisId(analysisId)
-        .title(modelTitle)
-        .linearModel(linearModel)
-        .modelType(Model.NETWORK_MODEL_TYPE)
+    Model internalModel = modelBuilder
         .heterogeneityPriorType(Model.PRECISION_HETEROGENEITY_PRIOR_TYPE)
         .rate(rate)
         .shape(shape)
-        .burnInIterations(burnInIterations)
-        .inferenceIterations(inferenceIterations)
-        .thinningFactor(thinningFactor)
-        .likelihood(likelihood)
-        .link(link)
         .build();
 
     when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
@@ -217,24 +202,15 @@ public class ModelServiceTest {
     String toName = "toName";
     NodeCommand to = new NodeCommand(toId, toName);
     DetailsCommand details = new DetailsCommand(from, to);
-    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", details);
-    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, null);
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("pairwise", details);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = null;
     ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     Model expectedModel = mock(Model.class);
 
-    Model internalModel = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title(modelTitle)
-            .linearModel(linearModel)
-            .modelType(Model.NETWORK_MODEL_TYPE)
-            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
+    Model internalModel = modelBuilder
+            .modelType(Model.PAIRWISE_MODEL_TYPE)
             .from(new Model.DetailNode(fromId, fromName))
             .to(new Model.DetailNode(toId, toName))
-            .burnInIterations(burnInIterations)
-            .inferenceIterations(inferenceIterations)
-            .thinningFactor(thinningFactor)
-            .likelihood(likelihood)
-            .link(link)
             .build();
 
     when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
@@ -248,23 +224,7 @@ public class ModelServiceTest {
   @Test
   public void testQueryModelIsPresent() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer analysisId = -1;
-    String modelTitle = "modelTitle";
-    String linearModel = "fixed";
-    String modelType = "network";
-    Integer burnInIterations = 5000;
-    Integer inferenceIterations = 20000;
-    Integer thinningFactor = 10;
-    Model model = new Model.ModelBuilder()
-            .id(-10)
-            .analysisId(analysisId)
-            .title(modelTitle)
-            .linearModel(linearModel)
-            .modelType(Model.NETWORK_MODEL_TYPE)
-            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
-            .burnInIterations(burnInIterations)
-            .inferenceIterations(inferenceIterations)
-            .thinningFactor(thinningFactor)
-            .build();
+    Model model = modelBuilder.build();
 
     List<Model> models = Collections.singletonList(model);
     when(modelRepository.findByAnalysis(analysisId)).thenReturn(models);
@@ -277,7 +237,7 @@ public class ModelServiceTest {
   @Test
   public void testQueryModelIsNotPresent() throws Exception {
     Integer analysisId = -1;
-    when(modelRepository.findByAnalysis(analysisId)).thenReturn(new ArrayList<Model>());
+    when(modelRepository.findByAnalysis(analysisId)).thenReturn(new ArrayList<>());
     List<Model> resultList = modelService.query(analysisId);
     assertEquals(0, resultList.size());
   }

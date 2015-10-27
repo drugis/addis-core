@@ -1,4 +1,4 @@
-package org.drugis.addis.models;
+package org.drugis.addis.models.controller.command;
 
 /**
  * Created by daan on 30-7-15.

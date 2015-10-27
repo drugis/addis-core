@@ -4,7 +4,8 @@ import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.config.TestConfig;
-import org.drugis.addis.models.*;
+import org.drugis.addis.models.Model;
+import org.drugis.addis.models.controller.command.*;
 import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.service.ModelService;
@@ -63,6 +64,7 @@ public class ModelControllerTest {
   private AbstractAddisCoreController abstractAddisCoreController;
 
   private Principal user;
+  private Model.ModelBuilder modelBuilder;
 
   @Before
   public void setUp() {
@@ -74,6 +76,26 @@ public class ModelControllerTest {
     mockMvc = MockMvcBuilders.standaloneSetup(abstractAddisCoreController, modelController).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
+
+
+    Integer analysisId = 55;
+    String modelTitle = "model title";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+
+    modelBuilder = new Model.ModelBuilder()
+            .id(1)
+            .analysisId(analysisId)
+            .title(modelTitle)
+            .linearModel(linearModel)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor);
+
   }
 
   @After
@@ -82,7 +104,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreateNetwork() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testCreateFixedEffectNetwork() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -93,27 +115,17 @@ public class ModelControllerTest {
     String likelihood = Model.LIKELIHOOD_BINOM;
     String link = Model.LINK_LOG;
 
-    Model model = new Model.ModelBuilder()
-            .id(1)
-            .analysisId(analysisId)
-            .title(modelTitle)
-            .linearModel(linearModel)
-            .modelType(Model.NETWORK_MODEL_TYPE)
-            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
-            .burnInIterations(burnInIterations)
-            .inferenceIterations(inferenceIterations)
-            .thinningFactor(thinningFactor)
-            .build();
+    Model model = modelBuilder.build();
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
-    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, null);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = null;
     ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     String body = TestUtils.createJson(modelCommand);
 
     when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);
     mockMvc.perform(post("/projects/45/analyses/55/models")
-              .content(body)
-              .principal(user)
-              .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .content(body)
+            .principal(user)
+            .contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.id", notNullValue()))
@@ -121,7 +133,123 @@ public class ModelControllerTest {
 
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
+    verify(modelService).createModel(analysisId, modelCommand);
+  }
 
+  @Test
+  public void testCreateNetworkWithStdDevHetPrior() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+    Integer projectId = 45;
+    Integer analysisId = 55;
+    String modelTitle = "model title";
+    String linearModel = Model.LINEAR_MODEL_RANDOM;
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+
+    Double lower = 0.4;
+    Double upper = 1.4;
+    Model model = modelBuilder
+            .heterogeneityPriorType(Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE)
+            .lower(lower)
+            .upper(upper)
+            .build();
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new StdDevHeterogeneityPriorCommand(new StdDevValuesCommand(lower, upper));
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    String body = TestUtils.createJson(modelCommand);
+
+    when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);
+    mockMvc.perform(post("/projects/45/analyses/55/models")
+            .content(body)
+            .principal(user)
+            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.id", notNullValue()))
+            .andExpect(jsonPath("$.analysisId", notNullValue()));
+
+    verify(analysisService).checkCoordinates(projectId, analysisId);
+    verify(projectService).checkOwnership(projectId, user);
+    verify(modelService).createModel(analysisId, modelCommand);
+  }
+
+  @Test
+  public void testCreateNetworkWithVarianceHetPrior() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+    Integer projectId = 45;
+    Integer analysisId = 55;
+    String modelTitle = "model title";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+
+    Double mean = 0.4;
+    Double stdDev = 1.4;
+    Model model = modelBuilder
+            .heterogeneityPriorType(Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE)
+            .mean(mean)
+            .stdDev(stdDev)
+            .build();
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new VarianceHeterogeneityPriorCommand(new VarianceValuesCommand(mean, stdDev));
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    String body = TestUtils.createJson(modelCommand);
+
+    when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);
+    mockMvc.perform(post("/projects/45/analyses/55/models")
+            .content(body)
+            .principal(user)
+            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.id", notNullValue()))
+            .andExpect(jsonPath("$.analysisId", notNullValue()));
+
+    verify(analysisService).checkCoordinates(projectId, analysisId);
+    verify(projectService).checkOwnership(projectId, user);
+    verify(modelService).createModel(analysisId, modelCommand);
+  }
+
+  @Test
+  public void testCreateNetworkWithPrecisionHetPrior() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+    Integer projectId = 45;
+    Integer analysisId = 55;
+    String modelTitle = "model title";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+
+    Double rate = 0.4;
+    Double shape = 1.4;
+    Model model = modelBuilder
+            .heterogeneityPriorType(Model.PRECISION_HETEROGENEITY_PRIOR_TYPE)
+            .rate(rate)
+            .shape(shape)
+            .build();
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new PrecisionHeterogeneityPriorCommand(new PrecisionValuesCommand(rate, shape));
+    ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    String body = TestUtils.createJson(modelCommand);
+
+    when(modelService.createModel(analysisId, modelCommand)).thenReturn(model);
+    mockMvc.perform(post("/projects/45/analyses/55/models")
+            .content(body)
+            .principal(user)
+            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.id", notNullValue()))
+            .andExpect(jsonPath("$.analysisId", notNullValue()));
+
+    verify(analysisService).checkCoordinates(projectId, analysisId);
+    verify(projectService).checkOwnership(projectId, user);
     verify(modelService).createModel(analysisId, modelCommand);
   }
 
@@ -138,19 +266,9 @@ public class ModelControllerTest {
     String link = Model.LINK_LOG;
     Double outcomeScale = 2.2;
 
-    Model model = new Model.ModelBuilder()
-            .id(1)
-            .analysisId(analysisId)
-            .title(modelTitle)
-            .linearModel(linearModel)
-            .modelType(Model.NETWORK_MODEL_TYPE)
-            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
-            .burnInIterations(burnInIterations)
-            .inferenceIterations(inferenceIterations)
-            .thinningFactor(thinningFactor)
-            .build();
+    Model model = modelBuilder.build();
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
-    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, null);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = null;
 
     ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale);
     String body = TestUtils.createJson(modelCommand);
@@ -172,28 +290,16 @@ public class ModelControllerTest {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
-    String linearModel = "fixed";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
     Integer burnInIterations = 5000;
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
     String likelihood = Model.LIKELIHOOD_BINOM;
     String link = Model.LINK_LOG;
 
-    Model model = new Model.ModelBuilder()
-            .id(1)
-            .analysisId(analysisId)
-            .title(modelTitle)
-            .linearModel(linearModel)
-            .modelType(Model.PAIRWISE_MODEL_TYPE)
-            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
-            .from(new Model.DetailNode(-1, "t1"))
-            .to(new Model.DetailNode(-2, "t2"))
-            .burnInIterations(burnInIterations)
-            .inferenceIterations(inferenceIterations)
-            .thinningFactor(thinningFactor)
-            .build();
+    Model model = modelBuilder.build();
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand(Model.PAIRWISE_MODEL_TYPE, new DetailsCommand(new NodeCommand(-1, "t1"), new NodeCommand(-2, "t2")));
-    HeterogeneityPriorCommand heterogeneityPriorCommand = new HeterogeneityPriorCommand(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, null);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = null;
 
     ModelCommand modelCommand = new ModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
     String body = TestUtils.createJson(modelCommand);
@@ -217,67 +323,31 @@ public class ModelControllerTest {
   @Test
   public void testGet() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer analysisId = 55;
-    Integer modelId = 12;
-    String modelTitle = "model title";
-    String linearModel = "fixed";
-    String modelType = Model.NETWORK_MODEL_TYPE;
-
-    Integer burnInIterations = 5000;
-    Integer inferenceIterations = 20000;
-    Integer thinningFactor = 10;
-
-    Model model = new Model.ModelBuilder()
-            .id(modelId)
-            .analysisId(analysisId)
-            .title(modelTitle)
-            .linearModel(linearModel)
-            .modelType(modelType)
-            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
-            .burnInIterations(burnInIterations)
-            .inferenceIterations(inferenceIterations)
-            .thinningFactor(thinningFactor)
-            .build();
-
+    Model model = modelBuilder.build();
     when(modelService.getModel(analysisId, model.getId())).thenReturn(model);
-    mockMvc.perform(get("/projects/45/analyses/55/models/12").principal(user))
+
+    mockMvc.perform(get("/projects/45/analyses/55/models/1").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.id", is(modelId)))
+            .andExpect(jsonPath("$.id", is(model.getId())))
             .andExpect(jsonPath("$.analysisId", is(analysisId)));
 
-    verify(modelService).getModel(analysisId, modelId);
+    verify(modelService).getModel(analysisId, model.getId());
   }
 
   @Test
   public void testQueryWithModelResult() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer analysisId = 55;
-    String modelTitle = "model title";
-    String linearModel = "fixed";
-    String modelType = Model.NETWORK_MODEL_TYPE;
-
-    Integer burnInIterations = 5000;
-    Integer inferenceIterations = 20000;
-    Integer thinningFactor = 10;
-
-    Model model = new Model.ModelBuilder()
-            .id(-1)
-            .analysisId(analysisId)
-            .title(modelTitle)
-            .linearModel(linearModel)
-            .modelType(modelType)
-            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
-            .burnInIterations(burnInIterations)
-            .inferenceIterations(inferenceIterations)
-            .thinningFactor(thinningFactor)
-            .build();
+    Model model = modelBuilder.build();
     List<Model> models = Collections.singletonList(model);
     when(modelService.query(analysisId)).thenReturn(models);
+
     mockMvc.perform(get("/projects/45/analyses/55/models").principal(user))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0].id", notNullValue()));
-    verify(modelService).query(analysisId);
 
+    verify(modelService).query(analysisId);
   }
 
   @Test
@@ -290,4 +360,6 @@ public class ModelControllerTest {
             .andExpect(jsonPath("$", empty()));
     verify(modelService).query(analysisId);
   }
+
+
 }

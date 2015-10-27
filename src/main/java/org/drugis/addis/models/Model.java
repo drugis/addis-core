@@ -105,6 +105,10 @@ public class Model {
     return taskId;
   }
 
+  public void setTaskId(Integer taskId) {
+    this.taskId = taskId;
+  }
+
   public String getTitle() {
     return title;
   }
@@ -160,7 +164,6 @@ public class Model {
     return new ModelType(getModelTypeTypeAsString(), details);
   }
 
-
   public HeterogeneityPrior getHeterogeneityPrior() {
     JSONObject heterogeneityObject = (JSONObject) JSONValue.parse(heterogeneityPrior);
     String priorType = (String) heterogeneityObject.get("type");
@@ -200,10 +203,6 @@ public class Model {
     } else {
       return null;
     }
-  }
-
-  public void setTaskId(Integer taskId) {
-    this.taskId = taskId;
   }
 
   @Override
@@ -249,135 +248,6 @@ public class Model {
     return result;
   }
 
-  public class HeterogeneityPrior {
-    private String type;
-    private HeterogeneityValues values;
-
-    public HeterogeneityPrior() {
-    }
-
-    public HeterogeneityPrior(String type, HeterogeneityValues values) {
-      this.type = type;
-      this.values = values;
-    }
-
-    public String getType() {
-      return type;
-    }
-
-    public HeterogeneityValues getValues() {
-      return values;
-    }
-  }
-
-  public abstract class HeterogeneityValues {
-  }
-
-  public class HeterogeneityStdDevValues extends HeterogeneityValues {
-    private Double lower;
-    private Double upper;
-
-    public HeterogeneityStdDevValues() {
-    }
-
-    public HeterogeneityStdDevValues(Double lower, Double upper) {
-      this.lower = lower;
-      this.upper = upper;
-    }
-
-    public Double getLower() {
-      return lower;
-    }
-
-    public Double getUpper() {
-      return upper;
-    }
-  }
-
-  public class HeterogeneityVarianceValues extends HeterogeneityValues {
-    private Double mean;
-    private Double stdDev;
-
-    public HeterogeneityVarianceValues() {
-    }
-
-    public HeterogeneityVarianceValues(Double mean, Double stdDev) {
-      this.mean = mean;
-      this.stdDev = stdDev;
-    }
-
-    public Double getMean() {
-      return mean;
-    }
-
-    public Double getStdDev() {
-      return stdDev;
-    }
-  }
-
-  public class HeterogeneityPrecisionValues extends HeterogeneityValues {
-    private Double rate;
-    private Double shape;
-
-    public HeterogeneityPrecisionValues() {
-    }
-
-    public HeterogeneityPrecisionValues(Double rate, Double shape) {
-      this.rate = rate;
-      this.shape = shape;
-    }
-
-    public Double getRate() {
-      return rate;
-    }
-
-    public Double getShape() {
-      return shape;
-    }
-  }
-
-  public class ModelType {
-    private String type;
-    private TypeDetails details;
-
-    public ModelType() {
-    }
-
-    public ModelType(String type, TypeDetails details) {
-      this.type = type;
-      this.details = details;
-    }
-
-    public String getType() {
-      return type;
-    }
-
-    public TypeDetails getDetails() {
-      return details;
-    }
-  }
-
-  public class TypeDetails {
-    DetailNode from;
-    DetailNode to;
-
-    public TypeDetails() {
-    }
-
-    public TypeDetails(DetailNode from, DetailNode to) {
-      this.from = from;
-      this.to = to;
-    }
-
-    public DetailNode getFrom() {
-      return from;
-    }
-
-    public DetailNode getTo() {
-      return to;
-    }
-  }
-
   public static class DetailNode {
     Integer id;
     String name;
@@ -398,7 +268,6 @@ public class Model {
       return name;
     }
   }
-
 
   public static class ModelBuilder {
     private Integer taskId = null;
@@ -531,6 +400,135 @@ public class Model {
 
     public Model build() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
       return new Model(this);
+    }
+  }
+
+  public class HeterogeneityPrior {
+    private String type;
+    private HeterogeneityValues values;
+
+    public HeterogeneityPrior() {
+    }
+
+    public HeterogeneityPrior(String type, HeterogeneityValues values) {
+      this.type = type;
+      this.values = values;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public HeterogeneityValues getValues() {
+      return values;
+    }
+  }
+
+  public abstract class HeterogeneityValues {
+  }
+
+  public class HeterogeneityStdDevValues extends HeterogeneityValues {
+    private Double lower;
+    private Double upper;
+
+    public HeterogeneityStdDevValues() {
+    }
+
+    public HeterogeneityStdDevValues(Double lower, Double upper) {
+      this.lower = lower;
+      this.upper = upper;
+    }
+
+    public Double getLower() {
+      return lower;
+    }
+
+    public Double getUpper() {
+      return upper;
+    }
+  }
+
+  public class HeterogeneityVarianceValues extends HeterogeneityValues {
+    private Double mean;
+    private Double stdDev;
+
+    public HeterogeneityVarianceValues() {
+    }
+
+    public HeterogeneityVarianceValues(Double mean, Double stdDev) {
+      this.mean = mean;
+      this.stdDev = stdDev;
+    }
+
+    public Double getMean() {
+      return mean;
+    }
+
+    public Double getStdDev() {
+      return stdDev;
+    }
+  }
+
+  public class HeterogeneityPrecisionValues extends HeterogeneityValues {
+    private Double rate;
+    private Double shape;
+
+    public HeterogeneityPrecisionValues() {
+    }
+
+    public HeterogeneityPrecisionValues(Double rate, Double shape) {
+      this.rate = rate;
+      this.shape = shape;
+    }
+
+    public Double getRate() {
+      return rate;
+    }
+
+    public Double getShape() {
+      return shape;
+    }
+  }
+
+  public class ModelType {
+    private String type;
+    private TypeDetails details;
+
+    public ModelType() {
+    }
+
+    public ModelType(String type, TypeDetails details) {
+      this.type = type;
+      this.details = details;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public TypeDetails getDetails() {
+      return details;
+    }
+  }
+
+  public class TypeDetails {
+    DetailNode from;
+    DetailNode to;
+
+    public TypeDetails() {
+    }
+
+    public TypeDetails(DetailNode from, DetailNode to) {
+      this.from = from;
+      this.to = to;
+    }
+
+    public DetailNode getFrom() {
+      return from;
+    }
+
+    public DetailNode getTo() {
+      return to;
     }
   }
 }

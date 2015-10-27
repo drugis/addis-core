@@ -1,4 +1,4 @@
-package org.drugis.addis.models;
+package org.drugis.addis.models.controller.command;
 
 /**
  * Created by connor on 6/24/15.
@@ -87,7 +87,8 @@ public class ModelCommand {
     if (!title.equals(that.title)) return false;
     if (!linearModel.equals(that.linearModel)) return false;
     if (!modelType.equals(that.modelType)) return false;
-    if (!heterogeneityPrior.equals(that.heterogeneityPrior)) return false;
+    if (heterogeneityPrior != null ? !heterogeneityPrior.equals(that.heterogeneityPrior) : that.heterogeneityPrior != null)
+      return false;
     if (!burnInIterations.equals(that.burnInIterations)) return false;
     if (!inferenceIterations.equals(that.inferenceIterations)) return false;
     if (!thinningFactor.equals(that.thinningFactor)) return false;
@@ -102,7 +103,7 @@ public class ModelCommand {
     int result = title.hashCode();
     result = 31 * result + linearModel.hashCode();
     result = 31 * result + modelType.hashCode();
-    result = 31 * result + heterogeneityPrior.hashCode();
+    result = 31 * result + (heterogeneityPrior != null ? heterogeneityPrior.hashCode() : 0);
     result = 31 * result + burnInIterations.hashCode();
     result = 31 * result + inferenceIterations.hashCode();
     result = 31 * result + thinningFactor.hashCode();
