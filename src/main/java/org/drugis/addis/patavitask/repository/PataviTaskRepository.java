@@ -1,5 +1,6 @@
 package org.drugis.addis.patavitask.repository;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
@@ -22,5 +23,5 @@ public interface PataviTaskRepository {
 
   void delete(Integer id);
 
-
+  JsonNode getResult(Integer taskId) throws IOException;
 }

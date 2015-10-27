@@ -1,5 +1,6 @@
 package org.drugis.addis.patavitask.repository.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.patavitask.PataviTask;
@@ -120,5 +121,12 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   @Override
   public void delete(Integer id) {
     jdbcTemplate.update("DELETE FROM patavitask WHERE id = ?", id);
+  }
+
+  @Override
+  public JsonNode getResult(Integer taskId) throws IOException {
+    String result = jdbcTemplate.queryForObject("SELECT result FROM patavitask where id = " + taskId, String.class);
+    ObjectMapper objectMapper = new ObjectMapper();
+    return objectMapper.readTree(result).get("results");
   }
 }

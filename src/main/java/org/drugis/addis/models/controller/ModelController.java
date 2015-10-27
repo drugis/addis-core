@@ -1,6 +1,7 @@
 package org.drugis.addis.models.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.HttpHeaders;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
@@ -13,6 +14,7 @@ import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
+import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
@@ -42,6 +45,9 @@ public class ModelController extends AbstractAddisCoreController {
 
   @Inject
   ModelRepository modelRepository;
+
+  @Inject
+  PataviTaskRepository pataviTaskRepository;
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models", method = RequestMethod.POST)
   @ResponseBody
@@ -71,5 +77,16 @@ public class ModelController extends AbstractAddisCoreController {
   public void update(Principal principal, @RequestBody UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidModelTypeException {
     modelService.checkOwnership(updateModelCommand.getId(), principal);
     modelService.increaseRunLength(updateModelCommand);
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/result", method = RequestMethod.GET)
+  @ResponseBody
+  public JsonNode getResult(@PathVariable Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException, IOException {
+    Model model = modelRepository.get(modelId);
+    if (model.getTaskId() != null) {
+      return pataviTaskRepository.getResult(model.getTaskId());
+    } else {
+      throw new ResourceDoesNotExistException("attempt to get results of model with no task");
+    }
   }
 }
