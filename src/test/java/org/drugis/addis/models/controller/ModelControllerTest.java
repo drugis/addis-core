@@ -1,5 +1,7 @@
 package org.drugis.addis.models.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
@@ -7,9 +9,9 @@ import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.controller.command.*;
 import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
-import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
+import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.util.WebConstants;
 import org.junit.After;
@@ -57,6 +59,9 @@ public class ModelControllerTest {
 
   @Mock
   private ModelRepository modelRepository;
+
+  @Mock
+  private PataviTaskRepository pataviTaskRepository;
 
   @Inject
   private WebApplicationContext webApplicationContext;
@@ -108,7 +113,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreateFixedEffectNetwork() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testCreateFixedEffectNetwork() throws Exception, InvalidHeterogeneityTypeException {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -144,7 +149,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreateNetworkWithStdDevHetPrior() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testCreateNetworkWithStdDevHetPrior() throws Exception, InvalidHeterogeneityTypeException {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -184,7 +189,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreateNetworkWithVarianceHetPrior() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testCreateNetworkWithVarianceHetPrior() throws Exception, InvalidHeterogeneityTypeException {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -227,7 +232,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreateNetworkWithPrecisionHetPrior() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testCreateNetworkWithPrecisionHetPrior() throws Exception, InvalidHeterogeneityTypeException {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -268,7 +273,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreateModelWithFixedOutcomeScale() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testCreateModelWithFixedOutcomeScale() throws Exception, InvalidHeterogeneityTypeException {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -300,7 +305,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreatePairwise() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testCreatePairwise() throws Exception, InvalidHeterogeneityTypeException {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -335,7 +340,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testGet() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testGet() throws Exception, InvalidHeterogeneityTypeException {
     Integer analysisId = 55;
     Model model = modelBuilder.build();
     when(modelRepository.get(model.getId())).thenReturn(model);
@@ -350,7 +355,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testQueryWithModelResult() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testQueryWithModelResult() throws Exception, InvalidHeterogeneityTypeException {
     Integer analysisId = 55;
     Model model = modelBuilder.build();
     List<Model> models = Collections.singletonList(model);
@@ -376,7 +381,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testUpdate() throws Exception, InvalidModelTypeException {
+  public void testUpdate() throws Exception {
 
     String modelTitle = "model title";
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
@@ -400,6 +405,34 @@ public class ModelControllerTest {
 
     verify(modelService).checkOwnership(modelId, user);
     verify(modelService).increaseRunLength(updateModelCommand);
+  }
+
+  @Test
+  public void testGetResult() throws Exception {
+    Integer taskId = 2;
+    Model model = modelBuilder.taskId(taskId).build();
+    Integer modelID = 1;
+    JsonNode jsonNode = new ObjectMapper().readTree("{}");
+    when(modelRepository.get(modelID)).thenReturn(model);
+    when(pataviTaskRepository.getResult(model.getTaskId())).thenReturn(jsonNode);
+    ResultActions resultActions = mockMvc.perform(get("/projects/45/analyses/55/models/1/result").principal(user));
+    resultActions
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", notNullValue()));
+    verify(modelRepository).get(model.getId());
+    verify(pataviTaskRepository).getResult(model.getTaskId());
+  }
+
+  @Test
+  public void testGetResultNoTaskId() throws Exception {
+    Model model = modelBuilder.build();
+    Integer modelID = 1;
+    when(modelRepository.get(modelID)).thenReturn(model);
+    ResultActions resultActions = mockMvc.perform(get("/projects/45/analyses/55/models/1/result").principal(user));
+    resultActions
+            .andExpect(status().isNotFound());
+    verify(modelRepository).get(model.getId());
   }
 
 }
