@@ -61,7 +61,9 @@ define(
       'addis.services',
       'addis.filters',
       'addis.interceptors',
-      'addis.directives'
+      'addis.directives',
+      'mm.foundation.tpls',
+      'mm.foundation.modal'
     ];
     var gemtcWebDependencies = [
       'gemtc.controllers',
@@ -119,14 +121,13 @@ define(
       uiSelectConfig.theme = 'select2';
     });
 
-    app.config(['Tasks', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES', '$httpProvider', '$animateProvider', 'MCDARouteProvider',
-      function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider, $animateProvider, MCDARouteProvider) {
+    app.config(['Tasks', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES', '$httpProvider', 'MCDARouteProvider',
+      function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider, MCDARouteProvider) {
         var baseTemplatePath = 'app/views/';
         var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
         var gemtcWebBaseTemplatePath = 'app/js/bower_components/gemtc-web/app/';
 
         $httpProvider.interceptors.push('SessionExpiredInterceptor');
-        $animateProvider.classNameFilter(/sidepanel/);
 
         $stateProvider
           .state('projects', {
