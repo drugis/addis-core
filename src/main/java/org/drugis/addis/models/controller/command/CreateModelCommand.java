@@ -1,8 +1,11 @@
 package org.drugis.addis.models.controller.command;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Created by connor on 6/24/15.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateModelCommand {
 
   private String title;
