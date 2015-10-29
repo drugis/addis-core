@@ -9,7 +9,8 @@ public enum StudyStatusEnum {
   COMPLETED("Completed"),
   SUSPENDED("Suspended"),
   TERMINATED("Terminated"),
-  WITHDRAWN("Withdrawn");
+  WITHDRAWN("Withdrawn"),
+  UNKNOWN("Unknown");
 
   private String label;
 
@@ -37,6 +38,8 @@ public enum StudyStatusEnum {
       return StudyStatusEnum.TERMINATED;
     } else if (inputString.equalsIgnoreCase("StatusWithdrawn")) {
       return StudyStatusEnum.WITHDRAWN;
+    } else if (inputString.equalsIgnoreCase("StatusUnknown")) {
+      return StudyStatusEnum.UNKNOWN;
     }
 
     throw new IllegalArgumentException("Can not create StudyStatus enum from given input " + inputString);
