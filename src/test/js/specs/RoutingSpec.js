@@ -11,6 +11,7 @@ define(['angular', 'angular-mocks', 'jQuery', 'app'], function () {
       // We need add the template entry into the templateCache if we ever
       // specify a templateUrl
       $templateCache.put('projects.html', '');
+      $httpBackend.expect('GET', 'app/js/bower_components/gemtc-web/app/lexicon.json').respond(200);
     }));
     it('navigate to #/projects from projects', function () {
       expect($state.href('projects')).toEqual('#/projects');

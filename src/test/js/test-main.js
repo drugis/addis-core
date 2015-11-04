@@ -30,10 +30,11 @@ require.config({
     'nvd3': 'bower_components/nvd3/build/nv.d3.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
     'moment': 'bower_components/moment/min/moment.min',
-    'mmfoundation': 'bower_components/angular-foundation/mm-foundation-tpls',
+    'mmfoundation': 'bower_components/angular-foundation/dist/mm-foundation-tpls-0.9.0-SNAPSHOT',
     'angularanimate': 'bower_components/angular-animate/angular-animate',
     'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize',
-    'lodash': 'bower_components/lodash/lodash.min'
+    'lodash': 'bower_components/lodash/lodash.min',
+    'help-popup': 'bower_components/help-popup/help-directive'
   },
   baseUrl: '/base/app/js',
   shim: {
@@ -65,6 +66,11 @@ require.config({
       deps: ['angular']
     },
     'mmfoundation': {
+      deps: ['angular'],
+      exports: 'mmfoundation'
+    },
+
+    'help-popup': {
       deps: ['angular']
     },
     'd3': {

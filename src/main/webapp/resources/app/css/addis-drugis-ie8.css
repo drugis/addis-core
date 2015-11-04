@@ -6366,6 +6366,23 @@ code {
   padding: 0 0.2em 0 0.2em;
 }
 
+/* -------- inline help directive---------*/
+/* line 262, ../../drugis-css/_drugis.scss */
+inline-help {
+  margin: 1rem;
+}
+
+/* line 266, ../../drugis-css/_drugis.scss */
+.joyride-content-wrapper a {
+  color: #008CBA;
+}
+
+/* line 270, ../../drugis-css/_drugis.scss */
+body .joyride-tip-guide {
+  z-index: 1006;
+}
+
+/* -------- end inline help directive---------*/
 /* line 3, ../../drugis-css/_drugis-ie8.scss */
 .top-bar {
   margin-bottom: 0;

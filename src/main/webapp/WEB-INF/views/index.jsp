@@ -41,6 +41,11 @@
       <section class="top-bar-section">
         <!-- Right Nav Section -->
         <ul class="right">
+          <li>
+            <a class="manual" href="/manual.html" target="_blank">
+              Manual
+            </a>
+          </li>
           <li class="has-dropdown not-click">
             <a href="#"><img class="user-image" src="https://secure.gravatar.com/avatar/${userMD5}?s=43&d=mm"> <c:out value="${account.firstName} ${account.lastName} " /></a>
             <ul class="dropdown">

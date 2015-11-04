@@ -16,6 +16,7 @@ define(
     'interceptors',
     'resources',
     'services',
+    'help-popup',
     'gemtc-web/controllers',
     'gemtc-web/resources',
     'gemtc-web/constants',
@@ -63,7 +64,8 @@ define(
       'addis.interceptors',
       'addis.directives',
       'mm.foundation.tpls',
-      'mm.foundation.modal'
+      'mm.foundation.modal',
+      'help-directive'
     ];
     var gemtcWebDependencies = [
       'gemtc.controllers',
@@ -85,8 +87,8 @@ define(
     }]);
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');
-    app.run(['$rootScope', '$window', '$http',
-      function($rootScope, $window, $http) {
+    app.run(['$rootScope', '$window', '$http', 'HelpPopupService',
+      function($rootScope, $window, $http, HelpPopupService) {
         var csrfToken = $window.config._csrf_token;
         var csrfHeader = $window.config._csrf_header;
 
@@ -112,8 +114,16 @@ define(
               }
             });
           });
-
         });
+
+        $http.get('app/js/bower_components/gemtc-web/app/lexicon.json').success(function(data) {
+          if (data) {
+            HelpPopupService.loadLexicon(data);
+          } else {
+            console.error("Failed to load gemtc-lexicon json data");
+          }
+        });
+
       }
     ]);
 

@@ -10038,6 +10038,23 @@ code {
   padding: 0 0.2em 0 0.2em;
 }
 
+/* -------- inline help directive---------*/
+/* line 262, ../../drugis-css/_drugis.scss */
+inline-help {
+  margin: 1rem;
+}
+
+/* line 266, ../../drugis-css/_drugis.scss */
+.joyride-content-wrapper a {
+  color: #008CBA;
+}
+
+/* line 270, ../../drugis-css/_drugis.scss */
+body .joyride-tip-guide {
+  z-index: 1006;
+}
+
+/* -------- end inline help directive---------*/
 /* line 1, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 .export-button {
   margin-left: 1rem;
@@ -10101,6 +10118,21 @@ table.layout-table td {
 .top-bar-section ul.top-bar-content {
   padding-top: 5px;
   margin-left: 4rem;
+}
+
+/* line 56, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+inline-help a {
+  color: grey;
+}
+
+/* line 60, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+inline-help a:hover {
+  color: #676767;
+}
+
+/* line 64, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+navbar-directive ul li > a.manual:hover {
+  text-decoration: underline;
 }
 
 /* Tabs */

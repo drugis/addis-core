@@ -16,12 +16,13 @@ require.config({
     'lodash': 'bower_components/lodash/lodash.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
     'mcda': 'bower_components/mcda-web/app/js',
-    'mmfoundation': 'bower_components/angular-foundation/mm-foundation-tpls',
+    'mmfoundation': 'bower_components/angular-foundation/dist/mm-foundation-tpls-0.9.0-SNAPSHOT',
     'modernizr': 'bower_components/modernizr/modernizr',
     'moment': 'bower_components/moment/min/moment.min',
     'ngSanitize': 'bower_components/angular-sanitize/angular-sanitize.min',
     'nvd3': 'bower_components/nvd3/build/nv.d3.min',
-    'underscore': 'bower_components/underscore/underscore-min'
+    'underscore': 'bower_components/underscore/underscore-min',
+    'help-popup': 'bower_components/help-popup/help-directive'
   },
   baseUrl: 'app/js',
   shim: {
@@ -40,6 +41,9 @@ require.config({
     },
     'mmfoundation': {
       deps: ['angular']
+    },
+    'help-popup': {
+          deps: ['angular']
     },
     'angular-resource': {
       deps: ['angular'],
