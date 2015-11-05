@@ -24,12 +24,10 @@ define(['util/transformJsonLd'], function(transformJsonLd) {
         'getJson': {
           method: 'get',
           headers: {
-            'Accept': 'application/json'
+            'Accept': 'application/ld+json'
           },
           transformResponse: function(data) {
-            return {
-              data: transformJsonLd(data) // property on Responce object to access raw result data
-            };
+            return transformJsonLd(JSON.parse(data))
           }
         }
       });

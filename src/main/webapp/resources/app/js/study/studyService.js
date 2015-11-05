@@ -7,6 +7,7 @@ define([], function() {
     var loadDefer = $q.defer();
     var scratchStudyUri,
       modified = false;
+    var studyJsonPromise;
 
     var createEmptyStudyTemplate = SparqlResource.get('createEmptyStudy.sparql');
     var studyDataQuery = SparqlResource.get('queryStudyData.sparql');
@@ -89,6 +90,22 @@ define([], function() {
         .replace(/\$comment/g, SanitizeService.sanitizeStringLiteral(study.comment));
     }
 
+    function loadJson(jsonPromise) {
+       studyJsonPromise = jsonPromise;
+    }
+
+    function getStudy() {
+      return studyJsonPromise.then(function(graph) {
+        return _.find(graph['@graph'], function(graphNode) {
+          return graphNode['@type'] === 'ontology:Study';
+        });
+      });
+    }
+
+    function save(study) {
+      studyJsonPromise = $q.defer().resolve(study);
+    }
+
     return {
       loadStore: loadStore,
       queryStudyData: queryStudyData,
@@ -99,7 +116,10 @@ define([], function() {
       isStudyModified: isStudyModified,
       studySaved: studySaved,
       getStudyUUID: getStudyUUID,
-      reset: reset
+      reset: reset,
+      loadJson: loadJson,
+      getStudy: getStudy,
+      save: save
     };
   };
 

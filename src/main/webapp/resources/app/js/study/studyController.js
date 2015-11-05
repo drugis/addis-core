@@ -17,12 +17,12 @@ define([],
       $scope.openCopyDialog = openCopyDialog;
       $scope.study = {};
       $scope.resetStudy = resetStudy;
-      $scope.jsonStudy = VersionedGraphResource.getJson({
+      StudyService.loadJson(VersionedGraphResource.getJson({
           userUid: $stateParams.userUid,
           datasetUUID: $stateParams.datasetUUID,
           graphUuid: $stateParams.studyGraphUuid,
           versionUuid: $stateParams.versionUuid
-        });
+        }).$promise);
 
       $scope.categorySettings = {
         studyInformation: {

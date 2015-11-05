@@ -1,70 +1,43 @@
 'use strict';
-define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
-  describe('the arm service', function() {
+define(['angular', 'angular-mocks'], function(angular, angularMocks) {
+  fdescribe('the arm service', function() {
 
     var graphUri = 'http://karma-test/';
     var scratchStudyUri = 'http://localhost:9876/scratch'; // NB proxied by karma to actual fuseki instance
 
     var rootScope, q, httpBackend;
     var remotestoreServiceStub;
-    var studyService;
+    var studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
     var armService;
 
     beforeEach(function() {
-      module('trialverse.util', function($provide) {
-        remotestoreServiceStub = testUtils.createRemoteStoreStub();
-        $provide.value('RemoteRdfStoreService', remotestoreServiceStub);
+      module('trialverse.arm', function($provide) {
+        $provide.value('StudyService', studyService)
       });
     });
 
-    beforeEach(module('trialverse.activity'));
-
-    beforeEach(inject(function($q, $rootScope, $httpBackend, ArmService, StudyService) {
+    beforeEach(inject(function($q, $rootScope, $httpBackend, ArmService) {
       q = $q;
       httpBackend = $httpBackend;
       rootScope = $rootScope;
-      studyService = StudyService;
 
+      var studyJsonObject = {
+        has_arm: [{
+          "@id": "http://trials.drugis.org/instances/1c3c67ba-4c0c-46e3-846c-5e9d72c5ed80",
+          "@type": "ontology:Arm",
+          "label": "arm label"
+        }]
+      }
+      var studyDefer = $q.defer();
+      var getStudyPromise = studyDefer.promise;
+      studyDefer.resolve(studyJsonObject);
+      studyService.getStudy.and.returnValue(getStudyPromise);
       armService = ArmService;
-
-      // reset the test graph
-      testUtils.dropGraph(graphUri);
-
-      // load study service templates
-      testUtils.loadTemplate('createEmptyStudy.sparql', httpBackend);
-      testUtils.loadTemplate('queryStudyData.sparql', httpBackend);
-
-      // load service templates and flush httpBackend
-      testUtils.loadTemplate('queryArm.sparql', httpBackend);
-      testUtils.loadTemplate('addArmQuery.sparql', httpBackend);
-      testUtils.loadTemplate('addArmCommentQuery.sparql', httpBackend);
-      testUtils.loadTemplate('editArmWithComment.sparql', httpBackend);
-      testUtils.loadTemplate('editArmWithoutComment.sparql', httpBackend);
-      testUtils.loadTemplate('deleteSubject.sparql', httpBackend);
-      testUtils.loadTemplate('deleteHasArm.sparql', httpBackend);
-
-      httpBackend.flush();
-
-      // create and load empty test store
-      var createStoreDeferred = $q.defer();
-      remotestoreServiceStub.create.and.returnValue(createStoreDeferred.promise);
-
-      var loadStoreDeferred = $q.defer();
-      remotestoreServiceStub.load.and.returnValue(loadStoreDeferred.promise);
-
-      studyService.loadStore();
-      createStoreDeferred.resolve(scratchStudyUri);
-      loadStoreDeferred.resolve();
 
       rootScope.$digest();
     }));
 
-    describe('query arms', function() {
-      beforeEach(function() {
-        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
-        testUtils.loadTestGraph('testArmGraph.ttl', graphUri);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-      });
+    fdescribe('query arms', function() {
 
       it('should query the arms', function(done) {
         armService.queryItems().then(function(result) {
@@ -77,58 +50,47 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     });
 
-    describe('addItem', function() {
+    fdescribe('addItem', function() {
       var studyUuid = 'studyUuid';
       var newArm = {
-        label: 'test label'
+        label: 'new arm label'
       };
       var armsResult;
       beforeEach(function(done) {
-        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
-        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-
         armService.addItem(newArm).then(function() {
-          armService.queryItems().then(function(result){
+          armService.queryItems().then(function(result) {
             armsResult = result;
-            done();  
+            done();
           })
-          
         });
         rootScope.$digest();
       });
 
       it('should add the arm to the graph', function() {
-        expect(armsResult.length).toBe(1);
+        expect(armsResult.length).toBe(2);
+        expect(armsResult[0].label).toEqual('arm label');
+        expect(armsResult[1].label).toEqual(newArm.label);
       });
     });
 
-    describe('edit arm', function() {
-      var newArm = {
-        label: 'test label'
-      };
+    fdescribe('edit arm', function() {
       var editedArm = {
+        "@id": "http://trials.drugis.org/instances/1c3c67ba-4c0c-46e3-846c-5e9d72c5ed80",
         label: 'edited label'
       };
 
       var editResult;
 
       beforeEach(function(done) {
-        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
-        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-
-        armService.addItem(newArm).then(function() {
-          armService.queryItems().then(function(result) {
-            result[0].label = editedArm.label;
-            armService.editItem(result[0]).then(function(){
-              armService.queryItems().then(function(result) {
-                editResult = result;
-                done();
-              });
+        armService.queryItems().then(function(result) {
+          result[0].label = editedArm.label;
+          armService.editItem(result[0]).then(function() {
+            armService.queryItems().then(function(result) {
+              editResult = result;
+              done();
             });
-          })
-        })
+          });
+        });
         rootScope.$digest();
       });
 
@@ -138,24 +100,15 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
     });
 
-    describe('delete arm', function() {
-      var newArm = {
-        label: 'test label'
-      };
-      var editedArm = {
-        label: 'edited label'
-      };
+    fdescribe('delete arm', function() {
+
 
       beforeEach(function(done) {
-        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
-        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
 
-        armService.addItem(newArm).then(function() {
-          armService.queryItems().then(function(result) {
-            armService.deleteItem(result[0]).then(done);
-          });
+        armService.queryItems().then(function(result) {
+          armService.deleteItem(result[0]).then(done);
         });
+
         rootScope.$digest();
       });
 
