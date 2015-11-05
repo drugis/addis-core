@@ -116,13 +116,7 @@ define(
           });
         });
 
-        $http.get('app/js/bower_components/gemtc-web/app/lexicon.json').success(function(data) {
-          if (data) {
-            HelpPopupService.loadLexicon(data);
-          } else {
-            console.error("Failed to load gemtc-lexicon json data");
-          }
-        });
+        HelpPopupService.loadLexicon($http.get('app/js/bower_components/gemtc-web/app/lexicon.json'));
 
       }
     ]);
