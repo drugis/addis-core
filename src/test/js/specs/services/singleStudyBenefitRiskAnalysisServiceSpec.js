@@ -44,10 +44,9 @@ define(['angular', 'angular-mocks', 'services'], function() {
         mockProblemResource = jasmine.createSpyObj('ProblemResource', ['get']);
         mockScenarioResource = jasmine.createSpyObj('ScenarioResource', ['query']);
         mockLocation = jasmine.createSpyObj('$location', ['url']);
-
-        // make it happen
-        mockHttp = {
-          get: function() {return {success: function(){}}},
+        var mockHelpPopupService = jasmine.createSpyObj('HelpPopupService', ['loadLexicon']);
+        var mockHttp = {
+          get: function() {},
           defaults : {
           headers: {
             common: {}}
@@ -59,6 +58,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
           $provide.value('ProblemResource', mockProblemResource);
           $provide.value('ScenarioResource', mockScenarioResource);
           $provide.value('$location', mockLocation);
+          $provide.value('HelpPopupService', mockHelpPopupService);
           $provide.value('$http', mockHttp);
         });
       });
