@@ -43,8 +43,6 @@ define([],
         });
       }
 
-       //SanitizeService.sanitizeStringLiteral(item.comment));
-
       return {
         queryItems: queryItems,
         addItem: addItem,

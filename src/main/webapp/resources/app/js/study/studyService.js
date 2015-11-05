@@ -103,7 +103,12 @@ define([], function() {
     }
 
     function save(study) {
-      studyJsonPromise = $q.defer().resolve(study);
+      studyJsonPromise.then(function(jsonLd) {
+        _.remove(jsonLd['@graph'], function(graphNode) {
+          return graphNode['@type'] === 'ontology:Study';
+        });
+        jsonLd['@graph'].push(study);
+      });
     }
 
     return {

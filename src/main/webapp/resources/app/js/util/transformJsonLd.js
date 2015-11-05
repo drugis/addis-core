@@ -7,10 +7,18 @@ define(['lodash'], function(_) {
   }
 
   function improveJsonLd(linkedData) {
+    // annoying single-subject notation
+    if (!linkedData['@graph']) {
+      var context = linkedData['@context'];
+      delete linkedData['@context'];
+      linkedData = {
+        '@graph': [linkedData],
+        '@context': context
+      };
+    }
+
     // fix property names (also forces data types)
-    var contextPairs = _.filter(_.pairs(linkedData['@context']), function(pair) {
-      return pair[1]['@type'] !== '@id';
-    });
+    var contextPairs = _.pairs(linkedData['@context']);
     var typedProperties = _.zipObject(
       _.map(contextPairs, function(pair) {
          return [pair[1]['@id'], pair[0]]
@@ -56,7 +64,7 @@ define(['lodash'], function(_) {
     function inlineList(subject, propertyName) {
       subject[propertyName] = _.map(subject[propertyName]['@list'], findAndRemoveFromGraph);
       linkedData['@context'][propertyName]['@container'] = '@list';
-      linkedData['@context'][propertyName]['@type'] = undefined;
+      delete linkedData['@context'][propertyName]['@type'];
     }
 
     function inlineObjectsForSubjectsWithProperty(subjectList, propertyName) {
