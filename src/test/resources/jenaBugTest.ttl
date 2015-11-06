@@ -1,0 +1,2 @@
+<a> <http://www.w3.org/2000/01/rdf-schema#label> "b".
+<a> <http://example.com/ontology#doubleValuedProperty> 3.0E1 .

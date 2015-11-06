@@ -22,13 +22,11 @@ public class JsonLDTest {
   @Test
   public void jenaBugTest() throws IOException {
     Model model = ModelFactory.createDefaultModel();
-    model.read(new FileReader("test.ttl"), "http://example.com", RDFLanguages.strLangTurtle);
+    model.read(new FileReader("src/test/resources/jenaBugTest.ttl"), "http://example.com", RDFLanguages.strLangTurtle);
 
     StringWriter writer = new StringWriter();
     RDFDataMgr.write(writer, model, RDFLanguages.JSONLD);
     writer.close();
-
-    System.out.println(writer.toString());
 
     Model model2 = ModelFactory.createDefaultModel();
     model2.read(new StringReader(writer.toString()), "http://example.com", RDFLanguages.strLangJSONLD);
