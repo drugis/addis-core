@@ -30,6 +30,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
 
@@ -139,6 +141,32 @@ public class GraphControllerTest {
   }
 
   @Test
+  public void testUpdateJsonGraph() throws Exception {
+    String updateContent = "updateContent";
+    String datasetUUID = "datasetUUID";
+    URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    String graphUUID = "graphUUID";
+
+    when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
+    Header versionHeader = new BasicHeader(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion");
+    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString())).thenReturn(versionHeader);
+
+    mockMvc.perform(
+            put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
+                    .content(updateContent)
+                    .contentType(WebConstants.JSON_LD)
+                    .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
+                    .param(WebConstants.COMMIT_DESCRIPTION_PARAM, "description")
+                    .principal(user))
+            .andExpect(status().isOk())
+            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion"));
+
+    verify(graphService).jsonGraphInputStreamToTurtleInputStream( any(InputStream.class));
+    verify(datasetReadRepository).isOwner(datasetUrl, user);
+    verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString());
+  }
+
+  @Test
   public void testUpdateGraph() throws Exception {
     String updateContent = "updateContent";
     String datasetUUID = "datasetUUID";
@@ -147,18 +175,19 @@ public class GraphControllerTest {
 
     when(datasetReadRepository.isOwner(datasetUrl, user)).thenReturn(true);
     Header versionHeader = new BasicHeader(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion");
-    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(HttpServletRequest.class))).thenReturn(versionHeader);
+    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString())).thenReturn(versionHeader);
 
     mockMvc.perform(
             put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(updateContent)
                     .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
+                    .param(WebConstants.COMMIT_DESCRIPTION_PARAM, "description")
                     .principal(user))
             .andExpect(status().isOk())
             .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion"));
 
     verify(datasetReadRepository).isOwner(datasetUrl, user);
-    verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), Matchers.any(HttpServletRequest.class));
+    verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString());
   }
 
   @Test

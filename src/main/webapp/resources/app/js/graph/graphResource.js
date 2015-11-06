@@ -13,6 +13,12 @@ define([], function() {
       }, {
         'put': {
           method: 'put'
+        },
+        'putJson': {
+          method: 'put',
+          headers: {
+            'Content-Type': 'application/ld+json'
+          }
         }
       });
   };

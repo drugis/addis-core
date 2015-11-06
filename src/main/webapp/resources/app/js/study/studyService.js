@@ -111,6 +111,12 @@ define([], function() {
       });
     }
 
+    function getJsonGraph() {
+      return studyJsonPromise.then(function(graph) {
+        return graph;
+      });
+    }
+
     return {
       loadStore: loadStore,
       queryStudyData: queryStudyData,
@@ -124,7 +130,8 @@ define([], function() {
       reset: reset,
       loadJson: loadJson,
       getStudy: getStudy,
-      save: save
+      save: save,
+      getJsonGraph: getJsonGraph
     };
   };
 

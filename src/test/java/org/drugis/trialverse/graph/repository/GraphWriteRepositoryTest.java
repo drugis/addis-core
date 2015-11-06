@@ -24,9 +24,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.mock.web.DelegatingServletInputStream;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.social.security.SocialAuthenticationToken;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -106,7 +104,7 @@ public class GraphWriteRepositoryTest {
 
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
-    Header resultHeader = graphWriteRepository.updateGraph(datasetUrl, graphUuid, mockHttpServletRequest);
+    Header resultHeader = graphWriteRepository.updateGraph(datasetUrl, graphUuid, delegatingServletInputStream, titleValue, null );
 
     assertEquals(versionHeader, resultHeader);
 
@@ -131,7 +129,7 @@ public class GraphWriteRepositoryTest {
     VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl.toString());
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
-    Header resultHeader = graphWriteRepository.updateGraph(datasetUrl, graphUuid, mockHttpServletRequest);
+    Header resultHeader = graphWriteRepository.updateGraph(datasetUrl, graphUuid, delegatingServletInputStream, titleValue, descriptionValue);
 
     assertEquals(versionHeader, resultHeader);
 

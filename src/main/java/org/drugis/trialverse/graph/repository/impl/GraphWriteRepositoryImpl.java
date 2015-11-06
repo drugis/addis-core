@@ -25,8 +25,8 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 
 /**
@@ -51,7 +51,7 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
   private final static Logger logger = LoggerFactory.getLogger(GraphWriteRepositoryImpl.class);
 
   @Override
-  public Header updateGraph(URI datasetUri, String graphUuid, HttpServletRequest request) throws IOException, UpdateGraphException {
+  public Header updateGraph(URI datasetUri, String graphUuid, InputStream graph, String commitTitle, String commitDescription) throws IOException, UpdateGraphException {
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(datasetUri);
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
@@ -60,10 +60,8 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
             .build();
 
     HttpPut putRequest = new HttpPut(uriComponents.toUri());
-
     putRequest.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
-    String title = request.getParameter(WebConstants.COMMIT_TITLE_PARAM);
-    putRequest.setHeader(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(title.getBytes()));
+    putRequest.setHeader(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(commitTitle.getBytes()));
 
     TrialversePrincipal owner = authenticationService.getAuthentication();
     if(owner.hasApiKey()) {
@@ -72,12 +70,11 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
       putRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + owner.getUserName());
     }
 
-    String commitDescription = request.getParameter(WebConstants.COMMIT_DESCRIPTION_PARAM);
     if(StringUtils.isNotEmpty(commitDescription)) {
       putRequest.setHeader(WebConstants.EVENT_SOURCE_DESCRIPTION_HEADER, Base64.encodeBase64String(commitDescription.getBytes()));
     }
 
-    HttpEntity putBody = new InputStreamEntity(request.getInputStream());
+    HttpEntity putBody = new InputStreamEntity(graph);
 
     putRequest.setEntity(putBody);
     logger.debug("execute updateGraph");

@@ -4,6 +4,7 @@ import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.security.Account;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -18,4 +19,6 @@ public interface GraphService {
   URI extractDatasetUri(URI sourceGraphUri);
 
   URI extractVersionUri(URI sourceGraphUri);
+
+  InputStream jsonGraphInputStreamToTurtleInputStream(InputStream jsonGraph);
 }
