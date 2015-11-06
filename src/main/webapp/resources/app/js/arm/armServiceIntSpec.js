@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function(angular, angularMocks) {
-  fdescribe('the arm service', function() {
+  describe('the arm service', function() {
 
     var graphUri = 'http://karma-test/';
     var scratchStudyUri = 'http://localhost:9876/scratch'; // NB proxied by karma to actual fuseki instance
@@ -37,7 +37,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       rootScope.$digest();
     }));
 
-    fdescribe('query arms', function() {
+    describe('query arms', function() {
 
       it('should query the arms', function(done) {
         armService.queryItems().then(function(result) {
@@ -50,7 +50,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
 
     });
 
-    fdescribe('addItem', function() {
+    describe('addItem', function() {
       var studyUuid = 'studyUuid';
       var newArm = {
         label: 'new arm label'
@@ -73,7 +73,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       });
     });
 
-    fdescribe('edit arm', function() {
+    describe('edit arm', function() {
       var editedArm = {
         "@id": "http://trials.drugis.org/instances/1c3c67ba-4c0c-46e3-846c-5e9d72c5ed80",
         label: 'edited label'
@@ -100,21 +100,33 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       });
     });
 
-    fdescribe('delete arm', function() {
+    describe('delete arm', function() {
 
 
       beforeEach(function(done) {
-
-        armService.queryItems().then(function(result) {
-          armService.deleteItem(result[0]).then(done);
+        var arm2 = {
+          label: "arm 2 label"
+        };
+        var arm3 = {
+          label: "arm 3 label"
+        };
+        armService.addItem(arm2).then(function() {
+          armService.addItem(arm3).then(function() {
+            armService.queryItems().then(function(result) {
+              armService.deleteItem(result[1]).then(done);
+            });
+          });
         });
+
 
         rootScope.$digest();
       });
 
       it('should delete the arm', function(done) {
         armService.queryItems().then(function(result) {
-          expect(result.length).toBe(0);
+          expect(result.length).toBe(2);
+          expect(result[0].label).toBe('arm label');
+          expect(result[1].label).toBe('arm 3 label');
           done();
         });
       });

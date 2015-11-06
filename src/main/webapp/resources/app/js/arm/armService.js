@@ -12,7 +12,7 @@ define([],
 
       function addItem(arm) {
         return StudyService.getStudy().then(function(study) {
-          arm['@id'] = 'http://trials.drugis.org/instances/' + UUIDService.generate;
+          arm['@id'] = 'http://trials.drugis.org/instances/' + UUIDService.generate();
           arm['@type'] = 'ontology:Arm';
           if (!study.has_arm) {
             stuy.has_arm = [];

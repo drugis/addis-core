@@ -26,7 +26,6 @@ define([], function() {
         scope.editItem = function() {
           $modal.open({
             templateUrl: scope.settings.editItemTemplateUrl,
-            scope: scope,
             controller: scope.settings.editItemController,
             resolve: {
               callback: function () {
@@ -37,6 +36,9 @@ define([], function() {
               },
               actionType: function() {
                 return 'Edit'
+              },
+              item: function() {
+                return angular.copy(scope.item);
               }
             }
           });
