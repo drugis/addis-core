@@ -1,12 +1,11 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  fdescribe('the epoch service', function() {
+  describe('the epoch service', function() {
 
     var rootScope, q, epochService,
       queryEpochs, queryAddEpoch, queryAddEpochToEndOfList, queryAddEpochComment,
       editEpoch, addEpochToEndOfList, setEpochPrimary, deleteEpoch,
-      removeEpochPrimary, setEpochToPrimary,
-      graphAsText, getLastItemInEpochList, deleteTail, nonModifyingqueryPromise,
+      removeEpochPrimary, setEpochToPrimary, getLastItemInEpochList, deleteTail,
       studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
     var studyDefer;
     var studyJsonObject;
@@ -15,6 +14,9 @@ define(['angular', 'angular-mocks'], function() {
 
     beforeEach(function() {
       module('trialverse', function($provide) {
+        var uUIDServiceStub = jasmine.createSpyObj('UUIDService', ['generate']);
+        uUIDServiceStub.generate.and.returnValue('newUuid');
+        $provide.value('UUIDService', uUIDServiceStub);
         $provide.value('StudyService', studyService);
       });
     });
@@ -45,8 +47,6 @@ define(['angular', 'angular-mocks'], function() {
         }],
         'has_primary_epoch': 'http://trials.drugis.org/instances/ddd'
       };
-
-
 
       studyService.getStudy.and.returnValue(getStudyPromise);
 
@@ -145,89 +145,114 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    // describe('addEpoch', function() {
+    ddescribe('addEpoch', function() {
 
-    //   it('should add the epoch with comment and set primary and add it to the list', function() {
-    //     var mockEpoch = {
-    //       label: 'new epoch label',
-    //       comment: 'new epoch comment',
-    //       isPrimaryEpoch: true,
-    //       duration: {
-    //         numberOfPeriods: 13,
-    //         periodType: {
-    //           value: 'D',
-    //           type: 'day',
-    //           label: 'day(s)'
-    //         }
-    //       }
-    //     };
-    //     studyService.doModifyingQuery.calls.reset();
-    //     epochService.addItem(mockEpoch);
+      it('should add the epoch with comment and set primary and add it to the list', function(done) {
+        var getStudyPromise = studyDefer.promise;
+        var epochList = [{
+          '@id': 'http://trials.drugis.org/instances/aaa',
+          '@type': 'ontology:Epoch',
+          'duration': 'P14D',
+          'label': 'Washout'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/ddd',
+          '@type': 'ontology:Epoch',
+          'label': 'Randomization'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/ccc',
+          '@type': 'ontology:Epoch',
+          'duration': 'P42D',
+          'label': 'Main phase'
+        }];
+        var studyJsonObject = {
+          'has_epochs': epochList,
+          'has_primary_epoch': 'http://trials.drugis.org/instances/ddd'
+        };
+        studyDefer.resolve(studyJsonObject);
+        studyService.getStudy.and.returnValue(getStudyPromise);
+        var itemToAdd = {
+          label: 'new epoch label',
+          comment: 'new epoch comment',
+          isPrimaryEpoch: true,
+          duration: 'P13D',
+        };
 
-    //     rootScope.$digest();
+        var expectedEpoch = {
+          '@id': 'http://trials.drugis.org/instances/newUuid',
+          duration: 'P13D',
+          label: itemToAdd.label,
+          comment: 'new epoch comment',
+          pos: 3,
+          isPrimary: true
+        }
 
-    //     expect(studyService.doModifyingQuery.calls.count()).toEqual(4);
+        epochService.addItem(itemToAdd).then(function() {
+          epochService.queryItems().then(function(result) {
+            expect(result.length).toEqual(4);
+            expect(result[3]).toEqual(expectedEpoch);
+            expect(result[1].isPrimary).toEqual(false);
+            done();
+          })
+        });
 
-    //   });
+        rootScope.$digest();
 
-    //   it('should add the epoch without comment', function() {
-    //     var mockEpoch = {
-    //       label: 'new epoch label',
-    //       duration: {
-    //         numberOfPeriods: 13,
-    //         periodType: {
-    //           value: 'D',
-    //           type: 'day',
-    //           label: 'day(s)'
-    //         }
-    //       }
-    //     };
-    //     studyService.doModifyingQuery.calls.reset();
-
-    //     epochService.addItem(mockEpoch);
-
-    //     rootScope.$digest();
-
-    //     expect(studyService.doModifyingQuery.calls.count()).toEqual(2);
-
-    //   });
+      });
+    });
 
 
-    // });
+    describe('editEpoch', function() {
+      it('should edit to remove the comment and unset primary', function(done) {
+        var getStudyPromise = studyDefer.promise;
+        var epochList = [{
+          '@id': 'http://trials.drugis.org/instances/aaa',
+          '@type': 'ontology:Epoch',
+          'duration': 'P14D',
+          'label': 'Washout'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/ddd',
+          '@type': 'ontology:Epoch',
+          'label': 'Randomization'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/ccc',
+          '@type': 'ontology:Epoch',
+          'duration': 'P42D',
+          'label': 'Main phase'
+        }];
+        var studyJsonObject = {
+          'has_epochs': epochList,
+          'has_primary_epoch': 'http://trials.drugis.org/instances/ddd'
+        };
+        studyDefer.resolve(studyJsonObject);
+        studyService.getStudy.and.returnValue(getStudyPromise);
+        var itemToEdit = {
+          '@id': 'http://trials.drugis.org/instances/ddd',
+          label: 'Randomization',
+          comment: "",
+          isPrimaryEpoch: false,
+          duration: 'P13D',
+        };
 
+        var expectedEpoch = {
+          '@id': 'http://trials.drugis.org/instances/ddd',
+          duration: 'P13D',
+          label: itemToEdit.label,
+          pos: 2,
+          isPrimary: false
+        }
 
-    // describe('editEpoch', function() {
-    //   it('should modify the epoch without comment', function() {
-    //     var mockEpoch = {
-    //       uri: {
-    //         value: 'uri'
-    //       },
-    //       measurementType: {
-    //         value: 'measType'
-    //       },
-    //       label: 'new epoch label',
-    //       isPrimary: {
-    //         value: 'true'
-    //       },
-    //       duration: {
-    //         numberOfPeriods: 13,
-    //         periodType: {
-    //           value: 'D',
-    //           type: 'day',
-    //           label: 'day(s)'
-    //         }
-    //       }
-    //     };
-    //     studyService.doModifyingQuery.calls.reset();
+        epochService.editItem(itemToEdit).then(function() {
+          epochService.queryItems().then(function(result) {
+            expect(result.length).toEqual(3);
+            expect(result[2]).toEqual(expectedEpoch);
+            done();
+          })
+        });
 
-    //     epochService.editItem(mockEpoch, mockEpoch);
-
-    //     rootScope.$digest();
-
-    //     expect(studyService.doModifyingQuery.calls.count()).toEqual(2);
-
-    //   });
-    // });
+        rootScope.$digest();
+        
+      });
+    });
 
   });
 });
