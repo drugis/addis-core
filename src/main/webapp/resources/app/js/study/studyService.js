@@ -103,7 +103,7 @@ define([], function() {
     }
 
     function save(study) {
-      studyJsonPromise.then(function(jsonLd) {
+      return studyJsonPromise.then(function(jsonLd) {
         _.remove(jsonLd['@graph'], function(graphNode) {
           return graphNode['@type'] === 'ontology:Study';
         });

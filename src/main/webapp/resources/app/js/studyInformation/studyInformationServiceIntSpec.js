@@ -4,13 +4,13 @@ define(['angular', 'angular-mocks'], function() {
 
     var rootScope, q,
       uUIDServiceStub,
-      studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy']),
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'save']),
 
       studyInformationService,
       mockGeneratedUuid = 'newUuid',
-      studyDefer
-
-      ;
+      studyDefer,
+      jsonStudy
+    ;
 
     beforeEach(module('trialverse'));
     beforeEach(function() {
@@ -37,18 +37,20 @@ define(['angular', 'angular-mocks'], function() {
     }));
 
 
-    fdescribe('query study information', function() {
+    describe('query study information', function() {
 
       var result;
+      jsonStudy = {
+        has_blinding: 'ontology:SingleBlind',
+        has_allocation: 'ontology:AllocationRandomized',
+        status: 'ontology:StatusWithdrawn',
+        has_number_of_centers: 37,
+        has_objective: [{
+          comment: 'objective'
+        }]
+      };
 
       beforeEach(function(done) {
-        var jsonStudy = {
-          has_blinding: 'ontology:SingleBlind',
-          has_allocation: 'ontology:AllocationRandomized',
-          status: 'ontology:StatusWithdrawn',
-          has_number_of_centers: 37,
-          has_objective: 'objective'
-        };
         studyDefer.resolve(jsonStudy);
         studyInformationService.queryItems().then(function(info) {
           result = info;
@@ -59,19 +61,18 @@ define(['angular', 'angular-mocks'], function() {
 
       it('should return study information', function() {
         expect(result.length).toBe(1);
-        expect(result[0].blinding).toBe('ontology:SingleBlind');
-        expect(result[0].groupAllocation).toBe('ontology:AllocationRandomized');
-        expect(result[0].status).toBe('ontology:StatusWithdrawn');
-        expect(result[0].numberOfCenters).toBe(37);
-        expect(result[0].objective).toBe('objective');
+        expect(result[0].blinding).toBe(jsonStudy.has_blinding);
+        expect(result[0].allocation).toBe(jsonStudy.has_allocation);
+        expect(result[0].status).toBe(jsonStudy.status);
+        expect(result[0].numberOfCenters).toBe(jsonStudy.has_number_of_centers);
+        expect(result[0].objective).toBe(jsonStudy.has_objective[0]);
       });
-
     });
 
     describe('edit study information when there is no previous information', function() {
 
       var newInformation = {
-        groupAllocation: {
+        allocation: {
           uri: 'ontology:AllocationRandomized'
         },
         blinding: {
@@ -86,11 +87,15 @@ define(['angular', 'angular-mocks'], function() {
       var studyInformation;
 
       beforeEach(function(done) {
-        studyInformationService.editItem(newInformation).then(function() {
-          studyInformationService.queryItems().then(function(resultInfo) {
-            studyInformation = resultInfo;
-            done();
-          });
+        jsonStudy = {
+          has_objective: []
+        };
+        studyDefer.resolve(jsonStudy);
+
+        studyInformationService.editItem(newInformation);
+        studyInformationService.queryItems().then(function(resultInfo) {
+          studyInformation = resultInfo;
+          done();
         });
         rootScope.$digest();
       });
@@ -98,58 +103,28 @@ define(['angular', 'angular-mocks'], function() {
       it('should make the new study information accessible', function() {
         expect(studyInformation).toBeDefined();
         expect(studyInformation[0].blinding).toEqual(newInformation.blinding);
-        expect(studyInformation[0].groupAllocation).toEqual(newInformation.groupAllocation);
+        expect(studyInformation[0].allocation).toEqual(newInformation.allocation);
         expect(studyInformation[0].status).toEqual(newInformation.status);
-        expect(studyInformation[0].numberOfCenters).toEqual(29);
-        expect(studyInformation[0].objective).toBe(newInformation.objective);
+        expect(studyInformation[0].numberOfCenters).toEqual(newInformation.numberOfCenters);
+        expect(studyInformation[0].objective.comment).toBe(newInformation.objective);
       });
 
-    });
-
-    describe('edit study information with when there are previous results', function() {
-      var result;
-      var newInformation = {
-        groupAllocation: {
-          uri: 'ontology:AllocationNonRandomized'
-        },
-        blinding: {
-          uri: 'ontology:DoubleBlind'
-        },
-        status: {
-          uri: 'ontology:StatusSuspended'
-        },
-        numberOfCenters: 28,
-        objective: 'new study objective'
-      };
-
-
-      beforeEach(function(done) {
-        studyInformationService.editItem(newInformation).then(function() {
-          studyInformationService.queryItems().then(function(resultInfo) {
-            result = resultInfo;
-            done();
-          });
-        });
-        rootScope.$digest();
-      });
-
-      it('should overwrite previously selected values', function() {
-        expect(result.length).toBe(1);
-        expect(result[0].blinding).toBe(newInformation.blinding);
-        expect(result[0].groupAllocation).toBe(newInformation.groupAllocation);
-        expect(result[0].status).toBe(newInformation.status);
-        expect(result[0].numberOfCenters).toBe(newInformation.numberOfCenters);
-        expect(result[0].objective).toBe(newInformation.objective);
-      });
     });
 
     describe('edit study information with "unknown" values in selects', function() {
       var result;
+      var oldStudy = {
+        has_blinding: 'ontology:DoubleBlind',
+        has_allocation: 'ontology:AllocationRandomized',
+        status: 'ontology:StatusWithdrawn',
+        has_number_of_centers: 37,
+        has_objective: []
+      };
       var newInformation = {
-        blinding: {
+        has_blinding: {
           uri: 'unknown'
         },
-        groupAllocation: {
+        has_allocation: {
           uri: 'unknown'
         },
         status: {
@@ -158,20 +133,27 @@ define(['angular', 'angular-mocks'], function() {
       };
 
       beforeEach(function(done) {
-        studyInformationService.editItem(newInformation).then(function() {
-          studyInformationService.queryItems().then(function(resultInfo) {
-            result = resultInfo;
-            done();
-          });
+        jsonStudy = oldStudy;
+        studyDefer.resolve(jsonStudy);
+
+        oldStudy.has_blinding = newInformation.has_blinding;
+        oldStudy.has_allocation = newInformation.has_allocation;
+        oldStudy.status = newInformation.status;
+
+        studyInformationService.editItem(newInformation);
+        studyInformationService.queryItems().then(function(resultInfo) {
+          result = resultInfo;
+          done();
         });
         rootScope.$digest();
       });
 
       it('should delete previously selected values', function() {
         expect(result.length).toBe(1);
-        expect(result[0].blinding).not.toBeDefined();
-        expect(result[0].groupAllocation).not.toBeDefined();
+        expect(result[0].has_blinding).not.toBeDefined();
+        expect(result[0].has_allocation).not.toBeDefined();
         expect(result[0].status).not.toBeDefined();
+        expect(result[0].has_number_of_centers).toBe(oldStudy.has_number_of_centers);
       });
     });
 
