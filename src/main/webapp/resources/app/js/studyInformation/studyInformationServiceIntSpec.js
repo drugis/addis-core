@@ -1,85 +1,55 @@
 'use strict';
-define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
+define(['angular', 'angular-mocks'], function() {
   describe('the population information service', function() {
 
-    var graphUri = 'http://karma-test/';
-    var scratchStudyUri = 'http://localhost:9876/scratch'; // NB proxied by karma to actual fuseki instance
+    var rootScope, q,
+      uUIDServiceStub,
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy']),
 
-    var rootScope, q, httpBackend;
-    var remotestoreServiceStub, uUIDServiceStub;
-    var studyService;
+      studyInformationService,
+      mockGeneratedUuid = 'newUuid',
+      studyDefer
 
-    var studyInformationService;
-    var mockGeneratedUuid = 'newUuid';
+      ;
 
     beforeEach(module('trialverse'));
     beforeEach(function() {
       module('trialverse.util', function($provide) {
-        remotestoreServiceStub = testUtils.createRemoteStoreStub();
         uUIDServiceStub = jasmine.createSpyObj('UUIDService', [
           'generate'
         ]);
         uUIDServiceStub.generate.and.returnValue(mockGeneratedUuid);
-        $provide.value('RemoteRdfStoreService', remotestoreServiceStub);
         $provide.value('UUIDService', uUIDServiceStub);
+        $provide.value('StudyService', studyServiceMock);
       });
     });
 
 
-    beforeEach(inject(function($q, $rootScope, $httpBackend, StudyInformationService, StudyService) {
+    beforeEach(inject(function($q, $rootScope, StudyInformationService) {
       q = $q;
-      httpBackend = $httpBackend;
       rootScope = $rootScope;
-      studyService = StudyService;
+
+      studyDefer = q.defer();
+      studyServiceMock.getStudy.and.returnValue(studyDefer.promise);
 
       studyInformationService = StudyInformationService;
 
-      // reset the test graph
-      testUtils.dropGraph(graphUri);
-
-      // load study service templates
-      testUtils.loadTemplate('createEmptyStudy.sparql', httpBackend);
-      testUtils.loadTemplate('queryStudyData.sparql', httpBackend);
-
-      // load service templates and flush httpBackend
-      testUtils.loadTemplate('queryStudyInformation.sparql', httpBackend);
-      testUtils.loadTemplate('editBlinding.sparql', httpBackend);
-      testUtils.loadTemplate('deleteBlinding.sparql', httpBackend);
-      testUtils.loadTemplate('editGroupAllocation.sparql', httpBackend);
-      testUtils.loadTemplate('deleteGroupAllocation.sparql', httpBackend);
-      testUtils.loadTemplate('editStatus.sparql', httpBackend);
-      testUtils.loadTemplate('deleteStatus.sparql', httpBackend);
-      testUtils.loadTemplate('editNumberOfCenters.sparql', httpBackend);
-      testUtils.loadTemplate('deleteNumberOfCenters.sparql', httpBackend);
-      testUtils.loadTemplate('editObjective.sparql', httpBackend);
-      testUtils.loadTemplate('deleteObjective.sparql', httpBackend);
-
-      httpBackend.flush();
-
-      // create and load empty test store
-      var createStoreDeferred = $q.defer();
-      remotestoreServiceStub.create.and.returnValue(createStoreDeferred.promise);
-
-      var loadStoreDeferred = $q.defer();
-      remotestoreServiceStub.load.and.returnValue(loadStoreDeferred.promise);
-
-      studyService.loadStore();
-      createStoreDeferred.resolve(scratchStudyUri);
-      loadStoreDeferred.resolve();
-
-      rootScope.$digest();
     }));
 
 
-    describe('query study information', function() {
+    fdescribe('query study information', function() {
 
       var result;
 
       beforeEach(function(done) {
-
-        testUtils.loadTestGraph('studyWithStudyInformation.ttl', graphUri);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-
+        var jsonStudy = {
+          has_blinding: 'ontology:SingleBlind',
+          has_allocation: 'ontology:AllocationRandomized',
+          status: 'ontology:StatusWithdrawn',
+          has_number_of_centers: 37,
+          has_objective: 'objective'
+        };
+        studyDefer.resolve(jsonStudy);
         studyInformationService.queryItems().then(function(info) {
           result = info;
           done();
@@ -89,9 +59,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should return study information', function() {
         expect(result.length).toBe(1);
-        expect(result[0].blinding.uri).toBe('http://trials.drugis.org/ontology#SingleBlind');
-        expect(result[0].groupAllocation.uri).toBe('http://trials.drugis.org/ontology#AllocationRandomized');
-        expect(result[0].status.uri).toBe('http://trials.drugis.org/ontology#StatusWithdrawn');
+        expect(result[0].blinding).toBe('ontology:SingleBlind');
+        expect(result[0].groupAllocation).toBe('ontology:AllocationRandomized');
+        expect(result[0].status).toBe('ontology:StatusWithdrawn');
         expect(result[0].numberOfCenters).toBe(37);
         expect(result[0].objective).toBe('objective');
       });
@@ -102,13 +72,13 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       var newInformation = {
         groupAllocation: {
-          uri: 'http://trials.drugis.org/ontology#AllocationRandomized'
+          uri: 'ontology:AllocationRandomized'
         },
         blinding: {
-          uri: 'http://trials.drugis.org/ontology#SingleBlind'
+          uri: 'ontology:SingleBlind'
         },
         status: {
-          uri: 'http://trials.drugis.org/ontology#Completed'
+          uri: 'ontology:Completed'
         },
         numberOfCenters: 29,
         objective: 'new study objective'
@@ -116,10 +86,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       var studyInformation;
 
       beforeEach(function(done) {
-        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
-        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-
         studyInformationService.editItem(newInformation).then(function() {
           studyInformationService.queryItems().then(function(resultInfo) {
             studyInformation = resultInfo;
@@ -131,9 +97,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should make the new study information accessible', function() {
         expect(studyInformation).toBeDefined();
-        expect(studyInformation[0].blinding.uri).toEqual(newInformation.blinding.uri);
-        expect(studyInformation[0].groupAllocation.uri).toEqual(newInformation.groupAllocation.uri);
-        expect(studyInformation[0].status.uri).toEqual(newInformation.status.uri);
+        expect(studyInformation[0].blinding).toEqual(newInformation.blinding);
+        expect(studyInformation[0].groupAllocation).toEqual(newInformation.groupAllocation);
+        expect(studyInformation[0].status).toEqual(newInformation.status);
         expect(studyInformation[0].numberOfCenters).toEqual(29);
         expect(studyInformation[0].objective).toBe(newInformation.objective);
       });
@@ -144,13 +110,13 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       var result;
       var newInformation = {
         groupAllocation: {
-          uri: 'http://trials.drugis.org/ontology#AllocationNonRandomized'
+          uri: 'ontology:AllocationNonRandomized'
         },
         blinding: {
-          uri: 'http://trials.drugis.org/ontology#DoubleBlind'
+          uri: 'ontology:DoubleBlind'
         },
         status: {
-          uri: 'http://trials.drugis.org/ontology#StatusSuspended'
+          uri: 'ontology:StatusSuspended'
         },
         numberOfCenters: 28,
         objective: 'new study objective'
@@ -158,11 +124,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
 
       beforeEach(function(done) {
-
-        testUtils.loadTestGraph('studyWithStudyInformation.ttl', graphUri);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-
         studyInformationService.editItem(newInformation).then(function() {
           studyInformationService.queryItems().then(function(resultInfo) {
             result = resultInfo;
@@ -174,9 +135,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should overwrite previously selected values', function() {
         expect(result.length).toBe(1);
-        expect(result[0].blinding.uri).toBe(newInformation.blinding.uri);
-        expect(result[0].groupAllocation.uri).toBe(newInformation.groupAllocation.uri);
-        expect(result[0].status.uri).toBe(newInformation.status.uri);
+        expect(result[0].blinding).toBe(newInformation.blinding);
+        expect(result[0].groupAllocation).toBe(newInformation.groupAllocation);
+        expect(result[0].status).toBe(newInformation.status);
         expect(result[0].numberOfCenters).toBe(newInformation.numberOfCenters);
         expect(result[0].objective).toBe(newInformation.objective);
       });
@@ -197,11 +158,6 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       };
 
       beforeEach(function(done) {
-
-        testUtils.loadTestGraph('studyWithStudyInformation.ttl', graphUri);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-
         studyInformationService.editItem(newInformation).then(function() {
           studyInformationService.queryItems().then(function(resultInfo) {
             result = resultInfo;
@@ -213,9 +169,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should delete previously selected values', function() {
         expect(result.length).toBe(1);
-        expect(result[0].blinding.uri).not.toBeDefined();
-        expect(result[0].groupAllocation.uri).not.toBeDefined();
-        expect(result[0].status.uri).not.toBeDefined();
+        expect(result[0].blinding).not.toBeDefined();
+        expect(result[0].groupAllocation).not.toBeDefined();
+        expect(result[0].status).not.toBeDefined();
       });
     });
 

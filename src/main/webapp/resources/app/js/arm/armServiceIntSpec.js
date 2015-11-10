@@ -1,18 +1,14 @@
 'use strict';
-define(['angular', 'angular-mocks'], function(angular, angularMocks) {
+define(['angular', 'angular-mocks'], function() {
   describe('the arm service', function() {
 
-    var graphUri = 'http://karma-test/';
-    var scratchStudyUri = 'http://localhost:9876/scratch'; // NB proxied by karma to actual fuseki instance
-
     var rootScope, q, httpBackend;
-    var remotestoreServiceStub;
     var studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
     var armService;
 
     beforeEach(function() {
       module('trialverse.arm', function($provide) {
-        $provide.value('StudyService', studyService)
+        $provide.value('StudyService', studyService);
       });
     });
 
@@ -23,11 +19,11 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
 
       var studyJsonObject = {
         has_arm: [{
-          "@id": "http://trials.drugis.org/instances/1c3c67ba-4c0c-46e3-846c-5e9d72c5ed80",
-          "@type": "ontology:Arm",
-          "label": "arm label"
+          '@id': 'http://trials.drugis.org/instances/1c3c67ba-4c0c-46e3-846c-5e9d72c5ed80',
+          '@type': 'ontology:Arm',
+          'label': 'arm label'
         }]
-      }
+      };
       var studyDefer = $q.defer();
       var getStudyPromise = studyDefer.promise;
       studyDefer.resolve(studyJsonObject);
@@ -51,7 +47,6 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
     });
 
     describe('addItem', function() {
-      var studyUuid = 'studyUuid';
       var newArm = {
         label: 'new arm label'
       };
@@ -61,7 +56,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
           armService.queryItems().then(function(result) {
             armsResult = result;
             done();
-          })
+          });
         });
         rootScope.$digest();
       });
@@ -75,7 +70,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
 
     describe('edit arm', function() {
       var editedArm = {
-        "@id": "http://trials.drugis.org/instances/1c3c67ba-4c0c-46e3-846c-5e9d72c5ed80",
+        '@id': 'http://trials.drugis.org/instances/1c3c67ba-4c0c-46e3-846c-5e9d72c5ed80',
         label: 'edited label'
       };
 
@@ -105,10 +100,10 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
 
       beforeEach(function(done) {
         var arm2 = {
-          label: "arm 2 label"
+          label: 'arm 2 label'
         };
         var arm3 = {
-          label: "arm 3 label"
+          label: 'arm 3 label'
         };
         armService.addItem(arm2).then(function() {
           armService.addItem(arm3).then(function() {
