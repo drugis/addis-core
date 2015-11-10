@@ -1,11 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'UUIDService',
-      'BLINDING_OPTIONS', 'GROUP_ALLOCATION_OPTIONS', 'STATUS_OPTIONS', 'SanitizeService'
-    ];
-    var StudyInformationService = function($q, StudyService, UUIDService,
-      BLINDING_OPTIONS, GROUP_ALLOCATION_OPTIONS, STATUS_OPTIONS, SanitizeService) {
+    var dependencies = ['$q', 'StudyService'];
+    var StudyInformationService = function($q, StudyService) {
 
       var URI_PROPERTIES = ['allocation', 'blinding', 'status'];
 
@@ -19,19 +16,6 @@ define([],
             numberOfCenters: study.has_number_of_centers
           }];
         });
-      }
-
-      function editProperty(item, editCondition, editTemplate, deleteTemplate) {
-        // if (editCondition) {
-        //   return editTemplate.then(function(template) {
-        //     var query = fillTemplate(template, item);
-        //     return StudyService.doModifyingQuery(query);
-        //   });
-        // } else {
-        //   return deleteTemplate.then(function(template) {
-        //     return StudyService.doModifyingQuery(template);
-        //   });
-        // }
       }
 
       function editItem(item) {
@@ -49,9 +33,14 @@ define([],
           study.has_allocation = item.allocation;
           study.status = item.status;
           study.has_number_of_centers = item.numberOfCenters;
-          study.has_objective[0] = {
-            comment: item.objective
-          };
+          if (item.objective && item.objective.comment) {
+            study.has_objective[0] = {
+              comment: item.objective.comment
+            };
+          } else {
+            study.has_objective = [];
+          }
+
           StudyService.save(study);
 
         });

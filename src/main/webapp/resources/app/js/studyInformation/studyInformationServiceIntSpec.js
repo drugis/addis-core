@@ -82,7 +82,9 @@ define(['angular', 'angular-mocks'], function() {
           uri: 'ontology:Completed'
         },
         numberOfCenters: 29,
-        objective: 'new study objective'
+        objective: {
+          comment: 'new study objective'
+        }
       };
       var studyInformation;
 
@@ -106,7 +108,7 @@ define(['angular', 'angular-mocks'], function() {
         expect(studyInformation[0].allocation).toEqual(newInformation.allocation);
         expect(studyInformation[0].status).toEqual(newInformation.status);
         expect(studyInformation[0].numberOfCenters).toEqual(newInformation.numberOfCenters);
-        expect(studyInformation[0].objective.comment).toBe(newInformation.objective);
+        expect(studyInformation[0].objective.comment).toBe(newInformation.objective.comment);
       });
 
     });

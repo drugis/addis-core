@@ -95,6 +95,10 @@ define(['util/transformJsonLd'], function(transformJsonLd) {
         "@id": "http://trials.drugis.org/ontology#has_eligibility_criteria",
         "@type": "@id"
       },
+      "has_number_of_centers": {
+        "@id": "http://trials.drugis.org/ontology#has_number_of_centers",
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      },
       "rest": {
         "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest",
         "@type": "@id"

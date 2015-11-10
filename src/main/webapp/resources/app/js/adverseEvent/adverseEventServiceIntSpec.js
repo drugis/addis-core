@@ -150,8 +150,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           var adverseEventMeasuredAtAsString = testUtils.queryTeststore(measuredAtQuery);
           var measuredAtMoments = testUtils.deFusekify(adverseEventMeasuredAtAsString);
           expect(measuredAtMoments.length).toEqual(2);
-          expect(measuredAtMoments[1].measurementMoment).toEqual('http://moments/moment2');
           expect(measuredAtMoments[0].measurementMoment).toEqual('http://moments/moment1');
+          expect(measuredAtMoments[1].measurementMoment).toEqual('http://moments/moment2');
 
           done();
         });

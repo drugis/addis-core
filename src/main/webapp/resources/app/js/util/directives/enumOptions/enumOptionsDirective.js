@@ -16,7 +16,11 @@ define([], function() {
 
         if (scope.selectedOption) {
           scope.selectedOption = _.find(scope.enumOptions, function(option) {
-            return option.uri === scope.selectedOption.uri;
+            if (scope.selectedOption.uri) {
+              return option.uri === scope.selectedOption.uri;
+            } else {
+              return option.uri === scope.selectedOption;
+            }
           });
         }
 

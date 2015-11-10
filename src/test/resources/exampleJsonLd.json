@@ -528,6 +528,7 @@
     "has_arm" : [ "http://trials.drugis.org/instances/1c3c67ba-4c0c-46e3-846c-5e9d72c5ed80", "http://trials.drugis.org/instances/71ec1cfc-347c-4582-b2ae-5088ece45f85" ],
     "has_blinding" : "http://trials.drugis.org/ontology#DoubleBlind",
     "has_eligibility_criteria" : "http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000009",
+    "has_number_of_centers": 32,
     "has_epochs" : {
       "@list" : [ "http://trials.drugis.org/instances/a9a9511a-d83e-4b29-931b-c2e0f90bc46c", "http://trials.drugis.org/instances/fddaefbe-5f5a-4995-a365-8825d63c014c", "http://trials.drugis.org/instances/b5a68049-451a-4ae6-acf5-72a2f1b846e4" ]
     },
@@ -604,6 +605,10 @@
     "has_objective" : {
       "@id" : "http://trials.drugis.org/ontology#has_objective",
       "@type" : "@id"
+    },
+    "has_number_of_centers": {
+      "@id": "http://trials.drugis.org/ontology#has_number_of_centers",
+      "@type": "http://www.w3.org/2001/XMLSchema#integer"
     },
     "has_indication" : {
       "@id" : "http://trials.drugis.org/ontology#has_indication",
