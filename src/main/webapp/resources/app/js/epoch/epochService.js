@@ -1,22 +1,30 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'UUIDService', 'SparqlResource', 'SanitizeService'];
-    var EpochService = function($q, StudyService, UUIDService, SparqlResource, SanitizeService) {
+    var dependencies = ['$q', 'StudyService', 'UUIDService'];
+    var EpochService = function($q, StudyService, UUIDService) {
 
-      var epochQuery = SparqlResource.get('queryEpoch.sparql');
-      var addEpochQueryRaw = SparqlResource.get('addEpoch.sparql');
-      var addEpochCommentQueryRaw = SparqlResource.get('addEpochComment.sparql');
-      var addEpochToEndOfListQueryRaw = SparqlResource.get('addEpochToEndOfList.sparql');
-      var setEpochPrimaryQueryRaw = SparqlResource.get('setEpochPrimary.sparql');
-      var deleteEpochRaw = SparqlResource.get('deleteEpoch.sparql');
-      var editEpochRaw = SparqlResource.get('editEpoch.sparql');
-      var removeEpochPrimaryRaw = SparqlResource.get('removeEpochPrimary.sparql');
-      var setEpochToPrimaryRaw = SparqlResource.get('setEpochToPrimary.sparql');
+      function addPosition(item, index) {
+        item.pos = index;
+        return item;
+      }
+
+      function addIsPrimary(primaryEpochUri, item) {
+        if (item['@id'] === primaryEpochUri) {
+          item.isPrimary = true;
+        } else {
+          item.isPrimary = false;
+        }
+        return item;
+      }
 
       function queryItems() {
-        return epochQuery.then(function(query) {
-          return StudyService.doNonModifyingQuery(query);
+        return StudyService.getStudy().then(function(study) {
+          return study
+            .has_epochs
+            .map(addPosition)
+            .map(addIsPrimary.bind(this, study.has_primary_epoch));
+
         });
       }
 
@@ -53,9 +61,10 @@ define([],
         });
 
         return $q.all([addEpochPromise,
-                        addCommentPromise,
-                        setPrimaryPromise,
-                        addToListPromise]);
+          addCommentPromise,
+          setPrimaryPromise,
+          addToListPromise
+        ]);
       }
 
       function deleteItem(item) {
@@ -91,19 +100,19 @@ define([],
         return $q.all([isPrimaryDefer, epochDefer]);
       }
 
-      function fillInTemplate(template, item) {
-        return template
-                .replace(/\$newUUID/g, item.uuid)
-                .replace('$label', item.label)
-                .replace('$duration', item.duration)
-                .replace('$comment', SanitizeService.sanitizeStringLiteral(item.comment))
-                .replace(/\$elementToInsert/g, item.uuid)
-                .replace(/\$URI/g, item.uri)
-                .replace(/\$newDuration/g, item.duration)
-                .replace(/\$newLabel/g, item.label)
-                .replace(/\$newComment/g, SanitizeService.sanitizeStringLiteral(item.comment))
-                ;
-      }
+      // function fillInTemplate(template, item) {
+      //   return template
+      //           .replace(/\$newUUID/g, item.uuid)
+      //           .replace('$label', item.label)
+      //           .replace('$duration', item.duration)
+      //           .replace('$comment', SanitizeService.sanitizeStringLiteral(item.comment))
+      //           .replace(/\$elementToInsert/g, item.uuid)
+      //           .replace(/\$URI/g, item.uri)
+      //           .replace(/\$newDuration/g, item.duration)
+      //           .replace(/\$newLabel/g, item.label)
+      //           .replace(/\$newComment/g, SanitizeService.sanitizeStringLiteral(item.comment))
+      //           ;
+      // }
 
       return {
         queryItems: queryItems,
