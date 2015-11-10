@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
-  describe('the drug service service', function() {
+  xdescribe('the drug service service', function() {
 
     var graphUri = 'http://karma-test/';
     var scratchStudyUri = 'http://localhost:9876/scratch';
