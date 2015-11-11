@@ -58,7 +58,7 @@ define([],
         });
       }
 
-      function editItem(oldItem, newItem) {
+      function editItem(newItem) {
         return StudyService.getStudy().then(function(study) {
           var editEpochIndex = _.findIndex(study.has_epochs, function(epoch) {
             return newItem['@id'] === epoch['@id'];
@@ -73,16 +73,14 @@ define([],
             delete study.has_epochs[editEpochIndex].comment;
           }
 
-          if(oldItem.isPrimaryEpoch === newItem['@id']) {
+          if(study.has_primary_epoch === newItem['@id']) {
             study.has_primary_epoch = undefined;
           }
 
           if(newItem.isPrimaryEpoch) {
             study.has_primary_epoch = newItem['@id'];
           }
-          
 
-          study.has_epochs.push(newEpoch)
           return StudyService.save(study);
         });
       }

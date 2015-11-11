@@ -145,7 +145,7 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    ddescribe('addEpoch', function() {
+    describe('addEpoch', function() {
 
       it('should add the epoch with comment and set primary and add it to the list', function(done) {
         var getStudyPromise = studyDefer.promise;
@@ -225,28 +225,96 @@ define(['angular', 'angular-mocks'], function() {
         };
         studyDefer.resolve(studyJsonObject);
         studyService.getStudy.and.returnValue(getStudyPromise);
-        var itemToEdit = {
+        var oldItem = {
+          '@id': 'http://trials.drugis.org/instances/ddd',
+          label: 'Randomization',
+          comment: "this comment is old",
+          isPrimaryEpoch: true,
+          pos: 1,
+          duration: 'P13D',
+        };
+        var newItem = {
           '@id': 'http://trials.drugis.org/instances/ddd',
           label: 'Randomization',
           comment: "",
           isPrimaryEpoch: false,
+          pos: 1,
           duration: 'P13D',
         };
 
         var expectedEpoch = {
           '@id': 'http://trials.drugis.org/instances/ddd',
+          '@type': 'ontology:Epoch',
           duration: 'P13D',
-          label: itemToEdit.label,
+          label: newItem.label,
+          pos: 1,
+          isPrimary: false
+        }
+
+        epochService.editItem(newItem).then(function() {
+          epochService.queryItems().then(function(result) {
+            expect(result.length).toEqual(3);
+            expect(result[1]).toEqual(expectedEpoch);
+            done();
+          });
+        });
+
+        rootScope.$digest();
+        
+      });
+    });
+
+    describe('editEpoch', function() {
+      it('should edit label and leave primary alone', function(done) {
+        var getStudyPromise = studyDefer.promise;
+        var epochList = [{
+          '@id': 'http://trials.drugis.org/instances/aaa',
+          '@type': 'ontology:Epoch',
+          'duration': 'P14D',
+          'label': 'Washout'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/ddd',
+          '@type': 'ontology:Epoch',
+          'label': 'Randomization'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/ccc',
+          '@type': 'ontology:Epoch',
+          'duration': 'P42D',
+          'label': 'Main phase'
+        }];
+        var studyJsonObject = {
+          'has_epochs': epochList,
+          'has_primary_epoch': 'http://trials.drugis.org/instances/ddd'
+        };
+        studyDefer.resolve(studyJsonObject);
+        studyService.getStudy.and.returnValue(getStudyPromise);
+
+        var newItem = {
+          '@id': 'http://trials.drugis.org/instances/ccc',
+          label: 'Randomization',
+          comment: "new comment",
+          isPrimaryEpoch: false,
+          pos: 2,
+          duration: 'P0D',
+        };
+
+        var expectedEpoch = {
+          '@id': 'http://trials.drugis.org/instances/ccc',
+          '@type': 'ontology:Epoch',
+          duration: 'P0D',
+          label: newItem.label,
+          comment: newItem.comment,
           pos: 2,
           isPrimary: false
         }
 
-        epochService.editItem(itemToEdit).then(function() {
+        epochService.editItem(newItem).then(function() {
           epochService.queryItems().then(function(result) {
             expect(result.length).toEqual(3);
             expect(result[2]).toEqual(expectedEpoch);
+            expect(result[1].isPrimary).toEqual(true);
             done();
-          })
+          });
         });
 
         rootScope.$digest();
