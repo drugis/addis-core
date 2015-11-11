@@ -9,7 +9,7 @@ define([],
 
       // private
       var INSTANCE_PREFIX = 'http://trials.drugis.org/instances/';
-      var ONTOLOGY = 'http://trials.drugis.org/ontology#';
+      var ONTOLOGY = 'ontology:';
       var SCREENING_ACTIVITY = ONTOLOGY + 'ScreeningActivity';
       var WASH_OUT_ACTIVITY = ONTOLOGY + 'WashOutActivity';
       var RANDOMIZATION_ACTIVITY = ONTOLOGY + 'RandomizationActivity';
@@ -17,16 +17,8 @@ define([],
       var FOLLOW_UP_ACTIVITY = ONTOLOGY + 'FollowUpActivity';
       var OTHER_ACTIVITY = ONTOLOGY + 'StudyActivity';
 
-      var FIXED_DOSE_TYPE = 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment';
-      var TITRATED_DOSE_TYPE = 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment';
-
-      var queryActivityTemplate = SparqlResource.get('queryActivity.sparql');
-      var queryActivityTreatmentTemplate = SparqlResource.get('queryActivityTreatment.sparql');
-      var addActivityTemplate = SparqlResource.get('addActivity.sparql');
-      var addTitratedTreatmentTemplate = SparqlResource.get('addTitratedTreatment.sparql');
-      var addFixedDoseTreatmentTemplate = SparqlResource.get('addFixedDoseTreatment.sparql');
-      var editActivityTemplate = SparqlResource.get('editActivity.sparql');
-      var deleteActivityTemplate = SparqlResource.get('deleteActivity.sparql');
+      var FIXED_DOSE_TYPE = ONTOLOGY + 'FixedDoseDrugTreatment';
+      var TITRATED_DOSE_TYPE = ONTOLOGY + 'TitratedDoseDrugTreatment';
 
       // public
       var ACTIVITY_TYPE_OPTIONS = {};
@@ -56,72 +48,91 @@ define([],
       };
 
       function queryItems() {
-
-        var activities, treatmentsRows;
-
-        var activitiesPromise = queryActivityTemplate.then(function(query) {
-          return StudyService.doNonModifyingQuery(query).then(function(result) {
-            // make object {label, uri} from uri's to use as options in select
-            activities = convertTypeUrisToTypeOptions(result);
-            return;
-          });
-        });
-
-        var treatmentsPromise = queryActivityTreatmentTemplate.then(function(query) {
-          return StudyService.doNonModifyingQuery(query).then(function(result) {
-            treatmentsRows = result;
-            return;
-          });
-        });
-
-        return $q.all([activitiesPromise, treatmentsPromise]).then(function() {
-          // use a map to avoid double loop
-          var activitiesMap = _.indexBy(activities, 'activityUri');
-
-          var treatments = _.map(treatmentsRows, createTreatmentObject);
-
-          _.each(treatments, function(treatment) {
-            // make sure the activity has a array of treatments
-            if (!activitiesMap[treatment.activityUri].treatments) {
-              activitiesMap[treatment.activityUri].treatments = [];
+        return StudyService.getStudy().then(function(study) {
+          var activities = convertTypeUrisToTypeOptions(study.has_activity);
+          _.map(activities, function(activity) {
+            if(activity.has_drug_treatment) {
+              var treatments = _.map(activity.has_drug_treatment, _.partial(createTreatmentObject, study));
+              activity.treatments = activity.has_drug_treatment;
+              delete activity.has_drug_treatment;
             }
-            // assign each treatment to appropriate activity
-            activitiesMap[treatment.activityUri].treatments.push(treatment);
+            return activity;
           });
-          // return list of activities with treatments added
-          return _.values(activitiesMap);
+          return activities;
         });
       }
 
-      function createTreatmentObject(treatmentRow) {
-        var treatment = {
-          activityUri: treatmentRow.activityUri,
-          treatmentUri: treatmentRow.treatmentUri,
+      // function queryItems() {
+
+      //   var activities, treatmentsRows;
+
+      //   var activitiesPromise = queryActivityTemplate.then(function(query) {
+      //     return StudyService.doNonModifyingQuery(query).then(function(result) {
+      //       // make object {label, uri} from uri's to use as options in select
+      //       activities = convertTypeUrisToTypeOptions(result);
+      //       return;
+      //     });
+      //   });
+
+      //   var treatmentsPromise = queryActivityTreatmentTemplate.then(function(query) {
+      //     return StudyService.doNonModifyingQuery(query).then(function(result) {
+      //       treatmentsRows = result;
+      //       return;
+      //     });
+      //   });
+
+      //   return $q.all([activitiesPromise, treatmentsPromise]).then(function() {
+      //     // use a map to avoid double loop
+      //     var activitiesMap = _.indexBy(activities, 'activityUri');
+
+      //     var treatments = _.map(treatmentsRows, createTreatmentObject);
+
+      //     _.each(treatments, function(treatment) {
+      //       // make sure the activity has a array of treatments
+      //       if (!activitiesMap[treatment.activityUri].treatments) {
+      //         activitiesMap[treatment.activityUri].treatments = [];
+      //       }
+      //       // assign each treatment to appropriate activity
+      //       activitiesMap[treatment.activityUri].treatments.push(treatment);
+      //     });
+      //     // return list of activities with treatments added
+      //     return _.values(activitiesMap);
+      //   });
+      // }
+
+      function findInstance(study, uri) {
+        return _.find(study, function(node) {
+          return node['@id'] === uri;
+        });
+      }
+
+      function createTreatmentObject(study, treatment) {
+        var result = {
           doseUnit: {
-            uri: treatmentRow.treatmentUnitUri,
-            label: treatmentRow.treatmentUnitLabel
+            uri: treatment.treatment_min_dose[0].unit,
+            label: findInstance(study, treatment.treatment_min_dose[0].unit)
           },
           drug: {
-            uri: treatmentRow.treatmentDrugUri,
-            label: treatmentRow.treatmentDrugLabel
+            uri: treatment.treatment_has_drug,
+            label: findInstance(study, treatment.treatment_has_drug).label
           },
-          treatmentDoseType: treatmentRow.treatmentDoseType,
-          dosingPeriodicity: treatmentRow.treatmentDosingPeriodicity
+          treatmentDoseType: treatment['@type'],
+          dosingPeriodicity: treatment.treatmentDosingPeriodicity
         };
 
         if (treatment.treatmentDoseType === FIXED_DOSE_TYPE) {
-          treatment.fixedValue = treatmentRow.treatmentFixedValue;
+          treatment.fixedValue = treatment.treatmentFixedValue;
         } else {
-          treatment.minValue = treatmentRow.treatmentMinValue;
-          treatment.maxValue = treatmentRow.treatmentMaxValue;
+          treatment.minValue = treatment.treatment_min_dose[0].value;
+          treatment.maxValue = treatment.treatment_max_dose[0].value;
         }
 
-        return treatment;
+        return result;
       }
 
       function convertTypeUrisToTypeOptions(activities) {
         return _.map(activities, function(activity) {
-          activity.activityType = ACTIVITY_TYPE_OPTIONS[activity.activityType];
+          activity.activityType = ACTIVITY_TYPE_OPTIONS[activity['@type']];
           return activity;
         });
       }
