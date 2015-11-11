@@ -22,11 +22,10 @@ define([],
 
       function queryItems() {
         return StudyService.getStudy().then(function(study) {
-          return study
-            .has_epochs
+          return angular
+            .copy(study.has_epochs)
             .map(addPosition)
             .map(addIsPrimary.bind(this, study.has_primary_epoch));
-
         });
       }
 
@@ -34,6 +33,7 @@ define([],
         return StudyService.getStudy().then(function(study) {
           var newEpoch = {
             '@id': INSTANCE_PREFIX + UUIDService.generate(),
+            '@type': 'ontology:Epoch',
             label: item.label,
             duration: item.duration
           };
@@ -85,7 +85,7 @@ define([],
             study.has_primary_epoch = undefined;
           }
 
-          if (newItem.isPrimaryEpoch) {
+          if (newItem.isPrimary) {
             study.has_primary_epoch = newItem['@id'];
           }
 

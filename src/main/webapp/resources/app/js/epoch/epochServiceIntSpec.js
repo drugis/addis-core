@@ -179,6 +179,7 @@ define(['angular', 'angular-mocks'], function() {
 
         var expectedEpoch = {
           '@id': 'http://trials.drugis.org/instances/newUuid',
+          '@type': 'ontology:Epoch',
           duration: 'P13D',
           label: itemToAdd.label,
           comment: 'new epoch comment',
