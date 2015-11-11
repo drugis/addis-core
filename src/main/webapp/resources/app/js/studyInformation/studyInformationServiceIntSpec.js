@@ -104,9 +104,9 @@ define(['angular', 'angular-mocks'], function() {
 
       it('should make the new study information accessible', function() {
         expect(studyInformation).toBeDefined();
-        expect(studyInformation[0].blinding).toEqual(newInformation.blinding);
-        expect(studyInformation[0].allocation).toEqual(newInformation.allocation);
-        expect(studyInformation[0].status).toEqual(newInformation.status);
+        expect(studyInformation[0].blinding).toEqual(newInformation.blinding.uri);
+        expect(studyInformation[0].allocation).toEqual(newInformation.allocation.uri);
+        expect(studyInformation[0].status).toEqual(newInformation.status.uri);
         expect(studyInformation[0].numberOfCenters).toEqual(newInformation.numberOfCenters);
         expect(studyInformation[0].objective.comment).toBe(newInformation.objective.comment);
       });
