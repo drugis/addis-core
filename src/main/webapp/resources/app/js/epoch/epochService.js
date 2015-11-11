@@ -38,11 +38,11 @@ define([],
             duration: item.duration
           };
 
-          if(item.comment) {
+          if (item.comment) {
             newEpoch.comment = item.comment;
           }
 
-          if(item.isPrimaryEpoch) {
+          if (item.isPrimaryEpoch) {
             study.has_primary_epoch = newEpoch['@id'];
           }
 
@@ -52,9 +52,17 @@ define([],
       }
 
       function deleteItem(item) {
-        return deleteEpochRaw.then(function(deleteQueryRaw) {
-          var deleteQuery = deleteQueryRaw.replace(/\$URI/g, item.uri);
-          return StudyService.doModifyingQuery(deleteQuery);
+        return StudyService.getStudy().then(function(study) {
+
+          if (study.has_primary_epoch === item['@id']) {
+            study.has_primary_epoch = undefined;
+          }
+
+          _.remove(study.has_epochs, function(epoch) {
+            return epoch['@id'] === item['@id'];
+          });
+
+          return StudyService.save(study);
         });
       }
 
@@ -67,17 +75,17 @@ define([],
           study.has_epochs[editEpochIndex].label = newItem.label;
           study.has_epochs[editEpochIndex].duration = newItem.duration;
 
-          if(newItem.comment) {
+          if (newItem.comment) {
             study.has_epochs[editEpochIndex].comment = newItem.comment;
           } else {
             delete study.has_epochs[editEpochIndex].comment;
           }
 
-          if(study.has_primary_epoch === newItem['@id']) {
+          if (study.has_primary_epoch === newItem['@id']) {
             study.has_primary_epoch = undefined;
           }
 
-          if(newItem.isPrimaryEpoch) {
+          if (newItem.isPrimaryEpoch) {
             study.has_primary_epoch = newItem['@id'];
           }
 

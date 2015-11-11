@@ -322,5 +322,100 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
+    describe('deleteEpoch', function() {
+      it('remove the epoch from the list and remove the primary', function(done) {
+        var getStudyPromise = studyDefer.promise;
+        var epochList = [{
+          '@id': 'http://trials.drugis.org/instances/aaa',
+          '@type': 'ontology:Epoch',
+          'duration': 'P14D',
+          'label': 'Washout'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/ddd',
+          '@type': 'ontology:Epoch',
+          'label': 'Randomization'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/ccc',
+          '@type': 'ontology:Epoch',
+          'duration': 'P42D',
+          'label': 'Main phase'
+        }];
+        var studyJsonObject = {
+          'has_epochs': epochList,
+          'has_primary_epoch': 'http://trials.drugis.org/instances/ddd'
+        };
+        studyDefer.resolve(studyJsonObject);
+        studyService.getStudy.and.returnValue(getStudyPromise);
+
+        var itemToRemove = {
+          '@id': 'http://trials.drugis.org/instances/ddd',
+          label: 'Randomization',
+          comment: "new comment",
+          isPrimaryEpoch: true,
+          pos: 1,
+          duration: 'P42D',
+        };
+
+        epochService.deleteItem(itemToRemove).then(function() {
+          epochService.queryItems().then(function(result) {
+            expect(result.length).toEqual(2);
+            expect(result[0]['@id']).toEqual('http://trials.drugis.org/instances/aaa');
+            expect(result[1]['@id']).toEqual('http://trials.drugis.org/instances/ccc');
+            expect(result[0].isPrimary).toEqual(false);
+            expect(result[1].isPrimary).toEqual(false);
+            done();
+          });
+        });
+
+        rootScope.$digest();
+        
+      });
+    });
+
+    describe('deleteEpoch', function() {
+      it('remove the epoch from the list leave primary alone', function(done) {
+        var getStudyPromise = studyDefer.promise;
+        var epochList = [{
+          '@id': 'http://trials.drugis.org/instances/aaa',
+          '@type': 'ontology:Epoch',
+          'duration': 'P14D',
+          'label': 'Washout'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/ddd',
+          '@type': 'ontology:Epoch',
+          'label': 'Randomization'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/ccc',
+          '@type': 'ontology:Epoch',
+          'duration': 'P42D',
+          'label': 'Main phase'
+        }];
+        var studyJsonObject = {
+          'has_epochs': epochList,
+          'has_primary_epoch': 'http://trials.drugis.org/instances/ddd'
+        };
+        studyDefer.resolve(studyJsonObject);
+        studyService.getStudy.and.returnValue(getStudyPromise);
+
+        var itemToRemove = {
+          '@id': 'http://trials.drugis.org/instances/aaa',
+        };
+
+        epochService.deleteItem(itemToRemove).then(function() {
+          epochService.queryItems().then(function(result) {
+            expect(result.length).toEqual(2);
+            expect(result[0]['@id']).toEqual('http://trials.drugis.org/instances/ddd');
+            expect(result[1]['@id']).toEqual('http://trials.drugis.org/instances/ccc');
+            expect(result[0].isPrimary).toEqual(true);
+            expect(result[1].isPrimary).toEqual(false);
+            done();
+          });
+        });
+
+        rootScope.$digest();
+        
+      });
+    });
+
   });
 });
