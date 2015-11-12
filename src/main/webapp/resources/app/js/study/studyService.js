@@ -91,7 +91,21 @@ define([], function() {
     }
 
     function loadJson(jsonPromise) {
-       studyJsonPromise = jsonPromise;
+      studyJsonPromise = jsonPromise;
+    }
+
+    function getJsonGraph() {
+      return studyJsonPromise.then(function(graph) {
+        return graph;
+      });
+    }
+
+    function saveJsonGraph(newGraph) {
+      studyJsonPromise.then(function() {
+        var newDefer = $q.defer();
+        studyJsonPromise = newDefer.promise;
+        newDefer.resolve(newGraph);
+      });
     }
 
     function getStudy() {
@@ -111,12 +125,6 @@ define([], function() {
       });
     }
 
-    function getJsonGraph() {
-      return studyJsonPromise.then(function(graph) {
-        return graph;
-      });
-    }
-
     return {
       loadStore: loadStore,
       queryStudyData: queryStudyData,
@@ -131,7 +139,8 @@ define([], function() {
       loadJson: loadJson,
       getStudy: getStudy,
       save: save,
-      getJsonGraph: getJsonGraph
+      getJsonGraph: getJsonGraph,
+      saveJsonGraph: saveJsonGraph
     };
   };
 

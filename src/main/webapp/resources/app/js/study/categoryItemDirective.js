@@ -25,6 +25,7 @@ define([], function() {
 
         scope.editItem = function() {
           $modal.open({
+            scope: scope,
             templateUrl: scope.settings.editItemTemplateUrl,
             controller: scope.settings.editItemController,
             resolve: {

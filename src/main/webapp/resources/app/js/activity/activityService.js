@@ -1,11 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService',
-      'CommentService', 'SanitizeService'
-    ];
-    var ActivityService = function($q, StudyService, SparqlResource, UUIDService,
-      CommentService, SanitizeService) {
+    var dependencies = ['$q', 'StudyService', 'UUIDService'];
+    var ActivityService = function($q, StudyService, UUIDService) {
 
       // private
       var INSTANCE_PREFIX = 'http://trials.drugis.org/instances/';
@@ -50,27 +47,29 @@ define([],
       function queryItems() {
         return StudyService.getJsonGraph().then(function(jsonGraph) {
           return StudyService.getStudy().then(function(study) {
-            var activities = convertTypeUrisToTypeOptions(study.has_activity);
-            activities = _.map(activities, function(activity) {
-              var result = angular.copy(activity);
-              result.activityUri = activity['@id'];
-              delete(result['@id']);
-              if (activity.has_drug_treatment) {
-                result.treatments = _.map(activity.has_drug_treatment, _.partial(createTreatmentObject, study, jsonGraph));
-                delete result.has_drug_treatment;
-              }
-              return result;
-            });
-            return activities;
+            return _.map(study.has_activity, _.partial(createActivityObject, study, jsonGraph));
           });
         });
+      }
+
+      function createActivityObject(study, jsonGraph, activity) {
+        var result = {
+          activityUri: activity['@id'],
+          activityType: ACTIVITY_TYPE_OPTIONS[activity['@type']],
+          label: activity.label,
+          activityDescription: activity.comment
+        };
+        if (activity.has_drug_treatment) {
+          result.treatments = _.map(activity.has_drug_treatment, _.partial(createTreatmentObject, study, jsonGraph));
+        }
+        return result;
       }
 
       function findInstance(graph, uri) {
         return _.find(graph['@graph'], function(node) {
           return node['@id'] === uri;
         });
-      };
+      }
 
       function createTreatmentObject(study, graph, treatment) {
         var result = {
@@ -88,7 +87,7 @@ define([],
             uri: treatment.treatment_dose[0].unit,
             label: findInstance(graph, treatment.treatment_dose[0].unit).label
           };
-        } else {
+        } else if (result.treatmentDoseType === TITRATED_DOSE_TYPE) {
           result.minValue = treatment.treatment_min_dose[0].value;
           result.maxValue = treatment.treatment_max_dose[0].value;
           result.dosingPeriodicity = treatment.treatment_min_dose[0].dosingPeriodicity;
@@ -100,80 +99,86 @@ define([],
         return result;
       }
 
-
-      function convertTypeUrisToTypeOptions(activities) {
-        return _.map(activities, function(activity) {
-          activity.activityType = ACTIVITY_TYPE_OPTIONS[activity['@type']];
-          return activity;
-        });
-      }
-
       function addTreatment(activityUri, treatment) {
-        StudyService.getStudy().then(function(study) {
-          var activity = _.find(study.has_activity, function(activity) {
-            return activity['@id'] === activityUri;
-          });
-        });
-        if (treatment.treatmentDoseType === FIXED_DOSE_TYPE) {
-          return addFixedDoseTreatmentTemplate.then(function(template) {
-            var query = fillInTreatmentTemplate(template, activityUri, treatment);
-            return StudyService.doModifyingQuery(query);
-          });
-        } else if (treatment.treatmentDoseType === TITRATED_DOSE_TYPE) {
-          return addTitratedTreatmentTemplate.then(function(template) {
-            var query = fillInTreatmentTemplate(template, activityUri, treatment);
-            return StudyService.doModifyingQuery(query);
-          });
-        }
+        // StudyService.getStudy().then(function(study) {
+        //   var activity = _.find(study.has_activity, function(activity) {
+        //     return activity['@id'] === activityUri;
+        //   });
+        // });
+        // if (treatment.treatmentDoseType === FIXED_DOSE_TYPE) {
+        //   return addFixedDoseTreatmentTemplate.then(function(template) {
+        //     var query = fillInTreatmentTemplate(template, activityUri, treatment);
+        //     return StudyService.doModifyingQuery(query);
+        //   });
+        // } else if (treatment.treatmentDoseType === TITRATED_DOSE_TYPE) {
+        //   return addTitratedTreatmentTemplate.then(function(template) {
+        //     var query = fillInTreatmentTemplate(template, activityUri, treatment);
+        //     return StudyService.doModifyingQuery(query);
+        //   });
+        // }
       }
 
-      function addTreatments(treatments, activityUri) {
-        var treatmentPromises = [];
-        _.each(treatments, function(treatment) {
-          if (!treatment.treatmentUri) {
-            treatmentPromises.push(addTreatment(activityUri, treatment));
-          }
-        });
-        return treatmentPromises;
-      }
+      // function addTreatments(treatments, activityUri) {
+      //   var treatmentPromises = [];
+      //   _.each(treatments, function(treatment) {
+      //     if (!treatment.treatmentUri) {
+      //       treatmentPromises.push(addTreatment(activityUri, treatment));
+      //     }
+      //   });
+      //   return treatmentPromises;
+      // }
 
       function addItem(item) {
-        var newActivity = angular.copy(item);
-        newActivity.activityUri = INSTANCE_PREFIX + UUIDService.generate();
-        var addOptionalDescriptionPromise;
-        var addActivityPromise = addActivityTemplate.then(function(template) {
-          var query = fillInTemplate(template, newActivity);
-          return StudyService.doModifyingQuery(query);
-        });
-
-        var treatmentPromises = addTreatments(item.treatments, newActivity.activityUri);
-
-        if (newActivity.activityDescription) {
-          addOptionalDescriptionPromise = CommentService.addComment(newActivity.activityUri, item.activityDescription);
+        var newItem = {
+          '@id': INSTANCE_PREFIX + UUIDService.generate(),
+          '@type': item.activityType.uri,
+          label: item.label
+        };
+        if (item.activityDescription) {
+          newItem.comment = item.activityDescription;
         }
-
-        return $q.all([addActivityPromise, addOptionalDescriptionPromise].concat(treatmentPromises));
-      }
-
-      function editItem(activity) {
-        var editActivityPromise = editActivityTemplate.then(function(template) {
-          var query = fillInTemplate(template, activity);
-          return StudyService.doModifyingQuery(query).then(function() {
-            // no need to use edit as remove is dbone in the edit activity
-            // therefore wait for edit activity to return
-            if (activity.activityDescription) {
-              return CommentService.addComment(activity.activityUri, activity.activityDescription);
-            }
-          });
+        return StudyService.getStudy().then(function(study) {
+          study.has_activity.push(newItem);
+          return StudyService.save(study);
         });
-        var treatmentPromises = addTreatments(activity.treatments, activity.activityUri);
-        return $q.all(treatmentPromises.concat(editActivityPromise));
       }
 
-      function deleteItem(activity) {
-        return deleteActivityTemplate.then(function(template) {
-          var query = fillInTemplate(template, activity);
-          return StudyService.doModifyingQuery(query);
+      // function addItem(item) {
+      //   var newActivity = angular.copy(item);
+      //   newActivity.activityUri = INSTANCE_PREFIX + UUIDService.generate();
+      //   var addOptionalDescriptionPromise;
+      //   var addActivityPromise = addActivityTemplate.then(function(template) {
+      //     var query = fillInTemplate(template, newActivity);
+      //     return StudyService.doModifyingQuery(query);
+      //   });
+
+      //   var treatmentPromises = addTreatments(item.treatments, newActivity.activityUri);
+
+      //   if (newActivity.activityDescription) {
+      //     addOptionalDescriptionPromise = CommentService.addComment(newActivity.activityUri, item.activityDescription);
+      //   }
+
+      //   return $q.all([addActivityPromise, addOptionalDescriptionPromise].concat(treatmentPromises));
+      // }
+
+      function editItem(item) {
+        return StudyService.getStudy().then(function(study) {
+          var toEdit = _.find(study.has_activity, function(activity) {
+            return item.activityUri === activity['@id'];
+          });
+          toEdit['@type'] = item.activityType.uri;
+          toEdit.label = item.label;
+          toEdit.comment = item.activityDescription;
+          return StudyService.save(study);
+        });
+      }
+
+      function deleteItem(item) {
+        return StudyService.getStudy().then(function(study) {
+          _.remove(study.has_activity, function(activity){
+            return item.activityUri === activity['@id'];
+          });
+          return StudyService.save(study);
         });
       }
 
@@ -182,27 +187,6 @@ define([],
           return parseFloat(num).toExponential().replace('+', '');
         }
         return null;
-      }
-
-      function fillInTreatmentTemplate(template, activityUri, treatment) {
-        return template.replace(/\$activityUri/g, activityUri)
-          .replace(/\$treatmentUri/g, 'http://trials.drugis.org/instances/' + UUIDService.generate())
-          .replace(/\$treatmentUnitUri/g, treatment.doseUnit.uri)
-          .replace(/\$treatmentUnitLabel/g, treatment.doseUnit.label)
-          .replace(/\$treatmentDrugUri/g, treatment.drug.uri)
-          .replace(/\$treatmentDrugLabel/g, treatment.drug.label)
-          .replace(/\$treatmentDoseType/g, treatment.treatmentDoseType)
-          .replace(/\$treatmentFixedValue/g, formatDouble(treatment.fixedValue))
-          .replace(/\$treatmentMinValue/g, formatDouble(treatment.minValue))
-          .replace(/\$treatmentMaxValue/g, formatDouble(treatment.maxValue))
-          .replace(/\$treatmentDosingPeriodicity/g, treatment.dosingPeriodicity);
-      }
-
-      function fillInTemplate(template, activity) {
-        return template.replace(/\$activityUri/g, activity.activityUri)
-          .replace(/\$label/g, activity.label)
-          .replace(/\$comment/g, SanitizeService.sanitizeStringLiteral(activity.activityDescription))
-          .replace(/\$activityTypeUri/g, activity.activityType.uri);
       }
 
       return {
