@@ -48,87 +48,58 @@ define([],
       };
 
       function queryItems() {
-        return StudyService.getStudy().then(function(study) {
-          var activities = convertTypeUrisToTypeOptions(study.has_activity);
-          _.map(activities, function(activity) {
-            if(activity.has_drug_treatment) {
-              var treatments = _.map(activity.has_drug_treatment, _.partial(createTreatmentObject, study));
-              activity.treatments = activity.has_drug_treatment;
-              delete activity.has_drug_treatment;
-            }
-            return activity;
+        return StudyService.getJsonGraph().then(function(jsonGraph) {
+          return StudyService.getStudy().then(function(study) {
+            var activities = convertTypeUrisToTypeOptions(study.has_activity);
+            activities = _.map(activities, function(activity) {
+              var result = angular.copy(activity);
+              result.activityUri = activity['@id'];
+              delete(result['@id']);
+              if (activity.has_drug_treatment) {
+                result.treatments = _.map(activity.has_drug_treatment, _.partial(createTreatmentObject, study, jsonGraph));
+                delete result.has_drug_treatment;
+              }
+              return result;
+            });
+            return activities;
           });
-          return activities;
         });
       }
 
-      // function queryItems() {
-
-      //   var activities, treatmentsRows;
-
-      //   var activitiesPromise = queryActivityTemplate.then(function(query) {
-      //     return StudyService.doNonModifyingQuery(query).then(function(result) {
-      //       // make object {label, uri} from uri's to use as options in select
-      //       activities = convertTypeUrisToTypeOptions(result);
-      //       return;
-      //     });
-      //   });
-
-      //   var treatmentsPromise = queryActivityTreatmentTemplate.then(function(query) {
-      //     return StudyService.doNonModifyingQuery(query).then(function(result) {
-      //       treatmentsRows = result;
-      //       return;
-      //     });
-      //   });
-
-      //   return $q.all([activitiesPromise, treatmentsPromise]).then(function() {
-      //     // use a map to avoid double loop
-      //     var activitiesMap = _.indexBy(activities, 'activityUri');
-
-      //     var treatments = _.map(treatmentsRows, createTreatmentObject);
-
-      //     _.each(treatments, function(treatment) {
-      //       // make sure the activity has a array of treatments
-      //       if (!activitiesMap[treatment.activityUri].treatments) {
-      //         activitiesMap[treatment.activityUri].treatments = [];
-      //       }
-      //       // assign each treatment to appropriate activity
-      //       activitiesMap[treatment.activityUri].treatments.push(treatment);
-      //     });
-      //     // return list of activities with treatments added
-      //     return _.values(activitiesMap);
-      //   });
-      // }
-
-      function findInstance(study, uri) {
-        return _.find(study, function(node) {
+      function findInstance(graph, uri) {
+        return _.find(graph['@graph'], function(node) {
           return node['@id'] === uri;
         });
-      }
+      };
 
-      function createTreatmentObject(study, treatment) {
+      function createTreatmentObject(study, graph, treatment) {
         var result = {
-          doseUnit: {
-            uri: treatment.treatment_min_dose[0].unit,
-            label: findInstance(study, treatment.treatment_min_dose[0].unit)
-          },
           drug: {
             uri: treatment.treatment_has_drug,
-            label: findInstance(study, treatment.treatment_has_drug).label
+            label: findInstance(graph, treatment.treatment_has_drug).label
           },
-          treatmentDoseType: treatment['@type'],
-          dosingPeriodicity: treatment.treatmentDosingPeriodicity
+          treatmentDoseType: treatment['@type']
         };
 
-        if (treatment.treatmentDoseType === FIXED_DOSE_TYPE) {
-          treatment.fixedValue = treatment.treatmentFixedValue;
+        if (result.treatmentDoseType === FIXED_DOSE_TYPE) {
+          result.fixedValue = treatment.treatment_dose[0].value;
+          result.dosingPeriodicity = treatment.treatment_dose[0].dosingPeriodicity;
+          result.doseUnit = {
+            uri: treatment.treatment_dose[0].unit,
+            label: findInstance(graph, treatment.treatment_dose[0].unit).label
+          };
         } else {
-          treatment.minValue = treatment.treatment_min_dose[0].value;
-          treatment.maxValue = treatment.treatment_max_dose[0].value;
+          result.minValue = treatment.treatment_min_dose[0].value;
+          result.maxValue = treatment.treatment_max_dose[0].value;
+          result.dosingPeriodicity = treatment.treatment_min_dose[0].dosingPeriodicity;
+          result.doseUnit = {
+            uri: treatment.treatment_min_dose[0].unit,
+            label: findInstance(graph, treatment.treatment_min_dose[0].unit).label
+          };
         }
-
         return result;
       }
+
 
       function convertTypeUrisToTypeOptions(activities) {
         return _.map(activities, function(activity) {
@@ -138,6 +109,11 @@ define([],
       }
 
       function addTreatment(activityUri, treatment) {
+        StudyService.getStudy().then(function(study) {
+          var activity = _.find(study.has_activity, function(activity) {
+            return activity['@id'] === activityUri;
+          });
+        });
         if (treatment.treatmentDoseType === FIXED_DOSE_TYPE) {
           return addFixedDoseTreatmentTemplate.then(function(template) {
             var query = fillInTreatmentTemplate(template, activityUri, treatment);

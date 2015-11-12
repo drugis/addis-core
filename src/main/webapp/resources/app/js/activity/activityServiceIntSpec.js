@@ -7,7 +7,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       commentServiceStub,
       studyDefer,
       jsonStudy,
-      studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'save']),
+      graphDefer,
+      jsonGraph,
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'getJsonGraph', 'save']),
       activityService,
       drugServiceMock = jasmine.createSpyObj('DrugService', ['queryItems']),
       unitServiceMock;
@@ -31,7 +33,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       rootScope = $rootScope;
 
       studyDefer = q.defer();
+      graphDefer = q.defer();
       studyServiceMock.getStudy.and.returnValue(studyDefer.promise);
+      studyServiceMock.getJsonGraph.and.returnValue(graphDefer.promise);
 
       activityService = ActivityService;
     }));
@@ -65,17 +69,17 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             'has_drug_treatment': [{
               '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac11005900000013',
               '@type': 'ontology:TitratedDoseDrugTreatment',
-              'treatment_has_drug': 'http://trials.drugis.org/instances/a331aea9-58cc-4e1f-928d-fb5879bae8c1',
+              'treatment_has_drug': 'http://trials.drugis.org/instances/drug1Uuid',
               'treatment_max_dose': [{
                 '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac11005900000001',
                 'dosingPeriodicity': 'P1D',
-                'unit': 'http://trials.drugis.org/instances/8691b100-e5d9-4048-acc3-6ed9731e0896',
+                'unit': 'http://trials.drugis.org/instances/unit1Uuid',
                 'value': 40
               }],
               'treatment_min_dose': [{
                 '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000001',
                 'dosingPeriodicity': 'P1D',
-                'unit': 'http://trials.drugis.org/instances/8691b100-e5d9-4048-acc3-6ed9731e0896',
+                'unit': 'http://trials.drugis.org/instances/unit1Uuid',
                 'value': 20
               }]
             }],
@@ -103,25 +107,37 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             }],
             'has_drug_treatment': [{
               '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac11005900000003',
-              '@type': 'ontology:TitratedDoseDrugTreatment',
+              '@type': 'ontology:FixedDoseDrugTreatment',
               'treatment_has_drug': 'http://trials.drugis.org/instances/1e7464b5-c5ca-4b08-a735-a3aa361532d6',
-              'treatment_max_dose': [{
+              'treatment_dose': [{
                 '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac11005900000004',
                 'dosingPeriodicity': 'P1D',
-                'unit': 'http://trials.drugis.org/instances/8691b100-e5d9-4048-acc3-6ed9731e0896',
+                'unit': 'http://trials.drugis.org/instances/unit1Uuid',
                 'value': 100
-              }],
-              'treatment_min_dose': [{
-                '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000002',
-                'dosingPeriodicity': 'P1D',
-                'unit': 'http://trials.drugis.org/instances/8691b100-e5d9-4048-acc3-6ed9731e0896',
-                'value': 50
               }]
             }],
             'label': 'Sertraline'
           }]
         };
+        jsonGraph = {
+          '@graph': [{
+            '@id': 'http://trials.drugis.org/instances/drug1Uuid',
+            '@type': 'ontology:Drug',
+            label: 'Sertraline'
+          },
+          {
+            '@id': 'http://trials.drugis.org/instances/1e7464b5-c5ca-4b08-a735-a3aa361532d6',
+            '@type': 'ontology:Drug',
+            label: 'Bupropion'
+          },
+          {
+            '@id': 'http://trials.drugis.org/instances/unit1Uuid',
+            '@type': 'ontology:Unit',
+            label: 'milligram'
+          }]
+        }
         studyDefer.resolve(jsonStudy);
+        graphDefer.resolve(jsonGraph);
         rootScope.$apply();
       })
 
@@ -134,6 +150,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
           // verify query result
           expect(activities.length).toBe(4);
+          expect(activities[0].activityUri).toEqual(jsonStudy.has_activity[0]['@id']);
           expect(activities[0].label).toEqual(jsonStudy.has_activity[0].label);
           expect(activities[1].label).toEqual(jsonStudy.has_activity[1].label);
           expect(activities[2].label).toEqual(jsonStudy.has_activity[2].label);
@@ -149,21 +166,20 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
           expect(activities[0].treatments).not.toBeDefined();
           expect(activities[1].treatments.length).toBe(1);
-          expect(activities[1].treatments[0].treatmentDoseType).toEqual('http://trials.drugis.org/ontology#TitratedDoseDrugTreatment');
+          expect(activities[1].treatments[0].treatmentDoseType).toEqual('ontology:TitratedDoseDrugTreatment');
           expect(activities[1].treatments[0].drug.uri).toEqual('http://trials.drugis.org/instances/drug1Uuid');
           expect(activities[1].treatments[0].drug.label).toEqual('Sertraline');
           expect(activities[1].treatments[0].doseUnit.uri).toEqual('http://trials.drugis.org/instances/unit1Uuid');
           expect(activities[1].treatments[0].doseUnit.label).toEqual('milligram');
           expect(activities[1].treatments[0].dosingPeriodicity).toEqual('P1D');
-          expect(activities[1].treatments[0].maxValue).toEqual('1.500000e+02');
-          expect(activities[1].treatments[0].minValue).toEqual('5.000000e+01');
-          expect(activities[1].treatments[0].treatmentUri).toEqual('http://trials.drugis.org/instances/treatment1Uuid');
+          expect(activities[1].treatments[0].maxValue).toEqual(40);
+          expect(activities[1].treatments[0].minValue).toEqual(20);
 
-          expect(activities[1].treatments[1].treatmentDoseType).toEqual('http://trials.drugis.org/ontology#FixedDoseDrugTreatment');
-          expect(activities[1].treatments[1].drug.label).toEqual('Bupropion');
-          expect(activities[1].treatments[1].doseUnit.label).toEqual('liter');
-          expect(activities[1].treatments[1].dosingPeriodicity).toEqual('P1D');
-          expect(activities[1].treatments[1].fixedValue).toEqual('0.000000e+00');
+          expect(activities[3].treatments[0].treatmentDoseType).toEqual('ontology:FixedDoseDrugTreatment');
+          expect(activities[3].treatments[0].drug.label).toEqual('Bupropion');
+          expect(activities[3].treatments[0].doseUnit.label).toEqual('milligram');
+          expect(activities[3].treatments[0].dosingPeriodicity).toEqual('P1D');
+          expect(activities[3].treatments[0].fixedValue).toEqual(100);
 
           done();
         });
@@ -209,7 +225,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       var queryActivityPromise, queryUnitPromise, queryDrugsPromise;
       var fixedTreatment = {
-        treatmentDoseType: 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment',
+        treatmentDoseType: 'ontology:FixedDoseDrugTreatment',
         drug: {
           uri: 'http://drug/newDrugUuid',
           label: 'new drug'
@@ -223,7 +239,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       };
 
       var titRatedTreatment = {
-        treatmentDoseType: 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment',
+        treatmentDoseType: 'ontology:TitratedDoseDrugTreatment',
         drug: {
           uri: 'http://drug/oldDrugUuid',
           label: 'old drug'
@@ -241,7 +257,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         activityUri: 'http://trials.drugis.org/instances/newActivityUuid',
         label: 'newActivityLabel',
         activityType: {
-          uri: 'http://trials.drugis.org/ontology#TreatmentActivity'
+          uri: 'ontology:TreatmentActivity'
         },
         treatments: [fixedTreatment, titRatedTreatment]
       };
@@ -267,14 +283,14 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           var activity = resultActivities[0];
           expect(activity.treatments.length).toBe(2);
 
-          expect(activity.treatments[1].treatmentDoseType).toEqual('http://trials.drugis.org/ontology#TitratedDoseDrugTreatment');
+          expect(activity.treatments[1].treatmentDoseType).toEqual('ontology:TitratedDoseDrugTreatment');
           expect(activity.treatments[1].drug.label).toEqual('old drug');
           expect(activity.treatments[1].doseUnit.label).toEqual('old unit label');
           expect(activity.treatments[1].dosingPeriodicity).toEqual('P2W');
           expect(activity.treatments[1].minValue).toEqual('1.2e2');
           expect(activity.treatments[1].maxValue).toEqual('1.3e3');
 
-          expect(activity.treatments[0].treatmentDoseType).toEqual('http://trials.drugis.org/ontology#FixedDoseDrugTreatment');
+          expect(activity.treatments[0].treatmentDoseType).toEqual('ontology:FixedDoseDrugTreatment');
           expect(activity.treatments[0].drug.label).toEqual('new drug');
           expect(activity.treatments[0].doseUnit.label).toEqual('old unit label');
           expect(activity.treatments[0].dosingPeriodicity).toEqual('P3W');
@@ -315,7 +331,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
         var oldTreatment = {
           treatmentUri: 'http://trials.drugis.org/instances/treatment2Uuid',
-          treatmentDoseType: 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment',
+          treatmentDoseType: 'ontology:FixedDoseDrugTreatment',
           drug: {
             uri: 'http://trials.drugis.org/instances/drug1Uuid',
             label: 'Sertraline'
@@ -328,7 +344,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           dosingPeriodicity: 'P3W'
         };
         var newTreatment = {
-          treatmentDoseType: 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment',
+          treatmentDoseType: 'ontology:FixedDoseDrugTreatment',
           drug: {
             uri: 'http://drug/newDrugUuid2',
             label: 'new drug 2'
@@ -345,7 +361,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           activityUri: 'http://trials.drugis.org/instances/activity2Uuid',
           label: 'edit label',
           activityType: {
-            uri: 'http://trials.drugis.org/ontology#TreatmentActivity'
+            uri: 'ontology:TreatmentActivity'
           },
           treatments: [oldTreatment, newTreatment],
           activityDescription: undefined
@@ -364,7 +380,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           // verify query result
           expect(activities.length).toBe(2);
           expect(activities[0].label).toEqual('edit label');
-          expect(activities[0].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['http://trials.drugis.org/ontology#TreatmentActivity']);
+          expect(activities[0].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['ontology:TreatmentActivity']);
           expect(activities[0].activityDescription).not.toBeDefined();
           expect(activities[0].treatments.length).toBe(3);
           expect(activities[0].treatments[0].drug.label).toEqual('new drug 2');
