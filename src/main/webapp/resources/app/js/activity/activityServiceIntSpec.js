@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
+define(['angular', 'angular-mocks'], function(angular, angularMocks) {
   describe('the activity service', function() {
 
     var mockStudyUuid = 'mockStudyUuid',
@@ -16,32 +16,31 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     beforeEach(function() {
       module('trialverse.activity', function($provide) {
-        commentServiceStub = jasmine.createSpyObj('CommentService', [
-          'addComment'
-        ]);
         $provide.value('DrugService', drugServiceMock);
         $provide.value('UnitService', unitServiceMock);
         $provide.value('StudyService', studyServiceMock);
-        $provide.value('CommentService', commentServiceStub);
       });
     });
 
     beforeEach(module('trialverse.activity'));
 
-    beforeEach(inject(function($q, $rootScope, $httpBackend, ActivityService) {
+    beforeEach(inject(function($q, $rootScope, ActivityService) {
       q = $q;
       rootScope = $rootScope;
 
       studyDefer = q.defer();
       graphDefer = q.defer();
+      var saveDefer = q.defer();
+      saveDefer.resolve();
+
       studyServiceMock.getStudy.and.returnValue(studyDefer.promise);
       studyServiceMock.getJsonGraph.and.returnValue(graphDefer.promise);
-
+      studyServiceMock.save.and.returnValue(saveDefer.promise);
       activityService = ActivityService;
     }));
 
 
-    fdescribe('query activities', function() {
+    describe('query activities', function() {
 
       beforeEach(function() {
         jsonStudy = {
@@ -124,13 +123,11 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             '@id': 'http://trials.drugis.org/instances/drug1Uuid',
             '@type': 'ontology:Drug',
             label: 'Sertraline'
-          },
-          {
+          }, {
             '@id': 'http://trials.drugis.org/instances/1e7464b5-c5ca-4b08-a735-a3aa361532d6',
             '@type': 'ontology:Drug',
             label: 'Bupropion'
-          },
-          {
+          }, {
             '@id': 'http://trials.drugis.org/instances/unit1Uuid',
             '@type': 'ontology:Unit',
             label: 'milligram'
@@ -139,7 +136,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         studyDefer.resolve(jsonStudy);
         graphDefer.resolve(jsonGraph);
         rootScope.$apply();
-      })
+      });
 
 
       it('should return the activities contained in the study', function(done) {
@@ -189,9 +186,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     describe('add non-treatment activity', function() {
 
-      var queryPromise;
       var newActivity = {
-        activityUri: 'http://trials.drugis.org/instances/newActivityUuid',
         label: 'newActivityLabel',
         activityType: {
           uri: 'http://mockActivityUri'
@@ -199,19 +194,17 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         activityDescription: 'some description'
       };
 
-      beforeEach(function(done) {
-
-        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
-        activityService.addItem(newActivity).then(function() {
-          queryPromise = activityService.queryItems();
-          done();
-        });
+      beforeEach(function() {
+        jsonStudy = {
+          has_activity: []
+        };
+        studyDefer.resolve(jsonStudy);
         rootScope.$digest();
+        activityService.addItem(newActivity);
       });
 
       it('should add the new activity to the graph', function() {
-        queryPromise.then(function(result) {
+        activityService.queryItems().then(function(result) {
           expect(result.length).toBe(1);
           expect(activities[0].label).toEqual(newActivity.label);
           expect(activities[0].activityType).toEqual(newActivity.activityType);
@@ -221,9 +214,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
     });
 
-    describe('add treatment activity', function() {
+    fdescribe('add treatment activity', function() {
 
-      var queryActivityPromise, queryUnitPromise, queryDrugsPromise;
       var fixedTreatment = {
         treatmentDoseType: 'ontology:FixedDoseDrugTreatment',
         drug: {
@@ -263,22 +255,27 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       };
 
       beforeEach(function(done) {
-
-        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-
-        activityService.addItem(newActivity).then(function() {
-          queryActivityPromise = activityService.queryItems();
-          queryDrugsPromise = drugService.queryItems();
-          queryUnitPromise = unitService.queryItems()
-          done();
-        });
+        var jsonStudy = {
+          has_activity: []
+        };
+        var jsonGraph = {
+          '@graph': [{
+            '@id': 'http://drug/newDrugUuid'
+          }, {
+            '@id': 'http://unit/oldUnit'
+          }, {
+            '@id': 'http://drug/oldDrugUuid'
+          }]
+        };
+        graphDefer.resolve(jsonGraph);
+        studyDefer.resolve(jsonStudy);
+        activityService.addItem(newActivity).then(done);
 
         rootScope.$digest();
       });
 
       it('should add the new activity to the graph', function(done) {
-        queryActivityPromise.then(function(resultActivities) {
+        activityService.queryItems().then(function(resultActivities) {
           expect(resultActivities.length).toBe(1);
           var activity = resultActivities[0];
           expect(activity.treatments.length).toBe(2);
@@ -295,143 +292,86 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           expect(activity.treatments[0].doseUnit.label).toEqual('old unit label');
           expect(activity.treatments[0].dosingPeriodicity).toEqual('P3W');
           expect(activity.treatments[0].fixedValue).toEqual('1.5e3');
-
-        });
-
-        queryDrugsPromise.then(function(drugResults) {
-          expect(drugResults.length).toBe(2);
-          expect(drugResults[1].label).toEqual('old drug');
-          expect(drugResults[0].label).toEqual('new drug');
-        });
-
-        queryUnitPromise.then(function(unitResults) {
-          expect(unitResults.length).toBe(1);
-          expect(unitResults[0].label).toEqual('old unit label');
           done();
         });
       });
     });
 
     describe('edit activities', function() {
-
-      beforeEach(function(done) {
-        // load some mock graph with activities
-        var xmlHTTP = new XMLHttpRequest();
-        xmlHTTP.open('GET', 'base/test_graphs/activitiesMockGraph.ttl', false);
-        xmlHTTP.send(null);
-        var activitiesEditMockGraph = xmlHTTP.responseText;
-
-        xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
-        xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
-        xmlHTTP.send(activitiesEditMockGraph);
-
-        // stub remotestoreServiceStub.executeQuery method
-        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-
-        var oldTreatment = {
-          treatmentUri: 'http://trials.drugis.org/instances/treatment2Uuid',
-          treatmentDoseType: 'ontology:FixedDoseDrugTreatment',
-          drug: {
-            uri: 'http://trials.drugis.org/instances/drug1Uuid',
-            label: 'Sertraline'
-          },
-          doseUnit: {
-            uri: 'http://trials.drugis.org/instances/unit1Uuid',
-            label: 'milligram'
-          },
-          fixedValue: '150',
-          dosingPeriodicity: 'P3W'
+      beforeEach(function() {
+        jsonStudy = {
+          'has_activity': [{
+            '@id': 'http://trials.drugis.org/instances/6d44e008-450a-4363-aae2-f6a79801283d',
+            '@type': 'ontology:WashOutActivity',
+            'has_activity_application': [],
+            'label': 'Wash out',
+          }, {
+            '@id': 'http://trials.drugis.org/instances/activity2Uuid',
+            '@type': 'ontology:RandomizationActivity',
+            'has_activity_application': [],
+            label: 'Randomization',
+            comment: 'activity 2 comment'
+          }]
         };
-        var newTreatment = {
-          treatmentDoseType: 'ontology:FixedDoseDrugTreatment',
-          drug: {
-            uri: 'http://drug/newDrugUuid2',
-            label: 'new drug 2'
-          },
-          doseUnit: {
-            uri: 'http://trials.drugis.org/instances/unit1Uuid',
-            label: 'milligram'
-          },
-          fixedValue: '150',
-          dosingPeriodicity: 'P3W'
-        };
+        studyDefer.resolve(jsonStudy);
+        graphDefer.resolve({});
+        rootScope.$digest();
+      });
 
+      it('should edit a non-treatment activity', function(done) {
         var editActivity = {
           activityUri: 'http://trials.drugis.org/instances/activity2Uuid',
           label: 'edit label',
           activityType: {
-            uri: 'ontology:TreatmentActivity'
-          },
-          treatments: [oldTreatment, newTreatment],
-          activityDescription: undefined
+            uri: 'ontology:ScreeningActivity'
+          }
         };
-
         activityService.editItem(editActivity).then(function() {
-          done();
+          activityService.queryItems().then(function(activities) {
+            expect(activities.length).toBe(2);
+            expect(activities[1].label).toEqual('edit label');
+            expect(activities[1].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['ontology:ScreeningActivity']);
+            expect(activities[1].activityDescription).not.toBeDefined();
+            done();
+          });
         });
-
         rootScope.$digest();
-      });
-
-      it('should edit the activity', function(done) {
-
-        activityService.queryItems().then(function(activities) {
-          // verify query result
-          expect(activities.length).toBe(2);
-          expect(activities[0].label).toEqual('edit label');
-          expect(activities[0].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['ontology:TreatmentActivity']);
-          expect(activities[0].activityDescription).not.toBeDefined();
-          expect(activities[0].treatments.length).toBe(3);
-          expect(activities[0].treatments[0].drug.label).toEqual('new drug 2');
-          expect(commentServiceStub.addComment).not.toHaveBeenCalled();
-          done();
-        });
       });
     });
 
     describe('delete activity', function() {
-
-      beforeEach(function(done) {
-        // load some mock graph with activities
-        var xmlHTTP = new XMLHttpRequest();
-        xmlHTTP.open('GET', 'base/test_graphs/activitiesMockGraph.ttl', false);
-        xmlHTTP.send(null);
-        var activitiesQueryMockGraph = xmlHTTP.responseText;
-
-        xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
-        xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
-        xmlHTTP.send(activitiesQueryMockGraph);
-
-        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-
+      beforeEach(function() {
+        jsonStudy = {
+          'has_activity': [{
+            '@id': 'http://trials.drugis.org/instances/6d44e008-450a-4363-aae2-f6a79801283d',
+            '@type': 'ontology:WashOutActivity',
+            'has_activity_application': [],
+            'label': 'Wash out',
+          }, {
+            '@id': 'http://trials.drugis.org/instances/activity2Uuid',
+            '@type': 'ontology:RandomizationActivity',
+            'has_activity_application': [],
+            label: 'Randomization',
+            comment: 'activity 2 comment'
+          }]
+        };
+        studyDefer.resolve(jsonStudy);
+        graphDefer.resolve({});
+        rootScope.$digest();
+      });
+      it('should delete a non-treatment activity', function(done) {
         var deleteActivity = {
           activityUri: 'http://trials.drugis.org/instances/activity2Uuid',
-          activityType: {
-            uri: 'some uri'
-          }
         };
-
         activityService.deleteItem(deleteActivity).then(function() {
-          done();
+          activityService.queryItems().then(function(items) {
+            expect(items.length).toBe(1);
+            done();
+          });
         });
         rootScope.$digest();
-
       });
 
-      it('should remove the activity', function(done) {
-
-        var query = 'SELECT * WHERE { GRAPH <' + graphUri + '> { ?s ?p ?o }}';
-        var result = testUtils.queryTeststore(query);
-        var resultTriples = testUtils.deFusekify(result);
-
-        // verify results
-        expect(resultTriples.length).toBe(13); // todo needs to be six the delete does cleanup of treamtmentStuff
-        done();
-      });
     });
-
-
   });
 });

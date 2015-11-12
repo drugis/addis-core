@@ -1,20 +1,27 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService'];
-    var DrugService = function($q, StudyService, SparqlResource, UUIDService) {
+    var dependencies = ['$q', 'StudyService'];
+    var DrugService = function($q, StudyService) {
 
-      var queryDrugTemplate = SparqlResource.get('queryDrug.sparql');
+      function queryItems() {
+        return StudyService.getJsonGraph().then(function(graph) {
+          return _.filter(graph['@graph'], function(node) {
+            return node['@type'] === 'ontology:Drug';
+          });
+        });
+      }
 
-      function queryItems(studyUuid) {
-        return queryDrugTemplate.then(function(template){
-          // no need to fill template, nothing to fillin
-          return StudyService.doNonModifyingQuery(template);
+      function addItem(newDrug) {
+        return StudyService.getJsonGraph().then(function(graph) {
+          graph['@graph'].push(newDrug);
+          StudyService.saveJsonGraph(graph);
         });
       }
 
       return {
         queryItems: queryItems,
+        addItem: addItem
       };
     };
     return dependencies.concat(DrugService);

@@ -128,6 +128,28 @@ define([],
       //   return treatmentPromises;
       // }
 
+      function createTreatmentJson(treatment) {
+        function createDoseValue(value) {
+          return [{
+            dosingPeriodicity : treatment.dosingPeriodicity,
+            unit: treatment.doseUnit.uri,
+            value: value
+          }]
+        }
+        var newTreatment = {
+          '@id': INSTANCE_PREFIX + UUIDService.generate(),
+          '@type': treatment.treatmentDoseType,
+          treatment_has_drug: treatment.drug.uri
+        };
+        if(treatment.treatmentDoseType === TITRATED_DOSE_TYPE) {
+          newTreatment.treatment_min_dose = createDoseValue(treatment.minValue);
+          newTreatment.treatment_max_dose = createDoseValue(treatment.maxValue);
+        } else if (treatment.treatmentDoseType === FIXED_DOSE_TYPE) {
+          newTreatment.treatment_dose = createDoseValue(treatment.fixedValue);
+        }
+        return newTreatment;
+      }
+
       function addItem(item) {
         var newItem = {
           '@id': INSTANCE_PREFIX + UUIDService.generate(),
@@ -137,6 +159,9 @@ define([],
         };
         if (item.activityDescription) {
           newItem.comment = item.activityDescription;
+        }
+        if (item.treatments && item.treatments.length > 1) {
+          newItem.has_drug_treatment = _.map(item.treatments, createTreatmentJson);
         }
         return StudyService.getStudy().then(function(study) {
           study.has_activity.push(newItem);
