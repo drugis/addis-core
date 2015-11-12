@@ -132,7 +132,8 @@ define([],
         var newItem = {
           '@id': INSTANCE_PREFIX + UUIDService.generate(),
           '@type': item.activityType.uri,
-          label: item.label
+          label: item.label,
+          has_activity_application: []
         };
         if (item.activityDescription) {
           newItem.comment = item.activityDescription;
