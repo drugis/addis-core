@@ -4,10 +4,6 @@ define([],
     var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService'];
     var StudyDesignService = function($q, StudyService, SparqlResource, UUIDService) {
 
-      //var queryActivityCoordinatesTemplate = SparqlResource.get('queryActivityCoordinates.sparql');
-      //var setActivityCoordinatesTemplate = SparqlResource.get('setActivityCoordinates.sparql');
-      //var cleanupCoordinatesTemplate = SparqlResource.get('cleanupCoordinates.sparql');
-
       function createCoordinate(activityUri, activityApplication) {
         return {
           activityUri: activityUri,
@@ -42,7 +38,7 @@ define([],
             });
           });
 
-          // find the activity update
+          // find the activity to update
           var activityToAddTo = _.find(study.has_activity, function(activity) {
             return coordinates.activityUri === activity['@id'];
           });
@@ -58,18 +54,20 @@ define([],
       }
 
       function cleanupCoordinates() {
-        // return cleanupCoordinatesTemplate.then(function(template) {
-        //   var query = fillInTemplate(template, {});
-        //   return StudyService.doModifyingQuery(query);
-        // });
-      }
+        return StudyService.getStudy().then(function(study) {
+          var arms = _.pluck(study.has_arm, '@id');
+          var epochs = _.pluck(study.has_epochs, '@id');
 
-      // function fillInTemplate(template, coordinates) {
-      //   return template
-      //       .replace(/\$epochUri/g, coordinates.epochUri)
-      //       .replace(/\$armUri/g, coordinates.armUri)
-      //       .replace(/\$activityUri/g, coordinates.activityUri);
-      // }
+          _.each(study.has_activity, function(activity) {
+            _.remove(activity.has_activity_application, function(application) {
+                            return !_.includes(arms, application.applied_to_arm) ||
+                !_.includes(epochs, application.applied_in_epoch);
+            });
+          });
+
+          return StudyService.save(study);
+        });
+      }
 
       return {
         queryItems: queryItems,

@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function(angular, angularMocks) {
-  fdescribe('the activity service', function() {
+  describe('the activity service', function() {
 
     var graphUri = 'http://karma-test/';
     var scratchStudyUri = 'http://localhost:9876/scratch';
@@ -227,101 +227,45 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       });
     });
 
-    // describe('cleanup simple graph', function() {
 
-    //   beforeEach(function(done) {
+    describe('cleanup complex graph', function() {
 
-    //     var xmlHTTP = new XMLHttpRequest();
-    //     xmlHTTP.open('GET', 'base/test_graphs/activitiesCoordinatesCleanUpMockGraph.ttl', false);
-    //     xmlHTTP.send(null);
-    //     var activitiesCoordinatesCleanUpMockGraph = xmlHTTP.responseText;
+      var studyJsonObject;
 
-    //     xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
-    //     xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
-    //     xmlHTTP.send(activitiesCoordinatesCleanUpMockGraph);
+      beforeEach(function(done) {
 
-    //     remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
-    //       query = query.replace(/\$graphUri/g, graphUri);
-    //       var result = testUtils.executeUpdateQuery(query);
-    //       // console.log('queryResponce ' + result);
-    //       var executeUpdateDeferred = q.defer();
-    //       executeUpdateDeferred.resolve(result);
-    //       return executeUpdateDeferred.promise;
-    //     });
+        studyJsonObject = angular.copy(baseStudy);
+        studyJsonObject.has_arm =  [{
+          '@id': 'http://trials.drugis.org/instances/5b8352d0-5f45-47a3-8893-2110514e9d3b',
+          '@type': 'ontology:Arm',
+          'label': 'arm label'
+        }];
+        studyJsonObject.has_epochs = [{
+          '@id': 'http://trials.drugis.org/instances/a02fdb05-4986-4f58-b20f-973572813c8d',
+          '@type': 'ontology:Epoch',
+          'duration': 'P14D',
+          'label': 'Washout'
+        }];
 
-    //     remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
-    //       query = query.replace(/\$graphUri/g, graphUri);
-    //       var result = testUtils.queryTeststore(query);
-    //       //// console.log('queryResponce ' + result);
-    //       var resultObject = testUtils.deFusekify(result)
-    //       var executeUpdateDeferred = q.defer();
-    //       executeUpdateDeferred.resolve(resultObject);
-    //       return executeUpdateDeferred.promise;
-    //     });
+        var studyDefer = q.defer();
+        var getStudyPromise = studyDefer.promise;
+        studyDefer.resolve(studyJsonObject);
+        studyService.getStudy.and.returnValue(getStudyPromise);
+        done();
+      });
 
-    //     done();
-    //   });
+      it('should remove coordinates that refer to missing arms, epochs of activities', function(done) {
 
-    //   it('should remove coordinates that refer to missing arms, epochs of activities', function(done) {
+        studyDesignService.cleanupCoordinates().then(function() {
+          studyDesignService.queryItems().then(function(result) {
+            expect(result.length).toEqual(1);
+            done();
+          });
+        });
 
-    //     studyDesignService.cleanupCoordinates(mockStudyUuid).then(function() {
-    //       studyDesignService.queryItems(mockStudyUuid).then(function(result) {
-    //         expect(result.length).toEqual(1);
-    //         done();
-    //       });
-    //     });
-
-    //     rootScope.$digest();
-    //   });
-    // });
-
-    // describe('cleanup complex graph', function() {
-
-    //   beforeEach(function(done) {
-
-    //     var xmlHTTP = new XMLHttpRequest();
-    //     xmlHTTP.open('GET', 'base/test_graphs/realLifeMockCleanupGraph.ttl', false);
-    //     xmlHTTP.send(null);
-    //     var activitiesCoordinatesCleanUpMockGraph = xmlHTTP.responseText;
-
-    //     xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
-    //     xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
-    //     xmlHTTP.send(activitiesCoordinatesCleanUpMockGraph);
-
-    //     remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
-    //       query = query.replace(/\$graphUri/g, graphUri);
-    //       var result = testUtils.executeUpdateQuery(query);
-    //       // console.log('queryResponce ' + result);
-    //       var executeUpdateDeferred = q.defer();
-    //       executeUpdateDeferred.resolve(result);
-    //       return executeUpdateDeferred.promise;
-    //     });
-
-    //     remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
-    //       query = query.replace(/\$graphUri/g, graphUri);
-    //       var result = testUtils.queryTeststore(query);
-    //       //// console.log('queryResponce ' + result);
-    //       var resultObject = testUtils.deFusekify(result)
-    //       var executeUpdateDeferred = q.defer();
-    //       executeUpdateDeferred.resolve(resultObject);
-    //       return executeUpdateDeferred.promise;
-    //     });
-
-    //     done();
-    //   });
-
-    //   it('should remove coordinates that refer to missing arms, epochs of activities', function(done) {
-
-    //     studyDesignService.cleanupCoordinates('c8354a59-04c6-42a8-a818-a9618bd00ba5').then(function() {
-    //       studyDesignService.queryItems('c8354a59-04c6-42a8-a818-a9618bd00ba5').then(function(result) {
-    //         expect(result.length).toEqual(4);
-    //         done();
-    //       });
-    //     });
-
-    //     rootScope.$digest();
-    //   });
-    // });
+        rootScope.$digest();
+      });
+    });
 
 
   });
