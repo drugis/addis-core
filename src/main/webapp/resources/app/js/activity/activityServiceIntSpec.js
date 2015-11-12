@@ -206,15 +206,15 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       it('should add the new activity to the graph', function() {
         activityService.queryItems().then(function(result) {
           expect(result.length).toBe(1);
-          expect(activities[0].label).toEqual(newActivity.label);
-          expect(activities[0].activityType).toEqual(newActivity.activityType);
-          expect(activities[0].activityDescription).toEqual(newActivity.activityDescription);
-          expect(activities[0].treatments).not.toBeDefined();
+          expect(result[0].label).toEqual(newActivity.label);
+          expect(result[0].activityType).toEqual(newActivity.activityType);
+          expect(result[0].activityDescription).toEqual(newActivity.activityDescription);
+          expect(result[0].treatments).not.toBeDefined();
         });
       });
     });
 
-    fdescribe('add treatment activity', function() {
+    describe('add treatment activity', function() {
 
       var fixedTreatment = {
         treatmentDoseType: 'ontology:FixedDoseDrugTreatment',
@@ -260,11 +260,14 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
         };
         var jsonGraph = {
           '@graph': [{
-            '@id': 'http://drug/newDrugUuid'
+            '@id': 'http://drug/newDrugUuid',
+            label: 'new drug'
           }, {
-            '@id': 'http://unit/oldUnit'
+            '@id': 'http://unit/oldUnit',
+            label: 'old unit label'
           }, {
-            '@id': 'http://drug/oldDrugUuid'
+            '@id': 'http://drug/oldDrugUuid',
+            label: 'old drug'
           }]
         };
         graphDefer.resolve(jsonGraph);
@@ -280,18 +283,20 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
           var activity = resultActivities[0];
           expect(activity.treatments.length).toBe(2);
 
-          expect(activity.treatments[1].treatmentDoseType).toEqual('ontology:TitratedDoseDrugTreatment');
-          expect(activity.treatments[1].drug.label).toEqual('old drug');
-          expect(activity.treatments[1].doseUnit.label).toEqual('old unit label');
-          expect(activity.treatments[1].dosingPeriodicity).toEqual('P2W');
-          expect(activity.treatments[1].minValue).toEqual('1.2e2');
-          expect(activity.treatments[1].maxValue).toEqual('1.3e3');
 
           expect(activity.treatments[0].treatmentDoseType).toEqual('ontology:FixedDoseDrugTreatment');
           expect(activity.treatments[0].drug.label).toEqual('new drug');
           expect(activity.treatments[0].doseUnit.label).toEqual('old unit label');
           expect(activity.treatments[0].dosingPeriodicity).toEqual('P3W');
-          expect(activity.treatments[0].fixedValue).toEqual('1.5e3');
+          expect(activity.treatments[0].fixedValue).toEqual('1500');
+
+          expect(activity.treatments[1].treatmentDoseType).toEqual('ontology:TitratedDoseDrugTreatment');
+          expect(activity.treatments[1].drug.label).toEqual('old drug');
+          expect(activity.treatments[1].doseUnit.label).toEqual('old unit label');
+          expect(activity.treatments[1].dosingPeriodicity).toEqual('P2W');
+          expect(activity.treatments[1].minValue).toEqual('120');
+          expect(activity.treatments[1].maxValue).toEqual('1300');
+
           done();
         });
       });
