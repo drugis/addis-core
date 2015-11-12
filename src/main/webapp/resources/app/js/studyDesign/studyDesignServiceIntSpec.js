@@ -16,23 +16,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
 
     var setActivityCoordinatesTemplate;
 
-    beforeEach(module('trialverse.studyDesign', function($provide) {
-      $provide.value('StudyService', studyService);
-    }));
-
-    beforeEach(inject(function($q, $rootScope, $httpBackend, StudyDesignService, SparqlResource) {
-      q = $q;
-      httpBackend = $httpBackend;
-      rootScope = $rootScope;
-
-      studyDesignService = StudyDesignService;
-    }));
-
-    describe('query activity coordinates', function() {
-      var studyJsonObject
-
-      beforeEach(function() {
-        studyJsonObject = {
+    var baseStudy = {
           "has_activity": [{
             "@id": "http://trials.drugis.org/instances/1afd0f6f-4975-40d4-a557-73ef4aa39046",
             "@type": "ontology:TreatmentActivity",
@@ -135,6 +119,24 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
             "label": "Placebo"
           }]
         };
+
+    beforeEach(module('trialverse.studyDesign', function($provide) {
+      $provide.value('StudyService', studyService);
+    }));
+
+    beforeEach(inject(function($q, $rootScope, $httpBackend, StudyDesignService, SparqlResource) {
+      q = $q;
+      httpBackend = $httpBackend;
+      rootScope = $rootScope;
+
+      studyDesignService = StudyDesignService;
+    }));
+
+    describe('query activity coordinates', function() {
+      var studyJsonObject
+
+      beforeEach(function() {
+        studyJsonObject = angular.copy(baseStudy);
         var studyDefer = q.defer();
         var getStudyPromise = studyDefer.promise;
         studyDefer.resolve(studyJsonObject);
@@ -155,59 +157,75 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
     });
 
 
-    // describe('set activity coordinates', function() {
+    describe('set activity coordinates, as update', function() {
 
-    //   beforeEach(function(done) {
+      var studyJsonObject;
 
-    //     var xmlHTTP = new XMLHttpRequest();
-    //     xmlHTTP.open('GET', 'base/test_graphs/activitiesCoordinatesSetActivityMockGraph.ttl', false);
-    //     xmlHTTP.send(null);
-    //     var activitiesCoordinatesSetActivityMockGraph = xmlHTTP.responseText;
+      beforeEach(function(done) {
 
-    //     xmlHTTP.open('PUT', scratchStudyUri + '/data?graph=' + graphUri, false);
-    //     xmlHTTP.setRequestHeader('Content-type', 'text/turtle');
-    //     xmlHTTP.send(activitiesCoordinatesSetActivityMockGraph);
+        studyJsonObject = angular.copy(baseStudy);
+        var studyDefer = q.defer();
+        var getStudyPromise = studyDefer.promise;
+        studyDefer.resolve(studyJsonObject);
+        studyService.getStudy.and.returnValue(getStudyPromise);
 
-    //     remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
-    //       query = query.replace(/\$graphUri/g, graphUri);
-    //       var result = testUtils.executeUpdateQuery(query);
-    //       // console.log('queryResponce ' + result);
-    //       var executeUpdateDeferred = q.defer();
-    //       executeUpdateDeferred.resolve(result);
-    //       return executeUpdateDeferred.promise;
-    //     });
+        done();
+      });
 
-    //     remotestoreServiceStub.executeQuery.and.callFake(function(uri, query) {
-    //       query = query.replace(/\$graphUri/g, graphUri);
-    //       var result = testUtils.queryTeststore(query);
-    //       //// console.log('queryResponce ' + result);
-    //       var resultObject = testUtils.deFusekify(result)
-    //       var executeUpdateDeferred = q.defer();
-    //       executeUpdateDeferred.resolve(resultObject);
-    //       return executeUpdateDeferred.promise;
-    //     });
+      it('should return the activities contained in the study', function(done) {
 
-    //     done();
-    //   });
+        var coordinates = {
+          epochUri: 'http://trials.drugis.org/instances/62bc14d7-4fbc-4973-8119-ffaca0bb18e4',
+          armUri: 'http://trials.drugis.org/instances/5b8352d0-5f45-47a3-8893-2110514e9d3b',
+          activityUri: 'http://trials.drugis.org/instances/aa54abb9-e81e-4492-b8bf-e46a68571971'
+        };
 
-    //   it('should return the activities contained in the study', function(done) {
+        studyDesignService.setActivityCoordinates(coordinates).then(function() {
+          studyDesignService.queryItems(mockStudyUuid).then(function(result) {
+            expect(result.length).toEqual(9); // length should not have changed
+            expect(result[3]).toEqual(coordinates);
+            done();
+          });
+        });
 
-    //     var coordinates = {
-    //       epochUri: 'http://trials.drugis.org/instances/epoch1Uuid',
-    //       armUri: 'http://trials.drugis.org/instances/arm1Uuid',
-    //       activityUri: 'http://trials.drugis.org/instances/activity1Uuid'
-    //     };
+        rootScope.$digest();
+      });
+    });
 
-    //     studyDesignService.setActivityCoordinates(coordinates).then(function() {
-    //       studyDesignService.queryItems(mockStudyUuid).then(function(result) {
-    //         expect(result.length).toEqual(2);
-    //         done();
-    //       });
-    //     });
+    describe('set activity coordinates, as add', function() {
 
-    //     rootScope.$digest();
-    //   });
-    // });
+      var studyJsonObject;
+
+      beforeEach(function(done) {
+
+        studyJsonObject = angular.copy(baseStudy);
+        var studyDefer = q.defer();
+        var getStudyPromise = studyDefer.promise;
+        studyDefer.resolve(studyJsonObject);
+        studyService.getStudy.and.returnValue(getStudyPromise);
+
+        done();
+      });
+
+      it('should return the activities contained in the study', function(done) {
+
+        var coordinates = {
+          epochUri: 'http://trials.drugis.org/instances/62bc14d7-4fbc-4973-8119-ffaca0bb18e4',
+          armUri: 'http://trials.drugis.org/instances/some_new_arm',
+          activityUri: 'http://trials.drugis.org/instances/aa54abb9-e81e-4492-b8bf-e46a68571971'
+        };
+
+        studyDesignService.setActivityCoordinates(coordinates).then(function() {
+          studyDesignService.queryItems(mockStudyUuid).then(function(result) {
+            expect(result.length).toEqual(10); // length should grow by one
+            expect(result[4]).toEqual(coordinates);
+            done();
+          });
+        });
+
+        rootScope.$digest();
+      });
+    });
 
     // describe('cleanup simple graph', function() {
 
