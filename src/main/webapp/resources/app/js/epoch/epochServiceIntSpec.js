@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  describe('the epoch service', function() {
+  fdescribe('the epoch service', function() {
 
     var rootScope, q, epochService,
       queryEpochs, queryAddEpoch, queryAddEpochToEndOfList, queryAddEpochComment,
@@ -56,25 +56,23 @@ define(['angular', 'angular-mocks'], function() {
     describe('queryItems', function(done) {
 
       var expected = [{
-        '@id': 'http://trials.drugis.org/instances/aaa',
-        '@type': 'ontology:Epoch',
-        'duration': 'P14D',
-        'label': 'Washout',
-        'pos': 0,
-        'isPrimary': false
+        uri: 'http://trials.drugis.org/instances/aaa',
+        duration: 'P14D',
+        label: 'Washout',
+        pos: 0,
+        isPrimary: false
       }, {
-        '@id': 'http://trials.drugis.org/instances/bbb',
-        '@type': 'ontology:Epoch',
-        'label': 'Randomization',
-        'pos': 1,
-        'isPrimary': false
+        uri: 'http://trials.drugis.org/instances/bbb',
+        label: 'Randomization',
+        duration: 'PT0S',
+        pos: 1,
+        isPrimary: false
       }, {
-        '@id': 'http://trials.drugis.org/instances/ccc',
-        '@type': 'ontology:Epoch',
-        'duration': 'P42D',
-        'label': 'Main phase',
-        'pos': 2,
-        'isPrimary': false
+        uri: 'http://trials.drugis.org/instances/ccc',
+        duration: 'P42D',
+        label: 'Main phase',
+        pos: 2,
+        isPrimary: false
       }];
 
       it('should query the epochs', function(done) {
@@ -92,25 +90,23 @@ define(['angular', 'angular-mocks'], function() {
     describe('queryItems where primary is set', function(done) {
 
       var expected = [{
-        '@id': 'http://trials.drugis.org/instances/aaa',
-        '@type': 'ontology:Epoch',
-        'duration': 'P14D',
-        'label': 'Washout',
-        'pos': 0,
-        'isPrimary': false
+        uri: 'http://trials.drugis.org/instances/aaa',
+        duration: 'P14D',
+        label: 'Washout',
+        pos: 0,
+        isPrimary: false
       }, {
-        '@id': 'http://trials.drugis.org/instances/ddd',
-        '@type': 'ontology:Epoch',
-        'label': 'Randomization',
-        'pos': 1,
-        'isPrimary': true
+        uri: 'http://trials.drugis.org/instances/ddd',
+        label: 'Randomization',
+        duration: 'PT0S',
+        pos: 1,
+        isPrimary: true
       }, {
-        '@id': 'http://trials.drugis.org/instances/ccc',
-        '@type': 'ontology:Epoch',
-        'duration': 'P42D',
-        'label': 'Main phase',
-        'pos': 2,
-        'isPrimary': false
+        uri: 'http://trials.drugis.org/instances/ccc',
+        duration: 'P42D',
+        label: 'Main phase',
+        pos: 2,
+        isPrimary: false
       }];
 
       it('should query the epochs', function(done) {
@@ -178,8 +174,7 @@ define(['angular', 'angular-mocks'], function() {
         };
 
         var expectedEpoch = {
-          '@id': 'http://trials.drugis.org/instances/newUuid',
-          '@type': 'ontology:Epoch',
+          uri: 'http://trials.drugis.org/instances/newUuid',
           duration: 'P13D',
           label: itemToAdd.label,
           comment: 'new epoch comment',
@@ -226,16 +221,9 @@ define(['angular', 'angular-mocks'], function() {
         };
         studyDefer.resolve(studyJsonObject);
         studyService.getStudy.and.returnValue(getStudyPromise);
-        var oldItem = {
-          '@id': 'http://trials.drugis.org/instances/ddd',
-          label: 'Randomization',
-          comment: "this comment is old",
-          isPrimaryEpoch: true,
-          pos: 1,
-          duration: 'P13D',
-        };
+
         var newItem = {
-          '@id': 'http://trials.drugis.org/instances/ddd',
+          uri: 'http://trials.drugis.org/instances/ddd',
           label: 'Randomization',
           comment: "",
           isPrimaryEpoch: false,
@@ -244,8 +232,7 @@ define(['angular', 'angular-mocks'], function() {
         };
 
         var expectedEpoch = {
-          '@id': 'http://trials.drugis.org/instances/ddd',
-          '@type': 'ontology:Epoch',
+          uri: 'http://trials.drugis.org/instances/ddd',
           duration: 'P13D',
           label: newItem.label,
           pos: 1,
@@ -291,7 +278,7 @@ define(['angular', 'angular-mocks'], function() {
         studyService.getStudy.and.returnValue(getStudyPromise);
 
         var newItem = {
-          '@id': 'http://trials.drugis.org/instances/ccc',
+          uri: 'http://trials.drugis.org/instances/ccc',
           label: 'Randomization',
           comment: "new comment",
           isPrimaryEpoch: false,
@@ -300,8 +287,7 @@ define(['angular', 'angular-mocks'], function() {
         };
 
         var expectedEpoch = {
-          '@id': 'http://trials.drugis.org/instances/ccc',
-          '@type': 'ontology:Epoch',
+          uri: 'http://trials.drugis.org/instances/ccc',
           duration: 'P0D',
           label: newItem.label,
           comment: newItem.comment,
@@ -349,7 +335,7 @@ define(['angular', 'angular-mocks'], function() {
         studyService.getStudy.and.returnValue(getStudyPromise);
 
         var itemToRemove = {
-          '@id': 'http://trials.drugis.org/instances/ddd',
+          uri: 'http://trials.drugis.org/instances/ddd',
           label: 'Randomization',
           comment: "new comment",
           isPrimaryEpoch: true,
@@ -360,8 +346,8 @@ define(['angular', 'angular-mocks'], function() {
         epochService.deleteItem(itemToRemove).then(function() {
           epochService.queryItems().then(function(result) {
             expect(result.length).toEqual(2);
-            expect(result[0]['@id']).toEqual('http://trials.drugis.org/instances/aaa');
-            expect(result[1]['@id']).toEqual('http://trials.drugis.org/instances/ccc');
+            expect(result[0].uri).toEqual('http://trials.drugis.org/instances/aaa');
+            expect(result[1].uri).toEqual('http://trials.drugis.org/instances/ccc');
             expect(result[0].isPrimary).toEqual(false);
             expect(result[1].isPrimary).toEqual(false);
             done();
@@ -399,14 +385,14 @@ define(['angular', 'angular-mocks'], function() {
         studyService.getStudy.and.returnValue(getStudyPromise);
 
         var itemToRemove = {
-          '@id': 'http://trials.drugis.org/instances/aaa',
+          uri: 'http://trials.drugis.org/instances/aaa',
         };
 
         epochService.deleteItem(itemToRemove).then(function() {
           epochService.queryItems().then(function(result) {
             expect(result.length).toEqual(2);
-            expect(result[0]['@id']).toEqual('http://trials.drugis.org/instances/ddd');
-            expect(result[1]['@id']).toEqual('http://trials.drugis.org/instances/ccc');
+            expect(result[0].uri).toEqual('http://trials.drugis.org/instances/ddd');
+            expect(result[1].uri).toEqual('http://trials.drugis.org/instances/ccc');
             expect(result[0].isPrimary).toEqual(true);
             expect(result[1].isPrimary).toEqual(false);
             done();
