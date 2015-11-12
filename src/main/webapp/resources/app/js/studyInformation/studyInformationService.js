@@ -4,8 +4,6 @@ define([],
     var dependencies = ['$q', 'StudyService'];
     var StudyInformationService = function($q, StudyService) {
 
-      var URI_PROPERTIES = ['allocation', 'blinding', 'status'];
-
       function queryItems() {
         return StudyService.getStudy().then(function(study) {
           return [{
@@ -19,19 +17,19 @@ define([],
       }
 
       function editItem(item) {
-        angular.forEach(URI_PROPERTIES, function(property) {
-          if (item[property]) {
-            if (item[property].uri === 'unknown') {
-              delete item[property];
+        function dropdownValueToUri(property) {
+          if (property) {
+            if (property.uri === 'unknown') {
+              return undefined;
             } else {
-              item[property] = item[property].uri;
+              return property.uri;
             }
           }
-        });
+        }
         return StudyService.getStudy().then(function(study) {
-          study.has_blinding = item.blinding;
-          study.has_allocation = item.allocation;
-          study.status = item.status;
+          study.has_blinding = dropdownValueToUri(item.blinding);
+          study.has_allocation = dropdownValueToUri(item.allocation);
+          study.status = dropdownValueToUri(item.status);
           study.has_number_of_centers = item.numberOfCenters;
           if (item.objective && item.objective.comment) {
             study.has_objective[0] = {
