@@ -18,7 +18,7 @@ define([],
             stuy.has_arm = [];
           }
           study.has_arm.push(arm);
-          StudyService.save(study);
+          return StudyService.save(study);
         });
       }
 
@@ -30,7 +30,7 @@ define([],
             }
             return arm;
           });
-          StudyService.save(study);
+          return StudyService.save(study);
         });
       }
 
@@ -39,7 +39,7 @@ define([],
           _.remove(study.has_arm, function(arm) {
             return arm['@id'] === removeArm['@id'];
           });
-          StudyService.save(study);
+          return StudyService.save(study);
         });
       }
 
