@@ -131,7 +131,7 @@ define([],
       function createTreatmentJson(treatment) {
         function createDoseValue(value) {
           return [{
-            dosingPeriodicity : treatment.dosingPeriodicity,
+            dosingPeriodicity: treatment.dosingPeriodicity,
             unit: treatment.doseUnit.uri,
             value: value
           }]
@@ -141,7 +141,7 @@ define([],
           '@type': treatment.treatmentDoseType,
           treatment_has_drug: treatment.drug.uri
         };
-        if(treatment.treatmentDoseType === TITRATED_DOSE_TYPE) {
+        if (treatment.treatmentDoseType === TITRATED_DOSE_TYPE) {
           newTreatment.treatment_min_dose = createDoseValue(treatment.minValue);
           newTreatment.treatment_max_dose = createDoseValue(treatment.maxValue);
         } else if (treatment.treatmentDoseType === FIXED_DOSE_TYPE) {
@@ -151,21 +151,44 @@ define([],
       }
 
       function addItem(item) {
-        var newItem = {
-          '@id': INSTANCE_PREFIX + UUIDService.generate(),
-          '@type': item.activityType.uri,
-          label: item.label,
-          has_activity_application: []
-        };
-        if (item.activityDescription) {
-          newItem.comment = item.activityDescription;
-        }
-        if (item.treatments && item.treatments.length > 1) {
-          newItem.has_drug_treatment = _.map(item.treatments, createTreatmentJson);
-        }
-        return StudyService.getStudy().then(function(study) {
+        return StudyService.getJsonGraph().then(function(graph) {
+          var newItem = {
+            '@id': INSTANCE_PREFIX + UUIDService.generate(),
+            '@type': item.activityType.uri,
+            label: item.label,
+            has_activity_application: []
+          };
+          if (item.activityDescription) {
+            newItem.comment = item.activityDescription;
+          }
+          if (item.treatments && item.treatments.length > 1) {
+            newItem.has_drug_treatment = _.map(item.treatments, createTreatmentJson);
+
+            angular.forEach(item.treatments, function(treatment) {
+              // add drug to graph if it wasn't there yet
+              var drug = _.find(graph['@graph'], function(node) {
+                return node['@id'] === treatment.drug.uri;
+              });
+              if (!drug) {
+                graph['@graph'].push({
+                  '@id': treatment.drug.uri,
+                  '@type': 'ontology:Drug',
+                  label: treatment.drug.label
+                });
+              }
+            });
+          }
+
+          var study = _.find(graph['@graph'], function(graphNode) {
+            return graphNode['@type'] === 'ontology:Study';
+          });
           study.has_activity.push(newItem);
-          return StudyService.save(study);
+          _.remove(graph['@graph'], function(graphNode) {
+            return graphNode['@type'] === 'ontology:Study';
+          });
+          graph['@graph'].push(study);
+
+          return StudyService.saveJsonGraph(graph);
         });
       }
 
@@ -201,7 +224,7 @@ define([],
 
       function deleteItem(item) {
         return StudyService.getStudy().then(function(study) {
-          _.remove(study.has_activity, function(activity){
+          _.remove(study.has_activity, function(activity) {
             return item.activityUri === activity['@id'];
           });
           return StudyService.save(study);

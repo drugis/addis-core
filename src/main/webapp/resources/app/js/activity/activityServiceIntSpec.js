@@ -9,9 +9,10 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       jsonStudy,
       graphDefer,
       jsonGraph,
-      studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'getJsonGraph', 'save']),
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'getJsonGraph', 'save', 'saveJsonGraph']),
       activityService,
       drugServiceMock = jasmine.createSpyObj('DrugService', ['queryItems']),
+      uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']),
       unitServiceMock;
 
     beforeEach(function() {
@@ -19,6 +20,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
         $provide.value('DrugService', drugServiceMock);
         $provide.value('UnitService', unitServiceMock);
         $provide.value('StudyService', studyServiceMock);
+        $provide.value('UUIDService', uuidServiceMock);
       });
     });
 
@@ -36,6 +38,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       studyServiceMock.getStudy.and.returnValue(studyDefer.promise);
       studyServiceMock.getJsonGraph.and.returnValue(graphDefer.promise);
       studyServiceMock.save.and.returnValue(saveDefer.promise);
+      uuidServiceMock.generate.and.returnValue('generatedUUID')
       activityService = ActivityService;
     }));
 
@@ -214,8 +217,8 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       });
     });
 
-    describe('add treatment activity', function() {
-
+    fdescribe('add treatment activity', function() {
+      var expectedGraph;
       var fixedTreatment = {
         treatmentDoseType: 'ontology:FixedDoseDrugTreatment',
         drug: {
@@ -256,20 +259,60 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
 
       beforeEach(function(done) {
         var jsonStudy = {
+          '@type': 'ontology:Study',
           has_activity: []
         };
-        var jsonGraph = {
+        jsonGraph = {
           '@graph': [{
-            '@id': 'http://drug/newDrugUuid',
-            label: 'new drug'
-          }, {
             '@id': 'http://unit/oldUnit',
             label: 'old unit label'
           }, {
             '@id': 'http://drug/oldDrugUuid',
             label: 'old drug'
-          }]
+          }, jsonStudy]
         };
+        expectedGraph = angular.copy(jsonGraph);
+        expectedGraph['@graph'].push({
+          '@id': 'http://drug/newDrugUuid',
+          '@type': 'ontology:Drug',
+          label: 'new drug'
+        });
+        _.remove(expectedGraph['@graph'], function(node) {
+          return node['@type'] === 'ontology:Study';
+        });
+        expectedGraph['@graph'].push({
+          '@type': 'ontology:Study',
+          has_activity: [{
+            '@id': 'http://trials.drugis.org/instances/generatedUUID',
+            '@type': 'ontology:TreatmentActivity',
+            label: 'newActivityLabel',
+            has_activity_application: [],
+            has_drug_treatment: [{
+              '@id': 'http://trials.drugis.org/instances/generatedUUID',
+              '@type': 'ontology:FixedDoseDrugTreatment',
+              treatment_has_drug: 'http://drug/newDrugUuid',
+              treatment_dose: [{
+                dosingPeriodicity: 'P3W',
+                unit: 'http://unit/oldUnit',
+                value: '1500'
+              }]
+            }, {
+              '@id': 'http://trials.drugis.org/instances/generatedUUID',
+              '@type': 'ontology:TitratedDoseDrugTreatment',
+              treatment_has_drug: 'http://drug/oldDrugUuid',
+              treatment_min_dose: [{
+                dosingPeriodicity: 'P2W',
+                unit: 'http://unit/oldUnit',
+                value: '120'
+              }],
+              treatment_max_dose: [{
+                dosingPeriodicity: 'P2W',
+                unit: 'http://unit/oldUnit',
+                value: '1300'
+              }]
+            }]
+          }]
+        });
         graphDefer.resolve(jsonGraph);
         studyDefer.resolve(jsonStudy);
         activityService.addItem(newActivity).then(done);
@@ -278,7 +321,9 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       });
 
       it('should add the new activity to the graph', function(done) {
+        expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith(expectedGraph);
         activityService.queryItems().then(function(resultActivities) {
+
           expect(resultActivities.length).toBe(1);
           var activity = resultActivities[0];
           expect(activity.treatments.length).toBe(2);
@@ -296,6 +341,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
           expect(activity.treatments[1].dosingPeriodicity).toEqual('P2W');
           expect(activity.treatments[1].minValue).toEqual('120');
           expect(activity.treatments[1].maxValue).toEqual('1300');
+
 
           done();
         });
