@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  fdescribe('the epoch service', function() {
+  describe('the epoch service', function() {
 
     var rootScope, q, epochService,
       queryEpochs, queryAddEpoch, queryAddEpochToEndOfList, queryAddEpochComment,

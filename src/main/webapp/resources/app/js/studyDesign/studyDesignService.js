@@ -13,12 +13,16 @@ define([],
       }
 
       function flattenActivity(acumulator, activity) {
-        return acumulator
-          .concat(
-            activity
-            .has_activity_application
-            .map(createCoordinate.bind(this, activity['@id']))
-          );
+        if (activity.has_activity_application) {
+          return acumulator
+            .concat(
+              activity
+              .has_activity_application
+              .map(createCoordinate.bind(this, activity['@id']))
+            );
+        } else {
+          return acumulator;
+        }
       }
 
       function queryItems() {
@@ -43,6 +47,10 @@ define([],
             return coordinates.activityUri === activity['@id'];
           });
 
+          if(!activityToAddTo.has_activity_application) {
+            activityToAddTo.has_activity_application = [];
+          }
+
           activityToAddTo.has_activity_application = activityToAddTo.has_activity_application.concat([{
             '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
             applied_in_epoch: coordinates.epochUri,
@@ -60,7 +68,7 @@ define([],
 
           _.each(study.has_activity, function(activity) {
             _.remove(activity.has_activity_application, function(application) {
-                            return !_.includes(arms, application.applied_to_arm) ||
+              return !_.includes(arms, application.applied_to_arm) ||
                 !_.includes(epochs, application.applied_in_epoch);
             });
           });
