@@ -121,29 +121,24 @@ define([],
         return newTreatment;
       }
 
+      function addToGraphIfNotExists(graph, uri, type, label) {
+        var foundNode = _.find(graph['@graph'], function(node) {
+          return node['@id'] === uri;
+        });
+        if (!foundNode) {
+          graph['@graph'].push({
+            '@id': uri,
+            '@type': type,
+            label: label
+          });
+        }
+      }
+
       function addDrugsAndUnitsToGraph(graph, treatments) {
         angular.forEach(treatments, function(treatment) {
-          // add drug to graph if it wasn't there yet
-          var drug = _.find(graph['@graph'], function(node) {
-            return node['@id'] === treatment.drug.uri;
-          });
-          if (!drug) {
-            graph['@graph'].push({
-              '@id': treatment.drug.uri,
-              '@type': 'ontology:Drug',
-              label: treatment.drug.label
-            });
-          }
-          var unit = _.find(graph['@graph'], function(node) {
-            return node['@id'] === treatment.doseUnit.uri;
-          });
-          if (!unit) {
-            graph['@graph'].push({
-              '@id': treatment.doseUnit.uri,
-              '@type': 'ontology:Unit',
-              label: treatment.doseUnit.label
-            });
-          }
+          // add drug and unit to graph if they weren't there yet
+          addToGraphIfNotExists(graph, treatment.drug.uri, 'ontology:Drug', treatment.drug.label);
+          addToGraphIfNotExists(graph, treatment.doseUnit.uri, 'ontology:Unit', treatment.doseUnit.label);
         });
       }
 
@@ -172,7 +167,6 @@ define([],
             return graphNode['@type'] === 'ontology:Study';
           });
           graph['@graph'].push(study);
-
           return StudyService.saveJsonGraph(graph);
         });
       }
@@ -188,7 +182,7 @@ define([],
           toEdit['@type'] = item.activityType.uri;
           toEdit.label = item.label;
           toEdit.comment = item.activityDescription;
-          if(! toEdit.comment) {
+          if (!toEdit.comment) {
             delete toEdit.comment;
           }
           if (item.treatments && item.treatments.length > 0) {
