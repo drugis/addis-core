@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function(angular) {
-  fdescribe('the measurement moment service', function() {
+  describe('the measurement moment service', function() {
 
     var mockStudyUuid = 'mockStudyUuid';
     var rootScope, q;

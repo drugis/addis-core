@@ -4,11 +4,6 @@ define([],
     var dependencies = ['$q', '$filter', 'StudyService', 'UUIDService', 'EpochService', 'DurationService'];
     var MeasurementMomentService = function($q, $filter, StudyService, UUIDService, EpochService, DurationService) {
 
-      // var measurementMomentQuery = SparqlResource.get('queryMeasurementMoment.sparql');
-      // var addItemQuery = SparqlResource.get('addMeasurementMoment.sparql');
-      // var editItemQuery = SparqlResource.get('editMeasurementMoment.sparql');
-      // var deleteItemQuery = SparqlResource.get('deleteMeasurementMoment.sparql');
-
       function toFrontend(backendItem) {
         var frontendItem = {
           uri: backendItem['@id'],
