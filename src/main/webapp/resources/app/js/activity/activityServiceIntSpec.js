@@ -459,7 +459,82 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
         rootScope.$digest();
       });
     });
+    describe('edit a from a treatment to a non-treatment activity', function() {
+      beforeEach(function() {
+        jsonStudy = {
+          '@type': 'ontology:Study',
+          'has_activity': [{
+            '@id': 'http://trials.drugis.org/instances/6d44e008-450a-4363-aae2-f6a79801283d',
+            '@type': 'ontology:WashOutActivity',
+            'label': 'Wash out',
+          }, {
+            '@id': 'http://trials.drugis.org/instances/activity2Uuid',
+            '@type': 'ontology:TreatmentActivity',
+            'has_drug_treatment': [{
+              '@id': 'http://treatmentId',
+              '@type': 'ontology:TitratedDoseDrugTreatment',
+              'treatment_has_drug': 'http://trials.drugis.org/instances/a331aea9-58cc-4e1f-928d-fb5879bae8c1',
+              'treatment_max_dose': [{
+                '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac11005900000001',
+                'dosingPeriodicity': 'P1D',
+                'unit': 'http://trials.drugis.org/instances/8691b100-e5d9-4048-acc3-6ed9731e0896',
+                'value': 40
+              }],
+              'treatment_min_dose': [{
+                '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000001',
+                'dosingPeriodicity': 'P1D',
+                'unit': 'http://trials.drugis.org/instances/8691b100-e5d9-4048-acc3-6ed9731e0896',
+                'value': 20
+              }]
+            }],
+            label: 'Treatment',
+            comment: 'activity 2 comment'
+          }]
+        };
+        studyDefer.resolve(jsonStudy);
+        graphDefer.resolve({
+          '@graph': [jsonStudy]
+        });
+        rootScope.$digest();
+      });
 
+      it('should edit', function(done) {
+        var editActivity = {
+          activityUri: 'http://trials.drugis.org/instances/activity2Uuid',
+          label: 'edit label',
+          activityType: {
+            uri: 'ontology:ScreeningActivity'
+          }
+        };
+
+        var strippedStudy = {
+          '@type': 'ontology:Study',
+          'has_activity': [{
+            '@id': 'http://trials.drugis.org/instances/6d44e008-450a-4363-aae2-f6a79801283d',
+            '@type': 'ontology:WashOutActivity',
+            'label': 'Wash out',
+          }, {
+            '@id': 'http://trials.drugis.org/instances/activity2Uuid',
+            '@type': 'ontology:ScreeningActivity',
+            label: 'edit label'
+          }]
+        }
+        activityService.editItem(editActivity).then(function() {
+          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith({
+            '@graph': [strippedStudy]
+          });
+          activityService.queryItems().then(function(activities) {
+            expect(activities.length).toBe(2);
+            expect(activities[1].label).toEqual('edit label');
+            expect(activities[1].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['ontology:ScreeningActivity']);
+            expect(activities[1].activityDescription).not.toBeDefined();
+            expect(activities[1].treatments).not.toBeDefined();
+            done();
+          });
+        });
+        rootScope.$digest();
+      });
+    });
     describe('delete activity', function() {
       beforeEach(function() {
         jsonStudy = {

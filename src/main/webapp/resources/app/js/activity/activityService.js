@@ -188,10 +188,15 @@ define([],
           toEdit['@type'] = item.activityType.uri;
           toEdit.label = item.label;
           toEdit.comment = item.activityDescription;
+          if(! toEdit.comment) {
+            delete toEdit.comment;
+          }
           if (item.treatments && item.treatments.length > 0) {
             toEdit.has_drug_treatment = _.map(item.treatments, createTreatmentJson);
 
             addDrugsAndUnitsToGraph(graph, item.treatments);
+          } else {
+            delete toEdit.has_drug_treatment;
           }
           return StudyService.saveJsonGraph(graph);
         });
