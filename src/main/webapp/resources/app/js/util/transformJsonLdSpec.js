@@ -187,6 +187,10 @@ define(['util/transformJsonLd'], function(transformJsonLd) {
         "@id": "http://trials.drugis.org/ontology#in_epoch",
         "@type": "@id"
       },
+      'treatment_dose': {
+        '@id': 'http://trials.drugis.org/ontology#treatment_dose',
+        '@type': '@id'
+      },
       "treatment_min_dose": {
         "@id": "http://trials.drugis.org/ontology#treatment_min_dose",
         "@type": "@id"
@@ -1235,7 +1239,7 @@ define(['util/transformJsonLd'], function(transformJsonLd) {
 
     it('should transform a study with a list', function() {
       var result = transformJsonLd(studyWithList);
-      var study = _.find(result['@graph'], function(node){
+      var study = _.find(result['@graph'], function(node) {
         return node['@type'] === "ontology:Study";
       });
       expect(study.has_epochs.length).toEqual(3);

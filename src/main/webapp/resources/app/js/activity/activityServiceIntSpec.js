@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function(angular, angularMocks) {
-  fdescribe('the activity service', function() {
+  describe('the activity service', function() {
 
     var mockStudyUuid = 'mockStudyUuid',
       rootScope, q,

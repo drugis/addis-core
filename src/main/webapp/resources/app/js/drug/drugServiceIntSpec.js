@@ -59,41 +59,5 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       });
     });
 
-    describe('addItem', function() {
-      var jsonGraph = {
-        '@graph': [{
-          '@id': 'http://trials.drugis.org/instances/drugUuid1',
-          '@type': 'ontology:Drug',
-          label: 'Sertraline'
-        }, {
-          '@id': 'http://trials.drugis.org/instances/drugUuid2',
-          '@type': 'ontology:Drug',
-          label: 'Bupropion'
-        }]
-      }
-
-      beforeEach(function() {
-        graphDefer.resolve(jsonGraph);
-        rootScope.$digest();
-      });
-
-      it('should add the item to the graph', function(done) {
-        var newItem = {
-          '@id': 'http://instances/newUuid',
-          '@type': 'ontology:Drug',
-          label: 'Fluoxetine'
-        }
-        drugService.addItem(newItem).then(function(){
-          drugService.queryItems().then(function(drugs) {
-            expect(drugs.length).toBe(3);
-            expect(drugs[2]).toBe(newItem);
-            done();
-          });
-        });
-        rootScope.$digest();
-      });
-
-    })
-
   });
 });

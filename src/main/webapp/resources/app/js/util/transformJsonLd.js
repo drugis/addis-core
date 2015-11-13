@@ -87,7 +87,7 @@ define(['lodash'], function(_) {
             } else {
               list.push(findAndRemoveFromGraph(listBlankNode.first['@id']));
             }
-            
+
           }
         }
       } else if (listBlankNodeId['@list'].length === 1) {
@@ -328,6 +328,10 @@ define(['lodash'], function(_) {
       },
       'in_epoch': {
         '@id': 'http://trials.drugis.org/ontology#in_epoch',
+        '@type': '@id'
+      },
+      'treatment_dose': {
+        '@id': 'http://trials.drugis.org/ontology#treatment_dose',
         '@type': '@id'
       },
       'treatment_min_dose': {

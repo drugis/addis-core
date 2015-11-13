@@ -11,7 +11,7 @@ define([], function() {
 
         scope.treatment = {};
         scope.treatment.dosingPeriodicity = 'P1D';
-        scope.treatment.treatmentDoseType = 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment';
+        scope.treatment.treatmentDoseType = 'ontology:FixedDoseDrugTreatment';
 
         DrugService.queryItems($stateParams.studyUUID).then(function(result){
           scope.drugs = result;
@@ -24,7 +24,7 @@ define([], function() {
         function reset() {
           scope.treatment = {
             dosingPeriodicity: 'P1D',
-            treatmentDoseType: 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment'
+            treatmentDoseType: 'ontology:FixedDoseDrugTreatment'
           };
         }
 
@@ -47,9 +47,9 @@ define([], function() {
           var baseValid = isCompleteTypeaheadValue(scope.treatment.drug) &&
             isCompleteTypeaheadValue(scope.treatment.doseUnit) && scope.treatment.dosingPeriodicity &&
             scope.treatment.dosingPeriodicity !== 'PnullD';
-          if(scope.treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment') {
+          if(scope.treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment') {
             return baseValid && isDefinedNumber(scope.treatment.fixedValue);
-          } else if (scope.treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment') {
+          } else if (scope.treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment') {
             return baseValid && isDefinedNumber(scope.treatment.minValue) && isDefinedNumber(scope.treatment.maxValue);
           }
           return false;

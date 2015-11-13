@@ -4,24 +4,25 @@ define([],
     var dependencies = ['$q', 'StudyService'];
     var DrugService = function($q, StudyService) {
 
+
+      function nodeToFrontEnd(node) {
+        return {
+          uri: node['@id'],
+          label: node.label
+        };
+      }
+
       function queryItems() {
         return StudyService.getJsonGraph().then(function(graph) {
-          return _.filter(graph['@graph'], function(node) {
+          var nodes = _.filter(graph['@graph'], function(node) {
             return node['@type'] === 'ontology:Drug';
           });
+          return _.map(nodes, nodeToFrontEnd);
+
         });
       }
-
-      function addItem(newDrug) {
-        return StudyService.getJsonGraph().then(function(graph) {
-          graph['@graph'].push(newDrug);
-          StudyService.saveJsonGraph(graph);
-        });
-      }
-
       return {
-        queryItems: queryItems,
-        addItem: addItem
+        queryItems: queryItems
       };
     };
     return dependencies.concat(DrugService);
