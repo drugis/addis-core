@@ -1,15 +1,14 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService'];
-    var UnitService = function($q, StudyService, SparqlResource, UUIDService) {
-
-      var queryUnitTemplate = SparqlResource.get('queryUnit.sparql');
+    var dependencies = ['$q', 'StudyService'];
+    var UnitService = function($q, StudyService) {
 
       function queryItems(studyUuid) {
-        return queryUnitTemplate.then(function(template){
-          // no need to fill template, nothing to fillin
-          return StudyService.doNonModifyingQuery(template);
+        return StudyService.getJsonGraph().then(function(graph) {
+          return _.filter(graph['@graph'], function(node) {
+            return node['@type'] === 'ontology:Unit';
+          });
         });
       }
 

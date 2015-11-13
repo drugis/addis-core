@@ -99,35 +99,6 @@ define([],
         return result;
       }
 
-      function addTreatment(activityUri, treatment) {
-        // StudyService.getStudy().then(function(study) {
-        //   var activity = _.find(study.has_activity, function(activity) {
-        //     return activity['@id'] === activityUri;
-        //   });
-        // });
-        // if (treatment.treatmentDoseType === FIXED_DOSE_TYPE) {
-        //   return addFixedDoseTreatmentTemplate.then(function(template) {
-        //     var query = fillInTreatmentTemplate(template, activityUri, treatment);
-        //     return StudyService.doModifyingQuery(query);
-        //   });
-        // } else if (treatment.treatmentDoseType === TITRATED_DOSE_TYPE) {
-        //   return addTitratedTreatmentTemplate.then(function(template) {
-        //     var query = fillInTreatmentTemplate(template, activityUri, treatment);
-        //     return StudyService.doModifyingQuery(query);
-        //   });
-        // }
-      }
-
-      // function addTreatments(treatments, activityUri) {
-      //   var treatmentPromises = [];
-      //   _.each(treatments, function(treatment) {
-      //     if (!treatment.treatmentUri) {
-      //       treatmentPromises.push(addTreatment(activityUri, treatment));
-      //     }
-      //   });
-      //   return treatmentPromises;
-      // }
-
       function createTreatmentJson(treatment) {
         function createDoseValue(value) {
           return [{
@@ -176,6 +147,16 @@ define([],
                   label: treatment.drug.label
                 });
               }
+              var unit = _.find(graph['@graph'], function(node) {
+                return node['@id'] === treatment.doseUnit.uri;
+              });
+              if (!unit) {
+                graph['@graph'].push({
+                  '@id': treatment.doseUnit.uri,
+                  '@type': 'ontology:Unit',
+                  label: treatment.doseUnit.label
+                });
+              }
             });
           }
 
@@ -191,24 +172,6 @@ define([],
           return StudyService.saveJsonGraph(graph);
         });
       }
-
-      // function addItem(item) {
-      //   var newActivity = angular.copy(item);
-      //   newActivity.activityUri = INSTANCE_PREFIX + UUIDService.generate();
-      //   var addOptionalDescriptionPromise;
-      //   var addActivityPromise = addActivityTemplate.then(function(template) {
-      //     var query = fillInTemplate(template, newActivity);
-      //     return StudyService.doModifyingQuery(query);
-      //   });
-
-      //   var treatmentPromises = addTreatments(item.treatments, newActivity.activityUri);
-
-      //   if (newActivity.activityDescription) {
-      //     addOptionalDescriptionPromise = CommentService.addComment(newActivity.activityUri, item.activityDescription);
-      //   }
-
-      //   return $q.all([addActivityPromise, addOptionalDescriptionPromise].concat(treatmentPromises));
-      // }
 
       function editItem(item) {
         return StudyService.getStudy().then(function(study) {

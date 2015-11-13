@@ -240,8 +240,8 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
           label: 'old drug'
         },
         doseUnit: {
-          uri: 'http://unit/oldUnit',
-          label: 'old unit label'
+          uri: 'http://unit/newUnit',
+          label: 'new unit label'
         },
         minValue: '120',
         maxValue: '1300',
@@ -276,6 +276,10 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
           '@id': 'http://drug/newDrugUuid',
           '@type': 'ontology:Drug',
           label: 'new drug'
+        }, {
+          '@id': 'http://unit/newUnit',
+          '@type': 'ontology:Unit',
+          label: 'new unit label'
         });
         _.remove(expectedGraph['@graph'], function(node) {
           return node['@type'] === 'ontology:Study';
@@ -302,12 +306,12 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
               treatment_has_drug: 'http://drug/oldDrugUuid',
               treatment_min_dose: [{
                 dosingPeriodicity: 'P2W',
-                unit: 'http://unit/oldUnit',
+                unit: 'http://unit/newUnit',
                 value: '120'
               }],
               treatment_max_dose: [{
                 dosingPeriodicity: 'P2W',
-                unit: 'http://unit/oldUnit',
+                unit: 'http://unit/newUnit',
                 value: '1300'
               }]
             }]
@@ -337,7 +341,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
 
           expect(activity.treatments[1].treatmentDoseType).toEqual('ontology:TitratedDoseDrugTreatment');
           expect(activity.treatments[1].drug.label).toEqual('old drug');
-          expect(activity.treatments[1].doseUnit.label).toEqual('old unit label');
+          expect(activity.treatments[1].doseUnit.label).toEqual('new unit label');
           expect(activity.treatments[1].dosingPeriodicity).toEqual('P2W');
           expect(activity.treatments[1].minValue).toEqual('120');
           expect(activity.treatments[1].maxValue).toEqual('1300');

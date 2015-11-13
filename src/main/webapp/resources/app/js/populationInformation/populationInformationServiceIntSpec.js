@@ -168,7 +168,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
 
     });
 
-    describe('edit population information when NO indication was precent on study', function() {
+    describe('edit population information when NO indication was present on study', function() {
 
       var studyDefer, getStudyPromise, populationInformation;
       var newInformation;
