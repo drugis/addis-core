@@ -57,7 +57,7 @@ define([],
             return measurementMoment;
           });
 
-          return unsorted.length > 1 ? sortByEpochAnchorAndDuration(unsorted): unsorted;
+          return unsorted.length > 1 ? sortByEpochAnchorAndDuration(unsorted) : unsorted;
         });
       }
 
@@ -99,11 +99,27 @@ define([],
 
 
       function addItem(item) {
-        // var newItem = angular.copy(item);
-        // newItem.uuid = UUIDService.generate();
-        // return addItemQuery.then(function(template) {
-        //   return StudyService.doModifyingQuery(fillTemplate(template, newItem));
-        // });
+        var epoch = {
+          '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
+          '@type': 'ontology:MeasurementMoment',
+          label: item.label
+        };
+
+        if (item.relativeToAnchor) {
+          epoch.relative_to_anchor = item.relativeToAnchor;
+        }
+
+        if (item.offset) {
+          epoch.time_offset = item.offset;
+        }
+
+        if (item.epoch) {
+          epoch.relative_to_epoch = item.epoch.uri;
+        }
+
+        return StudyService.getJsonGraph().then(function(graph) {
+          return StudyService.saveJsonGraph(graph.push(epoch));
+        });
       }
 
       function editItem(item) {

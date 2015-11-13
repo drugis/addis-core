@@ -77,38 +77,39 @@ define(['angular', 'angular-mocks'], function(angular) {
       });
     });
 
-    // describe('add measurement moments', function() {
-    //   var newMoment = {
-    //     label: 'At start of new epoch',
-    //     epoch: {
-    //       uri: 'http://trials.drugis.org/instances/epoch1uuid'
-    //     },
-    //     relativeToAnchor: 'http://trials.drugis.org/ontology#anchorEpochStart',
-    //     offset: 'PT0S'
-    //   };
+    fdescribe('add measurement moments', function() {
+      var newMoment = {
+        label: 'At start of new epoch',
+        epoch: {
+          uri: 'http://trials.drugis.org/instances/bbb'
+        },
+        relativeToAnchor: 'ontology:anchorEpochStart',
+        offset: 'PT0S'
+      };
 
-    //   beforeEach(function(done) {
-    //     testUtils.loadTestGraph('singleEpoch.ttl', graphUri);
-    //     testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-    //     testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-    //     done();
-    //   });
+      beforeEach(function() {
+        var graphJsonObject = [];
+        var graphDefer = q.defer();
+        var getGraphPromise = graphDefer.promise;
+        graphDefer.resolve(graphJsonObject);
+        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+      });
 
-    //   it('should add the measurement', function(done) {
-    //     measurementMomentService.addItem(newMoment).then(function() {
-    //       measurementMomentService.queryItems().then(function(result) {
-    //         expect(result.length).toBe(1);
-    //         var measurementMoment = result[0];
-    //         expect(measurementMoment.label).toEqual('At start of new epoch');
-    //         expect(measurementMoment.epochLabel).toEqual('epoch 1');
-    //         expect(measurementMoment.relativeToAnchor).toEqual('http://trials.drugis.org/ontology#anchorEpochStart');
-    //         expect(measurementMoment.offset).toEqual('PT0S');
-    //         done();
-    //       });
-    //     });
-    //     rootScope.$digest();
-    //   });
-    // });
+      it('should add the measurement', function(done) {
+        measurementMomentService.addItem(newMoment).then(function() {
+          measurementMomentService.queryItems().then(function(result) {
+            expect(result.length).toBe(1);
+            var measurementMoment = result[0];
+            expect(measurementMoment.label).toEqual('At start of new epoch');
+            expect(measurementMoment.epochLabel).toEqual('Randomization');
+            expect(measurementMoment.relativeToAnchor).toEqual('ontology:anchorEpochStart');
+            expect(measurementMoment.offset).toEqual('PT0S');
+            done();
+          });
+        });
+        rootScope.$digest();
+      });
+    });
 
     // describe('delete measurement moment', function() {
     //   beforeEach(function(done) {
