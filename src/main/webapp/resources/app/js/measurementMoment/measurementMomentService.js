@@ -1,27 +1,51 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', '$filter', 'StudyService', 'SparqlResource', 'UUIDService', 'EpochService', 'DurationService'];
-    var MeasurementMomentService = function($q, $filter, StudyService, SparqlResource, UUIDService, EpochService, DurationService) {
+    var dependencies = ['$q', '$filter', 'StudyService', 'UUIDService', 'EpochService', 'DurationService'];
+    var MeasurementMomentService = function($q, $filter, StudyService, UUIDService, EpochService, DurationService) {
 
-      var measurementMomentQuery = SparqlResource.get('queryMeasurementMoment.sparql');
-      var addItemQuery = SparqlResource.get('addMeasurementMoment.sparql');
-      var editItemQuery = SparqlResource.get('editMeasurementMoment.sparql');
-      var deleteItemQuery = SparqlResource.get('deleteMeasurementMoment.sparql');
+      // var measurementMomentQuery = SparqlResource.get('queryMeasurementMoment.sparql');
+      // var addItemQuery = SparqlResource.get('addMeasurementMoment.sparql');
+      // var editItemQuery = SparqlResource.get('editMeasurementMoment.sparql');
+      // var deleteItemQuery = SparqlResource.get('deleteMeasurementMoment.sparql');
+
+      function toFrontEnd(backendItem) {
+        var frontEndItem = {
+          uri: backendItem['@id'],
+          label: label
+        };
+
+        if (backendItem.relative_to_epoch) {
+          frontendItem.epochUri = backendItem.relative_to_epoch;
+        }
+
+        if (backendItem.relative_to_anchor) {
+          frontendItem.relativeToAnchor = backendItem.relativeToAnchor
+        }
+
+        if (backendItem.time_offset) {
+          frontendItem.offset = backendItem.time_offset;
+        }
+
+        return frontendItem;
+      }
+
+      function isMeasurementMoment(node) {
+        return 'ontology:MeasurementMoment' === node['@type'];
+      }
 
       function queryItems() {
-        var measurementMoments, epochs;
-        var epochsPromise = EpochService.queryItems().then(function(result) {
-          epochs = result;
+
+        var epochs = EpochService.queryItems().then(function(result) {
+          return result;
         });
 
-        var measurementsMomentsPromise = measurementMomentQuery.then(function(query) {
-          return StudyService.doNonModifyingQuery(query).then(function(result) {
-            measurementMoments = result;
-          });
+        var measurementMoments = StudyService.getJsonGraph().then(function(graph) {
+          var backendMeasurementMoments = _.filter(graph, isMeasurementMoment);
+          return backendMeasurementMoments.map(toFrontEnd);
         });
 
-        return $q.all([epochsPromise, measurementsMomentsPromise]).then(function() {
+        return $q.all([epochs, measurementMoments]).then(function() {
 
           var unsorted = _.map(measurementMoments, function(measurementMoment) {
             measurementMoment.epoch = _.find(epochs, function(epoch) {
@@ -44,14 +68,14 @@ define([],
           }
 
           // move un-sortable items to the back
-          if(!isSortable(a) && !isSortable(b)) {
+          if (!isSortable(a) && !isSortable(b)) {
             return 0;
-          } else if(!isSortable(a)) {
+          } else if (!isSortable(a)) {
             return 1;
-          } else if(!isSortable(b)){
+          } else if (!isSortable(b)) {
             return -1;
           }
-          
+
           // sort only the sortable items
           if (a.epoch.pos === b.epoch.pos) {
             if (a.relativeToAnchor === b.relativeToAnchor) {
@@ -73,23 +97,23 @@ define([],
 
 
       function addItem(item) {
-        var newItem = angular.copy(item);
-        newItem.uuid = UUIDService.generate();
-        return addItemQuery.then(function(template) {
-          return StudyService.doModifyingQuery(fillTemplate(template, newItem));
-        });
+        // var newItem = angular.copy(item);
+        // newItem.uuid = UUIDService.generate();
+        // return addItemQuery.then(function(template) {
+        //   return StudyService.doModifyingQuery(fillTemplate(template, newItem));
+        // });
       }
 
       function editItem(item) {
-        return editItemQuery.then(function(template) {
-          return StudyService.doModifyingQuery(fillTemplate(template, item));
-        });
+        // return editItemQuery.then(function(template) {
+        //   return StudyService.doModifyingQuery(fillTemplate(template, item));
+        // });
       }
 
       function deleteItem(item) {
-        return deleteItemQuery.then(function(template) {
-          return StudyService.doModifyingQuery(fillTemplate(template, item));
-        });
+        // return deleteItemQuery.then(function(template) {
+        //   return StudyService.doModifyingQuery(fillTemplate(template, item));
+        // });
 
       }
 
@@ -102,18 +126,18 @@ define([],
         return offsetStr + ' ' + anchorStr + ' of ' + measurementMoment.epoch.label;
       }
 
-      function fillTemplate(template, item) {
-        var query = template
-          .replace(/\$newItemUuid/g, item.uuid)
-          .replace(/\$itemUri/g, item.uri)
-          .replace(/\$newLabel/g, item.label)
-          .replace(/\$anchorMoment/g, item.relativeToAnchor)
-          .replace(/\$timeOffset/g, item.offset);
-        if(item.epoch) {
-          query = query.replace(/\$epochUri/g, item.epoch.uri)
-        }
-        return query;
-      }
+      // function fillTemplate(template, item) {
+      //   var query = template
+      //     .replace(/\$newItemUuid/g, item.uuid)
+      //     .replace(/\$itemUri/g, item.uri)
+      //     .replace(/\$newLabel/g, item.label)
+      //     .replace(/\$anchorMoment/g, item.relativeToAnchor)
+      //     .replace(/\$timeOffset/g, item.offset);
+      //   if(item.epoch) {
+      //     query = query.replace(/\$epochUri/g, item.epoch.uri)
+      //   }
+      //   return query;
+      // }
 
       return {
         queryItems: queryItems,
