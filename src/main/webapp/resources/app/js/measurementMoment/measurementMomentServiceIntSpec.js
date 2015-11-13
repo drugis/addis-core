@@ -77,7 +77,7 @@ define(['angular', 'angular-mocks'], function(angular) {
       });
     });
 
-    fdescribe('add measurement moments', function() {
+    describe('add measurement moments', function() {
       var newMoment = {
         label: 'At start of new epoch',
         epoch: {
@@ -111,28 +111,84 @@ define(['angular', 'angular-mocks'], function(angular) {
       });
     });
 
-    // describe('delete measurement moment', function() {
-    //   beforeEach(function(done) {
-    //     testUtils.loadTestGraph('queryMeasurementMomentsGraph.ttl', graphUri);
-    //     testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-    //     testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-    //     done();
-    //   });
+    describe('edit measurement moments', function() {
+      var editMoment = {
+        label: 'new Label',
+        epoch: {
+          uri: 'http://trials.drugis.org/instances/aaa'
+        },
+        relativeToAnchor: 'ontology:anchorEpochEnd',
+        offset: 'PT4D',
+        uri: 'http://trials.drugis.org/instances/4bf82c72-02de-48cb-8925-2062b6b82234'
+      };
 
-    //   it('should remove the measurementmoment', function(done) {
-    //     var mmToRemove = {
-    //       label: 'At start of new epoch',
-    //       uri: 'http://trials.drugis.org/instances/2634b5b6-d557-4b38-8c48-ec08fa12d435'
-    //     };
-    //     measurementMomentService.deleteItem(mmToRemove).then(function() {
-    //       measurementMomentService.queryItems().then(function(result) {
-    //         expect(result.length).toBe(1);
-    //         done();
-    //       });
-    //     });
-    //     rootScope.$digest();
-    //   });
-    // });
+      beforeEach(function() {
+        var graphJsonObject = [{
+          "@id": "http://trials.drugis.org/instances/4bf82c72-02de-48cb-8925-2062b6b82234",
+          "@type": "ontology:MeasurementMoment",
+          "relative_to_anchor": "ontology:anchorEpochStart",
+          "relative_to_epoch": "http://trials.drugis.org/instances/bbb",
+          "time_offset": "PT0S",
+          "label": "At start of epoch 1"
+        }];
+        var graphDefer = q.defer();
+        var getGraphPromise = graphDefer.promise;
+        graphDefer.resolve(graphJsonObject);
+        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+      });
+
+      it('should add the measurement', function(done) {
+        measurementMomentService.editItem(editMoment).then(function() {
+          measurementMomentService.queryItems().then(function(result) {
+            expect(result.length).toBe(1);
+            var measurementMoment = result[0];
+            expect(measurementMoment.label).toEqual('new Label');
+            expect(measurementMoment.epochLabel).toEqual('Washout');
+            expect(measurementMoment.relativeToAnchor).toEqual('ontology:anchorEpochEnd');
+            expect(measurementMoment.offset).toEqual('PT4D');
+            done();
+          });
+        });
+        rootScope.$digest();
+      });
+    });
+
+    describe('delete measurement moments', function() {
+      var deleteMoment = {
+        label: 'At start of epoch 1',
+        epoch: {
+          uri: 'http://trials.drugis.org/instances/bbb'
+        },
+        relativeToAnchor: 'ontology:anchorEpochStart',
+        offset: 'PT0S',
+        uri: 'http://trials.drugis.org/instances/4bf82c72-02de-48cb-8925-2062b6b82234'
+      };
+
+      beforeEach(function() {
+        var graphJsonObject = [{
+          "@id": "http://trials.drugis.org/instances/4bf82c72-02de-48cb-8925-2062b6b82234",
+          "@type": "ontology:MeasurementMoment",
+          "relative_to_anchor": "ontology:anchorEpochStart",
+          "relative_to_epoch": "http://trials.drugis.org/instances/bbb",
+          "time_offset": "PT0S",
+          "label": "At start of epoch 1"
+        }];
+        var graphDefer = q.defer();
+        var getGraphPromise = graphDefer.promise;
+        graphDefer.resolve(graphJsonObject);
+        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+      });
+
+      it('should add the measurement', function(done) {
+        measurementMomentService.deleteItem(deleteMoment).then(function() {
+          measurementMomentService.queryItems().then(function(result) {
+            expect(result.length).toBe(0);
+            done();
+          });
+        });
+        rootScope.$digest();
+      });
+    });
 
 
   });

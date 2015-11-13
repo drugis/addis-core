@@ -123,16 +123,41 @@ define([],
       }
 
       function editItem(item) {
-        // return editItemQuery.then(function(template) {
-        //   return StudyService.doModifyingQuery(fillTemplate(template, item));
-        // });
+        return StudyService.getJsonGraph().then(function(graph) {
+
+          var removed = _.remove(graph, function(node) {
+            return item.uri = node['@id'];
+          });
+
+          var editItem = {
+            '@id': removed[0]['@id'],
+            '@type': 'ontology:MeasurementMoment',
+            label: item.label
+          };
+
+          if (item.relativeToAnchor) {
+            editItem.relative_to_anchor = item.relativeToAnchor;
+          }
+
+          if (item.offset) {
+            editItem.time_offset = item.offset;
+          }
+
+          if (item.epoch) {
+            editItem.relative_to_epoch = item.epoch.uri;
+          }
+
+          return StudyService.saveJsonGraph(graph.push(editItem));
+        });
       }
 
       function deleteItem(item) {
-        // return deleteItemQuery.then(function(template) {
-        //   return StudyService.doModifyingQuery(fillTemplate(template, item));
-        // });
-
+        return StudyService.getJsonGraph().then(function(graph) {
+          _.remove(graph, function(node) {
+            return item.uri = node['@id'];
+          });
+          return StudyService.saveJsonGraph(graph);
+        });
       }
 
       function generateLabel(measurementMoment) {
@@ -140,22 +165,9 @@ define([],
           return '';
         }
         var offsetStr = (measurementMoment.offset === 'PT0S') ? 'At' : $filter('durationFilter')(measurementMoment.offset) + ' from';
-        var anchorStr = measurementMoment.relativeToAnchor === 'http://trials.drugis.org/ontology#anchorEpochStart' ? 'start' : 'end';
+        var anchorStr = measurementMoment.relativeToAnchor === 'ontology:anchorEpochStart' ? 'start' : 'end';
         return offsetStr + ' ' + anchorStr + ' of ' + measurementMoment.epoch.label;
       }
-
-      // function fillTemplate(template, item) {
-      //   var query = template
-      //     .replace(/\$newItemUuid/g, item.uuid)
-      //     .replace(/\$itemUri/g, item.uri)
-      //     .replace(/\$newLabel/g, item.label)
-      //     .replace(/\$anchorMoment/g, item.relativeToAnchor)
-      //     .replace(/\$timeOffset/g, item.offset);
-      //   if(item.epoch) {
-      //     query = query.replace(/\$epochUri/g, item.epoch.uri)
-      //   }
-      //   return query;
-      // }
 
       return {
         queryItems: queryItems,
