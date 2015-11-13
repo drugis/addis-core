@@ -6,7 +6,7 @@ define([],
 
       function toFrontEnd(backEndArm) {
         var frontEndArm = {
-          uri: backEndArm['@id'],
+          armURI: backEndArm['@id'],
           label: backEndArm.label,
         }
 
@@ -19,7 +19,7 @@ define([],
 
       function toBackEnd(frontEndArm) {
         var backEndArm = {
-          '@id': frontEndArm.uri,
+          '@id': frontEndArm.armURI,
           label: frontEndArm.label,
         }
 
@@ -56,7 +56,7 @@ define([],
       function editItem(editArm) {
         return StudyService.getStudy().then(function(study) {
           study.has_arm = _.map(study.has_arm, function(arm) {
-            if (arm['@id'] === editArm.uri) {
+            if (arm['@id'] === editArm.armURI) {
               return toBackEnd(editArm);
             }
             return arm;
@@ -68,7 +68,7 @@ define([],
       function deleteItem(removeArm) {
         return StudyService.getStudy().then(function(study) {
           _.remove(study.has_arm, function(arm) {
-            return arm['@id'] === removeArm.uri;
+            return arm['@id'] === removeArm.armURI;
           });
           return StudyService.save(study);
         });
