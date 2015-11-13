@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function(angular) {
-  describe('the measurement moment service', function() {
+  fdescribe('the measurement moment service', function() {
 
     var mockStudyUuid = 'mockStudyUuid';
     var rootScope, q;
@@ -29,7 +29,17 @@ define(['angular', 'angular-mocks'], function(angular) {
       // mock stub services
       var queryEpochsDeferred = $q.defer();
       var mockEpochs = [{
-        uri: 'http://trials.drugis.org/instances/4be1f8d0-7d6c-45f0-a651-69bb9d4df948'
+        uri: 'http://trials.drugis.org/instances/aaa',
+        duration: 'P14D',
+        label: 'Washout',
+        pos: 0,
+        isPrimary: false
+      }, {
+        uri: 'http://trials.drugis.org/instances/bbb',
+        label: 'Randomization',
+        duration: 'PT0S',
+        pos: 1,
+        isPrimary: true
       }];
       queryEpochsDeferred.resolve(mockEpochs);
       epochServiceStub.queryItems.and.returnValue(queryEpochsDeferred.promise);
@@ -40,16 +50,14 @@ define(['angular', 'angular-mocks'], function(angular) {
 
     describe('query measurement moments', function() {
       beforeEach(function() {
-        var graphJsonObject = {
-          "@graph": [{
-            "@id": "http://trials.drugis.org/instances/4bf82c72-02de-48cb-8925-2062b6b82234",
-            "@type": "ontology:MeasurementMoment",
-            "relative_to_anchor": "ontology:anchorEpochStart",
-            "relative_to_epoch": "http://trials.drugis.org/instances/2e545e50-b1f6-4a2a-813a-ab972cef804c",
-            "time_offset": "PT0S",
-            "label": "P0D FROM_EPOCH_START Main phase"
-          }]
-        };
+        var graphJsonObject = [{
+          "@id": "http://trials.drugis.org/instances/4bf82c72-02de-48cb-8925-2062b6b82234",
+          "@type": "ontology:MeasurementMoment",
+          "relative_to_anchor": "ontology:anchorEpochStart",
+          "relative_to_epoch": "http://trials.drugis.org/instances/bbb",
+          "time_offset": "PT0S",
+          "label": "At start of epoch 1"
+        }];
         var graphDefer = q.defer();
         var getGraphPromise = graphDefer.promise;
         graphDefer.resolve(graphJsonObject);
@@ -60,8 +68,8 @@ define(['angular', 'angular-mocks'], function(angular) {
           expect(result.length).toBe(1);
           var measurementMoment = result[0];
           expect(measurementMoment.label).toEqual('At start of epoch 1');
-          expect(measurementMoment.epochLabel).toEqual('epoch 1');
-          expect(measurementMoment.relativeToAnchor).toEqual('http://trials.drugis.org/ontology#anchorEpochStart');
+          expect(measurementMoment.epochLabel).toEqual('Randomization');
+          expect(measurementMoment.relativeToAnchor).toEqual('ontology:anchorEpochStart');
           expect(measurementMoment.offset).toEqual('PT0S');
           done();
         });

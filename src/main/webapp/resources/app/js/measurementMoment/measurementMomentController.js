@@ -49,7 +49,7 @@ define([],
         $scope.hasOffset = 'false';
         $scope.itemScratch = {
           offset: 'PT0S',
-          relativeToAnchor: 'http://trials.drugis.org/ontology#anchorEpochStart'
+          relativeToAnchor: 'ontology#anchorEpochStart'
         };
 
         $scope.commit = $scope.addItem;

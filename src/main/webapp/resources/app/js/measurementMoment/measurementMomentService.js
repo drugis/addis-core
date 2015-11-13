@@ -9,10 +9,10 @@ define([],
       // var editItemQuery = SparqlResource.get('editMeasurementMoment.sparql');
       // var deleteItemQuery = SparqlResource.get('deleteMeasurementMoment.sparql');
 
-      function toFrontEnd(backendItem) {
-        var frontEndItem = {
+      function toFrontend(backendItem) {
+        var frontendItem = {
           uri: backendItem['@id'],
-          label: label
+          label: backendItem.label
         };
 
         if (backendItem.relative_to_epoch) {
@@ -20,7 +20,7 @@ define([],
         }
 
         if (backendItem.relative_to_anchor) {
-          frontendItem.relativeToAnchor = backendItem.relativeToAnchor
+          frontendItem.relativeToAnchor = backendItem.relative_to_anchor
         }
 
         if (backendItem.time_offset) {
@@ -36,26 +36,28 @@ define([],
 
       function queryItems() {
 
-        var epochs = EpochService.queryItems().then(function(result) {
+        var queryEpochs = EpochService.queryItems().then(function(result) {
           return result;
         });
 
-        var measurementMoments = StudyService.getJsonGraph().then(function(graph) {
-          var backendMeasurementMoments = _.filter(graph, isMeasurementMoment);
-          return backendMeasurementMoments.map(toFrontEnd);
+        var queryMeasurementMoments = StudyService.getJsonGraph().then(function(graph) {
+          return _.filter(graph, isMeasurementMoment).map(toFrontend);
         });
 
-        return $q.all([epochs, measurementMoments]).then(function() {
+        return $q.all([queryEpochs, queryMeasurementMoments]).then(function(results) {
+
+          var epochs = results[0];
+          var measurementMoments = results[1];
 
           var unsorted = _.map(measurementMoments, function(measurementMoment) {
             measurementMoment.epoch = _.find(epochs, function(epoch) {
               return measurementMoment.epochUri === epoch.uri;
             });
+            measurementMoment.epochLabel = measurementMoment.epoch.label;
             return measurementMoment;
           });
 
-          return sortByEpochAnchorAndDuration(unsorted);
-
+          return unsorted.length > 1 ? sortByEpochAnchorAndDuration(unsorted): unsorted;
         });
       }
 
@@ -88,7 +90,7 @@ define([],
               }
             }
             // sort by anchor
-            return a.relativeToAnchor === 'http://trials.drugis.org/ontology#anchorEpochStart' ? -1 : 1;
+            return a.relativeToAnchor === 'ontology:anchorEpochStart' ? -1 : 1;
           }
           // sort by epoch
           return a.epoch.pos - b.epoch.pos;
