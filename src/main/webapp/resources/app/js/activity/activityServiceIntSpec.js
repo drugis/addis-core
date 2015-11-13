@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function(angular, angularMocks) {
-  describe('the activity service', function() {
+  fdescribe('the activity service', function() {
 
     var mockStudyUuid = 'mockStudyUuid',
       rootScope, q,
@@ -217,7 +217,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       });
     });
 
-    fdescribe('add treatment activity', function() {
+    describe('add treatment activity', function() {
       var expectedGraph;
       var fixedTreatment = {
         treatmentDoseType: 'ontology:FixedDoseDrugTreatment',
@@ -352,9 +352,10 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       });
     });
 
-    describe('edit activities', function() {
+    describe('edit a non-treatment activity', function() {
       beforeEach(function() {
         jsonStudy = {
+          '@type': 'ontology:Study',
           'has_activity': [{
             '@id': 'http://trials.drugis.org/instances/6d44e008-450a-4363-aae2-f6a79801283d',
             '@type': 'ontology:WashOutActivity',
@@ -369,11 +370,13 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
           }]
         };
         studyDefer.resolve(jsonStudy);
-        graphDefer.resolve({});
+        graphDefer.resolve({
+          '@graph': [jsonStudy]
+        });
         rootScope.$digest();
       });
 
-      it('should edit a non-treatment activity', function(done) {
+      it('should edit', function(done) {
         var editActivity = {
           activityUri: 'http://trials.drugis.org/instances/activity2Uuid',
           label: 'edit label',
@@ -387,6 +390,69 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
             expect(activities[1].label).toEqual('edit label');
             expect(activities[1].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['ontology:ScreeningActivity']);
             expect(activities[1].activityDescription).not.toBeDefined();
+            done();
+          });
+        });
+        rootScope.$digest();
+      });
+    });
+
+    describe('edit a from a non-treatment to a treatment activity', function() {
+      beforeEach(function() {
+        jsonStudy = {
+          '@type': 'ontology:Study',
+          'has_activity': [{
+            '@id': 'http://trials.drugis.org/instances/6d44e008-450a-4363-aae2-f6a79801283d',
+            '@type': 'ontology:WashOutActivity',
+            'has_activity_application': [],
+            'label': 'Wash out',
+          }, {
+            '@id': 'http://trials.drugis.org/instances/activity2Uuid',
+            '@type': 'ontology:RandomizationActivity',
+            'has_activity_application': [],
+            label: 'Randomization',
+            comment: 'activity 2 comment'
+          }]
+        };
+        studyDefer.resolve(jsonStudy);
+        graphDefer.resolve({
+          '@graph': [jsonStudy]
+        });
+        rootScope.$digest();
+      });
+
+      it('should edit', function(done) {
+        var titRatedTreatment = {
+          treatmentDoseType: 'ontology:TitratedDoseDrugTreatment',
+          drug: {
+            uri: 'http://drug/oldDrugUuid',
+            label: 'old drug'
+          },
+          doseUnit: {
+            uri: 'http://unit/newUnit',
+            label: 'new unit label'
+          },
+          minValue: '120',
+          maxValue: '1300',
+          dosingPeriodicity: 'P2W'
+        };
+
+        var editActivity = {
+          activityUri: 'http://trials.drugis.org/instances/activity2Uuid',
+          label: 'edit label',
+          activityType: {
+            uri: 'ontology:TreatmentActivity'
+          },
+          treatments: [titRatedTreatment]
+        };
+
+        activityService.editItem(editActivity).then(function() {
+          activityService.queryItems().then(function(activities) {
+            expect(activities.length).toBe(2);
+            expect(activities[1].label).toEqual('edit label');
+            expect(activities[1].activityType).toEqual(activityService.ACTIVITY_TYPE_OPTIONS['ontology:TreatmentActivity']);
+            expect(activities[1].activityDescription).not.toBeDefined();
+            expect(activities[1].treatments.length).toBe(1);
             done();
           });
         });

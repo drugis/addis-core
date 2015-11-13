@@ -27,7 +27,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
     }));
 
 
-    fdescribe('query units', function() {
+    describe('query units', function() {
 
       beforeEach(function() {
         graphDefer.resolve({

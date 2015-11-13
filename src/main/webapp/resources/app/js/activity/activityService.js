@@ -121,6 +121,32 @@ define([],
         return newTreatment;
       }
 
+      function addDrugsAndUnitsToGraph(graph, treatments) {
+        angular.forEach(treatments, function(treatment) {
+          // add drug to graph if it wasn't there yet
+          var drug = _.find(graph['@graph'], function(node) {
+            return node['@id'] === treatment.drug.uri;
+          });
+          if (!drug) {
+            graph['@graph'].push({
+              '@id': treatment.drug.uri,
+              '@type': 'ontology:Drug',
+              label: treatment.drug.label
+            });
+          }
+          var unit = _.find(graph['@graph'], function(node) {
+            return node['@id'] === treatment.doseUnit.uri;
+          });
+          if (!unit) {
+            graph['@graph'].push({
+              '@id': treatment.doseUnit.uri,
+              '@type': 'ontology:Unit',
+              label: treatment.doseUnit.label
+            });
+          }
+        });
+      }
+
       function addItem(item) {
         return StudyService.getJsonGraph().then(function(graph) {
           var newItem = {
@@ -132,32 +158,10 @@ define([],
           if (item.activityDescription) {
             newItem.comment = item.activityDescription;
           }
-          if (item.treatments && item.treatments.length > 1) {
+          if (item.treatments && item.treatments.length > 0) {
             newItem.has_drug_treatment = _.map(item.treatments, createTreatmentJson);
 
-            angular.forEach(item.treatments, function(treatment) {
-              // add drug to graph if it wasn't there yet
-              var drug = _.find(graph['@graph'], function(node) {
-                return node['@id'] === treatment.drug.uri;
-              });
-              if (!drug) {
-                graph['@graph'].push({
-                  '@id': treatment.drug.uri,
-                  '@type': 'ontology:Drug',
-                  label: treatment.drug.label
-                });
-              }
-              var unit = _.find(graph['@graph'], function(node) {
-                return node['@id'] === treatment.doseUnit.uri;
-              });
-              if (!unit) {
-                graph['@graph'].push({
-                  '@id': treatment.doseUnit.uri,
-                  '@type': 'ontology:Unit',
-                  label: treatment.doseUnit.label
-                });
-              }
-            });
+            addDrugsAndUnitsToGraph(graph, item.treatments);
           }
 
           var study = _.find(graph['@graph'], function(graphNode) {
@@ -174,14 +178,22 @@ define([],
       }
 
       function editItem(item) {
-        return StudyService.getStudy().then(function(study) {
+        return StudyService.getJsonGraph().then(function(graph) {
+          var study = _.find(graph['@graph'], function(graphNode) {
+            return graphNode['@type'] === 'ontology:Study';
+          });
           var toEdit = _.find(study.has_activity, function(activity) {
             return item.activityUri === activity['@id'];
           });
           toEdit['@type'] = item.activityType.uri;
           toEdit.label = item.label;
           toEdit.comment = item.activityDescription;
-          return StudyService.save(study);
+          if (item.treatments && item.treatments.length > 0) {
+            toEdit.has_drug_treatment = _.map(item.treatments, createTreatmentJson);
+
+            addDrugsAndUnitsToGraph(graph, item.treatments);
+          }
+          return StudyService.saveJsonGraph(graph);
         });
       }
 
