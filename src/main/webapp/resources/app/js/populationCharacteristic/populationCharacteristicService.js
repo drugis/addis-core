@@ -8,23 +8,24 @@ define([],
         return node['@type'] === 'ontology:PopulationCharacteristic';
       }
 
-      function toFrontEnd(measurementMoments, item) {
-        function findMeasurementForUri(measurementMomentUri) {
-          return _.find(measurementMoments, function(moment) {
-            return measurementMomentUri === moment.uri;
-          });
-        }
+      function findMeasurementForUri(measurementMoments, measurementMomentUri) {
+        return _.find(measurementMoments, function(moment) {
+          return measurementMomentUri === moment.uri;
+        });
+      }
 
+      function toFrontEnd(measurementMoments, item) {
         var frontEndItem = {
           uri: item['@id'],
           label: item.label,
           measurementType: item.of_variable[0].measurementType
         };
 
+        // if only one measurement moment is selected, it's a string, not an array
         if (Array.isArray(item.is_measured_at)) {
-          frontEndItem.measuredAtMoments = _.map(item.is_measured_at, findMeasurementForUri);
+          frontEndItem.measuredAtMoments = _.map(item.is_measured_at, _.partial(findMeasurementForUri, measurementMoments));
         } else {
-          frontEndItem.measuredAtMoments = [findMeasurementForUri(item.is_measured_at)];
+          frontEndItem.measuredAtMoments = [findMeasurementForUri(measurementMoments, item.is_measured_at)];
         }
         return frontEndItem;
       }
@@ -32,45 +33,26 @@ define([],
       function queryItems() {
         return MeasurementMomentService.queryItems().then(function(measurementMoments) {
           return StudyService.getStudy().then(function(study) {
-            return _.map(_.filter(study.has_outcome, isPopulationCharacteristic), _.partial(toFrontEnd, measurementMoments));
+            var populationCharacteristics = _.filter(study.has_outcome, isPopulationCharacteristic);
+            return _.map(populationCharacteristics, _.partial(toFrontEnd, measurementMoments));
           });
         });
       }
 
-      // function queryItems() {
-      //   var items, measuredAtMoments, measurementMoments;
-
-      //   var queryItemsPromise = populationCharacteristicsQuery.then(function(query) {
-      //     return StudyService.doNonModifyingQuery(query).then(function(result) {
-      //       items = result;
-      //     });
-      //   });
-
-      //   var measuredAtQueryPromise = queryMeasuredAtTemplate.then(function(query) {
-      //     return StudyService.doNonModifyingQuery(query).then(function(result) {
-      //       measuredAtMoments = result;
-      //     });
-      //   });
-
-      //   var measurementMomentsPromise = MeasurementMomentService.queryItems().then(function(result) {
-      //     measurementMoments = result;
-      //   });
-
-      //   return $q.all([queryItemsPromise, measuredAtQueryPromise, measurementMomentsPromise]).then(function() {
-      //     return _.map(items, function(item) {
-      //       var filtered = _.filter(measuredAtMoments, function(measuredAtMoment) {
-      //         return item.uri === measuredAtMoment.itemUri;
-      //       });
-
-      //       item.measuredAtMoments = _.map(_.pluck(filtered, 'measurementMoment'), function(measurementMomentUri) {
-      //         return _.find(measurementMoments, function(moment) {
-      //           return measurementMomentUri === moment.uri;
-      //         });
-      //       });
-      //       return item;
-      //     });
-      //   });
-      // }
+      function measurementTypeToBackEnd(measurementType) {
+        if (measurementType === 'ontology:continuous') {
+          return [
+            "http://trials.drugis.org/ontology#standard_deviation",
+            "http://trials.drugis.org/ontology#mean",
+            "http://trials.drugis.org/ontology#sample_size"
+          ];
+        } else if (measurementType === 'ontology:dichotomous') {
+          return [
+            "http://trials.drugis.org/ontology#sample_size",
+            "http://trials.drugis.org/ontology#count"
+          ];
+        }
+      }
 
       function toBackEnd(item) {
         return {
@@ -81,9 +63,12 @@ define([],
             '@type': 'ontology:Variable',
             'measurementType': item.measurementType,
             'label': item.label
-          }]
+          }],
+          has_result_property: measurementTypeToBackEnd(item.measurementType)
         };
       }
+
+
 
       function addItem(item) {
         return StudyService.getStudy().then(function(study) {
@@ -95,57 +80,27 @@ define([],
         });
       }
 
-      // function addItem(item) {
-      //   var newItem = angular.copy(item);
-      //   newItem.uuid = UUIDService.generate();
-      //   newItem.uri = 'http://trials.drugis.org/instances/' + newItem.uuid;
-      //   var stringToInsert = buildInsertMeasuredAtBlock(newItem);
-
-      //   var addItemPromise = addPopulationCharacteristicQueryRaw.then(function(query) {
-      //     var addPopulationCharacteristicQuery = fillInTemplate(query, newItem);
-      //     return StudyService.doModifyingQuery(addPopulationCharacteristicQuery).then(function() {
-      //       return OutcomeService.setOutcomeProperty(newItem);
-      //     });
-      //   });
-
-      //   var addMeasuredAtPromise = addTemplateRaw.then(function(query) {
-      //     var addMeasuredAtQuery = query.replace('$insertBlock', stringToInsert);
-      //     return StudyService.doModifyingQuery(addMeasuredAtQuery);
-      //   });
-
-      //   return $q.all([addItemPromise, addMeasuredAtPromise]);
-      // }
-
       function deleteItem(item) {
-        return deletePopulationCharacteristicRaw.then(function(deleteQueryRaw) {
-          return StudyService.doModifyingQuery(deleteQueryRaw.replace(/\$URI/g, item.uri));
+        return StudyService.getStudy().then(function(study) {
+          study.has_outcome = _.reject(study.has_outcome, function(node) {
+            return node['@id'] === item.uri;
+          });
+          return StudyService.save(study);
         });
       }
 
       function editItem(item) {
-        var newItem = angular.copy(item);
-        newItem.measurementMomentBlock = buildInsertMeasuredAtBlock(newItem);
-        return editPopulationCharacteristicRaw.then(function(editQueryRaw) {
-          var editQuery = fillInTemplate(editQueryRaw, newItem);
-          return StudyService.doModifyingQuery(editQuery).then(function() {
-            return OutcomeService.setOutcomeProperty(item);
+        return StudyService.getStudy().then(function(study) {
+          var backEndEditItem = toBackEnd(item);
+          study.has_outcome = _.map(study.has_outcome, function(node) {
+            if (node['@id'] === item.uri) {
+              return backEndEditItem;
+            } else {
+              return node;
+            }
           });
+          return StudyService.save(study);
         });
-      }
-
-      function buildInsertMeasuredAtBlock(item) {
-        return _.reduce(item.measuredAtMoments, function(accumulator, measuredAtMoment) {
-          return accumulator + ' <' + item.uri + '> ontology:is_measured_at <' + measuredAtMoment.uri + '> .';
-        }, '');
-      }
-
-      function fillInTemplate(template, item) {
-        return template
-          .replace(/\$UUID/g, item.uuid)
-          .replace('$label', item.label)
-          .replace('$measurementType', item.measurementType)
-          .replace('$insertMeasurementMomentBlock', item.measurementMomentBlock)
-          .replace(/\$URI/g, item.uri);
       }
 
       return {
