@@ -1,107 +1,107 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'UUIDService', 'MeasurementMomentService', 'SparqlResource', 'OutcomeService'];
-    var EndpointService = function($q, StudyService, UUIDService, MeasurementMomentService, SparqlResource, OutcomeService) {
+    var dependencies = ['$q', 'StudyService', 'UUIDService', 'SparqlResource', 'MeasurementMomentService'];
+    var EndpointService = function($q, StudyService, UUIDService, SparqlResource, MeasurementMomentService) {
 
-      var addTemplateRaw = SparqlResource.get('addTemplate.sparql');
+      function isEndpoint(node) {
+        return node['@type'] === 'ontology:Endpoint';
+      }
 
-      var addEndpointQueryRaw = SparqlResource.get('addEndpoint.sparql');
-      var endpointQuery = SparqlResource.get('queryEndpoint.sparql');
-      var deleteEndpointRaw = SparqlResource.get('deleteVariable.sparql');
-      var editEndpointRaw = SparqlResource.get('editVariable.sparql');
-      var queryEndpointMeasuredAtRaw = SparqlResource.get('queryMeasuredAt.sparql');
+      function findMeasurementForUri(measurementMoments, measurementMomentUri) {
+        return _.find(measurementMoments, function(moment) {
+          return measurementMomentUri === moment.uri;
+        });
+      }
+
+      function toFrontEnd(measurementMoments, item) {
+        var frontEndItem = {
+          uri: item['@id'],
+          label: item.label,
+          measurementType: item.of_variable[0].measurementType
+        };
+
+        // if only one measurement moment is selected, it's a string, not an array
+        if (Array.isArray(item.is_measured_at)) {
+          frontEndItem.measuredAtMoments = _.map(item.is_measured_at, _.partial(findMeasurementForUri, measurementMoments));
+        } else {
+          frontEndItem.measuredAtMoments = [findMeasurementForUri(measurementMoments, item.is_measured_at)];
+        }
+        return frontEndItem;
+      }
 
       function queryItems() {
-        var endpoints, measuredAtMoments, measurementMoments;
-
-        var endpointsQueryPromise = endpointQuery.then(function(query) {
-          return StudyService.doNonModifyingQuery(query).then(function(result) {
-            endpoints = result;
-          });
-        });
-
-        var measuredAtQueryPromise = queryEndpointMeasuredAtRaw.then(function(query) {
-          return StudyService.doNonModifyingQuery(query).then(function(result) {
-            measuredAtMoments = result;
-          });
-        });
-
-        var measurementMomentsPromise = MeasurementMomentService.queryItems().then(function(result) {
-          measurementMoments = result;
-        });
-
-        return $q.all([endpointsQueryPromise, measuredAtQueryPromise, measurementMomentsPromise]).then(function() {
-          return _.map(endpoints, function(endpoint) {
-            var filtered = _.filter(measuredAtMoments, function(measuredAtMoment) {
-              return endpoint.uri === measuredAtMoment.itemUri;
-            });
-
-            endpoint.measuredAtMoments = _.map(_.pluck(filtered, 'measurementMoment'), function(measurementMomentUri) {
-              return _.find(measurementMoments, function(moment) {
-                return measurementMomentUri === moment.uri;
-              });
-            });
-            return endpoint;
+        return MeasurementMomentService.queryItems().then(function(measurementMoments) {
+          return StudyService.getStudy().then(function(study) {
+            var endpoints = _.filter(study.has_outcome, isEndpoint);
+            return _.map(endpoints, _.partial(toFrontEnd, measurementMoments));
           });
         });
       }
 
-      function addItem(endpoint) {
-        var newItem = angular.copy(endpoint);
-        newItem.uuid = UUIDService.generate();
-        newItem.uri = 'http://trials.drugis.org/instances/' + newItem.uuid;
-        var stringToInsert = buildInsertMeasuredAtBlock(newItem);
+      function measurementTypeToBackEnd(measurementType) {
+        if (measurementType === 'ontology:continuous') {
+          return [
+            "http://trials.drugis.org/ontology#standard_deviation",
+            "http://trials.drugis.org/ontology#mean",
+            "http://trials.drugis.org/ontology#sample_size"
+          ];
+        } else if (measurementType === 'ontology:dichotomous') {
+          return [
+            "http://trials.drugis.org/ontology#sample_size",
+            "http://trials.drugis.org/ontology#count"
+          ];
+        }
+      }
 
-        var addEndpointPromise = addEndpointQueryRaw.then(function(query) {
-          var addEndpointQuery = fillInTemplate(query, newItem);
-          return StudyService.doModifyingQuery(addEndpointQuery).then(function(){
-            return OutcomeService.setOutcomeProperty(newItem);
-          });
+      function toBackEnd(item) {
+        return {
+          '@type': 'ontology:Endpoint',
+          is_measured_at: item.measuredAtMoments.length === 1 ? item.measuredAtMoments[0].uri : _.map(item.measuredAtMoments, 'uri'),
+          label: item.label,
+          of_variable: [{
+            '@type': 'ontology:Variable',
+            'measurementType': item.measurementType,
+            'label': item.label
+          }],
+          has_result_property: measurementTypeToBackEnd(item.measurementType)
+        };
+      }
+
+
+
+      function addItem(item) {
+        return StudyService.getStudy().then(function(study) {
+          var newItem = toBackEnd(item);
+          item['@id'] = 'http://trials.drugis.org/instances/' + UUIDService.generate();
+
+          study.has_outcome.push(newItem);
+          return StudyService.save(study);
         });
-
-        var addMeasuredAtPromise = addTemplateRaw.then(function(query) {
-          var addMeasuredAtQuery = fillInTemplate(query, stringToInsert);
-          return StudyService.doModifyingQuery(addMeasuredAtQuery);
-        });
-
-        return $q.all([addEndpointPromise, addMeasuredAtPromise]);
       }
 
       function deleteItem(item) {
-        return deleteEndpointRaw.then(function(deleteQueryRaw) {
-          return StudyService.doModifyingQuery(fillInTemplate(deleteQueryRaw, item));
+        return StudyService.getStudy().then(function(study) {
+          study.has_outcome = _.reject(study.has_outcome, function(node) {
+            return node['@id'] === item.uri;
+          });
+          return StudyService.save(study);
         });
       }
 
       function editItem(item) {
-        var newItem = angular.copy(item);
-        newItem.measurementMomentBlock = buildInsertMeasuredAtBlock(item);
-        return editEndpointRaw.then(function(editQueryRaw) {
-          var editQuery = fillInTemplate(editQueryRaw, newItem);
-          return StudyService.doModifyingQuery(editQuery).then(function(){
-            return OutcomeService.setOutcomeProperty(item);
+        return StudyService.getStudy().then(function(study) {
+          var backEndEditItem = toBackEnd(item);
+          study.has_outcome = _.map(study.has_outcome, function(node) {
+            if (node['@id'] === item.uri) {
+              return backEndEditItem;
+            } else {
+              return node;
+            }
           });
+          return StudyService.save(study);
         });
       }
-
-      function buildInsertMeasuredAtBlock(endpoint) {
-        return _.reduce(endpoint.measuredAtMoments, function(accumulator, measuredAtMoment) {
-          return accumulator + ' <' + endpoint.uri + '> ontology:is_measured_at <' + measuredAtMoment.uri + '> .';
-        }, '');
-      }
-
-      function fillInTemplate(template, item) {
-        return template
-               .replace(/\$UUID/g, item.uuid)
-               .replace('$label', item.label)
-               .replace('$measurementType', item.measurementType)
-               .replace('$insertBlock', item)
-               .replace('$insertMeasurementMomentBlock', item.measurementMomentBlock)
-               .replace(/\$URI/g, item.uri)
-              ;
-      }
-
 
       return {
         queryItems: queryItems,

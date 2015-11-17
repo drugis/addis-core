@@ -15,7 +15,7 @@ define([],
         }
 
         if (backendItem.relative_to_anchor) {
-          frontendItem.relativeToAnchor = backendItem.relative_to_anchor
+          frontendItem.relativeToAnchor = backendItem.relative_to_anchor;
         }
 
         if (backendItem.time_offset) {
@@ -59,9 +59,9 @@ define([],
       function sortByEpochAnchorAndDuration(unsorted) {
         return unsorted.sort(function(a, b) {
 
-          // item contains a properties to be sorted
+          // item contains properties to be sorted
           function isSortable(item) {
-            return item.epoch && item.relativeToAnchor && item.offset
+            return item.epoch && item.relativeToAnchor && item.offset;
           }
 
           // move un-sortable items to the back
@@ -94,26 +94,26 @@ define([],
 
 
       function addItem(item) {
-        var epoch = {
+        var measurementMoment = {
           '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
           '@type': 'ontology:MeasurementMoment',
           label: item.label
         };
 
         if (item.relativeToAnchor) {
-          epoch.relative_to_anchor = item.relativeToAnchor;
+          measurementMoment.relative_to_anchor = item.relativeToAnchor;
         }
 
         if (item.offset) {
-          epoch.time_offset = item.offset;
+          measurementMoment.time_offset = item.offset;
         }
 
         if (item.epoch) {
-          epoch.relative_to_epoch = item.epoch.uri;
+          measurementMoment.relative_to_epoch = item.epoch.uri;
         }
 
         return StudyService.getJsonGraph().then(function(graph) {
-          return StudyService.saveJsonGraph(graph.concat(epoch));
+          return StudyService.saveJsonGraph(graph.concat(measurementMoment));
         });
       }
 
