@@ -2,165 +2,284 @@
 define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
   describe('the adverse event service', function() {
 
-    var graphUri = 'http://karma-test/';
-    var scratchStudyUri = 'http://localhost:9876/scratch';
-
-    var rootScope, q, httpBackend;
-    var remotestoreServiceStub;
-    var uuidServiceStub;
-    var measurementMomentServiceMock;
-    var adverseEventService;
-    var studyService;
-    var outcomeService;
-
-    var addTemplateRaw;
-    var addAdverseEventQueryRaw;
-    var adverseEventsQuery;
-    var deleteAdverseEventRaw;
-    var editAdverseEventRaw;
-    var queryAdverseEventMeasuredAtRaw;
+ var rootScope, q,
+      uUIDServiceMock,
+      measurementMomentServiceMock = jasmine.createSpyObj('MeasurementMomentService', ['queryItems']),
+      adverseEventService,
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'getJsonGraph', 'save']),
+      studyDefer,
+      measurementMomentsDefer;
 
     beforeEach(function() {
-      module('trialverse.util', function($provide) {
-        remotestoreServiceStub = jasmine.createSpyObj('RemoteRdfStoreService', [
-          'create',
-          'load',
-          'executeUpdate',
-          'executeQuery',
-          'getGraph',
-          'deFusekify'
-        ]);
-        $provide.value('RemoteRdfStoreService', remotestoreServiceStub);
+      module('trialverse.adverseEvent', function($provide) {
+        uUIDServiceMock = jasmine.createSpyObj('UUIDService', ['generate']);
+        uUIDServiceMock.generate.and.returnValue('newUuid');
+        $provide.value('UUIDService', uUIDServiceMock);
+        $provide.value('MeasurementMomentService', measurementMomentServiceMock);
+        $provide.value('StudyService', studyServiceMock);
       });
     });
-
-    beforeEach(module('trialverse.outcome'));
     beforeEach(module('trialverse.adverseEvent'));
 
-    beforeEach(function() {
-      module('trialverse', function($provide) {
-        measurementMomentServiceMock = jasmine.createSpyObj('MeasurementMomentService', [
-          'queryItems',
-          'addItem',
-          'editItem',
-          'deleteIte ',
-          'generateLabel'
-        ]);
-        $provide.value('MeasurementMomentService', measurementMomentServiceMock);
-        uuidServiceStub = jasmine.createSpyObj('UUIDService', ['generate']);
-        $provide.value('UUIDService', uuidServiceStub);
-      });
-    });
-
-    beforeEach(inject(function($q, $rootScope, $httpBackend, AdverseEventService, StudyService, OutcomeService) {
+    beforeEach(inject(function($q, $rootScope, AdverseEventService) {
       q = $q;
-      httpBackend = $httpBackend;
       rootScope = $rootScope;
       adverseEventService = AdverseEventService;
-      studyService = StudyService;
 
-      outcomeService = OutcomeService;
-      spyOn(outcomeService, 'setOutcomeProperty');
-
-      // reset the test graph
-      testUtils.dropGraph(graphUri);
-
-      // load study service templates
-      testUtils.loadTemplate('createEmptyStudy.sparql', httpBackend);
-      testUtils.loadTemplate('queryStudyData.sparql', httpBackend);
-
-      // load service templates and flush httpBackend
-      testUtils.loadTemplate('setOutcomeResultProperty.sparql', httpBackend);
-      addTemplateRaw = testUtils.loadTemplate('addTemplate.sparql', httpBackend);
-      addAdverseEventQueryRaw = testUtils.loadTemplate('addAdverseEvent.sparql', httpBackend);
-      adverseEventsQuery = testUtils.loadTemplate('queryAdverseEvent.sparql', httpBackend);
-      deleteAdverseEventRaw = testUtils.loadTemplate('deleteVariable.sparql', httpBackend);
-      editAdverseEventRaw = testUtils.loadTemplate('editVariable.sparql', httpBackend);
-      queryAdverseEventMeasuredAtRaw = testUtils.loadTemplate('queryMeasuredAt.sparql', httpBackend);
-
-      httpBackend.flush();
-
-      // create and load empty test store
-      var createStoreDeferred = $q.defer();
-      var createStorePromise = createStoreDeferred.promise;
-      remotestoreServiceStub.create.and.returnValue(createStorePromise);
-
-      var loadStoreDeferred = $q.defer();
-      var loadStorePromise = loadStoreDeferred.promise;
-      remotestoreServiceStub.load.and.returnValue(loadStorePromise);
-
-      studyService.loadStore();
-      createStoreDeferred.resolve(scratchStudyUri);
-      loadStoreDeferred.resolve();
-      rootScope.$digest();
-
-      // stub remotestoreServiceStub.executeUpdate method
-      remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
-        query = query.replace(/\$graphUri/g, graphUri);
-
-        // console.log('graphUri = ' + uri);
-        // console.log('query = ' + query);
-
-        testUtils.executeUpdateQuery(query);
-
-        var executeUpdateDeferred = q.defer();
-        executeUpdateDeferred.resolve();
-        return executeUpdateDeferred.promise;
-      });
-
+      studyDefer = q.defer();
+      studyServiceMock.getStudy.and.returnValue(studyDefer.promise);
+      measurementMomentsDefer = q.defer();
+      measurementMomentServiceMock.queryItems.and.returnValue(measurementMomentsDefer.promise);
     }));
 
-    describe('addItem', function() {
+    describe('query adverse events', function() {
+      var jsonStudy = {
+        has_outcome: [{
+          '@id': 'http://trials.drugis.org/instances/popchar1',
+          '@type': 'ontology:AdverseEvent',
+          'has_result_property': [
+            'ontology:standard_deviation',
+            'ontology:mean',
+            'ontology:sample_size'
+          ],
+          'is_measured_at': 'http://instance/moment1',
+          'of_variable': [{
+            '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
+            '@type': 'ontology:Variable',
+            'measurementType': 'ontology:continuous',
+            'comment': [
+              '',
+              'years'
+            ],
+            'label': 'Age'
+          }],
+          'comment': '',
+          'label': 'Age'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/9bb96077-a8e0-4da1-bee2-011db8b7e560',
+          '@type': 'ontology:AdverseEvent',
+          'has_result_property': [
+            'ontology:sample_size',
+            'ontology:count'
+          ],
+          'is_measured_at': ['http://instance/moment1', 'http://instance/moment2'],
+          'of_variable': [{
+            '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac1100590000000b',
+            '@type': 'ontology:Variable',
+            'measurementType': 'ontology:dichotomous',
+            'comment': '',
+            'label': 'is stupid'
+          }],
+          'comment': '',
+          'label': 'is stupid'
+        }]
+      };
 
-      it('should add the adverseEvent triples and measuredAtMoments triples to the graph', function(done) {
+      var measurementMoments = [{
+        uri: 'http://instance/moment1'
+      }, {
+        uri: 'http://instance/moment2'
+      }];
 
-        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
+      beforeEach(function() {
+        studyDefer.resolve(jsonStudy);
+        measurementMomentsDefer.resolve(measurementMoments);
+      });
 
-        // the test item to add
-        var adverseEvent = {
-          label: 'adverse event label',
-          measurementType: 'http://some-measurementType'
-        };
-        var newUuid = 'newUuid';
-        uuidServiceStub.generate.and.returnValue(newUuid);
-
-        // add some measured at moments
-        var moment1 = {uri: 'http://moments/moment1'};
-        var moment2 = {uri: 'http://moments/moment2'};
-        var adverseEventWithMoments = angular.copy(adverseEvent);
-        adverseEventWithMoments.measuredAtMoments = [moment1, moment2];
-        adverseEventWithMoments.uuid = newUuid;
-        adverseEventWithMoments.uri = 'http://trials.drugis.org/instances/' + newUuid;
-
-        var resultPromise = adverseEventService.addItem(adverseEventWithMoments);
-
-        resultPromise.then(function(result) {
-          // verify addAdverseEvent query
-          var adverseEventsAsString = testUtils.queryTeststore(adverseEventsQuery.replace(/\$graphUri/g, graphUri));
-          var adverseEventsObject = testUtils.deFusekify(adverseEventsAsString);
-          expect(adverseEventsObject.length).toEqual(1);
-          expect(adverseEventsObject[0].label).toEqual(adverseEvent.label);
-          expect(adverseEventsObject[0].measurementType).toEqual(adverseEvent.measurementType);
-
-          // verify outcome properties are added
-          expect(outcomeService.setOutcomeProperty).toHaveBeenCalledWith(adverseEventWithMoments);
-
-          // verify add measured at query
-          var measuredAtQuery = queryAdverseEventMeasuredAtRaw.replace(/\$graphUri/g, graphUri);
-          var adverseEventMeasuredAtAsString = testUtils.queryTeststore(measuredAtQuery);
-          var measuredAtMoments = testUtils.deFusekify(adverseEventMeasuredAtAsString);
-          expect(measuredAtMoments.length).toEqual(2);
-          expect(measuredAtMoments[0].measurementMoment).toEqual('http://moments/moment1');
-          expect(measuredAtMoments[1].measurementMoment).toEqual('http://moments/moment2');
-
+      it('should query the characteristics', function(done) {
+        adverseEventService.queryItems().then(function(items) {
+          expect(items.length).toBe(2);
+          expect(items[0].measurementType).toEqual('ontology:continuous');
+          expect(items[0].measuredAtMoments).toEqual([measurementMoments[0]]);
+          expect(items[1].measurementType).toEqual('ontology:dichotomous');
+          expect(items[1].measuredAtMoments).toEqual(measurementMoments);
           done();
         });
-
         rootScope.$digest();
-
       });
     });
 
+    describe('add adverse event', function() {
+      var queryPromise;
+      var adverseEventUri = 'http://trials.drugis.org/instances/newUuid';
+      var moment = 'http://mm/uri';
+
+      var measuredAtMoment = {
+        uri: moment
+      };
+
+      var newAdverseEvent = {
+        uri: adverseEventUri,
+        label: 'label',
+        measurementType: 'ontology:dichotomous',
+        measuredAtMoments: [measuredAtMoment]
+      };
+
+      beforeEach(function(done) {
+        measurementMomentsDefer.resolve([{
+          itemUri: moment
+        }]);
+        studyDefer.resolve({
+          has_outcome: []
+        });
+
+        adverseEventService.addItem(newAdverseEvent).then(done);
+        rootScope.$digest();
+      });
+
+      it('should add the advere event', function(done) {
+        var expectedStudy = {
+          has_outcome: [{
+            '@type': 'ontology:AdverseEvent',
+            is_measured_at: moment,
+            has_result_property: ['http://trials.drugis.org/ontology#sample_size', 'http://trials.drugis.org/ontology#count'],
+            of_variable: [{
+              '@type': 'ontology:Variable',
+              measurementType: 'ontology:dichotomous',
+              label: 'label'
+            }],
+            label: 'label'
+          }]
+        };
+
+        adverseEventService.queryItems().then(function(queryResult) {
+          expect(studyServiceMock.save).toHaveBeenCalledWith(expectedStudy);
+          expect(queryResult.length).toEqual(1);
+          expect(queryResult[0].label).toEqual(newAdverseEvent.label);
+          done();
+        });
+      });
+    });
+
+    describe('edit adverse event', function() {
+      var jsonStudy = {
+        has_outcome: [{
+          '@id': 'http://trials.drugis.org/instances/popchar1',
+          '@type': 'ontology:AdverseEvent',
+          'has_result_property': [
+            'ontology:standard_deviation',
+            'ontology:mean',
+            'ontology:sample_size'
+          ],
+          'is_measured_at': 'http://instance/moment1',
+          'of_variable': [{
+            '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
+            '@type': 'ontology:Variable',
+            'measurementType': 'ontology:continuous',
+            'label': 'Age'
+          }],
+          'comment': '',
+          'label': 'Age'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/9bb96077-a8e0-4da1-bee2-011db8b7e560',
+          '@type': 'ontology:AdverseEvent',
+          'has_result_property': [
+            'ontology:sample_size',
+            'ontology:count'
+          ],
+          'is_measured_at': ['http://instance/moment1', 'http://instance/moment2'],
+          'of_variable': [{
+            '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac1100590000000b',
+            '@type': 'ontology:Variable',
+            'measurementType': 'ontology:dichotomous',
+            'label': 'is stupid'
+          }],
+          'label': 'is stupid'
+        }]
+      };
+
+      var moment1 = 'http://instance/moment1';
+      var moment2 = 'http://instance/moment2';
+      var adverseEventUri = 'http://trials.drugis.org/instances/popchar1';
+      var measuredAtMoment1 = {
+        uri: moment1
+      };
+      var measuredAtMoment2 = {
+        uri: moment2
+      };
+
+      var newAdverseEvent = {
+        uri: 'http://trials.drugis.org/instances/popchar1',
+        label: 'new label',
+        measurementType: 'ontology:dichotomous',
+        measuredAtMoments: [measuredAtMoment1, measuredAtMoment2]
+      };
+
+      beforeEach(function(done) {
+        studyDefer.resolve(jsonStudy);
+        measurementMomentsDefer.resolve({});
+        adverseEventService.editItem(newAdverseEvent).then(done);
+        rootScope.$digest();
+      });
+
+      it('should have changed the advere event', function(done) {
+        adverseEventService.queryItems().then(function(queryResult) {
+          expect(queryResult.length).toEqual(2);
+          expect(queryResult[0].label).toEqual(newAdverseEvent.label);
+          expect(queryResult[0].measurementType).toEqual('ontology:dichotomous');
+          expect(queryResult[0].measuredAtMoments.length).toBe(2);
+          done();
+        });
+      });
+    });
+
+    describe('delete adverse event', function() {
+      var jsonStudy = {
+        has_outcome: [{
+          '@id': 'http://trials.drugis.org/instances/popchar1',
+          '@type': 'ontology:AdverseEvent',
+          'has_result_property': [
+            'ontology:standard_deviation',
+            'ontology:mean',
+            'ontology:sample_size'
+          ],
+          'is_measured_at': 'http://instance/moment1',
+          'of_variable': [{
+            '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
+            '@type': 'ontology:Variable',
+            'measurementType': 'ontology:continuous',
+            'label': 'Age'
+          }],
+          'comment': '',
+          'label': 'Age'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/9bb96077-a8e0-4da1-bee2-011db8b7e560',
+          '@type': 'ontology:AdverseEvent',
+          'has_result_property': [
+            'ontology:sample_size',
+            'ontology:count'
+          ],
+          'is_measured_at': ['http://instance/moment1', 'http://instance/moment2'],
+          'of_variable': [{
+            '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac1100590000000b',
+            '@type': 'ontology:Variable',
+            'measurementType': 'ontology:dichotomous',
+            'label': 'is stupid'
+          }],
+          'label': 'is stupid'
+        }]
+      };
+
+
+      var newAdverseEvent = {
+        uri: 'http://trials.drugis.org/instances/popchar1'
+      };
+
+      beforeEach(function(done) {
+        studyDefer.resolve(jsonStudy);
+        measurementMomentsDefer.resolve({});
+        adverseEventService.deleteItem(newAdverseEvent).then(done);
+        rootScope.$digest();
+      });
+
+
+      it('should have removed the advere event', function(done) {
+        adverseEventService.queryItems().then(function(queryResult) {
+          expect(queryResult.length).toEqual(1);
+          done();
+        });
+      });
+    });
 
   });
 });
