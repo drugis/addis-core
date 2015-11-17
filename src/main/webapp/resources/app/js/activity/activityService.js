@@ -66,7 +66,7 @@ define([],
       }
 
       function findInstance(graph, uri) {
-        return _.find(graph['@graph'], function(node) {
+        return _.find(graph, function(node) {
           return node['@id'] === uri;
         });
       }
@@ -122,11 +122,11 @@ define([],
       }
 
       function addToGraphIfNotExists(graph, uri, type, label) {
-        var foundNode = _.find(graph['@graph'], function(node) {
+        var foundNode = _.find(graph, function(node) {
           return node['@id'] === uri;
         });
         if (!foundNode) {
-          graph['@graph'].push({
+          graph.push({
             '@id': uri,
             '@type': type,
             label: label
@@ -159,21 +159,21 @@ define([],
             addDrugsAndUnitsToGraph(graph, item.treatments);
           }
 
-          var study = _.find(graph['@graph'], function(graphNode) {
+          var study = _.find(graph, function(graphNode) {
             return graphNode['@type'] === 'ontology:Study';
           });
           study.has_activity.push(newItem);
-          _.remove(graph['@graph'], function(graphNode) {
+          _.remove(graph, function(graphNode) {
             return graphNode['@type'] === 'ontology:Study';
           });
-          graph['@graph'].push(study);
+          graph.push(study);
           return StudyService.saveJsonGraph(graph);
         });
       }
 
       function editItem(item) {
         return StudyService.getJsonGraph().then(function(graph) {
-          var study = _.find(graph['@graph'], function(graphNode) {
+          var study = _.find(graph, function(graphNode) {
             return graphNode['@type'] === 'ontology:Study';
           });
           var toEdit = _.find(study.has_activity, function(activity) {

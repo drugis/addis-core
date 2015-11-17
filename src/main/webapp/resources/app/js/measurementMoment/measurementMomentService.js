@@ -1,37 +1,58 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', '$filter', 'StudyService', 'SparqlResource', 'UUIDService', 'EpochService', 'DurationService'];
-    var MeasurementMomentService = function($q, $filter, StudyService, SparqlResource, UUIDService, EpochService, DurationService) {
+    var dependencies = ['$q', '$filter', 'StudyService', 'UUIDService', 'EpochService', 'DurationService'];
+    var MeasurementMomentService = function($q, $filter, StudyService, UUIDService, EpochService, DurationService) {
 
-      var measurementMomentQuery = SparqlResource.get('queryMeasurementMoment.sparql');
-      var addItemQuery = SparqlResource.get('addMeasurementMoment.sparql');
-      var editItemQuery = SparqlResource.get('editMeasurementMoment.sparql');
-      var deleteItemQuery = SparqlResource.get('deleteMeasurementMoment.sparql');
+      function toFrontend(backendItem) {
+        var frontendItem = {
+          uri: backendItem['@id'],
+          label: backendItem.label
+        };
+
+        if (backendItem.relative_to_epoch) {
+          frontendItem.epochUri = backendItem.relative_to_epoch;
+        }
+
+        if (backendItem.relative_to_anchor) {
+          frontendItem.relativeToAnchor = backendItem.relative_to_anchor
+        }
+
+        if (backendItem.time_offset) {
+          frontendItem.offset = backendItem.time_offset;
+        }
+
+        return frontendItem;
+      }
+
+      function isMeasurementMoment(node) {
+        return 'ontology:MeasurementMoment' === node['@type'];
+      }
 
       function queryItems() {
-        var measurementMoments, epochs;
-        var epochsPromise = EpochService.queryItems().then(function(result) {
-          epochs = result;
+
+        var queryEpochs = EpochService.queryItems().then(function(result) {
+          return result;
         });
 
-        var measurementsMomentsPromise = measurementMomentQuery.then(function(query) {
-          return StudyService.doNonModifyingQuery(query).then(function(result) {
-            measurementMoments = result;
-          });
+        var queryMeasurementMoments = StudyService.getJsonGraph().then(function(graph) {
+          return _.filter(graph, isMeasurementMoment).map(toFrontend);
         });
 
-        return $q.all([epochsPromise, measurementsMomentsPromise]).then(function() {
+        return $q.all([queryEpochs, queryMeasurementMoments]).then(function(results) {
+
+          var epochs = results[0];
+          var measurementMoments = results[1];
 
           var unsorted = _.map(measurementMoments, function(measurementMoment) {
             measurementMoment.epoch = _.find(epochs, function(epoch) {
               return measurementMoment.epochUri === epoch.uri;
             });
+            measurementMoment.epochLabel = measurementMoment.epoch.label;
             return measurementMoment;
           });
 
-          return sortByEpochAnchorAndDuration(unsorted);
-
+          return unsorted.length > 1 ? sortByEpochAnchorAndDuration(unsorted) : unsorted;
         });
       }
 
@@ -44,14 +65,14 @@ define([],
           }
 
           // move un-sortable items to the back
-          if(!isSortable(a) && !isSortable(b)) {
+          if (!isSortable(a) && !isSortable(b)) {
             return 0;
-          } else if(!isSortable(a)) {
+          } else if (!isSortable(a)) {
             return 1;
-          } else if(!isSortable(b)){
+          } else if (!isSortable(b)) {
             return -1;
           }
-          
+
           // sort only the sortable items
           if (a.epoch.pos === b.epoch.pos) {
             if (a.relativeToAnchor === b.relativeToAnchor) {
@@ -64,7 +85,7 @@ define([],
               }
             }
             // sort by anchor
-            return a.relativeToAnchor === 'http://trials.drugis.org/ontology#anchorEpochStart' ? -1 : 1;
+            return a.relativeToAnchor === 'ontology:anchorEpochStart' ? -1 : 1;
           }
           // sort by epoch
           return a.epoch.pos - b.epoch.pos;
@@ -73,24 +94,65 @@ define([],
 
 
       function addItem(item) {
-        var newItem = angular.copy(item);
-        newItem.uuid = UUIDService.generate();
-        return addItemQuery.then(function(template) {
-          return StudyService.doModifyingQuery(fillTemplate(template, newItem));
+        var epoch = {
+          '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
+          '@type': 'ontology:MeasurementMoment',
+          label: item.label
+        };
+
+        if (item.relativeToAnchor) {
+          epoch.relative_to_anchor = item.relativeToAnchor;
+        }
+
+        if (item.offset) {
+          epoch.time_offset = item.offset;
+        }
+
+        if (item.epoch) {
+          epoch.relative_to_epoch = item.epoch.uri;
+        }
+
+        return StudyService.getJsonGraph().then(function(graph) {
+          return StudyService.saveJsonGraph(graph.push(epoch));
         });
       }
 
       function editItem(item) {
-        return editItemQuery.then(function(template) {
-          return StudyService.doModifyingQuery(fillTemplate(template, item));
+        return StudyService.getJsonGraph().then(function(graph) {
+
+          var removed = _.remove(graph, function(node) {
+            return item.uri = node['@id'];
+          });
+
+          var editItem = {
+            '@id': removed[0]['@id'],
+            '@type': 'ontology:MeasurementMoment',
+            label: item.label
+          };
+
+          if (item.relativeToAnchor) {
+            editItem.relative_to_anchor = item.relativeToAnchor;
+          }
+
+          if (item.offset) {
+            editItem.time_offset = item.offset;
+          }
+
+          if (item.epoch) {
+            editItem.relative_to_epoch = item.epoch.uri;
+          }
+
+          return StudyService.saveJsonGraph(graph.push(editItem));
         });
       }
 
       function deleteItem(item) {
-        return deleteItemQuery.then(function(template) {
-          return StudyService.doModifyingQuery(fillTemplate(template, item));
+        return StudyService.getJsonGraph().then(function(graph) {
+          _.remove(graph, function(node) {
+            return item.uri = node['@id'];
+          });
+          return StudyService.saveJsonGraph(graph);
         });
-
       }
 
       function generateLabel(measurementMoment) {
@@ -98,21 +160,8 @@ define([],
           return '';
         }
         var offsetStr = (measurementMoment.offset === 'PT0S') ? 'At' : $filter('durationFilter')(measurementMoment.offset) + ' from';
-        var anchorStr = measurementMoment.relativeToAnchor === 'http://trials.drugis.org/ontology#anchorEpochStart' ? 'start' : 'end';
+        var anchorStr = measurementMoment.relativeToAnchor === 'ontology:anchorEpochStart' ? 'start' : 'end';
         return offsetStr + ' ' + anchorStr + ' of ' + measurementMoment.epoch.label;
-      }
-
-      function fillTemplate(template, item) {
-        var query = template
-          .replace(/\$newItemUuid/g, item.uuid)
-          .replace(/\$itemUri/g, item.uri)
-          .replace(/\$newLabel/g, item.label)
-          .replace(/\$anchorMoment/g, item.relativeToAnchor)
-          .replace(/\$timeOffset/g, item.offset);
-        if(item.epoch) {
-          query = query.replace(/\$epochUri/g, item.epoch.uri)
-        }
-        return query;
       }
 
       return {

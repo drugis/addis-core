@@ -121,21 +121,20 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
             'label': 'Sertraline'
           }]
         };
-        jsonGraph = {
-          '@graph': [{
-            '@id': 'http://trials.drugis.org/instances/drug1Uuid',
-            '@type': 'ontology:Drug',
-            label: 'Sertraline'
-          }, {
-            '@id': 'http://trials.drugis.org/instances/1e7464b5-c5ca-4b08-a735-a3aa361532d6',
-            '@type': 'ontology:Drug',
-            label: 'Bupropion'
-          }, {
-            '@id': 'http://trials.drugis.org/instances/unit1Uuid',
-            '@type': 'ontology:Unit',
-            label: 'milligram'
-          }]
-        }
+        jsonGraph = [{
+          '@id': 'http://trials.drugis.org/instances/drug1Uuid',
+          '@type': 'ontology:Drug',
+          label: 'Sertraline'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/1e7464b5-c5ca-4b08-a735-a3aa361532d6',
+          '@type': 'ontology:Drug',
+          label: 'Bupropion'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/unit1Uuid',
+          '@type': 'ontology:Unit',
+          label: 'milligram'
+        }]
+
         studyDefer.resolve(jsonStudy);
         graphDefer.resolve(jsonGraph);
         rootScope.$apply();
@@ -262,17 +261,15 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
           '@type': 'ontology:Study',
           has_activity: []
         };
-        jsonGraph = {
-          '@graph': [{
+        jsonGraph =  [{
             '@id': 'http://unit/oldUnit',
             label: 'old unit label'
           }, {
             '@id': 'http://drug/oldDrugUuid',
             label: 'old drug'
-          }, jsonStudy]
-        };
+          }, jsonStudy];
         expectedGraph = angular.copy(jsonGraph);
-        expectedGraph['@graph'].push({
+        expectedGraph.push({
           '@id': 'http://drug/newDrugUuid',
           '@type': 'ontology:Drug',
           label: 'new drug'
@@ -281,10 +278,10 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
           '@type': 'ontology:Unit',
           label: 'new unit label'
         });
-        _.remove(expectedGraph['@graph'], function(node) {
+        _.remove(expectedGraph, function(node) {
           return node['@type'] === 'ontology:Study';
         });
-        expectedGraph['@graph'].push({
+        expectedGraph.push({
           '@type': 'ontology:Study',
           has_activity: [{
             '@id': 'http://trials.drugis.org/instances/generatedUUID',
@@ -370,9 +367,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
           }]
         };
         studyDefer.resolve(jsonStudy);
-        graphDefer.resolve({
-          '@graph': [jsonStudy]
-        });
+        graphDefer.resolve([jsonStudy]);
         rootScope.$digest();
       });
 
@@ -415,9 +410,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
           }]
         };
         studyDefer.resolve(jsonStudy);
-        graphDefer.resolve({
-          '@graph': [jsonStudy]
-        });
+        graphDefer.resolve([jsonStudy]);
         rootScope.$digest();
       });
 
@@ -459,6 +452,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
         rootScope.$digest();
       });
     });
+
     describe('edit a from a treatment to a non-treatment activity', function() {
       beforeEach(function() {
         jsonStudy = {
@@ -492,9 +486,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
           }]
         };
         studyDefer.resolve(jsonStudy);
-        graphDefer.resolve({
-          '@graph': [jsonStudy]
-        });
+        graphDefer.resolve([jsonStudy]);
         rootScope.$digest();
       });
 
@@ -520,9 +512,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
           }]
         }
         activityService.editItem(editActivity).then(function() {
-          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith({
-            '@graph': [strippedStudy]
-          });
+          expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith([strippedStudy]);
           activityService.queryItems().then(function(activities) {
             expect(activities.length).toBe(2);
             expect(activities[1].label).toEqual('edit label');

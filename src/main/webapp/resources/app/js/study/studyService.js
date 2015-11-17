@@ -96,15 +96,13 @@ define([], function() {
 
     function getJsonGraph() {
       return studyJsonPromise.then(function(graph) {
-        return graph;
+        return graph['@graph'];
       });
     }
 
     function saveJsonGraph(newGraph) {
-      studyJsonPromise.then(function() {
-        var newDefer = $q.defer();
-        studyJsonPromise = newDefer.promise;
-        newDefer.resolve(newGraph);
+      studyJsonPromise.then(function(jsonLd) {
+        jsonLd['@graph'] = newGraph;
       });
     }
 
