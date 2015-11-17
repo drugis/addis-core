@@ -113,7 +113,7 @@ define([],
         }
 
         return StudyService.getJsonGraph().then(function(graph) {
-          return StudyService.saveJsonGraph(graph.push(epoch));
+          return StudyService.saveJsonGraph(graph.concat(epoch));
         });
       }
 
@@ -121,7 +121,7 @@ define([],
         return StudyService.getJsonGraph().then(function(graph) {
 
           var removed = _.remove(graph, function(node) {
-            return item.uri = node['@id'];
+            return item.uri === node['@id'];
           });
 
           var editItem = {
@@ -142,14 +142,14 @@ define([],
             editItem.relative_to_epoch = item.epoch.uri;
           }
 
-          return StudyService.saveJsonGraph(graph.push(editItem));
+          return StudyService.saveJsonGraph(graph.concat(editItem));
         });
       }
 
       function deleteItem(item) {
         return StudyService.getJsonGraph().then(function(graph) {
           _.remove(graph, function(node) {
-            return item.uri = node['@id'];
+            return item.uri === node['@id'];
           });
           return StudyService.saveJsonGraph(graph);
         });

@@ -7,6 +7,7 @@ define(['angular', 'angular-mocks'], function(angular) {
     var remotestoreServiceStub;
     var studyService = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph']);
     var epochServiceStub = jasmine.createSpyObj('EpochService', ['queryItems']);
+    var uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']);
     var measurementMomentService;
 
 
@@ -14,6 +15,7 @@ define(['angular', 'angular-mocks'], function(angular) {
       module('trialverse.measurementMoment', function($provide) {
         $provide.value('StudyService', studyService);
         $provide.value('EpochService', epochServiceStub);
+        $provide.value('UUIDService', uuidServiceMock);
       });
     });
 
@@ -23,6 +25,7 @@ define(['angular', 'angular-mocks'], function(angular) {
       q = $q;
       rootScope = $rootScope;
       measurementMomentService = MeasurementMomentService;
+      uuidServiceMock.generate.and.returnValue('generatedUUID')
 
       studyService = StudyService;
 
@@ -51,12 +54,12 @@ define(['angular', 'angular-mocks'], function(angular) {
     describe('query measurement moments', function() {
       beforeEach(function() {
         var graphJsonObject = [{
-          "@id": "http://trials.drugis.org/instances/4bf82c72-02de-48cb-8925-2062b6b82234",
-          "@type": "ontology:MeasurementMoment",
-          "relative_to_anchor": "ontology:anchorEpochStart",
-          "relative_to_epoch": "http://trials.drugis.org/instances/bbb",
-          "time_offset": "PT0S",
-          "label": "At start of epoch 1"
+          '@id': 'http://trials.drugis.org/instances/4bf82c72-02de-48cb-8925-2062b6b82234',
+          '@type': 'ontology:MeasurementMoment',
+          'relative_to_anchor': 'ontology:anchorEpochStart',
+          'relative_to_epoch': 'http://trials.drugis.org/instances/bbb',
+          'time_offset': 'PT0S',
+          'label': 'At start of epoch 1'
         }];
         var graphDefer = q.defer();
         var getGraphPromise = graphDefer.promise;
@@ -97,15 +100,18 @@ define(['angular', 'angular-mocks'], function(angular) {
 
       it('should add the measurement', function(done) {
         measurementMomentService.addItem(newMoment).then(function() {
-          measurementMomentService.queryItems().then(function(result) {
-            expect(result.length).toBe(1);
-            var measurementMoment = result[0];
-            expect(measurementMoment.label).toEqual('At start of new epoch');
-            expect(measurementMoment.epochLabel).toEqual('Randomization');
-            expect(measurementMoment.relativeToAnchor).toEqual('ontology:anchorEpochStart');
-            expect(measurementMoment.offset).toEqual('PT0S');
-            done();
-          });
+
+          expect(studyService.saveJsonGraph).toHaveBeenCalledWith([{
+            '@id': 'http://trials.drugis.org/instances/generatedUUID',
+            '@type': 'ontology:MeasurementMoment',
+            relative_to_anchor: 'ontology:anchorEpochStart',
+            relative_to_epoch: 'http://trials.drugis.org/instances/bbb',
+            time_offset: 'PT0S',
+            label: 'At start of new epoch'
+          }]);
+
+          done();
+
         });
         rootScope.$digest();
       });
@@ -124,12 +130,12 @@ define(['angular', 'angular-mocks'], function(angular) {
 
       beforeEach(function() {
         var graphJsonObject = [{
-          "@id": "http://trials.drugis.org/instances/4bf82c72-02de-48cb-8925-2062b6b82234",
-          "@type": "ontology:MeasurementMoment",
-          "relative_to_anchor": "ontology:anchorEpochStart",
-          "relative_to_epoch": "http://trials.drugis.org/instances/bbb",
-          "time_offset": "PT0S",
-          "label": "At start of epoch 1"
+          '@id': 'http://trials.drugis.org/instances/4bf82c72-02de-48cb-8925-2062b6b82234',
+          '@type': 'ontology:MeasurementMoment',
+          'relative_to_anchor': 'ontology:anchorEpochStart',
+          'relative_to_epoch': 'http://trials.drugis.org/instances/bbb',
+          'time_offset': 'PT0S',
+          'label': 'At start of epoch 1'
         }];
         var graphDefer = q.defer();
         var getGraphPromise = graphDefer.promise;
@@ -139,16 +145,16 @@ define(['angular', 'angular-mocks'], function(angular) {
 
       it('should add the measurement', function(done) {
         measurementMomentService.editItem(editMoment).then(function() {
-          measurementMomentService.queryItems().then(function(result) {
-            expect(result.length).toBe(1);
-            var measurementMoment = result[0];
-            expect(measurementMoment.label).toEqual('new Label');
-            expect(measurementMoment.epochLabel).toEqual('Washout');
-            expect(measurementMoment.relativeToAnchor).toEqual('ontology:anchorEpochEnd');
-            expect(measurementMoment.offset).toEqual('PT4D');
-            done();
-          });
+          expect(studyService.saveJsonGraph).toHaveBeenCalledWith([{
+            '@id': 'http://trials.drugis.org/instances/4bf82c72-02de-48cb-8925-2062b6b82234',
+            '@type': 'ontology:MeasurementMoment',
+            relative_to_anchor: 'ontology:anchorEpochEnd',
+            relative_to_epoch: 'http://trials.drugis.org/instances/aaa',
+            time_offset: 'PT4D',
+            label: 'new Label'
+          }])
         });
+        done();
         rootScope.$digest();
       });
     });
@@ -166,12 +172,12 @@ define(['angular', 'angular-mocks'], function(angular) {
 
       beforeEach(function() {
         var graphJsonObject = [{
-          "@id": "http://trials.drugis.org/instances/4bf82c72-02de-48cb-8925-2062b6b82234",
-          "@type": "ontology:MeasurementMoment",
-          "relative_to_anchor": "ontology:anchorEpochStart",
-          "relative_to_epoch": "http://trials.drugis.org/instances/bbb",
-          "time_offset": "PT0S",
-          "label": "At start of epoch 1"
+          '@id': 'http://trials.drugis.org/instances/4bf82c72-02de-48cb-8925-2062b6b82234',
+          '@type': 'ontology:MeasurementMoment',
+          'relative_to_anchor': 'ontology:anchorEpochStart',
+          'relative_to_epoch': 'http://trials.drugis.org/instances/bbb',
+          'time_offset': 'PT0S',
+          'label': 'At start of epoch 1'
         }];
         var graphDefer = q.defer();
         var getGraphPromise = graphDefer.promise;
