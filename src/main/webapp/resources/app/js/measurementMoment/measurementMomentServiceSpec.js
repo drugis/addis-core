@@ -5,6 +5,7 @@ define(['angular', 'angular-mocks'], function() {
       sparqlResource = jasmine.createSpyObj('SparqlResource', ['get']),
       studyService = jasmine.createSpyObj('StudyService', ['doModifyingQuery', 'doNonModifyingQuery']),
       epochService = jasmine.createSpyObj('EpochService', ['queryItems']),
+      uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']),
       measurementMomentService;
 
     beforeEach(module('trialverse.measurementMoment'));
@@ -13,11 +14,13 @@ define(['angular', 'angular-mocks'], function() {
       module('trialverse', function($provide) {
         $provide.value('StudyService', studyService);
         $provide.value('EpochService', epochService);
+        $provide.value('UUIDService', uuidServiceMock);
       });
     });
 
     beforeEach(inject(function(MeasurementMomentService) {
       measurementMomentService = MeasurementMomentService;
+      uuidServiceMock.generate.and.returnValue('generatedUUID')
     }));
 
     describe('generateLabel', function() {
