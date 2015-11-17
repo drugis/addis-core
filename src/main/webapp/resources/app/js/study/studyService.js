@@ -94,6 +94,12 @@ define([], function() {
       studyJsonPromise = jsonPromise;
     }
 
+    function getGraphAndContext() {
+      return studyJsonPromise.then(function(graphAndContext) {
+        return graphAndContext;
+      });
+    }
+
     function getJsonGraph() {
       return studyJsonPromise.then(function(graph) {
         return graph['@graph'];
@@ -101,7 +107,7 @@ define([], function() {
     }
 
     function saveJsonGraph(newGraph) {
-      studyJsonPromise.then(function(jsonLd) {
+      return studyJsonPromise.then(function(jsonLd) {
         jsonLd['@graph'] = newGraph;
       });
     }
@@ -138,7 +144,8 @@ define([], function() {
       getStudy: getStudy,
       save: save,
       getJsonGraph: getJsonGraph,
-      saveJsonGraph: saveJsonGraph
+      saveJsonGraph: saveJsonGraph,
+      getGraphAndContext: getGraphAndContext
     };
   };
 
