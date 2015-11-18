@@ -49,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private DataSource dataSource;
 
   @Override
-  protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     auth.jdbcAuthentication()
       .dataSource(dataSource)
       .usersByUsernameQuery("SELECT username, password, TRUE FROM Account WHERE username = ?")

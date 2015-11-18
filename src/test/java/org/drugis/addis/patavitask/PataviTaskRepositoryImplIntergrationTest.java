@@ -7,6 +7,7 @@ package org.drugis.addis.patavitask;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
+import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -58,9 +59,14 @@ public class PataviTaskRepositoryImplIntergrationTest {
   }
 
   @Test
-  public void testGetResult() throws IOException {
+  public void testGetResult() throws IOException, UnexpectedNumberOfResultsException {
     JsonNode result = pataviTaskRepository.getResult(1);
     assertNotNull(result);
     assertEquals("some results", result.asText());
+  }
+
+  @Test(expected = UnexpectedNumberOfResultsException.class)
+  public void testGetResultWhenThereAreNone() throws IOException, UnexpectedNumberOfResultsException {
+    pataviTaskRepository.getResult(2);
   }
 }
