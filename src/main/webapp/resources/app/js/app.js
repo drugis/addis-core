@@ -4,6 +4,7 @@ define(
     'require',
     'jQuery',
     'mcda/config',
+    'gemtc-web/util/errorInterceptor',
     'mmfoundation',
     'foundation',
     'angular-ui-router',
@@ -36,7 +37,7 @@ define(
     'mcda/services/scaleRangeService',
     'mcda/services/util'
   ],
-  function(angular, require, $, Config) {
+  function(angular, require, $, Config, errorInterceptor) {
     var mcdaDependencies = [
       'elicit.errorHandling',
       'elicit.scaleRangeService',
@@ -72,9 +73,12 @@ define(
       'gemtc.resources',
       'gemtc.constants',
       'gemtc.services',
-      'gemtc.directives'
+      'gemtc.directives',
     ];
     var app = angular.module('addis', dependencies.concat(mcdaDependencies.concat(gemtcWebDependencies)));
+  
+    // DRY; already implemented in gemtc
+    app.factory('errorInterceptor', errorInterceptor);
 
     app.constant('Tasks', Config.tasks);
     app.constant('DEFAULT_VIEW', 'overview');
@@ -131,6 +135,7 @@ define(
         var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
         var gemtcWebBaseTemplatePath = 'app/js/bower_components/gemtc-web/app/';
 
+        $httpProvider.interceptors.push('errorInterceptor');
         $httpProvider.interceptors.push('SessionExpiredInterceptor');
 
         $stateProvider

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
+import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 import org.json.JSONObject;
 import org.postgresql.util.PGobject;
@@ -124,8 +125,11 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   @Override
-  public JsonNode getResult(Integer taskId) throws IOException {
+  public JsonNode getResult(Integer taskId) throws IOException, UnexpectedNumberOfResultsException {
     String result = jdbcTemplate.queryForObject("SELECT result FROM patavitask where id = " + taskId, String.class);
+    if (result == null) {
+      throw new UnexpectedNumberOfResultsException("expected was 1 but got zero results");
+    }
     ObjectMapper objectMapper = new ObjectMapper();
     return objectMapper.readTree(result).get("results");
   }

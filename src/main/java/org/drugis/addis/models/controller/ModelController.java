@@ -15,6 +15,7 @@ import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
+import org.drugis.addis.patavitask.repository.UnexpectedNumberOfResultsException;
 import org.drugis.addis.projects.service.ProjectService;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,10 +82,15 @@ public class ModelController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/result", method = RequestMethod.GET)
   @ResponseBody
-  public JsonNode getResult(@PathVariable Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException, IOException {
+  public JsonNode getResult(HttpServletResponse response, @PathVariable Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException, IOException {
     Model model = modelRepository.get(modelId);
     if (model.getTaskId() != null) {
-      return pataviTaskRepository.getResult(model.getTaskId());
+      try {
+        return pataviTaskRepository.getResult(model.getTaskId());
+      } catch (UnexpectedNumberOfResultsException e) {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        return null;
+      }
     } else {
       throw new ResourceDoesNotExistException("attempt to get results of model with no task");
     }
