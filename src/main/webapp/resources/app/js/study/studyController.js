@@ -218,9 +218,9 @@ define([],
 
       $scope.$on('updateStudyDesign', function() {
         console.log('update design');
-        ResultsService.cleanUpMeasurements().then(function() {
-          $scope.$broadcast('refreshResults');
-        });
+        // ResultsService.cleanUpMeasurements().then(function() {
+        //   $scope.$broadcast('refreshResults');
+        // });
         StudyDesignService.cleanupCoordinates($stateParams.studyUUID).then(function() {
           console.log('after cleanup coord');
           $scope.$broadcast('refreshStudyDesign');

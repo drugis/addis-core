@@ -109,6 +109,7 @@ define([], function() {
     function saveJsonGraph(newGraph) {
       return studyJsonPromise.then(function(jsonLd) {
         jsonLd['@graph'] = newGraph;
+        modified = true;
       });
     }
 
@@ -126,6 +127,7 @@ define([], function() {
           return graphNode['@type'] === 'ontology:Study';
         });
         jsonLd['@graph'].push(study);
+        modified = true;
       });
     }
 
