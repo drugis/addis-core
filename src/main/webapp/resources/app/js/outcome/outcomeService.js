@@ -21,7 +21,9 @@ define([],
         if (Array.isArray(item.is_measured_at)) {
           frontEndItem.measuredAtMoments = _.map(item.is_measured_at, _.partial(findMeasurementForUri, measurementMoments));
         } else {
-          frontEndItem.measuredAtMoments = [findMeasurementForUri(measurementMoments, item.is_measured_at)];
+          if (item.is_measured_at) {
+            frontEndItem.measuredAtMoments = [findMeasurementForUri(measurementMoments, item.is_measured_at)];
+          }
         }
         return frontEndItem;
       }
