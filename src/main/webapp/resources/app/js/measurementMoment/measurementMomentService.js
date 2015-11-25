@@ -146,11 +146,46 @@ define([],
         });
       }
 
+      function deleteResultsForMoment(graph, momentUri) {
+        _.remove(graph, function(node) {
+          return momentUri === node.of_moment;
+        });
+      }
+
+      function cleanUpOutcomes(graph, momentUri) {
+        var study = _.find(graph, function(node) {
+          return node['@type'] === 'ontology:Study';
+        });
+        study.has_outcome = _.map(study.has_outcome, function(outcome) {
+          if(outcome.is_measured_at) {
+            // single is_measured_at is a string, not an array of strings for whatever reason.
+            if(Array.isArray(outcome.is_measured_at)) {
+              outcome.is_measured_at = _.filter(outcome.is_measured_at, function(measurementUri) {
+                return measurementUri !== momentUri;
+              });
+              if (outcome.is_measured_at.length === 1) {
+                outcome.is_measured_at = outcome.is_measured_at[0];
+              }
+            } else {
+              if(outcome.is_measured_at === momentUri) {
+                delete outcome.is_measured_at;
+              }
+            }
+          }
+          return outcome;
+        });
+      }
+
       function deleteItem(item) {
         return StudyService.getJsonGraph().then(function(graph) {
           _.remove(graph, function(node) {
             return item.uri === node['@id'];
           });
+
+          deleteResultsForMoment(graph, item.uri);
+
+          cleanUpOutcomes(graph, item.uri);
+
           return StudyService.saveJsonGraph(graph);
         });
       }

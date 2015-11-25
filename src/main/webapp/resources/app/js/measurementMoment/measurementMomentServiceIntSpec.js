@@ -159,7 +159,7 @@ define(['angular', 'angular-mocks'], function(angular) {
       });
     });
 
-    describe('delete measurement moments', function() {
+    describe('delete unused measurement moments', function() {
       var deleteMoment = {
         label: 'At start of epoch 1',
         epoch: {
@@ -178,14 +178,19 @@ define(['angular', 'angular-mocks'], function(angular) {
           'relative_to_epoch': 'http://trials.drugis.org/instances/bbb',
           'time_offset': 'PT0S',
           'label': 'At start of epoch 1'
+        }, {
+          '@type': 'ontology:Study'
         }];
         var graphDefer = q.defer();
         var getGraphPromise = graphDefer.promise;
         graphDefer.resolve(graphJsonObject);
         studyService.getJsonGraph.and.returnValue(getGraphPromise);
       });
+      afterEach(function() {
+        studyService.getJsonGraph.calls.reset();
+      });
 
-      it('should add the measurement', function(done) {
+      it('should delete the measurement', function(done) {
         measurementMomentService.deleteItem(deleteMoment).then(function() {
           measurementMomentService.queryItems().then(function(result) {
             expect(result.length).toBe(0);
@@ -195,7 +200,131 @@ define(['angular', 'angular-mocks'], function(angular) {
         rootScope.$digest();
       });
     });
+    describe('delete measurement moments used in results', function() {
+      var deleteMoment = {
+        label: 'At start of epoch 1',
+        epoch: {
+          uri: 'http://trials.drugis.org/instances/bbb'
+        },
+        relativeToAnchor: 'ontology:anchorEpochStart',
+        offset: 'PT0S',
+        uri: 'http://trials.drugis.org/instances/moment1'
+      };
 
+      beforeEach(function() {
+        var graphJsonObject = [{
+          '@id': 'http://trials.drugis.org/instances/result1',
+          'count': 7,
+          'of_moment': 'http://trials.drugis.org/instances/moment1',
+          'sample_size': 142
+        }, {
+          '@id': 'http://trials.drugis.org/instances/result1',
+          'count': 7,
+          'of_moment': 'http://trials.drugis.org/instances/moment2',
+          'sample_size': 142
+        }, {
+          '@id': 'http://trials.drugis.org/instances/moment1',
+          '@type': 'ontology:MeasurementMoment',
+          'relative_to_anchor': 'ontology:anchorEpochStart',
+          'relative_to_epoch': 'http://trials.drugis.org/instances/bbb',
+          'time_offset': 'PT0S',
+          'label': 'At start of epoch 1'
+        }, {
+          '@type': 'ontology:Study',
+          has_outcome: []
+        }];
+        var graphDefer = q.defer();
+        var getGraphPromise = graphDefer.promise;
+        graphDefer.resolve(graphJsonObject);
+        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+      });
 
+      it('should delete the measurement and any results referring to it', function(done) {
+        measurementMomentService.deleteItem(deleteMoment).then(function() {
+          expect(studyService.saveJsonGraph).toHaveBeenCalledWith([{
+            '@id': 'http://trials.drugis.org/instances/result1',
+            'count': 7,
+            'of_moment': 'http://trials.drugis.org/instances/moment2',
+            'sample_size': 142
+          }, {
+            '@type': 'ontology:Study',
+            has_outcome: []
+          }]);
+          done();
+        });
+        rootScope.$digest();
+      });
+    });
+    describe('delete measurement moments used in results', function() {
+      var deleteMoment = {
+        uri: 'http://trials.drugis.org/instances/moment1'
+      };
+
+      beforeEach(function() {
+
+        var studyNode = {
+          '@id': 'http://trials.drugis.org/studies/study1',
+          '@type': 'ontology:Study',
+          'has_outcome': [{
+            '@id': 'http://trials.drugis.org/instances/outcome1',
+            '@type': 'ontology:AdverseEvent',
+            'is_measured_at': 'http://trials.drugis.org/instances/moment1',
+            'label': 'Agitation'
+          }, {
+            '@id': 'http://trials.drugis.org/instances/b3acd954-665e-478f-bea7-a551ebbfa66b',
+            '@type': 'ontology:PopulationCharacteristic',
+            'is_measured_at': ['http://trials.drugis.org/instances/moment1', 'http://trials.drugis.org/instances/moment2'],
+            'label': 'Sex'
+          }, {
+            '@id': 'http://trials.drugis.org/instances/b3acd954-665e-478f-bea7-a551ebbfa66b',
+            '@type': 'ontology:PopulationCharacteristic',
+            'is_measured_at': 'http://trials.drugis.org/instances/moment2',
+            'label': 'Age'
+          }]
+        };
+
+        var graphJsonObject = [{
+          '@id': 'http://trials.drugis.org/instances/moment1',
+          '@type': 'ontology:MeasurementMoment',
+          'relative_to_anchor': 'ontology:anchorEpochStart',
+          'relative_to_epoch': 'http://trials.drugis.org/instances/bbb',
+          'time_offset': 'PT0S',
+          'label': 'At start of epoch 1'
+        }, studyNode];
+        var graphDefer = q.defer();
+        var getGraphPromise = graphDefer.promise;
+        graphDefer.resolve(graphJsonObject);
+        studyService.getJsonGraph.and.returnValue(getGraphPromise);
+      });
+
+      it('should delete the measurement and any results referring to it', function(done) {
+
+        var expected = [{
+          '@id': 'http://trials.drugis.org/studies/study1',
+          '@type': 'ontology:Study',
+          'has_outcome': [{
+            '@id': 'http://trials.drugis.org/instances/outcome1',
+            '@type': 'ontology:AdverseEvent',
+            'label': 'Agitation'
+          }, {
+            '@id': 'http://trials.drugis.org/instances/b3acd954-665e-478f-bea7-a551ebbfa66b',
+            '@type': 'ontology:PopulationCharacteristic',
+            'is_measured_at': 'http://trials.drugis.org/instances/moment2',
+            'label': 'Sex'
+          }, {
+            '@id': 'http://trials.drugis.org/instances/b3acd954-665e-478f-bea7-a551ebbfa66b',
+            '@type': 'ontology:PopulationCharacteristic',
+            'is_measured_at': 'http://trials.drugis.org/instances/moment2',
+            'label': 'Age'
+          }]
+        }];
+
+        measurementMomentService.deleteItem(deleteMoment).then(function() {
+          expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expected);
+          done();
+        });
+        rootScope.$digest();
+      });
+    });
   });
 });
