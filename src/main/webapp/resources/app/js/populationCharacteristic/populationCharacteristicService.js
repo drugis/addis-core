@@ -7,10 +7,9 @@ define([],
       var populationCharacteristicType = 'ontology:PopulationCharacteristic';
 
       function queryItems() {
-        return OutcomeService.queryItems(
-          function(node) {
-            return node['@type'] === populationCharacteristicType;
-          });
+        return OutcomeService.queryItems(function(node) {
+          return node['@type'] === populationCharacteristicType;
+        });
       }
 
       function addItem(item) {

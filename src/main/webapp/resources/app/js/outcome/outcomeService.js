@@ -57,11 +57,11 @@ define([],
         }
       }
 
-      function queryItems(isCorrectTypeFunction) {
+      function queryItems(typeCheckFunction) {
         return MeasurementMomentService.queryItems().then(function(measurementMoments) {
           return StudyService.getStudy().then(function(study) {
-            var populationCharacteristics = _.filter(study.has_outcome, isCorrectTypeFunction);
-            return _.map(populationCharacteristics, _.partial(toFrontEnd, measurementMoments));
+            var outcomes = _.filter(study.has_outcome, typeCheckFunction);
+            return _.map(outcomes, _.partial(toFrontEnd, measurementMoments));
           });
         });
       }
@@ -69,7 +69,7 @@ define([],
       function addItem(item, type) {
         return StudyService.getStudy().then(function(study) {
           var newItem = toBackEnd(item, type);
-          item['@id'] = 'http://trials.drugis.org/instances/' + UUIDService.generate();
+          newItem['@id'] = 'http://trials.drugis.org/instances/' + UUIDService.generate();
 
           study.has_outcome.push(newItem);
           return StudyService.save(study);

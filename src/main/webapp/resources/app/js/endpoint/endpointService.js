@@ -7,10 +7,9 @@ define([],
       var endpointType = 'ontology:Endpoint';
 
       function queryItems() {
-        return OutcomeService.queryItems(
-          function(node) {
-            return node['@type'] === endpointType;
-          });
+        return OutcomeService.queryItems(function(node) {
+          return node['@type'] === endpointType;
+        });
       }
 
       function addItem(item) {

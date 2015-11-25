@@ -1,9 +1,9 @@
 'use strict';
 define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
-  describe('the adverse event service', function() {
+  describe('the endpoint service', function() {
 
     var rootScope, q,
-      adverseEventService,
+      endpointService,
       outcomeServiceMock = jasmine.createSpyObj('OutcomeService', ['queryItems', 'addItem', 'editItem', 'deleteItem']),
       outcomeQueryDefer,
       outcomeAddDefer,
@@ -11,16 +11,16 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       outcomeDeleteDefer;
 
     beforeEach(function() {
-      module('trialverse.adverseEvent', function($provide) {
+      module('trialverse.endpoint', function($provide) {
         $provide.value('OutcomeService', outcomeServiceMock);
       });
     });
-    beforeEach(module('trialverse.adverseEvent'));
+    beforeEach(module('trialverse.endpoint'));
 
-    beforeEach(inject(function($q, $rootScope, AdverseEventService) {
+    beforeEach(inject(function($q, $rootScope, EndpointService) {
       q = $q;
       rootScope = $rootScope;
-      adverseEventService = AdverseEventService;
+      endpointService = EndpointService;
 
       outcomeQueryDefer = q.defer();
       outcomeServiceMock.queryItems.and.returnValue(outcomeQueryDefer.promise);
@@ -32,7 +32,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       outcomeServiceMock.deleteItem.and.returnValue(outcomeDeleteDefer.promise);
     }));
 
-    describe('query adverse events', function() {
+    describe('query endpoints', function() {
       beforeEach(function() {
         outcomeQueryDefer.resolve([{
           id: 'item1'
@@ -40,7 +40,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
 
       it('should query the events', function(done) {
-        adverseEventService.queryItems().then(function(items) {
+        endpointService.queryItems().then(function(items) {
           expect(items.length).toBe(1);
           expect(outcomeServiceMock.queryItems).toHaveBeenCalled();
           done();
@@ -48,36 +48,36 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         rootScope.$digest();
       });
     });
-    describe('add adverse event', function() {
+    describe('add endpoint', function() {
       beforeEach(function(){
         outcomeAddDefer.resolve({});
       });
-      it('should add the advere event', function(done) {
-        adverseEventService.addItem({}).then(function() {
+      it('should add the endpoint', function(done) {
+        endpointService.addItem({}).then(function() {
           expect(outcomeServiceMock.addItem).toHaveBeenCalled();
           done();
         });
         rootScope.$digest();
       });
     });
-    describe('edit adverse event', function() {
+    describe('edit endpoint', function() {
       beforeEach(function(){
         outcomeEditDefer.resolve({});
       });
-      it('should edit the adverse event', function(done) {
-        adverseEventService.editItem({}).then(function() {
+      it('should edit the endpoint', function(done) {
+        endpointService.editItem({}).then(function() {
           expect(outcomeServiceMock.editItem).toHaveBeenCalled();
           done();
         });
         rootScope.$digest();
       });
     });
-    describe('delete adverse event', function() {
+    describe('delete endpoint', function() {
       beforeEach(function(){
         outcomeDeleteDefer.resolve({});
       });
-      it('should delete the adverse event', function(done) {
-        adverseEventService.deleteItem({}).then(function() {
+      it('should delete the endpoint', function(done) {
+        endpointService.deleteItem({}).then(function() {
           expect(outcomeServiceMock.deleteItem).toHaveBeenCalled();
           done();
         });

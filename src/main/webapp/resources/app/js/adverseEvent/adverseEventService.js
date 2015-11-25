@@ -7,10 +7,9 @@ define([],
       var adverseEventType = 'ontology:AdverseEvent';
 
       function queryItems() {
-        return OutcomeService.queryItems(
-          function(node) {
-            return node['@type'] === adverseEventType;
-          });
+        return OutcomeService.queryItems(function(node) {
+          return node['@type'] === adverseEventType;
+        });
       }
 
       function addItem(item) {
