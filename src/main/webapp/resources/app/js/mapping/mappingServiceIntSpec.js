@@ -141,23 +141,36 @@ define(['angular', 'angular-mocks'], function() {
         };
 
       beforeEach(function(done) {
-        studyDefer.resolve([{
-          '@id': 'http://testuri/1',
-          '@type': 'ontology:Drug',
-          'label': 'Sertraline'
-        }]);
-        mappingService.updateMapping(studyConcept, datasetConcept).then(function() {
-          done();
+        studyDefer.resolve({
+          '@type': 'ontology:Study',
+          'has_outcome': [{
+            '@id': studyConcept.uri,
+            '@type': 'ontology:AdverseEvent',
+            'of_variable': [{
+              'label': 'Agitation'
+            }]
+          }]
         });
+        mappingService.updateMapping(studyConcept, datasetConcept).then(done);
         rootScope.$digest();
       });
 
-      it('should add the new variable mapping to the graph', function(done) {
-        done();
+      it('should add the new variable mapping to the graph', function() {
+        expect(studyServiceMock.saveStudy).toHaveBeenCalledWith({
+          '@type': 'ontology:Study',
+          'has_outcome': [{
+            '@id': studyConcept.uri,
+            '@type': 'ontology:AdverseEvent',
+            'of_variable': [{
+              'label': 'Agitation',
+              'sameAs': datasetConcept.uri
+            }]
+          }]
+        });
       });
     });
 
-    describe('set variable mapping where one existed', function() {
+    fdescribe('set variable mapping where one existed', function(done) {
       var studyConcept = {
           uri: 'http://trials.drugis.org/instances/instance1'
         },
@@ -170,31 +183,72 @@ define(['angular', 'angular-mocks'], function() {
           type: 'ontology:AdverseEvent'
         };
       beforeEach(function(done) {
-        mappingService.updateMapping(studyConcept, datasetConcept1).then(function() {
-          mappingService.updateMapping(studyConcept, datasetConcept2).then(function() {
-            done();
-          });
+        studyDefer.resolve({
+          '@type': 'ontology:Study',
+          'has_outcome': [{
+            '@id': studyConcept.uri,
+            '@type': 'ontology:AdverseEvent',
+            'of_variable': [{
+              'label': 'Agitation',
+              sameAs: datasetConcept1.uri
+            }]
+          }]
         });
+        mappingService.updateMapping(studyConcept, datasetConcept2).then(done);
         rootScope.$digest();
-
       });
 
-      it('should overwrite the old variable mapping to the graph', function(done) {
-        done();
+      it('should overwrite the old variable mapping to the graph', function() {
+        expect(studyServiceMock.saveStudy).toHaveBeenCalledWith({
+          '@type': 'ontology:Study',
+          'has_outcome': [{
+            '@id': studyConcept.uri,
+            '@type': 'ontology:AdverseEvent',
+            'of_variable': [{
+              'label': 'Agitation',
+              'sameAs': datasetConcept2.uri
+            }]
+          }]
+        });
       });
     });
 
-    describe('remove variable mapping', function() {
+    fdescribe('remove variable mapping', function() {
       var studyConcept = {
-          uri: 'http://trials.drugis.org/instances/instance1'
+          uri: 'http://testuri/1'
         },
         datasetConcept = {
-          uri: 'http://trials.drugis.org/entities/entities1',
+          uri: 'http://testuri/2',
           type: 'ontology:AdverseEvent'
         };
 
-      it('should remove the variable mapping', function(done) {
-        done();
+      beforeEach(function(done) {
+        studyDefer.resolve({
+          '@type': 'ontology:Study',
+          'has_outcome': [{
+            '@id': studyConcept.uri,
+            '@type': 'ontology:AdverseEvent',
+            'of_variable': [{
+              'label': 'Agitation',
+              'sameAs': datasetConcept.uri
+            }]
+          }]
+        });
+        mappingService.removeMapping(studyConcept, datasetConcept).then(done);
+        rootScope.$digest();
+      });
+
+      it('should add the new variable mapping to the graph', function() {
+        expect(studyServiceMock.saveStudy).toHaveBeenCalledWith({
+          '@type': 'ontology:Study',
+          'has_outcome': [{
+            '@id': studyConcept.uri,
+            '@type': 'ontology:AdverseEvent',
+            'of_variable': [{
+              'label': 'Agitation'
+            }]
+          }]
+        });
       });
     });
 
