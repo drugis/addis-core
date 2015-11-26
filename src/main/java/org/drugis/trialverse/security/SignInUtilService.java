@@ -15,16 +15,26 @@
  */
 package org.drugis.trialverse.security;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.security.SocialAuthenticationToken;
+import org.springframework.social.security.SocialUserDetails;
+import org.springframework.stereotype.Service;
 
-public class SignInUtils {
+import javax.inject.Inject;
+
+@Service
+public class SignInUtilService {
+
+  @Inject
+  SimpleSocialUsersDetailService simpleSocialUsersDetailService;
 
   /**
    * Programmatically signs in the user with the given the user ID.
    */
-  public static void signin(String userId) {
-    SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(userId, null, null));
+  public void signin(Connection<?> connection, String userId) {
+    SocialUserDetails socialUserDetails = simpleSocialUsersDetailService.loadUserByUserId(userId);
+    SecurityContextHolder.getContext().setAuthentication(new SocialAuthenticationToken(connection, socialUserDetails, null, null));
   }
 
 }
