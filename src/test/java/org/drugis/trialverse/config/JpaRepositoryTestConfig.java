@@ -9,6 +9,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.web.client.RestTemplate;
@@ -59,5 +60,10 @@ public class JpaRepositoryTestConfig {
   @Bean
   public UsersConnectionRepository usersConnectionRepository() {
     return mock(UsersConnectionRepository.class);
+  }
+
+  @Bean
+  public UserDetailsService userDetailsService() {
+    return mock(UserDetailsService.class);
   }
 }

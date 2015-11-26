@@ -1,5 +1,7 @@
 package org.drugis.trialverse.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.social.security.SocialAuthenticationToken;
 import org.springframework.social.security.SocialUserDetails;
@@ -13,6 +15,8 @@ public class TrialversePrincipal {
 
   private ApiKey apiKey;
   private String userName;
+  final static Logger logger = LoggerFactory.getLogger(TrialversePrincipal.class);
+
 
   public TrialversePrincipal(Principal principal) {
     if (principal instanceof PreAuthenticatedAuthenticationToken) {
@@ -24,6 +28,7 @@ public class TrialversePrincipal {
       SocialUserDetails socialUserDetails = (SocialUserDetails) socialAuthenticationToken.getPrincipal();
       this.userName = socialUserDetails.getUsername();
     } else {
+      logger.error("trying to create Trialverse principal with unknown authentication class");
       throw new ClassCastException("unknown principal type, should be either PreAuthenticatedAuthenticationToken or SocialAuthenticationToken type");
     }
   }
