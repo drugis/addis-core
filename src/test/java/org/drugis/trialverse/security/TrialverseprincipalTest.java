@@ -27,15 +27,6 @@ import static org.mockito.Mockito.when;
 public class TrialverseprincipalTest {
 
   @Test
-  public void testContructorWithUserNameAndPasswordPrincipal () {
-    String userId = "some user id";
-    Principal principal = new UsernamePasswordAuthenticationToken(userId, null, null);
-    TrialversePrincipal trialversePrincipal = new TrialversePrincipal(principal);
-    assertEquals(userId, trialversePrincipal.getUserName());
-    assertNull(trialversePrincipal.getApiKey());
-  }
-
-  @Test
   public void testContructorWithSocialPrincipal () {
     final String userId = "some user id";
     Connection connection = mock(Connection.class);
