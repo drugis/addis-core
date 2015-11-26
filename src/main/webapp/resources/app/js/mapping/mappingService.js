@@ -4,43 +4,62 @@ define([],
     var dependencies = ['StudyService', 'SparqlResource'];
     var MappingService = function(StudyService, SparqlResource) {
 
-      var setDrugMappingTemplate = SparqlResource.get('setDrugMapping.sparql');
-      var setVariableMappingTemplate = SparqlResource.get('setVariableMapping.sparql');
-      var removeMappingTemplate = SparqlResource.get('removeDrugMapping.sparql');
-
-      function updateDrugMapping(studyConcept, datasetConcept) {
-        return setDrugMappingTemplate.then(function(template) {
-          var query = fillInTemplate(template, studyConcept.uri, datasetConcept.uri);
-          return StudyService.doModifyingQuery(query);
-        });
-      }
-
-      function updateVariableMapping(studyConcept, datasetConcept) {
-        return setVariableMappingTemplate.then(function(template) {
-          var query = fillInTemplate(template, studyConcept.uri, datasetConcept.uri);
-          return StudyService.doModifyingQuery(query);
+      function findNodeWithId(graph, uri) {
+        return _.find(graph, function(node) {
+          return node['@id'] === uri;
         });
       }
 
       function updateMapping(studyConcept, datasetConcept) {
-        if (datasetConcept.type === 'http://trials.drugis.org/ontology#Drug') {
+        if (datasetConcept.type === 'ontology:Drug') {
           return updateDrugMapping(studyConcept, datasetConcept);
-        } else {
+        } else if (datasetConcept.type === 'ontology:PopulationCharacteristic' ||
+          datasetConcept.type === 'ontology:AdverseEvent' ||
+          datasetConcept.type === 'ontology:Endpoint') {
           return updateVariableMapping(studyConcept, datasetConcept);
         }
       }
 
-      function removeMapping(studyConcept, datasetConcept) {
-        return removeMappingTemplate.then(function(template) {
-          var query = fillInTemplate(template, studyConcept.uri, datasetConcept.uri);
-          return StudyService.doModifyingQuery(query);
+      function updateDrugMapping(studyConcept, datasetConcept) {
+        return StudyService.getJsonGraph().then(function(graph) {
+          var drugNode = findNodeWithId(graph, studyConcept.uri);
+          drugNode.sameAs = datasetConcept.uri;
+          return StudyService.saveGraph(graph);
         });
       }
 
-      function fillInTemplate(template, studyConceptUri, datasetConceptUri) {
-        return template
-          .replace(/\$studyConcept/g, studyConceptUri)
-          .replace(/\$datasetConcept/g, datasetConceptUri);
+      function updateVariableMapping(studyConcept, datasetConcept) {
+        return StudyService.getStudy().then(function(study) {
+          var outcomeNode = findNodeWithId(study.has_outcome, studyConcept.uri);
+          outcomeNode.of_variable[0].sameAs = datasetConcept.uri;
+          return StudyService.saveStudy(study);
+        });
+      }
+
+      function removeMapping(studyConcept, datasetConcept) {
+        if (datasetConcept.type === 'ontology:Drug') {
+          return removeDrugMapping(studyConcept, datasetConcept);
+        } else if (datasetConcept.type === 'ontology:PopulationCharacteristic' ||
+          datasetConcept.type === 'ontology:AdverseEvent' ||
+          datasetConcept.type === 'ontology:Endpoint') {
+          return removeVariableMapping(studyConcept, datasetConcept);
+        }
+      };
+
+      function removeDrugMapping(studyConcept, datasetConcept) {
+        return StudyService.getJsonGraph().then(function(graph) {
+          var drugNode = findNodeWithId(graph, studyConcept.uri);
+          delete drugNode.sameAs;
+          return StudyService.saveGraph(graph);
+        });
+      }
+
+      function removeVariableMapping(studyConcept, datasetConcept) {
+        return StudyService.getStudy().then(function(study) {
+          var outcomeNode = findNodeWithId(study.has_outcome, studyConcept.uri);
+          delete outcomeNode.of_variable[0].sameAs;
+          return StudyService.saveStudy(study);
+        });
       }
 
       return {
