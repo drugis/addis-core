@@ -44,16 +44,24 @@ define([],
       });
 
       $scope.loadConcepts = function() {
-        return VersionedGraphResource.get({
+        return ConceptService.loadJson(VersionedGraphResource.getJsonNoTransform({
           userUid: $stateParams.userUid,
           datasetUUID: $stateParams.datasetUUID,
           graphUuid: 'concepts',
           versionUuid: $stateParams.versionUuid
-        }).$promise.then(function(conceptsTurtle) {
-          return ConceptService.loadStore(conceptsTurtle.data).then(function() {
-            return ConceptService.queryItems($stateParams.datasetUUID);
-          });
+        }).$promise).then(function() {
+          return ConceptService.queryItems();
         });
+        // return VersionedGraphResource.get({
+        //   userUid: $stateParams.userUid,
+        //   datasetUUID: $stateParams.datasetUUID,
+        //   graphUuid: 'concepts',
+        //   versionUuid: $stateParams.versionUuid
+        // }).$promise.then(function(conceptsTurtle) {
+        //   return ConceptService.loadStore(conceptsTurtle.data).then(function() {
+        //     return ConceptService.queryItems($stateParams.datasetUUID);
+        //   });
+        // });
       };
 
       $scope.datasetConcepts = $scope.loadConcepts();

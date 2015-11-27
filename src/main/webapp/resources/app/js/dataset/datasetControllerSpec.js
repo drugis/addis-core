@@ -8,8 +8,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       mockRemoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['deFusekify']),
       studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get']),
       historyResource = jasmine.createSpyObj('HistoryResource', ['query']),
-      conceptService = jasmine.createSpyObj('ConceptService', ['loadStore', 'queryItems']),
-      versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get']),
+      conceptService = jasmine.createSpyObj('ConceptService', ['loadJson', 'queryItems']),
+      versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get', 'getJsonNoTransform']),
       mockLoadStoreDeferred,
       queryHistoryDeferred,
       studiesWithDetailsGetDeferred,
@@ -28,7 +28,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       };
 
 
-    // encode query like angualr does for test use, http://tools.ietf.org/html/rfc3986
+    // encode query like angular does for test use, http://tools.ietf.org/html/rfc3986
     function encodeUriQuery(val) {
       return encodeURIComponent(val).
       replace(/%40/gi, '@').
@@ -56,7 +56,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       studiesWithDetailsService.get.and.returnValue(studiesWithDetailsGetDeferred.promise);
       mockRemoteRdfStoreService.deFusekify.and.returnValue(mockStudiesWithDetail);
       conceptService.loadStore.and.returnValue({then: function(){}});
-      versionedGraphResource.get.and.returnValue({
+      versionedGraphResource.getJsonNoTransform.and.returnValue({
         $promise: getConceptsDeferred.promise
       });
       historyResource.query.and.returnValue({
@@ -90,7 +90,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     }));
 
-    describe('on load', function() {
+    fdescribe('on load', function() {
       it('should get the dataset and place its properties on the scope', function() {
         var mockDataset = [{
           mock: 'object'

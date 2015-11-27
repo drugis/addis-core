@@ -26,7 +26,7 @@ define(['angular', 'angular-mocks'], function() {
     }));
 
 
-    fdescribe('set drug mapping where none existed', function() {
+    describe('set drug mapping where none existed', function() {
 
       var studyConcept = {
           uri: 'http://testuri/1'
@@ -58,7 +58,7 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    fdescribe('set drug mapping where one existed', function() {
+    describe('set drug mapping where one existed', function() {
 
       var studyConcept = {
           uri: 'http://testuri/1'
@@ -97,7 +97,7 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    fdescribe('remove drug mapping', function() {
+    describe('remove drug mapping', function() {
 
       var studyConcept = {
           uri: 'http://testuri/1',
@@ -131,7 +131,7 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    fdescribe('set variable mapping where none existed', function() {
+    describe('set variable mapping where none existed', function() {
       var studyConcept = {
           uri: 'http://testuri/1'
         },
@@ -170,7 +170,7 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    fdescribe('set variable mapping where one existed', function(done) {
+    describe('set variable mapping where one existed', function(done) {
       var studyConcept = {
           uri: 'http://trials.drugis.org/instances/instance1'
         },
@@ -213,7 +213,7 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    fdescribe('remove variable mapping', function() {
+    describe('remove variable mapping', function() {
       var studyConcept = {
           uri: 'http://testuri/1'
         },

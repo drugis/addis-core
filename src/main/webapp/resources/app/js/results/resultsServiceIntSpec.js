@@ -189,7 +189,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       });
 
-      fdescribe('if the new value is null', function() {
+      describe('if the new value is null', function() {
 
         var row = {
           variable: {
