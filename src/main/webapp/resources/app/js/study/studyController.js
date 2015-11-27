@@ -133,22 +133,22 @@ define([],
         drugs: {
           label: 'Drugs',
           serviceName: 'DrugService',
-          typeUri: 'http://trials.drugis.org/ontology#Drug'
+          typeUri: 'ontology:Drug'
         },
         populationCharacteristics: {
           label: 'Population characteristics',
           serviceName: 'PopulationCharacteristicService',
-          typeUri: 'http://trials.drugis.org/ontology#Variable'
+          typeUri: 'ontology:Variable'
         },
         endpoints: {
           label: 'Endpoints',
           serviceName: 'EndpointService',
-          typeUri: 'http://trials.drugis.org/ontology#Variable'
+          typeUri: 'ontology:Variable'
         },
         adverseEvents: {
           label: 'Adverse events',
           serviceName: 'AdverseEventService',
-          typeUri: 'http://trials.drugis.org/ontology#Variable'
+          typeUri: 'ontology:Variable'
         }
       };
 
