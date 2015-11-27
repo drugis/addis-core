@@ -3,45 +3,16 @@ define([],
   function() {
     var dependencies = ['$scope', '$q', '$window', '$location', '$stateParams', '$modal', '$filter',
       'SingleDatasetService', 'DatasetVersionedResource', 'StudiesWithDetailsService',
-      'RemoteRdfStoreService', 'HistoryResource', 'ConceptService', 'VersionedGraphResource'
+      'RemoteRdfStoreService', 'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource'
     ];
     var DatasetController = function($scope, $q, $window, $location, $stateParams, $modal, $filter,
       SingleDatasetService, DatasetVersionedResource, StudiesWithDetailsService,
-      RemoteRdfStoreService, HistoryResource, ConceptService, VersionedGraphResource) {
-
-      $scope.userUid = $stateParams.userUid;
-      $scope.datasetUUID = $stateParams.datasetUUID;
-      $scope.versionUuid = $stateParams.versionUuid;
-
-      $scope.stripFrontFilter = $filter('stripFrontFilter');
-      $scope.userUid = $stateParams.userUid;
+      RemoteRdfStoreService, HistoryResource, ConceptService, VersionedGraphResource, DatasetResource) {
 
       function isEditingAllowed() {
         return !!($scope.dataset && $scope.dataset.creator === $window.config.user.userEmail &&
           $scope.currentRevision && $scope.currentRevision.isHead);
       }
-
-      $scope.isEditingAllowed = false;
-
-      DatasetVersionedResource.get($stateParams, function(response) {
-        SingleDatasetService.reset();
-        SingleDatasetService.loadStore(response.data).then(function() {
-          SingleDatasetService.queryDataset().then(function(queryResult) {
-            $scope.dataset = queryResult[0];
-            $scope.dataset.uuid = $stateParams.datasetUUID;
-            $scope.isEditingAllowed = isEditingAllowed();
-          });
-        });
-      });
-
-      HistoryResource.query($stateParams).$promise.then(function(historyItems) {
-        // sort to know it curentRevission is head
-        $scope.currentRevision = _.find(historyItems, function(item) {
-          return item.uri.lastIndexOf($stateParams.versionUuid) > 0;
-        });
-        $scope.currentRevision.isHead = $scope.currentRevision.historyOrder === 0;
-        $scope.isEditingAllowed = isEditingAllowed();
-      });
 
       $scope.loadConcepts = function() {
         return VersionedGraphResource.get({
@@ -56,8 +27,46 @@ define([],
         });
       };
 
-      $scope.datasetConcepts = $scope.loadConcepts();
+      $scope.userUid = $stateParams.userUid;
+      $scope.datasetUUID = $stateParams.datasetUUID;
+      $scope.versionUuid = $stateParams.versionUuid;
 
+      $scope.stripFrontFilter = $filter('stripFrontFilter');
+      $scope.userUid = $stateParams.userUid;
+      $scope.isEditingAllowed = false;
+  //    $scope.datasetConcepts = $scope.loadConcepts();
+
+      if ($stateParams.versionUuid) {
+        DatasetVersionedResource.get($stateParams, function(response) {
+          SingleDatasetService.reset();
+          SingleDatasetService.loadStore(response.data).then(function() {
+            SingleDatasetService.queryDataset().then(function(queryResult) {
+              $scope.dataset = queryResult[0];
+              $scope.dataset.uuid = $stateParams.datasetUUID;
+              $scope.isEditingAllowed = isEditingAllowed();
+            });
+          });
+        });
+      } else {
+        DatasetResource.getForJson($stateParams, function(response) {
+          SingleDatasetService.loadStore(response).then(function() {
+            SingleDatasetService.queryDataset().then(function(queryResult) {
+              $scope.dataset = queryResult[0];
+              $scope.dataset.uuid = $stateParams.datasetUUID;
+              $scope.isEditingAllowed = isEditingAllowed();
+            });
+          });
+        })
+      }
+
+      HistoryResource.query($stateParams).$promise.then(function(historyItems) {
+        // sort to know it curentRevission is head
+        $scope.currentRevision = _.find(historyItems, function(item) {
+          return item.uri.lastIndexOf($stateParams.versionUuid) > 0;
+        });
+        $scope.currentRevision.isHead = $scope.currentRevision.historyOrder === 0;
+        $scope.isEditingAllowed = isEditingAllowed();
+      });
 
       $scope.loadStudiesWithDetail = function() {
         StudiesWithDetailsService.get($stateParams.userUid, $stateParams.datasetUUID, $stateParams.versionUuid)

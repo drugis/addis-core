@@ -31,21 +31,14 @@ define([],
       }
 
       function reloadDatasets() {
-        DatasetOverviewService.reset();
-        DatasetResource.query($stateParams, function(response) {
-          DatasetOverviewService.loadStore(response.data).then(function() {
-            console.log('loading dataset-store success');
-            DatasetOverviewService.queryDatasetsOverview().then(function(datasets) {
-              $scope.datasets = datasets;
-              $scope.datasetsLoaded = true;
-              if (datasets.length > 0) {
-                $scope.versionUrlBase = datasets[0].headVersion.split('/').slice(0, 4).join('/') + '/';
-              }
-            }, function() {
-              console.error('failed loading datasetstore');
-            });
-          });
+        DatasetResource.queryForJson($stateParams, function(datasets) {
+          $scope.datasetsLoaded = true;
+          $scope.datasets = datasets;
+          // if (datasets.length > 0) {
+          //   $scope.versionUrlBase = datasets[0].headVersion.split('/').slice(0, 4).join('/') + '/';
+          // }
         });
+
       }
 
       $scope.createDatasetDialog = function() {
