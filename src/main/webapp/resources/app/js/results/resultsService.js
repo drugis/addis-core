@@ -86,7 +86,62 @@ define([],
       }
 
       function isResultForVariable(variableUri, item) {
-        return item.of_outcome && variableUri === item.of_outcome && item.of_arm && item.of_moment;
+        return isResult(item) && variableUri === item.of_outcome;
+      }
+
+      function isStudyNode(node) {
+        return node['@type'] === 'ontology:Study';
+      }
+
+      function isResult(node) {
+        return node.of_outcome && node.of_arm && node.of_moment;
+      }
+
+      function isMoment(node) {
+        return node['@type'] === 'ontology:MeasurementMoment';
+      }
+
+      function cleanupMeasurements() {
+        return StudyService.getJsonGraph().then(function(graph) {
+          // first get all the info we need
+          var study;
+          var hasArmMap = {};
+          var momentMap = {};
+          var hasOutcomeMap = {};
+
+          _.each(graph, function(node) {
+
+            if (isStudyNode(node)) {
+              study = node;
+            }
+
+            if (isMoment(node)) {
+              momentMap[node['@id']] = true;
+            }
+
+          });
+
+          study.has_arm.reduce(function(accum, item) {
+            accum[item['@id']] = true;
+            return accum;
+          }, hasArmMap);
+
+          study.has_outcome.reduce(function(accum, item) {
+            accum[item['@id']] = true;
+            return accum;
+          }, hasOutcomeMap);
+
+          // now its time for cleaning
+          var filterdGraph = _.filter(graph, function(node) {
+            if (isResult(node)) {
+              return hasArmMap[node.of_arm] && momentMap[node.of_moment] && hasOutcomeMap[node.of_outcome];
+            } else {
+              return true;
+            }
+          });
+
+          return StudyService.saveJsonGraph(filterdGraph);
+        });
       }
 
       function queryResults(variableUri) {
@@ -99,6 +154,7 @@ define([],
       return {
         updateResultValue: updateResultValue,
         queryResults: queryResults,
+        cleanupMeasurements: cleanupMeasurements
       };
     };
     return dependencies.concat(ResultsService);

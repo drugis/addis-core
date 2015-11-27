@@ -18,11 +18,11 @@ define([],
       $scope.study = {};
       $scope.resetStudy = resetStudy;
       StudyService.loadJson(VersionedGraphResource.getJson({
-          userUid: $stateParams.userUid,
-          datasetUUID: $stateParams.datasetUUID,
-          graphUuid: $stateParams.studyGraphUuid,
-          versionUuid: $stateParams.versionUuid
-        }).$promise);
+        userUid: $stateParams.userUid,
+        datasetUUID: $stateParams.datasetUUID,
+        graphUuid: $stateParams.studyGraphUuid,
+        versionUuid: $stateParams.versionUuid
+      }).$promise);
 
       $scope.categorySettings = {
         studyInformation: {
@@ -159,7 +159,9 @@ define([],
           controller: 'CopyStudyController',
           resolve: {
             datasets: function() {
-              return DatasetResource.queryForJson({userUid: $scope.loginUser.userNameHash}).$promise.then(function(result){
+              return DatasetResource.queryForJson({
+                userUid: $scope.loginUser.userNameHash
+              }).$promise.then(function(result) {
                 return _.filter(result, function(dataset) {
                   return dataset.uri !== 'http://trials.drugis.org/datasets/' + $scope.datasetUUID;
                 });
@@ -209,20 +211,18 @@ define([],
 
       function resetStudy() {
         // skip reset check in controller as ng-disabled does not work with a <a> tag needed by foundation menu item
-        if(StudyService.isStudyModified()) {
-           reloadStudyModel();
+        if (StudyService.isStudyModified()) {
+          reloadStudyModel();
         }
       };
 
       reloadStudyModel();
 
       $scope.$on('updateStudyDesign', function() {
-        console.log('update design');
-        // ResultsService.cleanUpMeasurements().then(function() {
-           $scope.$broadcast('refreshResults');
-        // });
+        ResultsService.cleanupMeasurements().then(function() {
+          $scope.$broadcast('refreshResults');
+        });
         StudyDesignService.cleanupCoordinates($stateParams.studyUUID).then(function() {
-          console.log('after cleanup coord');
           $scope.$broadcast('refreshStudyDesign');
         });
       });
@@ -243,8 +243,8 @@ define([],
 
       $scope.saveStudy = function() {
         // skip save check in controller as ng-disabled does not work with a <a> tag needed by foundation menu item
-        if(!StudyService.isStudyModified()) {
-           return;
+        if (!StudyService.isStudyModified()) {
+          return;
         }
 
         $modal.open({

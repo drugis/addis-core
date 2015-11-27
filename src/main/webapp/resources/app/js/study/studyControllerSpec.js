@@ -18,7 +18,7 @@ define(['angular', 'angular-mocks'], function() {
       modalMock = jasmine.createSpyObj('modal', ['open']),
       studyServiceMock = jasmine.createSpyObj('StudyService',
        ['reset', 'queryArmData', 'loadStore', 'queryStudyData', 'getGraph', 'studySaved', 'loadJson']),
-      resultsServiceMock = jasmine.createSpyObj('ResultsService', ['cleanUpMeasurements']),
+      resultsServiceMock = jasmine.createSpyObj('ResultsService', ['cleanupMeasurements']),
       studyDesignServiceMock = jasmine.createSpyObj('StudyDesignService', ['cleanupCoordinates']),
       loadStoreDeferred,
       queryStudyDataDeferred,
