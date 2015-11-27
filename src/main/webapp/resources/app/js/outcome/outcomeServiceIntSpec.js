@@ -101,6 +101,51 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       });
     });
 
+
+describe('query outcomes that a not measured', function() {
+      var jsonStudy = {
+        has_outcome: [{
+          '@id': 'http://trials.drugis.org/instances/popchar1',
+          '@type': 'ontology:OutcomeType',
+          'has_result_property': [
+            'ontology:standard_deviation',
+            'ontology:mean',
+            'ontology:sample_size'
+          ],
+          
+          'of_variable': [{
+            '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
+            '@type': 'ontology:Variable',
+            'measurementType': 'ontology:continuous',
+            'comment': [
+              '',
+              'years'
+            ],
+            'label': 'Age'
+          }],
+          'comment': '',
+          'label': 'Age'
+        }]
+      };
+
+      beforeEach(function() {
+        studyDefer.resolve(jsonStudy);
+        measurementMomentsDefer.resolve([]);
+      });
+
+      it('should query the characteristics', function(done) {
+        outcomeService.queryItems(function(outcome) {
+          return outcome['@type'] === 'ontology:OutcomeType';
+        }).then(function(items) {
+          expect(items.length).toBe(1);
+          expect(items[0].measurementType).toEqual('ontology:continuous');
+          expect(items[0].measuredAtMoments).toEqual([]);
+          done();
+        });
+        rootScope.$digest();
+      });
+    });
+
     describe('add outcome of type', function() {
       var queryPromise;
       var outcomeUri = 'http://trials.drugis.org/instances/newUuid';

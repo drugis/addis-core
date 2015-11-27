@@ -38,7 +38,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         'sample_size': 70
       }, {
         '@id': 'http://trials.drugis.org/instances/result2',
-        'count': 2,
+        'standard_deviation': 2,
+        'mean': 5,
         'of_arm': 'http://trials.drugis.org/instances/arm2',
         'of_moment': 'http://trials.drugis.org/instances/moment1',
         'of_outcome': 'http://trials.drugis.org/instances/outcome1',
@@ -63,7 +64,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       it('should return the results for a given variable', function(done) {
         resultsService.queryResults(queryOutcome).then(function(actualResults) {
-          expect(actualResults.length).toEqual(4);
+          expect(actualResults.length).toEqual(5);
           expect(actualResults[0].instance).toEqual('http://trials.drugis.org/instances/result1');
           expect(actualResults[0].armUri).toEqual('http://trials.drugis.org/instances/arm1');
           expect(actualResults[0].momentUri).toEqual('http://trials.drugis.org/instances/moment1');
@@ -77,6 +78,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
           expect(actualResults[1].outcomeUri).toEqual('http://trials.drugis.org/instances/outcome1');
           expect(actualResults[1].result_property).toEqual('count');
           expect(actualResults[1].value).toEqual(24);
+
+          expect(actualResults[4].value).toEqual(5);
           done();
         });
         // fire in the hole !
@@ -103,7 +106,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               uri: 'http://trials.drugis.org/instances/outcome1'
             },
             arm: {
-              uri: 'http://trials.drugis.org/instances/arm1'
+              armURI: 'http://trials.drugis.org/instances/arm1'
             },
             measurementMoment: {
               uri: 'http://trials.drugis.org/instances/moment1'
@@ -115,7 +118,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             value: 123,
           };
 
-          resultsService.updateResultValue(row, inputColumn).then(function() {
+          resultsService.updateResultValue(row, inputColumn).then(function(result) {
             var expextedGraph = [{
               '@id': 'http://trials.drugis.org/instances/newUuid',
               'count': 123,
@@ -123,6 +126,8 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               'of_moment': 'http://trials.drugis.org/instances/moment1',
               'of_outcome': 'http://trials.drugis.org/instances/outcome1',
             }];
+            expect(result).toBeTruthy();
+            expect(result).toEqual(expextedGraph[0]['@id']);
             expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
             done();
           });
@@ -158,7 +163,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               uri: 'http://trials.drugis.org/instances/outcome1'
             },
             arm: {
-              uri: 'http://trials.drugis.org/instances/arm1'
+              armURI: 'http://trials.drugis.org/instances/arm1'
             },
             measurementMoment: {
               uri: 'http://trials.drugis.org/instances/moment1'
@@ -171,7 +176,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
             valueName: 'sample_size'
           };
 
-          resultsService.updateResultValue(row, inputColumn).then(function() {
+          resultsService.updateResultValue(row, inputColumn).then(function(result) {
             var expextedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
               'count': 24,
@@ -180,6 +185,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               'of_outcome': 'http://trials.drugis.org/instances/outcome1',
               'sample_size': 789
             }];
+            expect(result).toBeTruthy();
+            expect(result).toEqual(expextedGraph[0]['@id']);
+            expect(result).toEqual(row.uri);
             expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
             done();
           });
@@ -189,14 +197,57 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
       });
 
-      fdescribe('if the new value is null', function() {
+      describe('if the new value is a null value', function() {
+
+        var graphJsonObject = [];
+
+        beforeEach(function() {
+          var graphDefer = q.defer();
+          var getGraphPromise = graphDefer.promise;
+          graphDefer.resolve(graphJsonObject);
+          studyService.getJsonGraph.and.returnValue(getGraphPromise);
+        });
+
+        it('should save the value to the graph', function(done) {
+          var row = {
+            variable: {
+              uri: 'http://trials.drugis.org/instances/outcome1'
+            },
+            arm: {
+              armURI: 'http://trials.drugis.org/instances/arm1'
+            },
+            measurementMoment: {
+              uri: 'http://trials.drugis.org/instances/moment1'
+            }
+          };
+
+          var inputColumn = {
+            value: null,
+            valueName: 'sample_size'
+          };
+
+          studyService.saveJsonGraph.calls.reset();
+          resultsService.updateResultValue(row, inputColumn).then(function(result) {
+
+            expect(result).toBeFalsy();
+            expect(studyService.saveJsonGraph).not.toHaveBeenCalled();
+            done();
+          });
+          // fire in the hole !
+          rootScope.$digest();
+        });
+
+      });
+
+
+      describe('if the new value is null', function() {
 
         var row = {
           variable: {
             uri: 'http://trials.drugis.org/instances/outcome1'
           },
           arm: {
-            uri: 'http://trials.drugis.org/instances/arm1'
+            armURI: 'http://trials.drugis.org/instances/arm1'
           },
           measurementMoment: {
             uri: 'http://trials.drugis.org/instances/moment1'
@@ -227,7 +278,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
         it('should delete the value from the graph', function(done) {
 
-          resultsService.updateResultValue(row, inputColumn).then(function() {
+          resultsService.updateResultValue(row, inputColumn).then(function(result) {
             var expextedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
               'count': 24,
@@ -235,13 +286,67 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
               'of_moment': 'http://trials.drugis.org/instances/moment1',
               'of_outcome': 'http://trials.drugis.org/instances/outcome1',
             }];
+            expect(result).toBeTruthy();
             expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
             done();
           });
           // fire in the hole !
           rootScope.$digest();
         });
+      });
 
+      describe('if the new value is null', function() {
+
+        var row = {
+          variable: {
+            uri: 'http://trials.drugis.org/instances/outcome1'
+          },
+          arm: {
+            armURI: 'http://trials.drugis.org/instances/arm1'
+          },
+          measurementMoment: {
+            uri: 'http://trials.drugis.org/instances/moment1'
+          },
+          uri: 'http://trials.drugis.org/instances/result1'
+        };
+
+        var inputColumn = {
+          value: null,
+          valueName: 'sample_size'
+        };
+
+        var graphJsonObject = [{
+          '@id': 'http://trials.drugis.org/instances/result1',
+          'of_arm': 'http://trials.drugis.org/instances/arm1',
+          'of_moment': 'http://trials.drugis.org/instances/moment1',
+          'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+          'sample_size': 70
+        }];
+
+        beforeEach(function() {
+          var graphDefer = q.defer();
+          var getGraphPromise = graphDefer.promise;
+          graphDefer.resolve(graphJsonObject);
+          studyService.getJsonGraph.and.returnValue(getGraphPromise);
+        });
+
+        it('should delete the value from the graph', function(done) {
+
+          resultsService.updateResultValue(row, inputColumn).then(function(result) {
+            var expextedGraph = [{
+              '@id': 'http://trials.drugis.org/instances/result1',
+              'count': 24,
+              'of_arm': 'http://trials.drugis.org/instances/arm1',
+              'of_moment': 'http://trials.drugis.org/instances/moment1',
+              'of_outcome': 'http://trials.drugis.org/instances/outcome1',
+            }];
+            expect(result).toBeFalsy();
+            expect(studyService.saveJsonGraph).toHaveBeenCalledWith(expextedGraph);
+            done();
+          });
+          // fire in the hole !
+          rootScope.$digest();
+        });
       });
     }); // end describe updateResultValue
 

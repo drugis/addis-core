@@ -14,7 +14,8 @@ define([],
         var frontEndItem = {
           uri: item['@id'],
           label: item.label,
-          measurementType: item.of_variable[0].measurementType
+          measurementType: item.of_variable[0].measurementType,
+          measuredAtMoments: []
         };
 
         // if only one measurement moment is selected, it's a string, not an array
@@ -23,7 +24,7 @@ define([],
         } else {
           if (item.is_measured_at) {
             frontEndItem.measuredAtMoments = [findMeasurementForUri(measurementMoments, item.is_measured_at)];
-          }
+          } 
         }
         return frontEndItem;
       }

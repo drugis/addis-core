@@ -12,11 +12,12 @@ define([], function() {
         isEditingAllowed: '='
       },
       link: function(scope) {
-
         scope.updateValue = function(row, column) {
           if (ResultsTableService.isValidValue(column)) {
             column.isInValidValue = false;
-            ResultsService.updateResultValue(row, column);
+            ResultsService.updateResultValue(row, column).then(function(result){
+              row.uri = result;
+            })
           } else {
             column.isInValidValue = true;
           }

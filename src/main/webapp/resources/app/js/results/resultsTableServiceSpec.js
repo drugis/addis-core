@@ -92,7 +92,7 @@ define(['angular', 'angular-mocks'], function() {
             armUri: arms[0].armURI,
             instance: 'http://instance/1',
             momentUri: measurementMoments[0].uri,
-            result_property: 'http://trials.drugis.org/ontology#mean',
+            result_property: 'mean',
             value: '2'
           }];
           variable.measurementType = resultsTableService.CONTINUOUS_TYPE;
@@ -121,7 +121,7 @@ define(['angular', 'angular-mocks'], function() {
             armUri: arms[0].armURI,
             instance: 'http://instance/2',
             momentUri: measurementMoments[0].uri,
-            result_property: 'http://trials.drugis.org/ontology#count',
+            result_property: 'count',
             value: '66'
           }];
           variable.measurementType = resultsTableService.DICHOTOMOUS_TYPE;

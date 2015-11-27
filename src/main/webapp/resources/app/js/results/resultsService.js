@@ -7,19 +7,25 @@ define([],
       function updateResultValue(row, inputColumn) {
         return StudyService.getJsonGraph().then(function(graph) {
           if (!row.uri) {
-            // create branch
-            var addItem = {
-              '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
-              of_arm: row.arm.uri,
-              of_moment: row.measurementMoment.uri,
-              of_outcome: row.variable.uri
-            };
-            addItem[inputColumn.valueName] = inputColumn.value;
-            return StudyService.saveJsonGraph(graph.concat(addItem));
+            if (inputColumn.value) {
+              // create branch
+              var addItem = {
+                '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
+                of_arm: row.arm.armURI,
+                of_moment: row.measurementMoment.uri,
+                of_outcome: row.variable.uri
+              };
+              addItem[inputColumn.valueName] = inputColumn.value;
+              StudyService.saveJsonGraph(graph.concat(addItem));
+
+              return addItem['@id'];
+            } else {
+              return undefined;
+            }
           } else {
             // update branch
             var editItem = _.remove(graph, function(node) {
-              return row.uri = node['@id'];
+              return row.uri === node['@id'];
             })[0];
 
             if (inputColumn.value === null) {
@@ -30,9 +36,12 @@ define([],
 
             if (!isEmptyResult(editItem)) {
               graph.push(editItem);
+            } else {
+              row.uri = undefined;
             }
 
-            return StudyService.saveJsonGraph(graph);
+            StudyService.saveJsonGraph(graph);
+            return row.uri;
           }
         });
       }
@@ -70,7 +79,7 @@ define([],
         }
 
         if (backEndItem.mean) {
-          acum.push(createValueItem(backEndItem, 'mean'));
+          acum.push(createValueItem(baseItem, backEndItem, 'mean'));
         }
 
         return acum;
