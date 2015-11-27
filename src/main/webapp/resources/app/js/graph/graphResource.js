@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['util/transformJsonLd'], function(transformJsonLd) {
 
   var dependencies = ['$resource'];
   var GraphResource = function($resource) {
@@ -14,13 +14,29 @@ define([], function() {
         'put': {
           method: 'put'
         },
+        'getJson': {
+          method: 'get',
+          headers: {
+            'Accept': 'application/ld+json'
+          },
+          transformResponse: function(data) {
+            return transformJsonLd(JSON.parse(data));
+          }
+        },
+        'getJsonNoTransform' : {
+          method: 'get',
+          headers: {
+            'Accept': 'application/ld+json'
+          }
+        },
         'putJson': {
           method: 'put',
           headers: {
             'Content-Type': 'application/ld+json'
           }
         }
-      });
+      }
+    );
   };
   return dependencies.concat(GraphResource);
 });
