@@ -1,34 +1,43 @@
 'use strict';
-define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
+define(['angular', 'angular-mocks'], function() {
   describe('concept service', function() {
 
     var scope, q,
-      conceptService
-      ;
+      conceptService,
+      jsonPromiseDefer;
 
-    beforeEach(module('trialverse.concept', function($provide) {
-      $provide.value('RemoteRdfStoreService', remoteRdfStoreServiceMock);
-    }));
+    beforeEach(module('trialverse.concept'));
 
     beforeEach(inject(function($rootScope, $q, ConceptService) {
       scope = $rootScope;
       q = $q;
       conceptService = ConceptService;
-
+      jsonPromiseDefer = q.defer();
+      conceptService.loadJson(jsonPromiseDefer.promise);
     }));
 
     describe('queryItems', function() {
+      beforeEach(function() {
+        jsonPromiseDefer.resolve({
+          '@graph': [{
+            '@id': 'http://uris/concept1',
+            '@type': 'http://trials.drugis.org/ontology#Variable',
+            'http://www.w3.org/2000/01/rdf-schema#label': 'Weight Loss'
+          }]
+        });
+      });
 
       it('should retrieve the concepts', function(done) {
+        var expected = [{
+          uri: 'http://uris/concept1',
+          type: {
+            uri: 'http://trials.drugis.org/ontology#Variable',
+            label: 'Variable'
+          },
+          label: 'Weight Loss'
+        }];
         conceptService.queryItems().then(function(result) {
-          var concepts = result;
-          expect(concepts.length).toBe(3);
-          expect(concepts[0].label).toBe('endpoint');
-          expect(concepts[1].label).toBe('conc 2 the druggening');
-          expect(concepts[2].label).toBe('conc 1');
-          expect(concepts[0].type).toBe('http://trials.drugis.org/ontology#Variable');
-          expect(concepts[1].type).toBe('http://trials.drugis.org/ontology#Drug');
-          expect(concepts[2].type).toBe('http://trials.drugis.org/ontology#Drug');
+          expect(result).toEqual(expected);
           done();
         });
         scope.$digest();
@@ -36,19 +45,25 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     });
 
     describe('addItem', function() {
+      beforeEach(function() {
+        jsonPromiseDefer.resolve({
+          '@graph': []
+        });
+      });
       it('should add the new concept to the graph', function(done) {
         var newConcept = {
-          title: 'added concept',
+          label: 'added concept',
           type: {
-            uri: 'http://trials.drugis.org/ontology#AdverseEvent'
+            label: 'Variable',
+            uri: 'http://trials.drugis.org/ontology#Variable'
           }
         };
         conceptService.addItem(newConcept).then(function() {
           conceptService.queryItems().then(function(result) {
             var concepts = result;
-            expect(concepts.length).toBe(4);
-            expect(concepts[1].label).toEqual(newConcept.title);
-            expect(concepts[1].type).toEqual(newConcept.type.uri);
+            expect(concepts.length).toBe(1);
+            expect(concepts[0].label).toEqual(newConcept.label);
+            expect(concepts[0].type.uri).toEqual(newConcept.type.uri);
             done();
           });
         });

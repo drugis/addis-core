@@ -1,29 +1,46 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$q', 'SparqlResource', 'RemoteRdfStoreService', 'UUIDService'];
-  var ConceptService = function($q, SparqlResource, RemoteRdfStoreService, UUIDService) {
+  var dependencies = ['$q', 'UUIDService'];
+  var ConceptService = function($q, UUIDService) {
 
     var
       conceptsGraphUriBase = 'http://trials.drugis.org/concepts/',
       scratchConceptsGraphUri,
       modified = false,
-      contextJsonPromise;
+      contextJsonPromise,
+      typeOptions = {
+        'http://trials.drugis.org/ontology#Drug': {
+          uri: 'http://trials.drugis.org/ontology#Drug',
+          label: 'Drug'
+        },
+        'http://trials.drugis.org/ontology#Variable': {
+          uri: 'http://trials.drugis.org/ontology#Variable',
+          label: 'Variable'
+        }
+      };
 
-    function toFrontEnd(contextItem) {
-  //     {
-  //   "@id" : "http://trials.drugis.org/concepts/01707e6f-b92c-4ff8-b7c5-61cef7b4c80d",
-  //   "@type" : "http://trials.drugis.org/ontology#Variable",
-  //   "measurementType" : "http://trials.drugis.org/ontology#dichotomous",
-  //   "http://www.w3.org/2000/01/rdf-schema#comment" : "",
-  //   "http://www.w3.org/2000/01/rdf-schema#label" : "Weight Loss"
-  // }
-      return {
-        uri: contextItem['@id'],
-        type: contextItem['@type'],
-        measurementType: contextItem.measurementType,
-        comment: contextItem['http://www.w3.org/2000/01/rdf-schema#comment'],
-        label: contextItem['http://www.w3.org/2000/01/rdf-schema#label']
+    function toFrontEnd(conceptItem) {
+      var frontEnd = {
+        uri: conceptItem['@id'],
+        type: typeOptions[conceptItem['@type']],
+        label: conceptItem['http://www.w3.org/2000/01/rdf-schema#label']
+      };
+      if (conceptItem['http://www.w3.org/2000/01/rdf-schema#comment']) {
+        frontEnd.comment = conceptItem['http://www.w3.org/2000/01/rdf-schema#comment'];
       }
+      return frontEnd;
+    }
+
+    function toBackEnd(concept) {
+      var backEnd = {
+        '@id': 'http://trials.drugis.org/concepts/' + UUIDService.generate(),
+        '@type': concept.type.uri,
+        'http://www.w3.org/2000/01/rdf-schema#label': concept.label
+      };
+      if (concept.comment) {
+        backEnd['http://www.w3.org/2000/01/rdf-schema#comment'] = concept.comment;
+      }
+      return backEnd;
     }
 
     function queryItems() {
@@ -33,9 +50,10 @@ define([], function() {
     }
 
     function addItem(concept) {
-      return addConceptTemplate.then(function(template) {
-        var query = fillInConceptTemplate(template, concept);
-        return doModifyingQuery(query);
+      return contextJsonPromise.then(function(json) {
+        modified = true;
+        json['@graph'].push(toBackEnd(concept));
+        return json;
       });
     }
 
@@ -45,38 +63,6 @@ define([], function() {
 
     function conceptsSaved() {
       modified = false;
-    }
-
-    function getGraph() {
-      return loadDefer.promise.then(function() {
-        return RemoteRdfStoreService.getGraph(scratchConceptsGraphUri);
-      });
-    }
-
-    function doModifyingQuery(query) {
-      return loadDefer.promise.then(function() {
-        return RemoteRdfStoreService.executeUpdate(scratchConceptsGraphUri, query).then(function() {
-          modified = true;
-        });
-      });
-    }
-
-    function doNonModifyingQuery(query) {
-      return loadDefer.promise.then(function() {
-        return RemoteRdfStoreService.executeQuery(scratchConceptsGraphUri, query);
-      });
-    }
-
-
-    function fillInTemplate(template) {
-      return template;
-    }
-
-    function fillInConceptTemplate(template, concept) {
-      return template
-        .replace(/\$conceptUri/g, 'http://trials.drugis.org/concepts/' + UUIDService.generate())
-        .replace(/\$conceptType/g, concept.type.uri)
-        .replace(/\$conceptTitle/g, concept.title);
     }
 
     function loadJson(jsonPromise) {
@@ -107,7 +93,6 @@ define([], function() {
       queryItems: queryItems,
       addItem: addItem,
       areConceptsModified: areConceptsModified,
-      getGraph: getGraph,
       conceptsSaved: conceptsSaved,
       loadJson: loadJson
     };

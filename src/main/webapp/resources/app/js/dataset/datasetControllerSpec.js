@@ -14,7 +14,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       queryHistoryDeferred,
       studiesWithDetailsGetDeferred,
       mockQueryDatasetDeferred,
-      getConceptsDeferred,
+      conceptsJsonDefer,
       mockStudiesWithDetail = {
         '@graph': {}
       },
@@ -49,15 +49,15 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       mockQueryDatasetDeferred = $q.defer();
       studiesWithDetailsGetDeferred = $q.defer();
       queryHistoryDeferred = $q.defer();
-      getConceptsDeferred = $q.defer();
+      conceptsJsonDefer = $q.defer();
 
       mockSingleDatasetService.loadStore.and.returnValue(mockLoadStoreDeferred.promise);
       mockSingleDatasetService.queryDataset.and.returnValue(mockQueryDatasetDeferred.promise);
       studiesWithDetailsService.get.and.returnValue(studiesWithDetailsGetDeferred.promise);
       mockRemoteRdfStoreService.deFusekify.and.returnValue(mockStudiesWithDetail);
-      conceptService.loadStore.and.returnValue({then: function(){}});
+      conceptService.loadJson.and.returnValue(conceptsJsonDefer.promise);
       versionedGraphResource.getJsonNoTransform.and.returnValue({
-        $promise: getConceptsDeferred.promise
+        $promise: conceptsJsonDefer.promise
       });
       historyResource.query.and.returnValue({
         $promise: queryHistoryDeferred.promise
@@ -90,7 +90,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
 
     }));
 
-    fdescribe('on load', function() {
+    describe('on load', function() {
       it('should get the dataset and place its properties on the scope', function() {
         var mockDataset = [{
           mock: 'object'
@@ -132,12 +132,14 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
 
       it('should place the concepts on the scope', function() {
-        var datasetConcepts = [{label: 'concept 1'}];
-        getConceptsDeferred.resolve(datasetConcepts);
+        var datasetConcepts = [{
+          label: 'concept 1'
+        }];
+        conceptsJsonDefer.resolve(datasetConcepts);
         scope.$digest();
-        expect(scope.datasetConcepts.$$state.status).toEqual(1); // promise resolved
-        expect(versionedGraphResource.get).toHaveBeenCalled();
-        expect(conceptService.loadStore).toHaveBeenCalled();
+        expect(scope.datasetConcepts).toBeDefined(); // promise resolved
+        expect(versionedGraphResource.getJsonNoTransform).toHaveBeenCalled();
+        expect(conceptService.loadJson).toHaveBeenCalled();
       });
 
     });
