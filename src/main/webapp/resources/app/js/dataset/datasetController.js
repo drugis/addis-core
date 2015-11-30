@@ -50,19 +50,9 @@ define([],
           graphUuid: 'concepts',
           versionUuid: $stateParams.versionUuid
         }).$promise);
-        // return VersionedGraphResource.get({
-        //   userUid: $stateParams.userUid,
-        //   datasetUUID: $stateParams.datasetUUID,
-        //   graphUuid: 'concepts',
-        //   versionUuid: $stateParams.versionUuid
-        // }).$promise.then(function(conceptsTurtle) {
-        //   return ConceptService.loadStore(conceptsTurtle.data).then(function() {
-        //     return ConceptService.queryItems($stateParams.datasetUUID);
-        //   });
-        // });
       };
 
-      $scope.datasetConceptsPromise = $scope.loadConcepts();
+      $scope.datasetConcepts = $scope.loadConcepts();
 
 
       $scope.loadStudiesWithDetail = function() {
