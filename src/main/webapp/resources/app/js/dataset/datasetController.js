@@ -44,7 +44,7 @@ define([],
       });
 
       $scope.loadConcepts = function() {
-        ConceptService.loadJson(VersionedGraphResource.getJsonNoTransform({
+        return ConceptService.loadJson(VersionedGraphResource.getJsonNoTransform({
           userUid: $stateParams.userUid,
           datasetUUID: $stateParams.datasetUUID,
           graphUuid: 'concepts',
