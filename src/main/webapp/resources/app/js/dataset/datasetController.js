@@ -44,14 +44,12 @@ define([],
       });
 
       $scope.loadConcepts = function() {
-        return ConceptService.loadJson(VersionedGraphResource.getJsonNoTransform({
+        ConceptService.loadJson(VersionedGraphResource.getJsonNoTransform({
           userUid: $stateParams.userUid,
           datasetUUID: $stateParams.datasetUUID,
           graphUuid: 'concepts',
           versionUuid: $stateParams.versionUuid
-        }).$promise).then(function() {
-          return ConceptService.queryItems();
-        });
+        }).$promise);
         // return VersionedGraphResource.get({
         //   userUid: $stateParams.userUid,
         //   datasetUUID: $stateParams.datasetUUID,
@@ -64,7 +62,7 @@ define([],
         // });
       };
 
-      $scope.datasetConcepts = $scope.loadConcepts();
+      $scope.datasetConceptsPromise = $scope.loadConcepts();
 
 
       $scope.loadStudiesWithDetail = function() {
