@@ -1,6 +1,5 @@
 package org.drugis.trialverse.jsonLd;
 
-import org.apache.commons.io.output.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
@@ -13,10 +12,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.*;
-import java.io.ByteArrayOutputStream;
 
 import static org.drugis.trialverse.util.Utils.loadResource;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -58,7 +55,7 @@ public class JsonLDTest {
     engine.eval("var outputJson = JSON.stringify(improveJsonLd(JSON.parse(inputJson)), null, 2)");
     String betterJsonLd = (String) engine.get("outputJson");
 
-    org.apache.commons.io.output.ByteArrayOutputStream outputStream = new org.apache.commons.io.output.ByteArrayOutputStream();
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     RDFDataMgr.write(outputStream, model, Lang.TURTLE) ;
     String turtleStringModel = outputStream.toString();
 
@@ -67,7 +64,7 @@ public class JsonLDTest {
 
     Model model2 = ModelFactory.createDefaultModel();
     model2.read(new StringReader(betterJsonLd), "http://example.com", RDFLanguages.strLangJSONLD);
-    org.apache.commons.io.output.ByteArrayOutputStream outputStream2 = new org.apache.commons.io.output.ByteArrayOutputStream();
+    ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream();
     RDFDataMgr.write(outputStream2, model2, Lang.TURTLE) ;
     String turtleStringModel2 = outputStream2.toString();
     Model model2a = ModelFactory.createDefaultModel();

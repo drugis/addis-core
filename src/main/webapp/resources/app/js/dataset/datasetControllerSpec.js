@@ -8,13 +8,13 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       mockRemoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['deFusekify']),
       studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get']),
       historyResource = jasmine.createSpyObj('HistoryResource', ['query']),
-      conceptService = jasmine.createSpyObj('ConceptService', ['loadStore', 'queryItems']),
-      versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get']),
+      conceptService = jasmine.createSpyObj('ConceptService', ['loadJson', 'queryItems']),
+      versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get', 'getJsonNoTransform']),
       mockLoadStoreDeferred,
       queryHistoryDeferred,
       studiesWithDetailsGetDeferred,
       mockQueryDatasetDeferred,
-      getConceptsDeferred,
+      conceptsJsonDefer,
       mockStudiesWithDetail = {
         '@graph': {}
       },
@@ -28,7 +28,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       };
 
 
-    // encode query like angualr does for test use, http://tools.ietf.org/html/rfc3986
+    // encode query like angular does for test use, http://tools.ietf.org/html/rfc3986
     function encodeUriQuery(val) {
       return encodeURIComponent(val).
       replace(/%40/gi, '@').
@@ -49,15 +49,15 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       mockQueryDatasetDeferred = $q.defer();
       studiesWithDetailsGetDeferred = $q.defer();
       queryHistoryDeferred = $q.defer();
-      getConceptsDeferred = $q.defer();
+      conceptsJsonDefer = $q.defer();
 
       mockSingleDatasetService.loadStore.and.returnValue(mockLoadStoreDeferred.promise);
       mockSingleDatasetService.queryDataset.and.returnValue(mockQueryDatasetDeferred.promise);
       studiesWithDetailsService.get.and.returnValue(studiesWithDetailsGetDeferred.promise);
       mockRemoteRdfStoreService.deFusekify.and.returnValue(mockStudiesWithDetail);
-      conceptService.loadStore.and.returnValue({then: function(){}});
-      versionedGraphResource.get.and.returnValue({
-        $promise: getConceptsDeferred.promise
+      conceptService.loadJson.and.returnValue(conceptsJsonDefer.promise);
+      versionedGraphResource.getJsonNoTransform.and.returnValue({
+        $promise: conceptsJsonDefer.promise
       });
       historyResource.query.and.returnValue({
         $promise: queryHistoryDeferred.promise
@@ -132,12 +132,14 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
 
       it('should place the concepts on the scope', function() {
-        var datasetConcepts = [{label: 'concept 1'}];
-        getConceptsDeferred.resolve(datasetConcepts);
+        var datasetConcepts = [{
+          label: 'concept 1'
+        }];
+        conceptsJsonDefer.resolve(datasetConcepts);
         scope.$digest();
-        expect(scope.datasetConcepts.$$state.status).toEqual(1); // promise resolved
-        expect(versionedGraphResource.get).toHaveBeenCalled();
-        expect(conceptService.loadStore).toHaveBeenCalled();
+        expect(scope.datasetConcepts).toBeDefined(); // promise resolved
+        expect(versionedGraphResource.getJsonNoTransform).toHaveBeenCalled();
+        expect(conceptService.loadJson).toHaveBeenCalled();
       });
 
     });

@@ -45,18 +45,6 @@ define(['angular', 'angular-mocks'], function() {
       expect(scope.createDatasetDialog).not.toBe(null);
     });
 
-    it('should query the datasetVersionedResource, process the results and place them on the scope', function() {
-
-      httpBackend.flush();
-
-      expect(mockDatasetOverviewService.loadStore).toHaveBeenCalled();
-      mockLoadStoreDeferred.resolve(101);
-      scope.$digest();
-      expect(mockDatasetOverviewService.queryDatasetsOverview).toHaveBeenCalled();
-      mockQueryDatasetsDeferred.resolve(datasets);
-      scope.$digest();
-      expect(scope.datasets).toBe(datasets);
-    });
 
     describe('createDatasetDialog', function() {
       it('should open a modal', function() {

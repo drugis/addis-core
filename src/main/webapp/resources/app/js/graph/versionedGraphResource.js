@@ -29,6 +29,15 @@ define(['util/transformJsonLd'], function(transformJsonLd) {
           transformResponse: function(data) {
             return transformJsonLd(JSON.parse(data))
           }
+        },
+        'getJsonNoTransform': {
+          method: 'get',
+          headers: {
+            'Accept': 'application/ld+json'
+          },
+          transformResponse: function(data) {
+            return JSON.parse(data);
+          }
         }
       });
   };
