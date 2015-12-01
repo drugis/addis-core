@@ -367,7 +367,7 @@
     (trig/spo instance-uri
               [(trig/iri :rdf "type") (trig/iri :ontology "ParticipantFlow")]
               [(trig/iri :ontology "participants_starting") (trig/lit nr-starting)]
-              [(trig/iri :ontology "of_arm") arm-uri]
+              [(trig/iri :ontology "of_group") arm-uri]
               [(trig/iri :ontology "in_epoch") epoch-uri])))
 
 (defn arm-size
