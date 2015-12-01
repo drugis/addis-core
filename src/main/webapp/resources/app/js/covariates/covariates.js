@@ -10,6 +10,7 @@ define(function (require) {
 
     // resources
     .factory('CovariateResource', require('covariates/covariateResource'))
+    .factory('CovariateOptionsResource', require('covariates/covariateOptionsResource'))
 
     //services
 
