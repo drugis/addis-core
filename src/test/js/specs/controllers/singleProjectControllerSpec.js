@@ -26,7 +26,8 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         InterventionResource: {},
         AnalysisResource: {},
         TrialverseStudyResource: {},
-        ANALYSIS_TYPES: {}
+        ANALYSIS_TYPES: {},
+        $modal: {}
       };
     });
 

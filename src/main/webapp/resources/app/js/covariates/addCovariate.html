@@ -1,0 +1,46 @@
+<form id="add-covariate-form" novalidate ng-submit="addCovariate(covariate)">
+
+    <div class="row">
+        <div class="large-9 columns">
+            <h3>Add a new Covariate</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="large-9 columns">
+            <label>Definition
+                <select id="covariate-devinition-select"
+                        ng-options="covariate.label group by covariate.type for covariate in covariates"
+                        autofocus="true"
+                        ng-model="covariate.definition"></select>
+            </label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="large-9 columns">
+            <label>Name
+                <input id="covariate-name-input" type="text" ng-model="covariate.name">
+            </label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="large-9 columns">
+            <label>Motivation
+                <textarea rows=4 id="covariate-motivation-textarea" ng-model="covariate.motivation"></textarea>
+            </label>
+        </div>
+    </div>
+
+    <div class="row modal-bottom-button-bar">
+        <div class="large-9 columns">
+            <button id="submit-add-covariate-btn" class="success" type="submit"
+                    ng-disabled="!covariate.definition || !covariate.name">Add
+            </button>
+        </div>
+    </div>
+
+    <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+
+</form>

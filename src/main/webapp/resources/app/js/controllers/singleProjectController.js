@@ -9,10 +9,15 @@ define([], function() {
     'SemanticInterventionResource',
     'InterventionResource',
     'AnalysisResource',
-    'ANALYSIS_TYPES'
+    'ANALYSIS_TYPES',
+    '$modal'
   ];
-  var ProjectsController = function($scope, $state, $stateParams, $window, ProjectResource, TrialverseResource, TrialverseStudyResource, SemanticOutcomeResource,
-    OutcomeResource, SemanticInterventionResource, InterventionResource, AnalysisResource, ANALYSIS_TYPES) {
+  var ProjectsController = function($scope, $state, $stateParams, $window, ProjectResource, TrialverseResource,
+    TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
+    AnalysisResource, ANALYSIS_TYPES, $modal) {
+
+    $scope.analysesLoaded = false;
+    $scope.covariatesLoaded = true;
     $scope.loading = {
       loaded: false
     };
@@ -29,74 +34,88 @@ define([], function() {
 
     $scope.project = ProjectResource.get($stateParams);
     $scope.project.$promise.then(function() {
+
+      $scope.loading.loaded = true;
+
+      if($window.config.user.id === $scope.project.owner.id) {
+        $scope.editMode.allowEditing = true;
+      }
+
       $scope.trialverse = TrialverseResource.get({
         namespaceUid: $scope.project.namespaceUid,
         version: $scope.project.datasetVersion
       });
+
       $scope.semanticOutcomes = SemanticOutcomeResource.query({
         namespaceUid: $scope.project.namespaceUid,
         version: $scope.project.datasetVersion
       });
+
       $scope.semanticInterventions = SemanticInterventionResource.query({
         namespaceUid: $scope.project.namespaceUid,
         version: $scope.project.datasetVersion
       });
+
       $scope.outcomes = OutcomeResource.query({
         projectId: $scope.project.id
       });
+
       $scope.interventions = InterventionResource.query({
         projectId: $scope.project.id
       });
-
-      $scope.loading.loaded = true;
-
-      $scope.editMode.allowEditing = $window.config.user.id === $scope.project.owner.id;
 
       $scope.studies = TrialverseStudyResource.query({
         namespaceUid: $scope.project.namespaceUid,
         version: $scope.project.datasetVersion
       });
 
-      $scope.analysesLoaded = false;
       $scope.studies.$promise.then(function() {
         $scope.analyses = AnalysisResource.query({
           projectId: $scope.project.id
-        }, function(){
-        $scope.analysesLoaded = true;
+        }, function() {
+          $scope.analysesLoaded = true;
         });
       });
-
-      $scope.addOutcome = function(newOutcome) {
-        newOutcome.projectId = $scope.project.id;
-        $scope.createOutcomeModal.close();
-        this.model = {};
-        OutcomeResource
-          .save(newOutcome)
-          .$promise.then(function(outcome) {
-            $scope.outcomes.push(outcome);
-          });
-      };
-
-      $scope.addIntervention = function(newIntervention) {
-        newIntervention.projectId = $scope.project.id;
-        $scope.createInterventionModal.close();
-        this.model = {};
-        InterventionResource
-          .save(newIntervention)
-          .$promise.then(function(intervention) {
-            $scope.interventions.push(intervention);
-          });
-      };
-
-      $scope.addAnalysis = function(newAnalysis) {
-        newAnalysis.projectId = $scope.project.id;
-        AnalysisResource
-          .save(newAnalysis)
-          .$promise.then(function(savedAnalysis) {
-            $scope.goToAnalysis(savedAnalysis.id, savedAnalysis.analysisType);
-          });
-      };
     });
+
+    $scope.addOutcome = function(newOutcome) {
+      newOutcome.projectId = $scope.project.id;
+      $scope.createOutcomeModal.close();
+      this.model = {};
+      OutcomeResource
+        .save(newOutcome)
+        .$promise.then(function(outcome) {
+          $scope.outcomes.push(outcome);
+        });
+    };
+
+    $scope.addIntervention = function(newIntervention) {
+      newIntervention.projectId = $scope.project.id;
+      $scope.createInterventionModal.close();
+      this.model = {};
+      InterventionResource
+        .save(newIntervention)
+        .$promise.then(function(intervention) {
+          $scope.interventions.push(intervention);
+        });
+    };
+
+    $scope.addCovariate = function() {
+      $modal.open({
+        templateUrl: './app/js/covariates/addCovariate.html',
+        scope: $scope,
+        controller: 'AddCovariateController'
+      });
+    };
+
+    $scope.addAnalysis = function(newAnalysis) {
+      newAnalysis.projectId = $scope.project.id;
+      AnalysisResource
+        .save(newAnalysis)
+        .$promise.then(function(savedAnalysis) {
+          $scope.goToAnalysis(savedAnalysis.id, savedAnalysis.analysisType);
+        });
+    };
 
     $scope.goToAnalysis = function(analysisId, analysisTypeLabel) {
       var analysisType = _.find(ANALYSIS_TYPES, function(type) {

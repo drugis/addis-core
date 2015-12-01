@@ -35,7 +35,8 @@ define(
     'mcda/services/hashCodeService',
     'mcda/services/partialValueFunction',
     'mcda/services/scaleRangeService',
-    'mcda/services/util'
+    'mcda/services/util',
+    'covariates/covariates'
   ],
   function(angular, require, $, Config, errorInterceptor) {
     var mcdaDependencies = [
@@ -66,7 +67,8 @@ define(
       'addis.directives',
       'mm.foundation.tpls',
       'mm.foundation.modal',
-      'help-directive'
+      'help-directive',
+      'addis.covariates'
     ];
     var gemtcWebDependencies = [
       'gemtc.controllers',
