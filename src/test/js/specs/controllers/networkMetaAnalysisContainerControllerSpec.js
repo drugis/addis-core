@@ -5,6 +5,9 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       q,
       analysisDeferred,
       interventionDeferred,
+      covariateDeferred,
+      covariates = [{id:1}, {id:2}],
+      covariateResource = jasmine.createSpyObj('CovariateResource', ['query']),
       trialverseTrialDataDeferred,
       mockAnalysis = {
         $save: function () {},
@@ -84,7 +87,10 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       trialverseTrialDataResource = jasmine.createSpyObj('TrialverseTrialDataResource', ['query', 'get']);
       trialverseTrialDataResource.query.and.returnValue(mockTrialData);
       trialverseTrialDataResource.get.and.returnValue(mockTrialData);
-      networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows', 'transformTrialDataToNetwork', 'isNetworkDisconnected', 'addInclusionsToInterventions', 'changeArmExclusion', 'buildInterventionInclusions', 'doesInterventionHaveAmbiguousArms', 'doesModelHaveAmbiguousArms', 'cleanUpExcludedArms']);
+      networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows',
+       'transformTrialDataToNetwork', 'isNetworkDisconnected', 'addInclusionsToInterventions', 'changeArmExclusion',
+        'buildInterventionInclusions', 'doesInterventionHaveAmbiguousArms', 'doesModelHaveAmbiguousArms', 'cleanUpExcludedArms',
+        'addInclusionsToCovariates', 'changeCovariateInclusion']);
       var mockNetwork = {
         interventions: []
       };
@@ -96,6 +102,11 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
       });
       networkMetaAnalysisService.doesInterventionHaveAmbiguousArms.and.returnValue(true);
       networkMetaAnalysisService.addInclusionsToInterventions.and.returnValue(mockInterventions);
+
+      covariateDeferred = $q.defer();
+      covariates.$promise = covariateDeferred.promise;
+      covariateResource.query.and.returnValue(covariates);
+
       modelResource = jasmine.createSpyObj('modelResource', ['save', 'query']);
       modelDeferred = $q.defer();
       mockModel.$promise = modelDeferred.promise;
@@ -112,6 +123,7 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
         currentProject: mockProject,
         OutcomeResource: outcomeResource,
         InterventionResource: interventionResource,
+        CovariateResource: covariateResource,
         TrialverseTrialDataResource: trialverseTrialDataResource,
         NetworkMetaAnalysisService: networkMetaAnalysisService,
         ModelResource: modelResource
@@ -132,13 +144,14 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
         expect(modelResource.query).toHaveBeenCalledWith(mockStateParams);
       });
     });
-    describe('when the analysis, outcomes, interventions, project, models are loaded', function () {
+    describe('when the analysis, outcomes, interventions, project, models and covariates are loaded', function () {
       beforeEach(inject(function ($controller) {
         analysisDeferred.resolve(mockAnalysis);
         projectDeferred.resolve(mockProject);
         interventionDeferred.resolve(mockInterventions);
         outcomesDeferred.resolve(mockOutcomes);
         modelDeferred.resolve(mockModel);
+        covariateDeferred.resolve(covariates);
         scope.$apply();
       }));
       it('should save the analysis when the selected outcome changes', function () {

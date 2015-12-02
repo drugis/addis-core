@@ -339,11 +339,23 @@ define(['angular'], function() {
         return [inclusion.interventionId, true];
       }));
 
-      angular.forEach(interventions, function(intervention) {
+      return interventions.map(function(intervention) {
         intervention.isIncluded = inclusionMap[intervention.id];
+        return intervention;
       });
-      return interventions;
     }
+
+    function addInclusionsToCovariates(covariates, inclusions) {
+      var inclusionMap = _.object(_.map(inclusions, function(inclusion) {
+        return [inclusion.covariateId, true];
+      }));
+
+      return covariates.map(function(covariate) {
+        covariate.isIncluded = inclusionMap[covariate.id];
+        return covariate;
+      });
+    }
+
 
     function cleanUpExcludedArms(intervention, analysis, trialverseData) {
 
@@ -373,16 +385,30 @@ define(['angular'], function() {
 
     }
 
+    function changeCovariateInclusion(covariate, includedCovariates) {
+      var updatedList = angular.copy(includedCovariates);
+      if(covariate.isIncluded) {
+        updatedList.push({covariateId: covariate.id});
+      } else {
+        _.remove(updatedList, function(includedCovariate){
+          return includedCovariate.covariateId === covariate.id;
+        });
+      }
+      return updatedList;
+    }
+
     return {
       transformTrialDataToNetwork: transformTrialDataToNetwork,
       transformTrialDataToTableRows: transformTrialDataToTableRows,
       isNetworkDisconnected: isNetworkDisconnected,
       addInclusionsToInterventions: addInclusionsToInterventions,
+      addInclusionsToCovariates: addInclusionsToCovariates,
       changeArmExclusion: changeArmExclusion,
       buildInterventionInclusions: buildInterventionInclusions,
       doesInterventionHaveAmbiguousArms: doesInterventionHaveAmbiguousArms,
       doesModelHaveAmbiguousArms: doesModelHaveAmbiguousArms,
-      cleanUpExcludedArms: cleanUpExcludedArms
+      cleanUpExcludedArms: cleanUpExcludedArms,
+      changeCovariateInclusion: changeCovariateInclusion
     };
   };
   return dependencies.concat(NetworkMetaAnalysisService);

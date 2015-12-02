@@ -73,6 +73,10 @@ public class AnalysisServiceImpl implements AnalysisService {
       interventionInclusion.setAnalysis(analysis);
     }
 
+    for (CovariateInclusion covariateInclusion : analysis.getCovariateInclusions()) {
+      covariateInclusion.setAnalysis(analysis);
+    }
+
     return networkMetaAnalysisRepository.update(analysis);
   }
 

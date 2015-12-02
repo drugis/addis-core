@@ -33,7 +33,6 @@ import org.springframework.web.util.NestedServletException;
 
 import javax.inject.Inject;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -54,29 +53,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class AnalysisControllerTest {
 
-  private MockMvc mockMvc;
-
-  @Inject
-  private AccountRepository accountRepository;
-
-  @Inject
-  private AnalysisRepository analysisRepository;
-
-  @Inject
-  private AnalysisService analysisService;
-
-  @Inject
-  private SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
-
-  @Inject
-  private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
-
   @Inject
   CriteriaRepository criteriaRepository;
-
   @Inject
   ScenarioRepository scenarioRepository;
-
+  private MockMvc mockMvc;
+  @Inject
+  private AccountRepository accountRepository;
+  @Inject
+  private AnalysisRepository analysisRepository;
+  @Inject
+  private AnalysisService analysisService;
+  @Inject
+  private SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
+  @Inject
+  private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
   @Inject
   private WebApplicationContext webApplicationContext;
 
@@ -90,7 +81,7 @@ public class AnalysisControllerTest {
   @Before
   public void setUp() {
     reset(accountRepository, analysisRepository, singleStudyBenefitRiskAnalysisRepository,
-            networkMetaAnalysisRepository, scenarioRepository, criteriaRepository);
+            networkMetaAnalysisRepository, scenarioRepository, criteriaRepository, analysisService);
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
@@ -100,7 +91,7 @@ public class AnalysisControllerTest {
   @After
   public void tearDown() {
     verifyNoMoreInteractions(accountRepository, analysisRepository, singleStudyBenefitRiskAnalysisRepository,
-            networkMetaAnalysisRepository);
+            networkMetaAnalysisRepository, analysisService, criteriaRepository, scenarioRepository);
   }
 
   @Test
@@ -302,6 +293,7 @@ public class AnalysisControllerTest {
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(analysisId);
     verify(singleStudyBenefitRiskAnalysisRepository).update(gert, newAnalysis);
+    verify(scenarioRepository).create(analysisId, Scenario.DEFAULT_TITLE, "{\"problem\":" + newAnalysis.getProblem() + "}");
   }
 
   @Test
@@ -330,8 +322,8 @@ public class AnalysisControllerTest {
     Integer projectId = 101;
     Integer outcomeId = 444;
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
-    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", new ArrayList<ArmExclusion>(), Collections.EMPTY_LIST, outcome);
-    newAnalysis.getExcludedArms().addAll(Arrays.asList(new ArmExclusion(null, "-1L"), new ArmExclusion(null, "-2L")));
+    List<ArmExclusion> excludedArms = Arrays.asList(new ArmExclusion(null, "-1L"), new ArmExclusion(null, "-2L"));
+    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", excludedArms, Collections.EMPTY_LIST, outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
@@ -349,8 +341,29 @@ public class AnalysisControllerTest {
     Integer projectId = 101;
     Integer outcomeId = 444;
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
-    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.EMPTY_LIST, new ArrayList<InterventionInclusion>(), outcome);
-    newAnalysis.getIncludedInterventions().addAll(Arrays.asList(new InterventionInclusion(null, -1), new InterventionInclusion(null, -2)));
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "adsf");
+    List<InterventionInclusion> includedInterventions = Arrays.asList(new InterventionInclusion(analysis, -1), new InterventionInclusion(analysis, -2));
+    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.EMPTY_LIST, includedInterventions, outcome);
+
+    String jsonCommand = TestUtils.createJson(newAnalysis);
+    mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
+            .content(jsonCommand)
+            .principal(user)
+            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk());
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
+  }
+
+  @Test
+  public void testUpdateWithIncludedCovariates() throws Exception {
+    Integer analysisId = 333;
+    Integer projectId = 101;
+    Integer outcomeId = 444;
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "adsf");
+    List<CovariateInclusion> covariateInclusions = Arrays.asList(new CovariateInclusion(analysis, -1), new CovariateInclusion(analysis, -2));
+    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST, covariateInclusions, outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)

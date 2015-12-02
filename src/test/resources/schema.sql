@@ -275,3 +275,14 @@ CREATE TABLE covariate (
   FOREIGN KEY(project) REFERENCES Project(id)
 );
 --rollback DROP TABLE covariate;
+
+--changeset stroombergc:29
+CREATE TABLE CovariateInclusion (
+  id SERIAL NOT NULL,
+  covariateId INT NOT NULL,
+  analysisId INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id),
+  FOREIGN KEY(covariateId) REFERENCES covariate(id)
+);
+--rollback DROP TABLE CovariateInclusion;
