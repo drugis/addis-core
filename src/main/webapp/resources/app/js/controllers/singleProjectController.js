@@ -8,13 +8,14 @@ define([], function() {
     'OutcomeResource',
     'SemanticInterventionResource',
     'InterventionResource',
+    'CovariateResource',
     'AnalysisResource',
     'ANALYSIS_TYPES',
     '$modal'
   ];
   var ProjectsController = function($scope, $state, $stateParams, $window, ProjectResource, TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
-    AnalysisResource, ANALYSIS_TYPES, $modal) {
+    CovariateResource, AnalysisResource, ANALYSIS_TYPES, $modal) {
 
     $scope.analysesLoaded = false;
     $scope.covariatesLoaded = true;
@@ -37,7 +38,7 @@ define([], function() {
 
       $scope.loading.loaded = true;
 
-      if($window.config.user.id === $scope.project.owner.id) {
+      if ($window.config.user.id === $scope.project.owner.id) {
         $scope.editMode.allowEditing = true;
       }
 
@@ -64,6 +65,8 @@ define([], function() {
         projectId: $scope.project.id
       });
 
+      loadCovariates();
+
       $scope.studies = TrialverseStudyResource.query({
         namespaceUid: $scope.project.namespaceUid,
         version: $scope.project.datasetVersion
@@ -77,6 +80,12 @@ define([], function() {
         });
       });
     });
+
+    function loadCovariates() {
+      $scope.covariates = CovariateResource.query({
+        projectId: $scope.project.id
+      });
+    }
 
     $scope.addOutcome = function(newOutcome) {
       newOutcome.projectId = $scope.project.id;
@@ -104,7 +113,12 @@ define([], function() {
       $modal.open({
         templateUrl: './app/js/covariates/addCovariate.html',
         scope: $scope,
-        controller: 'AddCovariateController'
+        controller: 'AddCovariateController',
+        resolve: {
+          callback: function() {
+            return loadCovariates;
+          }
+        }
       });
     };
 

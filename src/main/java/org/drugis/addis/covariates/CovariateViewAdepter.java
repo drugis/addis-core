@@ -7,7 +7,8 @@ public class CovariateViewAdepter {
 
   private String key;
   private String label;
-  private String type;
+  private String typeKey;
+  private String typeLabel;
 
   public CovariateViewAdepter() {
   }
@@ -15,7 +16,8 @@ public class CovariateViewAdepter {
   public CovariateViewAdepter(CovariateOption option) {
     this.key = option.toString();
     this.label = option.getLabel();
-    this.type = option.getType().toString();
+    this.typeKey = option.getType().toString();
+    this.typeLabel = option.getType().getLabel();
   }
 
   public String getKey() {
@@ -26,8 +28,12 @@ public class CovariateViewAdepter {
     return label;
   }
 
-  public String getType() {
-    return type;
+  public String getTypeKey() {
+    return typeKey;
+  }
+
+  public String getTypeLabel() {
+    return typeLabel;
   }
 
   @Override
@@ -39,7 +45,8 @@ public class CovariateViewAdepter {
 
     if (!key.equals(that.key)) return false;
     if (!label.equals(that.label)) return false;
-    return type.equals(that.type);
+    if (!typeKey.equals(that.typeKey)) return false;
+    return typeLabel.equals(that.typeLabel);
 
   }
 
@@ -47,7 +54,8 @@ public class CovariateViewAdepter {
   public int hashCode() {
     int result = key.hashCode();
     result = 31 * result + label.hashCode();
-    result = 31 * result + type.hashCode();
+    result = 31 * result + typeKey.hashCode();
+    result = 31 * result + typeLabel.hashCode();
     return result;
   }
 }

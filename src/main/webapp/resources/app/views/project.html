@@ -53,7 +53,8 @@
       </tbody>
     </table>
   </div>
-  <!-- Interventions -->
+
+    <!-- Interventions -->
   <div class="nested-view columns large-6">
     <div class="nested-view-header">
       Interventions
@@ -87,7 +88,6 @@
   </div>
 </div>
 
-
 <!-- Covariates -->
 <div class="row">
     <div class="columns large-6 nested-view">
@@ -105,7 +105,8 @@
             </p>
     </div>
 
-        <table ng-show="covariatesLoaded">
+        <em ng-show="covariatesLoaded && covariates.length === 0">No covariates have been defined</em>
+        <table ng-show="covariatesLoaded && covariates.length > 0">
       <thead>
         <tr>
             <th>Definition</th>
@@ -115,9 +116,9 @@
       </thead>
       <tbody>
       <tr ng-repeat="covariate in covariates">
-          <td>{{covariate.definition}}</td>
+          <td>{{covariate.definition.label}}</td>
           <td>{{covariate.name}}</td>
-          <td>{{covariate.description}}</td>
+          <td>{{covariate.motivation}}</td>
       </tr>
       </tbody>
         </table>
@@ -132,7 +133,7 @@
                     ng-click="createAnalysisModal.open()"><i
                     class="fa fa-plus"></i> Add Analysis
             </button>
-        </div>
+    </div>
         <!--  <div class="panel callout radius">
           Create an analysis on the basis of the defined outcomes and interventions, and the data in the project's
           trialverse namespace.
@@ -141,7 +142,7 @@
             <i class="fa fa-spinner fa-spin fa-3x"></i>
 
             <p>Loading analyses...</p>
-        </div>
+    </div>
         <div ng-show="analysesLoaded">
             <table>
                 <thead>

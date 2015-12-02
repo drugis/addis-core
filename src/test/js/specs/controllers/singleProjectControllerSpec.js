@@ -24,6 +24,7 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         OutcomeResource: {},
         SemanticInterventionResource: {},
         InterventionResource: {},
+        CovariateResource: jasmine.createSpyObj('CovariateResource', ['query']),
         AnalysisResource: {},
         TrialverseStudyResource: {},
         ANALYSIS_TYPES: {},

@@ -6,7 +6,9 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.util.WebConstants;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -38,6 +40,7 @@ public class CovariateController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/covariates", method = RequestMethod.POST)
   @ResponseBody
+  @Transactional("ptmAddisCore")
   public Covariate addCovariateToProject(HttpServletRequest request, HttpServletResponse response, Principal currentUser,
                                          @PathVariable Integer projectId, @RequestBody AddCovariateCommand command)
           throws MethodNotAllowedException, ResourceDoesNotExistException {
@@ -46,6 +49,7 @@ public class CovariateController extends AbstractAddisCoreController {
       projectService.checkProjectExistsAndModifiable(user, projectId);
       Covariate covariate = covariateRepository.createForProject(projectId, command.getDefinition(), command.getName(), command.getMotivation());
       response.setStatus(HttpServletResponse.SC_CREATED);
+      response.setContentType(WebConstants.APPLICATION_JSON_UTF8.toString());
       response.setHeader("Location", request.getRequestURL() + "/");
       return covariate;
     } else {

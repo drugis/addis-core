@@ -41,6 +41,7 @@ import static org.mockito.Mockito.mock;
                 "org.drugis.addis.trialverse.service",
                 "org.drugis.addis.trialverse.factory",
                 "org.drugis.addis.util",
+                "org.drugis.addis.covariates",
                 "org.drugis.addis.remarks"
 
         })
@@ -53,6 +54,7 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.scenarios",
         "org.drugis.addis.models",
         "org.drugis.addis.remarks",
+        "org.drugis.addis.covariates",
         "org.drugis.addis.security"
 })
 public class JpaRepositoryTestConfig {
@@ -116,6 +118,7 @@ public class JpaRepositoryTestConfig {
             "org.drugis.addis.scenarios",
             "org.drugis.addis.security",
             "org.drugis.addis.models",
+            "org.drugis.addis.covariates",
             "org.drugis.addis.remarks");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");

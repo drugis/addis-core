@@ -1,8 +1,6 @@
-package org.drugis.addis;
+package org.drugis.addis.covariates;
 
 import org.apache.http.entity.ContentType;
-import org.drugis.addis.covariates.CovariateOption;
-import org.drugis.addis.covariates.CovariateOptionsController;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -45,6 +43,7 @@ public class CovariateOptionsControlerTest {
     result.andExpect(jsonPath("$", hasSize(4)));
     result.andExpect(jsonPath("$[0].key", is(CovariateOption.ALLOCATION_RANDOMIZED.toString())));
     result.andExpect(jsonPath("$[0].label", is(CovariateOption.ALLOCATION_RANDOMIZED.getLabel())));
-    result.andExpect(jsonPath("$[0].type", is(CovariateOption.ALLOCATION_RANDOMIZED.getType().toString())));
+    result.andExpect(jsonPath("$[0].typeKey", is(CovariateOption.ALLOCATION_RANDOMIZED.getType().toString())));
+    result.andExpect(jsonPath("$[0].typeLabel", is(CovariateOption.ALLOCATION_RANDOMIZED.getType().getLabel())));
   }
 }

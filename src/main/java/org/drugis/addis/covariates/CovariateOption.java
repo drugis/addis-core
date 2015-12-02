@@ -1,8 +1,16 @@
 package org.drugis.addis.covariates;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import java.util.Arrays;
+import java.util.Optional;
+
 /**
  * Created by connor on 12/1/15.
  */
+@JsonDeserialize(using = CovariateOptionDeserializer.class)
+@JsonSerialize(using = CovariateOptionSerializer.class)
 public enum CovariateOption {
   ALLOCATION_RANDOMIZED(CovariateOptionType.STUDY_CHARACTERISTIC, "Allocation: Randomized", "ontology:study_has_rondomized"),
   BLINDING_AT_LEAST_SINGLE_BLIND(CovariateOptionType.STUDY_CHARACTERISTIC, "Blinding: at least Single Blind", "ontology:study_has_single"),
@@ -19,11 +27,25 @@ public enum CovariateOption {
     this.uri = uri;
   }
 
+  public static CovariateOption fromKey(String key) {
+    Optional<CovariateOption> optionOptional = Arrays.stream(CovariateOption.values())
+            .filter(option -> option.toString().equals(key)).findFirst();
+    if (optionOptional.isPresent()) {
+      return optionOptional.get();
+    } else {
+      throw new EnumConstantNotPresentException(CovariateOption.class, key);
+    }
+  }
+
   public CovariateOptionType getType() {
     return type;
   }
 
   public String getLabel() {
     return label;
+  }
+
+  public String getUri() {
+    return uri;
   }
 }
