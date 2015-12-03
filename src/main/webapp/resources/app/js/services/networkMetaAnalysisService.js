@@ -76,7 +76,7 @@ define(['angular'], function() {
       }, {});
     }
 
-    function buildTableFromTrialData(data, interventions, excludedArms) {
+    function buildTableFromTrialData(data, interventions, excludedArms, covariates) {
       var rows = [];
       if (interventions.length < 1) {
         return rows;
@@ -87,11 +87,22 @@ define(['angular'], function() {
         angular.forEach(study.trialDataArms, function(trialDataArm) {
           var matchedIntervention = findInterventionOptionForDrug(trialDataArm.drugConceptUid, interventions);
           var row = {};
+          row.covariatesColumns = []
 
           row.study = study.name;
           row.studyUid = study.studyUid;
           row.studyRowSpan = study.trialDataArms.length;
+          angular.forEach(covariates, function(covariate) {
+            if (covariate.isIncluded) {
+              var covariateColumn = {
+                headerTitle: covariate.name,
+                data: 0
+              };
+              row.covariatesColumns.push(covariateColumn);
+            }
+          });
           row.studyRows = studyRows;
+
 
           row.intervention = matchedIntervention ? matchedIntervention.semanticInterventionLabel : 'unmatched';
           row.drugInstanceUid = trialDataArm.drugInstanceUid;
@@ -211,8 +222,8 @@ define(['angular'], function() {
       return network;
     }
 
-    function transformTrialDataToTableRows(trialData, interventions, excludedArms) {
-      var tableRows = buildTableFromTrialData(trialData, interventions, excludedArms);
+    function transformTrialDataToTableRows(trialData, interventions, excludedArms, covariates) {
+      var tableRows = buildTableFromTrialData(trialData, interventions, excludedArms, covariates);
       tableRows = sortTableByStudyAndIntervention(tableRows);
       tableRows = addRenderingHintsToTable(tableRows);
       return tableRows;
@@ -230,12 +241,12 @@ define(['angular'], function() {
 
       function addUnvisitedNodesToToVisitList(edge) {
         if (!_.findWhere(visited, {
-          name: edge.to.name
-        })) {
+            name: edge.to.name
+          })) {
           toVisit.push(edge.to);
         } else if (!_.findWhere(visited, {
-          name: edge.from.name
-        })) {
+            name: edge.from.name
+          })) {
           toVisit.push(edge.from);
         }
       }
@@ -387,10 +398,12 @@ define(['angular'], function() {
 
     function changeCovariateInclusion(covariate, includedCovariates) {
       var updatedList = angular.copy(includedCovariates);
-      if(covariate.isIncluded) {
-        updatedList.push({covariateId: covariate.id});
+      if (covariate.isIncluded) {
+        updatedList.push({
+          covariateId: covariate.id
+        });
       } else {
-        _.remove(updatedList, function(includedCovariate){
+        _.remove(updatedList, function(includedCovariate) {
           return includedCovariate.covariateId === covariate.id;
         });
       }

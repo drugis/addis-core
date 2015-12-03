@@ -99,7 +99,7 @@ define([], function() {
           $scope.trialverseData = trialverseData;
           updateNetwork();
           var includedInterventions = getIncludedInterventions($scope.interventions);
-          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis.excludedArms);
+          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis.excludedArms, $scope.covariates);
           $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
           $scope.hasLessThanTwoInterventions = getIncludedInterventions($scope.interventions).length < 2;
           $scope.isModelCreationBlocked = checkCanNotCreateModel();
@@ -171,6 +171,7 @@ define([], function() {
       $scope.analysis.covariateInclusions = NetworkMetaAnalysisService.changeCovariateInclusion(covariate, $scope.analysis.covariateInclusions);
       $scope.analysis.$save(function() {
         $scope.analysis.outcome = _.find($scope.outcomes, $scope.matchOutcome);
+        $scope.covariates = NetworkMetaAnalysisService.addInclusionsToCovariates($scope.covariates, $scope.analysis.covariateInclusions);
         $scope.reloadModel();
       });
     };

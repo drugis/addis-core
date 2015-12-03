@@ -369,14 +369,20 @@ define(['angular', 'angular-mocks', 'services'], function() {
           var trialVersStudyData = {};
           trialVersStudyData.trialDataStudies = exampleStudies;
           var interventions = exampleInterventions();
+          var excludedArms = [];
+          var covariates = [{isIncluded: false}, {isIncluded: true, name: 'covariate name'}, {isIncluded: false}];
 
           // Execute
-          var resultRows = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialVersStudyData, interventions);
+          var resultRows = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialVersStudyData, interventions, excludedArms, covariates);
 
           expect(resultRows[0]).toEqual({
             study: 'Fava et al, 2002',
             studyUid: "27",
             studyRowSpan: 3,
+            covariatesColumns: [{
+                headerTitle: 'covariate name',
+                data: 0
+              }],
             studyRows: resultRows,
             intervention: 'intervention 1',
             arm: 'Paroxetine',
@@ -403,6 +409,10 @@ define(['angular', 'angular-mocks', 'services'], function() {
             study: 'Fava et al, 2002',
             studyUid: "27",
             studyRowSpan: 3,
+            covariatesColumns: [{
+                headerTitle: 'covariate name',
+                data: 0
+              }],
             studyRows: resultRows,
             included: true,
             drugInstanceUid: "58",
@@ -422,6 +432,10 @@ define(['angular', 'angular-mocks', 'services'], function() {
             study: 'Fava et al, 2002',
             studyUid: "27",
             studyRowSpan: 3,
+            covariatesColumns: [{
+                headerTitle: 'covariate name',
+                data: 0
+              }], 
             studyRows: resultRows,
             included: true,
             drugInstanceUid: "60",
