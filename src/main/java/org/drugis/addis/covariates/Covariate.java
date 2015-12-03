@@ -27,7 +27,6 @@ public class Covariate {
     this.project = project;
     this.name = name;
     this.motivation = motivation;
-    CovariateOption.fromKey(definitionKey); // check if key is a valid definition
     this.definitionKey = definitionKey;
   }
 
@@ -47,8 +46,8 @@ public class Covariate {
     return motivation;
   }
 
-  public CovariateOption getDefinition() {
-    return CovariateOption.fromKey(this.definitionKey);
+  public String getDefinitionKey() {
+    return definitionKey;
   }
 
   @Override

@@ -1,6 +1,7 @@
-package org.drugis.addis.covariates;
+package org.drugis.addis.trialverse.controller;
 
 import org.drugis.addis.base.AbstractAddisCoreController;
+import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

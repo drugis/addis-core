@@ -8,5 +8,5 @@ import java.util.Collection;
 public interface CovariateRepository {
   Collection<Covariate> findByProject(Integer projectId);
 
-  Covariate createForProject(Integer projectId, CovariateOption definition, String name, String motivation);
+  Covariate createForProject(Integer projectId, String covariateDefinitionKey, String name, String motivation);
 }

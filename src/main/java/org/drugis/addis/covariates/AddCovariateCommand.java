@@ -5,25 +5,25 @@ package org.drugis.addis.covariates;
  */
 public class AddCovariateCommand {
 
-  private CovariateOption definition;
+  private String covariateDefinitionKey;
   private String name;
   private String motivation;
 
   public AddCovariateCommand() {
   }
 
-  public AddCovariateCommand(CovariateOption definition, String name) {
-    this(definition, name, null);
+  public AddCovariateCommand(String covariateDefinitionKey, String name) {
+    this(covariateDefinitionKey, name, null);
   }
 
-  public AddCovariateCommand(CovariateOption definition, String name, String motivation) {
-    this.definition = definition;
+  public AddCovariateCommand(String covariateDefinitionKey, String name, String motivation) {
+    this.covariateDefinitionKey = covariateDefinitionKey;
     this.name = name;
     this.motivation = motivation;
   }
 
-  public CovariateOption getDefinition() {
-    return definition;
+  public String getCovariateDefinitionKey() {
+    return covariateDefinitionKey;
   }
 
   public String getName() {
@@ -41,7 +41,7 @@ public class AddCovariateCommand {
 
     AddCovariateCommand that = (AddCovariateCommand) o;
 
-    if (definition != that.definition) return false;
+    if (!covariateDefinitionKey.equals(that.covariateDefinitionKey)) return false;
     if (!name.equals(that.name)) return false;
     return !(motivation != null ? !motivation.equals(that.motivation) : that.motivation != null);
 
@@ -49,7 +49,7 @@ public class AddCovariateCommand {
 
   @Override
   public int hashCode() {
-    int result = definition.hashCode();
+    int result = covariateDefinitionKey.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + (motivation != null ? motivation.hashCode() : 0);
     return result;

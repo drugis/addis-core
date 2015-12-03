@@ -1,7 +1,6 @@
 package org.drugis.addis.covariates.impl;
 
 import org.drugis.addis.covariates.Covariate;
-import org.drugis.addis.covariates.CovariateOption;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -29,8 +28,8 @@ public class CovariateRepositoryImpl implements CovariateRepository {
   }
 
   @Override
-  public Covariate createForProject(Integer projectId, CovariateOption definition, String name, String motivation) {
-    Covariate newCovariate = new Covariate(projectId, name, motivation, definition.toString());
+  public Covariate createForProject(Integer projectId, String covariateDefinitionKey, String name, String motivation) {
+    Covariate newCovariate = new Covariate(projectId, name, motivation, covariateDefinitionKey);
     em.persist(newCovariate);
     return newCovariate;
   }

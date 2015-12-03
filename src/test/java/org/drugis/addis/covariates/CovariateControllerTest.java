@@ -5,6 +5,7 @@ import org.drugis.addis.TestUtils;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -76,12 +77,12 @@ public class CovariateControllerTest {
   @Test
   public void addCovariateTest() throws Exception {
     Integer projectId = 1;
-    AddCovariateCommand addCovariateCommand = new AddCovariateCommand(CovariateOption.ALLOCATION_RANDOMIZED,
+    AddCovariateCommand addCovariateCommand = new AddCovariateCommand(CovariateOption.ALLOCATION_RANDOMIZED.toString(),
             "my test covariate", "my motivation");
     String body = TestUtils.createJson(addCovariateCommand);
     when(accountRepository.findAccountByUsername(user.getName())).thenReturn(gert);
     Covariate covariate = new Covariate(projectId, "name", "motivation", CovariateOption.MULTI_CENTER_STUDY.toString());
-    when(covariateRepository.createForProject(projectId, addCovariateCommand.getDefinition(),
+    when(covariateRepository.createForProject(projectId, addCovariateCommand.getCovariateDefinitionKey(),
             addCovariateCommand.getName(), addCovariateCommand.getMotivation()))
             .thenReturn(covariate);
     ResultActions resultActions = mockMvc.perform(post("/projects/1/covariates")
@@ -91,10 +92,10 @@ public class CovariateControllerTest {
     resultActions.andExpect(status().isCreated());
     resultActions.andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
     resultActions.andExpect(jsonPath("$.name", is("name")));
-    resultActions.andExpect(jsonPath("$.definition.label", is("Multi-center study")));
+    resultActions.andExpect(jsonPath("$.definitionKey", is(CovariateOption.MULTI_CENTER_STUDY.toString())));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectService).checkProjectExistsAndModifiable(gert, projectId);
-    verify(covariateRepository).createForProject(projectId, addCovariateCommand.getDefinition(),
+    verify(covariateRepository).createForProject(projectId, addCovariateCommand.getCovariateDefinitionKey(),
             addCovariateCommand.getName(), addCovariateCommand.getMotivation());
   }
 

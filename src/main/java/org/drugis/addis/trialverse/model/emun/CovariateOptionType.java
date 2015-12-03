@@ -1,4 +1,4 @@
-package org.drugis.addis.covariates;
+package org.drugis.addis.trialverse.model.emun;
 
 /**
  * Created by connor on 12/1/15.

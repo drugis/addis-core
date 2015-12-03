@@ -1,6 +1,8 @@
 package org.drugis.addis.covariates;
 
 import org.apache.http.entity.ContentType;
+import org.drugis.addis.trialverse.controller.CovariateOptionsController;
+import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;

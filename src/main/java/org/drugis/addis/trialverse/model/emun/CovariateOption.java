@@ -1,7 +1,9 @@
-package org.drugis.addis.covariates;
+package org.drugis.addis.trialverse.model.emun;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.drugis.addis.trialverse.model.emun.serializer.CovariateOptionDeserializer;
+import org.drugis.addis.trialverse.model.emun.serializer.CovariateOptionSerializer;
 
 import java.util.Arrays;
 import java.util.Optional;

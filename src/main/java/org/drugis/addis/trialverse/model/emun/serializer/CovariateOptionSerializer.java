@@ -1,8 +1,10 @@
-package org.drugis.addis.covariates;
+package org.drugis.addis.trialverse.model.emun.serializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import org.drugis.addis.trialverse.controller.CovariateViewAdepter;
+import org.drugis.addis.trialverse.model.emun.CovariateOption;
 
 import java.io.IOException;
 

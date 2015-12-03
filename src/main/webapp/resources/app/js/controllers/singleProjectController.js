@@ -1,6 +1,6 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$scope', '$state', '$stateParams', '$window',
+  var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window',
     'ProjectResource',
     'TrialverseResource',
     'TrialverseStudyResource',
@@ -8,14 +8,15 @@ define([], function() {
     'OutcomeResource',
     'SemanticInterventionResource',
     'InterventionResource',
+    'CovariateOptionsResource',
     'CovariateResource',
     'AnalysisResource',
     'ANALYSIS_TYPES',
     '$modal'
   ];
-  var ProjectsController = function($scope, $state, $stateParams, $window, ProjectResource, TrialverseResource,
+  var ProjectsController = function($scope, $q, $state, $stateParams, $window, ProjectResource, TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
-    CovariateResource, AnalysisResource, ANALYSIS_TYPES, $modal) {
+    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, $modal) {
 
     $scope.analysesLoaded = false;
     $scope.covariatesLoaded = true;
@@ -82,8 +83,17 @@ define([], function() {
     });
 
     function loadCovariates() {
-      $scope.covariates = CovariateResource.query({
-        projectId: $scope.project.id
+      // we need to get the options in order to display the definition label, as only the definition key is stored on the covariate
+      $q.all([CovariateOptionsResource.query().$promise,
+        CovariateResource.query({
+          projectId: $scope.project.id
+        }).$promise
+      ]).then(function(result) {
+        var optionsMap = _.indexBy(result[0], 'key');
+        $scope.covariates = result[1].map(function(covariate) {
+          covariate.definitionLabel = optionsMap[covariate.definitionKey].label;
+          return covariate;
+        })
       });
     }
 
