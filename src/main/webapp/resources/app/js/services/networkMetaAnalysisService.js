@@ -94,9 +94,12 @@ define(['angular'], function() {
           row.studyRowSpan = study.trialDataArms.length;
           angular.forEach(covariates, function(covariate) {
             if (covariate.isIncluded) {
+              var covariateValue = _.find(study.covariateValues, function(covariateValue){
+                  return covariateValue.covariateKey === covariate.definitionKey;
+                }).value;
               var covariateColumn = {
                 headerTitle: covariate.name,
-                data: 0
+                data: covariateValue === null ? 'Na' : covariateValue
               };
               row.covariatesColumns.push(covariateColumn);
             }

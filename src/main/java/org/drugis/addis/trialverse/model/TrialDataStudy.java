@@ -11,6 +11,7 @@ public class TrialDataStudy {
   private String name;
   private List<TrialDataIntervention> trialDataInterventions = new ArrayList<>();
   private List<TrialDataArm> trialDataArms = new ArrayList<>();
+  private List<CovariateValue> covariateValues = new ArrayList<>();
 
   public TrialDataStudy() {
   }
@@ -44,19 +45,27 @@ public class TrialDataStudy {
     return trialDataArms;
   }
 
+  public void addCovariateValue(CovariateValue covariateValue) {
+    covariateValues.add(covariateValue);
+  }
+
+  public List<CovariateValue> getCovariateValues() {
+    return covariateValues;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof TrialDataStudy)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     TrialDataStudy that = (TrialDataStudy) o;
 
-    if (!name.equals(that.name)) return false;
     if (!studyUid.equals(that.studyUid)) return false;
-    if (!trialDataArms.equals(that.trialDataArms)) return false;
+    if (!name.equals(that.name)) return false;
     if (!trialDataInterventions.equals(that.trialDataInterventions)) return false;
+    if (!trialDataArms.equals(that.trialDataArms)) return false;
+    return covariateValues.equals(that.covariateValues);
 
-    return true;
   }
 
   @Override
@@ -65,6 +74,7 @@ public class TrialDataStudy {
     result = 31 * result + name.hashCode();
     result = 31 * result + trialDataInterventions.hashCode();
     result = 31 * result + trialDataArms.hashCode();
+    result = 31 * result + covariateValues.hashCode();
     return result;
   }
 }

@@ -8,6 +8,7 @@ import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
+import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
@@ -52,6 +53,9 @@ public class ProblemServiceTest {
   ProjectRepository projectRepository;
 
   @Mock
+  CovariateRepository covariateRepository;
+
+  @Mock
   PerformanceTableBuilder performanceTablebuilder;
 
   @Mock
@@ -59,12 +63,10 @@ public class ProblemServiceTest {
 
   @Mock
   TrialverseService trialverseService;
-
-  @Mock
-  private TriplestoreService triplestoreService;
-
   @InjectMocks
   ProblemService problemService;
+  @Mock
+  private TriplestoreService triplestoreService;
 
   @Before
   public void setUp() {
@@ -204,14 +206,14 @@ public class ProblemServiceTest {
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
-    when(trialverseService.getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"))).thenReturn(trialDataNode);
+    when(trialverseService.getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"));
+    verify(trialverseService).getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"), Collections.EMPTY_LIST);
 
     assertNotNull(problem);
     assertEquals(3, problem.getEntries().size());
@@ -261,14 +263,14 @@ public class ProblemServiceTest {
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
-    when(trialverseService.getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"))).thenReturn(trialDataNode);
+    when(trialverseService.getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"));
+    verify(trialverseService).getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"), Collections.EMPTY_LIST);
 
     assertEquals(2, problem.getEntries().size());
   }

@@ -5,15 +5,11 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
-import org.drugis.addis.trialverse.model.emun.StudyAllocationEnum;
-import org.drugis.addis.trialverse.model.emun.StudyBlindingEnum;
-import org.drugis.addis.trialverse.model.emun.StudyDataSection;
-import org.drugis.addis.trialverse.model.emun.StudyStatusEnum;
+import org.drugis.addis.trialverse.model.emun.*;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
 import org.joda.time.DateTime;
@@ -21,8 +17,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -33,9 +27,8 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by connor on 2/28/14.
@@ -44,18 +37,18 @@ import java.util.*;
 public class TriplestoreServiceImpl implements TriplestoreService {
 
   public final static String STUDY_DATE_FORMAT = "yyyy-MM-dd";
-  public final static String NAMESPACE = loadResource("sparql/namespace.sparql");
-  public final static String STUDY_QUERY = loadResource("sparql/studyQuery.sparql");
-  public final static String STUDY_DETAILS_QUERY = loadResource("sparql/studyDetails.sparql");
-  public final static String STUDIES_WITH_DETAILS_QUERY = loadResource("sparql/studiesWithDetails.sparql");
-  public final static String STUDY_ARMS_QUERY = loadResource("sparql/studyArms.sparql");
-  public final static String STUDY_ARMS_EPOCHS = loadResource("sparql/studyEpochs.sparql");
-  public final static String STUDY_TREATMENT_ACTIVITIES = loadResource("sparql/studyTreatmentActivities.sparql");
-  public final static String STUDY_DATA = loadResource("sparql/studyData.sparql");
-  public final static String SINGLE_STUDY_MEASUREMENTS = loadResource("sparql/singleStudyMeasurements.sparql");
-  public final static String TRIAL_DATA = loadResource("sparql/trialData.sparql");
-  public final static String OUTCOME_QUERY = loadResource("sparql/outcomes.sparql");
-  public final static String INTERVENTION_QUERY = loadResource("sparql/interventions.sparql");
+  public final static String NAMESPACE = TriplestoreService.loadResource("sparql/namespace.sparql");
+  public final static String STUDY_QUERY = TriplestoreService.loadResource("sparql/studyQuery.sparql");
+  public final static String STUDY_DETAILS_QUERY = TriplestoreService.loadResource("sparql/studyDetails.sparql");
+  public final static String STUDIES_WITH_DETAILS_QUERY = TriplestoreService.loadResource("sparql/studiesWithDetails.sparql");
+  public final static String STUDY_ARMS_QUERY = TriplestoreService.loadResource("sparql/studyArms.sparql");
+  public final static String STUDY_ARMS_EPOCHS = TriplestoreService.loadResource("sparql/studyEpochs.sparql");
+  public final static String STUDY_TREATMENT_ACTIVITIES = TriplestoreService.loadResource("sparql/studyTreatmentActivities.sparql");
+  public final static String STUDY_DATA = TriplestoreService.loadResource("sparql/studyData.sparql");
+  public final static String SINGLE_STUDY_MEASUREMENTS = TriplestoreService.loadResource("sparql/singleStudyMeasurements.sparql");
+  public final static String TRIAL_DATA = TriplestoreService.loadResource("sparql/trialData.sparql");
+  public final static String OUTCOME_QUERY = TriplestoreService.loadResource("sparql/outcomes.sparql");
+  public final static String INTERVENTION_QUERY = TriplestoreService.loadResource("sparql/interventions.sparql");
   public static final String QUERY_ENDPOINT = "/query";
   public static final String QUERY_PARAM_QUERY = "query";
   public static final String X_ACCEPT_EVENT_SOURCE_VERSION = "X-Accept-EventSource-Version";
@@ -82,18 +75,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     headers.put(ACCEPT_HEADER, Collections.singletonList(APPLICATION_SPARQL_RESULTS_JSON));
     return headers;
   }
-
-  private static String loadResource(String filename) {
-    try {
-      Resource myData = new ClassPathResource(filename);
-      InputStream stream = myData.getInputStream();
-      return IOUtils.toString(stream, "UTF-8");
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return "";
-  }
-
 
   @Override
   public Collection<Namespace> queryNameSpaces() throws ParseException {
@@ -502,7 +483,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<TrialDataStudy> getTrialData(String namespaceUid, String version, String outcomeUid, List<String> interventionUids) {
+  public List<TrialDataStudy> getTrialData(String namespaceUid, String version, String outcomeUid,
+                                           List<String> interventionUids, List<String> covariateKeys) {
     String interventionUnion = buildInterventionUnionString(interventionUids);
     String query = TRIAL_DATA
             .replace("$outcomeUid", outcomeUid)
@@ -544,8 +526,27 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       trialDataStudy.getTrialDataArms().add(trialDataArm);
 
     }
+
+    List<CovariateOption> covariates = covariateKeys.stream().map(c -> CovariateOption.fromKey(c)).collect(Collectors.toList());
+
+    for (CovariateOption covariate : covariates) {
+      ResponseEntity<String> covariateResponse = queryTripleStoreVersion(namespaceUid, covariate.getQuery(), version);
+      JSONArray covariateBindings = JsonPath.read(covariateResponse.getBody(), "$.results.bindings");
+      for (Object binding : covariateBindings) {
+        JSONObject row = (net.minidev.json.JSONObject) binding;
+        String studyUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.graph.value"), '/');
+        TrialDataStudy studyData = trialDataStudies.get(studyUid);
+        if (studyData != null) {
+          // mock scaffold impl
+          CovariateValue value = row.containsKey("value") ? new CovariateNumberValue(covariate.toString(), Double.parseDouble(JsonPath.<String>read(row, "$.value.value"))) : new CovariateNumberValue(covariate.toString(), null);
+          studyData.addCovariateValue(value);
+        }
+      }
+    }
+
     return new ArrayList<>(trialDataStudies.values());
   }
+
 
   @Override
   public List<SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String namespaceUid, String studyUid, String version, List<String> outcomeUids, List<String> interventionUids) {

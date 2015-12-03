@@ -86,12 +86,12 @@ define([], function() {
     };
 
     $scope.reloadModel = function reloadModel() {
-      var includedInterventionUris = _.reduce($scope.interventions, addIncludedInterventionUri, []);
       TrialverseTrialDataResource
         .get({
           namespaceUid: $scope.project.namespaceUid,
           outcomeUri: $scope.analysis.outcome.semanticOutcomeUri,
-          interventionUris: includedInterventionUris,
+          interventionUris: _.reduce($scope.interventions, addIncludedInterventionUri, []),
+          covariateKeys: _.reduce($scope.covariates, addIncludedCovariateDefinitionKey, []),
           version: $scope.project.datasetVersion
         })
         .$promise
@@ -132,6 +132,13 @@ define([], function() {
         memo.push(intervention.semanticInterventionUri);
       }
       return memo;
+    }
+
+    function addIncludedCovariateDefinitionKey(accum, covariate) {
+      if (covariate.isIncluded) {
+        accum.push(covariate.definitionKey);
+      }
+      return accum;
     }
 
     function getIncludedInterventions(interventions) {

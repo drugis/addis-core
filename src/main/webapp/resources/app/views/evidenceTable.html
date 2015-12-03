@@ -5,7 +5,9 @@
             <thead>
             <tr>
                 <th rowspan="2">Studies</th>
-                <th colspan="{{trialData[0].covariatesColumns.length}}">Covariates</th>
+                <th ng-show="trialData[0].covariatesColumns.length > 0"
+                    colspan="{{trialData[0].covariatesColumns.length}}">Covariates
+                </th>
                 <th rowspan="2">Interventions</th>
                 <th rowspan="2">Arms</th>
                 <th rowspan="2" ng-show="trialData[0].rate !== null">Subjects with outcome</th>

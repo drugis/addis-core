@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
+import org.drugis.addis.covariates.Covariate;
+import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
@@ -22,6 +24,8 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created by daan on 3/21/14.
@@ -50,6 +54,9 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   private TriplestoreService triplestoreService;
 
+  @Inject
+  private CovariateRepository covariateRepository;
+
   @Override
   public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
     Project project = projectRepository.get(projectId);
@@ -76,8 +83,16 @@ public class ProblemServiceImpl implements ProblemService {
       treatments.add(new TreatmentEntry(intervention.getId(), intervention.getName()));
     }
 
+    Map<Integer, Covariate> definedMap = covariateRepository
+            .findByProject(project.getId())
+            .stream()
+            .collect(Collectors.toMap(Covariate::getId, Function.identity()));
+    List<String> includedCovariateKeys = analysis.getCovariateInclusions().stream()
+            .map(ic -> definedMap.get(ic.getId()).getDefinitionKey())
+            .collect(Collectors.toList());
+
     List<ObjectNode> trialDataStudies = trialverseService.getTrialData(project.getNamespaceUid(), project.getDatasetVersion(),
-            analysis.getOutcome().getSemanticOutcomeUri(), alternativeUris);
+            analysis.getOutcome().getSemanticOutcomeUri(), alternativeUris, includedCovariateKeys);
     ObjectMapper mapper = new ObjectMapper();
     List<TrialDataStudy> convertedTrialDataStudies = new ArrayList<>();
     for (ObjectNode objectNode : trialDataStudies) {

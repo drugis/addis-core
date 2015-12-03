@@ -173,12 +173,12 @@ public class TrialverseControllerTest {
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     String versionUid = "current";
 
-    when(triplestoreService.getTrialData(namespaceUid, versionUid, outcomeUri, interventionUris)).thenReturn(trialDataStudies);
+    when(triplestoreService.getTrialData(namespaceUid, versionUid, outcomeUri, interventionUris, Collections.EMPTY_LIST)).thenReturn(trialDataStudies);
     mockMvc.perform(get("/namespaces/namespaceUid/trialData?interventionUris=uri1&interventionUris=uri2&outcomeUri=" + outcomeUri).principal(user).param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", notNullValue()));
-    verify(triplestoreService).getTrialData(namespaceUid, versionUid, outcomeUri, interventionUris);
+    verify(triplestoreService).getTrialData(namespaceUid, versionUid, outcomeUri, interventionUris, Collections.EMPTY_LIST);
   }
 
   @Test
@@ -194,12 +194,12 @@ public class TrialverseControllerTest {
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     String versionUid = "current";
 
-    when(triplestoreService.getTrialData(namespaceUid, versionUid, outcomeUri, Collections.EMPTY_LIST)).thenReturn(trialDataStudies);
+    when(triplestoreService.getTrialData(namespaceUid, versionUid, outcomeUri, Collections.EMPTY_LIST, Collections.EMPTY_LIST)).thenReturn(trialDataStudies);
     mockMvc.perform(get("/namespaces/namespaceUid/trialData?outcomeUri=" + outcomeUri).param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", notNullValue()));
-    verify(triplestoreService).getTrialData(namespaceUid, versionUid, outcomeUri, Collections.EMPTY_LIST);
+    verify(triplestoreService).getTrialData(namespaceUid, versionUid, outcomeUri, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
   }
 
   @Test

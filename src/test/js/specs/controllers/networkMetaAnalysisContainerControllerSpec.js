@@ -165,6 +165,7 @@ define(['angular', 'angular-mocks', 'controllers'], function () {
             namespaceUid: mockProject.namespaceUid,
             outcomeUri: mockOutcomes[0].semanticOutcomeUri,
             interventionUris: [],
+            covariateKeys: [],
             version: mockProject.datasetVersion
           });
           trialverseTrialDataDeferred.resolve();

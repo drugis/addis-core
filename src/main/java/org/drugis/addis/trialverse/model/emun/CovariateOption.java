@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.drugis.addis.trialverse.model.emun.serializer.CovariateOptionDeserializer;
 import org.drugis.addis.trialverse.model.emun.serializer.CovariateOptionSerializer;
+import org.drugis.addis.trialverse.service.TriplestoreService;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -14,19 +15,20 @@ import java.util.Optional;
 @JsonDeserialize(using = CovariateOptionDeserializer.class)
 @JsonSerialize(using = CovariateOptionSerializer.class)
 public enum CovariateOption {
-  ALLOCATION_RANDOMIZED(CovariateOptionType.STUDY_CHARACTERISTIC, "Allocation: Randomized", "ontology:study_has_rondomized"),
-  BLINDING_AT_LEAST_SINGLE_BLIND(CovariateOptionType.STUDY_CHARACTERISTIC, "Blinding: at least Single Blind", "ontology:study_has_single"),
-  BLINDING_AT_LEAST_DOUBLE_BLIND(CovariateOptionType.STUDY_CHARACTERISTIC, "Blinding: at least Double Blind", "ontology:study_has_double"),
-  MULTI_CENTER_STUDY(CovariateOptionType.STUDY_CHARACTERISTIC, "Multi-center study", "ontology:study_has_multi-center");
+
+  ALLOCATION_RANDOMIZED(CovariateOptionType.STUDY_CHARACTERISTIC, "Allocation: Randomized", TriplestoreService.loadResource("sparql/covariateNaQuery.sparql")),
+  BLINDING_AT_LEAST_SINGLE_BLIND(CovariateOptionType.STUDY_CHARACTERISTIC, "Blinding: at least Single Blind", TriplestoreService.loadResource("sparql/covariateNaQuery.sparql")),
+  BLINDING_AT_LEAST_DOUBLE_BLIND(CovariateOptionType.STUDY_CHARACTERISTIC, "Blinding: at least Double Blind", TriplestoreService.loadResource("sparql/covariateZeroQuery.sparql")),
+  MULTI_CENTER_STUDY(CovariateOptionType.STUDY_CHARACTERISTIC, "Multi-center study", TriplestoreService.loadResource("sparql/covariateZeroQuery.sparql"));
 
   private CovariateOptionType type;
   private String label;
-  private String uri;
+  private String query;
 
-  CovariateOption(CovariateOptionType type, String label, String uri) {
+  CovariateOption(CovariateOptionType type, String label, String query) {
     this.type = type;
     this.label = label;
-    this.uri = uri;
+    this.query = query;
   }
 
   public static CovariateOption fromKey(String key) {
@@ -47,7 +49,7 @@ public enum CovariateOption {
     return label;
   }
 
-  public String getUri() {
-    return uri;
+  public String getQuery() {
+    return query;
   }
 }
