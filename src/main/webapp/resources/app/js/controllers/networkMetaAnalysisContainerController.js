@@ -47,7 +47,6 @@ define([], function() {
         $scope.covariates.$promise
       ])
       .then(function() {
-        $scope.loading.loaded = true;
         $scope.hasModel = $scope.models.length > 0;
         $scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.includedInterventions);
         $scope.covariates = NetworkMetaAnalysisService.addInclusionsToCovariates($scope.covariates, $scope.analysis.covariateInclusions);
@@ -103,6 +102,7 @@ define([], function() {
           $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
           $scope.hasLessThanTwoInterventions = getIncludedInterventions($scope.interventions).length < 2;
           $scope.isModelCreationBlocked = checkCanNotCreateModel();
+          $scope.loading.loaded = true;
         });
     }
 
