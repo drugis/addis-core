@@ -2,12 +2,10 @@ package org.drugis.addis.problems;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.drugis.addis.analyses.ArmExclusion;
-import org.drugis.addis.analyses.InterventionInclusion;
-import org.drugis.addis.analyses.NetworkMetaAnalysis;
-import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
+import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
@@ -23,6 +21,7 @@ import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
@@ -31,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.*;
@@ -174,7 +174,10 @@ public class ProblemServiceTest {
 
     String outcomeUri = "outcomeUri";
     Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
-    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", new ArrayList<ArmExclusion>(), new ArrayList<InterventionInclusion>(), outcome);
+    List<ArmExclusion> armExclusions = new ArrayList<>();
+    List<InterventionInclusion> interventionInclusions = new ArrayList<>();
+    List<CovariateInclusion> covariateInclusions = new ArrayList<>();
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, interventionInclusions, covariateInclusions, outcome);
 
     analysis.getExcludedArms().add(new ArmExclusion(analysis, "888L")); // trialDataArm with armId4
 
@@ -230,7 +233,11 @@ public class ProblemServiceTest {
 
     String outcomeUri = "outcomeUri";
     Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
-    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", Collections.EMPTY_LIST, new ArrayList<InterventionInclusion>(), outcome);
+    List<ArmExclusion> armExclusions = new ArrayList<>();
+    List<InterventionInclusion> interventionInclusions = new ArrayList<>();
+    List<CovariateInclusion> covariateInclusions = new ArrayList<>();
+
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, interventionInclusions, covariateInclusions, outcome);
 
     SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
     SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
@@ -275,6 +282,80 @@ public class ProblemServiceTest {
     assertEquals(2, problem.getEntries().size());
   }
 
+  @Test
+  public void testGetNetworkAnalysisProblemWithCovaraites() throws ResourceDoesNotExistException {
+    String namespaceUid = "UID 1";
+    String version = "version 1";
+    Integer projectId = 2;
+    Integer analysisId = 3;
+
+    String outcomeUri = "outcomeUri";
+    Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
+    List<ArmExclusion> armExclusions = new ArrayList<>();
+    List<InterventionInclusion> interventionInclusions = new ArrayList<>();
+    List<CovariateInclusion> covariateInclusions = new ArrayList<>();
+
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, interventionInclusions, covariateInclusions, outcome);
+
+    SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
+    SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
+    SemanticIntervention semanticIntervention3 = new SemanticIntervention("uri3", "label3");
+    Intervention intervention1 = new Intervention(1, projectId, "int1", "moti", semanticIntervention1);
+    Intervention intervention2 = new Intervention(2, projectId, "int2", "moti", semanticIntervention2);
+    Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
+    List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
+
+    Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString()));
+    Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString()));
+    when(covariate1.getId()).thenReturn(1);
+    when(covariate2.getId()).thenReturn(2);
+    Collection<Covariate> covariates = Arrays.asList(covariate1, covariate2);
+
+    Project project = mock(Project.class);
+    when(project.getId()).thenReturn(projectId);
+    when(project.getNamespaceUid()).thenReturn(namespaceUid);
+    when(project.getDatasetVersion()).thenReturn(version);
+
+    CovariateInclusion covariateInclusion1 = Mockito.spy(new CovariateInclusion(analysis, covariate1.getId()));
+    CovariateInclusion covariateInclusion2 = Mockito.spy(new CovariateInclusion(analysis, covariate2.getId()));
+    when(covariateInclusion1.getId()).thenReturn(101);
+    when(covariateInclusion2.getId()).thenReturn(202);
+    analysis.getCovariateInclusions().addAll(Arrays.asList(covariateInclusion1, covariateInclusion2));
+
+    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis, intervention1.getId());
+    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention3.getId());
+    analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2));
+
+    List<TrialDataStudy> trialDataStudies = createMockTrialData();
+    TrialDataStudy firstTrialDataStudy = trialDataStudies.get(0);
+    List<TrialDataIntervention> trialDataInterventions = firstTrialDataStudy.getTrialDataInterventions();
+    // remove excluded intervention from trialdata as well (HACKY)
+    trialDataInterventions.set(1, new TrialDataIntervention("-666L", "iamnothere", "-666L"));
+
+    ObjectMapper mapper = new ObjectMapper();
+    List<ObjectNode> trialDataNode = new ArrayList<>();
+    for (TrialDataStudy trialDataStudy : trialDataStudies) {
+      trialDataNode.add(mapper.convertValue(trialDataStudy, ObjectNode.class));
+    }
+    when(projectRepository.get(projectId)).thenReturn(project);
+    when(analysisRepository.get(analysisId)).thenReturn(analysis);
+    when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
+    when(interventionRepository.query(projectId)).thenReturn(interventions);
+    List<String> includedCovariateKeys = Arrays.asList(covariate1.getDefinitionKey(), covariate2.getDefinitionKey());
+    when(trialverseService.getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"), includedCovariateKeys)).thenReturn(trialDataNode);
+
+    NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
+
+    verify(projectRepository).get(projectId);
+    verify(analysisRepository).get(analysisId);
+    verify(interventionRepository).query(projectId);
+    verify(trialverseService).getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"), includedCovariateKeys);
+
+    assertEquals(2, problem.getEntries().size());
+    assertEquals(2, problem.getStudyLevelCovariates().size());
+  }
+
+
   private List<TrialDataStudy> createMockTrialData() {
     String studyId1 = "101L";
     String studyId2 = "202L";
@@ -317,6 +398,12 @@ public class ProblemServiceTest {
     List<TrialDataArm> trialDataArms2 = Arrays.asList(trialDataArm5);
     TrialDataStudy trialDataStudy1 = new TrialDataStudy("1L", "study1", trialdataInterventions1, trialDataArms1);
     TrialDataStudy trialDataStudy2 = new TrialDataStudy("2L", "study2", trialdataInterventions2, trialDataArms2);
+
+    trialDataStudy1.addCovariateValue(new CovariateValue(CovariateOption.ALLOCATION_RANDOMIZED.toString().toString(), 1D));
+    trialDataStudy1.addCovariateValue(new CovariateValue(CovariateOption.MULTI_CENTER_STUDY.toString().toString(), 2D));
+
+    trialDataStudy2.addCovariateValue(new CovariateValue(CovariateOption.ALLOCATION_RANDOMIZED.toString().toString(), null));
+    trialDataStudy2.addCovariateValue(new CovariateValue(CovariateOption.MULTI_CENTER_STUDY.toString().toString(), null));
 
     return Arrays.asList(trialDataStudy1, trialDataStudy2);
   }

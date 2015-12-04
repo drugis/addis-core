@@ -1,23 +1,26 @@
-package org.drugis.addis.trialverse.model;
+package org.drugis.addis.problems.model;
 
 /**
- * Created by connor on 12/3/15.
+ * Created by connor on 12/4/15.
  */
 public class CovariateValue {
   private String covariateKey;
   private Double value;
+
+  public CovariateValue() {
+  }
 
   public CovariateValue(String covariateKey, Double value) {
     this.covariateKey = covariateKey;
     this.value = value;
   }
 
-  public Double getValue() {
-    return value;
-  }
-
   public String getCovariateKey() {
     return covariateKey;
+  }
+
+  public Double getValue() {
+    return value;
   }
 
   @Override

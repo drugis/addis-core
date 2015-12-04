@@ -1,5 +1,6 @@
 package org.drugis.addis.problems;
 
+import net.minidev.json.JSONObject;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
@@ -19,6 +20,7 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -37,11 +39,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class ProblemControllerTest {
 
-  private MockMvc mockMvc;
-
   @Inject
   ProblemService problemService;
-
+  private MockMvc mockMvc;
   @Inject
   private WebApplicationContext webApplicationContext;
 
@@ -84,7 +84,8 @@ public class ProblemControllerTest {
     AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId2, 20L, 7L);
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(entry1, entry2);
     List<TreatmentEntry> treatments = Arrays.asList(new TreatmentEntry(treatmentId1, "treatment 1 name"), new TreatmentEntry(treatmentId2, "treatment 2 name"));
-    NetworkMetaAnalysisProblem networkMetaAnalysisProblem = new NetworkMetaAnalysisProblem(entries, treatments);
+    Map<String, Map<String, Double>> studyCovariates = new HashMap<>();
+    NetworkMetaAnalysisProblem networkMetaAnalysisProblem = new NetworkMetaAnalysisProblem(entries, treatments, studyCovariates);
     Integer projectId = 1;
     Integer analysisId = 2;
     when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
@@ -95,7 +96,8 @@ public class ProblemControllerTest {
       .andExpect(jsonPath("$.entries", hasSize(2)))
       .andExpect((jsonPath("$.entries[0].treatment", equalTo(entry1.getTreatment()))))
       .andExpect((jsonPath("$.entries[0].responders", is(((RateNetworkMetaAnalysisProblemEntry) entry1).getResponders().intValue()))))
-      .andExpect((jsonPath("$.treatments[0].id", equalTo(treatmentId1))));
+            .andExpect((jsonPath("$.treatments[0].id", equalTo(treatmentId1))))
+            .andExpect((jsonPath("$.studyLevelCovariates", equalTo(new JSONObject()))));
     verify(problemService).getProblem(projectId, analysisId);
   }
 

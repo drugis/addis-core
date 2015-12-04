@@ -99,7 +99,7 @@ define(['angular'], function() {
                 }).value;
               var covariateColumn = {
                 headerTitle: covariate.name,
-                data: covariateValue === null ? 'Na' : covariateValue
+                data: covariateValue === null ? 'NA' : covariateValue
               };
               row.covariatesColumns.push(covariateColumn);
             }

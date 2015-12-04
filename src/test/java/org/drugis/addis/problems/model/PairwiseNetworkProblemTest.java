@@ -5,7 +5,9 @@ import org.drugis.addis.models.Model;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -41,7 +43,8 @@ public class PairwiseNetworkProblemTest {
         TreatmentEntry treatmentEntry3 = new TreatmentEntry(treatment3, "treatment3");
         List<TreatmentEntry> treatments = Arrays.asList(treatmentEntry1,treatmentEntry2, treatmentEntry3);
 
-        NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments);
+      Map<String, Map<String, Double>> studyCovariates = new HashMap<>();
+      NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments, studyCovariates);
 
         Pair details = Pair.of(new Model.DetailNode(-1, "treatment1"), new Model.DetailNode(-1, "treatment3"));
         PairwiseNetworkProblem pairwiseNetworkProblem = new PairwiseNetworkProblem(problem, details);

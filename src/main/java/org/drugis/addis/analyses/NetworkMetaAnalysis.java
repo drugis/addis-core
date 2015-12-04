@@ -51,18 +51,13 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   }
 
   public NetworkMetaAnalysis(Integer id, Integer projectId, String title, List<ArmExclusion> excludedArms,
-                             List<InterventionInclusion> includedInterventions, Outcome outcome) {
-    this(id, projectId, title, excludedArms, includedInterventions, null, outcome);
-  }
-
-  public NetworkMetaAnalysis(Integer id, Integer projectId, String title, List<ArmExclusion> excludedArms,
                              List<InterventionInclusion> includedInterventions, List<CovariateInclusion> includedCovariates, Outcome outcome) {
     this.id = id;
     this.projectId = projectId;
     this.title = title;
-    this.excludedArms = excludedArms == null ? new ArrayList<ArmExclusion>() : excludedArms;
-    this.includedInterventions = includedInterventions == null ? new ArrayList<InterventionInclusion>() : includedInterventions;
-    this.includedCovariates = includedCovariates == null ? new ArrayList<CovariateInclusion>() : includedCovariates;
+    this.excludedArms = excludedArms == null ? new ArrayList<>() : excludedArms;
+    this.includedInterventions = includedInterventions == null ? new ArrayList<>() : includedInterventions;
+    this.includedCovariates = includedCovariates == null ? new ArrayList<>() : includedCovariates;
     this.outcome = outcome;
   }
 

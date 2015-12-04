@@ -83,12 +83,10 @@ public class ProblemServiceImpl implements ProblemService {
       treatments.add(new TreatmentEntry(intervention.getId(), intervention.getName()));
     }
 
-    Map<Integer, Covariate> definedMap = covariateRepository
-            .findByProject(project.getId())
-            .stream()
-            .collect(Collectors.toMap(Covariate::getId, Function.identity()));
+    Map<Integer, Covariate> definedMap = covariateRepository.findByProject(project.getId())
+            .stream().collect(Collectors.toMap(Covariate::getId, Function.identity()));
     List<String> includedCovariateKeys = analysis.getCovariateInclusions().stream()
-            .map(ic -> definedMap.get(ic.getId()).getDefinitionKey())
+            .map(ic -> definedMap.get(ic.getCovariateId()).getDefinitionKey())
             .collect(Collectors.toList());
 
     List<ObjectNode> trialDataStudies = trialverseService.getTrialData(project.getNamespaceUid(), project.getDatasetVersion(),
@@ -98,26 +96,32 @@ public class ProblemServiceImpl implements ProblemService {
     for (ObjectNode objectNode : trialDataStudies) {
       convertedTrialDataStudies.add(mapper.convertValue(objectNode, TrialDataStudy.class));
     }
-    Map<String, TrialDataIntervention> interventionByDrugUidInstanceMap = createInterventionByDrugIdMap(convertedTrialDataStudies);
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
 
     for (TrialDataStudy trialDataStudy : convertedTrialDataStudies) {
       List<TrialDataArm> filteredArms = filterUnmatchedArms(trialDataStudy, interventionIdsByUrisMap);
       filteredArms = filterExcludedArms(filteredArms, analysis);
-
       // do not include studies with fewer than two included and matched arms
       if (filteredArms.size() >= 2) {
-
         for (TrialDataArm trialDataArm : filteredArms) {
           Integer treatmentId = interventionIdsByUrisMap.get(trialDataArm.getDrugConceptUid());
           entries.add(buildEntry(trialDataStudy.getName(), treatmentId, trialDataArm.getMeasurement()));
         }
-
       }
     }
 
-    return new NetworkMetaAnalysisProblem(entries, treatments);
+    // add covariate values to problem
+    Map<String, Map<String, Double>> studyLevelCovariates = new HashMap<>();
+    for (TrialDataStudy trialDataStudy : convertedTrialDataStudies) {
+      Map<String, Double> covariateNodes = new HashMap<>();
+      for (CovariateValue covariateValue : trialDataStudy.getCovariateValues()) {
+        covariateNodes.put(covariateValue.getCovariateKey(), covariateValue.getValue());
+      }
+      studyLevelCovariates.put(trialDataStudy.getName(), covariateNodes);
+    }
+
+    return new NetworkMetaAnalysisProblem(entries, treatments, studyLevelCovariates);
   }
 
   private List<TrialDataArm> filterExcludedArms(List<TrialDataArm> trialDataArms, NetworkMetaAnalysis analysis) {

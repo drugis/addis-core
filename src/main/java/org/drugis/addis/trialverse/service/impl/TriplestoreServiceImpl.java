@@ -538,7 +538,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
         TrialDataStudy studyData = trialDataStudies.get(studyUid);
         if (studyData != null) {
           // mock scaffold impl
-          CovariateValue value = row.containsKey("value") ? new CovariateNumberValue(covariate.toString(), Double.parseDouble(JsonPath.<String>read(row, "$.value.value"))) : new CovariateNumberValue(covariate.toString(), null);
+          CovariateValue value = row.containsKey("value") ? new CovariateValue(covariate.toString(), Double.parseDouble(JsonPath.<String>read(row, "$.value.value"))) : new CovariateValue(covariate.toString(), null);
           studyData.addCovariateValue(value);
         }
       }

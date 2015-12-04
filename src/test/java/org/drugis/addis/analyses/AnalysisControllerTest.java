@@ -177,7 +177,7 @@ public class AnalysisControllerTest {
   @Test
   public void testGetNMAnalysis() throws Exception {
     Integer projectId = 1;
-    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, projectId, "testName", Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, projectId, "testName", Collections.EMPTY_LIST, Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
     when(analysisRepository.get(analysis.getId())).thenReturn(analysis);
     ResultActions result = mockMvc.perform(get("/projects/1/analyses/1").principal(user));
 
@@ -323,7 +323,7 @@ public class AnalysisControllerTest {
     Integer outcomeId = 444;
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
     List<ArmExclusion> excludedArms = Arrays.asList(new ArmExclusion(null, "-1L"), new ArmExclusion(null, "-2L"));
-    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", excludedArms, Collections.EMPTY_LIST, outcome);
+    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", excludedArms, Collections.EMPTY_LIST, Collections.EMPTY_LIST, outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
@@ -343,7 +343,7 @@ public class AnalysisControllerTest {
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "adsf");
     List<InterventionInclusion> includedInterventions = Arrays.asList(new InterventionInclusion(analysis, -1), new InterventionInclusion(analysis, -2));
-    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.EMPTY_LIST, includedInterventions, outcome);
+    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.EMPTY_LIST, includedInterventions, Collections.EMPTY_LIST, outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)

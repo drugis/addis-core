@@ -4,7 +4,6 @@ import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
-import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.repository.impl.PataviTaskRepositoryImpl;
 import org.drugis.addis.patavitask.repository.impl.SimpleJdbcInsertPataviTaskFactory;
@@ -22,9 +21,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -58,7 +55,7 @@ public class PataviTaskRepositoryImplTest {
   }
 
   @Test
-  public void testCreateNetwork() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testCreateNetwork() throws Exception, InvalidHeterogeneityTypeException {
     Integer analysisId = -5; // from test-data/sql
 
     Long responders = 1L;
@@ -89,7 +86,8 @@ public class PataviTaskRepositoryImplTest {
     String entryName = "entry name";
     Integer entryId = 456;
     List<TreatmentEntry> treatments = Collections.singletonList(new TreatmentEntry(entryId, entryName));
-    NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments);
+    Map<String, Map<String, Double>> studyCovariates = new HashMap<>();
+    NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments, studyCovariates);
 
     PataviTask task = pataviTaskRepository.createPataviTask(problem, model);
     assertNotNull(task.getId());
@@ -104,7 +102,7 @@ public class PataviTaskRepositoryImplTest {
   }
 
   @Test
-  public void testCreatePairwise() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testCreatePairwise() throws Exception, InvalidHeterogeneityTypeException {
     Integer analysisId = -5; // from test-data/sql
 
     Long responders = 1L;
@@ -139,7 +137,8 @@ public class PataviTaskRepositoryImplTest {
     String entryName = "entry name";
     Integer entryId = 456;
     List<TreatmentEntry> treatments = Collections.singletonList(new TreatmentEntry(entryId, entryName));
-    NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments);
+    Map<String, Map<String, Double>> studyCovariates = new HashMap<>();
+    NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments, studyCovariates);
 
     PataviTask task = pataviTaskRepository.createPataviTask(problem, model);
     assertNotNull(task.getId());
@@ -153,7 +152,7 @@ public class PataviTaskRepositoryImplTest {
   }
 
   @Test
-  public void testCreateWithFixedOutcomeScale() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testCreateWithFixedOutcomeScale() throws Exception, InvalidHeterogeneityTypeException {
     Integer analysisId = -5; // from test-data/sql
 
     Long responders = 1L;
@@ -186,14 +185,15 @@ public class PataviTaskRepositoryImplTest {
     String entryName = "entry name";
     Integer entryId = 456;
     List<TreatmentEntry> treatments = Collections.singletonList(new TreatmentEntry(entryId, entryName));
-    NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments);
+    Map<String, Map<String, Double>> studyCovariates = new HashMap<>();
+    NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments, studyCovariates);
 
     PataviTask task = pataviTaskRepository.createPataviTask(problem, model);
     assertEquals(outcomeScale, JsonPath.read(task.getProblem(), "$.outcomeScale"));
   }
 
   @Test(expected = InvalidPathException.class)
-  public void testCreateWithoutFixedOutcomeScale() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testCreateWithoutFixedOutcomeScale() throws Exception, InvalidHeterogeneityTypeException {
     Integer analysisId = -5; // from test-data/sql
 
     Long responders = 1L;
@@ -224,7 +224,8 @@ public class PataviTaskRepositoryImplTest {
     String entryName = "entry name";
     Integer entryId = 456;
     List<TreatmentEntry> treatments = Collections.singletonList(new TreatmentEntry(entryId, entryName));
-    NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments);
+    Map<String, Map<String, Double>> studyCovariates = new HashMap<>();
+    NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments, studyCovariates);
 
     PataviTask task = pataviTaskRepository.createPataviTask(problem, model);
     JsonPath.read(task.getProblem(), "$.outcomeScale");
