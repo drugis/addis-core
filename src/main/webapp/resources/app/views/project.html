@@ -14,126 +14,22 @@
     <h1 class="inline-header" title="Project title">{{project.name}}</h1>
     <a ui-sref="namespace({namespaceUid: project.namespaceUid})"><h3 class="subheader inline-header" title="Trialverse namespace">/ {{trialverse.name}}</h3></a>
     <div class="row" ng-show="project.description">
-      <div class="columns large-6 small-12">
+        <div class="columns large-12 small-12">
         <p class="project-description" title="Project description">{{project.description}}</p>
       </div>
     </div>
   </div>
 </div>
 
-
+<!-- Analyses -->
 <div class="row">
-  <!-- Outcomes -->
-  <div class="nested-view columns large-6">
-    <div class="nested-view-header">
-      Outcomes
+    <div class="columns large-6 ">
+        <h2>Analyses</h2>
         <button ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small"
-                ng-click="createOutcomeModal.open()"><i
-                class="fa fa-plus"></i> Add outcome
-      </button>
-    </div>
-      <!--     <div class="panel callout radius">
-        <span class="alert round label">Placeholder input</span>
-        Define outcomes to use in analyses within this project, based on semantic outcomes from the Trialverse
-        namespace. Currently only one semantic outcome can be selected per outcome. This will be expanded in a
-        future release.
-      </div> -->
-    <table>
-      <thead>
-        <tr>
-          <th class="large-1">Name</th>
-          <th class="large-3">Definition</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-repeat="outcome in outcomes" class="has-tip" title="{{outcome.motivation}}">
-          <td>{{outcome.name}}</td>
-          <td>{{outcome.semanticOutcomeLabel}}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+                ng-click="createAnalysisModal.open()"><i
+                class="fa fa-plus"></i> Add Analysis
+        </button>
 
-    <!-- Interventions -->
-  <div class="nested-view columns large-6">
-    <div class="nested-view-header">
-      Interventions
-        <button ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small"
-                ng-click="createInterventionModal.open()"><i
-                class="fa fa-plus"></i> Add intervention
-      </button>
-    </div>
-      <!--
-      <div class="panel callout radius">
-        <span class="alert round label">Placeholder input</span>
-        Define interventions to use in analyses within this project, based on semantic interventions from the
-        Trialverse namespace. Currently only one semantic intervention can be selected per intervention. This will
-        be expanded in a future release.
-      </div> -->
-    <table>
-      <thead>
-        <tr>
-          <th class="large-1">Name</th>
-          <th class="large-3">Definition</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-repeat="intervention in interventions" class="has-tip"
-            title="{{intervention.motivation}}">
-            <td>{{intervention.name}}</td>
-            <td>{{intervention.semanticInterventionLabel}}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<!-- Covariates -->
-<div class="row">
-    <div class="columns large-6 nested-view">
-    <div class="nested-view-header">
-        Covariates
-        <button ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small" ng-click="addCovariate()"><i
-                class="fa fa-plus"></i> Add Covariate
-      </button>
-    </div>
-
-        <div ng-show="!covariatesLoaded">
-            <i class="fa fa-spinner fa-spin fa-3x"></i>
-
-            <p>Loading covariates...
-            </p>
-    </div>
-
-        <em ng-show="covariatesLoaded && covariates.length === 0">No covariates have been defined</em>
-        <table ng-show="covariatesLoaded && covariates.length > 0">
-      <thead>
-        <tr>
-            <th>Definition</th>
-            <th>Name</th>
-            <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-      <tr ng-repeat="covariate in covariates">
-          <td>{{covariate.definitionLabel}}</td>
-          <td>{{covariate.name}}</td>
-          <td>{{covariate.motivation}}</td>
-      </tr>
-      </tbody>
-        </table>
-    </div>
-
-
-    <!-- Analyses -->
-    <div class="columns large-6  nested-view">
-        <div class="nested-view-header">
-            Analyses
-            <button ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small"
-                    ng-click="createAnalysisModal.open()"><i
-                    class="fa fa-plus"></i> Add Analysis
-            </button>
-    </div>
         <!--  <div class="panel callout radius">
           Create an analysis on the basis of the defined outcomes and interventions, and the data in the project's
           trialverse namespace.
@@ -142,13 +38,13 @@
             <i class="fa fa-spinner fa-spin fa-3x"></i>
 
             <p>Loading analyses...</p>
-    </div>
+        </div>
         <div ng-show="analysesLoaded">
             <table>
                 <thead>
                 <tr>
-                    <th class="large-5">Name</th>
-                    <th class="large-4">Analysis type</th>
+                    <th>Name</th>
+                    <th>Analysis type</th>
                     <th>Data source</th>
                 </tr>
                 </thead>
@@ -165,6 +61,110 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <hr>
+</div>
+
+
+<div class="row">
+  <!-- Outcomes -->
+    <div class="columns large-12">
+        <h3 class="subheader">Outcomes</h3>
+        <button ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small"
+                ng-click="createOutcomeModal.open()"><i
+                class="fa fa-plus"></i> Add outcome
+        </button>
+
+        <!--     <div class="panel callout radius">
+          <span class="alert round label">Placeholder input</span>
+          Define outcomes to use in analyses within this project, based on semantic outcomes from the Trialverse
+          namespace. Currently only one semantic outcome can be selected per outcome. This will be expanded in a
+          future release.
+        </div> -->
+    <table>
+      <thead>
+        <tr>
+            <th class="large-3">Name</th>
+          <th class="large-3">Definition</th>
+            <th class="large-6 end">Motivation</th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="outcome in outcomes">
+          <td>{{outcome.name}}</td>
+          <td>{{outcome.semanticOutcomeLabel}}</td>
+          <td>{{outcome.motivation}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="row">
+    <!-- Interventions -->
+    <div class="columns large-12">
+        <h3 class="subheader">Interventions</h3>
+        <button ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small "
+                ng-click="createInterventionModal.open()"><i class="fa fa-plus"></i> Add intervention
+        </button>
+        <!--
+        <div class="panel callout radius">
+          <span class="alert round label">Placeholder input</span>
+          Define interventions to use in analyses within this project, based on semantic interventions from the
+          Trialverse namespace. Currently only one semantic intervention can be selected per intervention. This will
+          be expanded in a future release.
+        </div> -->
+    <table>
+      <thead>
+        <tr>
+            <th class="large-3">Name</th>
+          <th class="large-3">Definition</th>
+            <th class="large-6 end">Motivation</th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="intervention in interventions">
+          <td>{{intervention.name}}</td>
+          <td>{{intervention.semanticInterventionLabel}}</td>
+          <td>{{intervention.motivation}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Covariates -->
+<div class="row">
+    <div class="columns large-12">
+
+        <h3 class="subheader">Covariates</h3>
+        <button ng-show="editMode.allowEditing" ng-disabled="!loading.loaded" class="small" ng-click="addCovariate()"><i
+                class="fa fa-plus"></i> Add Covariate
+        </button>
+
+        <div ng-show="!covariatesLoaded">
+            <i class="fa fa-spinner fa-spin fa-3x"></i>
+
+            <p>Loading covariates... </p>
+    </div>
+
+        <em ng-show="covariatesLoaded && covariates.length === 0">No covariates have been defined</em>
+        <table ng-show="covariatesLoaded && covariates.length > 0">
+      <thead>
+        <tr>
+            <th class="large-3">Name</th>
+            <th class="large-3">Definition</th>
+            <th class="large-6 end">Motivation</th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="covariate in covariates">
+          <td>{{covariate.name}}</td>
+          <td>{{covariate.definitionLabel}}</td>
+          <td>{{covariate.motivation}}</td>
+      </tr>
+      </tbody>
+        </table>
     </div>
 </div>
 
