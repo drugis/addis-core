@@ -1,0 +1,20 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+PREFIX instance: <http://trials.drugis.org/instances/>
+PREFIX graph: <http://trials.drugis.org/graphs/>
+
+SELECT DISTINCT
+?graph
+?value
+WHERE {
+  GRAPH ?graph {
+    ?study a ontology:Study .
+    OPTIONAL {
+      ?study ontology:has_blinding ?X .
+      BIND ( IF (?X IN (ontology:SingleBlind, ontology:DoubleBlind, ontology:TripleBlind), 1, 0)  AS ?value )
+    }
+  }
+}

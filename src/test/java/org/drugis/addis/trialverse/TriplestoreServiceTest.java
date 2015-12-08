@@ -246,7 +246,7 @@ public class TriplestoreServiceTest {
   }
 
   private void createMockTrialverseService(String result) {
-    ResponseEntity<String> resultEntity = new ResponseEntity<String>(result, HttpStatus.OK);
+    ResponseEntity resultEntity = new ResponseEntity(result, HttpStatus.OK);
     when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), any(Class.class))).thenReturn(resultEntity);
   }
 
