@@ -115,8 +115,8 @@ public class ProblemServiceImpl implements ProblemService {
     Map<String, Map<String, Double>> studyLevelCovariates = new HashMap<>();
     for (TrialDataStudy trialDataStudy : convertedTrialDataStudies) {
       Map<String, Double> covariateNodes = new HashMap<>();
-      for (CovariateValue covariateValue : trialDataStudy.getCovariateValues()) {
-        covariateNodes.put(covariateValue.getCovariateKey(), covariateValue.getValue());
+      for (CovariateStudyValue covariateStudyValue : trialDataStudy.getCovariateValues()) {
+        covariateNodes.put(covariateStudyValue.getCovariateKey(), covariateStudyValue.getValue());
       }
       studyLevelCovariates.put(trialDataStudy.getName(), covariateNodes);
     }

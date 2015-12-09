@@ -1,0 +1,13 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix study: <http://trials.drugis.org/studies/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ontology: <http://trials.drugis.org/ontology#> .
+
+study:3e6794f1-c95c-486e-ac8d-55e9259d0f4a
+        rdf:type ontology:Study ;
+        rdfs:label "Hansen 2003" ;
+        ontology:has_primary_epoch <http://trials.drugis.org/instances/09aea0d8-065d-44ab-8588-a417920b4f26> .
+
+<http://trials.drugis.org/instances/09aea0d8-065d-44ab-8588-a417920b4f26>
+        a ontology:Epoch ;
+        ontology:duration "P2D"^^<http://www.w3.org/2001/XMLSchema#duration> .

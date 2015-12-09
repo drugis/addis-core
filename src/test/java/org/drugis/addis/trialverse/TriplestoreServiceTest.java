@@ -6,6 +6,7 @@ import net.minidev.json.parser.ParseException;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
+import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
@@ -21,6 +22,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -227,6 +229,18 @@ public class TriplestoreServiceTest {
         }
       }
     }
+  }
+
+  @Test
+  public void getCovariateTestData() {
+    String namespaceUid = "namespaceUid";
+    String version = "version";
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/covariateDataExample.json");
+    createMockTrialverseService(mockResult);
+
+    List<CovariateStudyValue> result = triplestoreService.getCovariateValues(namespaceUid, version, Arrays.asList(CovariateOption.ALLOCATION_RANDOMIZED));
+    assertEquals(4, result.size());
+
   }
 
   @Test

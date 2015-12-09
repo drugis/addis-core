@@ -11,7 +11,7 @@ public class TrialDataStudy {
   private String name;
   private List<TrialDataIntervention> trialDataInterventions = new ArrayList<>();
   private List<TrialDataArm> trialDataArms = new ArrayList<>();
-  private List<CovariateValue> covariateValues = new ArrayList<>();
+  private List<CovariateStudyValue> covariateValues = new ArrayList<>();
 
   public TrialDataStudy() {
   }
@@ -45,11 +45,11 @@ public class TrialDataStudy {
     return trialDataArms;
   }
 
-  public void addCovariateValue(CovariateValue covariateValue) {
-    covariateValues.add(covariateValue);
+  public void addCovariateValue(CovariateStudyValue covariateStudyValue) {
+    covariateValues.add(covariateStudyValue);
   }
 
-  public List<CovariateValue> getCovariateValues() {
+  public List<CovariateStudyValue> getCovariateValues() {
     return covariateValues;
   }
 

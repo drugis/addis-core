@@ -2,7 +2,6 @@ package org.drugis.addis.problems.service;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.problems.model.AbstractProblem;
-
 /**
  * Created by daan on 3/21/14.
  */

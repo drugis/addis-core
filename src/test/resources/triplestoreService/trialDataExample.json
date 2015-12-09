@@ -1,0 +1,232 @@
+{
+  "head": {
+    "vars": [
+      "graph",
+      "studyName",
+      "drug",
+      "interventionLabel",
+      "drugInstance",
+      "outcomeInstance",
+      "outcomeTypeUid",
+      "outcomeInstanceLabel",
+      "arm",
+      "armLabel",
+      "mean",
+      "stdDev",
+      "count",
+      "sampleSize"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "graph": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/graphs/1d999bbf-c2c1-4cb1-838f-e6b16bfaa3f0"
+        },
+        "studyName": {
+          "type": "literal",
+          "value": "Chouinard et al, 1999"
+        },
+        "drug": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/concepts/717b7c70-a608-4ea9-bad6-41236180ef3c"
+        },
+        "interventionLabel": {
+          "type": "literal",
+          "value": "Paroxetine"
+        },
+        "drugInstance": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/instances/ccf6c32f-0530-4a42-8a4b-59d74267b6e3"
+        },
+        "outcomeInstance": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/instances/fb1f650a-040d-4f49-82f7-30b47af3dc56"
+        },
+        "outcomeTypeUid": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/ontology#Endpoint"
+        },
+        "outcomeInstanceLabel": {
+          "type": "literal",
+          "value": "HAM-D Responders"
+        },
+        "arm": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/instances/d90fd45e-3333-4781-9750-5bec1a633b26"
+        },
+        "armLabel": {
+          "type": "literal",
+          "value": "Paroxetine"
+        },
+        "count": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "typed-literal",
+          "value": "67"
+        },
+        "sampleSize": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "typed-literal",
+          "value": "102"
+        }
+      },
+      {
+        "graph": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/graphs/1d999bbf-c2c1-4cb1-838f-e6b16bfaa3f0"
+        },
+        "studyName": {
+          "type": "literal",
+          "value": "Chouinard et al, 1999"
+        },
+        "drug": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/concepts/2a9f50e7-0541-4d2e-8895-11124bcce2cb"
+        },
+        "interventionLabel": {
+          "type": "literal",
+          "value": "Fluoxetine"
+        },
+        "drugInstance": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/instances/375a9856-be56-44c1-87de-1702b77a7527"
+        },
+        "outcomeInstance": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/instances/fb1f650a-040d-4f49-82f7-30b47af3dc56"
+        },
+        "outcomeTypeUid": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/ontology#Endpoint"
+        },
+        "outcomeInstanceLabel": {
+          "type": "literal",
+          "value": "HAM-D Responders"
+        },
+        "arm": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/instances/d2302542-a481-4589-8cbc-9e55298e38e9"
+        },
+        "armLabel": {
+          "type": "literal",
+          "value": "Fluoxetine"
+        },
+        "count": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "typed-literal",
+          "value": "67"
+        },
+        "sampleSize": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "typed-literal",
+          "value": "101"
+        }
+      },
+      {
+        "graph": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/graphs/7b93d596-5025-409b-bbb3-1e5fa23cdc03"
+        },
+        "studyName": {
+          "type": "literal",
+          "value": "Ballus et al, 2000"
+        },
+        "drug": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/concepts/717b7c70-a608-4ea9-bad6-41236180ef3c"
+        },
+        "interventionLabel": {
+          "type": "literal",
+          "value": "Paroxetine"
+        },
+        "drugInstance": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/instances/004f492c-3d09-42b3-9f73-97086e52784a"
+        },
+        "outcomeInstance": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/instances/c6d880d5-b8c9-4ae5-88fe-fec5c874018f"
+        },
+        "outcomeTypeUid": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/ontology#Endpoint"
+        },
+        "outcomeInstanceLabel": {
+          "type": "literal",
+          "value": "HAM-D Responders"
+        },
+        "arm": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/instances/449f6404-7482-4789-b166-0c4332585fdd"
+        },
+        "armLabel": {
+          "type": "literal",
+          "value": "Paroxetine"
+        },
+        "count": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "typed-literal",
+          "value": "23"
+        },
+        "sampleSize": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "typed-literal",
+          "value": "43"
+        }
+      },
+      {
+        "graph": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/graphs/7b93d596-5025-409b-bbb3-1e5fa23cdc03"
+        },
+        "studyName": {
+          "type": "literal",
+          "value": "Ballus et al, 2000"
+        },
+        "drug": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/concepts/0f6948ac-e197-41b7-a007-92e02cd2511e"
+        },
+        "interventionLabel": {
+          "type": "literal",
+          "value": "Venlafaxine"
+        },
+        "drugInstance": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/instances/be131e86-0911-49c6-aa6d-42d0d310c3c4"
+        },
+        "outcomeInstance": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/instances/c6d880d5-b8c9-4ae5-88fe-fec5c874018f"
+        },
+        "outcomeTypeUid": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/ontology#Endpoint"
+        },
+        "outcomeInstanceLabel": {
+          "type": "literal",
+          "value": "HAM-D Responders"
+        },
+        "arm": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/instances/48acfcd2-d7b3-4eb4-bc98-1a890dbb21fe"
+        },
+        "armLabel": {
+          "type": "literal",
+          "value": "Venlafaxine"
+        },
+        "count": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "typed-literal",
+          "value": "25"
+        },
+        "sampleSize": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "typed-literal",
+          "value": "41"
+        }
+      }
+    ]
+  }
+}

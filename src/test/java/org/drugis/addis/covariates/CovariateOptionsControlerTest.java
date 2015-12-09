@@ -42,7 +42,7 @@ public class CovariateOptionsControlerTest {
     ResultActions result = mockMvc.perform(get("/covariate-options"));
     result.andExpect(status().isOk());
     result.andExpect(content().contentType(ContentType.APPLICATION_JSON.toString()));
-    result.andExpect(jsonPath("$", hasSize(4)));
+    result.andExpect(jsonPath("$", hasSize(5)));
     result.andExpect(jsonPath("$[0].key", is(CovariateOption.ALLOCATION_RANDOMIZED.toString())));
     result.andExpect(jsonPath("$[0].label", is(CovariateOption.ALLOCATION_RANDOMIZED.getLabel())));
     result.andExpect(jsonPath("$[0].typeKey", is(CovariateOption.ALLOCATION_RANDOMIZED.getType().toString())));

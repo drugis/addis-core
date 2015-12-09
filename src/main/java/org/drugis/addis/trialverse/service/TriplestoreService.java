@@ -5,6 +5,7 @@ import net.minidev.json.parser.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
+import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.springframework.core.io.ClassPathResource;
@@ -59,4 +60,6 @@ public interface TriplestoreService {
   List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid);
 
   List<StudyData> getStudyData(String namespaceUid, String studyUid, StudyDataSection studyDataSection);
+
+  List<CovariateStudyValue> getCovariateValues(String namespaceUid, String version, List<CovariateOption> covariates);
 }

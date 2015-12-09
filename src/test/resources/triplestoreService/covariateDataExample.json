@@ -1,0 +1,51 @@
+{
+  "head": {
+    "vars": [
+      "graph",
+      "value"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "graph": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/graphs/c5d1f5a5-3af8-4223-8f30-7b39039bb7e1"
+        },
+        "value": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "typed-literal",
+          "value": "1"
+        }
+      },
+      {
+        "graph": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/graphs/1d999bbf-c2c1-4cb1-838f-e6b16bfaa3f0"
+        },
+        "value": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "type": "typed-literal",
+          "value": "0"
+        }
+      },
+      {
+        "graph": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/graphs/1d999bbf-c2c1-4cb1-838f-e6b16bfaa3f0"
+        },
+        "value": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#duration",
+          "type": "typed-literal",
+          "value": "P2W"
+        }
+      },
+      {
+        "graph": {
+          "type": "uri",
+          "value": "http://trials.drugis.org/graphs/7b93d596-5025-409b-bbb3-1e5fa23cdc03"
+        }
+      }
+    ]
+  }
+}

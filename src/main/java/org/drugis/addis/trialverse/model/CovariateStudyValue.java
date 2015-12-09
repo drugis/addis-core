@@ -1,26 +1,30 @@
-package org.drugis.addis.problems.model;
+package org.drugis.addis.trialverse.model;
 
 /**
- * Created by connor on 12/4/15.
+ * Created by connor on 12/3/15.
  */
-public class CovariateValue {
+public class CovariateStudyValue {
+
+  private String studyUri;
   private String covariateKey;
   private Double value;
 
-  public CovariateValue() {
-  }
-
-  public CovariateValue(String covariateKey, Double value) {
+  public CovariateStudyValue(String studyUri, String covariateKey, Double value) {
+    this.studyUri = studyUri;
     this.covariateKey = covariateKey;
     this.value = value;
   }
 
-  public String getCovariateKey() {
-    return covariateKey;
+  public String getStudyUri() {
+    return studyUri;
   }
 
   public Double getValue() {
     return value;
+  }
+
+  public String getCovariateKey() {
+    return covariateKey;
   }
 
   @Override
@@ -28,8 +32,9 @@ public class CovariateValue {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    CovariateValue that = (CovariateValue) o;
+    CovariateStudyValue that = (CovariateStudyValue) o;
 
+    if (!studyUri.equals(that.studyUri)) return false;
     if (!covariateKey.equals(that.covariateKey)) return false;
     return !(value != null ? !value.equals(that.value) : that.value != null);
 
@@ -37,7 +42,8 @@ public class CovariateValue {
 
   @Override
   public int hashCode() {
-    int result = covariateKey.hashCode();
+    int result = studyUri.hashCode();
+    result = 31 * result + covariateKey.hashCode();
     result = 31 * result + (value != null ? value.hashCode() : 0);
     return result;
   }

@@ -13,6 +13,7 @@ import org.drugis.addis.trialverse.model.emun.*;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -60,6 +61,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public static final HttpEntity<String> acceptJsonRequest = new HttpEntity<>(getJsonHeaders);
   private static final HttpHeaders getSparqlResultsHeaders = createGetSparqlResultHeader();
   public static final HttpEntity<String> acceptSparqlResultsRequest = new HttpEntity<>(getSparqlResultsHeaders);
+  private static final String DATATYPE_DURATION = "http://www.w3.org/2001/XMLSchema#duration";
 
   @Inject
   RestTemplate restTemplate;
@@ -527,27 +529,53 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     }
 
+    // transform covariate keys to object
     List<CovariateOption> covariates = covariateKeys.stream().map(c -> CovariateOption.fromKey(c)).collect(Collectors.toList());
 
+    // fetch the values for each study
+    List<CovariateStudyValue> covariateValues = getCovariateValues(namespaceUid, version, covariates);
+
+    // add te values to the studyData object
+    for (CovariateStudyValue covariateStudyValue : covariateValues) {
+      TrialDataStudy studyData = trialDataStudies.get(covariateStudyValue.getStudyUri());
+      if (studyData != null) {
+        studyData.addCovariateValue(covariateStudyValue);
+      }
+    }
+
+    return new ArrayList<>(trialDataStudies.values());
+  }
+
+  @Override
+  public List<CovariateStudyValue> getCovariateValues(String namespaceUid, String version, List<CovariateOption> covariates) {
+    List<CovariateStudyValue> covariateStudyValues = new ArrayList<>();
     for (CovariateOption covariate : covariates) {
       ResponseEntity<String> covariateResponse = queryTripleStoreVersion(namespaceUid, covariate.getQuery(), version);
       JSONArray covariateBindings = JsonPath.read(covariateResponse.getBody(), "$.results.bindings");
       for (Object binding : covariateBindings) {
         JSONObject row = (net.minidev.json.JSONObject) binding;
         String studyUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.graph.value"), '/');
-        TrialDataStudy studyData = trialDataStudies.get(studyUid);
-        if (studyData != null) {
-          Double value = null;
-          if (row.containsKey("value")) {
-            value = Double.parseDouble(JsonPath.<String>read(row, "$.value.value"));
-          }
-          CovariateValue covariateValue = new CovariateValue(covariate.toString(), value);
-          studyData.addCovariateValue(covariateValue);
-        }
+        Double value = extractValueFromRow(row);
+        CovariateStudyValue covariateStudyValue = new CovariateStudyValue(studyUid, covariate.toString(), value);
+        covariateStudyValues.add(covariateStudyValue);
       }
     }
+    return covariateStudyValues;
+  }
 
-    return new ArrayList<>(trialDataStudies.values());
+  private Double extractValueFromRow(JSONObject row) {
+    Double value = null;
+    if (row.containsKey("value")) {
+      String valueAsString = JsonPath.<String>read(row, "$.value.value");
+      if (JsonPath.<String>read(row, "$.value.datatype").equals(DATATYPE_DURATION)) {
+        Period period = Period.parse(valueAsString);
+        Integer periodAsDays = period.toStandardDays().getDays();
+        value = periodAsDays.doubleValue();
+      } else {
+        value = Double.parseDouble(valueAsString);
+      }
+    }
+    return value;
   }
 
 

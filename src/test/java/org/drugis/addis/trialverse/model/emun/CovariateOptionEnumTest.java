@@ -112,6 +112,18 @@ public class CovariateOptionEnumTest {
 
   }
 
+  @Test
+  public void NumberOfFollowUpDaysTest() throws IOException {
+
+    CovariateOption covariate = CovariateOption.LENGTH_OF_FOLLOW_UP;
+
+    ResultSet results = doQueryForResult("/trialverseModel/studyWithFollowUp.ttl", covariate);
+    QuerySolution querySolution = results.nextSolution();
+    Literal value = querySolution.getLiteral("value");
+    assertEquals("P2D", value.getString());
+
+  }
+
   private ResultSet doQueryForResult(String pathToMockStudy, CovariateOption covariate) throws IOException {
     InputStream datasetsModelStream = new ClassPathResource(pathToMockStudy).getInputStream();
     Model model = ModelFactory.createDefaultModel();

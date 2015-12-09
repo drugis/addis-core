@@ -399,11 +399,11 @@ public class ProblemServiceTest {
     TrialDataStudy trialDataStudy1 = new TrialDataStudy("1L", "study1", trialdataInterventions1, trialDataArms1);
     TrialDataStudy trialDataStudy2 = new TrialDataStudy("2L", "study2", trialdataInterventions2, trialDataArms2);
 
-    trialDataStudy1.addCovariateValue(new CovariateValue(CovariateOption.ALLOCATION_RANDOMIZED.toString().toString(), 1D));
-    trialDataStudy1.addCovariateValue(new CovariateValue(CovariateOption.MULTI_CENTER_STUDY.toString().toString(), 2D));
+    trialDataStudy1.addCovariateValue(new CovariateStudyValue(studyId1, CovariateOption.ALLOCATION_RANDOMIZED.toString().toString(), 1D));
+    trialDataStudy1.addCovariateValue(new CovariateStudyValue(studyId1, CovariateOption.MULTI_CENTER_STUDY.toString().toString(), 2D));
 
-    trialDataStudy2.addCovariateValue(new CovariateValue(CovariateOption.ALLOCATION_RANDOMIZED.toString().toString(), null));
-    trialDataStudy2.addCovariateValue(new CovariateValue(CovariateOption.MULTI_CENTER_STUDY.toString().toString(), null));
+    trialDataStudy2.addCovariateValue(new CovariateStudyValue(studyId2, CovariateOption.ALLOCATION_RANDOMIZED.toString().toString(), null));
+    trialDataStudy2.addCovariateValue(new CovariateStudyValue(studyId2, CovariateOption.MULTI_CENTER_STUDY.toString().toString(), null));
 
     return Arrays.asList(trialDataStudy1, trialDataStudy2);
   }
