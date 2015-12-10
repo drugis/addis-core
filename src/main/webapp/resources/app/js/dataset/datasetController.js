@@ -9,9 +9,16 @@ define([],
       SingleDatasetService, DatasetVersionedResource, StudiesWithDetailsService,
       RemoteRdfStoreService, HistoryResource, ConceptService, VersionedGraphResource, DatasetResource) {
 
+      // no version so this must be head view
+      $scope.isHeadView = !$stateParams.versionUuid;
+
       function isEditingAllowed() {
         return !!($scope.dataset && $scope.dataset.creator === $window.config.user.userEmail &&
-          $scope.currentRevision && $scope.currentRevision.isHead);
+          isEditAllowedOnVersion());
+      }
+
+      function isEditAllowedOnVersion() {
+        return $scope.isHeadView || ($scope.currentRevision && $scope.currentRevision.isHead);
       }
 
       $scope.loadConcepts = function() {
@@ -30,37 +37,40 @@ define([],
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.userUid = $stateParams.userUid;
       $scope.isEditingAllowed = false;
-  //    $scope.datasetConcepts = $scope.loadConcepts();
+      //    $scope.datasetConcepts = $scope.loadConcepts();
 
-      if ($stateParams.versionUuid) {
-        DatasetVersionedResource.get($stateParams, function(response) {
-          SingleDatasetService.reset();
-          SingleDatasetService.loadStore(response.data).then(function() {
-            SingleDatasetService.queryDataset().then(function(queryResult) {
-              $scope.dataset = queryResult[0];
-              $scope.dataset.uuid = $stateParams.datasetUUID;
-              $scope.isEditingAllowed = isEditingAllowed();
-            });
-          });
+      if ($scope.isHeadView) {
+        DatasetResource.getForJson($stateParams, function(response) {
+          $scope.dataset = {
+            datasetUri: $scope.datasetUUID,
+            label: response['http://purl.org/dc/terms/title'],
+            comment: response['http://purl.org/dc/terms/description'],
+            creator: response['http://purl.org/dc/terms/creator']
+          };
+          $scope.isEditingAllowed = isEditingAllowed();
         });
       } else {
-        DatasetResource.getForJson($stateParams, function(response) {
-          SingleDatasetService.loadStore(response).then(function() {
-            SingleDatasetService.queryDataset().then(function(queryResult) {
-              $scope.dataset = queryResult[0];
-              $scope.dataset.uuid = $stateParams.datasetUUID;
-              $scope.isEditingAllowed = isEditingAllowed();
-            });
-          });
-        })
+        DatasetVersionedResource.get($stateParams, function(response) {
+          $scope.dataset = {
+            datasetUri: $scope.datasetUUID,
+            label: response['http://purl.org/dc/terms/title'],
+            comment: response['http://purl.org/dc/terms/description'],
+            creator: response['http://purl.org/dc/terms/creator']
+          };
+          $scope.isEditingAllowed = isEditingAllowed();
+        });
       }
 
       HistoryResource.query($stateParams).$promise.then(function(historyItems) {
-        // sort to know it curentRevission is head
-        $scope.currentRevision = _.find(historyItems, function(item) {
-          return item.uri.lastIndexOf($stateParams.versionUuid) > 0;
-        });
-        $scope.currentRevision.isHead = $scope.currentRevision.historyOrder === 0;
+
+        if (!$scope.isHeadView) {
+          // sort to know it curentRevission is head
+          $scope.currentRevision = _.find(historyItems, function(item) {
+            return item.uri.lastIndexOf($stateParams.versionUuid) > 0;
+          });
+          $scope.currentRevision.isHead = $scope.currentRevision.historyOrder === 0;
+        }
+
         $scope.isEditingAllowed = isEditingAllowed();
       });
 

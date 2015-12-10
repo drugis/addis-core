@@ -54,7 +54,11 @@
             <td colspan="20">No studies in dataset</td>
           </tr>
           <tr ng-repeat="studyWithDetails in studiesWithDetail | orderBy:tableOptions.orderByField:tableOptions.reverseSortOrder ">
-            <td style="vertical-align: top; wh"><a ui-sref="versionedDataset.study({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'),
+            <td style="vertical-align: top;">
+
+              <a ng-if="!isHeadView" ui-sref="versionedDataset.study({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'),
+            studyGraphUuid: (studyWithDetails.studyGraphUri | stripFrontFilter:'http://trials.drugis.org/graphs/')})">{{studyWithDetails.label}}</a>
+              <a ng-if="isHeadView" ui-sref="dataset.study({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'),
             studyGraphUuid: (studyWithDetails.studyGraphUri | stripFrontFilter:'http://trials.drugis.org/graphs/')})">{{studyWithDetails.label}}</a>
             </td>
             <td style="vertical-align: top;" ng-show="column.visible" ng-repeat="column in tableOptions.columns">
