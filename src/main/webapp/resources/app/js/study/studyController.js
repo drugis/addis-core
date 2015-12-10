@@ -1,10 +1,10 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$window', '$filter', 'VersionedGraphResource', '$location', '$anchorScroll',
+    var dependencies = ['$scope', '$stateParams', '$window', '$filter', 'VersionedGraphResource', 'GraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource'
     ];
-    var StudyController = function($scope, $stateParams, $window, $filter, VersionedGraphResource, $location, $anchorScroll,
+    var StudyController = function($scope, $stateParams, $window, $filter, VersionedGraphResource, GraphResource, $location, $anchorScroll,
       $modal, StudyService, ResultsService, StudyDesignService, DatasetResource) {
 
       // onload
@@ -17,12 +17,21 @@ define([],
       $scope.openCopyDialog = openCopyDialog;
       $scope.study = {};
       $scope.resetStudy = resetStudy;
-      StudyService.loadJson(VersionedGraphResource.getJson({
-        userUid: $stateParams.userUid,
-        datasetUUID: $stateParams.datasetUUID,
-        graphUuid: $stateParams.studyGraphUuid,
-        versionUuid: $stateParams.versionUuid
-      }).$promise);
+
+      if ($scope.versionUuid) {
+        StudyService.loadJson(VersionedGraphResource.getJson({
+          userUid: $stateParams.userUid,
+          datasetUUID: $stateParams.datasetUUID,
+          graphUuid: $stateParams.studyGraphUuid,
+          versionUuid: $stateParams.versionUuid
+        }).$promise);
+      } else {
+        StudyService.loadJson(GraphResource.getJson({
+          userUid: $stateParams.userUid,
+          datasetUUID: $stateParams.datasetUUID,
+          graphUuid: $stateParams.studyGraphUuid
+        }).$promise);
+      }
 
       $scope.categorySettings = {
         studyInformation: {
@@ -187,26 +196,27 @@ define([],
       }
 
       function reloadStudyModel() {
-        VersionedGraphResource.get({
-          userUid: $stateParams.userUid,
-          datasetUUID: $stateParams.datasetUUID,
-          graphUuid: $stateParams.studyGraphUuid,
-          versionUuid: $stateParams.versionUuid
-        }, function(response) {
-          StudyService.loadStore(response.data)
-            .then(function() {
-              console.log('loading study-store success');
-              StudyService.queryStudyData().then(function(queryResult) {
-                $scope.study = queryResult;
-                $scope.studyUuid = $filter('stripFrontFilter')(queryResult.studyUri, 'http://trials.drugis.org/studies/');
-                $scope.$broadcast('refreshStudyDesign');
-                $scope.$broadcast('refreshResults');
-                StudyService.studySaved();
-              });
-            }, function() {
-              console.error('failed loading study-store');
-            });
-        });
+        // VersionedGraphResource.get({
+        //   userUid: $stateParams.userUid,
+        //   datasetUUID: $stateParams.datasetUUID,
+        //   graphUuid: $stateParams.studyGraphUuid,
+        //   versionUuid: $stateParams.versionUuid
+        // }, function(response) {
+        //   StudyService.loadStore(response.data)
+        //     .then(function() {
+        //       console.log('loading study-store success');
+        //       StudyService.queryStudyData().then(function(queryResult) {
+        //         $scope.study = queryResult;
+        //         $scope.studyUuid = $filter('stripFrontFilter')(queryResult.studyUri, 'http://trials.drugis.org/studies/');
+        //         $scope.$broadcast('refreshStudyDesign');
+        //         $scope.$broadcast('refreshResults');
+        //         StudyService.studySaved();
+        //       });
+        //     }, function() {
+        //       console.error('failed loading study-store');
+        //     });
+        // });
+ console.log('reload study model');
       }
 
       function resetStudy() {

@@ -14,7 +14,10 @@
       </li>
       <li class="name">
         <h1 class="topbar-text">
-          <a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">
+          <a ng-if="versionUuid" ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">
+            {{dataset.label}} / {{study.label}}
+          </a>
+          <a ng-if="!versionUuid" ui-sref="dataset({userUid: userUid, datasetUUID: datasetUUID})">
             {{dataset.label}} / {{study.label}}
           </a>
         </h1>
@@ -90,10 +93,11 @@
           <hr>
         </div>
       </div>
-      <concept-mapping-list id="drugMapping" settings="conceptSettings['drugs']" dataset-concepts="datasetConcepts" is-editing-allowed="isEditingAllowed"></concept-mapping-list>
+      Concepts have been commented out to work on scratch view
+    <!--   <concept-mapping-list id="drugMapping" settings="conceptSettings['drugs']" dataset-concepts="datasetConcepts" is-editing-allowed="isEditingAllowed"></concept-mapping-list>
       <concept-mapping-list id="populationCharacteristicMapping" settings="conceptSettings['populationCharacteristics']" dataset-concepts="datasetConcepts" is-editing-allowed="isEditingAllowed"></concept-mapping-list>
       <concept-mapping-list id="endpointMapping" settings="conceptSettings['endpoints']" dataset-concepts="datasetConcepts" is-editing-allowed="isEditingAllowed"></concept-mapping-list>
-      <concept-mapping-list id="adverseEventMapping" settings="conceptSettings['adverseEvents']" dataset-concepts="datasetConcepts" is-editing-allowed="isEditingAllowed"></concept-mapping-list>
+      <concept-mapping-list id="adverseEventMapping" settings="conceptSettings['adverseEvents']" dataset-concepts="datasetConcepts" is-editing-allowed="isEditingAllowed"></concept-mapping-list> -->
     </div>
   </div>
 </div>

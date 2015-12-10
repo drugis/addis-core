@@ -7,8 +7,12 @@ define([], function() {
 
     function get(userUid, datasetUuid, datasetVersionUuid) {
       return queryStudiesWithDetails.then(function(query) {
+        var restPath = '/users/'+ userUid +'/datasets/' + datasetUuid;
+        if(datasetVersionUuid) {
+          restPath = restPath + '/versions/' + datasetVersionUuid;
+        }
         return $http.get(
-          '/users/'+ userUid +'/datasets/' + datasetUuid + '/versions/' + datasetVersionUuid + '/query', {
+          restPath + '/query', {
             params: {
               query: query
             },

@@ -129,6 +129,11 @@ define(
             url: '/studies/:studyGraphUuid',
             templateUrl: 'app/js/study/view/study.html',
             controller: 'StudyController'
+          })
+          .state('dataset.study', {
+            url: '/studies/:studyGraphUuid',
+            templateUrl: 'app/js/study/view/study.html',
+            controller: 'StudyController'
           });
 
         // Default route
