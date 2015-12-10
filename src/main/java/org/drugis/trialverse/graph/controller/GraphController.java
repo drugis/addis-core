@@ -84,9 +84,20 @@ public class GraphController extends AbstractTrialverseController {
   @ResponseBody
   public void getGraphJsonLD(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid,
                        @PathVariable String versionUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
-    logger.trace("get graph");
+    logger.trace("get version graph");
     VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
     byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), versionUuid, graphUuid, WebConstants.JSON_LD);
+    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+    httpServletResponse.setHeader("Content-Type", WebConstants.JSON_LD);
+    trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);
+  }
+
+  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.GET, produces = WebConstants.JSON_LD)
+  @ResponseBody
+  public void getGraphHeadVersionJsonLD(HttpServletResponse httpServletResponse, @PathVariable String datasetUuid, @PathVariable String graphUuid) throws URISyntaxException, IOException, ReadGraphException {
+    logger.trace("get head graph");
+    VersionMapping versionMapping = versionMappingRepository.getVersionMappingByDatasetUrl(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid));
+    byte[] responseContent = graphReadRepository.getGraph(versionMapping.getVersionedDatasetUrl(), null, graphUuid, WebConstants.JSON_LD);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", WebConstants.JSON_LD);
     trialverseIOUtilsService.writeContentToServletResponse(responseContent, httpServletResponse);

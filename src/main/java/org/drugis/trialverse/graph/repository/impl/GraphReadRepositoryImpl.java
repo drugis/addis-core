@@ -49,9 +49,11 @@ public class GraphReadRepositoryImpl implements GraphReadRepository {
             .queryParam(GRAPH, Namespaces.GRAPH_NAMESPACE + graphUUID)
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
-    String headerValue = webConstants.buildVersionUri(versionUuid).toString();
-    Header acceptVersionHeader = new BasicHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, headerValue);
-    request.setHeader(acceptVersionHeader);
+    if(versionUuid != null) {
+      String headerValue = webConstants.buildVersionUri(versionUuid).toString();
+      Header acceptVersionHeader = new BasicHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, headerValue);
+      request.setHeader(acceptVersionHeader);
+    }
     request.addHeader(org.apache.http.HttpHeaders.ACCEPT, contentType);
     try(CloseableHttpResponse response =  (CloseableHttpResponse) httpClient.execute(request);
         InputStream contentStream = response.getEntity().getContent()) {
