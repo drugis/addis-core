@@ -30,5 +30,13 @@
       </div>
     </div>
   </section>
+
+  <script>
+    if(window.location.host.indexOf("test") > -1) {
+      document.body.className += " test";
+      document.title = "test-" + document.title;
+    }
+  </script>
+
 </body>
 </html>
