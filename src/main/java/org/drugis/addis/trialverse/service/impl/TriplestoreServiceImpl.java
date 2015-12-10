@@ -569,13 +569,34 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String valueAsString = JsonPath.<String>read(row, "$.value.value");
       if (JsonPath.<String>read(row, "$.value.datatype").equals(DATATYPE_DURATION)) {
         Period period = Period.parse(valueAsString);
-        Integer periodAsDays = period.toStandardDays().getDays();
-        value = periodAsDays.doubleValue();
+        value = numberOfDaysInPeriod(period);
       } else {
         value = Double.parseDouble(valueAsString);
       }
     }
     return value;
+  }
+
+  private Double numberOfDaysInPeriod(Period period) {
+
+    final double hourInDays = 1D / 24D;
+    final double minuteInDays = hourInDays / 60D;
+    final double secondInDays = minuteInDays / 60D;
+    final double milliInDays = secondInDays / 1000D;
+    final double weekInDays = 7D;
+    final double monthInDay = 365D / 12D;
+    final double yearInDays = 365D;
+
+    Double nDays = (period.getMillis() * milliInDays) +
+            ((double) period.getSeconds() * secondInDays) +
+            ((double) period.getMinutes() * minuteInDays) +
+            ((double) period.getHours() * hourInDays) +
+            (double) period.getDays() +
+            ((double) period.getWeeks() * weekInDays) +
+            ((double) period.getMonths() * monthInDay) +
+            ((double) period.getYears() * yearInDays);
+
+    return nDays;
   }
 
 
