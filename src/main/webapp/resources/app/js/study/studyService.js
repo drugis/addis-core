@@ -1,12 +1,10 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$q', '$filter', 'UUIDService', 'RemoteRdfStoreService', 'SparqlResource', 'SanitizeService', 'GraphResource'];
-  var StudyService = function($q, $filter, UUIDService, RemoteRdfStoreService, SparqlResource, SanitizeService, GraphResource) {
+  var dependencies = ['$q', 'UUIDService', 'GraphResource'];
+  var StudyService = function($q, UUIDService, GraphResource) {
 
-    var graphPrefix = 'http://trials.drugis.org/graphs/';
     var loadDefer = $q.defer();
-    var scratchStudyUri,
-      modified = false;
+    var modified = false;
     var studyJsonPromise;
     var context = {
       "standard_deviation": {
@@ -216,22 +214,6 @@ define([], function() {
       "ontology": "http://trials.drugis.org/ontology#"
     };
 
-    var studyDataQuery = SparqlResource.get('queryStudyData.sparql');
-
-    function doModifyingQuery(query) {
-      return loadDefer.promise.then(function() {
-        return RemoteRdfStoreService.executeUpdate(scratchStudyUri, query).then(function() {
-          modified = true;
-        });
-      });
-    }
-
-    function doNonModifyingQuery(query) {
-      return loadDefer.promise.then(function() {
-        return RemoteRdfStoreService.executeQuery(scratchStudyUri, query);
-      });
-    }
-
     function createEmptyStudy(study, userUid, datasetUid) {
       var uuid = UUIDService.generate();
       var emptyStudy = {
@@ -260,39 +242,14 @@ define([], function() {
         graphUuid: uuid,
         commitTitle: 'Initial study creation: ' + study.label
       }, emptyStudy, function(value, responseHeaders) {
-          var newVersion = responseHeaders('X-EventSource-Version');
-          newVersion = newVersion.split('/')[4];
-          newVersionDefer.resolve(newVersion);
+        var newVersion = responseHeaders('X-EventSource-Version');
+        newVersion = newVersion.split('/')[4];
+        newVersionDefer.resolve(newVersion);
       }, function(error) {
         console.error('error' + error);
       });
 
       return newVersionDefer.promise;
-    }
-
-    function queryStudyData() {
-      return loadDefer.promise.then(function() {
-        return studyDataQuery.then(function(query) {
-          return RemoteRdfStoreService.executeQuery(scratchStudyUri, query).then(function(results) {
-            return results[0];
-          });
-        });
-      });
-    }
-
-    function loadStore(data) {
-      return RemoteRdfStoreService.create(graphPrefix).then(function(graphUri) {
-        scratchStudyUri = graphUri;
-        return RemoteRdfStoreService.load(scratchStudyUri, data).then(function() {
-          loadDefer.resolve();
-        });
-      });
-    }
-
-    function getGraph() {
-      return loadDefer.promise.then(function() {
-        return RemoteRdfStoreService.getGraph(scratchStudyUri);
-      });
     }
 
     function isStudyModified() {
@@ -303,19 +260,9 @@ define([], function() {
       modified = false;
     }
 
-    function getStudyUUID() {
-      return $filter('stripFrontFilter')(scratchStudyUri, graphPrefix);
-    }
-
     function reset() {
       loadDefer = $q.defer();
       modified = false;
-    }
-
-    function fillTemplate(template, study) {
-      return template.replace(/\$studyUuid/g, study.uuid)
-        .replace(/\$label/g, study.label)
-        .replace(/\$comment/g, SanitizeService.sanitizeStringLiteral(study.comment));
     }
 
     function loadJson(jsonPromise) {
@@ -360,22 +307,17 @@ define([], function() {
     }
 
     return {
-      loadStore: loadStore,
-      queryStudyData: queryStudyData,
       createEmptyStudy: createEmptyStudy,
-      getGraph: getGraph,
-      doModifyingQuery: doModifyingQuery,
-      doNonModifyingQuery: doNonModifyingQuery,
       isStudyModified: isStudyModified,
+      getGraph: getGraph,
       studySaved: studySaved,
-      getStudyUUID: getStudyUUID,
       reset: reset,
       loadJson: loadJson,
-      getStudy: getStudy,
-      save: save,
+      getGraphAndContext: getGraphAndContext,
       getJsonGraph: getJsonGraph,
       saveJsonGraph: saveJsonGraph,
-      getGraphAndContext: getGraphAndContext
+      getStudy: getStudy,
+      save: save
     };
   };
 
