@@ -13,5 +13,5 @@ import java.net.URI;
  */
 public interface GraphWriteRepository {
 
-  public Header updateGraph(URI datasetUri, String graphUuid, InputStream graph, String commitTitle, String commitDescription) throws IOException, UpdateGraphException;
+  Header updateGraph(URI datasetUri, String graphUuid, InputStream graph, String commitTitle, String commitDescription) throws IOException, UpdateGraphException;
 }
