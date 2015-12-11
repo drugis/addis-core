@@ -18,21 +18,6 @@ define([],
       $scope.study = {};
       $scope.resetStudy = resetStudy;
 
-      if ($scope.versionUuid) {
-        StudyService.loadJson(VersionedGraphResource.getJson({
-          userUid: $stateParams.userUid,
-          datasetUUID: $stateParams.datasetUUID,
-          graphUuid: $stateParams.studyGraphUuid,
-          versionUuid: $stateParams.versionUuid
-        }).$promise);
-      } else {
-        StudyService.loadJson(GraphResource.getJson({
-          userUid: $stateParams.userUid,
-          datasetUUID: $stateParams.datasetUUID,
-          graphUuid: $stateParams.studyGraphUuid
-        }).$promise);
-      }
-
       $scope.categorySettings = {
         studyInformation: {
           service: 'StudyInformationService',
@@ -196,27 +181,44 @@ define([],
       }
 
       function reloadStudyModel() {
-        // VersionedGraphResource.get({
-        //   userUid: $stateParams.userUid,
-        //   datasetUUID: $stateParams.datasetUUID,
-        //   graphUuid: $stateParams.studyGraphUuid,
-        //   versionUuid: $stateParams.versionUuid
-        // }, function(response) {
-        //   StudyService.loadStore(response.data)
-        //     .then(function() {
-        //       console.log('loading study-store success');
-        //       StudyService.queryStudyData().then(function(queryResult) {
-        //         $scope.study = queryResult;
-        //         $scope.studyUuid = $filter('stripFrontFilter')(queryResult.studyUri, 'http://trials.drugis.org/studies/');
-        //         $scope.$broadcast('refreshStudyDesign');
-        //         $scope.$broadcast('refreshResults');
-        //         StudyService.studySaved();
-        //       });
-        //     }, function() {
-        //       console.error('failed loading study-store');
-        //     });
-        // });
- console.log('reload study model');
+        console.log('reload study model');
+
+        // load the data from the backend
+        var getStudyFromBackendDefer;
+        if ($scope.versionUuid) {
+          getStudyFromBackendDefer = VersionedGraphResource.getJson({
+            userUid: $stateParams.userUid,
+            datasetUUID: $stateParams.datasetUUID,
+            graphUuid: $stateParams.studyGraphUuid,
+            versionUuid: $stateParams.versionUuid
+          });
+        } else {
+          getStudyFromBackendDefer = GraphResource.getJson({
+            userUid: $stateParams.userUid,
+            datasetUUID: $stateParams.datasetUUID,
+            graphUuid: $stateParams.studyGraphUuid
+          });
+        }
+
+        // place loaded data into fontend cache
+        StudyService.loadJson(getStudyFromBackendDefer.$promise);
+
+        // use the loaded data to fill the view and alert the subviews
+        getStudyFromBackendDefer.$promise.then(function() {
+          StudyService.getStudy().then(function(study) {
+            $scope.studyUuid = $filter('stripFrontFilter')(study['@id'], 'http://trials.drugis.org/studies/');
+            $scope.study = {
+              id: $scope.studyUuid,
+              label: study.label,
+              comment: study.comment,
+
+            };
+            $scope.$broadcast('refreshStudyDesign');
+            $scope.$broadcast('refreshResults');
+            StudyService.studySaved();
+          });
+        });
+
       }
 
       function resetStudy() {

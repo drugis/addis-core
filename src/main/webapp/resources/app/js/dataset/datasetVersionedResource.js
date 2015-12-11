@@ -19,6 +19,12 @@ define([], function() {
           };
         }
       },
+      'getForJson': {
+        method: 'get',
+        headers: {
+           'Accept': 'application/json; charset=UTF-8'
+        }
+      },
       'query': {
         method: 'GET',
         headers: {
@@ -30,6 +36,13 @@ define([], function() {
             data: data // property on Responce object to access raw result data
           };
         },
+      },
+      'queryForJson': {
+        method: 'GET',
+        isArray: true,
+        headers: {
+          'Accept': 'application/json; charset=UTF-8'
+        }
       }
     });
   };

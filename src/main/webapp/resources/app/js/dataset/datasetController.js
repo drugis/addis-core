@@ -18,7 +18,7 @@ define([],
       }
 
       function isEditAllowedOnVersion() {
-        return $scope.isHeadView || ($scope.currentRevision && $scope.currentRevision.isHead);
+        return $scope.currentRevision && $scope.currentRevision.isHead;
       }
 
       $scope.loadConcepts = function() {
@@ -50,7 +50,7 @@ define([],
           $scope.isEditingAllowed = isEditingAllowed();
         });
       } else {
-        DatasetVersionedResource.get($stateParams, function(response) {
+        DatasetVersionedResource.getForJson($stateParams, function(response) {
           $scope.dataset = {
             datasetUri: $scope.datasetUUID,
             label: response['http://purl.org/dc/terms/title'],
@@ -63,7 +63,10 @@ define([],
 
       HistoryResource.query($stateParams).$promise.then(function(historyItems) {
 
-        if (!$scope.isHeadView) {
+        if ($scope.isHeadView) {
+          $scope.currentRevision = historyItems[historyItems.length - 1]
+          $scope.currentRevision.isHead = true;
+        } else {
           // sort to know it curentRevission is head
           $scope.currentRevision = _.find(historyItems, function(item) {
             return item.uri.lastIndexOf($stateParams.versionUuid) > 0;

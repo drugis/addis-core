@@ -309,7 +309,6 @@ define([], function() {
     return {
       createEmptyStudy: createEmptyStudy,
       isStudyModified: isStudyModified,
-      getGraph: getGraph,
       studySaved: studySaved,
       reset: reset,
       loadJson: loadJson,
