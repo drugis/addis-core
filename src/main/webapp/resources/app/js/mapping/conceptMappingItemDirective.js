@@ -22,13 +22,13 @@ define([], function() {
         }
 
         scope.datasetConcepts.then(function(concepts) {
-          scope.filteredConcepts = _.filter(concepts, function(datasetConcept) {
-            return datasetConcept.type === scope.settings.typeUri;
+          scope.filteredConcepts = _.filter(concepts['@graph'], function(datasetConcept) {
+            return datasetConcept['@type'] === scope.settings.typeUri;
           });
 
           if (scope.studyConcept.conceptMapping) {
             scope.selectedDatasetConcept = _.find(scope.filteredConcepts, function(datasetConcept) {
-              return scope.studyConcept.conceptMapping === datasetConcept.uri;
+              return scope.studyConcept.conceptMapping === datasetConcept['@id'];
             });
           }
         });

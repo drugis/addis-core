@@ -3,30 +3,29 @@ define([], function() {
   var dependencies = ['$q', 'UUIDService'];
   var ConceptService = function($q, UUIDService) {
 
-    var
-      conceptsGraphUriBase = 'http://trials.drugis.org/concepts/',
-      scratchConceptsGraphUri,
-      modified = false,
-      contextJsonPromise,
-      typeOptions = {
-        'http://trials.drugis.org/ontology#Drug': {
-          uri: 'http://trials.drugis.org/ontology#Drug',
-          label: 'Drug'
-        },
-        'http://trials.drugis.org/ontology#Variable': {
-          uri: 'http://trials.drugis.org/ontology#Variable',
-          label: 'Variable'
-        }
-      };
+    var conceptsGraphUriBase = 'http://trials.drugis.org/concepts/';
+    var modified = false;
+    var conceptJsonPromise;
+
+    var typeOptions = {
+      'ontology:Drug': {
+        uri: 'ontology:Drug',
+        label: 'Drug'
+      },
+      'ontology:Variable': {
+        uri: 'ontology:Variable',
+        label: 'Variable'
+      }
+    };
 
     function toFrontEnd(conceptItem) {
       var frontEnd = {
         uri: conceptItem['@id'],
         type: typeOptions[conceptItem['@type']],
-        label: conceptItem['http://www.w3.org/2000/01/rdf-schema#label']
+        label: conceptItem.label
       };
-      if (conceptItem['http://www.w3.org/2000/01/rdf-schema#comment']) {
-        frontEnd.comment = conceptItem['http://www.w3.org/2000/01/rdf-schema#comment'];
+      if (conceptItem.comment) {
+        frontEnd.comment = conceptItem.comment;
       }
       return frontEnd;
     }
@@ -35,27 +34,31 @@ define([], function() {
       var backEnd = {
         '@id': 'http://trials.drugis.org/concepts/' + UUIDService.generate(),
         '@type': concept.type.uri,
-        'http://www.w3.org/2000/01/rdf-schema#label': concept.label
+        label: concept.label
       };
       if (concept.comment) {
-        backEnd['http://www.w3.org/2000/01/rdf-schema#comment'] = concept.comment;
+        backEnd.comment = concept.comment;
       }
       return backEnd;
     }
 
     function queryItems() {
-      return contextJsonPromise.then(function(json) {
+      return conceptJsonPromise.then(function(json) {
+       // transformConceptJson(json);
         return _.map(json['@graph'], toFrontEnd)
       });
     }
 
     function addItem(concept) {
-      return contextJsonPromise.then(function(json) {
+      return conceptJsonPromise.then(function(json) {
         modified = true;
+        //transformConceptJson(json);
         json['@graph'].push(toBackEnd(concept));
         return json;
       });
     }
+
+
 
     function areConceptsModified() {
       return modified;
@@ -66,24 +69,24 @@ define([], function() {
     }
 
     function loadJson(jsonPromise) {
-      contextJsonPromise = jsonPromise;
+      conceptJsonPromise = jsonPromise;
       return jsonPromise;
     }
 
     function getGraphAndContext() {
-      return contextJsonPromise.then(function(graphAndContext) {
+      return conceptJsonPromise.then(function(graphAndContext) {
         return graphAndContext;
       });
     }
 
     function getJsonGraph() {
-      return contextJsonPromise.then(function(graph) {
+      return conceptJsonPromise.then(function(graph) {
         return graph['@graph'];
       });
     }
 
     function saveJsonGraph(newGraph) {
-      return contextJsonPromise.then(function(jsonLd) {
+      return conceptJsonPromise.then(function(jsonLd) {
         jsonLd['@graph'] = newGraph;
         modified = true;
       });
@@ -94,7 +97,8 @@ define([], function() {
       addItem: addItem,
       areConceptsModified: areConceptsModified,
       conceptsSaved: conceptsSaved,
-      loadJson: loadJson
+      loadJson: loadJson,
+      getGraphAndContext: getGraphAndContext
     };
 
   };

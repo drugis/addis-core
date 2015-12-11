@@ -15,7 +15,8 @@ define([],
           uri: item['@id'],
           label: item.label,
           measurementType: item.of_variable[0].measurementType,
-          measuredAtMoments: []
+          measuredAtMoments: [],
+          conceptMapping: item.of_variable[0].sameAs
         };
 
         // if only one measurement moment is selected, it's a string, not an array

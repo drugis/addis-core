@@ -11,11 +11,9 @@ define([],
       }
 
       function updateMapping(studyConcept, datasetConcept) {
-        if (datasetConcept.type === 'ontology:Drug') {
+        if (datasetConcept['@type'] === 'ontology:Drug') {
           return updateDrugMapping(studyConcept, datasetConcept);
-        } else if (datasetConcept.type === 'ontology:PopulationCharacteristic' ||
-          datasetConcept.type === 'ontology:AdverseEvent' ||
-          datasetConcept.type === 'ontology:Endpoint') {
+        } else if (datasetConcept['@type'] === 'ontology:Variable') {
           return updateVariableMapping(studyConcept, datasetConcept);
         }
       }
@@ -23,25 +21,25 @@ define([],
       function updateDrugMapping(studyConcept, datasetConcept) {
         return StudyService.getJsonGraph().then(function(graph) {
           var drugNode = findNodeWithId(graph, studyConcept.uri);
-          drugNode.sameAs = datasetConcept.uri;
-          return StudyService.saveGraph(graph);
+          drugNode.sameAs = datasetConcept['@id'];
+          return StudyService.saveJsonGraph(graph);
         });
       }
 
       function updateVariableMapping(studyConcept, datasetConcept) {
         return StudyService.getStudy().then(function(study) {
           var outcomeNode = findNodeWithId(study.has_outcome, studyConcept.uri);
-          outcomeNode.of_variable[0].sameAs = datasetConcept.uri;
-          return StudyService.saveStudy(study);
+          outcomeNode.of_variable[0].sameAs = datasetConcept['@id'];
+          return StudyService.save(study);
         });
       }
 
       function removeMapping(studyConcept, datasetConcept) {
-        if (datasetConcept.type === 'ontology:Drug') {
+        if (datasetConcept['@type'] === 'ontology:Drug') {
           return removeDrugMapping(studyConcept, datasetConcept);
-        } else if (datasetConcept.type === 'ontology:PopulationCharacteristic' ||
-          datasetConcept.type === 'ontology:AdverseEvent' ||
-          datasetConcept.type === 'ontology:Endpoint') {
+        } else if (datasetConcept['@type'] === 'ontology:PopulationCharacteristic' ||
+          datasetConcept['@type'] === 'ontology:AdverseEvent' ||
+          datasetConcept['@type'] === 'ontology:Endpoint') {
           return removeVariableMapping(studyConcept, datasetConcept);
         }
       };
@@ -50,7 +48,7 @@ define([],
         return StudyService.getJsonGraph().then(function(graph) {
           var drugNode = findNodeWithId(graph, studyConcept.uri);
           delete drugNode.sameAs;
-          return StudyService.saveGraph(graph);
+          return StudyService.saveJsonGraph(graph);
         });
       }
 
@@ -58,7 +56,7 @@ define([],
         return StudyService.getStudy().then(function(study) {
           var outcomeNode = findNodeWithId(study.has_outcome, studyConcept.uri);
           delete outcomeNode.of_variable[0].sameAs;
-          return StudyService.saveStudy(study);
+          return StudyService.save(study);
         });
       }
 

@@ -11,6 +11,7 @@ define([],
       $scope.otherUsers = [];
       $scope.userUid = $stateParams.userUid;
       $scope.loginUser = $window.config.user;
+      $scope.datasetsLoaded = false;
       $scope.reloadDatasets = reloadDatasets;
 
       // if no user is supplied, then go to the logged-in user user-page
@@ -31,12 +32,10 @@ define([],
       }
 
       function reloadDatasets() {
+        $scope.datasetsLoaded = false;
         DatasetResource.queryForJson($stateParams, function(datasets) {
-          $scope.datasetsLoaded = true;
           $scope.datasets = datasets;
-          // if (datasets.length > 0) {
-          //   $scope.versionUrlBase = datasets[0].headVersion.split('/').slice(0, 4).join('/') + '/';
-          // }
+          $scope.datasetsLoaded = true;
         });
 
       }

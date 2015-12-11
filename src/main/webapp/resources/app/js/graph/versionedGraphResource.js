@@ -1,5 +1,5 @@
 'use strict';
-define(['util/transformJsonLd'], function(transformJsonLd) {
+define(['util/transformJsonLd', 'util/transformConceptJsonLd'], function(transformStudyJsonLd, transformConceptJsonLd) {
 
   var dependencies = ['$resource'];
   var VersionedGraphResource = function($resource) {
@@ -27,16 +27,16 @@ define(['util/transformJsonLd'], function(transformJsonLd) {
             'Accept': 'application/ld+json'
           },
           transformResponse: function(data) {
-            return transformJsonLd(JSON.parse(data))
+            return transformStudyJsonLd(JSON.parse(data))
           }
         },
-        'getJsonNoTransform': {
+        'getConceptJson': {
           method: 'get',
           headers: {
             'Accept': 'application/ld+json'
           },
           transformResponse: function(data) {
-            return JSON.parse(data);
+            return transformConceptJsonLd(JSON.parse(data));
           }
         }
       });

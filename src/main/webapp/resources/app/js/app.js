@@ -130,6 +130,11 @@ define(
             templateUrl: 'app/js/study/view/study.html',
             controller: 'StudyController'
           })
+          .state('dataset.concepts', {
+            url: '/concepts',
+            templateUrl: 'app/js/concept/concepts.html',
+            controller: 'ConceptController'
+          })
           .state('dataset.study', {
             url: '/studies/:studyGraphUuid',
             templateUrl: 'app/js/study/view/study.html',

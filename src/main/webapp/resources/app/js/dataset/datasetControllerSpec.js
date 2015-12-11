@@ -9,7 +9,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get']),
       historyResource = jasmine.createSpyObj('HistoryResource', ['query']),
       conceptService = jasmine.createSpyObj('ConceptService', ['loadJson', 'queryItems']),
-      versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get', 'getJsonNoTransform']),
+      versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get', 'getConceptJson']),
       mockLoadStoreDeferred,
       queryHistoryDeferred,
       studiesWithDetailsGetDeferred,
@@ -56,7 +56,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       studiesWithDetailsService.get.and.returnValue(studiesWithDetailsGetDeferred.promise);
       mockRemoteRdfStoreService.deFusekify.and.returnValue(mockStudiesWithDetail);
       conceptService.loadJson.and.returnValue(conceptsJsonDefer.promise);
-      versionedGraphResource.getJsonNoTransform.and.returnValue({
+      versionedGraphResource.getConceptJson.and.returnValue({
         $promise: conceptsJsonDefer.promise
       });
       historyResource.query.and.returnValue({
@@ -138,7 +138,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         conceptsJsonDefer.resolve(datasetConcepts);
         scope.$digest();
         expect(scope.datasetConcepts).toBeDefined(); // promise resolved
-        expect(versionedGraphResource.getJsonNoTransform).toHaveBeenCalled();
+        expect(versionedGraphResource.getConceptJson).toHaveBeenCalled();
         expect(conceptService.loadJson).toHaveBeenCalled();
       });
 

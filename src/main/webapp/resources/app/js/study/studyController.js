@@ -127,7 +127,7 @@ define([],
         drugs: {
           label: 'Drugs',
           serviceName: 'DrugService',
-          typeUri: 'ontology:Drug'
+          typeUri: 'ontology:Drug' 
         },
         populationCharacteristics: {
           label: 'Population characteristics',

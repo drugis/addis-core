@@ -3,13 +3,14 @@ define([],
   function() {
     var dependencies = ['$scope', '$q', '$window', '$location', '$stateParams', '$modal', '$filter',
       'SingleDatasetService', 'DatasetVersionedResource', 'StudiesWithDetailsService',
-      'RemoteRdfStoreService', 'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource'
+      'RemoteRdfStoreService', 'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource'
     ];
     var DatasetController = function($scope, $q, $window, $location, $stateParams, $modal, $filter,
       SingleDatasetService, DatasetVersionedResource, StudiesWithDetailsService,
-      RemoteRdfStoreService, HistoryResource, ConceptService, VersionedGraphResource, DatasetResource) {
+      RemoteRdfStoreService, HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource) {
 
       // no version so this must be head view
+      $scope.versionUuid = $stateParams.versionUuid;
       $scope.isHeadView = !$stateParams.versionUuid;
 
       function isEditingAllowed() {
@@ -22,13 +23,28 @@ define([],
       }
 
       $scope.loadConcepts = function() {
-        return ConceptService.loadJson(VersionedGraphResource.getJsonNoTransform({
-          userUid: $stateParams.userUid,
-          datasetUUID: $stateParams.datasetUUID,
-          graphUuid: 'concepts',
-          versionUuid: $stateParams.versionUuid
-        }).$promise);
-      };
+
+        // load the concepts data from the backend
+        var getConceptsFromBackendDefer;
+        if ($scope.versionUuid) {
+          getConceptsFromBackendDefer = VersionedGraphResource.getConceptJson({
+            userUid: $stateParams.userUid,
+            datasetUUID: $stateParams.datasetUUID,
+            graphUuid: 'concepts',
+            versionUuid: $stateParams.versionUuid
+          });
+        } else {
+          getConceptsFromBackendDefer = GraphResource.getConceptJson({
+            userUid: $stateParams.userUid,
+            datasetUUID: $stateParams.datasetUUID,
+            graphUuid: 'concepts',
+          });
+        }
+
+        // place loaded data into fontend cache and return a promise
+        ConceptService.loadJson(getConceptsFromBackendDefer.$promise);
+        return getConceptsFromBackendDefer.$promise;
+      }
 
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUUID = $stateParams.datasetUUID;
@@ -37,7 +53,7 @@ define([],
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.userUid = $stateParams.userUid;
       $scope.isEditingAllowed = false;
-      //    $scope.datasetConcepts = $scope.loadConcepts();
+      $scope.datasetConcepts = $scope.loadConcepts();
 
       if ($scope.isHeadView) {
         DatasetResource.getForJson($stateParams, function(response) {
