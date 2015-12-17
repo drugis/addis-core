@@ -3,7 +3,6 @@ package org.drugis.addis.patavitask;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.patavitask.repository.impl.PataviTaskRepositoryImpl;
 import org.drugis.addis.patavitask.repository.impl.SimpleJdbcInsertPataviTaskFactory;
@@ -55,7 +54,7 @@ public class PataviTaskRepositoryImplTest {
   }
 
   @Test
-  public void testCreateNetwork() throws Exception, InvalidHeterogeneityTypeException {
+  public void testCreateNetwork() throws Exception {
     Integer analysisId = -5; // from test-data/sql
 
     Long responders = 1L;
@@ -102,7 +101,7 @@ public class PataviTaskRepositoryImplTest {
   }
 
   @Test
-  public void testCreatePairwise() throws Exception, InvalidHeterogeneityTypeException {
+  public void testCreatePairwise() throws Exception {
     Integer analysisId = -5; // from test-data/sql
 
     Long responders = 1L;
@@ -152,7 +151,7 @@ public class PataviTaskRepositoryImplTest {
   }
 
   @Test
-  public void testCreateWithFixedOutcomeScale() throws Exception, InvalidHeterogeneityTypeException {
+  public void testCreateWithFixedOutcomeScale() throws Exception {
     Integer analysisId = -5; // from test-data/sql
 
     Long responders = 1L;
@@ -193,7 +192,7 @@ public class PataviTaskRepositoryImplTest {
   }
 
   @Test(expected = InvalidPathException.class)
-  public void testCreateWithoutFixedOutcomeScale() throws Exception, InvalidHeterogeneityTypeException {
+  public void testCreateWithoutFixedOutcomeScale() throws Exception {
     Integer analysisId = -5; // from test-data/sql
 
     Long responders = 1L;
@@ -229,6 +228,58 @@ public class PataviTaskRepositoryImplTest {
 
     PataviTask task = pataviTaskRepository.createPataviTask(problem, model);
     JsonPath.read(task.getProblem(), "$.outcomeScale");
+  }
+
+
+  @Test
+  public void testCreateMetaRegression() throws Exception {
+    Integer analysisId = -5; // from test-data/sql
+
+    Long responders = 1L;
+    Long samplesize = 30L;
+    Integer treatment = 123;
+    String study = "study";
+    String linearModel = "random";
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+    net.minidev.json.JSONObject regressor = new net.minidev.json.JSONObject();
+    regressor.put("coefficient", "shared");
+    Model model = new Model.ModelBuilder()
+            .analysisId(analysisId)
+            .title("title")
+            .linearModel(linearModel)
+            .modelType(Model.REGRESSION_MODEL_TYPE)
+            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
+            .burnInIterations(burnInIterations)
+            .inferenceIterations(inferenceIterations)
+            .thinningFactor(thinningFactor)
+            .likelihood(likelihood)
+            .link(link)
+            .regressor(regressor)
+            .build();
+
+    List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
+    entries.add(new RateNetworkMetaAnalysisProblemEntry(study, treatment, samplesize, responders));
+    String entryName = "entry name";
+    Integer entryId = 456;
+    List<TreatmentEntry> treatments = Collections.singletonList(new TreatmentEntry(entryId, entryName));
+    Map<String, Map<String, Double>> studyCovariates = new HashMap<>();
+    NetworkMetaAnalysisProblem problem = new NetworkMetaAnalysisProblem(entries, treatments, studyCovariates);
+
+    PataviTask task = pataviTaskRepository.createPataviTask(problem, model);
+    assertNotNull(task.getId());
+    JSONObject parsedProblem = new JSONObject(task.getProblem());
+    assertEquals(linearModel, parsedProblem.get("linearModel"));
+    assertEquals("regression", JsonPath.read(task.getProblem(), "$.modelType.type"));
+    assertEquals(burnInIterations, JsonPath.read(task.getProblem(), "$.burnInIterations"));
+    assertEquals(inferenceIterations, JsonPath.read(task.getProblem(), "$.inferenceIterations"));
+    assertEquals(thinningFactor, JsonPath.read(task.getProblem(), "$.thinningFactor"));
+    assertEquals(likelihood, JsonPath.read(task.getProblem(), "$.likelihood"));
+    assertEquals(link, JsonPath.read(task.getProblem(), "$.link"));
+    assertEquals(regressor, JsonPath.read(task.getProblem(), "$.regressor"));
   }
 
 

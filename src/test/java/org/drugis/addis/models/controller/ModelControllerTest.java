@@ -2,13 +2,13 @@ package org.drugis.addis.models.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.minidev.json.JSONObject;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.controller.command.*;
-import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
@@ -113,7 +113,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreateFixedEffectNetwork() throws Exception, InvalidHeterogeneityTypeException {
+  public void testCreateFixedEffectNetwork() throws Exception {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -128,7 +128,17 @@ public class ModelControllerTest {
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
 
     HeterogeneityPriorCommand heterogeneityPriorCommand = null;
-    CreateModelCommand createModelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    CreateModelCommand createModelCommand = new CreateModelCommand.CreateModelCommandBuilder()
+            .setTitle(modelTitle)
+            .setLinearModel(linearModel)
+            .setModelType(modelTypeCommand)
+            .setHeterogeneityPriorCommand(heterogeneityPriorCommand)
+            .setBurnInIterations(burnInIterations)
+            .setInferenceIterations(inferenceIterations)
+            .setThinningFactor(thinningFactor)
+            .setLikelihood(likelihood)
+            .setLink(link)
+            .build();
     String body = TestUtils.createJson(createModelCommand);
 
     when(modelService.createModel(analysisId, createModelCommand)).thenReturn(model);
@@ -149,7 +159,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreateNetworkWithStdDevHetPrior() throws Exception, InvalidHeterogeneityTypeException {
+  public void testCreateNetworkWithStdDevHetPrior() throws Exception {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -170,7 +180,7 @@ public class ModelControllerTest {
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
 
     HeterogeneityPriorCommand heterogeneityPriorCommand = new StdDevHeterogeneityPriorCommand(new StdDevValuesCommand(lower, upper));
-    CreateModelCommand createModelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    CreateModelCommand createModelCommand = new CreateModelCommand.CreateModelCommandBuilder().setTitle(modelTitle).setLinearModel(linearModel).setModelType(modelTypeCommand).setHeterogeneityPriorCommand(heterogeneityPriorCommand).setBurnInIterations(burnInIterations).setInferenceIterations(inferenceIterations).setThinningFactor(thinningFactor).setLikelihood(likelihood).setLink(link).build();
     String body = TestUtils.createJson(createModelCommand);
 
     when(modelService.createModel(analysisId, createModelCommand)).thenReturn(model);
@@ -189,7 +199,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreateNetworkWithVarianceHetPrior() throws Exception, InvalidHeterogeneityTypeException {
+  public void testCreateNetworkWithVarianceHetPrior() throws Exception {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -211,7 +221,7 @@ public class ModelControllerTest {
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
     HeterogeneityPriorCommand heterogeneityPriorCommand = new VarianceHeterogeneityPriorCommand(new VarianceValuesCommand(mean, stdDev));
 
-    CreateModelCommand createModelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    CreateModelCommand createModelCommand = new CreateModelCommand.CreateModelCommandBuilder().setTitle(modelTitle).setLinearModel(linearModel).setModelType(modelTypeCommand).setBurnInIterations(burnInIterations).setInferenceIterations(inferenceIterations).setThinningFactor(thinningFactor).setLikelihood(likelihood).setLink(link).build();
     String body = TestUtils.createJson(createModelCommand);
 
 
@@ -232,7 +242,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreateNetworkWithPrecisionHetPrior() throws Exception, InvalidHeterogeneityTypeException {
+  public void testCreateNetworkWithPrecisionHetPrior() throws Exception {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -252,7 +262,7 @@ public class ModelControllerTest {
             .build();
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
     HeterogeneityPriorCommand heterogeneityPriorCommand = new PrecisionHeterogeneityPriorCommand(new PrecisionValuesCommand(rate, shape));
-    CreateModelCommand modelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    CreateModelCommand modelCommand = new CreateModelCommand.CreateModelCommandBuilder().setTitle(modelTitle).setLinearModel(linearModel).setModelType(modelTypeCommand).setHeterogeneityPriorCommand(heterogeneityPriorCommand).setBurnInIterations(burnInIterations).setInferenceIterations(inferenceIterations).setThinningFactor(thinningFactor).setLikelihood(likelihood).setLink(link).build();
     String body = TestUtils.createJson(modelCommand);
 
 
@@ -273,7 +283,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreateModelWithFixedOutcomeScale() throws Exception, InvalidHeterogeneityTypeException {
+  public void testCreateModelWithFixedOutcomeScale() throws Exception {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -289,7 +299,7 @@ public class ModelControllerTest {
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
     HeterogeneityPriorCommand heterogeneityPriorCommand = null;
 
-    CreateModelCommand createModelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale);
+    CreateModelCommand createModelCommand = new CreateModelCommand.CreateModelCommandBuilder().setTitle(modelTitle).setLinearModel(linearModel).setModelType(modelTypeCommand).setHeterogeneityPriorCommand(heterogeneityPriorCommand).setBurnInIterations(burnInIterations).setInferenceIterations(inferenceIterations).setThinningFactor(thinningFactor).setLikelihood(likelihood).setLink(link).setOutcomeScale(outcomeScale).build();
     String body = TestUtils.createJson(createModelCommand);
 
     when(modelService.createModel(analysisId, createModelCommand)).thenReturn(model);
@@ -305,7 +315,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testCreatePairwise() throws Exception, InvalidHeterogeneityTypeException {
+  public void testCreatePairwise() throws Exception {
     Integer projectId = 45;
     Integer analysisId = 55;
     String modelTitle = "model title";
@@ -320,7 +330,7 @@ public class ModelControllerTest {
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand(Model.PAIRWISE_MODEL_TYPE, new DetailsCommand(new NodeCommand(-1, "t1"), new NodeCommand(-2, "t2")));
     HeterogeneityPriorCommand heterogeneityPriorCommand = null;
 
-    CreateModelCommand createModelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    CreateModelCommand createModelCommand = new CreateModelCommand.CreateModelCommandBuilder().setTitle(modelTitle).setLinearModel(linearModel).setModelType(modelTypeCommand).setHeterogeneityPriorCommand(heterogeneityPriorCommand).setBurnInIterations(burnInIterations).setInferenceIterations(inferenceIterations).setThinningFactor(thinningFactor).setLikelihood(likelihood).setLink(link).build();
     String body = TestUtils.createJson(createModelCommand);
 
     when(modelService.createModel(analysisId, createModelCommand)).thenReturn(model);
@@ -340,7 +350,55 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testGet() throws Exception, InvalidHeterogeneityTypeException {
+  public void testCreateMetaRegressionModel() throws Exception {
+    Integer projectId = 45;
+    Integer analysisId = 55;
+    String modelTitle = "model title";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+
+    Model model = modelBuilder.build();
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand(Model.REGRESSION_MODEL_TYPE);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = null;
+
+    JSONObject regressor = new JSONObject();
+    regressor.put("a", "b");
+    CreateModelCommand createModelCommand = new CreateModelCommand.CreateModelCommandBuilder()
+            .setTitle(modelTitle)
+            .setLinearModel(linearModel)
+            .setModelType(modelTypeCommand)
+            .setHeterogeneityPriorCommand(heterogeneityPriorCommand)
+            .setBurnInIterations(burnInIterations)
+            .setInferenceIterations(inferenceIterations)
+            .setThinningFactor(thinningFactor)
+            .setLikelihood(likelihood)
+            .setLink(link)
+            .setRegressor(regressor)
+            .build();
+    String body = TestUtils.createJson(createModelCommand);
+
+    when(modelService.createModel(analysisId, createModelCommand)).thenReturn(model);
+    mockMvc.perform(post("/projects/45/analyses/55/models")
+            .content(body)
+            .principal(user)
+            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.id", notNullValue()))
+            .andExpect(jsonPath("$.analysisId", notNullValue()));
+
+    verify(analysisService).checkCoordinates(projectId, analysisId);
+    verify(projectService).checkOwnership(projectId, user);
+
+    verify(modelService).createModel(analysisId, createModelCommand);
+  }
+
+  @Test
+  public void testGet() throws Exception {
     Integer analysisId = 55;
     Model model = modelBuilder.build();
     when(modelRepository.get(model.getId())).thenReturn(model);
@@ -355,7 +413,7 @@ public class ModelControllerTest {
   }
 
   @Test
-  public void testQueryWithModelResult() throws Exception, InvalidHeterogeneityTypeException {
+  public void testQueryWithModelResult() throws Exception {
     Integer analysisId = 55;
     Model model = modelBuilder.build();
     List<Model> models = Collections.singletonList(model);
@@ -393,8 +451,17 @@ public class ModelControllerTest {
     String link = Model.LINK_LOG;
     Integer modelId = 1;
 
-    UpdateModelCommand updateModelCommand = new UpdateModelCommand(modelId, modelTitle, linearModel, modelTypeCommand,
-            burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    UpdateModelCommand updateModelCommand = new UpdateModelCommand.UpdateModelCommandBuilder()
+            .setId(modelId)
+            .setTitle(modelTitle)
+            .setLinearModel(linearModel)
+            .setModelTypeCommand(modelTypeCommand)
+            .setBurnInIterations(burnInIterations)
+            .setInferenceIterations(inferenceIterations)
+            .setThinningFactor(thinningFactor)
+            .setLikelihood(likelihood)
+            .setLink(link)
+            .build();
     String postBodyStr = TestUtils.createJson(updateModelCommand);
 
     mockMvc.perform(post("/projects/45/analyses/55/models/1")

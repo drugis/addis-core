@@ -282,3 +282,7 @@ CREATE TABLE CovariateInclusion (
   FOREIGN KEY(covariateId) REFERENCES covariate(id)
 );
 --rollback DROP TABLE CovariateInclusion;
+
+--changeset stroombergc:30
+ALTER TABLE model ADD COLUMN regressor VARCHAR;
+--rollback ALTER TABLE model DROP COLUMN regressor;

@@ -53,7 +53,8 @@ public class ModelServiceImpl implements ModelService {
             .thinningFactor(command.getThinningFactor())
             .likelihood(command.getLikelihood())
             .link(command.getLink())
-            .outcomeScale(command.getOutcomeScale());
+            .outcomeScale(command.getOutcomeScale())
+            .regressor(command.getRegressor());
 
     if (Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE.equals(heterogeneityPriorType)) {
       StdDevValuesCommand heterogeneityValuesCommand = ((StdDevHeterogeneityPriorCommand) heterogeneityPrior).getValues();

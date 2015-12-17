@@ -1,5 +1,6 @@
 package org.drugis.addis.models.service;
 
+import net.minidev.json.JSONObject;
 import org.drugis.addis.analyses.AbstractAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -92,7 +93,17 @@ public class ModelServiceTest {
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
     HeterogeneityPriorCommand heterogeneityPriorCommand = null;
 
-    CreateModelCommand modelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    CreateModelCommand modelCommand = new CreateModelCommand.CreateModelCommandBuilder()
+            .setTitle(modelTitle)
+            .setLinearModel(linearModel)
+            .setModelType(modelTypeCommand)
+            .setHeterogeneityPriorCommand(heterogeneityPriorCommand)
+            .setBurnInIterations(burnInIterations)
+            .setInferenceIterations(inferenceIterations)
+            .setThinningFactor(thinningFactor)
+            .setLikelihood(likelihood)
+            .setLink(link)
+            .build();
     Model expectedModel = mock(Model.class);
 
     Model internalModel = modelBuilder.build();
@@ -120,7 +131,7 @@ public class ModelServiceTest {
     Double upper = 1.0;
     HeterogeneityPriorCommand heterogeneityPriorCommand = new StdDevHeterogeneityPriorCommand(new StdDevValuesCommand(lower, upper));
 
-    CreateModelCommand createModelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    CreateModelCommand createModelCommand = new CreateModelCommand.CreateModelCommandBuilder().setTitle(modelTitle).setLinearModel(linearModel).setModelType(modelTypeCommand).setHeterogeneityPriorCommand(heterogeneityPriorCommand).setBurnInIterations(burnInIterations).setInferenceIterations(inferenceIterations).setThinningFactor(thinningFactor).setLikelihood(likelihood).setLink(link).build();
     Model expectedModel = mock(Model.class);
 
     Model internalModel = modelBuilder
@@ -153,7 +164,7 @@ public class ModelServiceTest {
     Double stdDev = 0.3;
     HeterogeneityPriorCommand heterogeneityPriorCommand = new VarianceHeterogeneityPriorCommand(new VarianceValuesCommand(mean, stdDev));
 
-    CreateModelCommand createModelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    CreateModelCommand createModelCommand = new CreateModelCommand.CreateModelCommandBuilder().setTitle(modelTitle).setLinearModel(linearModel).setModelType(modelTypeCommand).setHeterogeneityPriorCommand(heterogeneityPriorCommand).setBurnInIterations(burnInIterations).setInferenceIterations(inferenceIterations).setThinningFactor(thinningFactor).setLikelihood(likelihood).setLink(link).build();
     Model expectedModel = mock(Model.class);
 
     Model internalModel = modelBuilder
@@ -185,7 +196,7 @@ public class ModelServiceTest {
     Double shape = 1.3;
     HeterogeneityPriorCommand heterogeneityPriorCommand = new PrecisionHeterogeneityPriorCommand(new PrecisionValuesCommand(rate, shape));
 
-    CreateModelCommand modelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    CreateModelCommand modelCommand = new CreateModelCommand.CreateModelCommandBuilder().setTitle(modelTitle).setLinearModel(linearModel).setModelType(modelTypeCommand).setHeterogeneityPriorCommand(heterogeneityPriorCommand).setBurnInIterations(burnInIterations).setInferenceIterations(inferenceIterations).setThinningFactor(thinningFactor).setLikelihood(likelihood).setLink(link).build();
     Model expectedModel = mock(Model.class);
 
     Model internalModel = modelBuilder
@@ -221,7 +232,7 @@ public class ModelServiceTest {
     DetailsCommand details = new DetailsCommand(from, to);
 
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("pairwise", details);
-    CreateModelCommand createModelCommand = new CreateModelCommand(modelTitle, linearModel, modelTypeCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    CreateModelCommand createModelCommand = new CreateModelCommand.CreateModelCommandBuilder().setTitle(modelTitle).setLinearModel(linearModel).setModelType(modelTypeCommand).setBurnInIterations(burnInIterations).setInferenceIterations(inferenceIterations).setThinningFactor(thinningFactor).setLikelihood(likelihood).setLink(link).build();
 
     Model expectedModel = mock(Model.class);
 
@@ -238,9 +249,50 @@ public class ModelServiceTest {
     verify(modelRepository).persist(internalModel);
   }
 
+  @Test
+  public void testCreateMetaRegression() throws InvalidModelTypeException, ResourceDoesNotExistException, InvalidHeterogeneityTypeException {
+    Integer analysisId = 55;
+    String modelTitle = "model title";
+    String linearModel = Model.LINEAR_MODEL_FIXED;
+    Integer burnInIterations = 5000;
+    Integer inferenceIterations = 20000;
+    Integer thinningFactor = 10;
+    String likelihood = Model.LIKELIHOOD_BINOM;
+    String link = Model.LINK_LOG;
+    JSONObject regressor = new JSONObject();
+    regressor.put("a", "b");
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand(Model.REGRESSION_MODEL_TYPE, null);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = null;
+
+    CreateModelCommand modelCommand = new CreateModelCommand.CreateModelCommandBuilder()
+            .setTitle(modelTitle)
+            .setLinearModel(linearModel)
+            .setModelType(modelTypeCommand)
+            .setHeterogeneityPriorCommand(heterogeneityPriorCommand)
+            .setBurnInIterations(burnInIterations)
+            .setInferenceIterations(inferenceIterations)
+            .setThinningFactor(thinningFactor)
+            .setLikelihood(likelihood)
+            .setLink(link)
+            .setRegressor(regressor)
+            .build();
+    Model expectedModel = mock(Model.class);
+
+    Model internalModel = modelBuilder
+            .modelType(Model.REGRESSION_MODEL_TYPE)
+            .regressor(regressor)
+            .build();
+
+    when(modelRepository.persist(internalModel)).thenReturn(expectedModel);
+    Model createdModel = modelService.createModel(analysisId, modelCommand);
+
+    assertEquals(expectedModel, createdModel);
+    verify(modelRepository).persist(internalModel);
+  }
+
 
   @Test
-  public void testQueryModelIsPresent() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testQueryModelIsPresent() throws Exception, InvalidHeterogeneityTypeException {
     Integer analysisId = -1;
     Model model = modelBuilder.build();
 
@@ -316,8 +368,7 @@ public class ModelServiceTest {
     String link = Model.LINK_LOG;
     Double outcomeScale = 1D;
 
-    UpdateModelCommand updateModelCommand = new UpdateModelCommand(modelId, modelTitle, linearModel, modelTypeCommand,
-            burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    UpdateModelCommand updateModelCommand = new UpdateModelCommand.UpdateModelCommandBuilder().setId(modelId).setTitle(modelTitle).setLinearModel(linearModel).setModelTypeCommand(modelTypeCommand).setBurnInIterations(burnInIterations).setInferenceIterations(inferenceIterations).setThinningFactor(thinningFactor).setLikelihood(likelihood).setLink(link).build();
 
     Model oldModel = new Model.ModelBuilder()
             .analysisId(2)
@@ -356,8 +407,7 @@ public class ModelServiceTest {
     String link = Model.LINK_LOG;
     Double outcomeScale = 1D;
 
-    UpdateModelCommand updateModelCommand = new UpdateModelCommand(modelId, modelTitle, linearModel, modelTypeCommand,
-            burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
+    UpdateModelCommand updateModelCommand = new UpdateModelCommand.UpdateModelCommandBuilder().setId(modelId).setTitle(modelTitle).setLinearModel(linearModel).setModelTypeCommand(modelTypeCommand).setBurnInIterations(burnInIterations).setInferenceIterations(inferenceIterations).setThinningFactor(thinningFactor).setLikelihood(likelihood).setLink(link).build();
 
     Model oldModel = new Model.ModelBuilder()
             .analysisId(2)

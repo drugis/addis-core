@@ -1,11 +1,10 @@
 package org.drugis.addis.models.repository;
 
+import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
-import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.dao.DataAccessException;
@@ -33,7 +32,7 @@ public class JpaModelRepositoryTest {
   private ModelRepository modelRepository;
 
   @Test
-  public void testCreate() throws Exception, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testCreate() throws Exception {
     Integer analysisId = -5;
     String modelTitle = "model title";
     String linearModel = "fixed";
@@ -42,6 +41,8 @@ public class JpaModelRepositoryTest {
     Integer thinningFactor = 10;
     String likelihood = Model.LIKELIHOOD_BINOM;
     String link = Model.LINK_LOG;
+    JSONObject regressor = new JSONObject();
+    regressor.put("a", "b");
     Model toPersist = new Model.ModelBuilder()
             .analysisId(analysisId)
             .title(modelTitle)
@@ -53,6 +54,7 @@ public class JpaModelRepositoryTest {
             .thinningFactor(thinningFactor)
             .likelihood(likelihood)
             .link(link)
+            .regressor(regressor)
             .build();
     Model model = modelRepository.persist(toPersist);
     assertEquals(analysisId, model.getAnalysisId());
@@ -66,6 +68,7 @@ public class JpaModelRepositoryTest {
     assertEquals(likelihood, model.getLikelihood());
     assertEquals(link, model.getLink());
     assertNull(model.getPairwiseDetails());
+    assertEquals(regressor, model.getRegressor());
   }
 
   @Test

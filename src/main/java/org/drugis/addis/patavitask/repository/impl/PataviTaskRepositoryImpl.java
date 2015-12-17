@@ -73,6 +73,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     jsonProblem.put("thinningFactor", model.getThinningFactor());
     jsonProblem.put("likelihood", model.getLikelihood());
     jsonProblem.put("link", model.getLink());
+    jsonProblem.put("regressor", model.getRegressor());
 
     if(model.getOutcomeScale() != null) {
       jsonProblem.put("outcomeScale", model.getOutcomeScale());

@@ -1,6 +1,7 @@
 package org.drugis.addis.models.controller.command;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import net.minidev.json.JSONObject;
 
 /**
  * Created by connor on 6/24/15.
@@ -17,35 +18,25 @@ public class CreateModelCommand {
   private Integer thinningFactor;
   private String likelihood;
   private String link;
-
   private Double outcomeScale;
+
+  private JSONObject regressor;
 
   public CreateModelCommand() {
   }
 
-  public CreateModelCommand(String title, String linearModel, ModelTypeCommand modelType, HeterogeneityPriorCommand heterogeneityPriorCommand, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link) {
-    this(title, linearModel, modelType, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, null);
-  }
-
-  public CreateModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link) {
-    this(title, linearModel, modelType, null, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
-  }
-
-  public CreateModelCommand(String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link, Double outcomeScale) {
-    this(title, linearModel, modelType, null, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale);
-  }
-
-  public CreateModelCommand(String title, String linearModel, ModelTypeCommand modelType, HeterogeneityPriorCommand heterogeneityPriorCommand, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link, Double outcomeScale) {
-    this.title = title;
-    this.linearModel = linearModel;
-    this.modelType = modelType;
-    this.heterogeneityPrior = heterogeneityPriorCommand;
-    this.burnInIterations = burnInIterations;
-    this.inferenceIterations = inferenceIterations;
-    this.thinningFactor = thinningFactor;
-    this.likelihood = likelihood;
-    this.link = link;
-    this.outcomeScale = outcomeScale;
+  protected CreateModelCommand(CreateModelCommandBuilder builder) {
+    this.title = builder.title;
+    this.linearModel = builder.linearModel;
+    this.modelType = builder.modelType;
+    this.heterogeneityPrior = builder.heterogeneityPriorCommand;
+    this.burnInIterations = builder.burnInIterations;
+    this.inferenceIterations = builder.inferenceIterations;
+    this.thinningFactor = builder.thinningFactor;
+    this.likelihood = builder.likelihood;
+    this.link = builder.link;
+    this.outcomeScale = builder.outcomeScale;
+    this.regressor = builder.regressor;
   }
 
   public Integer getBurnInIterations() {
@@ -88,6 +79,10 @@ public class CreateModelCommand {
     return outcomeScale;
   }
 
+  public JSONObject getRegressor() {
+    return regressor;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -122,5 +117,79 @@ public class CreateModelCommand {
     result = 31 * result + link.hashCode();
     result = 31 * result + (outcomeScale != null ? outcomeScale.hashCode() : 0);
     return result;
+  }
+
+  public static class CreateModelCommandBuilder {
+
+    private String title;
+    private String linearModel;
+    private ModelTypeCommand modelType;
+    private HeterogeneityPriorCommand heterogeneityPriorCommand = null;
+    private Integer burnInIterations;
+    private Integer inferenceIterations;
+    private Integer thinningFactor;
+    private String likelihood;
+    private String link;
+    private Double outcomeScale = null;
+    private JSONObject regressor;
+
+    public CreateModelCommandBuilder setTitle(String title) {
+      this.title = title;
+      return this;
+    }
+
+    public CreateModelCommandBuilder setLinearModel(String linearModel) {
+      this.linearModel = linearModel;
+      return this;
+    }
+
+    public CreateModelCommandBuilder setModelType(ModelTypeCommand modelType) {
+      this.modelType = modelType;
+      return this;
+    }
+
+    public CreateModelCommandBuilder setHeterogeneityPriorCommand(HeterogeneityPriorCommand heterogeneityPriorCommand) {
+      this.heterogeneityPriorCommand = heterogeneityPriorCommand;
+      return this;
+    }
+
+    public CreateModelCommandBuilder setBurnInIterations(Integer burnInIterations) {
+      this.burnInIterations = burnInIterations;
+      return this;
+    }
+
+    public CreateModelCommandBuilder setInferenceIterations(Integer inferenceIterations) {
+      this.inferenceIterations = inferenceIterations;
+      return this;
+    }
+
+    public CreateModelCommandBuilder setThinningFactor(Integer thinningFactor) {
+      this.thinningFactor = thinningFactor;
+      return this;
+    }
+
+    public CreateModelCommandBuilder setLikelihood(String likelihood) {
+      this.likelihood = likelihood;
+      return this;
+    }
+
+    public CreateModelCommandBuilder setLink(String link) {
+      this.link = link;
+      return this;
+    }
+
+    public CreateModelCommandBuilder setOutcomeScale(Double outcomeScale) {
+      this.outcomeScale = outcomeScale;
+      return this;
+    }
+
+    public CreateModelCommandBuilder setRegressor(JSONObject regressor) {
+      this.regressor = regressor;
+      return this;
+    }
+
+    public CreateModelCommand build() {
+      return new CreateModelCommand(this);
+    }
   }
 }
