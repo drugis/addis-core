@@ -1,7 +1,8 @@
 package org.drugis.addis.problems.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,9 @@ public class NetworkMetaAnalysisProblem extends AbstractProblem {
 
   protected List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
   protected List<TreatmentEntry> treatments = new ArrayList<>();
-  private Map<String, Map<String, Double>> studyLevelCovariates = new HashMap<>();
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private Map<String, Map<String, Double>> studyLevelCovariates;
 
   public NetworkMetaAnalysisProblem() {
   }

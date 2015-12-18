@@ -83,8 +83,10 @@ public class ProblemServiceImpl implements ProblemService {
       treatments.add(new TreatmentEntry(intervention.getId(), intervention.getName()));
     }
 
-    Map<Integer, Covariate> definedMap = covariateRepository.findByProject(project.getId())
-            .stream().collect(Collectors.toMap(Covariate::getId, Function.identity()));
+    Collection<Covariate> projectCovariates = covariateRepository.findByProject(project.getId());
+    Map<Integer, Covariate> definedMap = projectCovariates
+            .stream()
+            .collect(Collectors.toMap(Covariate::getId, Function.identity()));
     List<String> includedCovariateKeys = analysis.getCovariateInclusions().stream()
             .map(ic -> definedMap.get(ic.getCovariateId()).getDefinitionKey())
             .collect(Collectors.toList());
@@ -112,13 +114,20 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     // add covariate values to problem
-    Map<String, Map<String, Double>> studyLevelCovariates = new HashMap<>();
-    for (TrialDataStudy trialDataStudy : convertedTrialDataStudies) {
-      Map<String, Double> covariateNodes = new HashMap<>();
-      for (CovariateStudyValue covariateStudyValue : trialDataStudy.getCovariateValues()) {
-        covariateNodes.put(covariateStudyValue.getCovariateKey(), covariateStudyValue.getValue());
+    Map<String, Map<String, Double>> studyLevelCovariates = null;
+    if (includedCovariateKeys.size() > 0) {
+      studyLevelCovariates = new HashMap<>(convertedTrialDataStudies.size());
+      Map<String, Covariate> covariatesByKey = projectCovariates
+              .stream()
+              .collect(Collectors.toMap(Covariate::getDefinitionKey, Function.identity()));
+      for (TrialDataStudy trialDataStudy : convertedTrialDataStudies) {
+        Map<String, Double> covariateNodes = new HashMap<>();
+        for (CovariateStudyValue covariateStudyValue : trialDataStudy.getCovariateValues()) {
+          Covariate covariate = covariatesByKey.get(covariateStudyValue.getCovariateKey());
+          covariateNodes.put(covariate.getName(), covariateStudyValue.getValue());
+        }
+        studyLevelCovariates.put(trialDataStudy.getName(), covariateNodes);
       }
-      studyLevelCovariates.put(trialDataStudy.getName(), covariateNodes);
     }
 
     return new NetworkMetaAnalysisProblem(entries, treatments, studyLevelCovariates);

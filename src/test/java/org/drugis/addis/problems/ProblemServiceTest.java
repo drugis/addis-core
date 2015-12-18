@@ -184,6 +184,12 @@ public class ProblemServiceTest {
     Project project = mock(Project.class);
     when(project.getDatasetVersion()).thenReturn(version);
 
+    Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString()));
+    Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString()));
+    when(covariate1.getId()).thenReturn(1);
+    when(covariate2.getId()).thenReturn(2);
+    Collection<Covariate> covariates = Arrays.asList(covariate1, covariate2);
+
     SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
     SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
     SemanticIntervention semanticIntervention3 = new SemanticIntervention("uri3", "label3");
@@ -209,6 +215,7 @@ public class ProblemServiceTest {
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
+    when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
     when(trialverseService.getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
@@ -256,6 +263,12 @@ public class ProblemServiceTest {
     InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention3.getId());
     analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2));
 
+    Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString()));
+    Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString()));
+    when(covariate1.getId()).thenReturn(1);
+    when(covariate2.getId()).thenReturn(2);
+    Collection<Covariate> covariates = Arrays.asList(covariate1, covariate2);
+
     List<TrialDataStudy> trialDataStudies = createMockTrialData();
     TrialDataStudy firstTrialDataStudy = trialDataStudies.get(0);
     List<TrialDataIntervention> trialDataInterventions = firstTrialDataStudy.getTrialDataInterventions();
@@ -270,6 +283,7 @@ public class ProblemServiceTest {
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
+    when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
     when(trialverseService.getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
@@ -353,6 +367,7 @@ public class ProblemServiceTest {
 
     assertEquals(2, problem.getEntries().size());
     assertEquals(2, problem.getStudyLevelCovariates().size());
+    assertTrue(problem.getStudyLevelCovariates().get("study1").keySet().contains("cov1"));
   }
 
 

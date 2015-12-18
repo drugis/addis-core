@@ -26,8 +26,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -48,6 +47,7 @@ public class ProblemControllerTest {
   @Before
   public void setUp() {
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    reset(problemService);
   }
 
   @Test
@@ -98,6 +98,31 @@ public class ProblemControllerTest {
       .andExpect((jsonPath("$.entries[0].responders", is(((RateNetworkMetaAnalysisProblemEntry) entry1).getResponders().intValue()))))
             .andExpect((jsonPath("$.treatments[0].id", equalTo(treatmentId1))))
             .andExpect((jsonPath("$.studyLevelCovariates", equalTo(new JSONObject()))));
+    verify(problemService).getProblem(projectId, analysisId);
+  }
+
+  @Test
+  public void testGetNetworkMetaAnalysisNoCovariates() throws Exception {
+    int treatmentId1 = 1;
+    int treatmentId2 = 2;
+    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10L, 5L);
+    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId2, 20L, 7L);
+    List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(entry1, entry2);
+    List<TreatmentEntry> treatments = Arrays.asList(new TreatmentEntry(treatmentId1, "treatment 1 name"), new TreatmentEntry(treatmentId2, "treatment 2 name"));
+
+    NetworkMetaAnalysisProblem networkMetaAnalysisProblem = new NetworkMetaAnalysisProblem(entries, treatments, null);
+    Integer projectId = 1;
+    Integer analysisId = 2;
+    when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
+    mockMvc.perform(get("/projects/1/analyses/2/problem"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$.entries", hasSize(2)))
+            .andExpect(jsonPath("$.entries[0].treatment", equalTo(entry1.getTreatment())))
+            .andExpect(jsonPath("$.entries[0].responders", is(((RateNetworkMetaAnalysisProblemEntry) entry1).getResponders().intValue())))
+            .andExpect(jsonPath("$.treatments[0].id", equalTo(treatmentId1)))
+            .andExpect(jsonPath("$.studyLevelCovariates").doesNotExist());
     verify(problemService).getProblem(projectId, analysisId);
   }
 
