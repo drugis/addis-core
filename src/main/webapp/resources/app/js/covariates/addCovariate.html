@@ -10,10 +10,11 @@
         <div class="large-9 columns">
             <label>Definition
                 <select id="covariate-devinition-select"
-                        ng-options="covariate.label group by covariate.typeLabel for covariate in covariates"
+                        ng-options="covariate.label group by covariate.typeLabel for covariate in covariatesOptions"
                         autofocus="true"
                         ng-model="covariate.definition"></select>
             </label>
+            <div ng-show="covariate.definition && alReadyAdded(covariate)" class="alert">This covariate has already been added to the project.</div>
         </div>
     </div>
 
@@ -36,7 +37,7 @@
     <div class="row modal-bottom-button-bar">
         <div class="large-9 columns">
             <button id="submit-add-covariate-btn" class="success" type="submit"
-                    ng-disabled="!covariate.definition || !covariate.name">Add
+                    ng-disabled="!covariate.definition || !covariate.name || alReadyAdded(covariate)">Add
             </button>
         </div>
     </div>

@@ -3,7 +3,8 @@ define([], function() {
   var dependencies = ['$scope', 'CovariateResource', 'CovariateOptionsResource','$modalInstance', 'callback'];
   var AddCovariateController = function($scope, CovariateResource, CovariateOptionsResource, $modalInstance, callback) {
 
-    $scope.covariates = CovariateOptionsResource.query();
+    $scope.covariatesOptions = CovariateOptionsResource.query();
+    var selectedOptionsKeys = _.pluck($scope.covariates, 'definitionKey');
 
     $scope.addCovariate = function(covariate) {
       $scope.isAddingCovariate = true;
@@ -20,6 +21,10 @@ define([], function() {
     $scope.cancel = function() {
       $modalInstance.dismiss('cancel');
     };
+
+    $scope.alReadyAdded = function(covariate) {
+      return _.contains(selectedOptionsKeys, covariate.definition.key);
+    }
 
 
   };
