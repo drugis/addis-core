@@ -3,6 +3,10 @@ define(['angular', 'angular-mocks', 'services'], function() {
   var exampleStudies = [{
     "studyUid": "27",
     "name": "Fava et al, 2002",
+    "covariateValues": [{
+      "covariateKey": "COVARAITE_KEY",
+      value: 123
+    }, ],
     "trialDataInterventions": [{
       "drugInstanceUid": "58",
       "drugConceptUid": "http://trials.drugis.org/namespaces/1/drug/a4b119795fa42c624640a77ce024d9a2",
@@ -63,6 +67,10 @@ define(['angular', 'angular-mocks', 'services'], function() {
   var exampleNetworkStudies = [{
     "studyUid": "44",
     "name": "TAK491-008 / NCT00696241",
+    "covariateValues": [{
+      "covariateKey": "COVARAITE_KEY",
+      value: 123
+    }, ],
     "trialDataInterventions": [{
       "drugInstanceUid": "100",
       "drugConceptUid": "http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6",
@@ -302,7 +310,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
         "semanticInterventionLabel": "Olmesartan",
         "semanticInterventionUri": "http://trials.drugis.org/namespaces/2/drug/d7d7c477b89a5e4e5a57318743ccc87e"
       },
-      "studies" : [exampleNetworkStudies[0], exampleNetworkStudies[2]]
+      "studies": [exampleNetworkStudies[0], exampleNetworkStudies[2]]
     }]
   };
 
@@ -369,14 +377,28 @@ define(['angular', 'angular-mocks', 'services'], function() {
           var trialVersStudyData = {};
           trialVersStudyData.trialDataStudies = exampleStudies;
           var interventions = exampleInterventions();
+          var excludedArms = [];
+          var covariates = [{
+            isIncluded: false
+          }, {
+            isIncluded: true,
+            name: 'covariate name',
+            definitionKey: 'COVARAITE_KEY'
+          }, {
+            isIncluded: false
+          }];
 
           // Execute
-          var resultRows = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialVersStudyData, interventions);
+          var resultRows = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialVersStudyData, interventions, excludedArms, covariates);
 
           expect(resultRows[0]).toEqual({
             study: 'Fava et al, 2002',
             studyUid: "27",
             studyRowSpan: 3,
+            covariatesColumns: [{
+              headerTitle: 'covariate name',
+              data: 123
+            }],
             studyRows: resultRows,
             intervention: 'intervention 1',
             arm: 'Paroxetine',
@@ -403,6 +425,10 @@ define(['angular', 'angular-mocks', 'services'], function() {
             study: 'Fava et al, 2002',
             studyUid: "27",
             studyRowSpan: 3,
+            covariatesColumns: [{
+              headerTitle: 'covariate name',
+              data: 123
+            }],
             studyRows: resultRows,
             included: true,
             drugInstanceUid: "58",
@@ -422,6 +448,10 @@ define(['angular', 'angular-mocks', 'services'], function() {
             study: 'Fava et al, 2002',
             studyUid: "27",
             studyRowSpan: 3,
+            covariatesColumns: [{
+              headerTitle: 'covariate name',
+              data: 123
+            }],
             studyRows: resultRows,
             included: true,
             drugInstanceUid: "60",
@@ -554,7 +584,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
         var studyUid = "27";
         var trialverseData = {
           trialDataStudies: [{
-            studyUid : studyUid,
+            studyUid: studyUid,
             trialDataArms: [{
               drugConceptUid: "1"
             }, {
@@ -576,7 +606,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
         var studyUid = "27";
         var trialverseData = {
           trialDataStudies: [{
-            studyUid : studyUid,
+            studyUid: studyUid,
             trialDataArms: [{
               drugConceptUid: 1
             }, {
@@ -595,7 +625,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
         var studyUid = "27";
         var trialverseData = {
           trialDataStudies: [{
-            studyUid : studyUid,
+            studyUid: studyUid,
             trialDataArms: [{
               id: 3,
               drugConceptUid: 1
@@ -615,11 +645,14 @@ define(['angular', 'angular-mocks', 'services'], function() {
 
     });
 
-   describe('doesModelHaveAmbiguousArms', function() {
+    describe('doesModelHaveAmbiguousArms', function() {
       beforeEach(module('addis.services'));
 
       it('should return true if there are ambiguous arms for the model', inject(function(NetworkMetaAnalysisService) {
-        var interventions = [{semanticInterventionUri: "uri1", isIncluded: true}];
+        var interventions = [{
+          semanticInterventionUri: "uri1",
+          isIncluded: true
+        }];
         var trialverseData = {
           trialDataStudies: [{
             trialDataArms: [{
@@ -677,7 +710,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
         var interventionExclusions = NetworkMetaAnalysisService.buildInterventionInclusions(interventions, analysis);
         expect(interventionExclusions).toEqual([{
           interventionId: 1
-        },{
+        }, {
           interventionId: 3
         }]);
       }));

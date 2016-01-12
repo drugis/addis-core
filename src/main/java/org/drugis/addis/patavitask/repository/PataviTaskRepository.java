@@ -23,5 +23,5 @@ public interface PataviTaskRepository {
 
   void delete(Integer id);
 
-  JsonNode getResult(Integer taskId) throws IOException;
+  JsonNode getResult(Integer taskId) throws IOException, UnexpectedNumberOfResultsException;
 }

@@ -1,0 +1,53 @@
+package org.drugis.addis.problems.model;
+
+/**
+ * Created by connor on 12/4/15.
+ */
+public class CovariateStudyValue {
+
+  private String studyUri;
+  private String covariateKey;
+  private Double value;
+
+  public CovariateStudyValue() {
+  }
+
+  public CovariateStudyValue(String studyUri, String covariateKey, Double value) {
+    this.studyUri = studyUri;
+    this.covariateKey = covariateKey;
+    this.value = value;
+  }
+
+  public String getStudyUri() {
+    return studyUri;
+  }
+
+  public Double getValue() {
+    return value;
+  }
+
+  public String getCovariateKey() {
+    return covariateKey;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    CovariateStudyValue that = (CovariateStudyValue) o;
+
+    if (!studyUri.equals(that.studyUri)) return false;
+    if (!covariateKey.equals(that.covariateKey)) return false;
+    return !(value != null ? !value.equals(that.value) : that.value != null);
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = studyUri.hashCode();
+    result = 31 * result + covariateKey.hashCode();
+    result = 31 * result + (value != null ? value.hashCode() : 0);
+    return result;
+  }
+}

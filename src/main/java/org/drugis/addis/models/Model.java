@@ -6,6 +6,7 @@ import net.minidev.json.JSONValue;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.util.JSONObjectConverter;
 
 import javax.persistence.*;
 
@@ -18,6 +19,7 @@ public class Model {
   public final static String NETWORK_MODEL_TYPE = "network";
   public final static String PAIRWISE_MODEL_TYPE = "pairwise";
   public final static String NODE_SPLITTING_MODEL_TYPE = "node-split";
+  public final static String REGRESSION_MODEL_TYPE = "regression";
   public final static String LINEAR_MODEL_FIXED = "fixed";
   public final static String LINEAR_MODEL_RANDOM = "random";
 
@@ -34,11 +36,11 @@ public class Model {
   public final static String STD_DEV_HETEROGENEITY_PRIOR_TYPE = "standard-deviation";
   public final static String VARIANCE_HETEROGENEITY_PRIOR_TYPE = "variance";
   public final static String PRECISION_HETEROGENEITY_PRIOR_TYPE = "precision";
-
+  @Transient
+  boolean hasResult = false;
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
-
   private Integer taskId;
   private Integer analysisId;
   private String title;
@@ -51,9 +53,8 @@ public class Model {
   private String likelihood;
   private String link;
   private Double outcomeScale;
-  private
-  @Transient
-  boolean hasResult = false;
+  @Convert(converter = JSONObjectConverter.class)
+  private JSONObject regressor;
 
   public Model() {
   }
@@ -70,11 +71,12 @@ public class Model {
     this.likelihood = builder.likelihood;
     this.link = builder.link;
     this.outcomeScale = builder.outcomeScale;
+    this.regressor = builder.regressor;
 
     if (Model.PAIRWISE_MODEL_TYPE.equals(builder.modelType) || Model.NODE_SPLITTING_MODEL_TYPE.equals(builder.modelType)) {
       this.modelType = String.format("{'type': '%s', 'details': {'from': {'id' : %s, 'name': '%s'}, 'to': {'id': %s, 'name': '%s'}}}",
               builder.modelType, builder.from.getId(), builder.from.getName(), builder.to.getId(), builder.to.getName());
-    } else if (Model.NETWORK_MODEL_TYPE.equals(builder.modelType)) {
+    } else if (Model.NETWORK_MODEL_TYPE.equals(builder.modelType) || Model.REGRESSION_MODEL_TYPE.equals(builder.modelType)) {
       this.modelType = String.format("{'type': '%s'}", builder.modelType);
     } else {
       throw new InvalidModelTypeException("not a valid model type");
@@ -153,6 +155,10 @@ public class Model {
 
   public Double getOutcomeScale() {
     return outcomeScale;
+  }
+
+  public JSONObject getRegressor() {
+    return regressor;
   }
 
   public boolean isHasResult() {
@@ -305,6 +311,7 @@ public class Model {
     private Double stdDev;
     private Double rate;
     private Double shape;
+    private JSONObject regressor;
 
     public ModelBuilder taskId(Integer taskId) {
       this.taskId = taskId;
@@ -411,10 +418,15 @@ public class Model {
       return this;
     }
 
+    public ModelBuilder regressor(JSONObject regressor) {
+      this.regressor = regressor;
+      return this;
+    }
 
     public Model build() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
       return new Model(this);
     }
+
   }
 
   public class HeterogeneityPrior {

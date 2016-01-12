@@ -122,11 +122,14 @@ public class TrialverseController {
   @RequestMapping(value = "/{namespaceUid}/trialData", method = RequestMethod.GET)
   @ResponseBody
   public TrialData getTrialData(@PathVariable String namespaceUid,@RequestParam String version, @RequestParam String outcomeUri,
-                                @RequestParam(required = false) List<String> interventionUris) {
+                                @RequestParam(required = false) List<String> interventionUris, @RequestParam(required = false) List<String> covariateKeys) {
     if (interventionUris == null) {
       interventionUris = Collections.emptyList();
     }
-    return new TrialData(triplestoreService.getTrialData(namespaceUid, version, outcomeUri, interventionUris));
+    if (covariateKeys == null) {
+      covariateKeys = Collections.emptyList();
+    }
+    return new TrialData(triplestoreService.getTrialData(namespaceUid, version, outcomeUri, interventionUris, covariateKeys));
   }
 
   @ResponseStatus(HttpStatus.NOT_FOUND)

@@ -54,9 +54,10 @@ import java.util.Properties;
         "org.drugis.addis.problems",
         "org.drugis.addis.scenarios",
         "org.drugis.addis.remarks",
+        "org.drugis.addis.covariates",
         "org.drugis.addis.util"})
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security",
+@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security", "org.drugis.addis.covariates",
         "org.drugis.addis.interventions", "org.drugis.addis.scenarios", "org.drugis.addis.models", "org.drugis.addis.remarks",
 })
 public class MainConfig {
@@ -141,6 +142,7 @@ public class MainConfig {
             "org.drugis.addis.analyses",
             "org.drugis.addis.scenarios",
             "org.drugis.addis.models",
+            "org.drugis.addis.covariates",
             "org.drugis.addis.remarks");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");

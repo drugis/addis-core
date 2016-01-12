@@ -2,11 +2,17 @@ package org.drugis.addis.trialverse.service;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.parser.ParseException;
+import org.apache.commons.io.IOUtils;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
+import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,33 +20,46 @@ import java.util.List;
  * Created by connor on 2/28/14.
  */
 public interface TriplestoreService {
-  public final static String TRIPLESTORE_BASE_URI = System.getenv("TRIPLESTORE_BASE_URI");
+  String TRIPLESTORE_BASE_URI = System.getenv("TRIPLESTORE_BASE_URI");
 
-  public Collection<Namespace> queryNameSpaces() throws ParseException;
+  static String loadResource(String filename) {
+    try {
+      Resource myData = new ClassPathResource(filename);
+      InputStream stream = myData.getInputStream();
+      return IOUtils.toString(stream, "UTF-8");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return "";
+  }
 
-  public Namespace getNamespaceHead(String uid);
+  Collection<Namespace> queryNameSpaces() throws ParseException;
 
-  public Namespace getNamespaceVersioned(String datasetUri, String versionUri);
+  Namespace getNamespaceHead(String uid);
 
-  public List<SemanticOutcome> getOutcomes(String namespaceUid, String version);
+  Namespace getNamespaceVersioned(String datasetUri, String versionUri);
 
-  public List<SemanticIntervention> getInterventions(String namespaceUid, String version);
+  List<SemanticOutcome> getOutcomes(String namespaceUid, String version);
 
-  public List<Study> queryStudies(String namespaceUid, String version);
+  List<SemanticIntervention> getInterventions(String namespaceUid, String version);
 
-  public List<StudyWithDetails> queryStudydetailsHead(String namespaceUid);
-  
-  public StudyWithDetails getStudydetails(String namespaceUid, String studyUid) throws ResourceDoesNotExistException;
+  List<Study> queryStudies(String namespaceUid, String version);
 
-  public JSONArray getStudyArms(String namespaceUid, String studyUid);
+  List<StudyWithDetails> queryStudydetailsHead(String namespaceUid);
 
-  public JSONArray getStudyEpochs(String namespaceUid, String studyUid);
+  StudyWithDetails getStudydetails(String namespaceUid, String studyUid) throws ResourceDoesNotExistException;
 
-  public List<TrialDataStudy> getTrialData(String namespaceUid, String version, String outcomeUri, List<String> interventionUris);
+  JSONArray getStudyArms(String namespaceUid, String studyUid);
 
-  public List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String namespaceUid, String studyUid, String version, List<String> outcomeUids, List<String> interventionUids);
+  JSONArray getStudyEpochs(String namespaceUid, String studyUid);
 
-  public List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid);
+  List<TrialDataStudy> getTrialData(String namespaceUid, String version, String outcomeUri, List<String> interventionUris, List<String> covariateKeys);
 
-  public List<StudyData> getStudyData(String namespaceUid, String studyUid, StudyDataSection studyDataSection);
+  List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String namespaceUid, String studyUid, String version, List<String> outcomeUids, List<String> interventionUids);
+
+  List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid);
+
+  List<StudyData> getStudyData(String namespaceUid, String studyUid, StudyDataSection studyDataSection);
+
+  List<CovariateStudyValue> getCovariateValues(String namespaceUid, String version, List<CovariateOption> covariates);
 }

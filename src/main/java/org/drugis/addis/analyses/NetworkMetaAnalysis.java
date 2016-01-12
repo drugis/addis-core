@@ -24,6 +24,9 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis", orphanRemoval = true)
   private List<InterventionInclusion> includedInterventions = new ArrayList<>();
 
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis", orphanRemoval = true)
+  private List<CovariateInclusion> includedCovariates = new ArrayList<>();
+
   @ManyToOne(targetEntity = Outcome.class)
   @JoinColumn(name = "outcomeId")
   private Outcome outcome;
@@ -47,12 +50,14 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     this(id, projectId, title, null);
   }
 
-  public NetworkMetaAnalysis(Integer id, Integer projectId, String title, List<ArmExclusion> excludedArms, List<InterventionInclusion> includedInterventions, Outcome outcome) {
+  public NetworkMetaAnalysis(Integer id, Integer projectId, String title, List<ArmExclusion> excludedArms,
+                             List<InterventionInclusion> includedInterventions, List<CovariateInclusion> includedCovariates, Outcome outcome) {
     this.id = id;
     this.projectId = projectId;
     this.title = title;
-    this.excludedArms = excludedArms == null ? new ArrayList<ArmExclusion>() : excludedArms;
-    this.includedInterventions = includedInterventions == null ? new ArrayList<InterventionInclusion>() : includedInterventions;
+    this.excludedArms = excludedArms == null ? new ArrayList<>() : excludedArms;
+    this.includedInterventions = includedInterventions == null ? new ArrayList<>() : includedInterventions;
+    this.includedCovariates = includedCovariates == null ? new ArrayList<>() : includedCovariates;
     this.outcome = outcome;
   }
 
@@ -76,6 +81,10 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     return includedInterventions;
   }
 
+  public List<CovariateInclusion> getCovariateInclusions() {
+    return includedCovariates;
+  }
+
   public Outcome getOutcome() {
     return outcome;
   }
@@ -87,13 +96,11 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
 
     NetworkMetaAnalysis that = (NetworkMetaAnalysis) o;
 
-    if (!excludedArms.equals(that.excludedArms)) return false;
     if (id != null ? !id.equals(that.id) : that.id != null) return false;
-    if (!title.equals(that.title)) return false;
-    if (outcome != null ? !outcome.equals(that.outcome) : that.outcome != null) return false;
     if (!projectId.equals(that.projectId)) return false;
+    if (!title.equals(that.title)) return false;
+    return !(outcome != null ? !outcome.equals(that.outcome) : that.outcome != null);
 
-    return true;
   }
 
   @Override
@@ -101,7 +108,6 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     int result = id != null ? id.hashCode() : 0;
     result = 31 * result + projectId.hashCode();
     result = 31 * result + title.hashCode();
-    result = 31 * result + excludedArms.hashCode();
     result = 31 * result + (outcome != null ? outcome.hashCode() : 0);
     return result;
   }

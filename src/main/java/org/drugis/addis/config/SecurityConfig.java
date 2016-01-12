@@ -26,10 +26,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
@@ -37,11 +35,7 @@ import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.social.security.SpringSocialConfigurer;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
-import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -55,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private DataSource dataSource;
 
   @Override
-  protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     auth.jdbcAuthentication()
       .dataSource(dataSource)
       .usersByUsernameQuery("SELECT username, password, TRUE FROM Account WHERE username = ?")
@@ -83,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .logoutUrl("/signout")
         .deleteCookies("JSESSIONID")
       .and().authorizeRequests()
-        .antMatchers("/", "/favicon.ico", "/app/**", "/auth/**", "/signin", "/signup").permitAll()
+            .antMatchers("/", "/favicon.ico", "/app/**", "/auth/**", "/signin", "/signup", "/manual.html").permitAll()
         .antMatchers("/monitoring").hasRole("MONITORING")
         .antMatchers("/**").authenticated()
       .and().rememberMe()

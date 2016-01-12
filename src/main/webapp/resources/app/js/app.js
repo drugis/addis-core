@@ -4,6 +4,7 @@ define(
     'require',
     'jQuery',
     'mcda/config',
+    'gemtc-web/util/errorInterceptor',
     'mmfoundation',
     'foundation',
     'angular-ui-router',
@@ -16,6 +17,7 @@ define(
     'interceptors',
     'resources',
     'services',
+    'help-popup',
     'gemtc-web/controllers',
     'gemtc-web/resources',
     'gemtc-web/constants',
@@ -33,9 +35,10 @@ define(
     'mcda/services/hashCodeService',
     'mcda/services/partialValueFunction',
     'mcda/services/scaleRangeService',
-    'mcda/services/util'
+    'mcda/services/util',
+    'covariates/covariates'
   ],
-  function(angular, require, $, Config) {
+  function(angular, require, $, Config, errorInterceptor) {
     var mcdaDependencies = [
       'elicit.errorHandling',
       'elicit.scaleRangeService',
@@ -61,16 +64,23 @@ define(
       'addis.services',
       'addis.filters',
       'addis.interceptors',
-      'addis.directives'
+      'addis.directives',
+      'mm.foundation.tpls',
+      'mm.foundation.modal',
+      'help-directive',
+      'addis.covariates'
     ];
     var gemtcWebDependencies = [
       'gemtc.controllers',
       'gemtc.resources',
       'gemtc.constants',
       'gemtc.services',
-      'gemtc.directives'
+      'gemtc.directives',
     ];
     var app = angular.module('addis', dependencies.concat(mcdaDependencies.concat(gemtcWebDependencies)));
+  
+    // DRY; already implemented in gemtc
+    app.factory('errorInterceptor', errorInterceptor);
 
     app.constant('Tasks', Config.tasks);
     app.constant('DEFAULT_VIEW', 'overview');
@@ -83,8 +93,8 @@ define(
     }]);
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');
-    app.run(['$rootScope', '$window', '$http',
-      function($rootScope, $window, $http) {
+    app.run(['$rootScope', '$window', '$http', 'HelpPopupService',
+      function($rootScope, $window, $http, HelpPopupService) {
         var csrfToken = $window.config._csrf_token;
         var csrfHeader = $window.config._csrf_header;
 
@@ -110,8 +120,10 @@ define(
               }
             });
           });
-
         });
+
+        HelpPopupService.loadLexicon($http.get('app/js/bower_components/gemtc-web/app/lexicon.json'));
+
       }
     ]);
 
@@ -119,14 +131,14 @@ define(
       uiSelectConfig.theme = 'select2';
     });
 
-    app.config(['Tasks', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES', '$httpProvider', '$animateProvider', 'MCDARouteProvider',
-      function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider, $animateProvider, MCDARouteProvider) {
+    app.config(['Tasks', '$stateProvider', '$urlRouterProvider', 'ANALYSIS_TYPES', '$httpProvider', 'MCDARouteProvider',
+      function(Tasks, $stateProvider, $urlRouterProvider, ANALYSIS_TYPES, $httpProvider, MCDARouteProvider) {
         var baseTemplatePath = 'app/views/';
         var mcdaBaseTemplatePath = 'app/js/bower_components/mcda-web/app/views/';
         var gemtcWebBaseTemplatePath = 'app/js/bower_components/gemtc-web/app/';
 
+        $httpProvider.interceptors.push('errorInterceptor');
         $httpProvider.interceptors.push('SessionExpiredInterceptor');
-        $animateProvider.classNameFilter(/sidepanel/);
 
         $stateProvider
           .state('projects', {

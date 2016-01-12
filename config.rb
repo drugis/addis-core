@@ -2,12 +2,13 @@
 
 # Set this to the root of your project when deployed:
 http_path = "/"
-css_dir = "app/css"
-sass_dir = "sass"
-images_dir = "app/img"
-javascripts_dir = "app/js"
 
-add_import_path "drugis-css"
+css_dir = "src/main/webapp/resources/app/css"
+sass_dir = "src/main/webapp/resources/sass"
+images_dir = "src/main/webapp/resources/app/img"
+javascripts_dir = "src/main/webapp/resources/app/js"
+
+add_import_path "src/main/webapp/resources/drugis-css"
 # You can select your preferred output style here (can be overridden via the command line):
 # output_style = :expanded or :nested or :compact or :compressed
 

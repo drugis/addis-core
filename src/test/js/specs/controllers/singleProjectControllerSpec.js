@@ -1,21 +1,41 @@
 define(['angular', 'angular-mocks', 'underscore'], function() {
   describe('the SingleProjectController', function() {
-    var controllerArguments,
-        analysisTypes = [{
-          label: 'type1',
-          stateName: 'stateName1'
-        }, {
-          label: 'type2',
-          stateName: 'stateName2'
-        }],
-        stateParams = {
-          param: 1
-        };
+    var $q, controllerArguments,
+      covariateOptionsResource = jasmine.createSpyObj('CovariateOptionsResource', ['query']),
+      covariateResource = jasmine.createSpyObj('CovariateResource', ['query']),
+      covariateOptions = [{key: 'COV_OPTION_KEY', label: 'covariate option label'}],
+      covariates = [{definitionKey: 'COV_OPTION_KEY'}],
+      covariateOptionsDeferred, covariatesDeferred,
+      analysisTypes = [{
+        label: 'type1',
+        stateName: 'stateName1'
+      }, {
+        label: 'type2',
+        stateName: 'stateName2'
+      }],
+      stateParams = {
+        param: 1
+      };
     beforeEach(module('addis.controllers'));
+
+    beforeEach(inject(function(_$q_) {
+      $q = _$q_;
+
+      covariateOptionsDeferred = $q.defer();
+      covariateOptions.$promise = covariateOptionsDeferred.promise;
+      covariateOptionsDeferred.resolve(covariateOptions);
+      covariateOptionsResource.query.and.returnValue(covariateOptions);
+
+      covariatesDeferred = $q.defer();
+      covariatesDeferred.resolve(covariates);
+      covariates.$promise = covariatesDeferred.promise;
+      covariateResource.query.and.returnValue(covariates);
+    }));
 
     beforeEach(function() {
       controllerArguments = {
         $scope: {},
+        $q: $q,
         $state: {},
         $stateParams: {},
         ProjectResource: {},
@@ -24,9 +44,12 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         OutcomeResource: {},
         SemanticInterventionResource: {},
         InterventionResource: {},
+        CovariateOptionsResource: covariateOptionsResource,
+        CovariateResource: covariateResource,
         AnalysisResource: {},
         TrialverseStudyResource: {},
-        ANALYSIS_TYPES: {}
+        ANALYSIS_TYPES: {},
+        $modal: {}
       };
     });
 
@@ -284,15 +307,21 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         expect(scope.semanticInterventions).toEqual(mockSemanticInterventions);
       });
 
+       it("should add the covariate options label to the covariates and place them on the scope", function() {
+        projectDeferred.resolve();
+        scope.$apply();
+        expect(scope.covariates[0]).toEqual({definitionKey: 'COV_OPTION_KEY', definitionLabel: 'covariate option label'});
+      });
+
       describe('addAnalysis', function() {
 
         it("should add an analysis and make an update call", function() {
           projectDeferred.resolve();
           scope.$apply();
           var newAnalysis = {
-            id: 2,
-            analysisType: analysisTypes[0].label
-          },
+              id: 2,
+              analysisType: analysisTypes[0].label
+            },
             newAnalysisWithProjectId = _.extend(newAnalysis, {
               projectId: 1
             });

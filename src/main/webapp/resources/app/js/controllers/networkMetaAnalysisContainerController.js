@@ -1,10 +1,11 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$scope', '$q', '$state', '$window', '$stateParams','currentAnalysis', 'currentProject', 'OutcomeResource',
-   'InterventionResource', 'ModelResource', 'NetworkMetaAnalysisService', 'TrialverseTrialDataResource'];
+  var dependencies = ['$scope', '$q', '$state', '$window', '$stateParams', 'currentAnalysis', 'currentProject', 'OutcomeResource',
+    'InterventionResource', 'CovariateResource', 'ModelResource', 'NetworkMetaAnalysisService', 'TrialverseTrialDataResource'
+  ];
 
-  var NetworkMetaAnalysisContainerController = function($scope, $q,  $state, $window, $stateParams, currentAnalysis, currentProject,
-   OutcomeResource, InterventionResource, ModelResource, NetworkMetaAnalysisService, TrialverseTrialDataResource) {
+  var NetworkMetaAnalysisContainerController = function($scope, $q, $state, $window, $stateParams, currentAnalysis, currentProject,
+    OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, TrialverseTrialDataResource) {
 
     $scope.isAnalysisLocked = true;
     $scope.isNetworkDisconnected = true;
@@ -16,7 +17,7 @@ define([], function() {
     $scope.networkGraph = {};
     $scope.trialData = {};
     $scope.loading = {
-      loaded: true
+      loaded: false
     };
 
     $scope.models = ModelResource.query({
@@ -32,29 +33,32 @@ define([], function() {
       projectId: $stateParams.projectId
     });
 
+    $scope.covariates = CovariateResource.query({
+      projectId: $stateParams.projectId
+    })
+
     $q
       .all([
         $scope.analysis.$promise,
         $scope.project.$promise,
         $scope.models.$promise,
         $scope.outcomes.$promise,
-        $scope.interventions.$promise
+        $scope.interventions.$promise,
+        $scope.covariates.$promise
       ])
       .then(function() {
         $scope.hasModel = $scope.models.length > 0;
         $scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.includedInterventions);
+        $scope.covariates = NetworkMetaAnalysisService.addInclusionsToCovariates($scope.covariates, $scope.analysis.covariateInclusions);
         $scope.analysis.outcome = _.find($scope.outcomes, $scope.matchOutcome);
-        if ($scope.analysis.outcome) {
-          $scope.reloadModel();
-        }
+        $scope.reloadModel();
       });
 
     $scope.gotoCreateModel = function() {
-      $state.go('createModel',
-        {
-          projectId: $stateParams.projectId,
-          analysisId: $stateParams.analysisId
-        });
+      $state.go('createModel', {
+        projectId: $stateParams.projectId,
+        analysisId: $stateParams.analysisId
+      });
     }
 
     $scope.lessThanTwoInterventionArms = function(dataRow) {
@@ -79,12 +83,18 @@ define([], function() {
     };
 
     $scope.reloadModel = function reloadModel() {
-      var includedInterventionUris = _.reduce($scope.interventions, addIncludedInterventionUri, []);
+      $scope.analysis.outcome = _.find($scope.outcomes, $scope.matchOutcome);
+      if (!$scope.analysis.outcome) {
+        // can not get data without outcome
+        $scope.loading.loaded = true;
+        return
+      }
       TrialverseTrialDataResource
         .get({
           namespaceUid: $scope.project.namespaceUid,
           outcomeUri: $scope.analysis.outcome.semanticOutcomeUri,
-          interventionUris: includedInterventionUris,
+          interventionUris: _.reduce($scope.interventions, addIncludedInterventionUri, []),
+          covariateKeys: _.reduce($scope.covariates, addIncludedCovariateDefinitionKey, []),
           version: $scope.project.datasetVersion
         })
         .$promise
@@ -92,10 +102,11 @@ define([], function() {
           $scope.trialverseData = trialverseData;
           updateNetwork();
           var includedInterventions = getIncludedInterventions($scope.interventions);
-          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis.excludedArms);
+          $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis.excludedArms, $scope.covariates);
           $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
-          $scope.hasLessThanTwoInterventions = getIncludedInterventions($scope.interventions).length < 2;
+          $scope.hasLessThanTwoInterventions = includedInterventions.length < 2;
           $scope.isModelCreationBlocked = checkCanNotCreateModel();
+          $scope.loading.loaded = true;
         });
     }
 
@@ -105,8 +116,6 @@ define([], function() {
         $scope.analysis.excludedArms = NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, $scope.analysis, $scope.trialverseData);
       }
       $scope.analysis.$save(function() {
-        $scope.analysis.outcome = _.find($scope.outcomes, $scope.matchOutcome);
-        $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
         $scope.reloadModel();
       });
     };
@@ -115,7 +124,6 @@ define([], function() {
       $scope.tableHasAmbiguousArm = false;
       $scope.analysis.excludedArms = [];
       $scope.analysis.$save(function() {
-        $scope.analysis.outcome = _.find($scope.outcomes, $scope.matchOutcome);
         $scope.reloadModel();
       });
     };
@@ -125,6 +133,13 @@ define([], function() {
         memo.push(intervention.semanticInterventionUri);
       }
       return memo;
+    }
+
+    function addIncludedCovariateDefinitionKey(accum, covariate) {
+      if (covariate.isIncluded) {
+        accum.push(covariate.definitionKey);
+      }
+      return accum;
     }
 
     function getIncludedInterventions(interventions) {
@@ -154,9 +169,15 @@ define([], function() {
       $scope.analysis = NetworkMetaAnalysisService.changeArmExclusion(dataRow, $scope.analysis);
       updateNetwork();
       $scope.analysis.$save(function() {
-        $scope.analysis.outcome = _.find($scope.outcomes, $scope.matchOutcome);
-        $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
-        $scope.isModelCreationBlocked = checkCanNotCreateModel();
+        $scope.reloadModel();
+      });
+    };
+
+    $scope.changeCovariateInclusion = function(covariate) {
+      $scope.analysis.covariateInclusions = NetworkMetaAnalysisService.changeCovariateInclusion(covariate, $scope.analysis.covariateInclusions);
+      $scope.analysis.$save(function() {
+        $scope.covariates = NetworkMetaAnalysisService.addInclusionsToCovariates($scope.covariates, $scope.analysis.covariateInclusions);
+        $scope.reloadModel();
       });
     };
   };

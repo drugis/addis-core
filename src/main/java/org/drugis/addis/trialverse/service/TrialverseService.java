@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface TrialverseService {
 
-  public List<ObjectNode> getTrialData(String namespaceUId, String version, String semanticOutcomeUri, List<String> alternativeUris);
+  List<ObjectNode> getTrialData(String namespaceUId, String version, String semanticOutcomeUri, List<String> alternativeUris, List<String> covariateKeys);
 }

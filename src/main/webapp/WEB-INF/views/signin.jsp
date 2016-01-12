@@ -58,7 +58,7 @@
   <section id="hero">
     <div class="row">
       <div class="large-12 columns">
-        <h1>addis.drugis.org <br/>
+        <h1 id="sign-in-header">addis.drugis.org <br/>
           <small>Aggregate Data Drug Information System</small>
         </h1>
       </div>
@@ -87,5 +87,14 @@
       </div>
     </div>
   </section>
+
+    <script>
+      if(window.location.host.indexOf("test") > -1) {
+        document.body.className += " test";
+        document.title = "test-" + document.title;
+        document.getElementById("sign-in-header").innerHTML = "test-" + document.getElementById("sign-in-header").innerHTML;
+      }
+    </script>
+
 </body>
 </html>

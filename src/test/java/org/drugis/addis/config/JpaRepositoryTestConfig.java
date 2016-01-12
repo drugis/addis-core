@@ -12,9 +12,12 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
+
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -38,6 +41,7 @@ import static org.mockito.Mockito.mock;
                 "org.drugis.addis.trialverse.service",
                 "org.drugis.addis.trialverse.factory",
                 "org.drugis.addis.util",
+                "org.drugis.addis.covariates",
                 "org.drugis.addis.remarks"
 
         })
@@ -50,6 +54,7 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.scenarios",
         "org.drugis.addis.models",
         "org.drugis.addis.remarks",
+        "org.drugis.addis.covariates",
         "org.drugis.addis.security"
 })
 public class JpaRepositoryTestConfig {
@@ -113,6 +118,7 @@ public class JpaRepositoryTestConfig {
             "org.drugis.addis.scenarios",
             "org.drugis.addis.security",
             "org.drugis.addis.models",
+            "org.drugis.addis.covariates",
             "org.drugis.addis.remarks");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
@@ -120,6 +126,16 @@ public class JpaRepositoryTestConfig {
     em.setJpaProperties(additionalProperties());
     em.afterPropertiesSet();
     return em;
+  }
+
+  @Bean
+  public ConnectionFactoryLocator connectionFactoryLocator() {
+    return mock(ConnectionFactoryLocator.class);
+  }
+
+  @Bean
+  public UsersConnectionRepository usersConnectionRepository() {
+    return mock(UsersConnectionRepository.class);
   }
 
   Properties additionalProperties() {

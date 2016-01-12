@@ -1,6 +1,6 @@
-{
+\{
   "name": "addis-core",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "homepage": "https://github.com/drugis/addis-core",
   "authors": [],
   "license": "GPL3",
@@ -16,7 +16,6 @@
     "angular": "~1.4.0",
     "angular-animate": "~1.4.0",
     "angular-foundation": "~0.6.0",
-    "angular-foundation-assets": "https://github.com/pineconellc/angular-foundation.git#0.2.2",
     "angular-mocks": "~1.4.0",
     "angular-resource": "~1.4.0",
     "angular-ui-router": "~0.2.0",
@@ -39,7 +38,10 @@
     "requirejs": "~2.1.10",
     "selectize": "~0.8.5",
     "select2": "~3.4.5",
-    "underscore": "~1.5.2"
+    "underscore": "~1.5.2",
+    "help-popup": "https://github.com/connorstroomberg/help-popup.git",
+    "KaTeX": "katex#~0.5.1",
+    "scrollup": "~2.4.1"
   },
   "resolutions": {
     "underscore": "1.8.3",
@@ -47,6 +49,7 @@
     "angular-ui-router": "0.2.14",
     "font-awesome": "~4.3.0",
     "jquery": "~2.1.3",
-    "foundation": "~5.5.2"
+    "foundation": "~5.5.2",
+    "angular-foundation": "popoverExpanded"
   }
 }

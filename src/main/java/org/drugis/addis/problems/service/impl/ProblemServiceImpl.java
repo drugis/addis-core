@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
+import org.drugis.addis.covariates.Covariate;
+import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
@@ -22,6 +24,8 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created by daan on 3/21/14.
@@ -50,6 +54,9 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   private TriplestoreService triplestoreService;
 
+  @Inject
+  private CovariateRepository covariateRepository;
+
   @Override
   public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
     Project project = projectRepository.get(projectId);
@@ -76,33 +83,54 @@ public class ProblemServiceImpl implements ProblemService {
       treatments.add(new TreatmentEntry(intervention.getId(), intervention.getName()));
     }
 
+    Collection<Covariate> projectCovariates = covariateRepository.findByProject(project.getId());
+    Map<Integer, Covariate> definedMap = projectCovariates
+            .stream()
+            .collect(Collectors.toMap(Covariate::getId, Function.identity()));
+    List<String> includedCovariateKeys = analysis.getCovariateInclusions().stream()
+            .map(ic -> definedMap.get(ic.getCovariateId()).getDefinitionKey())
+            .collect(Collectors.toList());
+
     List<ObjectNode> trialDataStudies = trialverseService.getTrialData(project.getNamespaceUid(), project.getDatasetVersion(),
-            analysis.getOutcome().getSemanticOutcomeUri(), alternativeUris);
+            analysis.getOutcome().getSemanticOutcomeUri(), alternativeUris, includedCovariateKeys);
     ObjectMapper mapper = new ObjectMapper();
     List<TrialDataStudy> convertedTrialDataStudies = new ArrayList<>();
     for (ObjectNode objectNode : trialDataStudies) {
       convertedTrialDataStudies.add(mapper.convertValue(objectNode, TrialDataStudy.class));
     }
-    Map<String, TrialDataIntervention> interventionByDrugUidInstanceMap = createInterventionByDrugIdMap(convertedTrialDataStudies);
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
 
     for (TrialDataStudy trialDataStudy : convertedTrialDataStudies) {
       List<TrialDataArm> filteredArms = filterUnmatchedArms(trialDataStudy, interventionIdsByUrisMap);
       filteredArms = filterExcludedArms(filteredArms, analysis);
-
       // do not include studies with fewer than two included and matched arms
       if (filteredArms.size() >= 2) {
-
         for (TrialDataArm trialDataArm : filteredArms) {
           Integer treatmentId = interventionIdsByUrisMap.get(trialDataArm.getDrugConceptUid());
           entries.add(buildEntry(trialDataStudy.getName(), treatmentId, trialDataArm.getMeasurement()));
         }
-
       }
     }
 
-    return new NetworkMetaAnalysisProblem(entries, treatments);
+    // add covariate values to problem
+    Map<String, Map<String, Double>> studyLevelCovariates = null;
+    if (includedCovariateKeys.size() > 0) {
+      studyLevelCovariates = new HashMap<>(convertedTrialDataStudies.size());
+      Map<String, Covariate> covariatesByKey = projectCovariates
+              .stream()
+              .collect(Collectors.toMap(Covariate::getDefinitionKey, Function.identity()));
+      for (TrialDataStudy trialDataStudy : convertedTrialDataStudies) {
+        Map<String, Double> covariateNodes = new HashMap<>();
+        for (CovariateStudyValue covariateStudyValue : trialDataStudy.getCovariateValues()) {
+          Covariate covariate = covariatesByKey.get(covariateStudyValue.getCovariateKey());
+          covariateNodes.put(covariate.getName(), covariateStudyValue.getValue());
+        }
+        studyLevelCovariates.put(trialDataStudy.getName(), covariateNodes);
+      }
+    }
+
+    return new NetworkMetaAnalysisProblem(entries, treatments, studyLevelCovariates);
   }
 
   private List<TrialDataArm> filterExcludedArms(List<TrialDataArm> trialDataArms, NetworkMetaAnalysis analysis) {

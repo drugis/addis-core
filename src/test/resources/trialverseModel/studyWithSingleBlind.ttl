@@ -1,0 +1,10 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix study: <http://trials.drugis.org/studies/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ontology: <http://trials.drugis.org/ontology#> .
+
+  study:3e6794f1-c95c-486e-ac8d-55e9259d0f4a
+    rdf:type ontology:Study ;
+    rdfs:label "McPartlin et al, 1998" ;
+    ontology:has_blinding ontology:SingleBlind .
+

@@ -14,19 +14,20 @@ public class UpdateModelCommand extends CreateModelCommand {
     super();
   }
 
-  public UpdateModelCommand(Integer id, String title, String linearModel, ModelTypeCommand modelType, HeterogeneityPriorCommand heterogeneityPriorCommand, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link, Double outcomeScale) {
-    super(title, linearModel, modelType, heterogeneityPriorCommand, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale);
-    this.id = id;
-  }
+  public UpdateModelCommand(UpdateModelCommandBuilder builder) {
+    super(new CreateModelCommandBuilder()
+            .setTitle(builder.getTitle())
+            .setLinearModel(builder.getLinearModel())
+            .setModelType(builder.getModelType())
+            .setHeterogeneityPriorCommand(builder.getHeterogeneityPriorCommand())
+            .setBurnInIterations(builder.getBurnInIterations())
+            .setInferenceIterations(builder.getInferenceIterations())
+            .setThinningFactor(builder.getThinningFactor())
+            .setLikelihood(builder.getLikelihood())
+            .setLink(builder.getLink())
+            .setOutcomeScale(builder.getOutcomeScale()));
 
-  public UpdateModelCommand(Integer id, String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link) {
-    super(title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor, likelihood, link);
-    this.id = id;
-  }
-
-  public UpdateModelCommand(Integer id, String title, String linearModel, ModelTypeCommand modelType, Integer burnInIterations, Integer inferenceIterations, Integer thinningFactor, String likelihood, String link, Double outcomeScale) {
-    super(title, linearModel, modelType, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale);
-    this.id = id;
+    this.id = builder.id;
   }
 
   public Integer getId() {
@@ -50,5 +51,108 @@ public class UpdateModelCommand extends CreateModelCommand {
     int result = super.hashCode();
     result = 31 * result + id.hashCode();
     return result;
+  }
+
+  public static class UpdateModelCommandBuilder extends CreateModelCommand.CreateModelCommandBuilder {
+    private Integer id;
+    private String title;
+    private String linearModel;
+    private ModelTypeCommand modelTypeCommand;
+    private Integer burnInIterations;
+    private Integer inferenceIterations;
+    private Integer thinningFactor;
+    private String likelihood;
+    private String link;
+    private HeterogeneityPriorCommand heterogeneityPriorCommand;
+    private Double outcomeScale;
+
+    public UpdateModelCommandBuilder setId(Integer id) {
+      this.id = id;
+      return this;
+    }
+
+    public UpdateModelCommandBuilder setModelTypeCommand(ModelTypeCommand modelTypeCommand) {
+      this.modelTypeCommand = modelTypeCommand;
+      return this;
+    }
+
+    public String getTitle() {
+      return title;
+    }
+
+    public UpdateModelCommandBuilder setTitle(String modelTitle) {
+      this.title = modelTitle;
+      return this;
+    }
+
+    public String getLinearModel() {
+      return linearModel;
+    }
+
+    public UpdateModelCommandBuilder setLinearModel(String linearModel) {
+      this.linearModel = linearModel;
+      return this;
+    }
+
+    public ModelTypeCommand getModelType() {
+      return modelTypeCommand;
+    }
+
+    public HeterogeneityPriorCommand getHeterogeneityPriorCommand() {
+      return heterogeneityPriorCommand;
+    }
+
+    public Integer getBurnInIterations() {
+      return burnInIterations;
+    }
+
+    public UpdateModelCommandBuilder setBurnInIterations(Integer burnInIterations) {
+      this.burnInIterations = burnInIterations;
+      return this;
+    }
+
+    public Integer getInferenceIterations() {
+      return inferenceIterations;
+    }
+
+    public UpdateModelCommandBuilder setInferenceIterations(Integer inferenceIterations) {
+      this.inferenceIterations = inferenceIterations;
+      return this;
+    }
+
+    public Integer getThinningFactor() {
+      return thinningFactor;
+    }
+
+    public UpdateModelCommandBuilder setThinningFactor(Integer thinningFactor) {
+      this.thinningFactor = thinningFactor;
+      return this;
+    }
+
+    public String getLikelihood() {
+      return likelihood;
+    }
+
+    public UpdateModelCommandBuilder setLikelihood(String likelihood) {
+      this.likelihood = likelihood;
+      return this;
+    }
+
+    public String getLink() {
+      return link;
+    }
+
+    public UpdateModelCommandBuilder setLink(String link) {
+      this.link = link;
+      return this;
+    }
+
+    public Double getOutcomeScale() {
+      return outcomeScale;
+    }
+
+    public UpdateModelCommand build() {
+      return new UpdateModelCommand(this);
+    }
   }
 }

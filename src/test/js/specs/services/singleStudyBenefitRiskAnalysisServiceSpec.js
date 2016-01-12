@@ -44,11 +44,22 @@ define(['angular', 'angular-mocks', 'services'], function() {
         mockProblemResource = jasmine.createSpyObj('ProblemResource', ['get']);
         mockScenarioResource = jasmine.createSpyObj('ScenarioResource', ['query']);
         mockLocation = jasmine.createSpyObj('$location', ['url']);
+        var mockHelpPopupService = jasmine.createSpyObj('HelpPopupService', ['loadLexicon']);
+        var mockHttp = {
+          get: function() {},
+          defaults : {
+          headers: {
+            common: {}}
+          }
+        };
+
 
         module('addis', function($provide) {
           $provide.value('ProblemResource', mockProblemResource);
           $provide.value('ScenarioResource', mockScenarioResource);
           $provide.value('$location', mockLocation);
+          $provide.value('HelpPopupService', mockHelpPopupService);
+          $provide.value('$http', mockHttp);
         });
       });
 

@@ -20,14 +20,13 @@ import java.util.List;
 @Service
 public class TrialverseServiceImpl implements TrialverseService {
 
+  final ObjectMapper mapper = new ObjectMapper();
   @Inject
   TriplestoreService triplestoreService;
 
-  final ObjectMapper mapper = new ObjectMapper();
-
   @Override
-  public List<ObjectNode> getTrialData(String namespaceUId, String version, String semanticOutcomeUri, List<String> alternativeUris) {
-    List<TrialDataStudy> trialData = triplestoreService.getTrialData(namespaceUId, version, semanticOutcomeUri, alternativeUris);
+  public List<ObjectNode> getTrialData(String namespaceUId, String version, String semanticOutcomeUri, List<String> alternativeUris, List<String> covariateKeys) {
+    List<TrialDataStudy> trialData = triplestoreService.getTrialData(namespaceUId, version, semanticOutcomeUri, alternativeUris, covariateKeys);
     return objectsToNodes(trialData);
   
   }

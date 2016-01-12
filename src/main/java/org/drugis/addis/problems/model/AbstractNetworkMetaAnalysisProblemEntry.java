@@ -4,8 +4,8 @@ package org.drugis.addis.problems.model;
  * Created by daan on 21-5-14.
  */
 public abstract class AbstractNetworkMetaAnalysisProblemEntry {
-    private String study;
-    private Integer treatment;
+  private String study;
+  private Integer treatment;
   private Long sampleSize;
 
   public AbstractNetworkMetaAnalysisProblemEntry(String study, Integer treatment, Long sampleSize) {
@@ -35,9 +35,8 @@ public abstract class AbstractNetworkMetaAnalysisProblemEntry {
 
     if (!sampleSize.equals(that.sampleSize)) return false;
     if (!study.equals(that.study)) return false;
-    if (!treatment.equals(that.treatment)) return false;
+    return treatment.equals(that.treatment);
 
-    return true;
   }
 
   @Override

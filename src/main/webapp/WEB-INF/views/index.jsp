@@ -57,6 +57,12 @@
     </section>
     <div ui-view></div>
     <script>
+
+      if(window.location.host.indexOf("test") > -1) {
+        document.body.className += " test";
+        document.title = "test-" + document.title;
+      }
+
       window.mcdaBasePath = 'app/js/bower_components/mcda-web/';
       window.config = {
         user : {

@@ -257,5 +257,32 @@ ALTER TABLE Account ADD COLUMN email VARCHAR(255);
 --rollback ALTER TABLE Account DROP COLUMN email;
 
 --changeset reidd:27
-ALTER TABLE model ADD COLUMN heterogeneityPrior VARCHAR NOT NULL DEFAULT '{"type": "automatic"}';
+ALTER TABLE model ADD COLUMN heterogeneityPrior VARCHAR;
 --rollback ALTER TABLE model DROP COLUMN heterogeneityPrior;
+
+--changeset stroombergc:28
+CREATE TABLE covariate (
+  id SERIAL NOT NULL,
+  project int,
+  name varchar NOT NULL,
+  motivation TEXT,
+  definitionkey varchar NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(project) REFERENCES Project(id)
+);
+--rollback DROP TABLE covariate;
+
+--changeset stroombergc:29
+CREATE TABLE CovariateInclusion (
+  id SERIAL NOT NULL,
+  covariateId INT NOT NULL,
+  analysisId INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id),
+  FOREIGN KEY(covariateId) REFERENCES covariate(id)
+);
+--rollback DROP TABLE CovariateInclusion;
+
+--changeset stroombergc:30
+ALTER TABLE model ADD COLUMN regressor VARCHAR;
+--rollback ALTER TABLE model DROP COLUMN regressor;

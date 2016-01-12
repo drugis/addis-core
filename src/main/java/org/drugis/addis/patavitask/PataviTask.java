@@ -1,12 +1,5 @@
 package org.drugis.addis.patavitask;
 
-import com.fasterxml.jackson.annotation.JsonRawValue;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
 /**
  * Created by connor on 26-6-14.
  */
