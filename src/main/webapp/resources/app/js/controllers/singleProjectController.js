@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window',
     'ProjectResource',
     'TrialverseResource',
@@ -89,7 +89,7 @@ define([], function() {
           projectId: $scope.project.id
         }).$promise
       ]).then(function(result) {
-        var optionsMap = _.indexBy(result[0], 'key');
+        var optionsMap = _.keyBy(result[0], 'key');
         $scope.covariates = result[1].map(function(covariate) {
           covariate.definitionLabel = optionsMap[covariate.definitionKey].label;
           return covariate;

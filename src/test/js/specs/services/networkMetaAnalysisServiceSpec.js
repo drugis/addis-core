@@ -1,4 +1,4 @@
-define(['angular', 'angular-mocks', 'services'], function() {
+define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
 
   var exampleStudies = [{
     "studyUid": "27",

@@ -65,7 +65,7 @@ define([], function() {
       var matchedAndIncludedRows = _.filter(dataRow.studyRows, function(studyRow) {
         return studyRow.intervention !== 'unmatched' && studyRow.included;
       });
-      var matchedInterventions = _.uniq(_.pluck(matchedAndIncludedRows, 'intervention'));
+      var matchedInterventions = _.uniq(_.map(matchedAndIncludedRows, 'intervention'));
       return matchedInterventions.length < 2;
     };
 

@@ -13,7 +13,7 @@ require.config({
     'gemtc-web': 'bower_components/gemtc-web/app/js',
     'jQuery': 'bower_components/jquery/dist/jquery.min',
     'jquery-slider': 'bower_components/jslider/dist/jquery.slider.min',
-    'lodash': 'bower_components/lodash/lodash.min',
+    'lodash': 'bower_components/lodash/dist/lodash.min',
     'MathJax': 'bower_components/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML',
     'mcda': 'bower_components/mcda-web/app/js',
     'mmfoundation': 'bower_components/angular-foundation/dist/mm-foundation-tpls-0.9.0-SNAPSHOT',

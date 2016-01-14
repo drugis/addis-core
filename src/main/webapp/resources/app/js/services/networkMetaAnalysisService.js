@@ -1,5 +1,5 @@
 'use strict';
-define(['angular'], function() {
+define(['lodash', 'angular'], function(_) {
   var dependencies = ['AnalysisService'];
 
   var NetworkMetaAnalysisService = function(AnalysisService) {
@@ -87,7 +87,7 @@ define(['angular'], function() {
         angular.forEach(study.trialDataArms, function(trialDataArm) {
           var matchedIntervention = findInterventionOptionForDrug(trialDataArm.drugConceptUid, interventions);
           var row = {};
-          row.covariatesColumns = []
+          row.covariatesColumns = [];
 
           row.study = study.name;
           row.studyUid = study.studyUid;
@@ -243,20 +243,16 @@ define(['angular'], function() {
       }
 
       function addUnvisitedNodesToToVisitList(edge) {
-        if (!_.findWhere(visited, {
-            name: edge.to.name
-          })) {
+        if (!_.find(visited, ['name', edge.to.name])) {
           toVisit.push(edge.to);
-        } else if (!_.findWhere(visited, {
-            name: edge.from.name
-          })) {
+        } else if (!_.find(visited, ['name', edge.from.name])) {
           toVisit.push(edge.from);
         }
       }
 
       function areNodeSetsEqual(setA, setB) {
-        var namesA = _.pluck(setA, 'name');
-        var namesB = _.pluck(setB, 'name');
+        var namesA = _.map(setA, 'name');
+        var namesB = _.map(setB, 'name');
         return !_.difference(namesA, namesB).length;
       }
 
@@ -349,7 +345,7 @@ define(['angular'], function() {
     }
 
     function addInclusionsToInterventions(interventions, inclusions) {
-      var inclusionMap = _.object(_.map(inclusions, function(inclusion) {
+      var inclusionMap = _.fromPairs(_.map(inclusions, function(inclusion) {
         return [inclusion.interventionId, true];
       }));
 
@@ -360,7 +356,7 @@ define(['angular'], function() {
     }
 
     function addInclusionsToCovariates(covariates, inclusions) {
-      var inclusionMap = _.object(_.map(inclusions, function(inclusion) {
+      var inclusionMap = _.fromPairs(_.map(inclusions, function(inclusion) {
         return [inclusion.covariateId, true];
       }));
 
