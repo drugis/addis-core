@@ -4,7 +4,9 @@ define([], function() {
   var AddCovariateController = function($scope, CovariateResource, CovariateOptionsResource, $modalInstance, callback) {
 
     $scope.covariatesOptions = CovariateOptionsResource.query();
-    var selectedOptionsKeys = _.pluck($scope.covariates, 'definitionKey');
+    var selectedOptionsKeys = $scope.covariates.map(function(covariate) {
+      return covariate.definitionKey;
+    });
 
     $scope.addCovariate = function(covariate) {
       $scope.isAddingCovariate = true;
@@ -23,7 +25,7 @@ define([], function() {
     };
 
     $scope.alReadyAdded = function(covariate) {
-      return _.contains(selectedOptionsKeys, covariate.definition.key);
+      return selectedOptionsKeys.indexOf(covariate.definition.key) >= 0;
     }
 
 
