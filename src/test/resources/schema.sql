@@ -290,3 +290,7 @@ CREATE TABLE CovariateInclusion (
 --changeset stroombergc:30
 ALTER TABLE model ADD COLUMN regressor VARCHAR;
 --rollback ALTER TABLE model DROP COLUMN regressor;
+
+--changeset stroombergc:31
+ALTER TABLE model ADD COLUMN sensitivity VARCHAR;
+--rollback ALTER TABLE model DROP COLUMN sensitivity;

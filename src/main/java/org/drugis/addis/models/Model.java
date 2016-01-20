@@ -55,6 +55,8 @@ public class Model {
   private Double outcomeScale;
   @Convert(converter = JSONObjectConverter.class)
   private JSONObject regressor;
+  @Convert(converter = JSONObjectConverter.class)
+  private JSONObject sensitivity;
 
   public Model() {
   }
@@ -72,6 +74,7 @@ public class Model {
     this.link = builder.link;
     this.outcomeScale = builder.outcomeScale;
     this.regressor = builder.regressor;
+    this.sensitivity = builder.sensitivity;
 
     if (Model.PAIRWISE_MODEL_TYPE.equals(builder.modelType) || Model.NODE_SPLITTING_MODEL_TYPE.equals(builder.modelType)) {
       this.modelType = String.format("{'type': '%s', 'details': {'from': {'id' : %s, 'name': '%s'}, 'to': {'id': %s, 'name': '%s'}}}",
@@ -161,6 +164,10 @@ public class Model {
     return regressor;
   }
 
+  public JSONObject getSensitivity() {
+    return sensitivity;
+  }
+
   public boolean isHasResult() {
     return hasResult;
   }
@@ -237,34 +244,42 @@ public class Model {
     if (taskId != null ? !taskId.equals(model.taskId) : model.taskId != null) return false;
     if (!analysisId.equals(model.analysisId)) return false;
     if (!title.equals(model.title)) return false;
-    if (!linearModel.equals(model.linearModel)) return false;
-    if (!modelType.equals(model.modelType)) return false;
-    if (!heterogeneityPrior.equals(model.heterogeneityPrior)) return false;
-    if (!burnInIterations.equals(model.burnInIterations)) return false;
-    if (!inferenceIterations.equals(model.inferenceIterations)) return false;
-    if (!thinningFactor.equals(model.thinningFactor)) return false;
-    if (!likelihood.equals(model.likelihood)) return false;
-    if (!link.equals(model.link)) return false;
-    return !(outcomeScale != null ? !outcomeScale.equals(model.outcomeScale) : model.outcomeScale != null);
+    if (linearModel != null ? !linearModel.equals(model.linearModel) : model.linearModel != null) return false;
+    if (modelType != null ? !modelType.equals(model.modelType) : model.modelType != null) return false;
+    if (heterogeneityPrior != null ? !heterogeneityPrior.equals(model.heterogeneityPrior) : model.heterogeneityPrior != null)
+      return false;
+    if (burnInIterations != null ? !burnInIterations.equals(model.burnInIterations) : model.burnInIterations != null)
+      return false;
+    if (inferenceIterations != null ? !inferenceIterations.equals(model.inferenceIterations) : model.inferenceIterations != null)
+      return false;
+    if (thinningFactor != null ? !thinningFactor.equals(model.thinningFactor) : model.thinningFactor != null)
+      return false;
+    if (likelihood != null ? !likelihood.equals(model.likelihood) : model.likelihood != null) return false;
+    if (link != null ? !link.equals(model.link) : model.link != null) return false;
+    if (outcomeScale != null ? !outcomeScale.equals(model.outcomeScale) : model.outcomeScale != null) return false;
+    if (regressor != null ? !regressor.equals(model.regressor) : model.regressor != null) return false;
+    return sensitivity != null ? sensitivity.equals(model.sensitivity) : model.sensitivity == null;
 
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
+    int result = (hasResult ? 1 : 0);
+    result = 31 * result + (id != null ? id.hashCode() : 0);
     result = 31 * result + (taskId != null ? taskId.hashCode() : 0);
     result = 31 * result + analysisId.hashCode();
     result = 31 * result + title.hashCode();
-    result = 31 * result + linearModel.hashCode();
-    result = 31 * result + modelType.hashCode();
-    result = 31 * result + heterogeneityPrior.hashCode();
-    result = 31 * result + burnInIterations.hashCode();
-    result = 31 * result + inferenceIterations.hashCode();
-    result = 31 * result + thinningFactor.hashCode();
-    result = 31 * result + likelihood.hashCode();
-    result = 31 * result + link.hashCode();
+    result = 31 * result + (linearModel != null ? linearModel.hashCode() : 0);
+    result = 31 * result + (modelType != null ? modelType.hashCode() : 0);
+    result = 31 * result + (heterogeneityPrior != null ? heterogeneityPrior.hashCode() : 0);
+    result = 31 * result + (burnInIterations != null ? burnInIterations.hashCode() : 0);
+    result = 31 * result + (inferenceIterations != null ? inferenceIterations.hashCode() : 0);
+    result = 31 * result + (thinningFactor != null ? thinningFactor.hashCode() : 0);
+    result = 31 * result + (likelihood != null ? likelihood.hashCode() : 0);
+    result = 31 * result + (link != null ? link.hashCode() : 0);
     result = 31 * result + (outcomeScale != null ? outcomeScale.hashCode() : 0);
-    result = 31 * result + (hasResult ? 1 : 0);
+    result = 31 * result + (regressor != null ? regressor.hashCode() : 0);
+    result = 31 * result + (sensitivity != null ? sensitivity.hashCode() : 0);
     return result;
   }
 
@@ -312,6 +327,7 @@ public class Model {
     private Double rate;
     private Double shape;
     private JSONObject regressor;
+    private JSONObject sensitivity;
 
     public ModelBuilder taskId(Integer taskId) {
       this.taskId = taskId;
@@ -420,6 +436,11 @@ public class Model {
 
     public ModelBuilder regressor(JSONObject regressor) {
       this.regressor = regressor;
+      return this;
+    }
+
+    public ModelBuilder sensitivity(JSONObject sensitivity) {
+      this.sensitivity = sensitivity;
       return this;
     }
 

@@ -21,6 +21,7 @@ public class CreateModelCommand {
   private Double outcomeScale;
 
   private JSONObject regressor;
+  private JSONObject sensitivity;
 
   public CreateModelCommand() {
   }
@@ -37,6 +38,7 @@ public class CreateModelCommand {
     this.link = builder.link;
     this.outcomeScale = builder.outcomeScale;
     this.regressor = builder.regressor;
+    this.sensitivity = builder.sensitivity;
   }
 
   public Integer getBurnInIterations() {
@@ -81,6 +83,10 @@ public class CreateModelCommand {
 
   public JSONObject getRegressor() {
     return regressor;
+  }
+
+  public JSONObject getSensitivity() {
+    return sensitivity;
   }
 
   @Override
@@ -132,6 +138,7 @@ public class CreateModelCommand {
     private String link;
     private Double outcomeScale = null;
     private JSONObject regressor;
+    private JSONObject sensitivity;
 
     public CreateModelCommandBuilder setTitle(String title) {
       this.title = title;
@@ -185,6 +192,11 @@ public class CreateModelCommand {
 
     public CreateModelCommandBuilder setRegressor(JSONObject regressor) {
       this.regressor = regressor;
+      return this;
+    }
+
+    public CreateModelCommandBuilder setSensitivity(JSONObject sensitivity) {
+      this.sensitivity = sensitivity;
       return this;
     }
 
