@@ -42,3 +42,5 @@ INSERT INTO public.remarks(analysisId, remarks) VALUES(-1, 'yo yo yo !');
 INSERT INTO public.covariate(id, project, name, motivation, definitionkey) VALUES (1, 1, 'covariate 1 name', 'my motivation', 'ALLOCATION_RANDOMIZED');
 INSERT INTO public.covariate(id, project, name, motivation, definitionkey) VALUES (2, 1, 'covariate 2 name', 'my motivation', 'BLINDING_AT_LEAST_SINGLE_BLIND');
 INSERT INTO public.covariate(id, project, name, motivation, definitionkey) VALUES (3, 2, 'covariate 3 name', 'my motivation', 'ALLOCATION_RANDOMIZED');
+
+UPDATE public.NetworkMetaAnalysis SET primaryModel = 1 WHERE id = -7;

@@ -110,7 +110,13 @@ public class NetworkMetaAnalysisRepositoryTest {
 
   @Test
   public void testSetPrimary() {
-
+    int analysisId = -7;
+    int modelId = 2;
+    NetworkMetaAnalysis previouslyPrimary = em.find(NetworkMetaAnalysis.class, analysisId);
+    assertEquals(1, (int)previouslyPrimary.getPrimaryModel());
+    networkMetaAnalysisRepository.setPrimaryModel(analysisId, modelId);
+    NetworkMetaAnalysis newPrimary = em.find(NetworkMetaAnalysis.class, analysisId);
+    assertEquals(modelId, (int)newPrimary.getPrimaryModel());
   }
 
 }
