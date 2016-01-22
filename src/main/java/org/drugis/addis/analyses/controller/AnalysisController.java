@@ -1,5 +1,7 @@
 package org.drugis.addis.analyses.controller;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
@@ -8,6 +10,7 @@ import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
@@ -46,14 +49,16 @@ public class AnalysisController extends AbstractAddisCoreController {
   AnalysisService analysisService;
   @Inject
   private ScenarioRepository scenarioRepository;
+  @Inject
+  private ProjectService projectService;
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractAnalysis [] query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public AbstractAnalysis[] query(Principal currentUser, @PathVariable Integer projectId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       List<AbstractAnalysis> abstractAnalysisList = analysisRepository.query(projectId);
-      AbstractAnalysis [] abstractAnalysesArray = new AbstractAnalysis[abstractAnalysisList.size()];
+      AbstractAnalysis[] abstractAnalysesArray = new AbstractAnalysis[abstractAnalysisList.size()];
       return abstractAnalysisList.toArray(abstractAnalysesArray);
     } else {
       throw new MethodNotAllowedException();
@@ -78,7 +83,7 @@ public class AnalysisController extends AbstractAddisCoreController {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       AbstractAnalysis analysis;
-      switch(analysisCommand.getType()) {
+      switch (analysisCommand.getType()) {
         case AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL:
           analysis = analysisService.createSingleStudyBenefitRiskAnalysis(user, analysisCommand);
           break;
@@ -94,6 +99,16 @@ public class AnalysisController extends AbstractAddisCoreController {
     } else {
       throw new MethodNotAllowedException();
     }
+  }
+
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/setPrimaryModel", method = RequestMethod.POST)
+  public void setPrimaryModel(HttpServletResponse response, Principal currentUser,
+                              @PathVariable Integer projectId,
+                              @PathVariable Integer analysisId,
+                              @RequestParam(required=false) Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    projectService.checkOwnership(projectId, currentUser);
+    analysisRepository.setPrimaryModel(analysisId, modelId);
+    response.setStatus(HttpStatus.SC_OK);
   }
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)

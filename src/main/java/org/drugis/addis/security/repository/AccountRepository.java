@@ -25,5 +25,4 @@ public interface AccountRepository {
 	Account findAccountByUsername(String username);
 
 	Account findAccountById(int id);
-
 }

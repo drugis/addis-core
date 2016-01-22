@@ -65,4 +65,9 @@ public class AnalysisRepositoryImpl implements AnalysisRepository {
     analyses.addAll(networkMetaAnalyses);
     return analyses;
   }
+
+  @Override
+  public void setPrimaryModel(Integer analysisId, Integer modelId) {
+    networkMetaAnalysisRepository.setPrimaryModel(analysisId, modelId);
+  }
 }

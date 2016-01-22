@@ -108,4 +108,9 @@ public class NetworkMetaAnalysisRepositoryTest {
     assertEquals(new Integer(interventionId), updatedAnalysis.getIncludedInterventions().get(0).getInterventionId());
   }
 
+  @Test
+  public void testSetPrimary() {
+
+  }
+
 }

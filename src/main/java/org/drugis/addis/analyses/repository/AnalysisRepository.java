@@ -12,4 +12,6 @@ public interface AnalysisRepository {
   AbstractAnalysis get(Integer analysisId) throws ResourceDoesNotExistException;
 
   List<AbstractAnalysis> query(Integer projectId);
+
+  void setPrimaryModel(Integer analysisId, Integer modelId);
 }

@@ -17,6 +17,7 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
   private Integer id;
   private Integer projectId;
   private String title;
+  private Integer primaryModel;
 
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis", orphanRemoval = true)
   private List<ArmExclusion> excludedArms = new ArrayList<>();
@@ -89,6 +90,14 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     return outcome;
   }
 
+  public Integer getPrimaryModel() {
+    return primaryModel;
+  }
+
+  public void setPrimaryModel(Integer primaryModel) {
+    this.primaryModel = primaryModel;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -96,18 +105,21 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
 
     NetworkMetaAnalysis that = (NetworkMetaAnalysis) o;
 
-    if (id != null ? !id.equals(that.id) : that.id != null) return false;
+    if (!id.equals(that.id)) return false;
     if (!projectId.equals(that.projectId)) return false;
     if (!title.equals(that.title)) return false;
-    return !(outcome != null ? !outcome.equals(that.outcome) : that.outcome != null);
+    if (primaryModel != null ? !primaryModel.equals(that.primaryModel) : that.primaryModel != null)
+      return false;
+    return outcome != null ? outcome.equals(that.outcome) : that.outcome == null;
 
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
+    int result = id.hashCode();
     result = 31 * result + projectId.hashCode();
     result = 31 * result + title.hashCode();
+    result = 31 * result + (primaryModel != null ? primaryModel.hashCode() : 0);
     result = 31 * result + (outcome != null ? outcome.hashCode() : 0);
     return result;
   }

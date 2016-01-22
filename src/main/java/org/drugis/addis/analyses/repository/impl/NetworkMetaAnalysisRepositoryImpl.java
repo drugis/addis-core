@@ -14,6 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by connor on 6-5-14.
@@ -48,5 +49,15 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
   @Override
   public NetworkMetaAnalysis update(NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
     return em.merge(analysis);
+  }
+
+  @Override
+  public void setPrimaryModel(Integer analysisId, Integer modelId) {
+    TypedQuery<NetworkMetaAnalysis> query = em.createQuery("FROM NetworkMetaAnalysis a WHERE a.id = :analysisId", NetworkMetaAnalysis.class);
+    query.setParameter("analysisId", analysisId);
+    List<NetworkMetaAnalysis> resultList = query.getResultList();
+    NetworkMetaAnalysis networkMetaAnalysis = resultList.get(0);
+    networkMetaAnalysis.setPrimaryModel(modelId);
+    em.merge(networkMetaAnalysis);
   }
 }

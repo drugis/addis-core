@@ -4,7 +4,13 @@ define([], function() {
   var AnalysisResource = function($resource) {
     return $resource('/projects/:projectId/analyses/:analysisId', {
       projectId: '@projectId',
-      analysisId: '@id'
+      analysisId: '@id',
+      modelId: '@modelId'
+    }, {
+      setPrimaryModel: {
+        url: '/projects/:projectId/analyses/:analysisId/setPrimaryModel',
+        method: 'POST',
+      }
     });
   };
   return dependencies.concat(AnalysisResource);

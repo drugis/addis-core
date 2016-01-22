@@ -10,6 +10,7 @@ import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.outcomes.Outcome;
+import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
@@ -70,7 +71,9 @@ public class AnalysisControllerTest {
   private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
   @Inject
   private WebApplicationContext webApplicationContext;
-
+  @Inject
+  private ProjectService projectService;
+  
   private Principal user;
 
   private Account john = new Account(1, "a", "john", "lennon", null),
@@ -81,7 +84,7 @@ public class AnalysisControllerTest {
   @Before
   public void setUp() {
     reset(accountRepository, analysisRepository, singleStudyBenefitRiskAnalysisRepository,
-            networkMetaAnalysisRepository, scenarioRepository, criteriaRepository, analysisService);
+            networkMetaAnalysisRepository, scenarioRepository, criteriaRepository, analysisService, projectService);
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
@@ -91,12 +94,12 @@ public class AnalysisControllerTest {
   @After
   public void tearDown() {
     verifyNoMoreInteractions(accountRepository, analysisRepository, singleStudyBenefitRiskAnalysisRepository,
-            networkMetaAnalysisRepository, analysisService, criteriaRepository, scenarioRepository);
+            networkMetaAnalysisRepository, analysisService, criteriaRepository, scenarioRepository, projectService);
   }
 
   @Test
   public void testQueryAnalyses() throws Exception {
-    SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.emptyList(), Collections.emptyList());
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(2, 1, "name", null);
     Integer projectId = 1;
     List<AbstractAnalysis> analyses = Arrays.asList(singleStudyBenefitRiskAnalysis, networkMetaAnalysis);
@@ -123,7 +126,7 @@ public class AnalysisControllerTest {
 
   @Test
   public void testCreateSingleStudyBenefitRiskAnalysis() throws Exception {
-    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.emptyList(), Collections.emptyList());
     AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
     when(analysisService.createSingleStudyBenefitRiskAnalysis(gert, analysisCommand)).thenReturn(analysis);
     String body = TestUtils.createJson(analysisCommand);
@@ -163,7 +166,7 @@ public class AnalysisControllerTest {
 
   @Test
   public void testGetSSBRAnalysis() throws Exception {
-    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.emptyList(), Collections.emptyList());
     when(analysisRepository.get(analysis.getId())).thenReturn(analysis);
     mockMvc.perform(get("/projects/1/analyses/1").principal(user))
             .andExpect(status().isOk())
@@ -177,7 +180,7 @@ public class AnalysisControllerTest {
   @Test
   public void testGetNMAnalysis() throws Exception {
     Integer projectId = 1;
-    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, projectId, "testName", Collections.EMPTY_LIST, Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
+    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, projectId, "testName", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null);
     when(analysisRepository.get(analysis.getId())).thenReturn(analysis);
     ResultActions result = mockMvc.perform(get("/projects/1/analyses/1").principal(user));
 
@@ -193,7 +196,7 @@ public class AnalysisControllerTest {
   @Test
   public void testGetAnalysisWithAProblem() throws Exception {
     String problem = "{\"key\": \"value\"}";
-    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST, problem);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(1, 1, "name", Collections.emptyList(), Collections.emptyList(), problem);
     Integer projectId = 1;
     when(analysisRepository.get(analysis.getId())).thenReturn(analysis);
     mockMvc.perform(get("/projects/1/analyses/1").principal(user))
@@ -241,7 +244,7 @@ public class AnalysisControllerTest {
   public void testUpdateAnalysisWithCreateScenario() throws Exception {
     Integer projectId = 1;
     Integer analysisId = 1;
-    SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.emptyList(), Collections.emptyList());
     ObjectMapper objectMapper = new ObjectMapper();
     SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
@@ -262,7 +265,7 @@ public class AnalysisControllerTest {
   public void testUpdateLockedAnalysisFails() throws Exception {
     Integer projectId = 1;
     Integer analysisId = 1;
-    SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST, "oldProblem");
+    SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.emptyList(), Collections.emptyList(), "oldProblem");
     ObjectMapper objectMapper = new ObjectMapper();
     SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
@@ -280,7 +283,7 @@ public class AnalysisControllerTest {
   public void testUpdate() throws Exception {
     Integer projectId = 1;
     Integer analysisId = 1;
-    SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST, null);
+    SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", Collections.emptyList(), Collections.emptyList(), null);
     ObjectMapper objectMapper = new ObjectMapper();
     SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithProblem()), SingleStudyBenefitRiskAnalysis.class);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
@@ -323,7 +326,7 @@ public class AnalysisControllerTest {
     Integer outcomeId = 444;
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
     List<ArmExclusion> excludedArms = Arrays.asList(new ArmExclusion(null, "-1L"), new ArmExclusion(null, "-2L"));
-    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", excludedArms, Collections.EMPTY_LIST, Collections.EMPTY_LIST, outcome);
+    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", excludedArms, Collections.emptyList(), Collections.emptyList(), outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
@@ -343,7 +346,7 @@ public class AnalysisControllerTest {
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "adsf");
     List<InterventionInclusion> includedInterventions = Arrays.asList(new InterventionInclusion(analysis, -1), new InterventionInclusion(analysis, -2));
-    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.EMPTY_LIST, includedInterventions, Collections.EMPTY_LIST, outcome);
+    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.emptyList(), includedInterventions, Collections.emptyList(), outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
@@ -363,7 +366,7 @@ public class AnalysisControllerTest {
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticOutcome("uir", "label"));
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "adsf");
     List<CovariateInclusion> covariateInclusions = Arrays.asList(new CovariateInclusion(analysis, -1), new CovariateInclusion(analysis, -2));
-    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.EMPTY_LIST, Collections.EMPTY_LIST, covariateInclusions, outcome);
+    NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.emptyList(), Collections.emptyList(), covariateInclusions, outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
@@ -373,6 +376,31 @@ public class AnalysisControllerTest {
             .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
+  }
+
+  @Test
+  public void testSetPrimaryModel() throws Exception {
+    Integer projectId = 3;
+    Integer analysisId = 4;
+    String modelId = "5";
+    mockMvc.perform((post("/projects/{projectId}/analyses/{analysisId}/setPrimaryModel", projectId, analysisId)
+      .param("modelId", modelId))
+      .principal(user))
+      .andExpect(status().isOk());
+    verify(projectService).checkOwnership(projectId, user);
+    verify(analysisRepository).setPrimaryModel(analysisId, Integer.parseInt(modelId));
+  }
+
+
+  @Test
+  public void testUnsetPrimaryModel() throws Exception {
+    Integer projectId = 3;
+    Integer analysisId = 4;
+    mockMvc.perform((post("/projects/{projectId}/analyses/{analysisId}/setPrimaryModel", projectId, analysisId))
+            .principal(user))
+            .andExpect(status().isOk());
+    verify(projectService).checkOwnership(projectId, user);
+    verify(analysisRepository).setPrimaryModel(analysisId, null);
   }
 
 

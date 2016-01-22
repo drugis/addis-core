@@ -64,5 +64,4 @@ public class AccountRepositoryImpl implements AccountRepository {
             "select id, username, firstName, lastName, email from Account where id = ?",
             rowMapper, id);
   }
-
 }

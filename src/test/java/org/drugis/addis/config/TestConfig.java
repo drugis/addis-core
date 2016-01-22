@@ -11,6 +11,7 @@ import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.remarks.repository.RemarksRepository;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -27,7 +28,6 @@ import static org.mockito.Mockito.mock;
 @ComponentScan(excludeFilters = {@ComponentScan.Filter(Configuration.class)}, basePackages = {
         "org.drugis.addis.error",
         "org.drugis.addis.projects.controller",
-        "org.drugis.addis.projects.service",
         "org.drugis.addis.outcomes.controller",
         "org.drugis.addis.interventions.controller",
         "org.drugis.addis.analyses.controller",
@@ -49,6 +49,9 @@ public class TestConfig {
   public ProjectRepository mockProjectsRepository() {
     return mock(ProjectRepository.class);
   }
+
+  @Bean
+  public ProjectService mockProjectService() { return mock(ProjectService.class); }
 
   @Bean
   public InterventionRepository interventionRepository() {

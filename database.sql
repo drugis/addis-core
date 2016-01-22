@@ -290,3 +290,9 @@ ALTER TABLE model ADD COLUMN regressor VARCHAR;
 --changeset stroombergc:31
 ALTER TABLE model ADD COLUMN sensitivity VARCHAR;
 --rollback ALTER TABLE model DROP COLUMN sensitivity;
+
+--changeset reidd:32
+ALTER TABLE NetworkMetaAnalysis ADD COLUMN primaryModel INT;
+ALTER TABLE NetworkMetaAnalysis ADD FOREIGN KEY(primaryModel) REFERENCES model(id);
+--rollback ALTER TABLE analysis DROP CONSTRAINT "analysis_primarymodel_fkey";
+--rollback ALTER TABLE analysis DROP COLUMN primaryModel;
