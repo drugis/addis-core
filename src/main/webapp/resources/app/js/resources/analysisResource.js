@@ -9,7 +9,7 @@ define([], function() {
     }, {
       setPrimaryModel: {
         url: '/projects/:projectId/analyses/:analysisId/setPrimaryModel',
-        method: 'POST',
+        method: 'POST'
       }
     });
   };
