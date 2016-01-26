@@ -24,26 +24,27 @@ public class WebConstants {
   private final static String TRIPLESTORE_BASE_URI = loadSystemEnvTripleStoreBaseURI();
   private final static String TRIPLESTORE_DATA_URI = TRIPLESTORE_BASE_URI + "/current";
 
+  public static final String API_KEY_PREFIX = "https://trialverse.org/apikeys/";
   public static final String VERSION_PATH = "versions/";
   public static final String QUERY_ENDPOINT = "/query";
   public static final String HISTORY_ENDPOINT = "/history";
   public static final String DATA_ENDPOINT = "/data";
   public static final String QUERY_PARAM_QUERY = "query";
   public static final String COPY_OF_QUERY_PARAM = "copyOf";
-  public static final String GRAPH_QUERY_PARAM = "graph";
 
+  public static final String GRAPH_QUERY_PARAM = "graph";
   public static final String QUERY_STRING_DEFAULT_GRAPH = "?default";
   public static final String X_EVENT_SOURCE_VERSION = "X-EventSource-Version";
   public static final String EVENT_SOURCE_TITLE_HEADER = "X-EventSource-Title";
+
   public static final String EVENT_SOURCE_DESCRIPTION_HEADER = "X-EventSource-Description";
-
   public static final String EVENT_SOURCE_CREATOR_HEADER = "X-EventSource-Creator";
-  public static final String X_ACCEPT_EVENT_SOURCE_VERSION = "X-Accept-EventSource-Version";
 
+  public static final String X_ACCEPT_EVENT_SOURCE_VERSION = "X-Accept-EventSource-Version";
   public static final String COMMIT_TITLE_PARAM = "commitTitle";
   public static final String COMMIT_DESCRIPTION_PARAM = "commitDescription";
-  public static final String ACCEPT_HEADER = "Accept";
 
+  public static final String ACCEPT_HEADER = "Accept";
   public static final String ACCEPT_TURTLE_HEADER = "Accept=" + WebContent.contentTypeTurtle;
   public static final String ACCEPT_JSON_HEADER = "Accept=" + APPLICATION_JSON_UTF8_VALUE;
   public static final String VERSION_UUID = "versionUuid";

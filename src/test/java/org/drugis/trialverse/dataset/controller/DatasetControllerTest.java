@@ -1,7 +1,6 @@
 package org.drugis.trialverse.dataset.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jdk.nashorn.internal.parser.JSONParser;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.entity.StringEntity;
@@ -18,9 +17,10 @@ import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.security.repository.AccountRepository;
-import org.drugis.trialverse.util.Utils;
 import org.drugis.trialverse.util.Namespaces;
+import org.drugis.trialverse.util.Utils;
 import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.junit.After;
@@ -32,21 +32,24 @@ import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.security.SocialAuthenticationToken;
+import org.springframework.social.security.SocialUser;
+import org.springframework.social.security.SocialUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -86,18 +89,22 @@ public class DatasetControllerTest {
   @Mock
   private DatasetService datasetService;
 
-  @Inject
-  private WebApplicationContext webApplicationContext;
-
   @InjectMocks
   private DatasetController datasetController;
 
-
-  private Principal user;
-  private Account john = new Account(1, "john@apple.co.uk", "John", "Lennon", "hash");
+  private TrialversePrincipal principal;
+  private SocialAuthenticationToken user;
+  private Account john = new Account(1, "john@apple.co.uk", "John", "Lennon", DigestUtils.sha256Hex("john@apple.co.uk"));
 
   @Before
   public void setUp() {
+    Connection connection = mock(Connection.class);
+    ConnectionData connectionData = mock(ConnectionData.class);
+    when(connectionData.getProviderId()).thenReturn("providerId");
+    when(connection.createData()).thenReturn(connectionData);
+
+    user = new SocialAuthenticationToken(connection, new SocialUser(john.getUsername(), "password", Collections.emptyList()), null, null);
+    principal = new TrialversePrincipal(user);
     accountRepository = mock(AccountRepository.class);
     datasetWriteRepository = mock(DatasetWriteRepository.class);
     datasetController = new DatasetController();
@@ -105,9 +112,7 @@ public class DatasetControllerTest {
 
     initMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(datasetController).build();
-    user = mock(Principal.class);
     when(user.getName()).thenReturn(john.getUsername());
-    when(accountRepository.findAccountByUsername("john@apple.co.uk")).thenReturn(john);
   }
 
 
@@ -122,7 +127,7 @@ public class DatasetControllerTest {
     URI uri = new URI(newDatasetUri);
     DatasetCommand datasetCommand = new DatasetCommand("dataset title");
     String jsonContent = Utils.createJson(datasetCommand);
-    when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john)).thenReturn(uri);
+    when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), principal)).thenReturn(uri);
     mockMvc
             .perform(post("/users/some-user-uid/datasets")
                             .principal(user)
@@ -131,7 +136,6 @@ public class DatasetControllerTest {
             )
             .andExpect(status().isInternalServerError());
 
-    verify(accountRepository).findAccountByUsername(john.getUsername());
     verifyNoMoreInteractions(datasetWriteRepository);
   }
 
@@ -141,7 +145,7 @@ public class DatasetControllerTest {
     URI uri = new URI(newDatasetUri);
     DatasetCommand datasetCommand = new DatasetCommand("dataset title");
     String jsonContent = Utils.createJson(datasetCommand);
-    when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john)).thenReturn(uri);
+    when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), principal)).thenReturn(uri);
     String userhash = john.getuserNameHash();
     mockMvc
             .perform(post("/users/" + userhash + "/datasets")
@@ -152,8 +156,7 @@ public class DatasetControllerTest {
             .andExpect(status().isCreated())
             .andExpect(header().string("Location", newDatasetUri));
 
-    verify(accountRepository).findAccountByUsername(john.getUsername());
-    verify(datasetWriteRepository).createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), john);
+    verify(datasetWriteRepository).createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), principal);
   }
 
   @Test

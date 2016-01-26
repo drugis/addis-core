@@ -13,7 +13,7 @@ import java.net.URISyntaxException;
 public interface GraphService {
   URI extractGraphUri(URI sourceGraphUri);
 
-  URI copy(URI targetDatasetUri, URI targetGraphUri, URI copyOfUri, Account owner) throws URISyntaxException, IOException, RevisionNotFoundException;
+  URI copy(URI targetDatasetUri, URI targetGraphUri, URI copyOfUri) throws URISyntaxException, IOException, RevisionNotFoundException;
 
   URI extractDatasetUri(URI sourceGraphUri);
 

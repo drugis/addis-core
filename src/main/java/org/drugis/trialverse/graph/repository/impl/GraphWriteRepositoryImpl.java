@@ -14,6 +14,7 @@ import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.security.AuthenticationService;
+import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.slf4j.Logger;
@@ -63,7 +64,13 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
     putRequest.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
     String title = request.getParameter(WebConstants.COMMIT_TITLE_PARAM);
     putRequest.setHeader(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(title.getBytes()));
-    putRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + authenticationService.getAuthentication().getName());
+
+    TrialversePrincipal owner = authenticationService.getAuthentication();
+    if(owner.hasApiKey()) {
+      putRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "https://trialverse.org/apikeys/" + owner.getApiKey().getId());
+    } else {
+      putRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + owner.getUserName());
+    }
 
     String commitDescription = request.getParameter(WebConstants.COMMIT_DESCRIPTION_PARAM);
     if(StringUtils.isNotEmpty(commitDescription)) {

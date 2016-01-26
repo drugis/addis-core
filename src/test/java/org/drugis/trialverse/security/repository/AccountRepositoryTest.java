@@ -8,27 +8,20 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
-
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Created by connor on 31-10-14.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@Transactional
 @ContextConfiguration(classes = {JpaRepositoryTestConfig.class})
 public class AccountRepositoryTest {
 
   @Inject
   private AccountRepository accountRepository;
-
-  @PersistenceContext(unitName = "trialverse")
-  EntityManager em;
 
   @Test
   public void testCreateAccount() throws Exception {
@@ -50,7 +43,22 @@ public class AccountRepositoryTest {
   @Test
   public void testGetUsers() {
     List<Account> accounts = accountRepository.getUsers();
-    assertEquals(2, accounts.size());
+   assertEquals(2, accounts.size());
+  }
+
+  @Test
+  public void testFindAccountByActiveApplicationKey() throws Exception {
+    String applicationKey = "this aint no key";
+    Account account = accountRepository.findAccountByActiveApplicationKey(applicationKey);
+    assertNull(account);
+  }
+
+  @Test
+  public void testFindAccountByActiveApplicationKeyExpectResult() throws Exception {
+    String applicationKey = "supersecretkey";
+    Account expectedAccount = accountRepository.get(1);
+    Account account = accountRepository.findAccountByActiveApplicationKey(applicationKey);
+    assertEquals(expectedAccount, account);
   }
 
 }

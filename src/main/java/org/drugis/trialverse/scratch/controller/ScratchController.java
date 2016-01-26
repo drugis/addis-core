@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.drugis.trialverse.scratch.service.ScratchService;
+import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

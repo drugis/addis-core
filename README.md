@@ -42,3 +42,15 @@ Run tomcat:
     mvn tomcat7:run
 
 Note that there should be live fuseki endpoints at both places referenced by the triplestore and scratch URIs.
+
+Release notes
+==========
+
+Release 7 (date: 11-27-215, tag 0.2.5)
+-------
+
+- [versioning]search studies
+-- A user can to search Trialverse for studies that match my search terms, either in title, description, or unique identifiers.
+- [versioning] add study from other dataset to my dataset 
+-- A user can copy a study extracted by another user.
+

@@ -1,41 +1,37 @@
-/*
- * Copyright 2013 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.drugis.trialverse.config;
 
+import org.apache.jena.ext.com.google.common.base.Optional;
+import org.drugis.trialverse.security.ApplicationKeyAuthenticationProvider;
+import org.drugis.trialverse.security.AuthenticationFilter;
 import org.drugis.trialverse.security.SimpleSocialUsersDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
 import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.social.security.SpringSocialConfigurer;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -45,17 +41,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private ApplicationContext context;
 
   @Inject
-  @Qualifier("dsTrialverse")
   private DataSource dataSource;
 
   @Override
-  protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     auth.jdbcAuthentication()
             .dataSource(dataSource)
             .usersByUsernameQuery("SELECT username, password, TRUE FROM Account WHERE username = ?")
             .authoritiesByUsernameQuery("SELECT Account.username, COALESCE(AccountRoles.role, 'ROLE_USER') FROM Account" +
                     " LEFT OUTER JOIN AccountRoles ON Account.id = AccountRoles.accountId WHERE Account.username = ?")
             .passwordEncoder(passwordEncoder());
+
+    auth.authenticationProvider(tokenAuthenticationProvider());
   }
 
   @Override
@@ -67,6 +64,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+    String[] whitelist = {"/", "/favicon.ico", "/favicon.png", "/app/**", "/auth/**", "/signin", "/signup", "/**/modal/*.html"};
+    // Disable CSFR protection on the following urls:
+    List<AntPathRequestMatcher> requestMatchers = Arrays.asList(whitelist)
+            .stream()
+            .map(AntPathRequestMatcher::new)
+            .collect(Collectors.toList());
     http
             .formLogin()
             .loginPage("/signin")
@@ -77,7 +80,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .logoutUrl("/signout")
             .deleteCookies("JSESSIONID")
             .and().authorizeRequests()
-            .antMatchers("/", "/favicon.ico", "/favicon.png", "/app/**", "/auth/**", "/signin", "/signup", "/**/modal/*.html").permitAll()
+            .antMatchers(whitelist).permitAll()
             .antMatchers("/monitoring").hasRole("MONITORING")
             .antMatchers("/**").authenticated()
             .and().rememberMe()
@@ -87,12 +90,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             new SpringSocialConfigurer()
                     .postLoginUrl("/")
                     .alwaysUsePostLoginUrl(true))
-            .and().setSharedObject(ApplicationContext.class, context);
+            .and().csrf().requireCsrfProtectionMatcher(request ->
+            !(requestMatchers.stream().anyMatch(matcher -> matcher.matches(request))
+                    || Optional.fromNullable(request.getHeader("X-Auth-Application-Key")).isPresent()))
+            .and().setSharedObject(ApplicationContext.class, context)
+    ;
+
+    http.addFilterBefore(new AuthenticationFilter(authenticationManager()), BasicAuthenticationFilter.class);
+
   }
 
   @Bean
-  public SocialUserDetailsService socialUsersDetailService() {
-    return new SimpleSocialUsersDetailService(userDetailsService());
+  public AuthenticationProvider tokenAuthenticationProvider() {
+    return new ApplicationKeyAuthenticationProvider();
+  }
+
+  @Bean
+  public AuthenticationEntryPoint unauthorizedEntryPoint() {
+    return (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+  }
+
+  @Bean
+  public UserDetailsService userDetailsService() {
+    return super.userDetailsService();
   }
 
   @Bean

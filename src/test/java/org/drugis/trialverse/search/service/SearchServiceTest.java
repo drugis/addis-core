@@ -52,15 +52,15 @@ public class SearchServiceTest {
   @Test
   public void testSearchStudy() throws URISyntaxException, IOException, ParseException {
     String trialverseDatasetUrl = "trialverseDatasetUrl";
-    String versiondDatasetUrl = "versiondDatasetUrl";
-    VersionMapping versionMapping = new VersionMapping(versiondDatasetUrl, "ovnerUid", trialverseDatasetUrl);
+    String versionedDatasetUrl = "versiondDatasetUrl";
+    VersionMapping versionMapping = new VersionMapping(versionedDatasetUrl, "ownerUid", trialverseDatasetUrl);
     List<VersionMapping> versionMappings = Arrays.asList(versionMapping);
     when(versionMappingRepository.getVersionMappings()).thenReturn(versionMappings);
 
     String searchQuery = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
             "prefix ontology: <http://trials.drugis.org/ontology#>\n" +
             "\n" +
-            "SELECT ?graph ?label ?comment WHERE {\n" +
+            "SELECT ?graph ?study ?label ?comment WHERE {\n" +
             "  graph ?graph {\n" +
             "    {\n" +
             "      ?study\n" +

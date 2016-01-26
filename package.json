@@ -1,6 +1,6 @@
 {
   "name": "trialverse",
-  "version": "0.1.1",
+  "version": "0.2.4",
   "description": "trialverse node deps",
   "directories": {
     "doc": "docs"
@@ -12,7 +12,7 @@
     "type": "git",
     "url": "https://github.com/drugis/trialverse.git"
   },
-  "author": "Gert van Valkenhoef, DanielReid, Connor Stroomberg",
+  "author": "Gert van Valkenhoef, Daan Reid, Connor Stroomberg",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/drugis/trialverse/issues"

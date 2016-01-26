@@ -23,6 +23,12 @@
   </div>
 
   <script>
+
+  if(window.location.host.indexOf("test") > -1) {
+    document.body.className += " test";
+    document.title = "test-" + document.title;
+  }
+
   window.config = {
     user : {
       name : "${account.firstName}",
