@@ -14,7 +14,7 @@ define([],
 
       function queryItems() {
         return StudyService.getJsonGraph().then(function(json) {
-          var nodes = _.filter(json['@graph'], function(node) {
+          var nodes = _.filter(json, function(node) {
             return node['@type'] === 'ontology:Drug';
           });
           return _.map(nodes, nodeToFrontEnd);

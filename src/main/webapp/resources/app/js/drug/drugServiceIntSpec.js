@@ -27,17 +27,15 @@ define(['angular-mocks'], function(angularMocks) {
 
 
     describe('query drugs', function() {
-      var jsonGraph = {
-        '@graph': [{
-          '@id': 'http://trials.drugis.org/instances/drugUuid1',
-          '@type': 'ontology:Drug',
-          label: 'Sertraline'
-        }, {
-          '@id': 'http://trials.drugis.org/instances/drugUuid2',
-          '@type': 'ontology:Drug',
-          label: 'Bupropion'
-        }]
-      };
+      var jsonGraph = [{
+        '@id': 'http://trials.drugis.org/instances/drugUuid1',
+        '@type': 'ontology:Drug',
+        label: 'Sertraline'
+      }, {
+        '@id': 'http://trials.drugis.org/instances/drugUuid2',
+        '@type': 'ontology:Drug',
+        label: 'Bupropion'
+      }];
 
       beforeEach(function() {
         graphDefer.resolve(jsonGraph);
