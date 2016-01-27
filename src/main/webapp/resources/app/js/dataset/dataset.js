@@ -8,8 +8,6 @@ define(function (require) {
     .controller('DatasetHistoryController', require('dataset/datasetHistoryController'))
 
     //services
-    .factory('DatasetService', require('dataset/datasetService'))
-    .factory('DatasetOverviewService', require('dataset/datasetOverviewService'))
     .factory('SingleDatasetService', require('dataset/singleDatasetService'))
     .factory('StudiesWithDetailsService', require('dataset/studiesWithDetailsService'))
 

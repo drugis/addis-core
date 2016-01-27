@@ -2,10 +2,10 @@
 define([],
   function() {
     var dependencies = ['$scope', '$q', '$window', '$location', '$stateParams', '$modal', '$filter', 'DatasetVersionedResource', 'StudiesWithDetailsService',
-      'RemoteRdfStoreService', 'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource'
+     'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource'
     ];
     var DatasetController = function($scope, $q, $window, $location, $stateParams, $modal, $filter, DatasetVersionedResource, StudiesWithDetailsService,
-      RemoteRdfStoreService, HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource) {
+       HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource) {
 
       // no version so this must be head view
       $scope.versionUuid = $stateParams.versionUuid;

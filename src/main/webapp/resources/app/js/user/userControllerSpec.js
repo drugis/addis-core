@@ -1,11 +1,10 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular-mocks'], function(angularMocks) {
   describe('user controller', function() {
 
     var scope, httpBackend,
       userHash = 'userHash',
       mockModal = jasmine.createSpyObj('$mock', ['open']),
-      mockDatasetOverviewService = jasmine.createSpyObj('DatasetOverviewService', ['loadStore', 'queryDatasetsOverview', 'reset']),
       md5Mock = jasmine.createSpyObj('md5', ['createHash']),
       mockLoadStoreDeferred,
       mockQueryDatasetsDeferred,
@@ -15,15 +14,13 @@ define(['angular', 'angular-mocks'], function() {
     beforeEach(module('trialverse.user'));
 
 
-    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, DatasetResource) {
+    beforeEach(angularMocks.inject(function($rootScope, $q, $controller, $httpBackend, DatasetResource) {
       scope = $rootScope;
       httpBackend = $httpBackend;
 
       mockLoadStoreDeferred = $q.defer();
       mockQueryDatasetsDeferred = $q.defer();
 
-      mockDatasetOverviewService.loadStore.and.returnValue(mockLoadStoreDeferred.promise);
-      mockDatasetOverviewService.queryDatasetsOverview.and.returnValue(mockQueryDatasetsDeferred.promise);
       md5Mock.createHash.and.returnValue(userHash);
 
       httpBackend.expectGET('/users').respond(users);
@@ -35,7 +32,6 @@ define(['angular', 'angular-mocks'], function() {
         $stateParams: {userUid: userHash},
         $window: {config: {user: {userNameHash: userHash}}},
         DatasetResource: DatasetResource,
-        DatasetOverviewService: mockDatasetOverviewService,
         md5: md5Mock
       });
 

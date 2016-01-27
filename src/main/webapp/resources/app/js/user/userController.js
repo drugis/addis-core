@@ -2,11 +2,11 @@
 define([],
   function() {
     var dependencies = ['$scope', '$location', '$q', '$modal', '$filter', '$window',
-      '$stateParams', 'DatasetResource', 'DatasetOverviewService', 'UserResource', 'md5'
+      '$stateParams', 'DatasetResource', 'UserResource', 'md5'
     ];
 
     var UserController = function($scope, $location, $q, $modal, $filter, $window,
-      $stateParams, DatasetResource, DatasetOverviewService, UserResource, md5) {
+      $stateParams, DatasetResource, UserResource, md5) {
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.otherUsers = [];
       $scope.userUid = $stateParams.userUid;

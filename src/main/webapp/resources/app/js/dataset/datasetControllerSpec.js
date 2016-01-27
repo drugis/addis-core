@@ -4,7 +4,6 @@ define(['angular-mocks'], function(angularMocks) {
 
     var scope, httpBackend,
       mockModal = jasmine.createSpyObj('$mock', ['open']),
-      mockRemoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['deFusekify']),
       studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get']),
       historyResource = jasmine.createSpyObj('HistoryResource', ['query']),
       conceptService = jasmine.createSpyObj('ConceptService', ['loadJson', 'queryItems']),
@@ -73,7 +72,6 @@ define(['angular-mocks'], function(angularMocks) {
         DatasetVersionedResource: datasetVersionedResource,
         DatasetResource: datasetResource,
         StudiesWithDetailsService: studiesWithDetailsService,
-        RemoteRdfStoreService: mockRemoteRdfStoreService,
         HistoryResource: historyResource,
         ConceptService: conceptService,
         VersionedGraphResource: versionedGraphResource
@@ -146,7 +144,6 @@ define(['angular-mocks'], function(angularMocks) {
           DatasetVersionedResource: datasetVersionedResource,
           DatasetResource: datasetResource,
           StudiesWithDetailsService: studiesWithDetailsService,
-          RemoteRdfStoreService: mockRemoteRdfStoreService,
           HistoryResource: historyResource,
           ConceptService: conceptService,
           VersionedGraphResource: versionedGraphResource
