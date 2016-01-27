@@ -3,7 +3,7 @@ define([], function() {
   // Work on object as object is both cashe and promise
   function transformConceptJson(conceptJson) {
     // fix the 1-item case
-    var context = conceptJson['@context'];
+    var context = conceptJson['@context'] || {};
 
     if (!conceptJson['@graph']) {
       delete conceptJson['@context'];
