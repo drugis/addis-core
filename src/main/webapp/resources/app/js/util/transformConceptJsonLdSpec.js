@@ -3,7 +3,7 @@ define(['util/transformConceptJsonLd'], function(transformConceptJsonLd) {
   describe('transformConceptJsonLd', function() {
     it('should work for an empty concepts graph', function() {
       var emptyData = {
-        '@context': {},
+        '@context': undefined,
         '@graph': []
       };
       expect(transformConceptJsonLd(emptyData)).toEqual(emptyData);
