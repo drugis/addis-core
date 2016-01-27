@@ -3,7 +3,7 @@ define(['angular', 'angular-mocks'], function() {
   describe('the concepts controller', function() {
 
     var
-      scope, httpBackend,
+      scope,
       datasetUuid = 'datasetUuid',
       versionUuid = 'versionUuid',
       stateParamsMock = {
@@ -12,21 +12,19 @@ define(['angular', 'angular-mocks'], function() {
       },
       loadConceptStoreDefer,
       queryItemsDefer,
-      loadDatasetStoreDefer,
       modalMock = jasmine.createSpyObj('$modal', ['open']),
       conceptServiceMock = jasmine.createSpyObj('ConceptService', ['loadStore', 'queryItems']),
       datasetConceptDefer;
 
     beforeEach(module('trialverse.concept'));
 
-    beforeEach(inject(function($rootScope, $q, $httpBackend, $controller, VersionedGraphResource) {
+    beforeEach(inject(function($rootScope, $q, $controller, VersionedGraphResource) {
       scope = $rootScope;
 
       // mock parent scope
       datasetConceptDefer = $q.defer();
-      scope.datasetConcepts = datasetConceptDefer.promise; 
+      scope.datasetConcepts = datasetConceptDefer.promise;
       datasetConceptDefer.resolve('anyValue2');
-      httpBackend = $httpBackend;
 
       loadConceptStoreDefer = $q.defer();
       queryItemsDefer = $q.defer();
@@ -47,11 +45,16 @@ define(['angular', 'angular-mocks'], function() {
     }));
 
     describe('on load', function() {
-      it('should place the concepts on the scope', function() {
-        var conceptResult ='anyValue2';
+      it('should place the concepts on the scope', function(done) {
+        var conceptResult = 'anyValue2';
+        queryItemsDefer.resolve(conceptResult);
+        queryItemsDefer.promise.then(function() {
 
-        expect(scope.concepts).toBeDefined();
-        expect(scope.concepts).toBe(conceptResult);
+          expect(scope.concepts).toBeDefined();
+          expect(scope.concepts).toBe(conceptResult);
+          done();
+        });
+        scope.$apply();
       });
     });
 
