@@ -146,7 +146,6 @@ define(
       }
     ]);
 
-    app.constant('SCRATCH_RDF_STORE_URL', '/scratch');
     app.constant('CONCEPT_GRAPH_UUID', 'concepts');
     app.constant('GROUP_ALLOCATION_OPTIONS', _.indexBy([{
       uri: 'ontology:AllocationRandomized',

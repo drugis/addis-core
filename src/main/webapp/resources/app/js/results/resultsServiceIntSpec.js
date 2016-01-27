@@ -1,11 +1,8 @@
 'use strict';
-define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
+define(['angular-mocks'], function(angularMocks) {
   describe('the resultsService service', function() {
 
-    var INTEGER_TYPE = '<http://www.w3.org/2001/XMLSchema#integer>';
-    var DOUBLE_TYPE = '<http://www.w3.org/2001/XMLSchema#double>';
-
-    var rootScope, q, httpBackend;
+    var rootScope, q;
     var studyService = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph']);
     var uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']);
     uuidServiceMock.generate.and.returnValue('newUuid');
@@ -18,7 +15,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
     });
 
-    beforeEach(inject(function($q, $rootScope, ResultsService) {
+    beforeEach(angularMocks.inject(function($q, $rootScope, ResultsService) {
       q = $q;
       rootScope = $rootScope;
       resultsService = ResultsService;
@@ -357,13 +354,13 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         '@id': 'http://trials.drugis.org/instances/a1',
         '@type': 'ontology:Arm',
         'label': 'arm label'
-      }
+      };
 
       var arm2 = {
         '@id': 'http://trials.drugis.org/instances/a2',
         '@type': 'ontology:Arm',
         'label': 'arm label'
-      }
+      };
 
       var outcome1 = {
         '@id': 'http://trials.drugis.org/instances/out1',

@@ -1,10 +1,8 @@
 'use strict';
-define(['angular', 'angular-mocks'], function(angular) {
+define(['angular-mocks'], function(angularMocks) {
   describe('the measurement moment service', function() {
 
-    var mockStudyUuid = 'mockStudyUuid';
     var rootScope, q;
-    var remotestoreServiceStub;
     var studyService = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveJsonGraph']);
     var epochServiceStub = jasmine.createSpyObj('EpochService', ['queryItems']);
     var uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']);
@@ -21,11 +19,11 @@ define(['angular', 'angular-mocks'], function(angular) {
 
     beforeEach(module('trialverse.util'));
 
-    beforeEach(inject(function($q, $rootScope, MeasurementMomentService, StudyService) {
+    beforeEach(angularMocks.inject(function($q, $rootScope, MeasurementMomentService, StudyService) {
       q = $q;
       rootScope = $rootScope;
       measurementMomentService = MeasurementMomentService;
-      uuidServiceMock.generate.and.returnValue('generatedUUID')
+      uuidServiceMock.generate.and.returnValue('generatedUUID');
 
       studyService = StudyService;
 
@@ -152,7 +150,7 @@ define(['angular', 'angular-mocks'], function(angular) {
             relative_to_epoch: 'http://trials.drugis.org/instances/aaa',
             time_offset: 'PT4D',
             label: 'new Label'
-          }])
+          }]);
         });
         done();
         rootScope.$digest();

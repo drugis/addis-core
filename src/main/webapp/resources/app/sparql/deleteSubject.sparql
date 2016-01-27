@@ -1,7 +1,0 @@
-WITH <$graphUri>
-DELETE {
-  <$subjectURI> ?p ?o .
-}
-WHERE {
-  <$subjectURI> ?p ?o .
-};

@@ -3,14 +3,12 @@ define(['angular', 'angular-mocks'],
   function(angular, angularMocks) {
     describe('study service', function() {
 
-      var remoteRdfStoreService, studyService,
+      var studyService,
         uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']),
         graphResource = jasmine.createSpyObj('GraphResource', ['putJson']),
         rootScope;
 
       beforeEach(module('trialverse', function($provide) {
-        remoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['create', 'load', 'executeUpdate', 'executeQuery']);
-        $provide.value('RemoteRdfStoreService', remoteRdfStoreService);
         $provide.value('UUIDService', uuidServiceMock);
         $provide.value('GraphResource', graphResource);
       }));
