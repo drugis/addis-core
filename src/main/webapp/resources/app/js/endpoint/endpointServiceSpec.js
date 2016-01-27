@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
+define(['angular-mocks'], function(angularMocks) {
   describe('the endpoint service', function() {
 
     var rootScope, q,
@@ -17,7 +17,7 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     });
     beforeEach(module('trialverse.endpoint'));
 
-    beforeEach(inject(function($q, $rootScope, EndpointService) {
+    beforeEach(angularMocks.inject(function($q, $rootScope, EndpointService) {
       q = $q;
       rootScope = $rootScope;
       endpointService = EndpointService;
