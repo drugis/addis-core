@@ -1,8 +1,8 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['StudyService', 'SparqlResource'];
-    var MappingService = function(StudyService, SparqlResource) {
+    var dependencies = ['StudyService'];
+    var MappingService = function(StudyService) {
 
       function findNodeWithId(graph, uri) {
         return _.find(graph, function(node) {
@@ -37,9 +37,7 @@ define([],
       function removeMapping(studyConcept, datasetConcept) {
         if (datasetConcept['@type'] === 'ontology:Drug') {
           return removeDrugMapping(studyConcept, datasetConcept);
-        } else if (datasetConcept['@type'] === 'ontology:PopulationCharacteristic' ||
-          datasetConcept['@type'] === 'ontology:AdverseEvent' ||
-          datasetConcept['@type'] === 'ontology:Endpoint') {
+        } else if (datasetConcept['@type'] === 'ontology:Variable') {
           return removeVariableMapping(studyConcept, datasetConcept);
         }
       };
