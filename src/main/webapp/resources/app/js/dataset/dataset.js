@@ -17,6 +17,7 @@ define(function (require) {
     .factory('DatasetVersionedResource', require('dataset/datasetVersionedResource'))
     .factory('DatasetResource', require('dataset/datasetResource'))
     .factory('HistoryResource', require('dataset/historyResource'))
+    .factory('GraphResource', require('graph/graphResource'))
 
     //directives
     .directive('historyItem', require('dataset/historyItemDirective'))

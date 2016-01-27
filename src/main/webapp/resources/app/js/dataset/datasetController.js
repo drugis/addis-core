@@ -1,29 +1,26 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$q', '$window', '$location', '$stateParams', '$modal', '$filter',
-      'SingleDatasetService', 'DatasetVersionedResource', 'StudiesWithDetailsService',
+    var dependencies = ['$scope', '$q', '$window', '$location', '$stateParams', '$modal', '$filter', 'DatasetVersionedResource', 'StudiesWithDetailsService',
       'RemoteRdfStoreService', 'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource'
     ];
-    var DatasetController = function($scope, $q, $window, $location, $stateParams, $modal, $filter,
-      SingleDatasetService, DatasetVersionedResource, StudiesWithDetailsService,
+    var DatasetController = function($scope, $q, $window, $location, $stateParams, $modal, $filter, DatasetVersionedResource, StudiesWithDetailsService,
       RemoteRdfStoreService, HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource) {
 
       // no version so this must be head view
       $scope.versionUuid = $stateParams.versionUuid;
       $scope.isHeadView = !$stateParams.versionUuid;
 
+      function isEditAllowedOnVersion() {
+        return $scope.currentRevision && $scope.currentRevision.isHead;
+      }
+
       function isEditingAllowed() {
         return !!($scope.dataset && $scope.dataset.creator === $window.config.user.userEmail &&
           isEditAllowedOnVersion());
       }
 
-      function isEditAllowedOnVersion() {
-        return $scope.currentRevision && $scope.currentRevision.isHead;
-      }
-
       $scope.loadConcepts = function() {
-
         // load the concepts data from the backend
         var getConceptsFromBackendDefer;
         if ($scope.versionUuid) {
@@ -44,7 +41,7 @@ define([],
         // place loaded data into fontend cache and return a promise
         ConceptService.loadJson(getConceptsFromBackendDefer.$promise);
         return getConceptsFromBackendDefer.$promise;
-      }
+      };
 
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUUID = $stateParams.datasetUUID;
@@ -55,18 +52,8 @@ define([],
       $scope.isEditingAllowed = false;
       $scope.datasetConcepts = $scope.loadConcepts();
 
-      if ($scope.isHeadView) {
-        DatasetResource.getForJson($stateParams, function(response) {
-          $scope.dataset = {
-            datasetUri: $scope.datasetUUID,
-            label: response['http://purl.org/dc/terms/title'],
-            comment: response['http://purl.org/dc/terms/description'],
-            creator: response['http://purl.org/dc/terms/creator']
-          };
-          $scope.isEditingAllowed = isEditingAllowed();
-        });
-      } else {
-        DatasetVersionedResource.getForJson($stateParams, function(response) {
+      function getJson(resource) {
+        resource.getForJson($stateParams).$promise.then(function(response) {
           $scope.dataset = {
             datasetUri: $scope.datasetUUID,
             label: response['http://purl.org/dc/terms/title'],
@@ -77,10 +64,16 @@ define([],
         });
       }
 
+      if ($scope.isHeadView) {
+        getJson(DatasetResource);
+      } else {
+        getJson(DatasetVersionedResource);
+      }
+
       HistoryResource.query($stateParams).$promise.then(function(historyItems) {
 
         if ($scope.isHeadView) {
-          $scope.currentRevision = historyItems[historyItems.length - 1]
+          $scope.currentRevision = historyItems[historyItems.length - 1];
           $scope.currentRevision.isHead = true;
         } else {
           // sort to know it curentRevission is head
@@ -123,7 +116,7 @@ define([],
                 $location.path('/users/' + $stateParams.userUid + '/datasets/' +
                   $stateParams.datasetUUID + '/versions/' + newVersion);
                 $scope.reloadDatasets();
-              }
+              };
             }
           }
         });
