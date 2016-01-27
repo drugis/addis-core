@@ -25,7 +25,9 @@ define(['lodash'], function(_) {
     context['label'] = 'http://www.w3.org/2000/01/rdf-schema#label';
     // standardize type URIs
     conceptJson['@graph'] = conceptJson['@graph'].map(function(item) {
-      item['@type'] = item['@type'].replace(context['ontology'], 'ontology:');
+      if(item['@type']) {
+        item['@type'] = item['@type'].replace(context['ontology'], 'ontology:');
+      }
       return item;
     });
     return conceptJson;
