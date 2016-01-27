@@ -100,11 +100,7 @@ define(['util/transformConceptJsonLd'], function(transformConceptJsonLd) {
         '@context': data['@context']
       };
 
-      var result = transformConceptJsonLd(data);
-      console.log(JSON.stringify(result));
-      console.log(JSON.stringify(expected));
-
-      expect(result).toEqual(expected);
+      expect(transformConceptJsonLd(data)).toEqual(expected);
 
     });
   });
