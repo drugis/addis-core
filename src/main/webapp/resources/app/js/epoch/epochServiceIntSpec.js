@@ -1,12 +1,9 @@
 'use strict';
-define(['angular', 'angular-mocks'], function() {
+define(['angular-mocks'], function(angularMocks) {
   describe('the epoch service', function() {
 
     var rootScope, q, epochService,
-      queryEpochs, queryAddEpoch, queryAddEpochToEndOfList, queryAddEpochComment,
-      editEpoch, addEpochToEndOfList, setEpochPrimary, deleteEpoch,
-      removeEpochPrimary, setEpochToPrimary, getLastItemInEpochList, deleteTail,
-      studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
+    studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
     var studyDefer;
     var studyJsonObject;
 
@@ -21,7 +18,7 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    beforeEach(inject(function($q, $rootScope, EpochService) {
+    beforeEach(angularMocks.inject(function($q, $rootScope, EpochService) {
 
       q = $q;
       rootScope = $rootScope;
@@ -53,7 +50,7 @@ define(['angular', 'angular-mocks'], function() {
     }));
 
 
-    describe('queryItems', function(done) {
+    describe('queryItems', function() {
 
       var expected = [{
         uri: 'http://trials.drugis.org/instances/aaa',
@@ -87,7 +84,7 @@ define(['angular', 'angular-mocks'], function() {
       });
     });
 
-    describe('queryItems where primary is set', function(done) {
+    describe('queryItems where primary is set', function() {
 
       var expected = [{
         uri: 'http://trials.drugis.org/instances/aaa',
@@ -248,7 +245,7 @@ define(['angular', 'angular-mocks'], function() {
         });
 
         rootScope.$digest();
-        
+
       });
     });
 
@@ -305,7 +302,7 @@ define(['angular', 'angular-mocks'], function() {
         });
 
         rootScope.$digest();
-        
+
       });
     });
 
@@ -355,7 +352,7 @@ define(['angular', 'angular-mocks'], function() {
         });
 
         rootScope.$digest();
-        
+
       });
     });
 
@@ -400,7 +397,7 @@ define(['angular', 'angular-mocks'], function() {
         });
 
         rootScope.$digest();
-        
+
       });
     });
 
