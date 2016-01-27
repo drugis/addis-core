@@ -21,8 +21,8 @@ define(['angular', 'angular-mocks'], function() {
         jsonPromiseDefer.resolve({
           '@graph': [{
             '@id': 'http://uris/concept1',
-            '@type': 'http://trials.drugis.org/ontology#Variable',
-            'http://www.w3.org/2000/01/rdf-schema#label': 'Weight Loss'
+            '@type': 'ontology:Variable',
+            'label': 'Weight Loss'
           }]
         });
       });
@@ -31,7 +31,7 @@ define(['angular', 'angular-mocks'], function() {
         var expected = [{
           uri: 'http://uris/concept1',
           type: {
-            uri: 'http://trials.drugis.org/ontology#Variable',
+            uri: 'ontology:Variable',
             label: 'Variable'
           },
           label: 'Weight Loss'
@@ -55,7 +55,7 @@ define(['angular', 'angular-mocks'], function() {
           label: 'added concept',
           type: {
             label: 'Variable',
-            uri: 'http://trials.drugis.org/ontology#Variable'
+            uri: 'ontology:Variable'
           }
         };
         conceptService.addItem(newConcept).then(function() {
