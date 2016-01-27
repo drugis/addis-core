@@ -210,7 +210,6 @@ define(['util/transformJsonLd'], function(transformJsonLd) {
       "ontology": "http://trials.drugis.org/ontology#"
     };
 
-
     var emptyStudy = {
       "@id": "http://trials.drugis.org/studies/695855bd-5782-4c67-a270-eb4459c3a4f6",
       "@type": "http://trials.drugis.org/ontology#Study",
