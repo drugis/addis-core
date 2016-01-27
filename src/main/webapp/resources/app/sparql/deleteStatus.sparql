@@ -1,8 +1,0 @@
-PREFIX ontology: <http://trials.drugis.org/ontology#>
-
-WITH <$graphUri>
-DELETE {
-  ?s ontology:status ?blindingUri .
-} WHERE {
-  ?s ontology:status ?blindingUri .
-};

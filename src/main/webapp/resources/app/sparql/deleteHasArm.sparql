@@ -1,7 +1,0 @@
-PREFIX ontology: <http://trials.drugis.org/ontology#>
-WITH <$graphUri>
-DELETE {
-  ?s ontology:has_arm <$armURI> .
-} WHERE {
-  ?s ontology:has_arm <$armURI> .
-}
