@@ -92,6 +92,7 @@
       "define"       : false,
       "require"      : false,
       "inject"       : true,
-      "module"       : false
+      "module"       : false,
+      "done"         : true
     }        // additional predefined global variables
 }
