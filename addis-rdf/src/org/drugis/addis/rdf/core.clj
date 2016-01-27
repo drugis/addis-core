@@ -324,6 +324,7 @@
   [xml instance-uri epoch-uris]
   (let [mm (when-taken-key xml)]
     (trig/spo instance-uri 
+              [(trig/iri :rdf "type") (trig/iri :ontology "MeasurementMoment")]
               [(trig/iri :rdfs "label") (str (:howLong mm) " " (:relativeTo mm) " " (:epochName mm))]
               [(trig/iri :ontology "relative_to_epoch") (epoch-uris (:epochName mm))]
               [(trig/iri :ontology "relative_to_anchor") (anchorUri (:relativeTo mm))]
@@ -355,7 +356,7 @@
                      [(trig/iri :ontology "sample_size") (trig/lit (Integer. (vtd/attr rate :sampleSize)))])
       catg (reduce (fn [subj cat] (trig/spo subj [(trig/iri :ontology "category_count")
                                                   (trig/_po [(trig/iri :ontology "category") (trig/lit (vtd/attr cat :name))]
-                                                            [(trig/iri :ontology "count") (trig/lit (vtd/attr cat :rate))])]))
+                                                            [(trig/iri :ontology "count") (trig/lit (Integer. (vtd/attr cat :rate)))])]))
                    measurement (vtd/search catg "./category"))
      :else measurement)
 ))
