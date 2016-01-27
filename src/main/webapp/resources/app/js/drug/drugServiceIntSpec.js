@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks'], function(angular, angularMocks) {
+define(['angular-mocks'], function(angularMocks) {
   describe('the drug service', function() {
 
     var rootScope, q,
@@ -13,9 +13,9 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       });
     });
 
-    beforeEach(module('trialverse.activity'));
+    beforeEach(angularMocks.module('trialverse.activity'));
 
-    beforeEach(inject(function($q, $rootScope, DrugService) {
+    beforeEach(angularMocks.inject(function($q, $rootScope, DrugService) {
       q = $q;
       rootScope = $rootScope;
 
@@ -37,7 +37,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
           '@type': 'ontology:Drug',
           label: 'Bupropion'
         }]
-      }
+      };
 
       beforeEach(function() {
         graphDefer.resolve(jsonGraph);
@@ -45,11 +45,8 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       });
 
       it('should return the drugs contained in the graph', function(done) {
-        // call function under test
         drugService.queryItems().then(function(result) {
           var drugs = result;
-
-          // verify query result
           expect(drugs.length).toBe(2);
           expect(drugs[0].label).toEqual('Sertraline');
           expect(drugs[1].label).toEqual('Bupropion');

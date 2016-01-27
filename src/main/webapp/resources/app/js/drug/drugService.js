@@ -4,7 +4,6 @@ define([],
     var dependencies = ['$q', 'StudyService'];
     var DrugService = function($q, StudyService) {
 
-
       function nodeToFrontEnd(node) {
         return {
           uri: node['@id'],
@@ -14,8 +13,8 @@ define([],
       }
 
       function queryItems() {
-        return StudyService.getJsonGraph().then(function(graph) {
-          var nodes = _.filter(graph, function(node) {
+        return StudyService.getJsonGraph().then(function(json) {
+          var nodes = _.filter(json['@graph'], function(node) {
             return node['@type'] === 'ontology:Drug';
           });
           return _.map(nodes, nodeToFrontEnd);
