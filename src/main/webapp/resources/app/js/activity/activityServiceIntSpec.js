@@ -4,7 +4,6 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
 
     var mockStudyUuid = 'mockStudyUuid',
       rootScope, q,
-      commentServiceStub,
       studyDefer,
       jsonStudy,
       graphDefer,
