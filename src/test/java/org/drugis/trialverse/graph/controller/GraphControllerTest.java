@@ -133,6 +133,7 @@ public class GraphControllerTest {
     mockMvc.perform(
             put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(jsonContent)
+                    .contentType(WebConstants.JSON_LD)
                     .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
                     .principal(user)).andExpect(status().isForbidden());
 
@@ -180,6 +181,7 @@ public class GraphControllerTest {
     mockMvc.perform(
             put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(updateContent)
+                    .contentType(WebConstants.JSON_LD)
                     .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
                     .param(WebConstants.COMMIT_DESCRIPTION_PARAM, "description")
                     .principal(user))
@@ -229,6 +231,7 @@ public class GraphControllerTest {
     mockMvc.perform(
             put("/users/" + userHash + "/datasets/" + datasetUUID + "/graphs/" + graphUUID)
                     .content(jsonContent)
+                    .contentType(WebConstants.JSON_LD)
                     .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
                     .principal(user)).andExpect(status().isForbidden());
 
