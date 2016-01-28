@@ -33,7 +33,7 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository {
   };
 
   @Inject
-  @Qualifier("jtTrialverse")
+  @Qualifier("jtAddisCore")
   private JdbcTemplate jdbcTemplate;
 
   @Override

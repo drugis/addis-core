@@ -2,13 +2,12 @@ package org.drugis.trialverse.dataset.service;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.drugis.addis.security.Account;
 import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.impl.DatasetServiceImpl;
-import org.drugis.trialverse.dataset.service.impl.HistoryServiceImpl;
-import org.drugis.trialverse.security.Account;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;

@@ -1,6 +1,6 @@
 package org.drugis.trialverse.config;
 
-import org.drugis.trialverse.security.repository.AccountRepository;
+import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.security.repository.ApiKeyRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

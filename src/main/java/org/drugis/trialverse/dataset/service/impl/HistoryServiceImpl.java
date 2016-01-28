@@ -17,9 +17,9 @@ import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
-import org.drugis.trialverse.security.Account;
+import org.drugis.addis.security.Account;
 import org.drugis.trialverse.security.ApiKey;
-import org.drugis.trialverse.security.repository.AccountRepository;
+import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.security.repository.ApiKeyRepository;
 import org.drugis.trialverse.util.JenaProperties;
 import org.drugis.trialverse.util.WebConstants;
@@ -130,7 +130,7 @@ public class HistoryServiceImpl implements HistoryService {
     Account account;
     if (creator.startsWith(WebConstants.API_KEY_PREFIX)) {
       apiKey = apiKeyRepository.get(Integer.valueOf(creator.substring(WebConstants.API_KEY_PREFIX.length())));
-      account = accountRepository.get(apiKey.getAccountId());
+      account = accountRepository.findAccountById(apiKey.getAccountId());
     } else {
       account = accountRepository.findAccountByUsername(creator.substring("mailto:".length()));
     }
@@ -144,7 +144,7 @@ public class HistoryServiceImpl implements HistoryService {
             .setDescription(descriptionStatement == null ? null : descriptionStatement.getObject().toString())
             .setHistoryOrder(historyOrder)
             .setCreator(creator)
-            .setUserHash(account.getuserNameHash())
+            .setUserId(account.getId())
             .setApplicationName(apiKey == null ? null : apiKey.getApplicationName())
             .build();
   }

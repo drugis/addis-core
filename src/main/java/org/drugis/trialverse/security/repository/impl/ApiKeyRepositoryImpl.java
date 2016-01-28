@@ -17,7 +17,7 @@ import java.sql.SQLException;
 @Repository
 public class ApiKeyRepositoryImpl implements ApiKeyRepository {
   @Inject
-  @Qualifier("jtTrialverse")
+  @Qualifier("jtAddisCore")
   private JdbcTemplate jdbcTemplate;
 
   private RowMapper<ApiKey> rowMapper = new RowMapper<ApiKey>() {

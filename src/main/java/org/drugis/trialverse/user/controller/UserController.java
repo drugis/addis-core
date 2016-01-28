@@ -1,8 +1,8 @@
 package org.drugis.trialverse.user.controller;
 
 import org.apache.http.client.HttpClient;
-import org.drugis.trialverse.security.Account;
-import org.drugis.trialverse.security.repository.AccountRepository;
+import org.drugis.addis.security.Account;
+import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -33,11 +32,11 @@ public class UserController extends AbstractTrialverseController {
 
   Logger logger = LoggerFactory.getLogger(getClass());
 
-  @RequestMapping(value = "/{userHash}", method = RequestMethod.GET)
+  @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
   @ResponseBody
-  public Account getUser(@PathVariable String userHash) {
+  public Account getUser(@PathVariable Integer userId) {
     logger.trace("retrieving user");
-    return accountRepository.findAccountByHash(userHash);
+    return accountRepository.findAccountById(userId);
   }
 
   @RequestMapping(method = RequestMethod.GET)

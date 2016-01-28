@@ -6,7 +6,7 @@ import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.DatasetService;
-import org.drugis.trialverse.security.Account;
+import org.drugis.addis.security.Account;
 import org.drugis.trialverse.util.JenaProperties;
 import org.springframework.stereotype.Service;
 

@@ -1,5 +1,6 @@
 package org.drugis.trialverse.security;
 
+import org.drugis.addis.security.Account;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;

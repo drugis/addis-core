@@ -9,6 +9,8 @@ import org.apache.http.message.BasicStatusLine;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
+import org.drugis.addis.security.Account;
+import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -16,9 +18,7 @@ import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
 import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.graph.service.GraphService;
-import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.TrialversePrincipal;
-import org.drugis.trialverse.security.repository.AccountRepository;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.Utils;
 import org.drugis.trialverse.util.WebConstants;
@@ -36,7 +36,6 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.security.SocialAuthenticationToken;
 import org.springframework.social.security.SocialUser;
-import org.springframework.social.security.SocialUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -44,7 +43,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.net.URI;
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -127,9 +125,10 @@ public class DatasetControllerTest {
     URI uri = new URI(newDatasetUri);
     DatasetCommand datasetCommand = new DatasetCommand("dataset title");
     String jsonContent = Utils.createJson(datasetCommand);
+    when(accountRepository.findAccountByUsername(null)).thenReturn(null);
     when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), principal)).thenReturn(uri);
     mockMvc
-            .perform(post("/users/some-user-uid/datasets")
+            .perform(post("/users/37/datasets")
                             .principal(user)
                             .content(jsonContent)
                             .contentType(webConstants.getApplicationJsonUtf8())
@@ -145,10 +144,11 @@ public class DatasetControllerTest {
     URI uri = new URI(newDatasetUri);
     DatasetCommand datasetCommand = new DatasetCommand("dataset title");
     String jsonContent = Utils.createJson(datasetCommand);
+    when(accountRepository.findAccountByUsername(john.getUsername())).thenReturn(john);
     when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), principal)).thenReturn(uri);
-    String userhash = john.getuserNameHash();
+    Integer userId = john.getId();
     mockMvc
-            .perform(post("/users/" + userhash + "/datasets")
+            .perform(post("/users/" + userId + "/datasets")
                             .principal(user)
                             .content(jsonContent)
                             .contentType(webConstants.getApplicationJsonUtf8())
@@ -156,6 +156,7 @@ public class DatasetControllerTest {
             .andExpect(status().isCreated())
             .andExpect(header().string("Location", newDatasetUri));
 
+    verify(accountRepository).findAccountByUsername(john.getUsername());
     verify(datasetWriteRepository).createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), principal);
   }
 
@@ -163,15 +164,15 @@ public class DatasetControllerTest {
   public void queryDatasetsRequestPathTurtleType() throws Exception {
     Model model = mock(Model.class);
     when(datasetReadRepository.queryDatasets(john)).thenReturn(model);
-    String userNameHash = "userNameHash";
-    when(accountRepository.findAccountByHash(userNameHash)).thenReturn(john);
+    Integer userId = 1;
+    when(accountRepository.findAccountById(userId)).thenReturn(john);
 
-    mockMvc.perform(get("/users/" + userNameHash + "/datasets").principal(user)
+    mockMvc.perform(get("/users/" + userId + "/datasets").principal(user)
             .accept(RDFLanguages.TURTLE.getHeaderString()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(RDFLanguages.TURTLE.getContentType().getContentType()));
 
-    verify(accountRepository).findAccountByHash(userNameHash);
+    verify(accountRepository).findAccountById(userId);
     verify(datasetReadRepository).queryDatasets(john);
     verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
   }
@@ -180,16 +181,16 @@ public class DatasetControllerTest {
   public void queryDatasetsRequestPathJsonType() throws Exception {
     List<Dataset> datasets = Arrays.asList(new Dataset("uri", john, "title", "description"));
     when(datasetService.findDatasets(john)).thenReturn(datasets);
-    String userNameHash = "userNameHash";
-    when(accountRepository.findAccountByHash(userNameHash)).thenReturn(john);
+    Integer userId = 1;
+    when(accountRepository.findAccountById(userId)).thenReturn(john);
 
-    mockMvc.perform(get("/users/" + userNameHash + "/datasets").principal(user)
+    mockMvc.perform(get("/users/" + userId + "/datasets").principal(user)
             .accept(WebConstants.getApplicationJsonUtf8()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8()))
             .andExpect(jsonPath("$", hasSize(datasets.size())));
 
-    verify(accountRepository).findAccountByHash(userNameHash);
+    verify(accountRepository).findAccountById(userId);
     verify(datasetService).findDatasets(john);
   }
 
@@ -198,12 +199,12 @@ public class DatasetControllerTest {
     Model model = mock(Model.class);
     HttpServletResponse mockServletResponse = mock(HttpServletResponse.class);
     when(datasetReadRepository.queryDatasets(john)).thenReturn(model);
-    String userNameHash = "userNameHash";
-    when(accountRepository.findAccountByHash(userNameHash)).thenReturn(john);
+    Integer userId = 1;
+    when(accountRepository.findAccountById(userId)).thenReturn(john);
 
-    datasetController.queryDatasetsGraphsByUser(mockServletResponse, userNameHash);
+    datasetController.queryDatasetsGraphsByUser(mockServletResponse, userId);
 
-    verify(accountRepository).findAccountByHash(userNameHash);
+    verify(accountRepository).findAccountById(userId);
     verify(datasetReadRepository).queryDatasets(john);
     verify(trialverseIOUtilsService).writeModelToServletResponse(model, mockServletResponse);
   }

@@ -1,6 +1,6 @@
 package org.drugis.trialverse.dataset.model;
 
-import org.drugis.trialverse.security.Account;
+import org.drugis.addis.security.Account;
 
 /**
  * Created by connor on 6-11-14.

@@ -1,14 +1,13 @@
 package org.drugis.trialverse.dataset.repository;
 
+import org.drugis.addis.security.Account;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.impl.DatasetWriteRepositoryImpl;
-import org.drugis.trialverse.security.Account;
 import org.drugis.trialverse.security.ApiKey;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -23,7 +22,6 @@ import java.net.URI;
 import java.security.Principal;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class DatasetWriteRepositoryTest {

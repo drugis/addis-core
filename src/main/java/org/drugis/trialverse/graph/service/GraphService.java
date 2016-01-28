@@ -1,7 +1,6 @@
 package org.drugis.trialverse.graph.service;
 
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
-import org.drugis.trialverse.security.Account;
 
 import java.io.IOException;
 import java.net.URI;

@@ -15,12 +15,18 @@
  */
 package org.drugis.addis.security;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.Collections;
 
 
 @Entity
 @Table
-public class Account {
+public class Account  implements UserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,27 +73,57 @@ public class Account {
   }
 
   @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+  }
+
+  @Override
+  public String getPassword() {
+    return null;
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return false;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return false;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return false;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return false;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
     Account account = (Account) o;
 
-    if (id != null ? !id.equals(account.id) : account.id != null) return false;
+    if (!id.equals(account.id)) return false;
     if (!username.equals(account.username)) return false;
-    if (firstName != null ? !firstName.equals(account.firstName) : account.firstName != null) return false;
-    if (lastName != null ? !lastName.equals(account.lastName) : account.lastName != null) return false;
-    return !(email != null ? !email.equals(account.email) : account.email != null);
+    if (!firstName.equals(account.firstName)) return false;
+    if (!lastName.equals(account.lastName)) return false;
+    return email.equals(account.email);
 
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
+    int result = id.hashCode();
     result = 31 * result + username.hashCode();
-    result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
-    result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-    result = 31 * result + (email != null ? email.hashCode() : 0);
+    result = 31 * result + firstName.hashCode();
+    result = 31 * result + lastName.hashCode();
+    result = 31 * result + email.hashCode();
     return result;
   }
 }

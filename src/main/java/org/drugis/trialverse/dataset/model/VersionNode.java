@@ -9,7 +9,7 @@ public class VersionNode {
   private String uri;
   private String versionTitle;
   private String creator;
-  private String userHash;
+  private Integer userId;
   private int historyOrder;
   private String applicationName;
   private Merge merge;
@@ -19,13 +19,13 @@ public class VersionNode {
   public VersionNode() {
   }
 
-  public VersionNode(String uri, String versionTitle, Date versionDate, String description, String creator, String userHash, int historyOrder, String applicationName) {
+  public VersionNode(String uri, String versionTitle, Date versionDate, String description, String creator, int userId, int historyOrder, String applicationName) {
     this.uri = uri;
     this.versionTitle = versionTitle;
     this.versionDate = versionDate;
     this.description = description;
     this.creator = creator;
-    this.userHash = userHash;
+    this.userId = userId;
     this.historyOrder = historyOrder;
     this.applicationName = applicationName;
   }
@@ -66,8 +66,8 @@ public class VersionNode {
     return applicationName;
   }
 
-  public String getUserHash() {
-    return userHash;
+  public Integer getUserId() {
+    return userId;
   }
 
   @Override
@@ -81,7 +81,7 @@ public class VersionNode {
     if (!uri.equals(that.uri)) return false;
     if (!versionTitle.equals(that.versionTitle)) return false;
     if (!creator.equals(that.creator)) return false;
-    if (!userHash.equals(that.userHash)) return false;
+    if (!userId.equals(that.userId)) return false;
     if (applicationName != null ? !applicationName.equals(that.applicationName) : that.applicationName != null)
       return false;
     if (merge != null ? !merge.equals(that.merge) : that.merge != null) return false;
@@ -95,7 +95,7 @@ public class VersionNode {
     int result = uri.hashCode();
     result = 31 * result + versionTitle.hashCode();
     result = 31 * result + creator.hashCode();
-    result = 31 * result + userHash.hashCode();
+    result = 31 * result + userId.hashCode();
     result = 31 * result + historyOrder;
     result = 31 * result + (applicationName != null ? applicationName.hashCode() : 0);
     result = 31 * result + (merge != null ? merge.hashCode() : 0);

@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.drugis.trialverse.security.controller;
+package org.drugis.addis.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.context.annotation.Configuration;
 
-@Controller
-public class SigninController {
+@Configuration
+@ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
+        "org.drugis.trialverse"})
+public class MainTrialverseConfig {
 
-  final static Logger logger = LoggerFactory.getLogger(SigninController.class);
+  private final static Logger logger = LoggerFactory.getLogger(MainTrialverseConfig.class);
 
-  @RequestMapping(value = "/signin", method = RequestMethod.GET)
-  public void showSigninPage() {
-    logger.info("signin page shown");
-  }
 }
