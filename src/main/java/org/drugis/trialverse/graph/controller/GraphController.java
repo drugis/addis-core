@@ -104,19 +104,17 @@ public class GraphController extends AbstractTrialverseController {
   }
 
 
-  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, params = {WebConstants.COMMIT_TITLE_PARAM})
+  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, params = {WebConstants.COMMIT_TITLE_PARAM}, consumes = WebConstants.JSON_LD)
   public void setGraph(HttpServletRequest request, HttpServletResponse trialversResponse, Principal currentUser,
                        @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
                        @RequestParam(value = WebConstants.COMMIT_TITLE_PARAM, required = false) String commitDescription,
-                       @PathVariable String datasetUuid, @PathVariable String graphUuid, @RequestHeader(value = HttpHeaders.CONTENT_TYPE, required = false) String contentTyp)
+                       @PathVariable String datasetUuid, @PathVariable String graphUuid)
           throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
     logger.trace("set graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
       InputStream graph = request.getInputStream();
-      if(WebConstants.JSON_LD.equals(contentTyp)) {
-         graph = graphService.jsonGraphInputStreamToTurtleInputStream(graph);
-      }
+      graph = graphService.jsonGraphInputStreamToTurtleInputStream(graph);
       Header versionHeader = graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, graph, commitTitle, commitDescription);
       trialversResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
       trialversResponse.setStatus(HttpStatus.OK.value());
