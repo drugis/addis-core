@@ -1,5 +1,5 @@
 'use strict';
-define(['angular', 'angular-mocks'], function(angular, angularMocks) {
+define(['angular-mocks'], function(angularMocks) {
   describe('the population information service', function() {
 
     var rootScope, q;
@@ -40,7 +40,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       });
     });
 
-    beforeEach(inject(function($q, $rootScope, PopulationInformationService) {
+    beforeEach(angularMocks.inject(function($q, $rootScope, PopulationInformationService) {
 
       q = $q;
       rootScope = $rootScope;
@@ -58,7 +58,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
 
       var result;
 
-      beforeEach(inject(function($q, $rootScope, PopulationInformationService) {
+      beforeEach(angularMocks.inject(function($q, $rootScope) {
         q = $q;
         rootScope = $rootScope;
         var studyDefer = $q.defer();
@@ -90,7 +90,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       var studyDefer;
       var getStudyPromise;
 
-      beforeEach(inject(function($q, $rootScope, PopulationInformationService) {
+      beforeEach(angularMocks.inject(function($q, $rootScope) {
         q = $q;
         rootScope = $rootScope;
         studyDefer = $q.defer();
@@ -117,11 +117,11 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
 
     describe('edit population information when indication was precent on study', function() {
 
-      var studyDefer, getStudyPromise, populationInformation;
+      var studyDefer, getStudyPromise;
       var newInformation;
 
 
-      beforeEach(inject(function($q, $rootScope, PopulationInformationService) {
+      beforeEach(angularMocks.inject(function($q, $rootScope) {
         q = $q;
         rootScope = $rootScope;
         studyDefer = $q.defer();
@@ -170,11 +170,11 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
 
     describe('edit population information when NO indication was present on study', function() {
 
-      var studyDefer, getStudyPromise, populationInformation;
+      var studyDefer, getStudyPromise;
       var newInformation;
 
 
-      beforeEach(inject(function($q, $rootScope, PopulationInformationService) {
+      beforeEach(angularMocks.inject(function($q, $rootScope) {
         q = $q;
         rootScope = $rootScope;
         studyDefer = $q.defer();
