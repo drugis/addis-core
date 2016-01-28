@@ -9,16 +9,20 @@ define([],
       VersionedGraphResource, GraphResource, $location, $anchorScroll,
       $modal, StudyService, ResultsService, StudyDesignService, DatasetResource) {
 
-      // onload
-      StudyService.reset();
-
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUUID = $stateParams.datasetUUID;
+      if($stateParams.versionUuid) {
+        $scope.versionUuid = $stateParams.versionUuid;
+      }
       $scope.studyGraphUuid = $stateParams.studyGraphUuid;
-      $scope.versionUuid = $stateParams.versionUuid;
       $scope.openCopyDialog = openCopyDialog;
       $scope.study = {};
       $scope.resetStudy = resetStudy;
+
+      // onload
+      StudyService.reset();
+
+
 
       $scope.categorySettings = {
         studyInformation: {
@@ -172,7 +176,7 @@ define([],
               return $stateParams.studyGraphUuid;
             },
             versionUuid: function() {
-              return $stateParams.versionUuid;
+              return $scope.versionUuid;
             },
             successCallback: function() {
               return $scope.reloadDatasets;
@@ -184,7 +188,7 @@ define([],
       function reloadStudyModel() {
         // load the data from the backend
         var getStudyFromBackendDefer;
-        if ($scope.versionUuid) {
+        if ($stateParams.versionUuid) {
           getStudyFromBackendDefer = VersionedGraphResource.getJson({
             userUid: $stateParams.userUid,
             datasetUUID: $stateParams.datasetUUID,

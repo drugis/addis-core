@@ -8,8 +8,10 @@ define([],
        HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource) {
 
       // no version so this must be head view
-      $scope.versionUuid = $stateParams.versionUuid;
       $scope.isHeadView = !$stateParams.versionUuid;
+      if(!$scope.isHeadView) {
+        $scope.versionUuid = $stateParams.versionUuid;
+      }
 
       function isEditAllowedOnVersion() {
         return $scope.currentRevision && $scope.currentRevision.isHead;
@@ -72,11 +74,16 @@ define([],
 
       HistoryResource.query($stateParams).$promise.then(function(historyItems) {
 
+        function segmentAfterLastSlash(str) {
+          return str.substr(str.lastIndexOf('/') + 1);
+        }
+
         if ($scope.isHeadView) {
           $scope.currentRevision = historyItems[historyItems.length - 1];
           $scope.currentRevision.isHead = true;
+          $scope.versionUuid = segmentAfterLastSlash($scope.currentRevision.uri);
         } else {
-          // sort to know it curentRevission is head
+          // sort to know iF curentRevission is head
           $scope.currentRevision = _.find(historyItems, function(item) {
             return item.uri.lastIndexOf($stateParams.versionUuid) > 0;
           });

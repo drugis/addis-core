@@ -22,7 +22,7 @@ define([],
             item.indication = study.has_indication[0];
           }
 
-          if (study.has_eligibility_criteria.length > 0) {
+          if (study.has_eligibility_criteria.length > 0 && study.has_eligibility_criteria[0]) {
             item.eligibilityCriteria = {
               label: study.has_eligibility_criteria[0].comment
             };
@@ -37,26 +37,26 @@ define([],
         return StudyService.getStudy().then(function(study) {
 
           if (item.indication) {
-            if (study.has_indication.length === 0) {
-              study.has_indication.push({
+            if (study.has_indication[0] === undefined) {
+              study.has_indication = [{
                 '@id': INSTANCE_PREFIX + UUIDService.generate()
-              })
+              }];
             }
             study.has_indication[0].label = item.indication.label;
           }
 
           if (item.eligibilityCriteria) {
-            if (study.has_eligibility_criteria.length === 0) {
-              study.has_eligibility_criteria.push({
+            if (study.has_eligibility_criteria[0] === undefined) {
+              study.has_eligibility_criteria = [{
                 '@id': INSTANCE_PREFIX + UUIDService.generate()
-              })
+              }];
             }
             study.has_eligibility_criteria[0].comment = item.eligibilityCriteria.label;
           }
 
           StudyService.save(study);
         });
-      };
+      }
 
       return {
         queryItems: queryItems,
