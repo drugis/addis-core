@@ -1,0 +1,30 @@
+# Count trialverse instances of SNOMED term
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX snomed: <http://www.ihtsdo.org/>
+PREFIX atc: <http://www.whocc.no/ATC2011/>
+PREFIX meddra: <http://purl.bioontology.org/ontology/MDR/>
+
+SELECT (COUNT(DISTINCT ?instance) AS ?count) WHERE {
+  GRAPH <http://trials.drugis.org/namespaces/> {
+    ?h rdf:type <http://trials.drugis.org/namespace> .
+  }
+  GRAPH ?h {
+     ?instance rdf:type ?namespaceConcept .
+     ?instance rdfs:label ?label .
+     ?namespaceConcept owl:sameAs{0,1} ?uri .
+  }
+  <%= restrict.graphQuery %>
+  GRAPH <%= restrict.graph %> {
+    <% _.each(terms, function(term) { %>
+      { ?uri rdfs:subClassOf<%= term.transitive === "transitive" ? "*" : "{0}" %> <<%= term.uri %>> . }
+      <% if (term !== _.last(terms)) {
+           print("\n    UNION\n    ");
+         }
+      })
+    %>
+    <%= restrict.sparql %>
+  }
+}

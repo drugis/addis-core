@@ -1,0 +1,19 @@
+# First 10 SNOMED CT disease terms that match a regex
+# and are not non-human disease
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX snomed: <http://www.ihtsdo.org/>
+PREFIX atc: <http://www.whocc.no/ATC2011/>
+PREFIX meddra: <http://purl.bioontology.org/ontology/MDR/>
+PREFIX text: <http://jena.apache.org/text#>
+
+SELECT ?uri ?label WHERE {
+  <%= restrict.graphQuery %>
+  GRAPH <%= restrict.graph %> {
+    ?uri text:query (<%= restrict.labelUri %> "<%= query %>") .
+	?uri <%= restrict.labelUri %> ?label .
+    <%= restrict.sparql %>
+  }
+} LIMIT 10

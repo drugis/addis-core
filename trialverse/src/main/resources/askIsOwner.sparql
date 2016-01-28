@@ -1,0 +1,8 @@
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+
+ASK { 
+  graph dataset:$dataset {
+    dataset:$dataset dc:creator $owner .
+  }
+}

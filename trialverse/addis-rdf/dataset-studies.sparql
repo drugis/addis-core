@@ -1,0 +1,20 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+PREFIX entity: <http://trials.drugis.org/entities/>
+PREFIX instance: <http://trials.drugis.org/instances/>
+PREFIX study: <http://trials.drugis.org/studies/>
+
+SELECT ?s ?label WHERE {
+  GRAPH ?dataset {
+    ?dataset a ontology:Dataset .
+  }
+  GRAPH ?dataset {
+    ?dataset ontology:contains_study ?s .
+  }
+  GRAPH ?s {
+    ?s rdfs:label ?label .
+  }
+}

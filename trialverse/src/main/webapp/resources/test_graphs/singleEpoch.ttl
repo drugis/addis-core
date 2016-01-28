@@ -1,0 +1,12 @@
+<http://trials.drugis.org/studies/967a27f6-6015-4398-82e4-494db735c0a9>
+        <http://trials.drugis.org/ontology#has_epochs>
+        ( <http://trials.drugis.org/instances/epoch1uuid> ) .
+
+<http://trials.drugis.org/instances/epoch1uuid>
+        a       <http://trials.drugis.org/ontology#Epoch> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "epoch description" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "epoch 1" ;
+        <http://trials.drugis.org/ontology#duration>
+                "PT0S"^^<http://www.w3.org/2001/XMLSchema#duration> .

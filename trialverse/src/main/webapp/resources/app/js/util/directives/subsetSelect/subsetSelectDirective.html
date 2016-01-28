@@ -1,0 +1,11 @@
+<div>
+  <label>Measurement moments</label>
+  <ul class="no-bullet">
+    <li ng-repeat="sourceItem in source">
+      <label> 
+        <input type="checkbox" ng-model="isSelected[$index]" ng-change="updateSelection(isSelected[$index], sourceItem)"> {{sourceItem.label}}</input>
+     </label>
+
+    </li>
+  </ul>
+</div>

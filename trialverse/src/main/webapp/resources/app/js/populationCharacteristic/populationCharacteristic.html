@@ -1,0 +1,8 @@
+<ul class="no-bullet">
+	<li><span><strong>Population characteristic: </strong></span> <span>{{::item.label}}</span></li>
+	<li><span><strong>Measurement type: </strong></span> <span>{{::item.measurementType | ontologyFilter}}</span></li>
+	<li ng-if="item.measuredAtMoments.length > 0">
+      <span><strong>Measured at: </strong></span>
+      <ul ng-repeat="measuredAt in item.measuredAtMoments"><li>{{::measuredAt.label}}</li></ul>
+  </li>
+</ul>

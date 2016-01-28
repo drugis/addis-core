@@ -1,0 +1,27 @@
+<form novalidate ng-submit="editItem()">
+  <div class="row">
+    <div class="large-9 columns">
+      <h3>Edit arm</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <label>Name
+        <input autofocus type="text" ng-model="item.label">
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <label>Description
+        <textarea rows="8" ng-model="item.comment"></textarea>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <button class="success" type="submit" ng-disabled="!item.label">Edit</button>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>

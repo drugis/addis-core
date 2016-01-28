@@ -1,0 +1,130 @@
+<http://trials.drugis.org/instances/881b130f-70cf-4e3a-adee-d776cc8616b7>
+        a       <http://trials.drugis.org/ontology#Arm> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "arm 1" .
+
+<http://trials.drugis.org/studies/c8354a59-04c6-42a8-a818-a9618bd00ba5>
+        a       <http://trials.drugis.org/ontology#Study> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "el studio" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "stud 1" ;
+        <http://trials.drugis.org/ontology#has_activity>
+                <http://trials.drugis.org/instances/f786db31-8d2c-42f6-957c-c43bd243120a> , <http://trials.drugis.org/instances/fe86021e-6f00-420d-a063-f0f536be0b05> , <http://trials.drugis.org/instances/6c1709f8-fd2b-4b06-b7ec-03da0c180993> ;
+        <http://trials.drugis.org/ontology#has_arm>
+                <http://trials.drugis.org/instances/881b130f-70cf-4e3a-adee-d776cc8616b7> , <http://trials.drugis.org/instances/27280b17-043a-4d60-bc88-511b3449b918> ;
+        <http://trials.drugis.org/ontology#has_epochs>
+                ( <http://trials.drugis.org/instances/457d19c5-c902-48e7-b814-95578d5caa8b> <http://trials.drugis.org/instances/40e9932c-ac21-4562-9e57-7ea0b8732814> ) .
+
+<http://trials.drugis.org/instances/43ed3884-631b-40cb-a19a-361648a9ad9d>
+        a       <http://trials.drugis.org/ontology#Unit> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "liter" .
+
+<http://trials.drugis.org/instances/40e9932c-ac21-4562-9e57-7ea0b8732814>
+        a       <http://trials.drugis.org/ontology#Epoch> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "epoch 3" ;
+        <http://trials.drugis.org/ontology#duration>
+                "PT0S"^^<http://www.w3.org/2001/XMLSchema#duration> .
+
+<http://trials.drugis.org/instances/fe86021e-6f00-420d-a063-f0f536be0b05>
+        a       <http://trials.drugis.org/ontology#TreatmentActivity> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "treatment" ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+                [ <http://trials.drugis.org/ontology#applied_in_epoch>
+                          <http://trials.drugis.org/instances/457d19c5-c902-48e7-b814-95578d5caa8b> ;
+                  <http://trials.drugis.org/ontology#applied_to_arm>
+                          <http://trials.drugis.org/instances/27280b17-043a-4d60-bc88-511b3449b918>
+                ] ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+                [ <http://trials.drugis.org/ontology#applied_in_epoch>
+                          <http://trials.drugis.org/instances/457d19c5-c902-48e7-b814-95578d5caa8b> ;
+                  <http://trials.drugis.org/ontology#applied_to_arm>
+                          <http://trials.drugis.org/instances/13e86306-f028-4e59-9937-d6f030878ea2>
+                ] ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+                [ <http://trials.drugis.org/ontology#applied_in_epoch>
+                          <http://trials.drugis.org/instances/457d19c5-c902-48e7-b814-95578d5caa8b> ;
+                  <http://trials.drugis.org/ontology#applied_to_arm>
+                          <http://trials.drugis.org/instances/881b130f-70cf-4e3a-adee-d776cc8616b7>
+                ] ;
+        <http://trials.drugis.org/ontology#has_drug_treatment>
+                <http://trials.drugis.org/instances/4f9f6dc5-6cb3-4fa0-9d71-b4e7ae4c477a> .
+
+<http://trials.drugis.org/instances/835eea9b-c6d3-43ea-b2dd-b3536dcf2785>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "headache" .
+
+<http://trials.drugis.org/instances/4f9f6dc5-6cb3-4fa0-9d71-b4e7ae4c477a>
+        a       <http://trials.drugis.org/ontology#FixedDoseDrugTreatment> ;
+        <http://trials.drugis.org/ontology#treatment_dose>
+                [ <http://www.w3.org/1999/02/22-rdf-syntax-ns#value>
+                          1 ;
+                  <http://trials.drugis.org/ontology#dosingPeriodicity>
+                          "P1D"^^<http://www.w3.org/2001/XMLSchema#duration> ;
+                  <http://trials.drugis.org/ontology#unit>
+                          <http://trials.drugis.org/instances/43ed3884-631b-40cb-a19a-361648a9ad9d>
+                ] ;
+        <http://trials.drugis.org/ontology#treatment_has_drug>
+                <http://trials.drugis.org/instances/835eea9b-c6d3-43ea-b2dd-b3536dcf2785> .
+
+<http://trials.drugis.org/instances/6c1709f8-fd2b-4b06-b7ec-03da0c180993>
+        a       <http://trials.drugis.org/ontology#FollowUpActivity> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "followup" ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+                [ <http://trials.drugis.org/ontology#applied_in_epoch>
+                          <http://trials.drugis.org/instances/40e9932c-ac21-4562-9e57-7ea0b8732814> ;
+                  <http://trials.drugis.org/ontology#applied_to_arm>
+                          <http://trials.drugis.org/instances/27280b17-043a-4d60-bc88-511b3449b918>
+                ] ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+                [ <http://trials.drugis.org/ontology#applied_in_epoch>
+                          <http://trials.drugis.org/instances/40e9932c-ac21-4562-9e57-7ea0b8732814> ;
+                  <http://trials.drugis.org/ontology#applied_to_arm>
+                          <http://trials.drugis.org/instances/13e86306-f028-4e59-9937-d6f030878ea2>
+                ] ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+                [ <http://trials.drugis.org/ontology#applied_in_epoch>
+                          <http://trials.drugis.org/instances/40e9932c-ac21-4562-9e57-7ea0b8732814> ;
+                  <http://trials.drugis.org/ontology#applied_to_arm>
+                          <http://trials.drugis.org/instances/881b130f-70cf-4e3a-adee-d776cc8616b7>
+                ] .
+
+<http://trials.drugis.org/instances/27280b17-043a-4d60-bc88-511b3449b918>
+        a       <http://trials.drugis.org/ontology#Arm> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "arm 2" .
+
+<http://trials.drugis.org/instances/f786db31-8d2c-42f6-957c-c43bd243120a>
+        a       <http://trials.drugis.org/ontology#RandomizationActivity> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "randomisation" ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+                [ <http://trials.drugis.org/ontology#applied_in_epoch>
+                          <http://trials.drugis.org/instances/8d647362-fc9c-4b74-9415-d27e7f6786f7> ;
+                  <http://trials.drugis.org/ontology#applied_to_arm>
+                          <http://trials.drugis.org/instances/881b130f-70cf-4e3a-adee-d776cc8616b7>
+                ] ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+                [ <http://trials.drugis.org/ontology#applied_in_epoch>
+                          <http://trials.drugis.org/instances/8d647362-fc9c-4b74-9415-d27e7f6786f7> ;
+                  <http://trials.drugis.org/ontology#applied_to_arm>
+                          <http://trials.drugis.org/instances/13e86306-f028-4e59-9937-d6f030878ea2>
+                ] ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+                [ <http://trials.drugis.org/ontology#applied_in_epoch>
+                          <http://trials.drugis.org/instances/8d647362-fc9c-4b74-9415-d27e7f6786f7> ;
+                  <http://trials.drugis.org/ontology#applied_to_arm>
+                          <http://trials.drugis.org/instances/27280b17-043a-4d60-bc88-511b3449b918>
+                ] .
+
+<http://trials.drugis.org/instances/457d19c5-c902-48e7-b814-95578d5caa8b>
+        a       <http://trials.drugis.org/ontology#Epoch> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "epoch 2" ;
+        <http://trials.drugis.org/ontology#duration>
+                "PT0S"^^<http://www.w3.org/2001/XMLSchema#duration> .

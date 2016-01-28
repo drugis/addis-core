@@ -1,0 +1,17 @@
+<Context allowLinking="true">
+    <Manager pathname=""/>
+    <!-- disable session persistence since it doesn't work for OAuth anyway -->
+
+    <Resource
+            name="jdbc/trialverse"
+            auth="Container"
+            type="javax.sql.DataSource" driverClassName="${TRIALVERSE_DB_DRIVER}"
+            url="${TRIALVERSE_DB_URL}"
+            username="${TRIALVERSE_DB_USERNAME}" password="${TRIALVERSE_DB_PASSWORD}"
+            maxActive="20" maxIdle="10" maxWait="-1"/>
+
+    <ResourceLink name="jdbc/trialverse"
+                  global="jdbc/trialverse"
+                  type="javax.sql.DataSource"/>
+
+</Context>

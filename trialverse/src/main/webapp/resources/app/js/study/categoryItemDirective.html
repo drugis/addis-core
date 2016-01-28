@@ -1,0 +1,5 @@
+<div ng-show="isEditingAllowed" class="edit-item-controls right">
+  <a ng-click="editItem()"> <i class="fa fa-edit fa-2x fa-fw"></i> </a>
+  <a ng-click="deleteItem()" ng-show="!isSingleItem"><i class="fa fa-trash-o fa-2x fa-fw"></i></a>
+</div>
+<div ng-include="settings.itemTemplateUrl"></div>

@@ -1,0 +1,7 @@
+<http://trials.drugis.org/instances/instance1>
+  <http://trials.drugis.org/ontology#of_variable> [
+    a <http://trials.drugis.org/ontology#AdverseEvent>
+  ] .
+
+<http://trials.drugis.org/instances/instance2>
+  <http://www.w3.org/2002/07/owl#sameAs> <http://trials.drugis.org/instances/drugInstance1>

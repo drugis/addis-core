@@ -1,0 +1,16 @@
+<h4>{{settings.label}}</h4>
+<table width="100%">
+  <tr>
+    <th width="33%">Study Concept</th>
+    <th width="77%">Dataset Concept</th>
+  </tr>
+  <tr ng-repeat="studyConcept in studyConcepts">
+    <td>{{studyConcept.label}}</td>
+    <td>
+      <concept-mapping-item
+      is-editing-allowed="isEditingAllowed"
+      settings="settings"
+      study-concept="studyConcept"
+      dataset-concepts="datasetConcepts"></concept-mapping-item></td>
+    </tr>
+  </table>

@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2014//EN"
+        "http://www.ncbi.nlm.nih.gov/corehtml/query/DTD/pubmed_140101.dtd">
+<PubmedArticleSet>
+    <PubmedArticle>
+        <MedlineCitation Owner="NLM" Status="MEDLINE">
+            <PMID Version="1">16172440</PMID>
+            <DateCreated>
+                <Year>2005</Year>
+                <Month>09</Month>
+                <Day>20</Day>
+            </DateCreated>
+            <DateCompleted>
+                <Year>2005</Year>
+                <Month>09</Month>
+                <Day>23</Day>
+            </DateCompleted>
+            <DateRevised>
+                <Year>2007</Year>
+                <Month>11</Month>
+                <Day>15</Day>
+            </DateRevised>
+            <Article PubModel="Print">
+                <Journal>
+                    <ISSN IssnType="Electronic">1539-3704</ISSN>
+                    <JournalIssue CitedMedium="Internet">
+                        <Volume>143</Volume>
+                        <Issue>6</Issue>
+                        <PubDate>
+                            <Year>2005</Year>
+                            <Month>Sep</Month>
+                            <Day>20</Day>
+                        </PubDate>
+                    </JournalIssue>
+                    <Title>Annals of internal medicine</Title>
+                    <ISOAbbreviation>Ann. Intern. Med.</ISOAbbreviation>
+                </Journal>
+                <ArticleTitle>Efficacy and safety of second-generation antidepressants in the treatment of major
+                    depressive disorder.
+                </ArticleTitle>
+                <Pagination>
+                    <MedlinePgn>415-26</MedlinePgn>
+                </Pagination>
+                <Abstract>
+                    <AbstractText Label="BACKGROUND" NlmCategory="BACKGROUND">Reviews have compared the efficacy and
+                        tolerability of newer second-generation antidepressants with those of placebo or older
+                        treatments, but comparative evidence for use of second-generation antidepressants to treat major
+                        depressive disorder has not been evaluated.
+                    </AbstractText>
+                    <AbstractText Label="PURPOSE" NlmCategory="OBJECTIVE">To systematically evaluate comparative data on
+                        the efficacy, effectiveness, and tolerability of commonly prescribed second-generation
+                        antidepressants (selective serotonin reuptake inhibitors, bupropion, duloxetine, mirtazapine,
+                        and venlafaxine) in the treatment of major depressive disorder.
+                    </AbstractText>
+                    <AbstractText Label="DATA SOURCES" NlmCategory="METHODS">MEDLINE, EMBASE, and PsychLit; the Cochrane
+                        Library; and the International Pharmaceutical Abstracts were searched from January 1980 through
+                        February 2005 for reviews; randomized, controlled trials; meta-analyses; and observational
+                        studies.
+                    </AbstractText>
+                    <AbstractText Label="STUDY SELECTION" NlmCategory="METHODS">The authors reviewed 46 head-to-head
+                        randomized, controlled trials comparing one second-generation antidepressant with another.
+                        Twenty-four observational studies and placebo-controlled trials were also included for
+                        assessment of safety and tolerability.
+                    </AbstractText>
+                    <AbstractText Label="DATA EXTRACTION" NlmCategory="METHODS">Two researchers independently reviewed
+                        titles and abstracts. Trained reviewers abstracted data from each study and assigned an initial
+                        quality rating. A second reviewer verified the data extraction and quality rating.
+                    </AbstractText>
+                    <AbstractText Label="DATA SYNTHESIS" NlmCategory="RESULTS">According to fair to good evidence, the
+                        second-generation antidepressants that were compared had only minimal differences in efficacy,
+                        and 88% of comparative efficacy studies reported no statistically significant difference in any
+                        outcome measure at the end of the study. One effectiveness trial rated good and 2 effectiveness
+                        trials rated fair reported no statistically significant differences in primary outcome measures
+                        for compared drugs. Meta-analyses showed a modest but statistically significant additional
+                        treatment effect for sertraline and venlafaxine compared with fluoxetine. About 96% of
+                        comparative trials were sponsored by or had at least 1 author affiliated with a pharmaceutical
+                        company; the remaining trials did not report funding sources. Adverse event profiles differed
+                        among drugs; however, the degree and quality of adverse event assessment varied and only 13% of
+                        trials used a standardized scale to assess adverse events.
+                    </AbstractText>
+                    <AbstractText Label="LIMITATIONS" NlmCategory="CONCLUSIONS">Quantitative analyses could not be done
+                        for many drug comparisons because the quantity and quality of the evidence were inadequate. Most
+                        published evidence was from trials sponsored by pharmaceutical companies, and publication bias
+                        may have occurred.
+                    </AbstractText>
+                    <AbstractText Label="CONCLUSIONS" NlmCategory="CONCLUSIONS">Overall, second-generation
+                        antidepressants probably do not differ substantially for treatment of major depressive disorder.
+                        Choosing the agent that is most appropriate for a given patient is difficult.
+                    </AbstractText>
+                </Abstract>
+                <AuthorList CompleteYN="Y">
+                    <Author ValidYN="Y">
+                        <LastName>Hansen</LastName>
+                        <ForeName>Richard A</ForeName>
+                        <Initials>RA</Initials>
+                        <Affiliation>Division of Pharmaceutical Policy and Evaluative Sciences, University of North
+                            Carolina, Chapel Hill, North Carolina 27599, USA. rahansen@unc.edu
+                        </Affiliation>
+                    </Author>
+                    <Author ValidYN="Y">
+                        <LastName>Gartlehner</LastName>
+                        <ForeName>Gerald</ForeName>
+                        <Initials>G</Initials>
+                    </Author>
+                    <Author ValidYN="Y">
+                        <LastName>Lohr</LastName>
+                        <ForeName>Kathleen N</ForeName>
+                        <Initials>KN</Initials>
+                    </Author>
+                    <Author ValidYN="Y">
+                        <LastName>Gaynes</LastName>
+                        <ForeName>Bradley N</ForeName>
+                        <Initials>BN</Initials>
+                    </Author>
+                    <Author ValidYN="Y">
+                        <LastName>Carey</LastName>
+                        <ForeName>Timothy S</ForeName>
+                        <Initials>TS</Initials>
+                    </Author>
+                </AuthorList>
+                <Language>eng</Language>
+                <GrantList CompleteYN="Y">
+                    <Grant>
+                        <GrantID>K23 MH01951-03</GrantID>
+                        <Acronym>MH</Acronym>
+                        <Agency>NIMH NIH HHS</Agency>
+                        <Country>United States</Country>
+                    </Grant>
+                </GrantList>
+                <PublicationTypeList>
+                    <PublicationType>Comparative Study</PublicationType>
+                    <PublicationType>Journal Article</PublicationType>
+                    <PublicationType>Meta-Analysis</PublicationType>
+                    <PublicationType>Research Support, N.I.H., Extramural</PublicationType>
+                    <PublicationType>Research Support, Non-U.S. Gov't</PublicationType>
+                    <PublicationType>Research Support, U.S. Gov't, P.H.S.</PublicationType>
+                    <PublicationType>Review</PublicationType>
+                </PublicationTypeList>
+            </Article>
+            <MedlineJournalInfo>
+                <Country>United States</Country>
+                <MedlineTA>Ann Intern Med</MedlineTA>
+                <NlmUniqueID>0372351</NlmUniqueID>
+                <ISSNLinking>0003-4819</ISSNLinking>
+            </MedlineJournalInfo>
+            <ChemicalList>
+                <Chemical>
+                    <RegistryNumber>0</RegistryNumber>
+                    <NameOfSubstance>Antidepressive Agents, Second-Generation</NameOfSubstance>
+                </Chemical>
+                <Chemical>
+                    <RegistryNumber>0</RegistryNumber>
+                    <NameOfSubstance>Serotonin Uptake Inhibitors</NameOfSubstance>
+                </Chemical>
+            </ChemicalList>
+            <CitationSubset>AIM</CitationSubset>
+            <CitationSubset>IM</CitationSubset>
+            <MeshHeadingList>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N">Antidepressive Agents, Second-Generation</DescriptorName>
+                    <QualifierName MajorTopicYN="Y">adverse effects</QualifierName>
+                    <QualifierName MajorTopicYN="Y">therapeutic use</QualifierName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N">Depressive Disorder, Major</DescriptorName>
+                    <QualifierName MajorTopicYN="Y">drug therapy</QualifierName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N">Humans</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N">Quality of Life</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N">Randomized Controlled Trials as Topic</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N">Serotonin Uptake Inhibitors</DescriptorName>
+                    <QualifierName MajorTopicYN="Y">adverse effects</QualifierName>
+                    <QualifierName MajorTopicYN="Y">therapeutic use</QualifierName>
+                </MeshHeading>
+            </MeshHeadingList>
+            <NumberOfReferences>97</NumberOfReferences>
+        </MedlineCitation>
+        <PubmedData>
+            <History>
+                <PubMedPubDate PubStatus="pubmed">
+                    <Year>2005</Year>
+                    <Month>9</Month>
+                    <Day>21</Day>
+                    <Hour>9</Hour>
+                    <Minute>0</Minute>
+                </PubMedPubDate>
+                <PubMedPubDate PubStatus="medline">
+                    <Year>2005</Year>
+                    <Month>9</Month>
+                    <Day>24</Day>
+                    <Hour>9</Hour>
+                    <Minute>0</Minute>
+                </PubMedPubDate>
+                <PubMedPubDate PubStatus="entrez">
+                    <Year>2005</Year>
+                    <Month>9</Month>
+                    <Day>21</Day>
+                    <Hour>9</Hour>
+                    <Minute>0</Minute>
+                </PubMedPubDate>
+            </History>
+            <PublicationStatus>ppublish</PublicationStatus>
+            <ArticleIdList>
+                <ArticleId IdType="pii">143/6/415</ArticleId>
+                <ArticleId IdType="pubmed">16172440</ArticleId>
+            </ArticleIdList>
+        </PubmedData>
+    </PubmedArticle>
+
+</PubmedArticleSet>
