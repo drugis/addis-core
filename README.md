@@ -29,7 +29,6 @@ Configure environment variables (NB google secret/key assumes localhost:8090)
     export TRIALVERSE_DB_USERNAME=trialverse
     export TRIALVERSE_DB_PASSWORD=develop
     export TRIPLESTORE_BASE_URI=http://localhost:3030
-    export TRIALVERSE_SCRATCH_URL=http://localhost:3031
     export TRIALVERSE_OAUTH_GOOGLE_SECRET=JMta9pPfckdE9GMnxKvTm3We
     export TRIALVERSE_OAUTH_GOOGLE_KEY=356525985053-j71rekspvj3ds507700srb8hl7955m32.apps.googleusercontent.com
 
@@ -41,7 +40,7 @@ Run tomcat:
 
     mvn tomcat7:run
 
-Note that there should be live fuseki endpoints at both places referenced by the triplestore and scratch URIs.
+Note that there should be live fuseki endpoint referenced by the triplestore.
 
 Release notes
 ==========

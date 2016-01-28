@@ -1,8 +1,0 @@
-PREFIX ontology: <http://trials.drugis.org/ontology#>
-
-WITH <$graphUri>
-DELETE {
-  ?s ontology:has_number_of_centers ?numberOfCenters .
-} WHERE {
-  ?s ontology:has_number_of_centers ?numberOfCenters .
-};

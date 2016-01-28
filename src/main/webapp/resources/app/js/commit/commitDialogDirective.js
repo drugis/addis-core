@@ -26,7 +26,7 @@ define([], function() {
               commitDescription: commitDescription
             }, graph, function(value, responseHeaders) {
               var newVersion = responseHeaders('X-EventSource-Version');
-              newVersion = newVersion.split('/')[4];
+              newVersion = newVersion.split('/versions/')[1];
               scope.changesCommited(newVersion);
             });
           });

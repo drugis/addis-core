@@ -1,14 +1,9 @@
+'use strict';
 // Karma configuration
 // Generated on Sun Jan 12 2014 11:41:44 GMT+0100 (CET)
 var log4js = require('log4js');
 var logger = log4js.getLogger();
-var scratchUrl = process.env.TRIALVERSE_SCRATCH_URL;
-if(!scratchUrl) {
-  logger.error("error enviroment variable TRIALVERSE_SCRATCH_URL has not been set")
-}else{
-  logger.info('scratchUrl for test use = ' + scratchUrl);
-}
-
+logger.info('starting test');
 
 module.exports = function(config) {
   config.set({
@@ -20,7 +15,7 @@ module.exports = function(config) {
     plugins : [
       'karma-chrome-launcher',
       'karma-phantomjs-launcher',
-      //'karma-junit-reporter',
+      'karma-junit-reporter',
       'karma-jasmine',
       'karma-requirejs',
       //'karma-coverage'
@@ -34,7 +29,6 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       '../../../test/js/test-main.js',
-      '../../../test/js/testUtils.js',
       {pattern: 'app/sparql/*.sparql', included:false, served:true},
       {pattern: 'test_graphs/*.ttl', included:false, served:true},
       {pattern: 'app/js/**/*.js', included: false},
@@ -82,10 +76,6 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit
-    singleRun: false,
-
-    proxies: {
-      '/scratch': scratchUrl + '/ds'
-    }
+    singleRun: false
   });
 };

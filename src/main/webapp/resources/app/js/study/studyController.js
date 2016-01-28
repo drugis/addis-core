@@ -1,10 +1,12 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$window', '$filter', 'VersionedGraphResource', 'GraphResource', '$location', '$anchorScroll',
+    var dependencies = ['$scope', '$stateParams', '$window', '$filter',
+      'VersionedGraphResource', 'GraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource'
     ];
-    var StudyController = function($scope, $stateParams, $window, $filter, VersionedGraphResource, GraphResource, $location, $anchorScroll,
+    var StudyController = function($scope, $stateParams, $window, $filter,
+      VersionedGraphResource, GraphResource, $location, $anchorScroll,
       $modal, StudyService, ResultsService, StudyDesignService, DatasetResource) {
 
       // onload
@@ -127,7 +129,7 @@ define([],
         drugs: {
           label: 'Drugs',
           serviceName: 'DrugService',
-          typeUri: 'ontology:Drug' 
+          typeUri: 'ontology:Drug'
         },
         populationCharacteristics: {
           label: 'Population characteristics',
@@ -147,7 +149,6 @@ define([],
       };
 
       function openCopyDialog() {
-
         $modal.open({
           templateUrl: 'app/js/study/copyStudy.html',
           controller: 'CopyStudyController',
@@ -181,8 +182,6 @@ define([],
       }
 
       function reloadStudyModel() {
-        console.log('reload study model');
-
         // load the data from the backend
         var getStudyFromBackendDefer;
         if ($scope.versionUuid) {
@@ -226,7 +225,7 @@ define([],
         if (StudyService.isStudyModified()) {
           reloadStudyModel();
         }
-      };
+      }
 
       reloadStudyModel();
 

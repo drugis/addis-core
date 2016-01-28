@@ -3,7 +3,8 @@ define(['angular', 'angular-mocks'], function() {
   describe('the mapping service', function() {
 
     var rootScope, q,
-      studyServiceMock = jasmine.createSpyObj('StudyService', ['getJsonGraph', 'saveGraph', 'getStudy', 'saveStudy']),
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['getJsonGraph', 
+        'saveGraph', 'getStudy', 'save', 'saveJsonGraph']),
       mappingService,
       studyDefer,
       studyGraphDefer;
@@ -32,8 +33,8 @@ define(['angular', 'angular-mocks'], function() {
           uri: 'http://testuri/1'
         },
         datasetConcept = {
-          uri: 'http://testuri/2',
-          type: 'ontology:Drug'
+          '@id': 'http://testuri/2',
+          '@type': 'ontology:Drug'
         };
       beforeEach(function(done) {
         studyGraphDefer.resolve([{
@@ -41,18 +42,16 @@ define(['angular', 'angular-mocks'], function() {
           '@type': 'ontology:Drug',
           'label': 'Sertraline'
         }]);
-        mappingService.updateMapping(studyConcept, datasetConcept).then(function() {
-          done();
-        });
+        mappingService.updateMapping(studyConcept, datasetConcept).then(done);
         rootScope.$digest();
       });
 
       it('should add the new mapping to the graph', function(done) {
-        expect(studyServiceMock.saveGraph).toHaveBeenCalledWith([{
+        expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith([{
           '@id': 'http://testuri/1',
           '@type': 'ontology:Drug',
           'label': 'Sertraline',
-          'sameAs': datasetConcept.uri
+          'sameAs': datasetConcept['@id']
         }]);
         done();
       });
@@ -64,12 +63,12 @@ define(['angular', 'angular-mocks'], function() {
           uri: 'http://testuri/1'
         },
         datasetConcept1 = {
-          uri: 'http://testuri/dataset/1',
-          type: 'ontology:Drug'
+          '@id': 'http://testuri/dataset/1',
+          '@type': 'ontology:Drug'
         },
         datasetConcept2 = {
-          uri: 'http://testuri/dataset/2',
-          type: 'ontology:Drug'
+          '@id': 'http://testuri/dataset/2',
+          '@type': 'ontology:Drug'
         };
 
       beforeEach(function(done) {
@@ -77,7 +76,7 @@ define(['angular', 'angular-mocks'], function() {
           '@id': studyConcept.uri,
           '@type': 'ontology:Drug',
           label: 'Sertraline',
-          sameAs: datasetConcept1.uri
+          sameAs: datasetConcept1['@id']
         }]);
 
         mappingService.updateMapping(studyConcept, datasetConcept2).then(function() {
@@ -87,11 +86,11 @@ define(['angular', 'angular-mocks'], function() {
       });
 
       it('should overwrite the old mapping with the new one', function(done) {
-        expect(studyServiceMock.saveGraph).toHaveBeenCalledWith([{
+        expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith([{
           '@id': studyConcept.uri,
           '@type': 'ontology:Drug',
           label: 'Sertraline',
-          sameAs: datasetConcept2.uri
+          sameAs: datasetConcept2['@id']
         }]);
         done();
       });
@@ -104,8 +103,8 @@ define(['angular', 'angular-mocks'], function() {
           type: 'ontology:Drug'
         },
         datasetConcept = {
-          uri: 'http://testuri/dataset/1',
-          type: 'ontology:Drug'
+          '@id': 'http://testuri/dataset/1',
+          '@type': 'ontology:Drug'
         };
 
       beforeEach(function(done) {
@@ -113,7 +112,7 @@ define(['angular', 'angular-mocks'], function() {
           '@id': studyConcept.uri,
           '@type': 'ontology:Drug',
           label: 'Sertraline',
-          sameAs: datasetConcept.uri
+          sameAs: datasetConcept['@id']
         }]);
         mappingService.removeMapping(studyConcept, datasetConcept).then(function() {
           done();
@@ -122,7 +121,7 @@ define(['angular', 'angular-mocks'], function() {
       });
 
       it('should remove the old mapping', function(done) {
-        expect(studyServiceMock.saveGraph).toHaveBeenCalledWith([{
+        expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith([{
           '@id': studyConcept.uri,
           '@type': 'ontology:Drug',
           label: 'Sertraline'
@@ -136,8 +135,8 @@ define(['angular', 'angular-mocks'], function() {
           uri: 'http://testuri/1'
         },
         datasetConcept = {
-          uri: 'http://testuri/2',
-          type: 'ontology:AdverseEvent'
+          '@id': 'http://testuri/2',
+          '@type': 'ontology:Variable'
         };
 
       beforeEach(function(done) {
@@ -156,31 +155,31 @@ define(['angular', 'angular-mocks'], function() {
       });
 
       it('should add the new variable mapping to the graph', function() {
-        expect(studyServiceMock.saveStudy).toHaveBeenCalledWith({
+        expect(studyServiceMock.save).toHaveBeenCalledWith({
           '@type': 'ontology:Study',
           'has_outcome': [{
             '@id': studyConcept.uri,
             '@type': 'ontology:AdverseEvent',
             'of_variable': [{
               'label': 'Agitation',
-              'sameAs': datasetConcept.uri
+              'sameAs': datasetConcept['@id']
             }]
           }]
         });
       });
     });
 
-    describe('set variable mapping where one existed', function(done) {
+    describe('set variable mapping where one existed', function() {
       var studyConcept = {
           uri: 'http://trials.drugis.org/instances/instance1'
         },
         datasetConcept1 = {
-          uri: 'http://trials.drugis.org/entities/entities1',
-          type: 'ontology:AdverseEvent'
+          '@id': 'http://trials.drugis.org/entities/entities1',
+          '@type': 'ontology:Variable'
         },
         datasetConcept2 = {
-          uri: 'http://trials.drugis.org/entities/entities2',
-          type: 'ontology:AdverseEvent'
+          '@id': 'http://trials.drugis.org/entities/entities2',
+          '@type': 'ontology:Variable'
         };
       beforeEach(function(done) {
         studyDefer.resolve({
@@ -190,7 +189,7 @@ define(['angular', 'angular-mocks'], function() {
             '@type': 'ontology:AdverseEvent',
             'of_variable': [{
               'label': 'Agitation',
-              sameAs: datasetConcept1.uri
+              sameAs: datasetConcept1['@id']
             }]
           }]
         });
@@ -199,14 +198,14 @@ define(['angular', 'angular-mocks'], function() {
       });
 
       it('should overwrite the old variable mapping to the graph', function() {
-        expect(studyServiceMock.saveStudy).toHaveBeenCalledWith({
+        expect(studyServiceMock.save).toHaveBeenCalledWith({
           '@type': 'ontology:Study',
           'has_outcome': [{
             '@id': studyConcept.uri,
             '@type': 'ontology:AdverseEvent',
             'of_variable': [{
               'label': 'Agitation',
-              'sameAs': datasetConcept2.uri
+              'sameAs': datasetConcept2['@id']
             }]
           }]
         });
@@ -218,8 +217,8 @@ define(['angular', 'angular-mocks'], function() {
           uri: 'http://testuri/1'
         },
         datasetConcept = {
-          uri: 'http://testuri/2',
-          type: 'ontology:AdverseEvent'
+          '@id': 'http://testuri/2',
+          '@type': 'ontology:Variable'
         };
 
       beforeEach(function(done) {
@@ -230,7 +229,7 @@ define(['angular', 'angular-mocks'], function() {
             '@type': 'ontology:AdverseEvent',
             'of_variable': [{
               'label': 'Agitation',
-              'sameAs': datasetConcept.uri
+              'sameAs': datasetConcept['@id']
             }]
           }]
         });
@@ -239,7 +238,7 @@ define(['angular', 'angular-mocks'], function() {
       });
 
       it('should add the new variable mapping to the graph', function() {
-        expect(studyServiceMock.saveStudy).toHaveBeenCalledWith({
+        expect(studyServiceMock.save).toHaveBeenCalledWith({
           '@type': 'ontology:Study',
           'has_outcome': [{
             '@id': studyConcept.uri,
