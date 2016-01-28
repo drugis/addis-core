@@ -76,7 +76,7 @@ define([],
       });
 
       $scope.showScrolbarIfNessesary = function() {
-        var offsetString = angular.element('.reveal-modal').css('top'); 
+        var offsetString = angular.element('.reveal-modal').css('top');
         var offset = parseInt(offsetString , 10); // remove px part
         var viewPortHeight = angular.element('html').height();
         var scrollableWrapperElement = angular.element('.scrollable-wrapper');

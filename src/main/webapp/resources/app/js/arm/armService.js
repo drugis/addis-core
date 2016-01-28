@@ -1,76 +1,77 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService', 'SanitizeService'];
-    var ArmService = function($q, StudyService, SparqlResource, UUIDService, SanitizeService) {
+    var dependencies = ['$q', 'StudyService', 'UUIDService'];
+    var ArmService = function($q, StudyService, UUIDService) {
 
-      var queryArms = SparqlResource.get('queryArm.sparql');
-      var addArmTemplate = SparqlResource.get('addArmQuery.sparql');
-      var addArmCommentTemplate = SparqlResource.get('addArmCommentQuery.sparql');
-      var editArmWithCommentTemplate = SparqlResource.get('editArmWithComment.sparql');
-      var editArmWithoutCommentTemplate = SparqlResource.get('editArmWithoutComment.sparql');
-      var deleteSubjectTemplate = SparqlResource.get('deleteSubject.sparql');
-      var deleteHasArmTemplate = SparqlResource.get('deleteHasArm.sparql');
+      function toFrontEnd(backEndArm) {
+        var frontEndArm = {
+          armURI: backEndArm['@id'],
+          label: backEndArm.label,
+        }
+
+        if (backEndArm.comment) {
+          frontEndArm.comment = backEndArm.comment;
+        }
+
+        return frontEndArm;
+      }
+
+      function toBackEnd(frontEndArm) {
+        var backEndArm = {
+          '@id': frontEndArm.armURI,
+          label: frontEndArm.label,
+        }
+
+        if (frontEndArm.comment) {
+          backEndArm.comment = frontEndArm.comment;
+        }
+
+        return backEndArm;
+      }
 
       function queryItems() {
-        return queryArms.then(function(query) {
-          return StudyService.doNonModifyingQuery(query);
+        return StudyService.getStudy().then(function(study) {
+          return study.has_arm.map(toFrontEnd);
         });
       }
 
       function addItem(item) {
-        var addArmPromise, addCommentPromise;
-        var armToAdd = angular.copy(item);
-        armToAdd.uuid = UUIDService.generate();
+        return StudyService.getStudy().then(function(study) {
+          var newArm = {
+            '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
+            '@type': 'ontology:Arm',
+            label: item.label
+          };
 
-        addArmPromise = addArmTemplate.then(function(template) {
-          return StudyService.doModifyingQuery(fillTemplate(template, armToAdd));
+          if(item.comment) {
+            newArm.comment = item.comment;
+          }
+
+          study.has_arm.push(newArm);
+          return StudyService.save(study);
         });
-
-        if (armToAdd.comment) {
-          addCommentPromise = addArmCommentTemplate.then(function(template) {
-            return StudyService.doModifyingQuery(fillTemplate(template, armToAdd));
-          });
-        }
-
-        return $q.all([addArmPromise, addCommentPromise]);
       }
 
-      function editItem(item) {
-        var defer = $q.defer();
-        if (item.comment) {
-          editArmWithCommentTemplate.then(function(template) {
-            defer.resolve(StudyService.doModifyingQuery(fillTemplate(template, item)));
+      function editItem(editArm) {
+        return StudyService.getStudy().then(function(study) {
+          study.has_arm = _.map(study.has_arm, function(arm) {
+            if (arm['@id'] === editArm.armURI) {
+              return toBackEnd(editArm);
+            }
+            return arm;
           });
-        } else {
-          editArmWithoutCommentTemplate.then(function(template) {
-            defer.resolve(StudyService.doModifyingQuery(fillTemplate(template, item)));
-          });
-        }
-        return defer.promise;
+          return StudyService.save(study);
+        });
       }
 
-      function deleteItem(arm) {
-        var deleteArmPromise, deleteHasArmPromise;
-
-        deleteArmPromise = deleteSubjectTemplate.then(function(template) {
-          return StudyService.doModifyingQuery(fillTemplate(template, arm));
+      function deleteItem(removeArm) {
+        return StudyService.getStudy().then(function(study) {
+          _.remove(study.has_arm, function(arm) {
+            return arm['@id'] === removeArm.armURI;
+          });
+          return StudyService.save(study);
         });
-
-        deleteArmPromise = deleteHasArmTemplate.then(function(template) {
-          return StudyService.doModifyingQuery(fillTemplate(template, arm));
-        });
-
-        return $q.all([deleteArmPromise, deleteHasArmPromise]);
-      }
-
-      function fillTemplate(template, item) {
-        return template
-          .replace(/\$newUUID/g, item.uuid)
-          .replace(/\$subjectURI/g, item.armURI)
-          .replace(/\$armURI/g, item.armURI)
-          .replace(/\$label/g, item.label)
-          .replace(/\$comment/g, SanitizeService.sanitizeStringLiteral(item.comment));
       }
 
       return {

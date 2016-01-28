@@ -6,8 +6,6 @@ define(function(require) {
   return angular.module('trialverse.populationCharacteristic', [
     'ngResource',
     'trialverse.util',
-    'trialverse.study',
-    'trialverse.measurementMoment',
     'trialverse.outcome'
   ])
 

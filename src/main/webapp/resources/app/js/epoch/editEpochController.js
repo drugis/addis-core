@@ -3,13 +3,13 @@ define([],
   function() {
     var dependencies = ['$scope',
       '$state', '$modalInstance',
-      'itemService', 'callback', 'DurationService'
+      'itemService', 'callback', 'DurationService', 'item'
     ];
     var EditEpochController = function($scope, $state, $modalInstance,
-      itemService, callback, DurationService) {
+      itemService, callback, DurationService, item) {
 
-      var itemScratch = angular.copy($scope.item);
-      itemScratch.isPrimary = itemScratch.isPrimary === 'true';
+      var itemScratch = item;
+      itemScratch.isPrimary = itemScratch.isPrimary === true;
 
       $scope.itemScratch = itemScratch;
 
@@ -28,8 +28,7 @@ define([],
       }
 
       $scope.editItem = function() {
-        itemService.editItem($scope.item, $scope.itemScratch).then(function() {
-            $scope.item = angular.copy($scope.itemScratch);
+        itemService.editItem($scope.itemScratch).then(function() {
             callback();
             $modalInstance.close();
           },

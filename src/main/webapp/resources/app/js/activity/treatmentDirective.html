@@ -14,14 +14,14 @@
       <div class="row">
         <div class="large-9 medium-12 columns">
           <label>Dose type</label>
-          <input ng-model="treatment.treatmentDoseType" type="radio" value="http://trials.drugis.org/ontology#FixedDoseDrugTreatment" id="fixedOption">
+          <input ng-model="treatment.treatmentDoseType" type="radio" value="ontology:FixedDoseDrugTreatment" id="fixedOption">
           <label for="fixedOption">fixed</label>
-          <input ng-model="treatment.treatmentDoseType" type="radio" value="http://trials.drugis.org/ontology#TitratedDoseDrugTreatment" id="titratedOption">
+          <input ng-model="treatment.treatmentDoseType" type="radio" value="ontology:TitratedDoseDrugTreatment" id="titratedOption">
           <label for="titratedOption">titrated</label>
         </div>
       </div>
 
-      <div class="row" ng-show="treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment' ">
+      <div class="row" ng-show="treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment' ">
         <div class="large-2 medium-3 columns">
           <label>Dose amount</label>
           <input ng-model="treatment.fixedValue" type="number">
@@ -33,7 +33,7 @@
         </div>
       </div>
 
-      <div class="row" ng-show="treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment' ">
+      <div class="row" ng-show="treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment' ">
         <div class="large-2 medium-3 columns">
           <label>Minimun dose</label>
           <input ng-model="treatment.minValue" type="number">

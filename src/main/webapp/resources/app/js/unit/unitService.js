@@ -1,15 +1,22 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService'];
-    var UnitService = function($q, StudyService, SparqlResource, UUIDService) {
+    var dependencies = ['$q', 'StudyService'];
+    var UnitService = function($q, StudyService) {
 
-      var queryUnitTemplate = SparqlResource.get('queryUnit.sparql');
+        function nodeToFrontEnd(node) {
+          return {
+            uri: node['@id'],
+            label: node.label
+          };
+        }
 
       function queryItems(studyUuid) {
-        return queryUnitTemplate.then(function(template){
-          // no need to fill template, nothing to fillin
-          return StudyService.doNonModifyingQuery(template);
+        return StudyService.getJsonGraph().then(function(graph) {
+          var nodes = _.filter(graph['@graph'], function(node) {
+            return node['@type'] === 'ontology:Unit';
+          });
+          return _.map(nodes, nodeToFrontEnd);
         });
       }
 

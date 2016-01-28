@@ -102,6 +102,12 @@ define(
             templateUrl: 'app/js/user/createDataset.html',
             controller: 'CreateDatasetController'
           })
+          .state('dataset', {
+            parent: 'user',
+            url: '/datasets/:datasetUUID',
+            templateUrl: 'app/js/dataset/dataset.html',
+            controller: 'DatasetController'
+          })
           .state('versionedDataset', {
             parent: 'user',
             url: '/datasets/:datasetUUID/versions/:versionUuid',
@@ -123,6 +129,16 @@ define(
             url: '/studies/:studyGraphUuid',
             templateUrl: 'app/js/study/view/study.html',
             controller: 'StudyController'
+          })
+          .state('dataset.concepts', {
+            url: '/concepts',
+            templateUrl: 'app/js/concept/concepts.html',
+            controller: 'ConceptController'
+          })
+          .state('dataset.study', {
+            url: '/studies/:studyGraphUuid',
+            templateUrl: 'app/js/study/view/study.html',
+            controller: 'StudyController'
           });
 
         // Default route
@@ -130,54 +146,53 @@ define(
       }
     ]);
 
-    app.constant('SCRATCH_RDF_STORE_URL', '/scratch');
     app.constant('CONCEPT_GRAPH_UUID', 'concepts');
     app.constant('GROUP_ALLOCATION_OPTIONS', _.indexBy([{
-      uri: 'http://trials.drugis.org/ontology#AllocationRandomized',
+      uri: 'ontology:AllocationRandomized',
       label: 'Randomized'
     }, {
-      uri: 'http://trials.drugis.org/ontology#AllocationNonRandomized',
+      uri: 'ontology:AllocationNonRandomized',
       label: 'Non-Randomized'
     }, {
       uri: 'unknown',
       label: 'Unknown'
     }], 'uri'));
     app.constant('BLINDING_OPTIONS', _.indexBy([{
-      uri: 'http://trials.drugis.org/ontology#OpenLabel',
+      uri: 'ontology:OpenLabel',
       label: 'Open'
     }, {
-      uri: 'http://trials.drugis.org/ontology#SingleBlind',
+      uri: 'ontology:SingleBlind',
       label: 'Single blind'
     }, {
-      uri: 'http://trials.drugis.org/ontology#DoubleBlind',
+      uri: 'ontology:DoubleBlind',
       label: 'Double blind'
     }, {
-      uri: 'http://trials.drugis.org/ontology#TripleBlind',
+      uri: 'ontology:TripleBlind',
       label: 'Triple blind'
     }, {
       uri: 'unknown',
       label: 'Unknown'
     }], 'uri'));
     app.constant('STATUS_OPTIONS', _.indexBy([{
-      uri: 'http://trials.drugis.org/ontology#StatusRecruiting',
+      uri: 'ontology:StatusRecruiting',
       label: 'Recruiting'
     }, {
-      uri: 'http://trials.drugis.org/ontology#StatusEnrolling',
+      uri: 'ontology:StatusEnrolling',
       label: 'Enrolling'
     }, {
-      uri: 'http://trials.drugis.org/ontology#StatusActive',
+      uri: 'ontology:StatusActive',
       label: 'Active'
     }, {
-      uri: 'http://trials.drugis.org/ontology#StatusCompleted',
+      uri: 'ontology:StatusCompleted',
       label: 'Completed'
     }, {
-      uri: 'http://trials.drugis.org/ontology#StatusSuspended',
+      uri: 'ontology:StatusSuspended',
       label: 'Suspended'
     }, {
-      uri: 'http://trials.drugis.org/ontology#StatusTerminated',
+      uri: 'ontology:StatusTerminated',
       label: 'Terminated'
     }, {
-      uri: 'http://trials.drugis.org/ontology#StatusWithdrawn',
+      uri: 'ontology:StatusWithdrawn',
       label: 'Withdrawn'
     }, {
       uri: 'unknown',

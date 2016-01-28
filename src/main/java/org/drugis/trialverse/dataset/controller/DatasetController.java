@@ -121,7 +121,14 @@ public class DatasetController extends AbstractTrialverseController {
   @ResponseBody
   public void getDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws IOException, URISyntaxException {
     logger.trace("retrieving head dataset");
-    getVersionedDataset(httpServletResponse, datasetUUID, null);
+    getVersionedDatasetAsTurtle(httpServletResponse, datasetUUID, null);
+  }
+
+  @RequestMapping(value = "/{datasetUUID}", method = RequestMethod.GET, headers = WebConstants.ACCEPT_JSON_HEADER)
+  @ResponseBody
+  public void getDatasetAsJson(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws IOException, URISyntaxException {
+    logger.trace("retrieving head dataset");
+    getVersionedDatasetAsJson(httpServletResponse, datasetUUID, null);
   }
 
   @RequestMapping(value = "/{datasetUuid}/query", method = RequestMethod.GET)
@@ -160,12 +167,26 @@ public class DatasetController extends AbstractTrialverseController {
 
   @RequestMapping(value = "/{datasetUUID}/versions/{versionUuid}", method = RequestMethod.GET)
   @ResponseBody
-  public void getVersionedDataset(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID, @PathVariable String versionUuid) throws URISyntaxException {
+  public void getVersionedDatasetAsTurtle(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID, @PathVariable String versionUuid) throws URISyntaxException {
     logger.trace("retrieving versioned dataset: {}", versionUuid);
-    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
-    Model datasetModel = datasetReadRepository.getVersionedDataset(trialverseDatasetUri, versionUuid);
+    Model model = getVersionedDatasetModel(datasetUUID, versionUuid);
     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     httpServletResponse.setHeader("Content-Type", RDFLanguages.TURTLE.getContentType().getContentType());
-    trialverseIOUtilsService.writeModelToServletResponse(datasetModel, httpServletResponse);
+    trialverseIOUtilsService.writeModelToServletResponse(model, httpServletResponse);
+  }
+
+  @RequestMapping(value = "/{datasetUUID}/versions/{versionUuid}", method = RequestMethod.GET, headers = WebConstants.ACCEPT_JSON_HEADER)
+  @ResponseBody
+  public void getVersionedDatasetAsJson(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID, @PathVariable String versionUuid) throws URISyntaxException {
+    logger.trace("retrieving versioned dataset: {}", versionUuid);
+    Model model = getVersionedDatasetModel(datasetUUID, versionUuid);
+    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+    httpServletResponse.setHeader("Content-Type", RDFLanguages.JSONLD.getContentType().getContentType());
+    trialverseIOUtilsService.writeModelToServletResponseJson(model, httpServletResponse);
+  }
+
+  public Model getVersionedDatasetModel(String datasetUUID, String versionUuid) throws URISyntaxException {
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUUID);
+    return datasetReadRepository.getVersionedDataset(trialverseDatasetUri, versionUuid);
   }
 }

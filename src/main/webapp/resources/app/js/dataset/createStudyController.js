@@ -2,10 +2,11 @@
 define([], function() {
   var dependencies = ['$scope', '$stateParams', '$modalInstance',
     'successCallback',
-    'UUIDService', 'StudyService', 'GraphResource'
+    'UUIDService', 'StudyService'
   ];
+
   var CreateStudyController = function($scope, $stateParams, $modalInstance,
-    successCallback, UUIDService, StudyService, GraphResource) {
+    successCallback, UUIDService, StudyService) {
 
     $scope.isCreatingStudy = false;
 
@@ -18,26 +19,14 @@ define([], function() {
 
     $scope.createStudy = function(study) {
       $scope.isCreatingStudy = true;
-      StudyService.createEmptyStudy(study).then(function() {
-        StudyService.getGraph().then(function(queryResult) {
-          var uuid = StudyService.getStudyUUID();
-          GraphResource.put({
-            userUid: $stateParams.userUid,
-            datasetUUID: $stateParams.datasetUUID,
-            graphUuid: uuid,
-            commitTitle: 'Initial study creation: ' + study.label
-          }, queryResult.data, function(value, responseHeaders) {
-            var newVersion = responseHeaders('X-EventSource-Version');
-            newVersion = newVersion.split('/')[4];
-            successCallback(newVersion);
-            $scope.isCreatingStudy = false;
-            $modalInstance.close();
-          }, function(error) {
-            console.log('error' + error);
-          });
-        });
-      });
 
+      var newStudyVersionPromise = StudyService.createEmptyStudy(study, $stateParams.userUid, $stateParams.datasetUUID);
+
+      newStudyVersionPromise.then(function(newVersion) {
+        successCallback(newVersion);
+        $scope.isCreatingStudy = false;
+        $modalInstance.close();
+      });
     };
 
     $scope.cancel = function() {

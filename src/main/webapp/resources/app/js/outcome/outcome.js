@@ -3,6 +3,7 @@
 define(function (require) {
   var angular = require('angular');
   var dependencies = ['ngResource',
+  'trialverse.measurementMoment',
   'trialverse.study',
   'trialverse.util'];
 

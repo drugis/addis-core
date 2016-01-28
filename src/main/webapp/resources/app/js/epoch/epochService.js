@@ -1,108 +1,110 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'UUIDService', 'SparqlResource', 'SanitizeService'];
-    var EpochService = function($q, StudyService, UUIDService, SparqlResource, SanitizeService) {
+    var dependencies = ['$q', 'StudyService', 'UUIDService'];
+    var EpochService = function($q, StudyService, UUIDService) {
 
-      var epochQuery = SparqlResource.get('queryEpoch.sparql');
-      var addEpochQueryRaw = SparqlResource.get('addEpoch.sparql');
-      var addEpochCommentQueryRaw = SparqlResource.get('addEpochComment.sparql');
-      var addEpochToEndOfListQueryRaw = SparqlResource.get('addEpochToEndOfList.sparql');
-      var setEpochPrimaryQueryRaw = SparqlResource.get('setEpochPrimary.sparql');
-      var deleteEpochRaw = SparqlResource.get('deleteEpoch.sparql');
-      var editEpochRaw = SparqlResource.get('editEpoch.sparql');
-      var removeEpochPrimaryRaw = SparqlResource.get('removeEpochPrimary.sparql');
-      var setEpochToPrimaryRaw = SparqlResource.get('setEpochToPrimary.sparql');
+      var INSTANCE_PREFIX = 'http://trials.drugis.org/instances/';
+
+      function addPosition(item, index) {
+        item.pos = index;
+        return item;
+      }
+
+      function addIsPrimary(primaryEpochUri, item) {
+        if (item.uri === primaryEpochUri) {
+          item.isPrimary = true;
+        } else {
+          item.isPrimary = false;
+        }
+        return item;
+      }
+
+      function tofrontEnd(backendEpoch) {
+        var frondEndEpoch = {
+          uri: backendEpoch['@id'],
+          label: backendEpoch.label,
+          duration: backendEpoch.duration ? backendEpoch.duration : 'PT0S' 
+        };
+
+        if (backendEpoch.comment) {
+          frondEndEpoch.comment = backendEpoch.comment;
+        }
+
+        return frondEndEpoch;
+      }
 
       function queryItems() {
-        return epochQuery.then(function(query) {
-          return StudyService.doNonModifyingQuery(query);
+        return StudyService.getStudy().then(function(study) {
+          return study.has_epochs
+            .map(tofrontEnd)
+            .map(addPosition)
+            .map(addIsPrimary.bind(this, study.has_primary_epoch));
         });
       }
 
       function addItem(item) {
-        var newItem = angular.copy(item);
-        newItem.uuid = UUIDService.generate();
+        return StudyService.getStudy().then(function(study) {
+          var newEpoch = {
+            '@id': INSTANCE_PREFIX + UUIDService.generate(),
+            '@type': 'ontology:Epoch',
+            label: item.label,
+            duration: item.duration
+          };
 
-        var addEpochPromise, addCommentPromise, setPrimaryPromise, addToListPromise;
+          if (item.comment) {
+            newEpoch.comment = item.comment;
+          }
 
-        // add epoch
-        addEpochPromise = addEpochQueryRaw.then(function(query) {
-          var addEpochQuery = fillInTemplate(query, newItem);
-          return StudyService.doModifyingQuery(addEpochQuery);
+          if (item.isPrimaryEpoch) {
+            study.has_primary_epoch = newEpoch['@id'];
+          }
+
+          study.has_epochs.push(newEpoch)
+          return StudyService.save(study);
         });
-        // optional add comment
-        if (item.comment) {
-          addCommentPromise = addEpochCommentQueryRaw.then(function(query) {
-            var addEpochCommentQuery = fillInTemplate(query, newItem);
-            return StudyService.doModifyingQuery(addEpochCommentQuery);
-          });
-        }
-        // optional is_primary
-        if (item.isPrimaryEpoch) {
-          setPrimaryPromise = setEpochPrimaryQueryRaw.then(function(query) {
-            var setEpochPrimaryQuery = fillInTemplate(query, newItem);
-            return StudyService.doModifyingQuery(setEpochPrimaryQuery);
-          });
-        }
-
-        // add epoch to list of has_epochs in study
-        addToListPromise = addEpochToEndOfListQueryRaw.then(function(query) {
-          var addEpochToEndOfListQuery = fillInTemplate(query, newItem);
-          return StudyService.doModifyingQuery(addEpochToEndOfListQuery);
-        });
-
-        return $q.all([addEpochPromise,
-                        addCommentPromise,
-                        setPrimaryPromise,
-                        addToListPromise]);
       }
 
       function deleteItem(item) {
-        return deleteEpochRaw.then(function(deleteQueryRaw) {
-          var deleteQuery = deleteQueryRaw.replace(/\$URI/g, item.uri);
-          return StudyService.doModifyingQuery(deleteQuery);
+        return StudyService.getStudy().then(function(study) {
+
+          if (study.has_primary_epoch === item.uri) {
+            study.has_primary_epoch = undefined;
+          }
+
+          _.remove(study.has_epochs, function(epoch) {
+            return epoch['@id'] === item.uri;
+          });
+
+          return StudyService.save(study);
         });
       }
 
-      function editItem(oldItem, newItem) {
-        var newItemCopy = angular.copy(newItem);
-        newItemCopy.comment = newItemCopy.comment ? newItemCopy.comment : '';
-
-        var isPrimaryDefer, epochDefer;
-
-        if (oldItem.isPrimary === 'true' && !newItemCopy.isPrimary) {
-          isPrimaryDefer = removeEpochPrimaryRaw.then(function(queryRaw) {
-            var query = fillInTemplate(queryRaw, newItemCopy);
-            return StudyService.doModifyingQuery(query);
+      function editItem(newItem) {
+        return StudyService.getStudy().then(function(study) {
+          var editEpochIndex = _.findIndex(study.has_epochs, function(epoch) {
+            return newItem.uri === epoch['@id'];
           });
-        } else if (newItemCopy.isPrimary) {
-          isPrimaryDefer = setEpochToPrimaryRaw.then(function(queryRaw) {
-            var query = fillInTemplate(queryRaw, newItemCopy);
-            return StudyService.doModifyingQuery(query);
-          });
-        }
 
-        epochDefer = editEpochRaw.then(function(editQueryRaw) {
-          var editQuery = fillInTemplate(editQueryRaw, newItemCopy);
-          return StudyService.doModifyingQuery(editQuery);
+          study.has_epochs[editEpochIndex].label = newItem.label;
+          study.has_epochs[editEpochIndex].duration = newItem.duration;
+
+          if (newItem.comment) {
+            study.has_epochs[editEpochIndex].comment = newItem.comment;
+          } else {
+            delete study.has_epochs[editEpochIndex].comment;
+          }
+
+          if (study.has_primary_epoch === newItem.uri) {
+            study.has_primary_epoch = undefined;
+          }
+
+          if (newItem.isPrimary) {
+            study.has_primary_epoch = newItem.uri;
+          }
+
+          return StudyService.save(study);
         });
-
-        return $q.all([isPrimaryDefer, epochDefer]);
-      }
-
-      function fillInTemplate(template, item) {
-        return template
-                .replace(/\$newUUID/g, item.uuid)
-                .replace('$label', item.label)
-                .replace('$duration', item.duration)
-                .replace('$comment', SanitizeService.sanitizeStringLiteral(item.comment))
-                .replace(/\$elementToInsert/g, item.uuid)
-                .replace(/\$URI/g, item.uri)
-                .replace(/\$newDuration/g, item.duration)
-                .replace(/\$newLabel/g, item.label)
-                .replace(/\$newComment/g, SanitizeService.sanitizeStringLiteral(item.comment))
-                ;
       }
 
       return {

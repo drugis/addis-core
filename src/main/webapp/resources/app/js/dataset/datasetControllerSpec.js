@@ -1,20 +1,20 @@
 'use strict';
-define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
+define(['angular-mocks'], function(angularMocks) {
   describe('the dataset controller', function() {
 
     var scope, httpBackend,
       mockModal = jasmine.createSpyObj('$mock', ['open']),
-      mockSingleDatasetService = jasmine.createSpyObj('SingleDatasetService', ['loadStore', 'queryDataset', 'reset']),
-      mockRemoteRdfStoreService = jasmine.createSpyObj('RemoteRdfStoreService', ['deFusekify']),
       studiesWithDetailsService = jasmine.createSpyObj('StudiesWithDetailsService', ['get']),
       historyResource = jasmine.createSpyObj('HistoryResource', ['query']),
-      conceptService = jasmine.createSpyObj('ConceptService', ['loadStore', 'queryItems']),
-      versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get']),
-      mockLoadStoreDeferred,
+      conceptService = jasmine.createSpyObj('ConceptService', ['loadJson', 'queryItems']),
+      versionedGraphResource = jasmine.createSpyObj('VersionedGraphResource', ['get', 'getConceptJson']),
+      datasetResource = jasmine.createSpyObj('DatasetResource', ['getForJson']),
+      datasetVersionedResource = jasmine.createSpyObj('DatasetVersionedResource', ['getForJson']),
+      datasetDeferred,
       queryHistoryDeferred,
       studiesWithDetailsGetDeferred,
       mockQueryDatasetDeferred,
-      getConceptsDeferred,
+      conceptsJsonDefer,
       mockStudiesWithDetail = {
         '@graph': {}
       },
@@ -27,44 +27,34 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         versionUuid: versionUuid
       };
 
+    beforeEach(angularMocks.module('trialverse.dataset'));
 
-    // encode query like angualr does for test use, http://tools.ietf.org/html/rfc3986
-    function encodeUriQuery(val) {
-      return encodeURIComponent(val).
-      replace(/%40/gi, '@').
-      replace(/%3A/gi, ':').
-      replace(/%3B/gi, ';').
-      replace(/%24/g, '$').
-      replace(/%2C/gi, ',').
-      replace(/%20/g, '+');
-    }
-
-    beforeEach(module('trialverse.dataset'));
-
-    beforeEach(inject(function($rootScope, $q, $controller, $httpBackend, DatasetVersionedResource) {
+    beforeEach(angularMocks.inject(function($rootScope, $q, $controller, $httpBackend) {
       scope = $rootScope;
       httpBackend = $httpBackend;
 
-      mockLoadStoreDeferred = $q.defer();
       mockQueryDatasetDeferred = $q.defer();
       studiesWithDetailsGetDeferred = $q.defer();
       queryHistoryDeferred = $q.defer();
-      getConceptsDeferred = $q.defer();
+      conceptsJsonDefer = $q.defer();
+      datasetDeferred = $q.defer();
 
-      mockSingleDatasetService.loadStore.and.returnValue(mockLoadStoreDeferred.promise);
-      mockSingleDatasetService.queryDataset.and.returnValue(mockQueryDatasetDeferred.promise);
       studiesWithDetailsService.get.and.returnValue(studiesWithDetailsGetDeferred.promise);
-      mockRemoteRdfStoreService.deFusekify.and.returnValue(mockStudiesWithDetail);
-      conceptService.loadStore.and.returnValue({then: function(){}});
-      versionedGraphResource.get.and.returnValue({
-        $promise: getConceptsDeferred.promise
+      conceptService.loadJson.and.returnValue(conceptsJsonDefer.promise);
+      versionedGraphResource.getConceptJson.and.returnValue({
+        $promise: conceptsJsonDefer.promise
       });
       historyResource.query.and.returnValue({
         $promise: queryHistoryDeferred.promise
       });
+      datasetVersionedResource.getForJson.and.returnValue({
+        $promise: datasetDeferred.promise
+      });
+      datasetResource.getForJson.and.returnValue({
+        $promise: datasetDeferred.promise
+      });
 
       mockModal.open.calls.reset();
-      httpBackend.expectGET('/users/' + userUid + '/datasets/' + datasetUUID + '/versions/' + versionUuid).respond('dataset');
 
       var windowMock = {
         config: {
@@ -79,10 +69,9 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
         $window: windowMock,
         $stateParams: stateParams,
         $modal: mockModal,
-        SingleDatasetService: mockSingleDatasetService,
-        DatasetVersionedResource: DatasetVersionedResource,
+        DatasetVersionedResource: datasetVersionedResource,
+        DatasetResource: datasetResource,
         StudiesWithDetailsService: studiesWithDetailsService,
-        RemoteRdfStoreService: mockRemoteRdfStoreService,
         HistoryResource: historyResource,
         ConceptService: conceptService,
         VersionedGraphResource: versionedGraphResource
@@ -91,24 +80,25 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     }));
 
     describe('on load', function() {
-      it('should get the dataset and place its properties on the scope', function() {
-        var mockDataset = [{
-          mock: 'object'
-        }];
-        httpBackend.flush();
-        expect(mockSingleDatasetService.reset).toHaveBeenCalled();
-        expect(mockSingleDatasetService.loadStore).toHaveBeenCalled();
-        mockLoadStoreDeferred.resolve();
-        scope.$digest();
-        expect(mockSingleDatasetService.queryDataset).toHaveBeenCalled();
-        mockQueryDatasetDeferred.resolve(mockDataset);
-        scope.$digest();
-        expect(scope.dataset).toEqual({
-          mock: 'object',
-          uuid: 'uuid-1'
+
+      beforeEach(function() {
+        datasetDeferred.resolve({
+          'http://purl.org/dc/terms/title': 'title',
+          'http://purl.org/dc/terms/description': 'description',
+          'http://purl.org/dc/terms/creator': 'creator'
         });
-        expect(scope.dataset.uuid).toBe(stateParams.datasetUUID);
-        expect(studiesWithDetailsService.get).toHaveBeenCalled();
+      });
+
+      it('should get the dataset and place its properties on the scope', function() {
+        scope.$digest();
+        expect(datasetVersionedResource.getForJson).toHaveBeenCalled();
+        expect(scope.dataset).toEqual({
+          datasetUri: 'uuid-1',
+          label: 'title',
+          comment: 'description',
+          creator: 'creator'
+        });
+
       });
 
       it('should get the studies with detail and place them on the scope', function() {
@@ -132,14 +122,36 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
       });
 
       it('should place the concepts on the scope', function() {
-        var datasetConcepts = [{label: 'concept 1'}];
-        getConceptsDeferred.resolve(datasetConcepts);
+        var datasetConcepts = [{
+          label: 'concept 1'
+        }];
+        conceptsJsonDefer.resolve(datasetConcepts);
         scope.$digest();
-        expect(scope.datasetConcepts.$$state.status).toEqual(1); // promise resolved
-        expect(versionedGraphResource.get).toHaveBeenCalled();
-        expect(conceptService.loadStore).toHaveBeenCalled();
+        expect(scope.datasetConcepts).toBeDefined(); // promise resolved
+        expect(versionedGraphResource.getConceptJson).toHaveBeenCalled();
+        expect(conceptService.loadJson).toHaveBeenCalled();
       });
 
+    });
+
+    describe('on load for a head view', function() {
+      beforeEach(angularMocks.inject(function($controller) {
+        $controller('DatasetController', {
+          $scope: scope,
+          $window: {},
+          $stateParams: {},
+          $modal: mockModal,
+          DatasetVersionedResource: datasetVersionedResource,
+          DatasetResource: datasetResource,
+          StudiesWithDetailsService: studiesWithDetailsService,
+          HistoryResource: historyResource,
+          ConceptService: conceptService,
+          VersionedGraphResource: versionedGraphResource
+        });
+      }));
+      it('should get the datasetusing the non versioned resource ', function() {
+        expect(datasetResource.getForJson).toHaveBeenCalled();
+      });
     });
 
     describe('showTableOptions', function() {

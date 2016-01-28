@@ -36,6 +36,12 @@ define([], function() {
             data: data // property on Responce object to access raw result data
           };
         }
+      },
+      'getForJson': {
+        method: 'get',
+        headers: {
+           'Accept': 'application/json; charset=UTF-8'
+        }
       }
     });
   };

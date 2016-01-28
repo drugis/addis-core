@@ -1,10 +1,12 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$scope', '$stateParams', '$window', '$filter', 'VersionedGraphResource', '$location', '$anchorScroll',
+    var dependencies = ['$scope', '$stateParams', '$window', '$filter',
+      'VersionedGraphResource', 'GraphResource', '$location', '$anchorScroll',
       '$modal', 'StudyService', 'ResultsService', 'StudyDesignService', 'DatasetResource'
     ];
-    var StudyController = function($scope, $stateParams, $window, $filter, VersionedGraphResource, $location, $anchorScroll,
+    var StudyController = function($scope, $stateParams, $window, $filter,
+      VersionedGraphResource, GraphResource, $location, $anchorScroll,
       $modal, StudyService, ResultsService, StudyDesignService, DatasetResource) {
 
       // onload
@@ -16,6 +18,8 @@ define([],
       $scope.versionUuid = $stateParams.versionUuid;
       $scope.openCopyDialog = openCopyDialog;
       $scope.study = {};
+      $scope.resetStudy = resetStudy;
+
       $scope.categorySettings = {
         studyInformation: {
           service: 'StudyInformationService',
@@ -125,33 +129,34 @@ define([],
         drugs: {
           label: 'Drugs',
           serviceName: 'DrugService',
-          typeUri: 'http://trials.drugis.org/ontology#Drug'
+          typeUri: 'ontology:Drug'
         },
         populationCharacteristics: {
           label: 'Population characteristics',
           serviceName: 'PopulationCharacteristicService',
-          typeUri: 'http://trials.drugis.org/ontology#Variable'
+          typeUri: 'ontology:Variable'
         },
         endpoints: {
           label: 'Endpoints',
           serviceName: 'EndpointService',
-          typeUri: 'http://trials.drugis.org/ontology#Variable'
+          typeUri: 'ontology:Variable'
         },
         adverseEvents: {
           label: 'Adverse events',
           serviceName: 'AdverseEventService',
-          typeUri: 'http://trials.drugis.org/ontology#Variable'
+          typeUri: 'ontology:Variable'
         }
       };
 
       function openCopyDialog() {
-
         $modal.open({
           templateUrl: 'app/js/study/copyStudy.html',
           controller: 'CopyStudyController',
           resolve: {
             datasets: function() {
-              return DatasetResource.queryForJson({userUid: $scope.loginUser.userNameHash}).$promise.then(function(result){
+              return DatasetResource.queryForJson({
+                userUid: $scope.loginUser.userNameHash
+              }).$promise.then(function(result) {
                 return _.filter(result, function(dataset) {
                   return dataset.uri !== 'http://trials.drugis.org/datasets/' + $scope.datasetUUID;
                 });
@@ -177,44 +182,58 @@ define([],
       }
 
       function reloadStudyModel() {
-        VersionedGraphResource.get({
-          userUid: $stateParams.userUid,
-          datasetUUID: $stateParams.datasetUUID,
-          graphUuid: $stateParams.studyGraphUuid,
-          versionUuid: $stateParams.versionUuid
-        }, function(response) {
-          StudyService.loadStore(response.data)
-            .then(function() {
-              console.log('loading study-store success');
-              StudyService.queryStudyData().then(function(queryResult) {
-                $scope.study = queryResult;
-                $scope.studyUuid = $filter('stripFrontFilter')(queryResult.studyUri, 'http://trials.drugis.org/studies/');
-                $scope.$broadcast('refreshStudyDesign');
-                $scope.$broadcast('refreshResults');
-                StudyService.studySaved();
-              });
-            }, function() {
-              console.error('failed loading study-store');
-            });
+        // load the data from the backend
+        var getStudyFromBackendDefer;
+        if ($scope.versionUuid) {
+          getStudyFromBackendDefer = VersionedGraphResource.getJson({
+            userUid: $stateParams.userUid,
+            datasetUUID: $stateParams.datasetUUID,
+            graphUuid: $stateParams.studyGraphUuid,
+            versionUuid: $stateParams.versionUuid
+          });
+        } else {
+          getStudyFromBackendDefer = GraphResource.getJson({
+            userUid: $stateParams.userUid,
+            datasetUUID: $stateParams.datasetUUID,
+            graphUuid: $stateParams.studyGraphUuid
+          });
+        }
+
+        // place loaded data into fontend cache
+        StudyService.loadJson(getStudyFromBackendDefer.$promise);
+
+        // use the loaded data to fill the view and alert the subviews
+        getStudyFromBackendDefer.$promise.then(function() {
+          StudyService.getStudy().then(function(study) {
+            $scope.studyUuid = $filter('stripFrontFilter')(study['@id'], 'http://trials.drugis.org/studies/');
+            $scope.study = {
+              id: $scope.studyUuid,
+              label: study.label,
+              comment: study.comment,
+
+            };
+            $scope.$broadcast('refreshStudyDesign');
+            $scope.$broadcast('refreshResults');
+            StudyService.studySaved();
+          });
         });
+
       }
 
-      $scope.resetStudy = function() {
+      function resetStudy() {
         // skip reset check in controller as ng-disabled does not work with a <a> tag needed by foundation menu item
-        if(StudyService.isStudyModified()) {
-           reloadStudyModel();
+        if (StudyService.isStudyModified()) {
+          reloadStudyModel();
         }
-      };
+      }
 
       reloadStudyModel();
 
       $scope.$on('updateStudyDesign', function() {
-        console.log('update design');
-        ResultsService.cleanUpMeasurements().then(function() {
+        ResultsService.cleanupMeasurements().then(function() {
           $scope.$broadcast('refreshResults');
         });
         StudyDesignService.cleanupCoordinates($stateParams.studyUUID).then(function() {
-          console.log('after cleanup coord');
           $scope.$broadcast('refreshStudyDesign');
         });
       });
@@ -235,8 +254,8 @@ define([],
 
       $scope.saveStudy = function() {
         // skip save check in controller as ng-disabled does not work with a <a> tag needed by foundation menu item
-        if(!StudyService.isStudyModified()) {
-           return;
+        if (!StudyService.isStudyModified()) {
+          return;
         }
 
         $modal.open({
