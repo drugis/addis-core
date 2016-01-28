@@ -1,0 +1,7 @@
+prefix es:    <http://drugis.org/eventSourcing/es#>
+SELECT ?revision WHERE { 
+  <$sourceVersion> es:graph_revision [
+    es:graph <$sourceGraph> ;
+    es:revision ?revision 
+  ] 
+}

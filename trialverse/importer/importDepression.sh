@@ -1,0 +1,1 @@
+lein run --database "postgresql://localhost?user=trialverse&password=develop" --rdf "depression.ttl" --file "../dbms/data/depressionExample.addis" --name "Hansen 2005" --title "Depression dataset based on the Hansen et al. (2005) systematic review"

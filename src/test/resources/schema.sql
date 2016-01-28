@@ -300,3 +300,20 @@ ALTER TABLE NetworkMetaAnalysis ADD COLUMN primaryModel INT;
 ALTER TABLE NetworkMetaAnalysis ADD FOREIGN KEY(primaryModel) REFERENCES model(id);
 --rollback ALTER TABLE analysis DROP CONSTRAINT "analysis_primarymodel_fkey";
 --rollback ALTER TABLE analysis DROP COLUMN primaryModel;
+
+--changeset gertvv:33
+
+CREATE TABLE VersionMapping (id SERIAL NOT NULL,
+    versionedDatasetUrl VARCHAR NOT NULL,
+    ownerUuid VARCHAR NOT NULL,
+    trialverseDatasetUrl VARCHAR NOT NULL,
+    PRIMARY KEY (id));
+
+CREATE TABLE ApplicationKey (id SERIAL NOT NULL,
+            secretKey VARCHAR UNIQUE,
+            accountId INT NOT NULL,
+            applicationName VARCHAR NOT NULL,
+            creationDate DATE NOT NULL,
+            revocationDate DATE NOT NULL,
+            PRIMARY KEY (id),
+            FOREIGN KEY (accountId) REFERENCES Account(id));

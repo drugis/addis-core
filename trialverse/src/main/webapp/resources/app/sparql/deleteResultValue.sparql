@@ -1,0 +1,10 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+
+WITH <$graphUri> 
+DELETE {
+  <$resultUri> ontology:$valueType ?value .
+}
+WHERE {
+  <$resultUri> ontology:$valueType ?value .
+};
+

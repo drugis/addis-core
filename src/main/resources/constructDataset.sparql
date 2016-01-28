@@ -1,0 +1,23 @@
+prefix dc: <http://purl.org/dc/elements/1.1/>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix dataset: <http://trials.drugis.org/datasets/>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix ontology: <http://trials.drugis.org/ontology#>
+
+CONSTRUCT {
+    dataset:$datasetUUID rdf:type ontology:Dataset ;
+      rdfs:label ?title;
+      rdfs:comment ?description;
+      dc:creator $owner .
+}
+WHERE {
+  GRAPH dataset:$datasetUUID {
+    dataset:$datasetUUID rdf:type ontology:Dataset ;
+      rdfs:label ?title ;
+      dc:creator $owner .
+      OPTIONAL {
+        dataset:$datasetUUID rdfs:comment ?description .
+      } .
+  }
+}
+

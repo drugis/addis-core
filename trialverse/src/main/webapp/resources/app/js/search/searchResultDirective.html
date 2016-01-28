@@ -1,0 +1,8 @@
+<div class="panel">
+  <h5>
+    <a ui-sref="versionedDataset.study(studyRefParams)">{{result.title}}</a>
+  </h5>
+  <div ng-show="result.comment">{{result.comment}}</div>
+  <div>Created by {{result.owner}} </div>
+  <div><a ui-sref="versionedDataset(studyRefParams)">Go to source dataset</a> </div>
+</div>

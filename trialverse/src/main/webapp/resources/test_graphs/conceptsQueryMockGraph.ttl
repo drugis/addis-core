@@ -1,0 +1,14 @@
+<http://trials.drugis.org/concepts/e43c3332-31ac-4fa0-b994-7673757fce4b>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "endpoint" .
+
+<http://trials.drugis.org/concepts/55b13cf1-50c8-4669-a390-cc90c2f0c5d7>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "conc 2 the druggening" .
+
+<http://trials.drugis.org/concepts/7af40414-1dc8-48e5-a160-98fc8b8ccc45>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "conc 1" .

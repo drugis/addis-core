@@ -1,0 +1,152 @@
+[ng\:cloak], [ng-cloak], .ng-cloak {
+  display: none !important;
+}
+
+.color-stripe {
+ margin-bottom: 1.25rem;
+}
+
+/* Tabs */
+
+div.tabs {
+  padding:10px;
+}
+ul.tabsNavigation {
+  margin:0 10px;
+  padding:0;
+  text-align:left;
+}
+ul.tabsNavigation > li {
+  list-style:none;
+  display:inline;
+}
+ul.tabsNavigation > li > a {
+  font-size: 0.875em;
+  border:1px solid #E0E0E0;
+  padding: 10px 15px 4px 15px;
+  background:#F0F0F0;
+  text-decoration:none;
+}
+ul.tabsNavigation > li > a:hover {
+  background-color:#F6F6F6;
+}
+ul.tabsNavigation > li.current > a {
+  background: #fff;
+  color:#222;
+  border-bottom:1px solid #fff;
+}
+div.fakeTabsContent {
+  border-top: 1px solid #E0E0E0;
+}
+
+/* inline results */
+#results .loader, .hidden {
+  display: none;
+}
+
+#results.loading > img {
+  opacity: 0.5;
+}
+
+#results.loading .loader {
+  float: left;
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 400px;
+  height: 400px;
+  text-align: center;
+  top: 200px;
+  background-color: white;
+  padding: 5px;
+}
+
+#results.loading .graph {
+  display: none
+}
+
+.jslider-bg i.x {
+  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+  background-color: #CC002C;
+  background-image: none;
+  display: inline-block;
+}
+
+input[type='file'] {
+  width: auto!important;
+}
+
+.alert-box {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/*
+* This product includes color specifications and designs developed by Cynthia
+* Brewer (http://colorbrewer.org/).
+*/
+.RdYlGn .q0-3{background-color:rgb(252,141,89)}
+.RdYlGn .q1-3{background-color:rgb(255,255,191)}
+.RdYlGn .q2-3{background-color:rgb(145,207,96)}
+.RdYlGn .q0-4{background-color:rgb(215,25,28)}
+.RdYlGn .q1-4{background-color:rgb(253,174,97)}
+.RdYlGn .q2-4{background-color:rgb(166,217,106)}
+.RdYlGn .q3-4{background-color:rgb(26,150,65)}
+.RdYlGn .q0-5{background-color:rgb(215,25,28)}
+.RdYlGn .q1-5{background-color:rgb(253,174,97)}
+.RdYlGn .q2-5{background-color:rgb(255,255,191)}
+.RdYlGn .q3-5{background-color:rgb(166,217,106)}
+.RdYlGn .q4-5{background-color:rgb(26,150,65)}
+.RdYlGn .q0-6{background-color:rgb(215,48,39)}
+.RdYlGn .q1-6{background-color:rgb(252,141,89)}
+.RdYlGn .q2-6{background-color:rgb(254,224,139)}
+.RdYlGn .q3-6{background-color:rgb(217,239,139)}
+.RdYlGn .q4-6{background-color:rgb(145,207,96)}
+.RdYlGn .q5-6{background-color:rgb(26,152,80)}
+.RdYlGn .q0-7{background-color:rgb(215,48,39)}
+.RdYlGn .q1-7{background-color:rgb(252,141,89)}
+.RdYlGn .q2-7{background-color:rgb(254,224,139)}
+.RdYlGn .q3-7{background-color:rgb(255,255,191)}
+.RdYlGn .q4-7{background-color:rgb(217,239,139)}
+.RdYlGn .q5-7{background-color:rgb(145,207,96)}
+.RdYlGn .q6-7{background-color:rgb(26,152,80)}
+.RdYlGn .q0-8{background-color:rgb(215,48,39)}
+.RdYlGn .q1-8{background-color:rgb(244,109,67)}
+.RdYlGn .q2-8{background-color:rgb(253,174,97)}
+.RdYlGn .q3-8{background-color:rgb(254,224,139)}
+.RdYlGn .q4-8{background-color:rgb(217,239,139)}
+.RdYlGn .q5-8{background-color:rgb(166,217,106)}
+.RdYlGn .q6-8{background-color:rgb(102,189,99)}
+.RdYlGn .q7-8{background-color:rgb(26,152,80)}
+.RdYlGn .q0-9{background-color:rgb(215,48,39)}
+.RdYlGn .q1-9{background-color:rgb(244,109,67)}
+.RdYlGn .q2-9{background-color:rgb(253,174,97)}
+.RdYlGn .q3-9{background-color:rgb(254,224,139)}
+.RdYlGn .q4-9{background-color:rgb(255,255,191)}
+.RdYlGn .q5-9{background-color:rgb(217,239,139)}
+.RdYlGn .q6-9{background-color:rgb(166,217,106)}
+.RdYlGn .q7-9{background-color:rgb(102,189,99)}
+.RdYlGn .q8-9{background-color:rgb(26,152,80)}
+.RdYlGn .q0-10{background-color:rgb(165,0,38)}
+.RdYlGn .q1-10{background-color:rgb(215,48,39)}
+.RdYlGn .q2-10{background-color:rgb(244,109,67)}
+.RdYlGn .q3-10{background-color:rgb(253,174,97)}
+.RdYlGn .q4-10{background-color:rgb(254,224,139)}
+.RdYlGn .q5-10{background-color:rgb(217,239,139)}
+.RdYlGn .q6-10{background-color:rgb(166,217,106)}
+.RdYlGn .q7-10{background-color:rgb(102,189,99)}
+.RdYlGn .q8-10{background-color:rgb(26,152,80)}
+.RdYlGn .q9-10{background-color:rgb(0,104,55)}
+.RdYlGn .q0-11{background-color:rgb(165,0,38)}
+.RdYlGn .q1-11{background-color:rgb(215,48,39)}
+.RdYlGn .q2-11{background-color:rgb(244,109,67)}
+.RdYlGn .q3-11{background-color:rgb(253,174,97)}
+.RdYlGn .q4-11{background-color:rgb(254,224,139)}
+.RdYlGn .q5-11{background-color:rgb(255,255,191)}
+.RdYlGn .q6-11{background-color:rgb(217,239,139)}
+.RdYlGn .q7-11{background-color:rgb(166,217,106)}
+.RdYlGn .q8-11{background-color:rgb(102,189,99)}
+.RdYlGn .q9-11{background-color:rgb(26,152,80)}
+.RdYlGn .q10-11{background-color:rgb(0,104,55)}

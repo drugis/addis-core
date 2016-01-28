@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>{{ site.name }}</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="css/main.css">
+
+    </head>
+    <body>
+
+        <div class="site">
+
+          <div class="header">
+            <h1>{{ site.name }} &mdash; <small>{{ page.title }}</small></h1>
+
+            <div>
+              <a href="index.html">Main specification</a> |
+              <a href="versioning.html">Versioning mechanism</a> |
+              <a href="conventions.html">Dataset conventions</a> |
+              <a href="notes.html">Notes</a> |
+            </div>
+          </div>
+
+          {{ content }}
+
+          <div class="footer">
+            &copy; Gert van Valkenhoef {{ site.time | date: "%Y-%m-%d" }}
+          </div>
+        </div>
+
+    </body>
+</html>

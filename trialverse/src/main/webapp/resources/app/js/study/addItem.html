@@ -1,0 +1,14 @@
+<form novalidate ng-submit="addItem()">
+    <div class="row">
+        <div class="large-9 columns">
+            <h3>Create a new {{itemName}}</h3>
+        </div>
+    </div>
+    <ng-include="{{addItemUrl}}">
+    <div class="row">
+        <div class="large-9 columns">
+            <button class="success" type="submit" ng-disabled="!mayCreate()">Create</button>
+        </div>
+    </div>
+    <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>

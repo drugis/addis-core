@@ -1,0 +1,8 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX instance: <http://trials.drugis.org/instances/>
+
+INSERT DATA {
+  GRAPH <$graphUri> {
+  	$insertBlock
+ }
+}
