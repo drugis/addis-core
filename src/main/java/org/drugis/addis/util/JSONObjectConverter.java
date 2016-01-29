@@ -16,7 +16,7 @@ public class JSONObjectConverter implements AttributeConverter<JSONObject, Strin
 
   @Override
   public String convertToDatabaseColumn(JSONObject attribute) {
-    return attribute.toJSONString();
+    return attribute == null ? null : attribute.toJSONString();
   }
 
   @Override
