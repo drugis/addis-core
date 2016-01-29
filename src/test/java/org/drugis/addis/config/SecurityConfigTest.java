@@ -1,4 +1,4 @@
-package org.drugis.trialverse.config;
+package org.drugis.addis.config;
 
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.ApiKey;

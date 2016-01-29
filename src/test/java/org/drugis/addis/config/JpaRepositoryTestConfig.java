@@ -13,6 +13,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -143,6 +144,12 @@ public class JpaRepositoryTestConfig {
   public SimpleSocialUsersDetailService simpleSocialUsersDetailService() {
     return mock(SimpleSocialUsersDetailService.class);
   }
+
+  @Bean
+  public UserDetailsService userDetailsService() {
+    return mock(UserDetailsService.class);
+  }
+
 
   Properties additionalProperties() {
     return new Properties() {
