@@ -17,7 +17,9 @@ public class ApiKey {
   private String secretKey;
   private Integer accountId;
   private String applicationName;
+  @Column(columnDefinition = "DATE")
   private Date creationDate;
+  @Column(columnDefinition = "DATE")
   private Date revocationDate;
 
   public ApiKey() {
