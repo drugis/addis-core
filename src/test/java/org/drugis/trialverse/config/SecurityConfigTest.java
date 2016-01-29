@@ -1,9 +1,9 @@
 package org.drugis.trialverse.config;
 
 import org.drugis.addis.security.Account;
-import org.drugis.trialverse.security.ApiKey;
+import org.drugis.addis.security.ApiKey;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.trialverse.security.repository.ApiKeyRepository;
+import org.drugis.addis.security.repository.ApiKeyRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Created by daan on 16-9-15.
  */
-@ContextConfiguration(classes = {SecurityConfig.class, SecurityConfigTestConfig.class})
+@ContextConfiguration(classes = {org.drugis.addis.config.SecurityConfig.class, SecurityConfigTestConfig.class})
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SecurityConfigTest {

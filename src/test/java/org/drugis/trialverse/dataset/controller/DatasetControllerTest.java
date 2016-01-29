@@ -125,7 +125,8 @@ public class DatasetControllerTest {
     URI uri = new URI(newDatasetUri);
     DatasetCommand datasetCommand = new DatasetCommand("dataset title");
     String jsonContent = Utils.createJson(datasetCommand);
-    when(accountRepository.findAccountByUsername(null)).thenReturn(null);
+    Account account = new Account(3, "username", "Pete", "smith", "foo@bar.com");
+    when(accountRepository.findAccountByUsername(john.getUsername())).thenReturn(account);
     when(datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), principal)).thenReturn(uri);
     mockMvc
             .perform(post("/users/37/datasets")
@@ -135,6 +136,7 @@ public class DatasetControllerTest {
             )
             .andExpect(status().isInternalServerError());
 
+    verify(accountRepository).findAccountByUsername(john.getUsername());
     verifyNoMoreInteractions(datasetWriteRepository);
   }
 

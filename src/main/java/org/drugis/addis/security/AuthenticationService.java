@@ -1,5 +1,6 @@
-package org.drugis.trialverse.security;
+package org.drugis.addis.security;
 
+import org.drugis.trialverse.security.TrialversePrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 

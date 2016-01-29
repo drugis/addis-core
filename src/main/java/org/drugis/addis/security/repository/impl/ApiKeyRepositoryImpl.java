@@ -1,7 +1,7 @@
-package org.drugis.trialverse.security.repository.impl;
+package org.drugis.addis.security.repository.impl;
 
-import org.drugis.trialverse.security.ApiKey;
-import org.drugis.trialverse.security.repository.ApiKeyRepository;
+import org.drugis.addis.security.ApiKey;
+import org.drugis.addis.security.repository.ApiKeyRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

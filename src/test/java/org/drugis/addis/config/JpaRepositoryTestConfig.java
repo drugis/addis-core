@@ -1,5 +1,6 @@
 package org.drugis.addis.config;
 
+import org.drugis.addis.security.SimpleSocialUsersDetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -136,6 +137,11 @@ public class JpaRepositoryTestConfig {
   @Bean
   public UsersConnectionRepository usersConnectionRepository() {
     return mock(UsersConnectionRepository.class);
+  }
+
+  @Bean
+  public SimpleSocialUsersDetailService simpleSocialUsersDetailService() {
+    return mock(SimpleSocialUsersDetailService.class);
   }
 
   Properties additionalProperties() {

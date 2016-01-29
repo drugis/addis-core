@@ -1,6 +1,7 @@
 package org.drugis.trialverse.security;
 
 import org.drugis.addis.security.Account;
+import org.drugis.addis.security.ApiKey;
 import org.junit.Test;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;

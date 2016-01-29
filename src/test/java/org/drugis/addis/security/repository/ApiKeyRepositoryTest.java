@@ -1,7 +1,7 @@
-package org.drugis.trialverse.security.repository;
+package org.drugis.addis.security.repository;
 
-import org.drugis.trialverse.config.JpaRepositoryTestConfig;
-import org.drugis.trialverse.security.ApiKey;
+import org.drugis.addis.config.JpaRepositoryTestConfig;
+import org.drugis.addis.security.ApiKey;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

@@ -1,9 +1,9 @@
-package org.drugis.trialverse.security;
+package org.drugis.addis.security;
 
 import org.apache.jena.ext.com.google.common.base.Optional;
-import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.trialverse.security.repository.ApiKeyRepository;
+import org.drugis.trialverse.security.TooManyAccountsException;
+import org.drugis.addis.security.repository.ApiKeyRepository;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;

@@ -44,22 +44,16 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
-        "org.drugis.addis.error",
-        "org.drugis.addis.projects",
-        "org.drugis.addis.security",
-        "org.drugis.addis.outcomes",
-        "org.drugis.addis.models",
-        "org.drugis.addis.patavitask",
-        "org.drugis.addis.interventions",
-        "org.drugis.addis.analyses",
-        "org.drugis.addis.problems",
-        "org.drugis.addis.scenarios",
-        "org.drugis.addis.remarks",
-        "org.drugis.addis.covariates",
-        "org.drugis.addis.util"})
+        "org.drugis.addis", "org.drugis.trialverse"})
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security", "org.drugis.addis.covariates",
-        "org.drugis.addis.interventions", "org.drugis.addis.scenarios", "org.drugis.addis.models", "org.drugis.addis.remarks",
+@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects",
+        "org.drugis.addis.security",
+        "org.drugis.addis.covariates",
+        "org.drugis.addis.interventions",
+        "org.drugis.addis.scenarios",
+        "org.drugis.addis.models",
+        "org.drugis.addis.remarks",
+        "org.drugis.trialverse.security"
 })
 public class MainConfig {
 

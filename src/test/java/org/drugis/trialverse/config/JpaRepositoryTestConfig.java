@@ -29,25 +29,6 @@ import static org.mockito.Mockito.mock;
 public class JpaRepositoryTestConfig {
 
   @Bean
-  public RestTemplate restTemplate() {
-    return new RestTemplate(new HttpComponentsClientHttpRequestFactory());
-  }
-
-  @Bean
-  public DataSource dataSource() {
-    return new EmbeddedDatabaseBuilder()
-            .setType(EmbeddedDatabaseType.HSQL)
-            .addScript("classpath:/schema.sql")
-            .addScript("classpath:/test-data.sql")
-            .build();
-  }
-
-  @Bean(name = "jtTrialverse")
-  public JdbcTemplate jdbcTemplate() {
-    return new JdbcTemplate(dataSource());
-  }
-
-  @Bean
   public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
     return new PersistenceExceptionTranslationPostProcessor();
   }

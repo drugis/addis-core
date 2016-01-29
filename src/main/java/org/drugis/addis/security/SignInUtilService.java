@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.drugis.trialverse.security;
+package org.drugis.addis.security;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.social.connect.Connection;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
-
+@Service
 public class SignInUtilService {
 
   @Inject

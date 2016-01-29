@@ -1,4 +1,4 @@
-package org.drugis.trialverse.security;
+package org.drugis.addis.security;
 
 import javax.persistence.*;
 import java.util.Date;

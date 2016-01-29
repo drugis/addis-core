@@ -1,6 +1,6 @@
-package org.drugis.trialverse.security.repository;
+package org.drugis.addis.security.repository;
 
-import org.drugis.trialverse.security.ApiKey;
+import org.drugis.addis.security.ApiKey;
 
 /**
  * Created by daan on 15-9-15.

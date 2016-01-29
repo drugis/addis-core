@@ -16,6 +16,7 @@
 package org.drugis.addis.security.controller;
 
 import org.drugis.addis.security.Account;
+import org.drugis.addis.security.SignInUtilService;
 import org.drugis.addis.security.SignInUtils;
 import org.drugis.addis.security.UsernameAlreadyInUseException;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -40,13 +41,16 @@ public class SignupController {
 
   private final AccountRepository accountRepository;
   private final ProviderSignInUtils providerSignInUtils;
+  private final SignInUtilService signInUtilService;
 
   @Inject
   public SignupController(AccountRepository accountRepository,
                           ConnectionFactoryLocator connectionFactoryLocator,
-                          UsersConnectionRepository connectionRepository) {
+                          UsersConnectionRepository connectionRepository,
+                          SignInUtilService signInUtilService) {
     this.accountRepository = accountRepository;
     this.providerSignInUtils = new ProviderSignInUtils(connectionFactoryLocator, connectionRepository);
+    this.signInUtilService = signInUtilService;
   }
 
   @RequestMapping(value = "/signup", method = RequestMethod.GET)
@@ -59,7 +63,7 @@ public class SignupController {
       logger.info("profile fetched. name: " + profile.getName() + " username: " + profile.getUsername() + " email: " + profile.getEmail());
       Account account = createAccount(profile);
       if (account != null) {
-        SignInUtils.signin(account.getUsername());
+        signInUtilService.signin(connection, account.getUsername());
         providerSignInUtils.doPostSignUp(account.getUsername(), request);
         return "redirect:/";
       } else {

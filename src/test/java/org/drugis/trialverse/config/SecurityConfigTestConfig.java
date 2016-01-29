@@ -1,7 +1,7 @@
 package org.drugis.trialverse.config;
 
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.trialverse.security.repository.ApiKeyRepository;
+import org.drugis.addis.security.repository.ApiKeyRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.mock;
 @Configuration
 @EnableWebMvc
 @ComponentScan(excludeFilters = {@ComponentScan.Filter(Configuration.class)},
-        basePackages = {"org.drugis.trialverse.security"})
+        basePackages = {"org.drugis.addis.security"})
 public class SecurityConfigTestConfig {
   @Bean
   public UsersConnectionRepository usersConnectionRepository() {
@@ -32,12 +32,12 @@ public class SecurityConfigTestConfig {
     return mock(SocialAuthenticationServiceLocator.class);
   }
 
-  @Bean
+  @Bean(name="dsAddisCore")
   public DataSource dataSource() {
     return mock(DataSource.class);
   }
 
-  @Bean(name = "jtTrialverse")
+  @Bean(name = "jtAddisCore")
   public JdbcTemplate jdbcTemplate() {
     return mock(JdbcTemplate.class);
   }
