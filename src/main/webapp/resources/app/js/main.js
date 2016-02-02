@@ -3,6 +3,7 @@
 require.config({
   paths: {
     'angular': 'bower_components/angular/angular',
+    'angular-md5': 'bower_components/angular-md5/angular-md5',
     'angular-resource': 'bower_components/angular-resource/angular-resource',
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
     'angular-select': 'bower_components/angular-ui-select/dist/select.min',
@@ -35,6 +36,10 @@ require.config({
     'angular': {
       deps: ['jQuery'],
       exports: 'angular'
+    },
+    'angular-md5': {
+      deps: ['angular'],
+      exports: 'angular-md5'
     },
     'angularanimate': {
       deps: ['angular']

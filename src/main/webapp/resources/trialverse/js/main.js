@@ -13,7 +13,7 @@ require.config({
     'mmfoundation': 'bower_components/angular-foundation/mm-foundation',
     'moment': 'bower_components/moment/min/moment.min',
   },
-  baseUrl: 'trialverse/js',
+  baseUrl: 'app/js',
   shim: {
     'jQuery': {
       exports: 'jQuery'
