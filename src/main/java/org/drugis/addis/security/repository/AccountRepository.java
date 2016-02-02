@@ -32,4 +32,6 @@ public interface AccountRepository {
 	Account findAccountByActiveApplicationKey(String applicationKey) throws TooManyAccountsException;
 
 	List<Account> getUsers();
+
+	Account findAccountByEmail(String email);
 }

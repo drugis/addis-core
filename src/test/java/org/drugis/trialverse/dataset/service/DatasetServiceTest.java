@@ -37,7 +37,7 @@ public class DatasetServiceTest {
   @InjectMocks
   private DatasetService datasetService;
 
-  private Account account = new Account(1, "john@apple.co.uk", "John", "Lennon", "hash");
+  private Account account = new Account(1, "username", "John", "Lennon", "john@apple.co.uk");
 
   @Before
   public void setUp() {
@@ -54,7 +54,7 @@ public class DatasetServiceTest {
 
     VersionMapping versionMapping = new VersionMapping("versionDatadetUrl", "ownerUid", "http://trialverseDatasetUrl");
     List<VersionMapping> versionMappings = Arrays.asList(versionMapping);
-    when(versionMappingRepository.findMappingsByUsername(account.getUsername())).thenReturn(versionMappings);
+    when(versionMappingRepository.findMappingsByEmail(account.getEmail())).thenReturn(versionMappings);
     when(datasetReadRepository.queryDataset(versionMapping)).thenReturn(datasetsModel);
 
     List<Dataset> datasets = datasetService.findDatasets(account);

@@ -3,7 +3,7 @@ define(['angular-mocks'], function(angularMocks) {
   describe('user controller', function() {
 
     var scope, httpBackend,
-      userHash = 'userHash',
+      userId = 3,
       mockModal = jasmine.createSpyObj('$mock', ['open']),
       md5Mock = jasmine.createSpyObj('md5', ['createHash']),
       mockLoadStoreDeferred,
@@ -21,16 +21,16 @@ define(['angular-mocks'], function(angularMocks) {
       mockLoadStoreDeferred = $q.defer();
       mockQueryDatasetsDeferred = $q.defer();
 
-      md5Mock.createHash.and.returnValue(userHash);
+      md5Mock.createHash.and.returnValue(userId);
 
       httpBackend.expectGET('/users').respond(users);
-      httpBackend.expectGET('/users/' + userHash + '/datasets').respond(datasets);
+      httpBackend.expectGET('/users/' + userId + '/datasets').respond(datasets);
 
       $controller('UserController', {
         $scope: scope,
         $modal: mockModal,
-        $stateParams: {userUid: userHash},
-        $window: {config: {user: {userNameHash: userHash}}},
+        $stateParams: {userUid: userId},
+        $window: {config: {user: {id: userId}}},
         DatasetResource: DatasetResource,
         md5: md5Mock
       });

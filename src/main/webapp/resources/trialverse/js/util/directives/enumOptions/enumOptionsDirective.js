@@ -4,7 +4,7 @@ define([], function() {
   var EnumOptionsDirective = function($injector) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/util/directives/enumOptions/enumOptionsDirective.html',
+      templateUrl: 'trialverse/js/util/directives/enumOptions/enumOptionsDirective.html',
       scope: {
         editMode: '=',
         optionsConstantName: '=',

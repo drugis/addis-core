@@ -22,6 +22,8 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.graph.GraphFactory;
+import org.drugis.addis.security.ApiKey;
+import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.impl.DatasetReadRepositoryImpl;
@@ -38,6 +40,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -73,6 +76,9 @@ public class DatasetReadRepositoryTest {
   RestTemplate restTemplate;
 
   @Mock
+  AccountRepository accountRepository;
+
+  @Mock
   HttpClient httpClient;
 
   @InjectMocks
@@ -86,18 +92,23 @@ public class DatasetReadRepositoryTest {
     when(webConstants.getTriplestoreBaseUri()).thenReturn("baseUri/");
   }
 
+  @After
+  public void tearDown() {
+    verifyNoMoreInteractions(jenaFactory, accountRepository, versionMappingRepository);
+  }
+
+
   @Test
   public void testQueryDatasets() throws Exception {
-    Account account = new Account(1, "username", "firstName", "lastName", "userNameHash");
+    Account account = new Account(1, "username", "firstName", "lastName", "foo@bar.com");
     String datasetLocation = "loc1";
     String versionKey = "version1";
-    VersionMapping versionMapping = new VersionMapping(1, datasetLocation, account.getUsername(), versionKey);
+    VersionMapping versionMapping = new VersionMapping(1, datasetLocation, account.getEmail(), versionKey);
     String datasetLocation2 = "loc2";
     String versionKey2 = "version2";
-    VersionMapping versionMapping2 = new VersionMapping(2, datasetLocation2, account.getUsername(), versionKey2);
+    VersionMapping versionMapping2 = new VersionMapping(2, datasetLocation2, account.getEmail(), versionKey2);
     List<VersionMapping> mockResult = Arrays.asList(versionMapping, versionMapping2);
-    when(versionMappingRepository.findMappingsByUsername(account.getUsername())).thenReturn(mockResult);
-    when(webConstants.getTriplestoreBaseUri()).thenReturn("http://mockserver/");
+    when(versionMappingRepository.findMappingsByEmail(account.getEmail())).thenReturn(mockResult);
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(WebConstants.X_EVENT_SOURCE_VERSION, "http://myhost/myversion");
     ResponseEntity<Object> responseEntity = new ResponseEntity<>(GraphFactory.createGraphMem(), httpHeaders, HttpStatus.OK);
@@ -109,6 +120,8 @@ public class DatasetReadRepositoryTest {
     Model model = datasetReadRepository.queryDatasets(account);
 
     assertNotNull(model);
+
+    verify(versionMappingRepository).findMappingsByEmail(account.getEmail());
   }
 
   @Test
@@ -152,26 +165,38 @@ public class DatasetReadRepositoryTest {
   public void testIsOwnerWhenQuerySaysFalse() throws IOException, URISyntaxException {
     URI datasetUrl = new URI("datasetUUID");
     String user1 = "other user";
-    Principal principal = new PrincipalImpl("user");
-    VersionMapping versionMapping = new VersionMapping(1, "whatever", user1, datasetUrl.toString());
+    Account account = new Account(user1, "piet", "klaassen", "foo@bar.com");
+    ApiKey credentials = new ApiKey();
+    Principal principal = new PreAuthenticatedAuthenticationToken(account, credentials);
+    VersionMapping versionMapping = new VersionMapping(1, "whatever", "different@email.com", datasetUrl.toString());
+    when(accountRepository.findAccountByUsername(account.getUsername())).thenReturn(account);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
     Boolean result = datasetReadRepository.isOwner(datasetUrl, principal);
 
     assertFalse(result);
+
+    verify(accountRepository).findAccountByUsername(user1);
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
   }
 
   @Test
   public void testIsOwnerWhenQuerySaysTrue() throws IOException, URISyntaxException {
     String user1 = "user1";
-    Principal principal = new PrincipalImpl(user1);
     URI datasetUrl = new URI(Namespaces.DATASET_NAMESPACE + "datasetUUID");
-    VersionMapping versionMapping = new VersionMapping(1, "whatever", user1, datasetUrl.toString());
+    Account account = new Account(user1, "piet", "klaassen", "foo@bar.com");
+    ApiKey credentials = new ApiKey();
+    Principal principal = new PreAuthenticatedAuthenticationToken(account, credentials);
+    VersionMapping versionMapping = new VersionMapping(1, "whatever", account.getEmail(), datasetUrl.toString());
+    when(accountRepository.findAccountByUsername(account.getUsername())).thenReturn(account);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
     Boolean result = datasetReadRepository.isOwner(datasetUrl, principal);
 
     assertTrue(result);
+
+    verify(accountRepository).findAccountByUsername(user1);
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
   }
 
   @Test
@@ -198,8 +223,11 @@ public class DatasetReadRepositoryTest {
 
     Boolean result = datasetReadRepository.containsStudyWithShortname(datasetUrl, shortName);
 
-    verify(restTemplate).exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, JsonObject.class);
     assertTrue(result);
+
+    verify(restTemplate).exchange(uriComponents.toUri(), HttpMethod.GET, requestEntity, JsonObject.class);
+    verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
+
   }
 
   @Test
@@ -322,10 +350,6 @@ public class DatasetReadRepositoryTest {
     assertNotNull(object);
   }
 
-  @After
-  public void tearDown() {
-    verifyNoMoreInteractions(jenaFactory);
-  }
 
 
   /**

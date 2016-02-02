@@ -304,6 +304,7 @@ CREATE TABLE VersionMapping (id SERIAL NOT NULL,
     ownerUuid VARCHAR NOT NULL,
     trialverseDatasetUrl VARCHAR NOT NULL,
     PRIMARY KEY (id));
+--rollback DROP TABLE versionmapping;
 
 CREATE TABLE ApplicationKey (id SERIAL NOT NULL,
             secretKey VARCHAR UNIQUE,
@@ -313,3 +314,4 @@ CREATE TABLE ApplicationKey (id SERIAL NOT NULL,
             revocationDate DATE NOT NULL,
             PRIMARY KEY (id),
             FOREIGN KEY (accountId) REFERENCES Account(id));
+--rollback DROP TABLE applicationkey;

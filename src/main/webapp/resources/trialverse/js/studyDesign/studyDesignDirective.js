@@ -5,7 +5,7 @@ define([], function() {
   var StudyDesignDirective = function($stateParams, $q, ArmService, EpochService, ActivityService, StudyDesignService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/studyDesign/studyDesignDirective.html',
+      templateUrl: 'trialverse/js/studyDesign/studyDesignDirective.html',
       scope: {
         isEditingAllowed: '='
       },

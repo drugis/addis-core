@@ -5,7 +5,7 @@ define([], function() {
   var CategoryItemDirective = function($stateParams, $modal, $injector) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/study/categoryItemDirective.html',
+      templateUrl: 'trialverse/js/study/categoryItemDirective.html',
       scope: {
         item: '=',
         reloadItems: '=',

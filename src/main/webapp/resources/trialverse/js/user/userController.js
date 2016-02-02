@@ -20,8 +20,8 @@ define([],
       } else {
         UserResource.query(function(users) {
           _.each(users, function(user) {
-            user.md5 = md5.createHash(user.username);
-            if ($scope.userUid === user.id) {
+            user.md5 = md5.createHash(user.email);
+            if ($scope.userUid === user.id.toString()) {
               $scope.user = user;
             } else {
               $scope.otherUsers.push(user);
@@ -42,7 +42,7 @@ define([],
 
       $scope.createDatasetDialog = function() {
         $modal.open({
-          templateUrl: 'app/js/user/createDataset.html',
+          templateUrl: 'trialverse/js/user/createDataset.html',
           controller: 'CreateDatasetController',
           resolve: {
             callback: function() {

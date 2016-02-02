@@ -7,7 +7,7 @@ define([], function() {
    MeasurementMomentService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/results/resultsTableDirective.html',
+      templateUrl: 'trialverse/js/results/resultsTableDirective.html',
       scope: {
         variable: '=',
         arms: '=',

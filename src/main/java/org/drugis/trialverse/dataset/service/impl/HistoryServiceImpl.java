@@ -132,7 +132,7 @@ public class HistoryServiceImpl implements HistoryService {
       apiKey = apiKeyRepository.get(Integer.valueOf(creator.substring(WebConstants.API_KEY_PREFIX.length())));
       account = accountRepository.findAccountById(apiKey.getAccountId());
     } else {
-      account = accountRepository.findAccountByUsername(creator.substring("mailto:".length()));
+      account = accountRepository.findAccountByEmail(creator.substring("mailto:".length()));
     }
     creator = account.getFirstName() + " " + account.getLastName();
     Statement descriptionStatement = current.getProperty(JenaProperties.DESCRIPTION_PROPERTY);

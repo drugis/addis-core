@@ -4,7 +4,7 @@ define([], function() {
   var SparqlResource = function($http) {
 
     function get(name) {
-      return $http.get('app/sparql/' + name, {
+      return $http.get('trialverse/sparql/' + name, {
         name: name
       }).then(function(result) {
         return result.data;

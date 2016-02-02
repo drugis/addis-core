@@ -4,7 +4,7 @@ define([], function() {
   var ConceptMappingListDirective = function($injector, $stateParams, VersionedGraphResource, MappingService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/mapping/conceptMappingListDirective.html',
+      templateUrl: 'trialverse/js/mapping/conceptMappingListDirective.html',
       scope: {
         settings: '=',
         datasetConcepts: '=',

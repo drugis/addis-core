@@ -60,7 +60,7 @@ public class VersionMappingRepositoryTest {
     List<Object> mockResult = Arrays.asList(new VersionMapping(1, "datasetUui1", userName, "trialverseDataset"));
     when(jdbcTemplate.query(anyString(), any(Object[].class), any(RowMapper.class))).thenReturn(mockResult);
 
-    List<VersionMapping> mappings = versionMappingRepository.findMappingsByUsername(userName);
+    List<VersionMapping> mappings = versionMappingRepository.findMappingsByEmail(userName);
 
     assertEquals(mockResult, mappings);
   }

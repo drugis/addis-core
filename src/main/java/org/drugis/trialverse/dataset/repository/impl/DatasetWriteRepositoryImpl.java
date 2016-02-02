@@ -9,6 +9,8 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.vocabulary.DCTerms;
+import org.drugis.addis.security.Account;
+import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
@@ -53,16 +55,20 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
   @Inject
   private VersionMappingRepository versionMappingRepository;
 
+  @Inject
+  private AccountRepository accountRepository;
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetWriteRepositoryImpl.class);
 
   @Override
   public URI createDataset(String title, String description, TrialversePrincipal owner) throws URISyntaxException, CreateDatasetException {
     HttpHeaders httpHeaders = new HttpHeaders();
+    Account account = accountRepository.findAccountByUsername(owner.getUserName());
     if(owner.hasApiKey()) {
-      httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "https://trialverse.org/apikeys/" + owner.getApiKey().getId());
+      httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER,
+              "https://trialverse.org/apikeys/" + owner.getApiKey().getId());
     } else {
-      httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + owner.getUserName());
+      httpHeaders.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + account.getEmail());
     }
     httpHeaders.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(INITIAL_COMMIT_MESSAGE.getBytes()));
     httpHeaders.add(HTTP.CONTENT_TYPE, RDFLanguages.TURTLE.getContentType().getContentType());
@@ -79,7 +85,7 @@ public class DatasetWriteRepositoryImpl implements DatasetWriteRepository {
       }
       URI location = response.getHeaders().getLocation();
       //store link from uri to location
-      versionMappingRepository.save(new VersionMapping(location.toString(), owner.getUserName(), datasetUri));
+      versionMappingRepository.save(new VersionMapping(location.toString(), account.getEmail(), datasetUri));
     } catch (RestClientException e) {
       logger.error(e.toString());
       throw new CreateDatasetException();

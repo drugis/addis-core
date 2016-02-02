@@ -24,7 +24,7 @@ define(['util/transformJsonLd'], function(transformJsonLd) {
         "@type": "@id"
       },
       "mean": {
-        "@id": "http://trials.drugis.org/ontology#mean",
+        "@id": "http://trials.drugis.org/ontology#measer.n",
         "@type": "http://www.w3.org/2001/XMLSchema#double"
       },
       "sameAs": {

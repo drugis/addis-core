@@ -9,6 +9,8 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.jena.riot.RDFLanguages;
+import org.drugis.addis.security.Account;
+import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
@@ -46,6 +48,9 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
   @Inject
   private AuthenticationService authenticationService;
 
+  @Inject
+  private AccountRepository accountRepository;
+
   public static final String DATA_ENDPOINT = "/data";
 
   private final static Logger logger = LoggerFactory.getLogger(GraphWriteRepositoryImpl.class);
@@ -64,10 +69,12 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
     putRequest.setHeader(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String(commitTitle.getBytes()));
 
     TrialversePrincipal owner = authenticationService.getAuthentication();
+    Account user = accountRepository.findAccountByUsername(owner.getUserName());
+
     if(owner.hasApiKey()) {
       putRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "https://trialverse.org/apikeys/" + owner.getApiKey().getId());
     } else {
-      putRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + owner.getUserName());
+      putRequest.setHeader(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "mailto:" + user.getEmail());
     }
 
     if(StringUtils.isNotEmpty(commitDescription)) {

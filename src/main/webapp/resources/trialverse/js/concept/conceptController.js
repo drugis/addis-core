@@ -16,7 +16,7 @@ define([],
 
       $scope.openAddConceptDialog = function() {
         $modal.open({
-          templateUrl: 'app/js/concept/createConcept.html',
+          templateUrl: 'trialverse/js/concept/createConcept.html',
           controller: 'CreateConceptController',
           resolve: {
             callback: function() {
@@ -38,7 +38,7 @@ define([],
 
       $scope.saveConcepts = function() {
         $modal.open({
-          templateUrl: 'app/js/commit/commit.html',
+          templateUrl: 'trialverse/js/commit/commit.html',
           controller: 'CommitController',
           resolve: {
             callback: function() {

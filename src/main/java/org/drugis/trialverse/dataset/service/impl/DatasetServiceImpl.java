@@ -28,7 +28,7 @@ public class DatasetServiceImpl implements DatasetService {
 
   @Override
   public List<Dataset> findDatasets(Account user) {
-    return versionMappingRepository.findMappingsByUsername(user.getUsername())
+    return versionMappingRepository.findMappingsByEmail(user.getEmail())
             .stream()
             .map((mapping) -> {
               String trialverseDatasetUrl = mapping.getTrialverseDatasetUrl();

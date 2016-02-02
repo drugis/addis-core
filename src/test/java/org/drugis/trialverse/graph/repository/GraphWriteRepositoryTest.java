@@ -8,6 +8,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicStatusLine;
 import org.drugis.addis.security.Account;
+import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
@@ -57,10 +58,15 @@ public class GraphWriteRepositoryTest {
   @Mock
   private AuthenticationService authenticationService;
 
+  @Mock
+  private AccountRepository accountRepository;
+
   @InjectMocks
   GraphWriteRepository graphWriteRepository;
 
-  private String name = "foo@bar.com";
+  private String email = "foo@bar.com";
+  private String username = "username";
+  private Account account = new Account(username, "firstname", "lastName", email);
 
   @Before
   public void setUp() throws IOException {
@@ -70,7 +76,8 @@ public class GraphWriteRepositoryTest {
     reset(httpClientFactory, mockHttpClient);
     when(webConstants.getTriplestoreDataUri()).thenReturn("BaseUri/current");
     when(httpClientFactory.build()).thenReturn(mockHttpClient);
-    TrialversePrincipal authentication = new TrialversePrincipal(new PreAuthenticatedAuthenticationToken(new Account("usename", "firstname", "lastName", "hash"), new ApiKey()));
+    PreAuthenticatedAuthenticationToken principal = new PreAuthenticatedAuthenticationToken(account, new ApiKey());
+    TrialversePrincipal authentication = new TrialversePrincipal(principal);
     when(authenticationService.getAuthentication()).thenReturn(authentication);
     mockResponse = mock(CloseableHttpResponse.class);
     HttpEntity entity = mock(HttpEntity.class);
@@ -103,6 +110,7 @@ public class GraphWriteRepositoryTest {
     VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl.toString());
 
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
+    when(accountRepository.findAccountByUsername(username)).thenReturn(account);
 
     Header resultHeader = graphWriteRepository.updateGraph(datasetUrl, graphUuid, delegatingServletInputStream, titleValue, null );
 
@@ -110,6 +118,7 @@ public class GraphWriteRepositoryTest {
 
     verify(httpClient).execute(any(HttpPut.class));
     verify(versionMappingRepository).getVersionMappingByDatasetUrl(datasetUrl);
+    verify(accountRepository).findAccountByUsername(username);
   }
 
   @Test

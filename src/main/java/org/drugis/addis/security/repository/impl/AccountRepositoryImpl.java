@@ -61,6 +61,12 @@ public class AccountRepositoryImpl implements AccountRepository {
             rowMapper, username);
   }
 
+  public Account findAccountByEmail(String email) {
+    return jdbcTemplate.queryForObject(
+            "select id, username, firstName, lastName, email from Account where email = ?",
+            rowMapper, email);
+  }
+
   public Account findAccountById(int id) {
     return jdbcTemplate.queryForObject(
             "select id, username, firstName, lastName, email from Account where id = ?",

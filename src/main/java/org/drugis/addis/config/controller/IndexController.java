@@ -95,7 +95,7 @@ public class IndexController {
       } else {
         Account account = accountRepository.findAccountByUsername(currentUser.getName());
         model.addAttribute(account);
-        model.addAttribute("userEmail", account.getUsername());
+        model.addAttribute("userEmail", account.getEmail());
         model.addAttribute("id", account.getId());
         if (StringUtils.isNotEmpty(account.getEmail())) {
           String md5String = DigestUtils.md5DigestAsHex(account.getEmail().getBytes());

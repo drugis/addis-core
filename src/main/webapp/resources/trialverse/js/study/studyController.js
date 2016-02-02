@@ -30,8 +30,8 @@ define([],
           anchorId: 'study-information',
           header: 'Study Information',
           itemName: 'Study Information',
-          itemTemplateUrl: 'app/js/studyInformation/studyInformation.html',
-          editItemTemplateUrl: 'app/js/studyInformation/editStudyInformation.html',
+          itemTemplateUrl: 'trialverse/js/studyInformation/studyInformation.html',
+          editItemTemplateUrl: 'trialverse/js/studyInformation/editStudyInformation.html',
           editItemController: 'EditStudyInformationController'
         },
         populationInformation: {
@@ -39,8 +39,8 @@ define([],
           anchorId: 'population-information',
           header: 'Population Information',
           itemName: 'Population Information',
-          itemTemplateUrl: 'app/js/populationInformation/populationInformation.html',
-          editItemTemplateUrl: 'app/js/populationInformation/editPopulationInformation.html',
+          itemTemplateUrl: 'trialverse/js/populationInformation/populationInformation.html',
+          editItemTemplateUrl: 'trialverse/js/populationInformation/editPopulationInformation.html',
           editItemController: 'EditPopulationInformationController',
         },
         arms: {
@@ -50,9 +50,9 @@ define([],
           addItemController: 'CreateArmController',
           categoryEmptyMessage: 'No arms defined.',
           itemName: 'arm',
-          itemTemplateUrl: 'app/js/arm/arm.html',
-          addItemTemplateUrl: 'app/js/arm/addArm.html',
-          editItemTemplateUrl: 'app/js/arm/editArm.html',
+          itemTemplateUrl: 'trialverse/js/arm/arm.html',
+          addItemTemplateUrl: 'trialverse/js/arm/addArm.html',
+          editItemTemplateUrl: 'trialverse/js/arm/editArm.html',
           editItemController: 'EditArmController',
         },
         populationCharacteristics: {
@@ -62,9 +62,9 @@ define([],
           addItemController: 'CreatePopulationCharacteristicController',
           categoryEmptyMessage: 'No population characteristics defined.',
           itemName: 'population characteristic',
-          itemTemplateUrl: 'app/js/populationCharacteristic/populationCharacteristic.html',
-          addItemTemplateUrl: 'app/js/populationCharacteristic/addPopulationCharacteristic.html',
-          editItemTemplateUrl: 'app/js/populationCharacteristic/editPopulationCharacteristic.html',
+          itemTemplateUrl: 'trialverse/js/populationCharacteristic/populationCharacteristic.html',
+          addItemTemplateUrl: 'trialverse/js/populationCharacteristic/addPopulationCharacteristic.html',
+          editItemTemplateUrl: 'trialverse/js/populationCharacteristic/editPopulationCharacteristic.html',
           editItemController: 'EditPopulationCharacteristicController',
         },
         endpoints: {
@@ -74,9 +74,9 @@ define([],
           addItemController: 'AddEndpointController',
           categoryEmptyMessage: 'No endpoints defined.',
           itemName: 'endpoint',
-          itemTemplateUrl: 'app/js/endpoint/endpoint.html',
-          addItemTemplateUrl: 'app/js/endpoint/addEndpoint.html',
-          editItemTemplateUrl: 'app/js/endpoint/editEndpoint.html',
+          itemTemplateUrl: 'trialverse/js/endpoint/endpoint.html',
+          addItemTemplateUrl: 'trialverse/js/endpoint/addEndpoint.html',
+          editItemTemplateUrl: 'trialverse/js/endpoint/editEndpoint.html',
           editItemController: 'EditEndpointController',
         },
         adverseEvents: {
@@ -86,9 +86,9 @@ define([],
           addItemController: 'AddAdverseEventController',
           categoryEmptyMessage: 'No adverse events defined.',
           itemName: 'adverse event',
-          itemTemplateUrl: 'app/js/adverseEvent/adverseEvent.html',
-          addItemTemplateUrl: 'app/js/adverseEvent/addAdverseEvent.html',
-          editItemTemplateUrl: 'app/js/adverseEvent/editAdverseEvent.html',
+          itemTemplateUrl: 'trialverse/js/adverseEvent/adverseEvent.html',
+          addItemTemplateUrl: 'trialverse/js/adverseEvent/addAdverseEvent.html',
+          editItemTemplateUrl: 'trialverse/js/adverseEvent/editAdverseEvent.html',
           editItemController: 'EditAdverseEventController',
         },
         epochs: {
@@ -98,9 +98,9 @@ define([],
           addItemController: 'AddEpochController',
           categoryEmptyMessage: 'No epochs defined.',
           itemName: 'epoch',
-          itemTemplateUrl: 'app/js/epoch/epoch.html',
-          addItemTemplateUrl: 'app/js/epoch/addEpoch.html',
-          editItemTemplateUrl: 'app/js/epoch/editEpoch.html',
+          itemTemplateUrl: 'trialverse/js/epoch/epoch.html',
+          addItemTemplateUrl: 'trialverse/js/epoch/addEpoch.html',
+          editItemTemplateUrl: 'trialverse/js/epoch/editEpoch.html',
           editItemController: 'EditEpochController',
         },
         measurementMoments: {
@@ -110,9 +110,9 @@ define([],
           addItemController: 'MeasurementMomentController',
           categoryEmptyMessage: 'No measurement moments defined.',
           itemName: 'measurement moment',
-          itemTemplateUrl: 'app/js/measurementMoment/measurementMoment.html',
-          addItemTemplateUrl: 'app/js/measurementMoment/editMeasurementMoment.html',
-          editItemTemplateUrl: 'app/js/measurementMoment/editMeasurementMoment.html',
+          itemTemplateUrl: 'trialverse/js/measurementMoment/measurementMoment.html',
+          addItemTemplateUrl: 'trialverse/js/measurementMoment/editMeasurementMoment.html',
+          editItemTemplateUrl: 'trialverse/js/measurementMoment/editMeasurementMoment.html',
           editItemController: 'MeasurementMomentController',
         },
         activities: {
@@ -122,9 +122,9 @@ define([],
           addItemController: 'ActivityController',
           categoryEmptyMessage: 'No activities defined.',
           itemName: 'activity',
-          itemTemplateUrl: 'app/js/activity/activity.html',
-          addItemTemplateUrl: 'app/js/activity/editActivity.html',
-          editItemTemplateUrl: 'app/js/activity/editActivity.html',
+          itemTemplateUrl: 'trialverse/js/activity/activity.html',
+          addItemTemplateUrl: 'trialverse/js/activity/editActivity.html',
+          editItemTemplateUrl: 'trialverse/js/activity/editActivity.html',
           editItemController: 'ActivityController',
         }
       };
@@ -154,12 +154,12 @@ define([],
 
       function openCopyDialog() {
         $modal.open({
-          templateUrl: 'app/js/study/copyStudy.html',
+          templateUrl: 'trialverse/js/study/copyStudy.html',
           controller: 'CopyStudyController',
           resolve: {
             datasets: function() {
               return DatasetResource.queryForJson({
-                userUid: $scope.loginUser.userNameHash
+                userUid: $scope.loginUser.id
               }).$promise.then(function(result) {
                 return _.filter(result, function(dataset) {
                   return dataset.uri !== 'http://trials.drugis.org/datasets/' + $scope.datasetUUID;
@@ -167,7 +167,7 @@ define([],
               });
             },
             userUuid: function() {
-              return $scope.loginUser.userNameHash;
+              return $scope.loginUser.id;
             },
             datasetUuid: function() {
               return $stateParams.datasetUUID;
@@ -263,7 +263,7 @@ define([],
         }
 
         $modal.open({
-          templateUrl: 'app/js/commit/commit.html',
+          templateUrl: 'trialverse/js/commit/commit.html',
           controller: 'CommitController',
           resolve: {
             callback: function() {

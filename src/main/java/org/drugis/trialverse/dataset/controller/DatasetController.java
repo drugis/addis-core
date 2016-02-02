@@ -77,7 +77,8 @@ public class DatasetController extends AbstractTrialverseController {
     TrialversePrincipal trialversePrincipal = new TrialversePrincipal(currentUser);
     Account user = accountRepository.findAccountByUsername(trialversePrincipal.getUserName());
     if (user != null && userId.equals(user.getId())) {
-      URI datasetUri = datasetWriteRepository.createDataset(datasetCommand.getTitle(), datasetCommand.getDescription(), trialversePrincipal);
+      URI datasetUri = datasetWriteRepository.createDataset(datasetCommand.getTitle(),
+              datasetCommand.getDescription(), trialversePrincipal);
       response.setStatus(HttpServletResponse.SC_CREATED);
       response.setHeader("Location", datasetUri.toString());
     } else {

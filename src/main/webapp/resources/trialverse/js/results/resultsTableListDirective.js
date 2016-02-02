@@ -5,7 +5,7 @@ define([], function() {
   var resultsTableListDirective = function($q, $injector, $stateParams, ArmService, MeasurementMomentService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/results/resultsTableListDirective.html',
+      templateUrl: 'trialverse/js/results/resultsTableListDirective.html',
       scope: {
         variableType: '=',
         variableName: '=',

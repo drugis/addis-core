@@ -102,7 +102,7 @@ define([],
 
       $scope.showTableOptions = function() {
         $modal.open({
-          templateUrl: 'app/js/dataset/tableOptions.html',
+          templateUrl: 'trialverse/js/dataset/tableOptions.html',
           scope: $scope,
           controller: function($scope, $modalInstance) {
             $scope.cancel = function() {
@@ -114,7 +114,7 @@ define([],
 
       $scope.showStudyDialog = function() {
         $modal.open({
-          templateUrl: 'app/js/dataset/createStudy.html',
+          templateUrl: 'trialverse/js/dataset/createStudy.html',
           scope: $scope,
           controller: 'CreateStudyController',
           resolve: {

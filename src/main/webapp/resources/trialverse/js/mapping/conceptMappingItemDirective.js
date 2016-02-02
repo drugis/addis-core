@@ -4,7 +4,7 @@ define([], function() {
   var ConceptMappingItemDirective = function(MappingService) {
     return {
       restrict: 'E',
-      templateUrl: 'app/js/mapping/conceptMappingItemDirective.html',
+      templateUrl: 'trialverse/js/mapping/conceptMappingItemDirective.html',
       scope: {
         settings: '=',
         studyConcept: '=',

@@ -79,9 +79,9 @@ public class HistoryServiceTest {
     Integer apiKeyId = 1;
     ApiKey apiKey = mock(ApiKey.class);
     when(apiKeyRepository.get(apiKeyId)).thenReturn(apiKey);
-    String userName = "osmosisch@gmail.com";
-    Account account = new Account(userName, "firstName", "lastName", "hash");
-    when(accountRepository.findAccountByUsername(userName)).thenReturn(account);
+    String email = "osmosisch@gmail.com";
+    Account account = new Account("userName", "firstName", "lastName", email);
+    when(accountRepository.findAccountByEmail(email)).thenReturn(account);
     List<VersionNode> history = historyService.createHistory(trialverseDatasetUri);
 
     assertTrue(history.size() > 0);

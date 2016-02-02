@@ -26,7 +26,7 @@
   <div class="row" ng-show="datasetsLoaded">
     <div class="columns large-12">
       <h3>Datasets</h3>
-      <button ng-show="loginUser.userNameHash === userUid" tabindex="0" class="button small" ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button>
+      <button ng-show="loginUser.id === userUid" tabindex="0" class="button small" ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button>
     </div>
     <div class="columns large-12">
       <em ng-show="datasets.length === 0">No datasets have been created</em>

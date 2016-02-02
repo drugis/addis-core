@@ -21,7 +21,7 @@ define(['angular', 'angular-mocks', 'jQuery', 'app'], function() {
 
     it('should navigate to /users/ by default', function() {
       $location.url('test');
-      $httpBackend.expect('GET', 'app/js/user/user.html')
+      $httpBackend.expect('GET', 'trialverse/js/user/user.html')
         .respond(200);
 
       $rootScope.$apply();
