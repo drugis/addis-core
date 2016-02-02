@@ -6,10 +6,8 @@ define(function (require) {
   return angular.module('trialverse.util', [])
     // services
     .factory('UUIDService', require('util/uuidService'))
-    .factory('RemoteRdfStoreService', require('util/remoteRdfStoreService'))
     .factory('DurationService', require('util/durationService'))
     .factory('SubsetSelectService', require('util/directives/subsetSelect/subsetSelectService'))
-    .factory('CommentService', require('util/commentService'))
     .factory('SanitizeService', require('util/sanitizeService'))
 
     // resources

@@ -3,18 +3,15 @@ define([],
   function() {
     var dependencies = ['$scope',
       '$state', '$modalInstance',
-      'itemService', 'callback'
+      'itemService', 'callback', 'item'
     ];
     var EditPopulationInformationController = function($scope, $state, $modalInstance,
-      itemService, callback) {
+      itemService, callback, item) {
 
-      var itemScratch = angular.copy($scope.item);
-
-      $scope.itemScratch = itemScratch;
+      $scope.itemScratch = item;
 
       $scope.editItem = function() {
         itemService.editItem($scope.itemScratch).then(function() {
-            $scope.item = angular.copy($scope.itemScratch);
             callback();
             $modalInstance.close();
           },

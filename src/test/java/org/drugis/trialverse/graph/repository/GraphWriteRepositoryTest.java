@@ -104,7 +104,7 @@ public class GraphWriteRepositoryTest {
 
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
-    Header resultHeader = graphWriteRepository.updateGraph(datasetUrl, graphUuid, mockHttpServletRequest);
+    Header resultHeader = graphWriteRepository.updateGraph(datasetUrl, graphUuid, delegatingServletInputStream, titleValue, null );
 
     assertEquals(versionHeader, resultHeader);
 
@@ -129,7 +129,7 @@ public class GraphWriteRepositoryTest {
     VersionMapping versionMapping = new VersionMapping(1, versionStoreDatasetUri, "userName", datasetUrl.toString());
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
 
-    Header resultHeader = graphWriteRepository.updateGraph(datasetUrl, graphUuid, mockHttpServletRequest);
+    Header resultHeader = graphWriteRepository.updateGraph(datasetUrl, graphUuid, delegatingServletInputStream, titleValue, descriptionValue);
 
     assertEquals(versionHeader, resultHeader);
 

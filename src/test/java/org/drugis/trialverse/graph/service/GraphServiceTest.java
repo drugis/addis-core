@@ -1,6 +1,10 @@
 package org.drugis.trialverse.graph.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import net.minidev.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.drugis.addis.security.Account;
@@ -13,6 +17,7 @@ import org.drugis.addis.security.AuthenticationService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
+import org.hsqldb.lib.StringInputStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -23,7 +28,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
@@ -124,6 +129,25 @@ public class GraphServiceTest {
     URI uri = URI.create("https://www.trialverse123.org/datasets/333-av-3222/versions/434-334/graphs/443-34");
     URI graphUri = graphService.extractGraphUri(uri);
     assertEquals(Namespaces.GRAPH_NAMESPACE + "443-34", graphUri.toString());
+  }
+
+  @Test
+  public void testJsonToTurtle() throws IOException {
+    String source = "{\"@graph\":[{\"@id\":\"http://trials.drugis.org/studies/695855bd-5782-4c67-a270-eb4459c3a4f6\",\"@type\":\"ontology:Study\",\"has_epochs\":[],\"comment\":\"my study\",\"label\":\"study 1\",\"has_outcome\":[],\"has_arm\":[{\"label\":\"jt\",\"comment\":\"set\",\"@id\":\"http://trials.drugis.org/instances/87e3e348-da19-4639-94b2-4cf8b547b976\",\"@type\":\"ontology:Arm\"}],\"has_activity\":[],\"has_indication\":[],\"has_objective\":[],\"has_publication\":[],\"has_eligibility_criteria\":[]}],\"@context\":{\"label\":\"http://www.w3.org/2000/01/rdf-schema#label\",\"comment\":\"http://www.w3.org/2000/01/rdf-schema#comment\",\"has_epochs\":{\"@id\":\"http://trials.drugis.org/ontology#has_epochs\",\"@container\":\"@list\"},\"ontology\":\"http://trials.drugis.org/ontology#\"}}";
+    InputStream is = new ByteArrayInputStream(source.getBytes());
+    InputStream resultStream = graphService.jsonGraphInputStreamToTurtleInputStream(is);
+    StringWriter writer = new StringWriter();
+    IOUtils.copy(resultStream, writer);
+    String result = writer.toString();
+    assertEquals("@prefix ontology: <http://trials.drugis.org/ontology#> .\n" +
+            "\n" +
+            "<http://trials.drugis.org/studies/695855bd-5782-4c67-a270-eb4459c3a4f6>\n" +
+            "        a                    ontology:Study ;\n" +
+            "        <http://www.w3.org/2000/01/rdf-schema#comment>\n" +
+            "                \"my study\" ;\n" +
+            "        <http://www.w3.org/2000/01/rdf-schema#label>\n" +
+            "                \"study 1\" ;\n" +
+            "        ontology:has_epochs  () .", result.trim());
   }
 
 }

@@ -6,10 +6,10 @@ define([], function() {
     $scope.concept = {};
 
     $scope.typeOptions = [{
-      uri: 'http://trials.drugis.org/ontology#Drug',
+      uri: 'ontology:Drug',
       label: 'Drug'
     }, {
-      uri: 'http://trials.drugis.org/ontology#Variable',
+      uri: 'ontology:Variable',
       label: 'Variable'
     }];
 

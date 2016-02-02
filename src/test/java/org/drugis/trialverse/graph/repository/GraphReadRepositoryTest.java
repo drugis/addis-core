@@ -8,7 +8,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicStatusLine;
-import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.exception.ReadGraphException;
 import org.drugis.trialverse.graph.repository.impl.GraphReadRepositoryImpl;
@@ -19,7 +18,6 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -67,7 +65,7 @@ public class GraphReadRepositoryTest {
     when(mockResponse.getEntity()).thenReturn(entity);
     when(webConstants.buildVersionUri(versionUuid)).thenReturn(new URI("version/versionedUri"));
     when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
-    graphReadRepository.getGraph(versionedDatasetUrl, versionUuid, graphUUID);
+    graphReadRepository.getGraph(versionedDatasetUrl, versionUuid, graphUUID, WebConstants.TURTLE);
 
    UriComponentsBuilder.fromHttpUrl(versionedDatasetUrl)
             .path("/data")

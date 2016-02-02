@@ -14,9 +14,9 @@
 
   <div class="row">
     <div class="large-12 columns">
-      <input ng-model="itemScratch.relativeToAnchor" type="radio" value="http://trials.drugis.org/ontology#anchorEpochStart" id="fromStartOption" ng-change="itemScratch.label = generateLabel(itemScratch)">
+      <input ng-model="itemScratch.relativeToAnchor" type="radio" value="ontology:anchorEpochStart" id="fromStartOption" ng-change="itemScratch.label = generateLabel(itemScratch)">
              <label for="fromStartOption">from start</label>
-      <input ng-model="itemScratch.relativeToAnchor" type="radio" value="http://trials.drugis.org/ontology#anchorEpochEnd" id="fromEndOption" ng-change="itemScratch.label = generateLabel(itemScratch)">
+      <input ng-model="itemScratch.relativeToAnchor" type="radio" value="ontology:anchorEpochEnd" id="fromEndOption" ng-change="itemScratch.label = generateLabel(itemScratch)">
              <label for="fromEndOption">from end</label>
     </div>
   </div>

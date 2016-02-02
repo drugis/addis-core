@@ -43,16 +43,18 @@ public class GraphReadRepositoryImpl implements GraphReadRepository {
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
   @Override
-  public byte[] getGraph(String versionedDatasetUrl, String versionUuid, String graphUUID) throws IOException, ReadGraphException {
+  public byte[] getGraph(String versionedDatasetUrl, String versionUuid, String graphUUID, String contentType) throws IOException, ReadGraphException {
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionedDatasetUrl)
             .path(DATA_ENDPOINT)
             .queryParam(GRAPH, Namespaces.GRAPH_NAMESPACE + graphUUID)
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
-    String headerValue = webConstants.buildVersionUri(versionUuid).toString();
-    Header acceptVersionHeader = new BasicHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, headerValue);
-    request.setHeader(acceptVersionHeader);
-    request.addHeader(org.apache.http.HttpHeaders.ACCEPT, RDFLanguages.TURTLE.getContentType().getContentType());
+    if(versionUuid != null) {
+      String headerValue = webConstants.buildVersionUri(versionUuid).toString();
+      Header acceptVersionHeader = new BasicHeader(WebConstants.X_ACCEPT_EVENT_SOURCE_VERSION, headerValue);
+      request.setHeader(acceptVersionHeader);
+    }
+    request.addHeader(org.apache.http.HttpHeaders.ACCEPT, contentType);
     try(CloseableHttpResponse response =  (CloseableHttpResponse) httpClient.execute(request);
         InputStream contentStream = response.getEntity().getContent()) {
       byte[] content = IOUtils.toByteArray(contentStream);

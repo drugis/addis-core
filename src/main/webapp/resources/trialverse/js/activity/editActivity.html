@@ -27,15 +27,15 @@
     </div>
   </div>
 
-  <div ng-show="itemScratch.activityType.uri === 'http://trials.drugis.org/ontology#TreatmentActivity' ">
+  <div ng-show="itemScratch.activityType.uri === 'ontology:TreatmentActivity' ">
 
     <div class="row">
       <div class="large-9 medium-12 columns">
         <label>Treatment drugs</label>
         <ul class="form-list">
           <li ng-repeat="treatment in itemScratch.treatments">
-            <span ng-show="treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#FixedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.fixedValue}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter }}</span>
-            <span ng-show="treatment.treatmentDoseType === 'http://trials.drugis.org/ontology#TitratedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.minValue}}-{{treatment.maxValue}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter }}</span>
+            <span ng-show="treatment.treatmentDoseType === 'ontology:FixedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.fixedValue}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter }}</span>
+            <span ng-show="treatment.treatmentDoseType === 'ontology:TitratedDoseDrugTreatment'">{{treatment.drug.label}}, {{treatment.minValue}}-{{treatment.maxValue}} {{treatment.doseUnit.label}} per {{treatment.dosingPeriodicity | durationFilter }}</span>
 
           </li>
           <li ng-show="!itemScratch.treatments">no treatment drugs defined</li>

@@ -14,7 +14,10 @@
       </li>
       <li class="name">
         <h1 class="topbar-text">
-          <a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">
+          <a ng-if="versionUuid" ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">
+            {{dataset.label}} / {{study.label}}
+          </a>
+          <a ng-if="!versionUuid" ui-sref="dataset({userUid: userUid, datasetUUID: datasetUUID})">
             {{dataset.label}} / {{study.label}}
           </a>
         </h1>

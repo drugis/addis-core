@@ -1,49 +1,61 @@
 'use strict';
 define([],
   function() {
-    var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService', 'SanitizeService'];
-    var PopulationInformationService = function($q, StudyService, SparqlResource, UUIDService, SanitizeService) {
+    var dependencies = ['$q', 'StudyService', 'UUIDService'];
+    var PopulationInformationService = function($q, StudyService, UUIDService) {
 
       var INSTANCE_PREFIX = 'http://trials.drugis.org/instances/';
 
-      var populationInformationQuery = SparqlResource.get('queryPopulationInformation.sparql');
-      var editPopulationInformationTemplate = SparqlResource.get('editPopulationInformation.sparql');
-
+      // Each study can have a maximun of 1 populationInformation items
       function queryItems() {
-        return populationInformationQuery.then(function(query) {
-          return StudyService.doNonModifyingQuery(query).then(function(result) {
-            var transformedResult = {
-              indication: {},
-              eligibilityCriteria: {}
-            };
-            if (result.length > 0) {
-              transformedResult.indication.label = result[0].indicationLabel;
-              transformedResult.indication.uri = result[0].indicationUri;
-              transformedResult.eligibilityCriteria.label = result[0].eligibilityCriteria;
+        return StudyService.getStudy().then(function(study) {
+          var item = {
+            indication: {
+              label: undefined
+            },
+            eligibilityCriteria: {
+              label: undefined
             }
+          };
 
-            return [transformedResult];
-          });
+          if (study.has_indication) {
+            item.indication = study.has_indication[0];
+          }
+
+          if (study.has_eligibility_criteria.length > 0 && study.has_eligibility_criteria[0]) {
+            item.eligibilityCriteria = {
+              label: study.has_eligibility_criteria[0].comment
+            };
+          }
+
+          return [item];
         });
       }
+
 
       function editItem(item) {
-        if (!item.indication.uri) {
-          item.indication.uri = INSTANCE_PREFIX + UUIDService.generate();
-        }
+        return StudyService.getStudy().then(function(study) {
 
-        return editPopulationInformationTemplate.then(function(template) {
-          var query = fillTemplate(template, item);
-          return StudyService.doModifyingQuery(query);
+          if (item.indication) {
+            if (study.has_indication[0] === undefined) {
+              study.has_indication = [{
+                '@id': INSTANCE_PREFIX + UUIDService.generate()
+              }];
+            }
+            study.has_indication[0].label = item.indication.label;
+          }
+
+          if (item.eligibilityCriteria) {
+            if (study.has_eligibility_criteria[0] === undefined) {
+              study.has_eligibility_criteria = [{
+                '@id': INSTANCE_PREFIX + UUIDService.generate()
+              }];
+            }
+            study.has_eligibility_criteria[0].comment = item.eligibilityCriteria.label;
+          }
+
+          StudyService.save(study);
         });
-      }
-
-      function fillTemplate(template, item) {
-        return template
-          .replace(/\$indicationUri/g, item.indication.uri)
-          .replace(/\$indicationLabel/g, SanitizeService.sanitizeStringLiteral(item.indication.label))
-          .replace(/\$eligibilityCriteria/g, SanitizeService.sanitizeStringLiteral(item.eligibilityCriteria.label))
-          ;
       }
 
       return {

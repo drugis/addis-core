@@ -1,63 +1,55 @@
-addis-core
+Trialverse
 ==========
 
-ADDIS 2.x core
+The Trialverse repository is currently home to a number of prototyping efforts
+for the ADDIS 2 project, all relating to how the structured database of
+clinical trials will be set up:
 
-Make sure the SASS and Bower submodules are present:
+ - `dbms`: the database structure (the data, but not the semantic meta-data)
+ - `src`: a prototype REST repository to serve the content of the DBMS.
+ - `triplestore`: the triplestore setup (the semantic meta-data)
+ - `sparql`: a prototype interface for searching / browsing ontologies
+ - `importer`: imports ADDIS 1.x datafiles into the DBMS, and generates the
+   meta-data
 
-    git submodule init
-    git submodule update
+Running
+-------
 
-Make sure you've run `make` in the src/main/webapp/resources directory first to generate the CSS.
+Create a trialverse user with password 'develop'
 
-Make sure you have the bower components needed by running `bower update` from the root of the repository
+	sudo -u postgres createuser -S -D -R trialverse
+	sudo -u postgres psql -c "ALTER USER trialverse WITH PASSWORD 'develop'"
+	sudo -u postgres psql -c "CREATE DATABASE trialverse ENCODING 'utf-8' OWNER trialverse"
 
-Running with PostgreSQL
------------------------
+Configure environment variables (NB google secret/key assumes localhost:8090)
 
-Set up the database:
+    export TRIALVERSE_DB_CHANGELOG=database.sql
+    export TRIALVERSE_DB_DRIVER=org.postgresql.Driver
+    export TRIALVERSE_DB_URL=jdbc:postgresql://localhost/trialverse
+    export TRIALVERSE_DB_USERNAME=trialverse
+    export TRIALVERSE_DB_PASSWORD=develop
+    export TRIPLESTORE_BASE_URI=http://localhost:3030
+    export TRIALVERSE_OAUTH_GOOGLE_SECRET=JMta9pPfckdE9GMnxKvTm3We
+    export TRIALVERSE_OAUTH_GOOGLE_KEY=356525985053-j71rekspvj3ds507700srb8hl7955m32.apps.googleusercontent.com
 
-```
-sudo -u postgres psql -c "CREATE USER addiscore WITH PASSWORD 'develop'"
-sudo -u postgres psql -c "CREATE DATABASE addiscore ENCODING 'utf-8' OWNER addiscore"
+Install the bower components:
 
-sudo -u postgres psql -c "CREATE USER patavitask WITH PASSWORD 'develop'"
-sudo -u postgres psql -c "CREATE DATABASE patavitask ENCODING 'utf-8' OWNER patavitask"
+  bower install
 
-```
+Run tomcat:
 
-Set up the environment:
-(NB: the Patavi URI assumes caching of patavi results via addis. If that is not desired omit ```/staged/```)
+    mvn tomcat7:run
 
-```
-export TRIPLESTORE_BASE_URI=http://localhost:3030
-export PATAVI_URI=http://localhost:3000/ws/staged/
+Note that there should be live fuseki endpoint referenced by the triplestore.
 
-export PATAVI_TASK_DB_DRIVER=org.postgresql.Driver
-export PATAVI_TASK_DB_HOST=localhost
-export PATAVI_TASK_DB=patavitask
-export PATAVI_TASK_DB_USERNAME=patavitask
-export PATAVI_TASK_DB_PASSWORD=develop
+Release notes
+==========
 
-export ADDIS_CORE_DB_CHANGELOG=database.sql
-export ADDIS_CORE_DB_DRIVER=org.postgresql.Driver
-export ADDIS_CORE_DB_HOST=localhost
-export ADDIS_CORE_DB=addiscore
-export ADDIS_CORE_DB_USERNAME=addiscore
-export ADDIS_CORE_DB_PASSWORD=develop
-export ADDIS_CORE_OAUTH_GOOGLE_SECRET=HU_-JxoYUvMbvk4vVRMhHibI
-export ADDIS_CORE_OAUTH_GOOGLE_KEY=201346854981-3pcdhh96orc3lcdr8k4i1u58pvepjme4.apps.googleusercontent.com
-```
+Release 7 (date: 11-27-215, tag 0.2.5)
+-------
 
-Run the Tomcat server (using the exact version of the plugin for which the system properties have been configured):
+- [versioning]search studies
+-- A user can to search Trialverse for studies that match my search terms, either in title, description, or unique identifiers.
+- [versioning] add study from other dataset to my dataset 
+-- A user can copy a study extracted by another user.
 
-```
-mvn org.apache.tomcat.maven:tomcat7-maven-plugin:2.2:run
-```
-
-To run integration tests:
-```
-mvn test -Dtest=*IT
-```
-
-test webhook

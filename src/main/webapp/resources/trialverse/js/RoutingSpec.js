@@ -27,7 +27,5 @@ define(['angular', 'angular-mocks', 'jQuery', 'app'], function() {
       $rootScope.$apply();
       expect($location.path()).toEqual('/users/');
     });
-
-
   });
 });

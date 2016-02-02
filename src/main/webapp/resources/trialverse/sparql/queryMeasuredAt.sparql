@@ -1,7 +1,0 @@
-prefix ontology: <http://trials.drugis.org/ontology#>
-
-SELECT ?itemUri ?measurementMoment WHERE {
-  GRAPH <$graphUri> {
-    ?itemUri ontology:is_measured_at ?measurementMoment .
-  }
-}

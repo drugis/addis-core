@@ -1,87 +1,85 @@
 'use strict';
-define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
+define(['angular-mocks'], function(angularMocks) {
   describe('the population information service', function() {
 
-    var graphUri = 'http://karma-test/';
-    var scratchStudyUri = 'http://localhost:9876/scratch'; // NB proxied by karma to actual fuseki instance
-
-    var rootScope, q, httpBackend;
-    var remotestoreServiceStub, uUIDServiceStub;
-    var studyService;
+    var rootScope, q;
+    var uUIDServiceStub;
+    var studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
 
     var populationInformationService;
     var mockGeneratedUuid = 'newUuid';
+    var studyJsonObject = {
+      has_indication: [{
+        '@id': 'http://trials.drugis.org/instances/abc-123',
+        '@type': 'ontology:Indication',
+        'label': 'Severe depression',
+        'sameAs': 'http://trials.drugis.org/concepts/xyz-456'
+      }],
+      has_eligibility_criteria: [{
+        '@id': 'http://eligibility_criteria_id',
+        'comment': 'over 22 years of age'
+      }]
+    };
+    var studyWithoutIndicationJsonObject = {
+      has_indication: [],
+      has_eligibility_criteria: [{
+        '@id': 'http://eligibility_criteria_id',
+        'comment': 'over 22 years of age'
+      }]
+    };
 
     beforeEach(module('trialverse.populationInformation'));
     beforeEach(function() {
       module('trialverse.util', function($provide) {
-        remotestoreServiceStub = testUtils.createRemoteStoreStub();
         uUIDServiceStub = jasmine.createSpyObj('UUIDService', [
           'generate'
         ]);
         uUIDServiceStub.generate.and.returnValue(mockGeneratedUuid);
-        $provide.value('RemoteRdfStoreService', remotestoreServiceStub);
         $provide.value('UUIDService', uUIDServiceStub);
+        $provide.value('StudyService', studyService);
       });
     });
 
+    beforeEach(angularMocks.inject(function($q, $rootScope, PopulationInformationService) {
 
-    beforeEach(inject(function($q, $rootScope, $httpBackend, PopulationInformationService, StudyService) {
       q = $q;
-      httpBackend = $httpBackend;
       rootScope = $rootScope;
-      studyService = StudyService;
-
       populationInformationService = PopulationInformationService;
-
-      // reset the test graph
-      testUtils.dropGraph(graphUri);
-
-      // load study service templates
-      testUtils.loadTemplate('createEmptyStudy.sparql', httpBackend);
-      testUtils.loadTemplate('queryStudyData.sparql', httpBackend);
-
-      // load service templates and flush httpBackend
-      testUtils.loadTemplate('queryPopulationInformation.sparql', httpBackend);
-      testUtils.loadTemplate('editPopulationInformation.sparql', httpBackend);
-
-      httpBackend.flush();
-
-      // create and load empty test store
-      var createStoreDeferred = $q.defer();
-      remotestoreServiceStub.create.and.returnValue(createStoreDeferred.promise);
-
-      var loadStoreDeferred = $q.defer();
-      remotestoreServiceStub.load.and.returnValue(loadStoreDeferred.promise);
-
-      studyService.loadStore();
-      createStoreDeferred.resolve(scratchStudyUri);
-      loadStoreDeferred.resolve();
 
       rootScope.$digest();
     }));
+
+    afterEach(function() {
+      studyService.save.calls.reset();
+    });
 
 
     describe('query population information', function() {
 
       var result;
 
-      beforeEach(function(done) {
+      beforeEach(angularMocks.inject(function($q, $rootScope) {
+        q = $q;
+        rootScope = $rootScope;
+        var studyDefer = $q.defer();
+        var getStudyPromise = studyDefer.promise;
+        studyDefer.resolve(studyJsonObject);
+        studyService.getStudy.and.returnValue(getStudyPromise);
 
-        testUtils.loadTestGraph('studyWithPopulationInformation.ttl', graphUri);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
+        rootScope.$digest();
+      }));
 
+      beforeEach(function() {
         populationInformationService.queryItems().then(function(info) {
           result = info;
-          done();
         });
         rootScope.$digest();
       });
 
       it('should return the population information contained in the study', function() {
         expect(result.length).toBe(1);
-        expect(result[0].indication.label).toBe('Indication label');
-        expect(result[0].eligibilityCriteria.label).toBe('eligibility criterion');
+        expect(result[0].indication.label).toBe('Severe depression');
+        expect(result[0].eligibilityCriteria.label).toBe('over 22 years of age');
       });
 
     });
@@ -89,57 +87,135 @@ define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks
     describe('query population information on study without a indication', function() {
 
       var result;
+      var studyDefer;
+      var getStudyPromise;
 
-      beforeEach(function(done) {
+      beforeEach(angularMocks.inject(function($q, $rootScope) {
+        q = $q;
+        rootScope = $rootScope;
+        studyDefer = $q.defer();
+        getStudyPromise = studyDefer.promise;
+        studyDefer.resolve(studyWithoutIndicationJsonObject);
+        studyService.getStudy.and.returnValue(getStudyPromise);
 
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
+        rootScope.$digest();
+      }));
 
+      beforeEach(function() {
         populationInformationService.queryItems().then(function(info) {
           result = info;
-          done();
         });
         rootScope.$digest();
       });
 
       it('should return the population information contained in the study', function() {
         expect(result.length).toBe(1);
-        expect(result[0].indication.label).toBe(undefined);
+        expect(result[0].indication).toBe(undefined);
       });
 
     });
 
-    describe('edit population information when there is no previous information', function() {
+    describe('edit population information when indication was precent on study', function() {
 
-      var newInformation = {
-        indication: {
-          label: 'new label'
-        },
-        eligibilityCriteria: {
-          label: 'eligibility label'
-        }
-      };
-      var populationInformation;
+      var studyDefer, getStudyPromise;
+      var newInformation;
 
-      beforeEach(function(done) {
-        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
-        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
 
-        populationInformationService.editItem(newInformation).then(function() {
-          populationInformationService.queryItems().then(function(resultInfo) {
-            populationInformation = resultInfo;
-            done();
-          })
-        });
+      beforeEach(angularMocks.inject(function($q, $rootScope) {
+        q = $q;
+        rootScope = $rootScope;
+        studyDefer = $q.defer();
+        getStudyPromise = studyDefer.promise;
+        studyDefer.resolve(studyJsonObject);
+        studyService.getStudy.and.returnValue(getStudyPromise);
+
+        rootScope.$digest();
+      }));
+
+      beforeEach(function() {
+
+        newInformation = {
+          indication: {
+            label: 'new label'
+          },
+          eligibilityCriteria: {
+            label: 'eligibility label'
+          }
+        };
+
+        populationInformationService.editItem(newInformation);
         rootScope.$digest();
       });
 
       it('should make the new population information accessible', function() {
-        expect(populationInformation).toBeDefined();
-        expect(populationInformation[0].indication.label).toEqual(newInformation.indication.label);
-        expect(populationInformation[0].indication.uri).toBeDefined();
-        expect(populationInformation[0].indication.uri).toEqual(populationInformationService.INSTANCE_PREFIX + mockGeneratedUuid);
-        expect(populationInformation[0].eligibilityCriteria.label).toEqual(newInformation.eligibilityCriteria.label);
+
+        var expedtedToBesaved = {
+          has_indication: [{
+            '@id': 'http://trials.drugis.org/instances/abc-123',
+            '@type': 'ontology:Indication',
+            'label': 'new label',
+            'sameAs': 'http://trials.drugis.org/concepts/xyz-456'
+          }],
+          has_eligibility_criteria: [{
+            '@id': 'http://eligibility_criteria_id',
+            'comment': 'eligibility label'
+          }]
+        };
+
+        expect(studyService.save).toHaveBeenCalledWith(expedtedToBesaved);
+
+      });
+
+    });
+
+    describe('edit population information when NO indication was present on study', function() {
+
+      var studyDefer, getStudyPromise;
+      var newInformation;
+
+
+      beforeEach(angularMocks.inject(function($q, $rootScope) {
+        q = $q;
+        rootScope = $rootScope;
+        studyDefer = $q.defer();
+        getStudyPromise = studyDefer.promise;
+        studyDefer.resolve(studyWithoutIndicationJsonObject);
+        studyService.getStudy.and.returnValue(getStudyPromise);
+
+        rootScope.$digest();
+      }));
+
+      beforeEach(function() {
+
+        newInformation = {
+          indication: {
+            label: 'new label'
+          },
+          eligibilityCriteria: {
+            label: 'eligibility label'
+          }
+        };
+
+        populationInformationService.editItem(newInformation);
+        rootScope.$digest();
+      });
+
+      it('should persist the changes an add the id', function() {
+
+        var expedtedToBesaved = {
+
+          has_eligibility_criteria: [{
+            '@id': studyJsonObject.has_eligibility_criteria[0]['@id'],
+            'comment': newInformation.eligibilityCriteria.label
+          }],
+          has_indication: [{
+            '@id': 'http://trials.drugis.org/instances/newUuid',
+            'label': newInformation.indication.label,
+          }],
+        };
+
+        expect(studyService.save).toHaveBeenCalledWith(expedtedToBesaved);
+
       });
 
     });

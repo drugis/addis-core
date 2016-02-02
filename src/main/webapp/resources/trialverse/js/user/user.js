@@ -7,7 +7,6 @@ define(function (require) {
     .controller('CreateDatasetController', require('user/createDatasetController'))
 
     //services
-    .factory('DatasetService', require('dataset/datasetService'))
 
     //resources
     .factory('UserResource', require('user/userResource'))

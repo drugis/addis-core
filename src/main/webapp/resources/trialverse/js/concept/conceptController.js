@@ -26,14 +26,10 @@ define([],
         });
       };
 
-      $scope.datasetConcepts.then(function(result) {
-        $scope.concepts = result;
-      });
+      $scope.datasetConcepts.then(reloadConceptsFromScratch);
 
       $scope.resetConcepts = function() {
-        $scope.$parent.loadConcepts().then(function() {
-          reloadConceptsFromScratch();
-        });
+        $scope.$parent.loadConcepts().then(reloadConceptsFromScratch);
       }
 
       $scope.areConceptsModified = function() {

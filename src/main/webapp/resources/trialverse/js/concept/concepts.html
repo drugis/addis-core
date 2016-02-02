@@ -28,11 +28,11 @@
     <button ng-show="isEditingAllowed" class="small" ng-click="openAddConceptDialog()"><i class="fa fa-plus"> Add Concept</i></button>
     <h3>Drugs</h3>
     <ul id="drugs">
-      <li ng-repeat="concept in concepts | filter:'ontology#Drug' | orderBy:'label'">{{concept.label}}</li>
+      <li ng-repeat="concept in concepts | filter:'ontology:Drug' | orderBy:'label'">{{concept.label}}</li>
     </ul>
     <h3>Variables</h3>
     <ul id="variables">
-      <li ng-repeat="concept in concepts | filter:'ontology#Variable'  | orderBy:'label'">{{concept.label}}</li>
+      <li ng-repeat="concept in concepts | filter:'ontology:Variable'  | orderBy:'label'">{{concept.label}}</li>
     </ul>
   </div>
 </div>

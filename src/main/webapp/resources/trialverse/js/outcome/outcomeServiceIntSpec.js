@@ -1,175 +1,334 @@
 'use strict';
-define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
+define(['angular', 'angular-mocks'], function(angular, angularMocks) {
   describe('the outcome service', function() {
 
-    var graphUri = 'http://karma-test/';
-    var scratchStudyUri = 'http://localhost:9876/scratch';
-
-    var rootScope, q, httpBackend;
-    var remotestoreServiceStub;
-    var measurementMomentServiceMock;
-    var outcomeService;
-    var studyService;
-
-    var addPopulationCharacteristicTemplate;
-    var setOutcomeResultPropertyTemplate;
+    var rootScope, q,
+      uUIDServiceMock,
+      measurementMomentServiceMock = jasmine.createSpyObj('MeasurementMomentService', ['queryItems']),
+      outcomeService,
+      studyServiceMock = jasmine.createSpyObj('StudyService', ['getStudy', 'getJsonGraph', 'save']),
+      studyDefer,
+      measurementMomentsDefer;
 
     beforeEach(function() {
-      module('trialverse.util', function($provide) {
-        remotestoreServiceStub = jasmine.createSpyObj('RemoteRdfStoreService', [
-          'create',
-          'load',
-          'executeUpdate',
-          'executeQuery',
-          'getGraph',
-          'deFusekify'
-        ]);
-        $provide.value('RemoteRdfStoreService', remotestoreServiceStub);
+      module('trialverse.outcome', function($provide) {
+        uUIDServiceMock = jasmine.createSpyObj('UUIDService', ['generate']);
+        uUIDServiceMock.generate.and.returnValue('newUuid');
+        $provide.value('UUIDService', uUIDServiceMock);
+        $provide.value('MeasurementMomentService', measurementMomentServiceMock);
+        $provide.value('StudyService', studyServiceMock);
       });
     });
-
     beforeEach(module('trialverse.outcome'));
 
-
-    beforeEach(inject(function($q, $rootScope, $httpBackend, OutcomeService, StudyService, SparqlResource) {
+    beforeEach(inject(function($q, $rootScope, OutcomeService) {
       q = $q;
-      httpBackend = $httpBackend;
       rootScope = $rootScope;
       outcomeService = OutcomeService;
-      studyService = StudyService;
 
-      // reset the test graph
-      testUtils.dropGraph(graphUri);
-
-      // load study service templates
-      testUtils.loadTemplate('createEmptyStudy.sparql', httpBackend);
-      testUtils.loadTemplate('queryStudyData.sparql', httpBackend);
-
-      // load service templates and flush httpBackend
-      setOutcomeResultPropertyTemplate = testUtils.loadTemplate('setOutcomeResultProperty.sparql', httpBackend);
-      SparqlResource.get('addPopulationCharacteristic.sparql');
-      addPopulationCharacteristicTemplate = testUtils.loadTemplate('addPopulationCharacteristic.sparql', httpBackend);
-      httpBackend.flush();
-
-      // create and load empty test store
-      var createStoreDeferred = $q.defer();
-      var createStorePromise = createStoreDeferred.promise;
-      remotestoreServiceStub.create.and.returnValue(createStorePromise);
-
-      var loadStoreDeferred = $q.defer();
-      var loadStorePromise = loadStoreDeferred.promise;
-      remotestoreServiceStub.load.and.returnValue(loadStorePromise);
-
-      studyService.loadStore();
-      createStoreDeferred.resolve(scratchStudyUri);
-      loadStoreDeferred.resolve();
-      rootScope.$digest();
-
-      // stub remotestoreServiceStub.executeUpdate method
-      remotestoreServiceStub.executeUpdate.and.callFake(function(uri, query) {
-        query = query.replace(/\$graphUri/g, graphUri);
-
-        // console.log('graphUri = ' + uri);
-        // console.log('query = ' + query);
-
-        var result = testUtils.executeUpdateQuery(query);
-
-        var executeUpdateDeferred = q.defer();
-        executeUpdateDeferred.resolve();
-        return executeUpdateDeferred.promise;
-      });
-
+      studyDefer = q.defer();
+      studyServiceMock.getStudy.and.returnValue(studyDefer.promise);
+      measurementMomentsDefer = q.defer();
+      measurementMomentServiceMock.queryItems.and.returnValue(measurementMomentsDefer.promise);
     }));
 
-    describe('setOutcomeProperty', function() {
+    describe('query outcomes of specific type', function() {
+      var jsonStudy = {
+        has_outcome: [{
+          '@id': 'http://trials.drugis.org/instances/popchar1',
+          '@type': 'ontology:OutcomeType',
+          'has_result_property': [
+            'ontology:standard_deviation',
+            'ontology:mean',
+            'ontology:sample_size'
+          ],
+          'is_measured_at': 'http://instance/moment1',
+          'of_variable': [{
+            '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
+            '@type': 'ontology:Variable',
+            'measurementType': 'ontology:continuous',
+            'comment': [
+              '',
+              'years'
+            ],
+            'label': 'Age'
+          }],
+          'comment': '',
+          'label': 'Age'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/9bb96077-a8e0-4da1-bee2-011db8b7e560',
+          '@type': 'ontology:OutcomeType',
+          'has_result_property': [
+            'ontology:sample_size',
+            'ontology:count'
+          ],
+          'is_measured_at': ['http://instance/moment1', 'http://instance/moment2'],
+          'of_variable': [{
+            '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac1100590000000b',
+            '@type': 'ontology:Variable',
+            'measurementType': 'ontology:dichotomous',
+            'comment': '',
+            'label': 'is stupid'
+          }],
+          'comment': '',
+          'label': 'is stupid'
+        }]
+      };
 
-      it('should add the triples for count and sampleSize when the outcome is dichotomous type outcome', function(done) {
+      var measurementMoments = [{
+        uri: 'http://instance/moment1'
+      }, {
+        uri: 'http://instance/moment2'
+      }];
 
-        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
-
-        // the test item to add
-        var outcome = {
-          uri: 'http://trials.drugis.org/instances/my-outcome',
-          label: 'outcome label',
-          measurementType: 'http://trials.drugis.org/ontology#dichotomous'
-        };
-
-        //first add an outcome
-        var addOutcomeQuery = addPopulationCharacteristicTemplate
-            .replace(/\$UUID/g, 'my-outcome')
-            .replace('$label', outcome.label)
-            .replace('$measurementType', outcome.measurementType)
-            .replace(/\$graphUri/g, graphUri);
-        testUtils.executeUpdateQuery(addOutcomeQuery);
-
-        // call the method to test
-        var resultPromise = outcomeService.setOutcomeProperty(outcome);
-
-        // setup verification, ready for digest cycle to kickoff
-        resultPromise.then(function(result) {
-          // verify addAdverseEvent query
-          var query = 'select ?property where { graph <' + graphUri + '> { <http://trials.drugis.org/instances/my-outcome> <http://trials.drugis.org/ontology#has_result_property> ?property . } }  ';
-          var result = testUtils.queryTeststore(query);
-          var resultObject = testUtils.deFusekify(result);
-          expect(resultObject.length).toEqual(2);
-          expect(resultObject[0].property).toEqual('http://trials.drugis.org/ontology#sample_size');
-          expect(resultObject[1].property).toEqual('http://trials.drugis.org/ontology#count');
-
-          // do not forget to signal async test is done !
-          done();
-        });
-
-        // fire in the hole !
-        rootScope.$digest();
+      beforeEach(function() {
+        studyDefer.resolve(jsonStudy);
+        measurementMomentsDefer.resolve(measurementMoments);
       });
 
-      it('should add the triples for mean, sd and sampleSize then the outcome is continous type outcome', function(done) {
-
-        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
-
-        // the test item to add
-        var outcome = {
-          uri: 'http://trials.drugis.org/instances/my-outcome',
-          label: 'outcome label',
-          measurementType: 'http://trials.drugis.org/ontology#continuous'
-        };
-
-        //first add a outcome
-        var addOutcomeQuery = addPopulationCharacteristicTemplate
-            .replace(/\$UUID/g, 'my-outcome')
-            .replace('$label', outcome.label)
-            .replace('$measurementType', outcome.measurementType)
-            .replace(/\$graphUri/g, graphUri);
-        testUtils.executeUpdateQuery(addOutcomeQuery);
-
-        // call the method to test
-        var resultPromise = outcomeService.setOutcomeProperty(outcome);
-
-        // setup verification, ready for digest cycle to kickoff
-        resultPromise.then(function(result) {
-          // verify addAdverseEvent query
-          var query = 'select ?property where { graph <' + graphUri + '> { <http://trials.drugis.org/instances/my-outcome> <http://trials.drugis.org/ontology#has_result_property> ?property . } }  ';
-          var result = testUtils.queryTeststore(query);
-          var resultObject = testUtils.deFusekify(result);
-          expect(resultObject.length).toEqual(3);
-          expect(resultObject[0].property).toEqual('http://trials.drugis.org/ontology#sample_size');
-          expect(resultObject[1].property).toEqual('http://trials.drugis.org/ontology#standard_deviation');
-          expect(resultObject[2].property).toEqual('http://trials.drugis.org/ontology#mean');
-
-          // do not forget to signal async test is done !
+      it('should query the characteristics', function(done) {
+        outcomeService.queryItems(function(outcome) {
+          return outcome['@type'] === 'ontology:OutcomeType';
+        }).then(function(items) {
+          expect(items.length).toBe(2);
+          expect(items[0].measurementType).toEqual('ontology:continuous');
+          expect(items[0].measuredAtMoments).toEqual([measurementMoments[0]]);
+          expect(items[1].measurementType).toEqual('ontology:dichotomous');
+          expect(items[1].measuredAtMoments).toEqual(measurementMoments);
           done();
         });
-
-        // fire in the hole !
         rootScope.$digest();
       });
-
     });
 
 
-    describe('deleteOutcome', function() {
+describe('query outcomes that a not measured', function() {
+      var jsonStudy = {
+        has_outcome: [{
+          '@id': 'http://trials.drugis.org/instances/popchar1',
+          '@type': 'ontology:OutcomeType',
+          'has_result_property': [
+            'ontology:standard_deviation',
+            'ontology:mean',
+            'ontology:sample_size'
+          ],
+          
+          'of_variable': [{
+            '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
+            '@type': 'ontology:Variable',
+            'measurementType': 'ontology:continuous',
+            'comment': [
+              '',
+              'years'
+            ],
+            'label': 'Age'
+          }],
+          'comment': '',
+          'label': 'Age'
+        }]
+      };
 
+      beforeEach(function() {
+        studyDefer.resolve(jsonStudy);
+        measurementMomentsDefer.resolve([]);
+      });
+
+      it('should query the characteristics', function(done) {
+        outcomeService.queryItems(function(outcome) {
+          return outcome['@type'] === 'ontology:OutcomeType';
+        }).then(function(items) {
+          expect(items.length).toBe(1);
+          expect(items[0].measurementType).toEqual('ontology:continuous');
+          expect(items[0].measuredAtMoments).toEqual([]);
+          done();
+        });
+        rootScope.$digest();
+      });
     });
+
+    describe('add outcome of type', function() {
+      var queryPromise;
+      var outcomeUri = 'http://trials.drugis.org/instances/newUuid';
+      var moment = 'http://mm/uri';
+
+      var measuredAtMoment = {
+        uri: moment
+      };
+
+      var newPopulationChar = {
+        uri: outcomeUri,
+        label: 'label',
+        measurementType: 'ontology:dichotomous',
+        measuredAtMoments: [measuredAtMoment]
+      };
+
+      beforeEach(function(done) {
+        measurementMomentsDefer.resolve([{
+          itemUri: moment
+        }]);
+        studyDefer.resolve({
+          has_outcome: []
+        });
+
+        outcomeService.addItem(newPopulationChar, 'ontology:OutcomeType').then(done);
+        rootScope.$digest();
+      });
+
+      it('should add the outcomes', function(done) {
+        var expectedStudy = {
+          has_outcome: [{
+            '@id': outcomeUri,
+            '@type': 'ontology:OutcomeType',
+            is_measured_at: moment,
+            has_result_property: ['http://trials.drugis.org/ontology#sample_size', 'http://trials.drugis.org/ontology#count'],
+            of_variable: [{
+              '@type': 'ontology:Variable',
+              measurementType: 'ontology:dichotomous',
+              label: 'label'
+            }],
+            label: 'label'
+          }]
+        };
+
+        outcomeService.queryItems().then(function(queryResult) {
+          expect(studyServiceMock.save).toHaveBeenCalledWith(expectedStudy);
+          expect(queryResult.length).toEqual(1);
+          expect(queryResult[0].label).toEqual(newPopulationChar.label);
+          done();
+        });
+      });
+    });
+
+    describe('edit outcome', function() {
+      var jsonStudy = {
+        has_outcome: [{
+          '@id': 'http://trials.drugis.org/instances/popchar1',
+          '@type': 'ontology:OutcomeType',
+          'has_result_property': [
+            'ontology:standard_deviation',
+            'ontology:mean',
+            'ontology:sample_size'
+          ],
+          'is_measured_at': 'http://instance/moment1',
+          'of_variable': [{
+            '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
+            '@type': 'ontology:Variable',
+            'measurementType': 'ontology:continuous',
+            'label': 'Age'
+          }],
+          'comment': '',
+          'label': 'Age'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/9bb96077-a8e0-4da1-bee2-011db8b7e560',
+          '@type': 'ontology:OutcomeType',
+          'has_result_property': [
+            'ontology:sample_size',
+            'ontology:count'
+          ],
+          'is_measured_at': ['http://instance/moment1', 'http://instance/moment2'],
+          'of_variable': [{
+            '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac1100590000000b',
+            '@type': 'ontology:Variable',
+            'measurementType': 'ontology:dichotomous',
+            'label': 'is stupid'
+          }],
+          'label': 'is stupid'
+        }]
+      };
+
+      var moment1 = 'http://instance/moment1';
+      var moment2 = 'http://instance/moment2';
+      var outcomeUri = 'http://trials.drugis.org/instances/popchar1';
+      var measuredAtMoment1 = {
+        uri: moment1
+      };
+      var measuredAtMoment2 = {
+        uri: moment2
+      };
+
+      var newPopulationChar = {
+        uri: 'http://trials.drugis.org/instances/popchar1',
+        label: 'new label',
+        measurementType: 'ontology:dichotomous',
+        measuredAtMoments: [measuredAtMoment1, measuredAtMoment2]
+      };
+
+      beforeEach(function(done) {
+        studyDefer.resolve(jsonStudy);
+        measurementMomentsDefer.resolve({});
+        outcomeService.editItem(newPopulationChar).then(done);
+        rootScope.$digest();
+      });
+
+      it('should have changed the outcomes', function(done) {
+        outcomeService.queryItems().then(function(queryResult) {
+          expect(queryResult.length).toEqual(2);
+          expect(queryResult[0].label).toEqual(newPopulationChar.label);
+          expect(queryResult[0].measurementType).toEqual('ontology:dichotomous');
+          expect(queryResult[0].measuredAtMoments.length).toBe(2);
+          done();
+        });
+      });
+    });
+
+    describe('delete outcome', function() {
+      var jsonStudy = {
+        has_outcome: [{
+          '@id': 'http://trials.drugis.org/instances/popchar1',
+          '@type': 'ontology:OutcomeType',
+          'has_result_property': [
+            'ontology:standard_deviation',
+            'ontology:mean',
+            'ontology:sample_size'
+          ],
+          'is_measured_at': 'http://instance/moment1',
+          'of_variable': [{
+            '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194dac11005900000003',
+            '@type': 'ontology:Variable',
+            'measurementType': 'ontology:continuous',
+            'label': 'Age'
+          }],
+          'comment': '',
+          'label': 'Age'
+        }, {
+          '@id': 'http://trials.drugis.org/instances/9bb96077-a8e0-4da1-bee2-011db8b7e560',
+          '@type': 'ontology:OutcomeType',
+          'has_result_property': [
+            'ontology:sample_size',
+            'ontology:count'
+          ],
+          'is_measured_at': ['http://instance/moment1', 'http://instance/moment2'],
+          'of_variable': [{
+            '@id': 'http://fuseki-test.drugis.org:3030/.well-known/genid/0000014fdfac194eac1100590000000b',
+            '@type': 'ontology:Variable',
+            'measurementType': 'ontology:dichotomous',
+            'label': 'is stupid'
+          }],
+          'label': 'is stupid'
+        }]
+      };
+
+
+      var newPopulationChar = {
+        uri: 'http://trials.drugis.org/instances/popchar1'
+      };
+
+      beforeEach(function(done) {
+        studyDefer.resolve(jsonStudy);
+        measurementMomentsDefer.resolve({});
+        outcomeService.deleteItem(newPopulationChar).then(done);
+        rootScope.$digest();
+      });
+
+
+      it('should have removed the outcomes', function(done) {
+        outcomeService.queryItems().then(function(queryResult) {
+          expect(queryResult.length).toEqual(1);
+          done();
+        });
+      });
+    });
+
 
   });
 });

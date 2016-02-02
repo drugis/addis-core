@@ -1,4 +1,4 @@
-<form name="myForm" novalidate ng-submit="editItem()">
+<form name="myForm" novalidate ng-submit="editItem(item)">
   <div class="row">
     <div class="large-9 medium-12 columns">
       <h3>Edit study information</h3>
@@ -11,25 +11,25 @@
          <enum-options
          options-constant-name="'GROUP_ALLOCATION_OPTIONS'"
          edit-mode="true"
-         selected-option="itemScratch.groupAllocation" ></enum-options>
+         selected-option="item.allocation" ></enum-options>
       </label>
       <label>Blinding
          <enum-options
          options-constant-name="'BLINDING_OPTIONS'"
          edit-mode="true"
-         selected-option="itemScratch.blinding" ></enum-options>
+         selected-option="item.blinding" ></enum-options>
       </label>
       <label>Status
          <enum-options
          options-constant-name="'STATUS_OPTIONS'"
          edit-mode="true"
-         selected-option="itemScratch.status" ></enum-options>
+         selected-option="item.status" ></enum-options>
       </label>
       <label>Number of centers
-         <input name="numberOfCenters" min="0" ng-pattern="/\d+$/" type="number" ng-model="itemScratch.numberOfCenters" />
+         <input name="numberOfCenters" min="0" ng-pattern="/\d+$/" type="number" ng-model="item.numberOfCenters" />
       </label>
       <label>Objective
-        <textarea rows="6" ng-model="itemScratch.objective"></textarea>
+        <textarea rows="6" ng-model="item.objective.comment"></textarea>
       </label>
     </div>
   </div>

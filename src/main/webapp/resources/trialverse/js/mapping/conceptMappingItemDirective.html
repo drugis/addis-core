@@ -1,8 +1,6 @@
 <span ng-show="isEditingAllowed" class="cell-with-single-btn">
   <select
-  ng-model="selectedDatasetConcept"
-  ng-change="updateMapping()"
-  ng-options="datasetConcept.label for datasetConcept in filteredConcepts | orderBy:'label'">
+  ng-model="selectedDatasetConcept" ng-change="updateMapping()" ng-options="datasetConcept.label for datasetConcept in filteredConcepts | orderBy:'label'">
 </select>
 <button ng-disabled="!selectedDatasetConcept" class="small secondary" ng-click="removeMapping()">remove</button>
 </span>

@@ -8,15 +8,13 @@ define(function (require) {
     .controller('DatasetHistoryController', require('dataset/datasetHistoryController'))
 
     //services
-    .factory('DatasetService', require('dataset/datasetService'))
-    .factory('DatasetOverviewService', require('dataset/datasetOverviewService'))
-    .factory('SingleDatasetService', require('dataset/singleDatasetService'))
     .factory('StudiesWithDetailsService', require('dataset/studiesWithDetailsService'))
 
     //resources
     .factory('DatasetVersionedResource', require('dataset/datasetVersionedResource'))
     .factory('DatasetResource', require('dataset/datasetResource'))
     .factory('HistoryResource', require('dataset/historyResource'))
+    .factory('GraphResource', require('graph/graphResource'))
 
     //directives
     .directive('historyItem', require('dataset/historyItemDirective'))

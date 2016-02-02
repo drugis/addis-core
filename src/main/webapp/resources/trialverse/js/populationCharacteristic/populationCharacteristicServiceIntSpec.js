@@ -1,220 +1,89 @@
 'use strict';
-define(['angular', 'angular-mocks', 'testUtils'], function(angular, angularMocks, testUtils) {
+define(['angular-mocks'], function(angularMocks) {
   describe('the population characteristic service', function() {
 
-    var graphUri = 'http://karma-test/';
-    var scratchStudyUri = 'http://localhost:9876/scratch';
+    var rootScope, q,
+      populationCharacteristicService,
+      outcomeServiceMock = jasmine.createSpyObj('OutcomeService', ['queryItems', 'addItem', 'editItem', 'deleteItem']),
+      outcomeQueryDefer,
+      outcomeAddDefer,
+      outcomeEditDefer,
+      outcomeDeleteDefer;
 
-    var rootScope, q, httpBackend;
-    var remotestoreServiceStub, uUIDServiceStub, measurementMomentServiceStub;
-    var populationCharacteristicService;
-    var outcomeService;
-    var studyService;
-
-    beforeEach(module('trialverse.populationCharacteristic'));
     beforeEach(function() {
-      module('trialverse.util', function($provide) {
-        remotestoreServiceStub = jasmine.createSpyObj('RemoteRdfStoreService', [
-          'create',
-          'load',
-          'executeUpdate',
-          'executeQuery',
-          'getGraph',
-          'deFusekify'
-        ]);
-        uUIDServiceStub = jasmine.createSpyObj('UUIDService', [
-          'generate'
-        ]);
-        uUIDServiceStub.generate.and.returnValue('newUuid');
-        measurementMomentServiceStub = jasmine.createSpyObj('MeasurementMomentService', [
-          'queryItems'
-        ]);
-        $provide.value('RemoteRdfStoreService', remotestoreServiceStub);
-        $provide.value('UUIDService', uUIDServiceStub);
-        $provide.value('MeasurementMomentService', measurementMomentServiceStub);
+      module('trialverse.populationCharacteristic', function($provide) {
+        $provide.value('OutcomeService', outcomeServiceMock);
       });
     });
+    beforeEach(module('trialverse.populationCharacteristic'));
 
-
-    beforeEach(inject(function($q, $rootScope, $httpBackend, StudyService,
-      PopulationCharacteristicService, OutcomeService) {
+    beforeEach(angularMocks.inject(function($q, $rootScope, PopulationCharacteristicService) {
       q = $q;
-      httpBackend = $httpBackend;
       rootScope = $rootScope;
       populationCharacteristicService = PopulationCharacteristicService;
-      studyService = StudyService;
-      outcomeService = OutcomeService;
 
-      // reset the test graph
-      testUtils.dropGraph(graphUri);
-
-      // load study service templates
-      testUtils.loadTemplate('createEmptyStudy.sparql', httpBackend);
-      testUtils.loadTemplate('queryStudyData.sparql', httpBackend);
-
-      // load service templates and flush httpBackend
-      testUtils.loadTemplate('setOutcomeResultProperty.sparql', httpBackend);
-      testUtils.loadTemplate('addTemplate.sparql', httpBackend);
-      testUtils.loadTemplate('addPopulationCharacteristic.sparql', httpBackend);
-      testUtils.loadTemplate('queryPopulationCharacteristic.sparql', httpBackend);
-      testUtils.loadTemplate('deleteVariable.sparql', httpBackend);
-      testUtils.loadTemplate('editVariable.sparql', httpBackend);
-      testUtils.loadTemplate('queryMeasuredAt.sparql', httpBackend);
-      httpBackend.flush();
-
-      // create and load empty test store
-      var createStoreDeferred = $q.defer();
-      remotestoreServiceStub.create.and.returnValue(createStoreDeferred.promise);
-      var loadStoreDeferred = $q.defer();
-      remotestoreServiceStub.load.and.returnValue(loadStoreDeferred.promise);
-      studyService.loadStore();
-      createStoreDeferred.resolve(scratchStudyUri);
-      loadStoreDeferred.resolve();
-      rootScope.$digest();
+      outcomeQueryDefer = q.defer();
+      outcomeServiceMock.queryItems.and.returnValue(outcomeQueryDefer.promise);
+      outcomeAddDefer = q.defer();
+      outcomeServiceMock.addItem.and.returnValue(outcomeAddDefer.promise);
+      outcomeEditDefer = q.defer();
+      outcomeServiceMock.editItem.and.returnValue(outcomeEditDefer.promise);
+      outcomeDeleteDefer = q.defer();
+      outcomeServiceMock.deleteItem.and.returnValue(outcomeDeleteDefer.promise);
     }));
 
+    describe('query population characteristics', function() {
+      beforeEach(function() {
+        outcomeQueryDefer.resolve([{
+          id: 'item1'
+        }]);
+      });
+
+      it('should query the events', function(done) {
+        populationCharacteristicService.queryItems().then(function(items) {
+          expect(items.length).toBe(1);
+          expect(outcomeServiceMock.queryItems).toHaveBeenCalled();
+          done();
+        });
+        rootScope.$digest();
+      });
+    });
     describe('add population characteristic', function() {
-
-      var popCharUri = 'http://trials.drugis.org/instances/newUuid';
-      var queryPromise;
-      var moment = 'http://mm/uri';
-      var measuredAtMoment = {
-        uri: popCharUri,
-        measurementMoment: moment
-      };
-
-      var newPopulationChar = {
-        uri: popCharUri,
-        label: 'label',
-        measurementType: 'http://trials.drugis.org/ontology#dichotomous',
-        measuredAtMoments: [measuredAtMoment]
-      };
-
-      beforeEach(function(done) {
-        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
-
-        var queryMeasurementMomentsDefer = q.defer();
-        queryMeasurementMomentsDefer.resolve([{
-          itemUri: popCharUri,
-          measurementMoment: moment
-        }]);
-        measurementMomentServiceStub.queryItems.and.returnValue(queryMeasurementMomentsDefer.promise);
-
-        populationCharacteristicService.addItem(newPopulationChar).then(function() {
-          queryPromise = populationCharacteristicService.queryItems();
+      beforeEach(function(){
+        outcomeAddDefer.resolve({});
+      });
+      it('should add the population characteristic', function(done) {
+        populationCharacteristicService.addItem({}).then(function() {
+          expect(outcomeServiceMock.addItem).toHaveBeenCalled();
           done();
         });
         rootScope.$digest();
       });
-
-      it('should add the population characteristics', function(done) {
-
-        queryPromise.then(function(queryResult) {
-          expect(queryResult.length).toEqual(1);
-          expect(queryResult[0].label).toEqual(newPopulationChar.label);
-          done();
-        });
-      });
     });
-
     describe('edit population characteristic', function() {
-
-      var editItem;
-      var popCharUri = 'http://trials.drugis.org/instances/newUuid';
-      var queryPromise;
-      var moment = 'http://mm/uri';
-      var measuredAtMoment = {
-        uri: popCharUri,
-        measurementMoment: moment
-      };
-
-      var newPopulationChar = {
-        uri: popCharUri,
-        label: 'label',
-        measurementType: 'http://trials.drugis.org/ontology#dichotomous',
-        measuredAtMoments: [measuredAtMoment]
-      };
-
-      beforeEach(function(done) {
-        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
-
-        var queryMeasurementMomentsDefer = q.defer();
-        queryMeasurementMomentsDefer.resolve([{
-          itemUri: popCharUri,
-          measurementMoment: moment
-        }]);
-        measurementMomentServiceStub.queryItems.and.returnValue(queryMeasurementMomentsDefer.promise);
-
-        populationCharacteristicService.addItem(newPopulationChar).then(function() {
-          editItem = angular.copy(newPopulationChar);
-          editItem.label = 'edit label';
-          populationCharacteristicService.editItem(editItem).then(function() {
-            queryPromise = populationCharacteristicService.queryItems();
-            done();
-          });
+      beforeEach(function(){
+        outcomeEditDefer.resolve({});
+      });
+      it('should edit the population characteristic', function(done) {
+        populationCharacteristicService.editItem({}).then(function() {
+          expect(outcomeServiceMock.editItem).toHaveBeenCalled();
+          done();
         });
         rootScope.$digest();
       });
-
-      it('should have changed the population characteristics', function(done) {
-
-        queryPromise.then(function(queryResult) {
-          expect(queryResult.length).toEqual(1);
-          expect(queryResult[0].label).toEqual(editItem.label);
-          done();
-        });
-      });
     });
-
     describe('delete population characteristic', function() {
-      var popCharUri = 'http://trials.drugis.org/instances/newUuid';
-      var queryPromise;
-      var moment = 'http://mm/uri';
-      var measuredAtMoment = {
-        uri: popCharUri,
-        measurementMoment: moment
-      };
-
-      var newPopulationChar = {
-        uri: popCharUri,
-        label: 'label',
-        measurementType: 'http://trials.drugis.org/ontology#dichotomous',
-        measuredAtMoments: [measuredAtMoment]
-      };
-
-      beforeEach(function(done) {
-        testUtils.remoteStoreStubUpdate(remotestoreServiceStub, graphUri, q);
-        testUtils.remoteStoreStubQuery(remotestoreServiceStub, graphUri, q);
-        testUtils.loadTestGraph('emptyStudy.ttl', graphUri);
-
-        var queryMeasurementMomentsDefer = q.defer();
-        queryMeasurementMomentsDefer.resolve([{
-          itemUri: popCharUri,
-          measurementMoment: moment
-        }]);
-        measurementMomentServiceStub.queryItems.and.returnValue(queryMeasurementMomentsDefer.promise);
-        populationCharacteristicService.addItem(newPopulationChar).then(function() {
-          populationCharacteristicService.deleteItem(newPopulationChar).then(function() {
-            queryPromise = populationCharacteristicService.queryItems();
-            done();
-          });
+      beforeEach(function(){
+        outcomeDeleteDefer.resolve({});
+      });
+      it('should delete the population characteristic', function(done) {
+        populationCharacteristicService.deleteItem({}).then(function() {
+          expect(outcomeServiceMock.deleteItem).toHaveBeenCalled();
+          done();
         });
         rootScope.$digest();
       });
-
-      it('should have removed the population characteristics', function(done) {
-
-        queryPromise.then(function(queryResult) {
-          expect(queryResult.length).toEqual(0);
-          done();
-        });
-      });
     });
-
 
   });
 });

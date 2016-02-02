@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.security.SocialAuthenticationToken;
@@ -225,6 +226,22 @@ public class DatasetControllerTest {
 
     verify(datasetReadRepository).getVersionedDataset(datasetUri, null);
     verify(trialverseIOUtilsService).writeModelToServletResponse(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
+  }
+
+  @Test
+  public void testGetDatasetAsJson() throws Exception {
+    String uuid = "uuuuiiid-yeswecan";
+    URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + uuid);
+    Model model = mock(Model.class);
+    when(datasetReadRepository.getVersionedDataset(datasetUri, null)).thenReturn(model);
+    when(accountRepository.findAccountByUsername(user.getName())).thenReturn(john);
+
+    mockMvc.perform((get("/users/some-user-uid/datasets/" + uuid)).principal(user).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(RDFLanguages.JSONLD.getContentType().getContentType()));
+
+    verify(datasetReadRepository).getVersionedDataset(datasetUri, null);
+    verify(trialverseIOUtilsService).writeModelToServletResponseJson(Matchers.any(Model.class), Matchers.any(HttpServletResponse.class));
   }
 
   @Test
