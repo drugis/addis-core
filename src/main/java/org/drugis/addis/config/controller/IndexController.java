@@ -30,8 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 
 @Controller
@@ -52,7 +50,7 @@ public class IndexController {
     try {
       String uri;
       String envUri = System.getenv("ADDIS_CORE_PATAVI_MCDA_WS_URI");
-      if(envUri != null && !envUri.isEmpty()) {
+      if (envUri != null && !envUri.isEmpty()) {
         uri = envUri;
       } else {
         uri = DEFAULT_PATAVI_MCDA_WS_URI;
@@ -74,7 +72,7 @@ public class IndexController {
       } else {
         Account account = accountRepository.findAccountByUsername(currentUser.getName());
         model.addAttribute(account);
-        if(StringUtils.isNotEmpty(account.getEmail())) {
+        if (StringUtils.isNotEmpty(account.getEmail())) {
           String md5String = DigestUtils.md5DigestAsHex(account.getEmail().getBytes());
           model.addAttribute("userMD5", md5String); // user email MD5 hash needed to retrieve gravatar image
         }
@@ -86,6 +84,29 @@ public class IndexController {
       return "redirect:/signin";
     }
     return "index";
+  }
+
+  @RequestMapping("/trialverse")
+  public String trialverse(Principal currentUser, Model model, HttpServletRequest request) {
+    model.addAttribute("connectionsToProviders", getConnectionRepository().findAllConnections());
+    try {
+      if (currentUser == null) {
+        return "redirect:/signin";
+      } else {
+        Account account = accountRepository.findAccountByUsername(currentUser.getName());
+        model.addAttribute(account);
+        model.addAttribute("userEmail", account.getUsername());
+        model.addAttribute("id", account.getId());
+        if (StringUtils.isNotEmpty(account.getEmail())) {
+          String md5String = DigestUtils.md5DigestAsHex(account.getEmail().getBytes());
+          model.addAttribute("userNameHash", md5String); // user email MD5 hash needed to retrieve gravatar image
+        }
+      }
+    } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+      request.getSession().invalidate();
+      return "redirect:/signin";
+    }
+    return "trialverse";
   }
 
   private ConnectionRepository getConnectionRepository() {

@@ -16,7 +16,6 @@
 package org.drugis.addis.config;
 
 import org.apache.jena.ext.com.google.common.base.Optional;
-import org.drugis.addis.security.SimpleSocialUsersDetailService;
 import org.drugis.addis.security.ApplicationKeyAuthenticationProvider;
 import org.drugis.addis.security.AuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
-import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.social.security.SpringSocialConfigurer;
 
 import javax.inject.Inject;
@@ -81,7 +79,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    String[] whitelist = {"/", "/favicon.ico", "/favicon.png", "/app/**", "/auth/**", "/signin", "/signup", "/**/modal/*.html", "/manual.html"};
+    String[] whitelist = {"/", "/trialverse", "/trialverse/**",
+            "/favicon.ico", "/favicon.png", "/app/**", "/auth/**",
+            "/signin", "/signup", "/**/modal/*.html", "/manual.html"};
     // Disable CSFR protection on the following urls:
     List<AntPathRequestMatcher> requestMatchers = Arrays.asList(whitelist)
             .stream()

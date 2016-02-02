@@ -15,12 +15,12 @@ define([],
 
       // if no user is supplied, then go to the logged-in user user-page
       if (!$scope.userUid || $scope.userUid.length === 0) {
-        $location.path('/users/' + $scope.loginUser.userNameHash);
+        $location.path('/users/' + $scope.loginUser.id);
       } else {
         UserResource.query(function(users) {
           _.each(users, function(user) {
             user.md5 = md5.createHash(user.username);
-            if ($scope.userUid === user.userNameHash) {
+            if ($scope.userUid === user.id) {
               $scope.user = user;
             } else {
               $scope.otherUsers.push(user);

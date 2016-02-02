@@ -88,40 +88,40 @@ define(
         $stateProvider
           .state('search', {
             url: '/search?searchTerm',
-            templateUrl: 'app/js/search/search.html',
+            templateUrl: 'trialverse/js/search/search.html',
             controller: 'SearchController'
           })
           .state('user', {
             url: '/users/:userUid',
-            templateUrl: 'app/js/user/user.html',
+            templateUrl: 'trialverse/js/user/user.html',
             controller: 'UserController'
           })
           .state('create-dataset', {
             parent: 'user',
             url: '/create-dataset',
-            templateUrl: 'app/js/user/createDataset.html',
+            templateUrl: 'trialverse/js/user/createDataset.html',
             controller: 'CreateDatasetController'
           })
           .state('versionedDataset', {
             parent: 'user',
             url: '/datasets/:datasetUUID/versions/:versionUuid',
-            templateUrl: 'app/js/dataset/dataset.html',
+            templateUrl: 'trialverse/js/dataset/dataset.html',
             controller: 'DatasetController'
           })
           .state('datasetHistory', {
             parent: 'user',
             url: '/datasets/:datasetUUID/history',
-            templateUrl: 'app/js/dataset/datasetHistory.html',
+            templateUrl: 'trialverse/js/dataset/datasetHistory.html',
             controller: 'DatasetHistoryController'
           })
           .state('versionedDataset.concepts', {
             url: '/concepts',
-            templateUrl: 'app/js/concept/concepts.html',
+            templateUrl: 'trialverse/js/concept/concepts.html',
             controller: 'ConceptController'
           })
           .state('versionedDataset.study', {
             url: '/studies/:studyGraphUuid',
-            templateUrl: 'app/js/study/view/study.html',
+            templateUrl: 'trialverse/js/study/view/study.html',
             controller: 'StudyController'
           });
 
