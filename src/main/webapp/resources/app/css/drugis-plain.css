@@ -1,10 +1,13 @@
 /*
 Error: Undefined variable: "$addis-grey".
-        on line 10 of /home/connor/Code/addis-core/src/main/webapp/resources/sass/_addis-base.scss
+        on line 6 of /home/connor/Code/addis-core/src/main/webapp/resources/sass/_addis-base.scss
         from line 2 of /home/connor/Code/addis-core/src/main/webapp/resources/sass/drugis-plain.scss
 
+1: @import"../app/js/bower_components/foundation/scss/foundation.scss";
+2: @import "addis-base";
+
 Backtrace:
-/home/connor/Code/addis-core/src/main/webapp/resources/sass/_addis-base.scss:10
+/home/connor/Code/addis-core/src/main/webapp/resources/sass/_addis-base.scss:6
 /home/connor/Code/addis-core/src/main/webapp/resources/sass/drugis-plain.scss:2
 /home/connor/.rvm/gems/ruby-2.1.2/gems/sass-3.4.21/lib/sass/script/tree/variable.rb:49:in `_perform'
 /home/connor/.rvm/gems/ruby-2.1.2/gems/sass-3.4.21/lib/sass/script/tree/node.rb:50:in `perform'
@@ -74,4 +77,4 @@ Backtrace:
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Error: Undefined variable: \"$addis-grey\".\A         on line 10 of /home/connor/Code/addis-core/src/main/webapp/resources/sass/_addis-base.scss\A         from line 2 of /home/connor/Code/addis-core/src/main/webapp/resources/sass/drugis-plain.scss"; }
+  content: "Error: Undefined variable: \"$addis-grey\".\A         on line 6 of /home/connor/Code/addis-core/src/main/webapp/resources/sass/_addis-base.scss\A         from line 2 of /home/connor/Code/addis-core/src/main/webapp/resources/sass/drugis-plain.scss\A \A 1: @import\"../app/js/bower_components/foundation/scss/foundation.scss\";\A 2: @import \"addis-base\";"; }

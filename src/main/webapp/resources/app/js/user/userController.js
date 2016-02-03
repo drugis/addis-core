@@ -9,7 +9,7 @@ define([],
       $stateParams, DatasetResource, UserResource, md5) {
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.otherUsers = [];
-      $scope.userUid = $stateParams.userUid;
+      $scope.userUid = Number($stateParams.userUid);
       $scope.loginUser = $window.config.user;
       $scope.datasetsLoaded = false;
       $scope.reloadDatasets = reloadDatasets;
@@ -21,7 +21,7 @@ define([],
         UserResource.query(function(users) {
           _.each(users, function(user) {
             user.md5 = md5.createHash(user.email);
-            if ($scope.userUid === user.id.toString()) {
+            if ($scope.userUid === user.id) {
               $scope.user = user;
             } else {
               $scope.otherUsers.push(user);

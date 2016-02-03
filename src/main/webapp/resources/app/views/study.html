@@ -1,3 +1,5 @@
+<navbar-directive>
+</navbar-directive>
 <ul class="breadcrumbs">
     <li><a ui-sref="projects">Projects</a></li>
     <li><a ui-sref="create-project">Datasets</a></li>
@@ -149,7 +151,7 @@
                     <span ng-show="dataArmValue.count">{{dataArmValue.count}}</span>
                     <span ng-show="dataArmValue.sampleSize && dataArmValue.count"> / {{dataArmValue.sampleSize}}</span>
                     <span ng-show="dataArmValue.sampleSize && dataArmValue.mean">({{dataArmValue.sampleSize}})</span>
-                    <span ng-show="dataArmValue.values">{{dataArmValue.values | categoricalFilter}}</span>   
+                    <span ng-show="dataArmValue.values">{{dataArmValue.values | categoricalFilter}}</span>
                 </td>
             </tr>
             </tbody>
@@ -186,7 +188,7 @@
                     <span ng-show="dataArmValue.count || (dataArmValue.count === 0)">{{dataArmValue.count}}</span>
                     <span ng-show="dataArmValue.sampleSize && dataArmValue.count || (dataArmValue.count === 0)"> / {{dataArmValue.sampleSize}}</span>
                     <span ng-show="dataArmValue.sampleSize && dataArmValue.mean">({{dataArmValue.sampleSize}})</span>
-                    <span ng-show="dataArmValue.values">{{dataArmValue.values | categoricalFilter}}</span>  
+                    <span ng-show="dataArmValue.values">{{dataArmValue.values | categoricalFilter}}</span>
                 </td>
             </tr>
             </tbody>
@@ -223,7 +225,7 @@
                     <span ng-show="dataArmValue.count || (dataArmValue.count === 0)">{{dataArmValue.count}}</span>
                     <span ng-show="dataArmValue.sampleSize && dataArmValue.count || (dataArmValue.count === 0)"> / {{dataArmValue.sampleSize}}</span>
                     <span ng-show="dataArmValue.sampleSize && dataArmValue.mean">({{dataArmValue.sampleSize}})</span>
-                    <span ng-show="dataArmValue.values">{{dataArmValue.values | categoricalFilter}}</span>  
+                    <span ng-show="dataArmValue.values">{{dataArmValue.values | categoricalFilter}}</span>
                 </td>
             </tr>
             </tbody>

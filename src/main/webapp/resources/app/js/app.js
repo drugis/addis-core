@@ -133,7 +133,7 @@ define(
     };
 
     var app = angular.module('addis', dependencies.concat(mcdaDependencies, gemtcWebDependencies, trialverseDependencies));
-  
+
     // DRY; already implemented in gemtc
     app.factory('errorInterceptor', errorInterceptor);
 
@@ -263,7 +263,7 @@ define(
           })
           .state('networkMetaAnalysis', {
             parent: 'networkMetaAnalysisContainer',
-            url: "",
+            url: '',
             views: {
               'networkMetaAnalysis': {
                 templateUrl: baseTemplatePath + 'networkMetaAnalysisView.html'
@@ -281,6 +281,7 @@ define(
             }
           })
           .state('createModel', {
+            parent: 'nmaModelContainer',
             url: '/projects/:projectId/nma/:analysisId/models/createModel',
             templateUrl: gemtcWebBaseTemplatePath + 'js/models/createModel.html',
             controller: 'CreateModelController'
@@ -391,7 +392,6 @@ define(
             templateUrl: 'app/js/study/view/study.html',
             controller: 'StudyController'
           });
-          ;
 
         // Default route
         $urlRouterProvider.otherwise('/projects');

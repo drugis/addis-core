@@ -1,70 +1,77 @@
-<div class="row">
+<div ui-view>
+  <navbar-directive></navbar-directive>
+  <div class="row">
     <div class="columns">
-         <div ng-if="error" class="row" ng-cloak>
-            <div class="columns">
-                <app-alert type="alert" close="error.close()" error="error"></span></app-alert>
-            </div>
+      <div ng-if="error" class="row" ng-cloak>
+        <div class="columns">
+          <app-alert type="alert" close="error.close()" error="error">
+            </span>
+          </app-alert>
         </div>
-        <alert type="info">
-            <strong>Disclaimer:</strong>this is
-            <em>beta</em>software. We store your projects on our servers. While we try our best to keep them secure and
-            compatible with future versions, we can make no guarantees.
-            <a ui-sref="user">GO TO USERS (TMP)</a>
-        </alert>
+      </div>
+      <alert type="info">
+        <strong>Disclaimer:</strong>this is
+        <em>beta</em>software. We store your projects on our servers. While we try our
+        best to keep them secure and compatible with future versions, we can make
+        no guarantees.
+        <a ui-sref="user">GO TO USERS (TMP)</a>
+      </alert>
     </div>
-</div>
-<div class="row">
+  </div>
+  <div class="row">
     <div class="columns large-8">
 
-        <h2 id="projects-page-header" class="nested-view-header">Projects</h2>
+      <h2 id="projects-page-header" class="nested-view-header">Projects</h2>
 
-        <p>A project consists of a number of analyses based on a PICO definition (Population, Interventions,
-            Comparisons, Outcomes). You can now define your own projects and look at (but not modify) other people's
-            projects.</p>
+      <p>A project consists of a number of analyses based on a PICO definition (Population,
+        Interventions, Comparisons, Outcomes). You can now define your own projects
+        and look at (but not modify) other people's projects.
+      </p>
 
-        <div>
-            <a id="create-project-btn" ui-sref="create-project" class="button "><i class="fa fa-plus"></i> Create project</a>
-        </div>
+      <div>
+        <a id="create-project-btn" ui-sref="create-project" class="button "><i class="fa fa-plus"></i> Create project</a>
+      </div>
     </div>
-</div>
+  </div>
 
-<div class="row">
+  <div class="row">
     <div class="columns large-12">
-        <div class="row">
-            <div class="columns large-2">
-                <h3>Your projects</h3>
-            </div>
-
+      <div class="row">
+        <div class="columns large-2">
+          <h3>Your projects</h3>
         </div>
 
-        <div class="panel">
-            <ul>
-                <li ng-show="!(projects | ownProjectsFilter:user.id).length">No projects</li>
-                <li ng-repeat="project in projects | ownProjectsFilter:user.id ">
-                    <a href="#/projects/{{project.id}}">
-                        <span title="project name">{{project.name}}</span>-
-                        <span title="project description">{{project.description}}</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
+      </div>
 
-        <h3>Other projects</h3>
+      <div class="panel">
+        <ul>
+          <li ng-show="!(projects | ownProjectsFilter:user.id).length">No projects</li>
+          <li ng-repeat="project in projects | ownProjectsFilter:user.id ">
+            <a href="#/projects/{{project.id}}">
+              <span title="project name">{{project.name}}</span>-
+              <span title="project description">{{project.description}}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
 
-        <div class="panel">
-            <ul>
-                <li ng-show="!(projects | ownProjectsFilter:user.id:true).length">No other projects</li>
-                <li ng-repeat="project in projects | ownProjectsFilter:user.id:true">
-                    <a href="#/projects/{{project.id}}">
-                        <span title="project name">{{project.name}}</span>-
-                        <span title="project description">{{project.description}}</span>
-                        <span title="user name">({{project.owner.firstName}} {{project.owner.lastName}})</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
+      <h3>Other projects</h3>
 
-        <div ui-view></div>
+      <div class="panel">
+        <ul>
+          <li ng-show="!(projects | ownProjectsFilter:user.id:true).length">No other projects</li>
+          <li ng-repeat="project in projects | ownProjectsFilter:user.id:true">
+            <a href="#/projects/{{project.id}}">
+              <span title="project name">{{project.name}}</span>-
+              <span title="project description">{{project.description}}</span>
+              <span title="user name">({{project.owner.firstName}} {{project.owner.lastName}})</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    
 
     </div>
+  </div>
 </div>

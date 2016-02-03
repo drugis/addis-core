@@ -23,38 +23,9 @@
     <script src="app/js/bower_components/requirejs/require.js" data-main="app/js/main.js"></script>
   </head>
 
-  <body>
+  <body class="f-topbar-fixed">
     <session-expired-directive></session-expired-directive>
-    <form method="POST" action="<c:url value="/signout" />" id="signout_form">
-      <input type="hidden" name="_csrf" value="<c:out value="${_csrf.token}" />" />
-    </form>
 
-    <nav class="top-bar" data-topbar>
-      <ul class="title-area">
-        <li class="name">
-          <h1>
-            <a id="addis-logo" href="/" target="_self">addis.drugis.org</a>
-          </h1>
-        </li>
-      </ul>
-
-      <section class="top-bar-section">
-        <!-- Right Nav Section -->
-        <ul class="right">
-          <li class="has-dropdown not-click">
-            <a href="#"><img class="user-image" src="https://secure.gravatar.com/avatar/${userMD5}?s=43&d=mm"> <c:out value="${account.firstName} ${account.lastName} " /></a>
-            <ul class="dropdown">
-              <li>
-                <a href="#" onClick="signout()">Sign out</a>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </section>
-    </nav>
-    <section>
-      <div class="color-stripe"></div>
-    </section>
     <div ui-view></div>
     <script>
 
