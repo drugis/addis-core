@@ -1,8 +1,7 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  describe('the measurement moment service', function() {
+  fdescribe('the measurement moment service', function() {
     var
-      sparqlResource = jasmine.createSpyObj('SparqlResource', ['get']),
       studyService = jasmine.createSpyObj('StudyService', ['doModifyingQuery', 'doNonModifyingQuery']),
       epochService = jasmine.createSpyObj('EpochService', ['queryItems']),
       uuidServiceMock = jasmine.createSpyObj('UUIDService', ['generate']),
@@ -20,7 +19,7 @@ define(['angular', 'angular-mocks'], function() {
 
     beforeEach(inject(function(MeasurementMomentService) {
       measurementMomentService = MeasurementMomentService;
-      uuidServiceMock.generate.and.returnValue('generatedUUID')
+      uuidServiceMock.generate.and.returnValue('generatedUUID');
     }));
 
     describe('generateLabel', function() {

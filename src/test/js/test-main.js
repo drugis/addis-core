@@ -19,6 +19,7 @@ require.config({
     'angular-resource': 'bower_components/angular-resource/angular-resource',
     'angular-ui-router': 'bower_components/angular-ui-router/release/angular-ui-router',
     'angular-select': 'bower_components/angular-ui-select/dist/select.min',
+    'angular-md5': 'bower_components/angular-md5/angular-md5',
     'foundation': 'bower_components/foundation/js/foundation',
     'jasmine': 'bower_components/jasmine/lib/jasmine-core/jasmine',
     'jasmine-html': 'bower_components/jasmine/lib/jasmine-core/jasmine-html',
@@ -55,6 +56,10 @@ require.config({
       deps: ['angular', 'jQuery'],
       exports: 'angular-select'
     },
+    'angular-md5': {
+      deps: ['angular'],
+      exports: 'angular-md5'
+    },
     'ngSanitize': {
       deps: ['angular'],
       exports: 'ngSanitize'
@@ -69,7 +74,6 @@ require.config({
       deps: ['angular'],
       exports: 'mmfoundation'
     },
-
     'help-popup': {
       deps: ['angular']
     },

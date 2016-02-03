@@ -1,6 +1,6 @@
 'use strict';
-define([],
-  function() {
+define(['lodash'],
+  function(_) {
     var dependencies = ['$q', '$filter', 'StudyService', 'UUIDService', 'EpochService', 'DurationService'];
     var MeasurementMomentService = function($q, $filter, StudyService, UUIDService, EpochService, DurationService) {
 
