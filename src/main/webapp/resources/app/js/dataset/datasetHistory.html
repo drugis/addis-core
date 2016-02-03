@@ -1,12 +1,10 @@
 <navbar-directive>
-<ul class="left top-bar-content">
-  <li class="name">
-    <h1 class="topbar-text">
-      <a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: headVersion})">{{dataset.label}}</a>
-    </h1>
-  </li>
-</ul>
 </navbar-directive>
+<ul class="breadcrumbs">
+  <li><a ui-sref="user">Datasets</a></li>
+  <li><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">{{dataset.label}}</a></li>
+  <li><a class="current active">History</a></li>
+</ul>
 <div class="row">
   <div class="columns large-12">
     <h1>Dataset history</h1>

@@ -1,13 +1,10 @@
 <div ui-view>
   <navbar-directive>
-    <ul class="left top-bar-content">
-      <li class="name">
-        <h1 class="topbar-text">
-          <a>{{dataset.label}}</a>
-        </h1>
-      </li>
-    </ul>
   </navbar-directive>
+  <ul class="breadcrumbs">
+      <li><a ui-sref="user">Datasets</a></li>
+    <li class="current active">{{dataset.label}}</li>
+  </ul>
   <div class="row nav-bar-spacer">
     <div class="column large-10">
       <h1>{{dataset.label}}</h1>
