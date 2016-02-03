@@ -2,7 +2,3 @@
 	path = src/main/webapp/resources/drugis-css
 	url = https://github.com/drugis/drugis-css.git
 	branch = master
-[submodule "src/main/webapp/resources/app/js/bower_components"]
-	path = src/main/webapp/resources/app/js/bower_components
-	url = https://github.com/drugis/addis-core-bower.git
-	branch = master
