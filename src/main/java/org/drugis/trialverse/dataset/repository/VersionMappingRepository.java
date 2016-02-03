@@ -12,7 +12,7 @@ public interface VersionMappingRepository {
 
     void save(VersionMapping versionMapping);
 
-    List<VersionMapping> findMappingsByUsername(String username);
+    List<VersionMapping> findMappingsByEmail(String username);
 
   List<VersionMapping> getVersionMappings();
 

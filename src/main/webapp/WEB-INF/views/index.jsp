@@ -69,7 +69,9 @@
           id : ${account.id},
           name : "${account.firstName}",
           firstName : "${account.firstName}",
-          LastName : "${account.lastName}"
+          LastName : "${account.lastName}",
+          userEmail: "${userEmail}",
+          userNameHash: "${userNameHash}"
         },
         WS_URI: "${pataviMcdaWsUri}",
         workspaceName: 'analyses',

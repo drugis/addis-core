@@ -33,7 +33,7 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository {
   };
 
   @Inject
-  @Qualifier("jtTrialverse")
+  @Qualifier("jtAddisCore")
   private JdbcTemplate jdbcTemplate;
 
   @Override
@@ -48,9 +48,9 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository {
   }
 
   @Override
-  public List<VersionMapping> findMappingsByUsername(String username) {
+  public List<VersionMapping> findMappingsByEmail(String email) {
     String sql = "SELECT * FROM VersionMapping WHERE ownerUuid = ?";
-    List<VersionMapping> queryResult = jdbcTemplate.query(sql, Arrays.asList(username).toArray(), rowMapper);
+    List<VersionMapping> queryResult = jdbcTemplate.query(sql, Arrays.asList(email).toArray(), rowMapper);
     if (queryResult == null) {
       queryResult = new ArrayList<VersionMapping>();
     }

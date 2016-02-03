@@ -19,7 +19,6 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       '../../../test/js/test-main.js',
-      '../../../test/js/testUtils.js',
       {pattern: 'app/sparql/*.sparql', included:false, served:true},
       {pattern: 'test_graphs/*.ttl', included:false, served:true},
       {pattern: 'app/js/**/*.js', included: false},

@@ -10,7 +10,7 @@ public class VersionNodeBuilder {
   private String creator;
   private int historyOrder;
   private String applicationName;
-  private String userHash;
+  private int userId;
 
   public VersionNodeBuilder setUri(String uri) {
     this.uri = uri;
@@ -48,11 +48,11 @@ public class VersionNodeBuilder {
   }
 
   public VersionNode build() {
-    return new VersionNode(uri, versionTitle, versionDate, description, creator, userHash, historyOrder, applicationName);
+    return new VersionNode(uri, versionTitle, versionDate, description, creator, userId, historyOrder, applicationName);
   }
 
-  public VersionNodeBuilder setUserHash(String userHash) {
-    this.userHash = userHash;
+  public VersionNodeBuilder setUserId(int userId) {
+    this.userId = userId;
     return this;
   }
 }

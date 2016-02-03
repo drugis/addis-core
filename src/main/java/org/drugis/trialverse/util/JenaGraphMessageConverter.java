@@ -23,7 +23,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 
 public class JenaGraphMessageConverter extends AbstractHttpMessageConverter<Graph> {
     private static MediaType s_turtle = MediaType.parseMediaType("text/turtle");
-    private static List<MediaType> s_supported = new ArrayList<MediaType>();
+    private static List<MediaType> s_supported = new ArrayList<>();
 
     public static final String BASE_URI = "http://example.com/"; // FIXME
 

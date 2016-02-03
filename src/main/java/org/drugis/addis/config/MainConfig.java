@@ -17,6 +17,7 @@ package org.drugis.addis.config;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.drugis.trialverse.util.JenaGraphMessageConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,22 +44,16 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
-        "org.drugis.addis.error",
-        "org.drugis.addis.projects",
-        "org.drugis.addis.security",
-        "org.drugis.addis.outcomes",
-        "org.drugis.addis.models",
-        "org.drugis.addis.patavitask",
-        "org.drugis.addis.interventions",
-        "org.drugis.addis.analyses",
-        "org.drugis.addis.problems",
-        "org.drugis.addis.scenarios",
-        "org.drugis.addis.remarks",
-        "org.drugis.addis.covariates",
-        "org.drugis.addis.util"})
+        "org.drugis.addis", "org.drugis.trialverse"})
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects", "org.drugis.addis.security", "org.drugis.addis.covariates",
-        "org.drugis.addis.interventions", "org.drugis.addis.scenarios", "org.drugis.addis.models", "org.drugis.addis.remarks",
+@EnableJpaRepositories(basePackages = {"org.drugis.addis.projects",
+        "org.drugis.addis.security",
+        "org.drugis.addis.covariates",
+        "org.drugis.addis.interventions",
+        "org.drugis.addis.scenarios",
+        "org.drugis.addis.models",
+        "org.drugis.addis.remarks",
+        "org.drugis.trialverse.security"
 })
 public class MainConfig {
 
@@ -67,6 +62,7 @@ public class MainConfig {
   @Bean
   public RestTemplate restTemplate() {
     RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient()));
+    restTemplate.getMessageConverters().add(new JenaGraphMessageConverter());
     return restTemplate;
   }
 

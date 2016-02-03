@@ -39,6 +39,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry.addResourceHandler("/app/**").addResourceLocations("/resources/app/");
+    registry.addResourceHandler("/trialverse/**").addResourceLocations("/resources/trialverse/");
     registry.addResourceHandler("/manual.html").addResourceLocations("/resources/manual.html");
     registry.addResourceHandler("/template/**").addResourceLocations("/resources/app/js/bower_components/angular-foundation-assets/template/"); // hack for angular-foundation
   }

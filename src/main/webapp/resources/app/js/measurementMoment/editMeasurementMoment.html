@@ -1,0 +1,53 @@
+<form novalidate ng-submit="commit()">
+  <div class="row">
+    <div class="large-9 medium-12 columns">
+      <h3>{{actionType}} measurement moment</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-12 columns">
+      Select epoch
+      <select ng-model="itemScratch.epoch" placeholder="select epoch" ng-options="epoch.label for epoch in epochs" ng-change="itemScratch.label = generateLabel(itemScratch)">
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="large-12 columns">
+      <input ng-model="itemScratch.relativeToAnchor" type="radio" value="ontology:anchorEpochStart" id="fromStartOption" ng-change="itemScratch.label = generateLabel(itemScratch)">
+             <label for="fromStartOption">from start</label>
+      <input ng-model="itemScratch.relativeToAnchor" type="radio" value="ontology:anchorEpochEnd" id="fromEndOption" ng-change="itemScratch.label = generateLabel(itemScratch)">
+             <label for="fromEndOption">from end</label>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="large-12 columns">
+      <input ng-model="hasOffset" type="radio" value="false" id="hasNoOffsetOption" ng-change="itemScratch.offset = 'PT0S'; itemScratch.label = generateLabel(itemScratch)">
+             <label for="hasNoOffsetOption">no offset</label>
+      <input ng-model="hasOffset" type="radio" value="true" id="hasOffsetOption" ng-change="itemScratch.offset = 'P1W'; itemScratch.label = generateLabel(itemScratch)">
+             <label for="hasOffsetOption">offset</label>
+    </div>
+  </div>
+
+  <div ng-show="hasOffset === 'true'" class="row form-input-group">
+    <duration-input duration-string="itemScratch.offset"/>
+  </div>
+
+  <div class="row">
+    <div class="large-9 medium-12 columns">
+      <label>Name
+        <input autofocus="true" type="text" ng-model="itemScratch.label">
+      </label>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="large-9 columns">
+      <button class="success" type="submit"
+              ng-disabled="(!itemScratch.epoch || !itemScratch.label || !isValidDuration(itemScratch.offset))">{{actionType}}
+      </button>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>

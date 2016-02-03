@@ -1,5 +1,6 @@
 package org.drugis.addis.config;
 
+import org.drugis.addis.security.SimpleSocialUsersDetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -137,6 +139,17 @@ public class JpaRepositoryTestConfig {
   public UsersConnectionRepository usersConnectionRepository() {
     return mock(UsersConnectionRepository.class);
   }
+
+  @Bean
+  public SimpleSocialUsersDetailService simpleSocialUsersDetailService() {
+    return mock(SimpleSocialUsersDetailService.class);
+  }
+
+  @Bean
+  public UserDetailsService userDetailsService() {
+    return mock(UserDetailsService.class);
+  }
+
 
   Properties additionalProperties() {
     return new Properties() {

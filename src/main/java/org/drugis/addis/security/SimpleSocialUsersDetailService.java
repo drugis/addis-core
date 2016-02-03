@@ -7,14 +7,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.social.security.SocialUser;
 import org.springframework.social.security.SocialUserDetails;
 import org.springframework.social.security.SocialUserDetailsService;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+
+@Service
 public class SimpleSocialUsersDetailService implements SocialUserDetailsService {
 
-	private UserDetailsService userDetailsService;
-
-	public SimpleSocialUsersDetailService(UserDetailsService userDetailsService) {
-		this.userDetailsService = userDetailsService;
-	}
+  @Inject
+  private UserDetailsService userDetailsService;
 
 	@Override
 	public SocialUserDetails loadUserByUserId(String userId) throws UsernameNotFoundException, DataAccessException {

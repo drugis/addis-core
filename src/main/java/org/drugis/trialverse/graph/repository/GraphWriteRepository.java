@@ -5,6 +5,7 @@ import org.drugis.trialverse.graph.exception.UpdateGraphException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 
 /**
@@ -12,5 +13,5 @@ import java.net.URI;
  */
 public interface GraphWriteRepository {
 
-  public Header updateGraph(URI datasetUri, String graphUuid, HttpServletRequest request) throws IOException, UpdateGraphException;
+  Header updateGraph(URI datasetUri, String graphUuid, InputStream graph, String commitTitle, String commitDescription) throws IOException, UpdateGraphException;
 }

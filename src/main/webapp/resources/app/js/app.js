@@ -10,7 +10,9 @@ define(
     'angular-ui-router',
     'angular-select',
     'angularanimate',
+    'angular-md5',
     'ngSanitize',
+    'lodash',
     'controllers',
     'directives',
     'filters',
@@ -18,6 +20,27 @@ define(
     'resources',
     'services',
     'help-popup',
+    'search/search',
+    'user/user',
+    'dataset/dataset',
+    'util/util',
+    'study/study',
+    'graph/graph',
+    'populationInformation/populationInformation',
+    'arm/arm',
+    'outcome/outcome',
+    'populationCharacteristic/populationCharacteristic',
+    'endpoint/endpoint',
+    'adverseEvent/adverseEvent',
+    'epoch/epoch',
+    'results/results',
+    'measurementMoment/measurementMoment',
+    'activity/activity',
+    'studyDesign/studyDesign',
+    'concept/concept',
+    'commit/commit',
+    'mapping/mapping',
+    'studyInformation/studyInformation',
     'gemtc-web/controllers',
     'gemtc-web/resources',
     'gemtc-web/constants',
@@ -58,6 +81,11 @@ define(
       'ui.router',
       'ngSanitize',
       'ui.select',
+      'angular-md5',
+      'mm.foundation.tpls',
+      'mm.foundation.modal',
+      'mm.foundation.typeahead',
+      'help-directive',
       'addis.controllers',
       'addis.directives',
       'addis.resources',
@@ -65,9 +93,6 @@ define(
       'addis.filters',
       'addis.interceptors',
       'addis.directives',
-      'mm.foundation.tpls',
-      'mm.foundation.modal',
-      'help-directive',
       'addis.covariates'
     ];
     var gemtcWebDependencies = [
@@ -77,7 +102,37 @@ define(
       'gemtc.services',
       'gemtc.directives',
     ];
-    var app = angular.module('addis', dependencies.concat(mcdaDependencies.concat(gemtcWebDependencies)));
+    var trialverseDependencies =  [
+      'trialverse.search',
+      'trialverse.user',
+      'trialverse.dataset',
+      'trialverse.util',
+      'trialverse.graph',
+      'trialverse.study',
+      'trialverse.populationInformation',
+      'trialverse.arm',
+      'trialverse.outcome',
+      'trialverse.populationCharacteristic',
+      'trialverse.endpoint',
+      'trialverse.adverseEvent',
+      'trialverse.epoch',
+      'trialverse.measurementMoment',
+      'trialverse.studyDesign',
+      'trialverse.activity',
+      'trialverse.results',
+      'trialverse.concept',
+      'trialverse.commit',
+      'trialverse.mapping',
+      'trialverse.studyInformation'
+    ];
+
+    Number.isInteger = Number.isInteger || function(value) {
+        return typeof value === 'number' &&
+          isFinite(value) &&
+          Math.floor(value) === value;
+    };
+
+    var app = angular.module('addis', dependencies.concat(mcdaDependencies, gemtcWebDependencies, trialverseDependencies));
   
     // DRY; already implemented in gemtc
     app.factory('errorInterceptor', errorInterceptor);
@@ -93,6 +148,7 @@ define(
     }]);
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');
+
     app.run(['$rootScope', '$window', '$http', 'HelpPopupService',
       function($rootScope, $window, $http, HelpPopupService) {
         var csrfToken = $window.config._csrf_token;
@@ -278,13 +334,122 @@ define(
               ]
 
             }
+          })
+
+          // trialverse states
+          .state('search', {
+            url: '/search?searchTerm',
+            templateUrl: 'app/js/search/search.html',
+            controller: 'SearchController'
+          })
+          .state('user', {
+            url: '/users/:userUid',
+            templateUrl: 'app/js/user/user.html',
+            controller: 'UserController'
+          })
+          .state('create-dataset', {
+            parent: 'user',
+            url: '/create-dataset',
+            templateUrl: 'app/js/user/createDataset.html',
+            controller: 'CreateDatasetController'
+          })
+          .state('dataset', {
+            parent: 'user',
+            url: '/datasets/:datasetUUID',
+            templateUrl: 'app/js/dataset/dataset.html',
+            controller: 'DatasetController'
+          })
+          .state('versionedDataset', {
+            parent: 'user',
+            url: '/datasets/:datasetUUID/versions/:versionUuid',
+            templateUrl: 'app/js/dataset/dataset.html',
+            controller: 'DatasetController'
+          })
+          .state('datasetHistory', {
+            parent: 'user',
+            url: '/datasets/:datasetUUID/history',
+            templateUrl: 'app/js/dataset/datasetHistory.html',
+            controller: 'DatasetHistoryController'
+          })
+          .state('versionedDataset.concepts', {
+            url: '/concepts',
+            templateUrl: 'app/js/concept/concepts.html',
+            controller: 'ConceptController'
+          })
+          .state('versionedDataset.study', {
+            url: '/studies/:studyGraphUuid',
+            templateUrl: 'app/js/study/view/study.html',
+            controller: 'StudyController'
+          })
+          .state('dataset.concepts', {
+            url: '/concepts',
+            templateUrl: 'app/js/concept/concepts.html',
+            controller: 'ConceptController'
+          })
+          .state('dataset.study', {
+            url: '/studies/:studyGraphUuid',
+            templateUrl: 'app/js/study/view/study.html',
+            controller: 'StudyController'
           });
+          ;
 
         // Default route
         $urlRouterProvider.otherwise('/projects');
         MCDARouteProvider.buildRoutes($stateProvider, 'singleStudyBenefitRisk', mcdaBaseTemplatePath);
       }
     ]);
+    app.constant('CONCEPT_GRAPH_UUID', 'concepts');
+    app.constant('GROUP_ALLOCATION_OPTIONS', _.indexBy([{
+      uri: 'ontology:AllocationRandomized',
+      label: 'Randomized'
+    }, {
+      uri: 'ontology:AllocationNonRandomized',
+      label: 'Non-Randomized'
+    }, {
+      uri: 'unknown',
+      label: 'Unknown'
+    }], 'uri'));
+    app.constant('BLINDING_OPTIONS', _.indexBy([{
+      uri: 'ontology:OpenLabel',
+      label: 'Open'
+    }, {
+      uri: 'ontology:SingleBlind',
+      label: 'Single blind'
+    }, {
+      uri: 'ontology:DoubleBlind',
+      label: 'Double blind'
+    }, {
+      uri: 'ontology:TripleBlind',
+      label: 'Triple blind'
+    }, {
+      uri: 'unknown',
+      label: 'Unknown'
+    }], 'uri'));
+    app.constant('STATUS_OPTIONS', _.indexBy([{
+      uri: 'ontology:StatusRecruiting',
+      label: 'Recruiting'
+    }, {
+      uri: 'ontology:StatusEnrolling',
+      label: 'Enrolling'
+    }, {
+      uri: 'ontology:StatusActive',
+      label: 'Active'
+    }, {
+      uri: 'ontology:StatusCompleted',
+      label: 'Completed'
+    }, {
+      uri: 'ontology:StatusSuspended',
+      label: 'Suspended'
+    }, {
+      uri: 'ontology:StatusTerminated',
+      label: 'Terminated'
+    }, {
+      uri: 'ontology:StatusWithdrawn',
+      label: 'Withdrawn'
+    }, {
+      uri: 'unknown',
+      label: 'Unknown'
+    }], 'uri'));
 
     return app;
   });

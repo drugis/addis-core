@@ -30,8 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 
 @Controller
@@ -52,7 +50,7 @@ public class IndexController {
     try {
       String uri;
       String envUri = System.getenv("ADDIS_CORE_PATAVI_MCDA_WS_URI");
-      if(envUri != null && !envUri.isEmpty()) {
+      if (envUri != null && !envUri.isEmpty()) {
         uri = envUri;
       } else {
         uri = DEFAULT_PATAVI_MCDA_WS_URI;
@@ -74,9 +72,12 @@ public class IndexController {
       } else {
         Account account = accountRepository.findAccountByUsername(currentUser.getName());
         model.addAttribute(account);
-        if(StringUtils.isNotEmpty(account.getEmail())) {
+        if (StringUtils.isNotEmpty(account.getEmail())) {
+          model.addAttribute("userEmail", account.getEmail());
+          model.addAttribute("id", account.getId());
           String md5String = DigestUtils.md5DigestAsHex(account.getEmail().getBytes());
           model.addAttribute("userMD5", md5String); // user email MD5 hash needed to retrieve gravatar image
+          model.addAttribute("userNameHash", md5String); // user email MD5 hash needed to retrieve gravatar image
         }
 
         model.addAttribute("pataviMcdaWsUri", ADDIS_CORE_PATAVI_MCDA_WS_URI);

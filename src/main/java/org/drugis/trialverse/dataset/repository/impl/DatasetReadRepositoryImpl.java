@@ -17,11 +17,13 @@ import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.graph.GraphFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
+import org.drugis.addis.security.Account;
+import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.factory.HttpClientFactory;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
-import org.drugis.trialverse.security.Account;
+import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.WebConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +77,9 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   @Inject
   private HttpClient httpClient;
+
+  @Inject
+  AccountRepository accountRepository;
 
   private final Node headProperty = ResourceFactory.createProperty(HTTP_DRUGIS_ORG_EVENT_SOURCING_ES, "head").asNode();
 
@@ -130,7 +135,7 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   @Override
   public Model queryDatasets(Account currentUserAccount) {
-    List<VersionMapping> mappings = versionMappingRepository.findMappingsByUsername(currentUserAccount.getUsername());
+    List<VersionMapping> mappings = versionMappingRepository.findMappingsByEmail(currentUserAccount.getEmail());
     Model resultModel = ModelFactory.createDefaultModel();
     mappings.stream()
             .map(this::queryDataset)
@@ -190,8 +195,10 @@ public class DatasetReadRepositoryImpl implements DatasetReadRepository {
 
   @Override
   public Boolean isOwner(URI trialverseDatasetUri, Principal principal) {
+    TrialversePrincipal tvPrincipal = new TrialversePrincipal(principal);
+    Account user = accountRepository.findAccountByUsername(tvPrincipal.getUserName());
     VersionMapping mapping = versionMappingRepository.getVersionMappingByDatasetUrl(trialverseDatasetUri);
-    return principal.getName().equals(mapping.getOwnerUuid());
+    return user.getEmail().equals(mapping.getOwnerUuid());
   }
 
   @Override

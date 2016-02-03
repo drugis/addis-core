@@ -1,0 +1,10 @@
+<span ng-show="isEditingAllowed" class="cell-with-single-btn">
+  <select
+  ng-model="selectedDatasetConcept" ng-change="updateMapping()" ng-options="datasetConcept.label for datasetConcept in filteredConcepts | orderBy:'label'">
+</select>
+<button ng-disabled="!selectedDatasetConcept" class="small secondary" ng-click="removeMapping()">remove</button>
+</span>
+<span ng-show="!isEditingAllowed">
+  <span ng-show="selectedDatasetConcept">{{selectedDatasetConcept.label}}</span>
+  <span ng-show="!selectedDatasetConcept"><em>Unmapped</em></span>
+</span>

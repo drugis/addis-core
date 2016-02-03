@@ -2,7 +2,7 @@ package org.drugis.trialverse.dataset.repository;
 
 import org.apache.http.HttpException;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
-import org.drugis.trialverse.security.Account;
+import org.drugis.addis.security.Account;
 import org.drugis.trialverse.security.TrialversePrincipal;
 
 import java.net.URI;

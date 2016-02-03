@@ -1,7 +1,7 @@
 package org.drugis.trialverse.dataset.service;
 
 import org.drugis.trialverse.dataset.model.Dataset;
-import org.drugis.trialverse.security.Account;
+import org.drugis.addis.security.Account;
 
 import java.util.List;
 

@@ -2,15 +2,21 @@ package org.drugis.trialverse.graph.service.impl;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.*;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.service.GraphService;
-import org.drugis.trialverse.security.AuthenticationService;
+import org.drugis.addis.security.AuthenticationService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
@@ -24,12 +30,16 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
-import java.io.IOException;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.drugis.trialverse.util.Utils.loadResource;
 
 /**
  * Created by daan on 26-8-15.
@@ -113,6 +123,17 @@ public class GraphServiceImpl implements GraphService {
     return new URI(newVersion.get(0));
   }
 
+  @Override
+  public InputStream jsonGraphInputStreamToTurtleInputStream(InputStream jsonGraph) {
+    Model model = ModelFactory.createDefaultModel();
+    model.read(jsonGraph, null, RDFLanguages.strLangJSONLD);
+
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    RDFDataMgr.write(outputStream, model, Lang.TURTLE) ;
+    byte[] bytes = outputStream.toByteArray();
+    return new ByteArrayInputStream(bytes);
+  }
+
   private URI getRevisionUri(Model historyModel, URI sourceGraphUri) throws URISyntaxException, RevisionNotFoundException, IOException {
     String revisionSparqlTemplate = IOUtils.toString(new ClassPathResource("getRevision.sparql").getInputStream(), "UTF-8");
 
@@ -138,3 +159,5 @@ public class GraphServiceImpl implements GraphService {
     return new URI(revision.asNode().getURI());
   }
 }
+
+

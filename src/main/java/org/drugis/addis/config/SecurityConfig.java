@@ -15,27 +15,37 @@
  */
 package org.drugis.addis.config;
 
-import org.drugis.addis.security.SimpleSocialUsersDetailService;
+import org.apache.jena.ext.com.google.common.base.Optional;
+import org.drugis.addis.security.ApplicationKeyAuthenticationProvider;
+import org.drugis.addis.security.AuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
-import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.social.security.SpringSocialConfigurer;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -56,6 +66,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       .authoritiesByUsernameQuery("SELECT Account.username, COALESCE(AccountRoles.role, 'ROLE_USER') FROM Account" +
         " LEFT OUTER JOIN AccountRoles ON Account.id = AccountRoles.accountId WHERE Account.username = ?")
       .passwordEncoder(passwordEncoder());
+    auth.authenticationProvider(tokenAuthenticationProvider());
+
   }
 
   @Override
@@ -67,6 +79,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+    String[] whitelist = {"/", "/trialverse", "/trialverse/**",
+            "/favicon.ico", "/favicon.png", "/app/**", "/auth/**",
+            "/signin", "/signup", "/**/modal/*.html", "/manual.html"};
+    // Disable CSFR protection on the following urls:
+    List<AntPathRequestMatcher> requestMatchers = Arrays.asList(whitelist)
+            .stream()
+            .map(AntPathRequestMatcher::new)
+            .collect(Collectors.toList());
     http
       .formLogin()
         .loginPage("/signin")
@@ -77,7 +97,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .logoutUrl("/signout")
         .deleteCookies("JSESSIONID")
       .and().authorizeRequests()
-            .antMatchers("/", "/favicon.ico", "/app/**", "/auth/**", "/signin", "/signup", "/manual.html").permitAll()
+        .antMatchers(whitelist).permitAll()
         .antMatchers("/monitoring").hasRole("MONITORING")
         .antMatchers("/**").authenticated()
       .and().rememberMe()
@@ -87,12 +107,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         new SpringSocialConfigurer()
           .postLoginUrl("/")
           .alwaysUsePostLoginUrl(true))
+      .and().csrf().requireCsrfProtectionMatcher(request ->
+        !(requestMatchers.stream().anyMatch(matcher -> matcher.matches(request))
+          || Optional.fromNullable(request.getHeader("X-Auth-Application-Key")).isPresent()))
       .and().setSharedObject(ApplicationContext.class, context);
+
+    http.addFilterBefore(new AuthenticationFilter(authenticationManager()), BasicAuthenticationFilter.class);
+
   }
 
   @Bean
-  public SocialUserDetailsService socialUsersDetailService() {
-    return new SimpleSocialUsersDetailService(userDetailsService());
+  public UserDetailsService userDetailsService() {
+    return super.userDetailsService();
   }
 
   @Bean
@@ -105,5 +131,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     return new BCryptPasswordEncoder();
   }
 
+  @Bean
+  public AuthenticationProvider tokenAuthenticationProvider() {
+    return new ApplicationKeyAuthenticationProvider();
+  }
+
+  @Bean
+  public AuthenticationEntryPoint unauthorizedEntryPoint() {
+    return (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+  }
 
 }
