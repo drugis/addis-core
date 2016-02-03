@@ -1,7 +1,8 @@
+'use strict';
 define(['angular', 'angular-mocks', 'controllers'],
   function() {
-    describe("The studyController", function() {
-      var ctrl, $scope, $q, $stateParams, TrialverseResource, StudyDetailsResource,
+    describe("The study readOnly controller", function() {
+      var ctrl, TrialverseResource, StudyDetailsResource,
         StudyTreatmentActivityResource, StudyArmResource, StudyEpochResource,
         StudyPopulationCharacteristicsResource, StudyEndpointsResource, StudyAdverseEventsResource,
         treatmentActivity;
@@ -30,10 +31,8 @@ define(['angular', 'angular-mocks', 'controllers'],
         StudyTreatmentActivityResource = jasmine.createSpyObj('StudyTreatmentActivityResource', ['query']);
         StudyTreatmentActivityResource.query.and.returnValue(treatmentActivities);
 
-        scope = {};
-
         ctrl = $controller('StudyController', {
-          $scope: scope,
+
           $q: $q,
           $stateParams: {},
           TrialverseResource: TrialverseResource,
@@ -47,8 +46,6 @@ define(['angular', 'angular-mocks', 'controllers'],
         });
 
       }));
-
-      
 
     });
   });

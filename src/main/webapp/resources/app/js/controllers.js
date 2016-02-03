@@ -9,5 +9,5 @@ define(function (require) {
     .controller('NetworkMetaAnalysisContainerController', require('controllers/networkMetaAnalysisContainerController'))
     .controller('NetworkMetaAnalysisModelContainerController', require('controllers/networkMetaAnalysisModelContainerController'))
     .controller('NamespaceController', require('controllers/namespaceController'))
-    .controller('StudyController', require('controllers/studyController'));
+    .controller('StudyReadOnlyController', require('controllers/studyReadOnlyController'));
 });

@@ -153,7 +153,7 @@ define(
       function($rootScope, $window, $http, HelpPopupService) {
         var csrfToken = $window.config._csrf_token;
         var csrfHeader = $window.config._csrf_header;
-      
+
         $http.defaults.headers.common[csrfHeader] = csrfToken;
 
         $rootScope.$safeApply = function($scope, fn) {
@@ -212,7 +212,7 @@ define(
           .state('study', {
             url: '/namespaces/:namespaceUid/study/:studyUid',
             templateUrl: baseTemplatePath + 'study.html',
-            controller: 'StudyController'
+            controller: 'StudyReadOnlyController'
           })
           .state('project', {
             url: '/projects/:projectId',

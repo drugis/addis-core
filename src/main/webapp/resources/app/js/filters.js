@@ -6,7 +6,7 @@ define(function (require) {
     .filter('durationFilter', require('filters/durationFilter'))
     .filter('durationOffsetFilter', require('filters/durationOffsetFilter'))
     .filter('splitOnTokenFilter', require('filters/splitOnTokenFilter'))
-    .filter('ontologyFilter', require('filters/ontologyFilter'))
+    .filter('addisOntologyFilter', require('filters/addisOntologyFilter'))
     .filter('anchorEpochFilter', require('filters/anchorEpochFilter'))
     .filter('categoricalFilter', require('filters/categoricalFilter'))
     .filter('activityTypeFilter', require('filters/activityTypeFilter'));

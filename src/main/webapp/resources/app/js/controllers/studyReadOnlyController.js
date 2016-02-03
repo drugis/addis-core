@@ -4,7 +4,7 @@ define([], function() {
     'StudyTreatmentActivityResource', 'StudyArmResource', 'StudyEpochResource',
     'StudyPopulationCharacteristicsResource', 'StudyEndpointsResource', 'StudyAdverseEventsResource'
   ];
-  var StudyReadOnlyController = function($scope, $q, $stateParams, TrialverseResource, StudyDetailsResource,
+  var StudyController = function($scope, $q, $stateParams, TrialverseResource, StudyDetailsResource,
     StudyTreatmentActivityResource, StudyArmResource, StudyEpochResource,
     StudyPopulationCharacteristicsResource, StudyEndpointsResource, StudyAdverseEventsResource) {
 
@@ -79,5 +79,5 @@ define([], function() {
 
 
   };
-  return dependencies.concat(StudyReadOnlyController);
+  return dependencies.concat(StudyController);
 });

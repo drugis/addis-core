@@ -18,7 +18,7 @@ var TermController = ['$scope', 'SparqlService', 'restrictions', function($scope
   var extractValues = function(result) {
     var bindings = result.data.results.bindings;
     return _.map(bindings, function(binding) {
-      return _.object(_.map(_.pairs(binding), function(obj) {
+      return _.object(_.map(_.toPairs(binding), function(obj) {
         return [ obj[0], obj[1].value ];
       }));
     });
@@ -55,7 +55,7 @@ var TermController = ['$scope', 'SparqlService', 'restrictions', function($scope
       });
   };
 
-  $scope.getAdjacent = function(term) { 
+  $scope.getAdjacent = function(term) {
     $scope.clicked = term;
     var uri = term.uri;
     var resultsFn = function(assignTo) {

@@ -18,8 +18,8 @@ define(['lodash'], function(_) {
     }
 
     // fix property names (also forces data types)
-    var contextPairs = _.pairs(linkedData['@context']);
-    var typedProperties = _.zipObject(
+    var contextPairs = _.toPairs(linkedData['@context']);
+    var typedProperties = _.fromPairs(
       _.map(contextPairs, function(pair) {
         return [pair[1]['@id'], pair[0]];
       }));
@@ -37,7 +37,7 @@ define(['lodash'], function(_) {
     linkedData['@graph'] = _.map(linkedData['@graph'], function(subjectWithTriples) {
       return _.mapValues(subjectWithTriples, function(value) {
         if (typeof value === 'string') {
-          return _.reduce(_.pairs(prefixes), function(accum, pair) {
+          return _.reduce(_.toPairs(prefixes), function(accum, pair) {
             return accum.replace(pair[1], pair[0] + ':');
           }, value);
         } else {

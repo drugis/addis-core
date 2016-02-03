@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = ['$http', 'SparqlResource'];
   var StudiesWithDetailsService = function($http, SparqlResource) {
 
@@ -9,7 +9,7 @@ define([], function() {
      var json = JSON.parse(data);
      var bindings = json.results.bindings;
      return _.map(bindings, function(binding) {
-       return _.object(_.map(_.pairs(binding), function(obj) {
+       return _.fromPairs(_.map(_.toPairs(binding), function(obj) {
          return [obj[0], obj[1].value];
        }));
      });

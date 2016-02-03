@@ -14,11 +14,11 @@ define([], function() {
 
         var refreshStudyDesignLister;
         var service = $injector.get(scope.settings.service);
-        
+
         scope.isSingleItem = !!attributes.isSingleItem;
 
         scope.reloadItems = function() {
-          console.log("CategoryDirective.reloadItems");
+          console.log('CategoryDirective.reloadItems');
           if (refreshStudyDesignLister) {
             // stop listning while loading
             refreshStudyDesignLister();
