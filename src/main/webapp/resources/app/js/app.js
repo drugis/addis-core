@@ -153,11 +153,8 @@ define(
       function($rootScope, $window, $http, HelpPopupService) {
         var csrfToken = $window.config._csrf_token;
         var csrfHeader = $window.config._csrf_header;
-
+      
         $http.defaults.headers.common[csrfHeader] = csrfToken;
-        $rootScope.$on('$viewContentLoaded', function() {
-          $(document).foundation();
-        });
 
         $rootScope.$safeApply = function($scope, fn) {
           var phase = $scope.$root.$$phase;
