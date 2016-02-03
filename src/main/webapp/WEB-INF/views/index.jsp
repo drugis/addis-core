@@ -40,7 +40,7 @@
           id : ${account.id},
           name : "${account.firstName}",
           firstName : "${account.firstName}",
-          LastName : "${account.lastName}",
+          lastName : "${account.lastName}",
           userEmail: "${userEmail}",
           userNameHash: "${userNameHash}"
         },
