@@ -37,7 +37,7 @@ require.config({
     'lodash': 'bower_components/lodash/dist/lodash.min',
     'help-popup': 'bower_components/help-popup/help-directive'
   },
-  baseUrl: '/base/app/js',
+  baseUrl: '/base/src/main/webapp/resources/app/js',
   shim: {
     'jQuery': {
       exports: 'jQuery'

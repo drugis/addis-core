@@ -8,10 +8,15 @@ define(['angular', 'angular-mocks'],
         graphResource = jasmine.createSpyObj('GraphResource', ['putJson']),
         rootScope;
 
-      beforeEach(module('trialverse', function($provide) {
-        $provide.value('UUIDService', uuidServiceMock);
-        $provide.value('GraphResource', graphResource);
-      }));
+      beforeEach(function() {
+        module('trialverse.study');
+        module('trialverse.util', function($provide) {
+          $provide.value('UUIDService', uuidServiceMock);
+        });
+        module('trialverse.graph', function($provide) {
+          $provide.value('GraphResource', graphResource);
+        });
+      });
 
       describe('createEmptyStudy', function() {
 
@@ -102,12 +107,18 @@ define(['angular', 'angular-mocks'],
         beforeEach(angularMocks.inject(function($rootScope, $q, StudyService) {
           rootScope = $rootScope;
           studyService = StudyService;
-          jsonPromise = $q.defer().promise;
+          var defer = $q.defer();
+          jsonPromise = defer.promise;
+          defer.resolve('test');
         }));
-        it('should store the json in the service', function() {
+        it('should store the json in the service', function(done) {
           studyService.loadJson(jsonPromise);
           // check if we get back what we stored
-          expect(studyService.getJsonGraph()).toEqual(jsonPromise.then());
+          studyService.getGraphAndContext().then(function(res) {
+            expect(res).toEqual('test');
+            done();
+          });
+          rootScope.$digest();
         });
       });
 

@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  fdescribe('the measurement moment service', function() {
+  describe('the measurement moment service', function() {
     var
       studyService = jasmine.createSpyObj('StudyService', ['doModifyingQuery', 'doNonModifyingQuery']),
       epochService = jasmine.createSpyObj('EpochService', ['queryItems']),
@@ -10,9 +10,13 @@ define(['angular', 'angular-mocks'], function() {
     beforeEach(module('trialverse.measurementMoment'));
 
     beforeEach(function() {
-      module('trialverse', function($provide) {
+      module('trialverse.study', function($provide) {
         $provide.value('StudyService', studyService);
+      });
+      module('trialverse.epoch', function($provide) {
         $provide.value('EpochService', epochService);
+      });
+      module('trialverse.util', function($provide) {
         $provide.value('UUIDService', uuidServiceMock);
       });
     });

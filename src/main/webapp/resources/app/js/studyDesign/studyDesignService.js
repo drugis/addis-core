@@ -1,6 +1,5 @@
 'use strict';
-define([],
-  function() {
+define(['lodash'], function(_) {
     var dependencies = ['$q', 'StudyService', 'SparqlResource', 'UUIDService'];
     var StudyDesignService = function($q, StudyService, SparqlResource, UUIDService) {
 
@@ -63,8 +62,8 @@ define([],
 
       function cleanupCoordinates() {
         return StudyService.getStudy().then(function(study) {
-          var arms = _.pluck(study.has_arm, '@id');
-          var epochs = _.pluck(study.has_epochs, '@id');
+          var arms = _.map(study.has_arm, '@id');
+          var epochs = _.map(study.has_epochs, '@id');
 
           _.each(study.has_activity, function(activity) {
             _.remove(activity.has_activity_application, function(application) {

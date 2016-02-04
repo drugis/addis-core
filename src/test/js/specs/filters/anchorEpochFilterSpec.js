@@ -1,3 +1,4 @@
+'use strict';
 define(['angular', 'angular-mocks', 'filters'], function () {
   describe("The anchorEpoch filter", function () {
     var anchorEpochFilter;

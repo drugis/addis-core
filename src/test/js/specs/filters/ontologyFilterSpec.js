@@ -1,3 +1,4 @@
+'use strict';
 define(['angular', 'angular-mocks', 'filters'], function () {
   describe("The ontology filter", function () {
     var ontologyFilter;
@@ -5,7 +6,7 @@ define(['angular', 'angular-mocks', 'filters'], function () {
     beforeEach(module('addis.filters'));
 
     beforeEach(inject(function($filter) {
-      ontologyFilter = $filter('ontologyFilter');
+      ontologyFilter = $filter('addisOntologyFilter');
     }));
 
     it("should strip strip everything up to and including the hash sign from the string", function() {

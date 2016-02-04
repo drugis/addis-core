@@ -1,9 +1,8 @@
 'use strict';
-define(['angular', 'angular-mocks'], function(angular, angularMocks) {
+define(['angular', 'angular-mocks', 'lodash'], function(angular, angularMocks, _) {
   describe('the activity service', function() {
 
-    var mockStudyUuid = 'mockStudyUuid',
-      rootScope, q,
+    var rootScope, q,
       studyDefer,
       jsonStudy,
       graphDefer,
@@ -37,7 +36,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
       studyServiceMock.getStudy.and.returnValue(studyDefer.promise);
       studyServiceMock.getJsonGraph.and.returnValue(graphDefer.promise);
       studyServiceMock.save.and.returnValue(saveDefer.promise);
-      uuidServiceMock.generate.and.returnValue('generatedUUID')
+      uuidServiceMock.generate.and.returnValue('generatedUUID');
       activityService = ActivityService;
     }));
 
@@ -132,7 +131,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
           '@id': 'http://trials.drugis.org/instances/unit1Uuid',
           '@type': 'ontology:Unit',
           label: 'milligram'
-        }]
+        }];
 
         studyDefer.resolve(jsonStudy);
         graphDefer.resolve(jsonGraph);
@@ -509,7 +508,7 @@ define(['angular', 'angular-mocks'], function(angular, angularMocks) {
             '@type': 'ontology:ScreeningActivity',
             label: 'edit label'
           }]
-        }
+        };
         activityService.editItem(editActivity).then(function() {
           expect(studyServiceMock.saveJsonGraph).toHaveBeenCalledWith([strippedStudy]);
           activityService.queryItems().then(function(activities) {

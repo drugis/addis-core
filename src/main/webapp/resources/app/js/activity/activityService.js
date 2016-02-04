@@ -1,6 +1,5 @@
 'use strict';
-define([],
-  function() {
+define(['angular', 'lodash'], function(angular, _) {
     var dependencies = ['$q', 'StudyService', 'UUIDService'];
     var ActivityService = function($q, StudyService, UUIDService) {
 
@@ -105,7 +104,7 @@ define([],
             dosingPeriodicity: treatment.dosingPeriodicity,
             unit: treatment.doseUnit.uri,
             value: value
-          }]
+          }];
         }
         var newTreatment = {
           '@id': INSTANCE_PREFIX + UUIDService.generate(),
@@ -203,13 +202,6 @@ define([],
           });
           return StudyService.save(study);
         });
-      }
-
-      function formatDouble(num) {
-        if (!isNaN(parseFloat(num)) && isFinite(num)) {
-          return parseFloat(num).toExponential().replace('+', '');
-        }
-        return null;
       }
 
       return {

@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = ['$q', 'UUIDService', 'GraphResource'];
   var StudyService = function($q, UUIDService, GraphResource) {
 
