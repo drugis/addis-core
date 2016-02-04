@@ -1,6 +1,5 @@
 'use strict';
-define([],
-  function() {
+define(['lodash'], function(_) {
     var dependencies = ['$q', 'StudyService', 'UUIDService'];
     var EpochService = function($q, StudyService, UUIDService) {
 
@@ -24,7 +23,7 @@ define([],
         var frondEndEpoch = {
           uri: backendEpoch['@id'],
           label: backendEpoch.label,
-          duration: backendEpoch.duration ? backendEpoch.duration : 'PT0S' 
+          duration: backendEpoch.duration ? backendEpoch.duration : 'PT0S'
         };
 
         if (backendEpoch.comment) {
@@ -60,7 +59,7 @@ define([],
             study.has_primary_epoch = newEpoch['@id'];
           }
 
-          study.has_epochs.push(newEpoch)
+          study.has_epochs.push(newEpoch);
           return StudyService.save(study);
         });
       }

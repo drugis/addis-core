@@ -12,7 +12,7 @@ define(['angular', 'angular-mocks'], function() {
       jsonStudy
     ;
 
-    beforeEach(module('trialverse'));
+    beforeEach(module('trialverse.studyInformation'));
     beforeEach(function() {
       module('trialverse.util', function($provide) {
         uUIDServiceStub = jasmine.createSpyObj('UUIDService', [

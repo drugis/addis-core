@@ -482,7 +482,7 @@ define(['angular-mocks'], function(angularMocks) {
         has_objective: [],
         has_publication: [],
         has_eligibility_criteria: []
-      }
+      };
 
       var graphJsonObject = [study, measurementMoment1, measurementMoment2].concat(resultsToLeave).concat(resultsToBeCleaned);
       var expextedGraph = [study, measurementMoment1, measurementMoment2].concat(resultsToLeave);

@@ -1,6 +1,5 @@
 'use strict';
-define([],
-  function() {
+define(['lodash'], function(_) {
     var dependencies = ['$q', 'StudyService', 'UUIDService'];
     var ArmService = function($q, StudyService, UUIDService) {
 
@@ -8,7 +7,7 @@ define([],
         var frontEndArm = {
           armURI: backEndArm['@id'],
           label: backEndArm.label,
-        }
+        };
 
         if (backEndArm.comment) {
           frontEndArm.comment = backEndArm.comment;
@@ -21,7 +20,7 @@ define([],
         var backEndArm = {
           '@id': frontEndArm.armURI,
           label: frontEndArm.label,
-        }
+        };
 
         if (frontEndArm.comment) {
           backEndArm.comment = frontEndArm.comment;

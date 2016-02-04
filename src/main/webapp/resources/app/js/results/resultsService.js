@@ -1,6 +1,5 @@
 'use strict';
-define([],
-  function() {
+define(['angular','lodash'], function(angular, _) {
     var dependencies = ['StudyService', 'UUIDService'];
     var ResultsService = function(StudyService, UUIDService) {
 
@@ -58,13 +57,13 @@ define([],
       }
 
       function toFrontend(acum, backEndItem) {
-        // ?instance ?armUri ?momentUri ?result_property ?value 
+        // ?instance ?armUri ?momentUri ?result_property ?value
         var baseItem = {
           instance: backEndItem['@id'],
           armUri: backEndItem.of_arm,
           momentUri: backEndItem.of_moment,
           outcomeUri: backEndItem.of_outcome,
-        }
+        };
 
         if (backEndItem.sample_size) {
           acum.push(createValueItem(baseItem, backEndItem, 'sample_size'));

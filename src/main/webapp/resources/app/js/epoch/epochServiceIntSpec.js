@@ -3,17 +3,19 @@ define(['angular-mocks'], function(angularMocks) {
   describe('the epoch service', function() {
 
     var rootScope, q, epochService,
-    studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
+      studyService = jasmine.createSpyObj('StudyService', ['getStudy', 'save']);
     var studyDefer;
     var studyJsonObject;
 
     beforeEach(module('trialverse.epoch'));
 
     beforeEach(function() {
-      module('trialverse', function($provide) {
+      module('trialverse.util', function($provide) {
         var uUIDServiceStub = jasmine.createSpyObj('UUIDService', ['generate']);
         uUIDServiceStub.generate.and.returnValue('newUuid');
         $provide.value('UUIDService', uUIDServiceStub);
+      });
+      module('trialverse.study', function($provide) {
         $provide.value('StudyService', studyService);
       });
     });
@@ -177,7 +179,7 @@ define(['angular-mocks'], function(angularMocks) {
           comment: 'new epoch comment',
           pos: 3,
           isPrimary: true
-        }
+        };
 
         epochService.addItem(itemToAdd).then(function() {
           epochService.queryItems().then(function(result) {
@@ -185,7 +187,7 @@ define(['angular-mocks'], function(angularMocks) {
             expect(result[3]).toEqual(expectedEpoch);
             expect(result[1].isPrimary).toEqual(false);
             done();
-          })
+          });
         });
 
         rootScope.$digest();
@@ -234,7 +236,7 @@ define(['angular-mocks'], function(angularMocks) {
           label: newItem.label,
           pos: 1,
           isPrimary: false
-        }
+        };
 
         epochService.editItem(newItem).then(function() {
           epochService.queryItems().then(function(result) {
@@ -290,7 +292,7 @@ define(['angular-mocks'], function(angularMocks) {
           comment: newItem.comment,
           pos: 2,
           isPrimary: false
-        }
+        };
 
         epochService.editItem(newItem).then(function() {
           epochService.queryItems().then(function(result) {

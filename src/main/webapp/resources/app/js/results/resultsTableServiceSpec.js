@@ -11,8 +11,11 @@ define(['angular', 'angular-mocks'], function() {
     beforeEach(module('trialverse.util'));
 
     beforeEach(function() {
-      module('trialverse', function($provide) {
+      module('trialverse.arm', function($provide) {
         $provide.value('ArmService', armService);
+
+      });
+      module('trialverse.measurementMoment', function($provide) {
         $provide.value('MeasurementMomentService', measurementMomentService);
       });
     });
@@ -160,11 +163,11 @@ define(['angular', 'angular-mocks'], function() {
         var column1 = {
           value: 3.2,
           dataType: DOUBLE_TYPE
-        }
+        };
         var column2 = {
           value: 3,
           dataType: DOUBLE_TYPE
-        }
+        };
         expect(resultsTableService.isValidValue(column1)).toBe(true);
         expect(resultsTableService.isValidValue(column2)).toBe(true);
       });
@@ -172,22 +175,22 @@ define(['angular', 'angular-mocks'], function() {
         var column = {
           value: 3.2,
           dataType: INTEGER_TYPE
-        }
+        };
         expect(resultsTableService.isValidValue(column)).toBe(false);
       });
       it('should return false for a non-numeric value', function() {
         var column1 = {
           value: 'test',
           dataType: INTEGER_TYPE
-        }
+        };
         var column2 = {
           value: 'test',
           dataType: DOUBLE_TYPE
-        }
+        };
         var column3 = {
           value: '1.23abc',
           dataType: DOUBLE_TYPE
-        }
+        };
         expect(resultsTableService.isValidValue(column1)).toBe(false);
         expect(resultsTableService.isValidValue(column2)).toBe(false);
         expect(resultsTableService.isValidValue(column3)).toBe(false);
