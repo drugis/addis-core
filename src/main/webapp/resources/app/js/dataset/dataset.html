@@ -2,7 +2,7 @@
   <navbar-directive>
   </navbar-directive>
   <ul class="breadcrumbs">
-      <li><a ui-sref="user">Datasets</a></li>
+      <li><a ui-sref="datasets({userUid: userUid})">Datasets</a></li>
     <li class="current active">{{dataset.label}}</li>
   </ul>
   <div class="row nav-bar-spacer">
@@ -12,8 +12,8 @@
       <version-info></version-info>
       <div class="row application-link">
         <div class="column large-10">
-          <a ng-if="versionUuid" ui-sref="versionedDataset.concepts({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concepts</a>
-          <a ng-if="!versionUuid" ui-sref="dataset.concepts({datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concepts</a>
+          <a ng-if="versionUuid" ui-sref="versionedDataset.concepts({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concepts</a>
+          <a ng-if="!versionUuid" ui-sref="dataset.concepts({userUid: userUid, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concepts</a>
         </div>
       </div>
       <hr>

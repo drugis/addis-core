@@ -1,56 +1,47 @@
 'use strict';
-define([],
-  function() {
+define(['lodash'],
+  function(_) {
     var dependencies = ['$scope', '$location', '$q', '$modal', '$filter', '$window',
-      '$stateParams', 'DatasetResource', 'UserResource', 'md5'
+      '$stateParams', '$state', 'UserResource', 'md5'
     ];
 
     var UserController = function($scope, $location, $q, $modal, $filter, $window,
-      $stateParams, DatasetResource, UserResource, md5) {
+      $stateParams, $state, UserResource, md5) {
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.otherUsers = [];
       $scope.userUid = Number($stateParams.userUid);
       $scope.loginUser = $window.config.user;
-      $scope.datasetsLoaded = false;
-      $scope.reloadDatasets = reloadDatasets;
 
-      // if no user is supplied, then go to the logged-in user user-page
-      if (!$scope.userUid || $scope.userUid.length === 0) {
-        $location.path('/users/' + $scope.loginUser.id);
-      } else {
-        UserResource.query(function(users) {
-          _.each(users, function(user) {
-            user.md5 = md5.createHash(user.email);
-            if ($scope.userUid === user.id) {
-              $scope.user = user;
-            } else {
-              $scope.otherUsers.push(user);
-            }
-          });
-        });
-        reloadDatasets();
+      $scope.user = $window.config.user;
+
+      if(!$scope.activetab) {
+        $scope.activetab = 'projects';
       }
 
-      function reloadDatasets() {
-        $scope.datasetsLoaded = false;
-        DatasetResource.queryForJson($stateParams, function(datasets) {
-          $scope.datasets = datasets;
-          $scope.datasetsLoaded = true;
-        });
+      $scope.selectProjectsTab = function() {
+        if ($state.current.name !== 'projects') {
+          $scope.activetab = 'projects';
+          $state.go('projects', {userUid: $stateParams.userUid});
+        }
+      };
 
-      }
+      $scope.selectDatasetsTab = function() {
+        if ($state.current.name !== 'datasets') {
+          $scope.activetab = 'datasets';
+          $state.go('datasets', {userUid: $stateParams.userUid});
+        }
+      };
 
-      $scope.createDatasetDialog = function() {
-        $modal.open({
-          templateUrl: 'app/js/user/createDataset.html',
-          controller: 'CreateDatasetController',
-          resolve: {
-            callback: function() {
-              return reloadDatasets;
-            }
+      UserResource.query(function(users) {
+        _.each(users, function(user) {
+          user.md5 = md5.createHash(user.email);
+          if ($scope.userUid === user.id) {
+            $scope.user = user;
+          } else {
+            $scope.otherUsers.push(user);
           }
         });
-      };
+      });
 
     };
     return dependencies.concat(UserController);

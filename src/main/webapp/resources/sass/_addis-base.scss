@@ -10,10 +10,16 @@
   margin: 1rem 0;
 }
 
-.user-image-large {
-  height: 4rem;
-  border-radius: 3rem;
+.row.user-header {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  .user-image-large {
+    height: 4rem;
+    border-radius: 3rem;
+  }
 }
+
+
 
 .top-bar li.name h1.topbar-text a  {
   display: inline;

@@ -5,6 +5,7 @@ define(
     'jQuery',
     'mcda/config',
     'gemtc-web/util/errorInterceptor',
+    'lodash',
     'mmfoundation',
     'foundation',
     'angular-ui-router',
@@ -12,7 +13,6 @@ define(
     'angularanimate',
     'angular-md5',
     'ngSanitize',
-    'lodash',
     'controllers',
     'directives',
     'filters',
@@ -61,7 +61,7 @@ define(
     'mcda/services/util',
     'covariates/covariates'
   ],
-  function(angular, require, $, Config, errorInterceptor) {
+  function(angular, require, $, Config, errorInterceptor, _) {
     var mcdaDependencies = [
       'elicit.errorHandling',
       'elicit.scaleRangeService',
@@ -85,6 +85,7 @@ define(
       'mm.foundation.tpls',
       'mm.foundation.modal',
       'mm.foundation.typeahead',
+      'mm.foundation.tabs',
       'help-directive',
       'addis.controllers',
       'addis.directives',
@@ -194,10 +195,22 @@ define(
         $httpProvider.interceptors.push('SessionExpiredInterceptor');
 
         $stateProvider
+          .state('user', {
+            url: '/users/:userUid',
+            templateUrl: 'app/js/user/user.html',
+            controller: 'UserController',
+          })
           .state('projects', {
             url: '/projects',
+            parent: 'user',
             templateUrl: baseTemplatePath + 'projects.html',
             controller: 'ProjectsController'
+          })
+          .state('datasets', {
+            url: '/datasets',
+            parent: 'user',
+            templateUrl: 'app/js/dataset/datasets.html',
+            controller: 'DatasetsController'
           })
           .state('create-project', {
             url: '/create-project',
@@ -340,32 +353,18 @@ define(
             templateUrl: 'app/js/search/search.html',
             controller: 'SearchController'
           })
-          .state('user', {
-            url: '/users/:userUid',
-            templateUrl: 'app/js/user/user.html',
-            controller: 'UserController'
-          })
-          .state('create-dataset', {
-            parent: 'user',
-            url: '/create-dataset',
-            templateUrl: 'app/js/user/createDataset.html',
-            controller: 'CreateDatasetController'
-          })
           .state('dataset', {
-            parent: 'user',
-            url: '/datasets/:datasetUUID',
+            url: '/users/:userUid/datasets/:datasetUUID',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
           })
           .state('versionedDataset', {
-            parent: 'user',
-            url: '/datasets/:datasetUUID/versions/:versionUuid',
+            url: '/users/:userUid/datasets/:datasetUUID/versions/:versionUuid',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
           })
           .state('datasetHistory', {
-            parent: 'user',
-            url: '/datasets/:datasetUUID/history',
+            url: '/users/:userUid/datasets/:datasetUUID/history',
             templateUrl: 'app/js/dataset/datasetHistory.html',
             controller: 'DatasetHistoryController'
           })
@@ -391,12 +390,17 @@ define(
           });
 
         // Default route
-        $urlRouterProvider.otherwise('/projects');
+      //  $urlRouterProvider.otherwise('/users/:userUid/projects');
+        $urlRouterProvider.otherwise(function($injector){
+          var $window = $injector.get('$window');
+          var $state = $injector.get('$state');
+          $state.go('projects', {userUid: $window.config.user.id});
+        });
         MCDARouteProvider.buildRoutes($stateProvider, 'singleStudyBenefitRisk', mcdaBaseTemplatePath);
       }
     ]);
     app.constant('CONCEPT_GRAPH_UUID', 'concepts');
-    app.constant('GROUP_ALLOCATION_OPTIONS', _.indexBy([{
+    app.constant('GROUP_ALLOCATION_OPTIONS', _.keyBy([{
       uri: 'ontology:AllocationRandomized',
       label: 'Randomized'
     }, {
@@ -406,7 +410,7 @@ define(
       uri: 'unknown',
       label: 'Unknown'
     }], 'uri'));
-    app.constant('BLINDING_OPTIONS', _.indexBy([{
+    app.constant('BLINDING_OPTIONS', _.keyBy([{
       uri: 'ontology:OpenLabel',
       label: 'Open'
     }, {
@@ -422,7 +426,7 @@ define(
       uri: 'unknown',
       label: 'Unknown'
     }], 'uri'));
-    app.constant('STATUS_OPTIONS', _.indexBy([{
+    app.constant('STATUS_OPTIONS', _.keyBy([{
       uri: 'ontology:StatusRecruiting',
       label: 'Recruiting'
     }, {

@@ -14,7 +14,7 @@ define([], function() {
           id: $window.config.user.id
         };
         scope.isOwnUserPage = $state.current.name === 'user' &&
-         scope.$parent.loginUser.id === $stateParams.userUid;
+         $window.config.user.id === $stateParams.userUid;
       }
     };
   };

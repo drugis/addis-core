@@ -6,7 +6,7 @@
           {{currentRevision.versionTitle}}
         </div>
         <div>
-          Created by <span ng-if="currentRevision.applicationName">{{currentRevision.applicationName}} on behalf of </span><a ui-sref="user({userUid: currentRevision.userHash})">{{currentRevision.creator}}</a>
+          Created by <span ng-if="currentRevision.applicationName">{{currentRevision.applicationName}} on behalf of </span><a ui-sref="user({userUid: currentRevision.userId})">{{currentRevision.creator}}</a>
         </div>
     </div>
     <div class="columns large-6 text-right">

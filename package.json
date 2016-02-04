@@ -1,0 +1,36 @@
+{
+  "name": "addis-core",
+  "version": "1.0.0",
+  "description": "Addis",
+  "main": "karma.conf.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ConnorStroomberg/addis-core.git"
+  },
+  "keywords": [
+    "addis"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ConnorStroomberg/addis-core/issues"
+  },
+  "homepage": "https://github.com/ConnorStroomberg/addis-core#readme",
+  "devDependencies": {
+    "jasmine-core": "^2.4.1",
+    "karma": "^0.13.19",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-jasmine": "^0.3.7",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "karma-selenium-webdriver-launcher": "0.0.3",
+    "phantomjs-prebuilt": "^2.1.3",
+    "selenium-webdriver": "^2.48.2"
+  }
+}

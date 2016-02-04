@@ -1,6 +1,6 @@
 'use strict';
-define([],
-  function() {
+define(['lodash'],
+  function(_) {
     var dependencies = ['$scope', '$q', '$window', '$location', '$stateParams', '$modal', '$filter', 'DatasetVersionedResource', 'StudiesWithDetailsService',
      'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource'
     ];
@@ -122,7 +122,6 @@ define([],
               return function(newVersion) {
                 $location.path('/users/' + $stateParams.userUid + '/datasets/' +
                   $stateParams.datasetUUID + '/versions/' + newVersion);
-                $scope.reloadDatasets();
               };
             }
           }
