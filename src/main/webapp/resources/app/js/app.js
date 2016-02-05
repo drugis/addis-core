@@ -224,27 +224,27 @@ define(
             controller: 'DatasetsController'
           })
           .state('create-project', {
-            url: '/create-project',
+            url: '/users/:userUid/projects/create-project',
             templateUrl: baseTemplatePath + 'createProject.html',
             controller: 'CreateProjectController'
           })
           .state('namespace', {
-            url: '/namespaces/:namespaceUid',
+            url: '/users/:userUid/namespaces/:namespaceUid',
             templateUrl: baseTemplatePath + 'namespaceView.html',
             controller: 'NamespaceController'
           })
           .state('study', {
-            url: '/namespaces/:namespaceUid/study/:studyUid',
+            url: '/users/:userUid/namespaces/:namespaceUid/study/:studyUid',
             templateUrl: baseTemplatePath + 'study.html',
             controller: 'StudyReadOnlyController'
           })
           .state('project', {
-            url: '/projects/:projectId',
+            url: '/users/:userUid/projects/:projectId',
             templateUrl: baseTemplatePath + 'project.html',
             controller: 'SingleProjectController'
           })
           .state('singleStudyBenefitRisk', {
-            url: '/projects/:projectId/ssbr/:analysisId',
+            url: '/users/:userUid/projects/:projectId/ssbr/:analysisId',
             resolve: {
               currentAnalysis: ['$stateParams', 'AnalysisResource',
                 function($stateParams, AnalysisResource) {
@@ -265,7 +265,7 @@ define(
           .state('networkMetaAnalysisContainer', {
             templateUrl: baseTemplatePath + 'networkMetaAnalysisContainer.html',
             controller: 'NetworkMetaAnalysisContainerController',
-            url: '/projects/:projectId/nma/:analysisId',
+            url: '/users/:userUid/projects/:projectId/nma/:analysisId',
             resolve: {
               currentAnalysis: ['$stateParams', 'AnalysisResource',
                 function($stateParams, AnalysisResource) {
@@ -303,7 +303,7 @@ define(
           })
           .state('createModel', {
             parent: 'nmaModelContainer',
-            url: '/projects/:projectId/nma/:analysisId/models/createModel',
+            url: '/users/:userUid/projects/:projectId/nma/:analysisId/models/createModel',
             templateUrl: gemtcWebBaseTemplatePath + 'js/models/createModel.html',
             controller: 'CreateModelController'
           })
@@ -313,7 +313,7 @@ define(
             abstract: true,
           })
           .state('model', {
-            url: '/projects/:projectId/nma/:analysisId/models/:modelId',
+            url: '/users/:userUid/projects/:projectId/nma/:analysisId/models/:modelId',
             parent: 'nmaModelContainer',
             templateUrl: gemtcWebBaseTemplatePath + 'views/modelView.html',
             controller: 'ModelController',

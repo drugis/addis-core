@@ -1,18 +1,20 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$scope', '$location', '$q', '$modal', '$filter', '$window',
+    var dependencies = ['$scope', '$filter', '$window',
       '$stateParams', '$state', 'UserResource', 'md5'
     ];
 
-    var UserController = function($scope, $location, $q, $modal, $filter, $window,
+    var UserController = function($scope, $filter, $window,
       $stateParams, $state, UserResource, md5) {
       console.log('user controller');
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.otherUsers = [];
       $scope.userUid = Number($stateParams.userUid);
       $scope.loginUser = $window.config.user;
-      $scope.user = $window.config.user;
+      // if(!$scope.user) {
+      //   $scope.user = $window.config.user;
+      // }
 
       if(!$scope.activetab) {
         console.log('set active as no other tab is');

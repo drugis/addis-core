@@ -6,7 +6,7 @@
         Interventions, Comparisons, Outcomes). You can now define your own projects
         and look at (but not modify) other people's projects.
       </p>
-      <div>
+      <div ng-if="user.id === loginUser.id">
         <a id="create-project-btn" ui-sref="create-project" class="button "><i class="fa fa-plus"></i> Create project</a>
       </div>
     </div>
@@ -23,7 +23,7 @@
         <ul>
           <li ng-show="!(projects | ownProjectsFilter:user.id).length">No projects</li>
           <li ng-repeat="project in projects | ownProjectsFilter:user.id ">
-            <a href="#/projects/{{project.id}}">
+            <a ui-sref="project({userUid: user.id, projectId: project.id})">
               <span title="project name">{{project.name}}</span>-
               <span title="project description">{{project.description}}</span>
             </a>
@@ -35,7 +35,7 @@
         <ul>
           <li ng-show="!(projects | ownProjectsFilter:user.id:true).length">No other projects</li>
           <li ng-repeat="project in projects | ownProjectsFilter:user.id:true">
-            <a href="#/projects/{{project.id}}">
+            <a ui-sref="project({userUid: project.owner.id, projectId: project.id})">
               <span title="project name">{{project.name}}</span>-
               <span title="project description">{{project.description}}</span>
               <span title="user name">({{project.owner.firstName}} {{project.owner.lastName}})</span>

@@ -20,20 +20,23 @@ define(['angular', 'angular-mocks', 'jQuery', 'app'], function () {
 
     it('should navigate to #/projects/1 ', function () {
       expect($state.href('project', {
+        userUid: 37,
         projectId: 1
-      })).toEqual('#/projects/1');
+      })).toEqual('#/users/37/projects/1');
     });
     it('should navigate to #/projects/1/nma/2 ', function () {
       expect($state.href('networkMetaAnalysis', {
+        userUid: 42,
         projectId: 1,
         analysisId: 2
-      })).toEqual('#/projects/1/nma/2');
+      })).toEqual('#/users/42/projects/1/nma/2');
     });
     it('should navigate to #/projects/1/ssbr/2 ', function () {
       expect($state.href('singleStudyBenefitRisk', {
-        projectId: 1,
-        analysisId: 2
-      })).toEqual('#/projects/1/ssbr/2');
+        userUid: 1,
+        projectId: 2,
+        analysisId: 3
+      })).toEqual('#/users/1/projects/2/ssbr/3');
     });
   });
 });

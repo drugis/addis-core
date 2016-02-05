@@ -93,7 +93,7 @@ define(['lodash'], function(_) {
         $scope.covariates = result[1].map(function(covariate) {
           covariate.definitionLabel = optionsMap[covariate.definitionKey].label;
           return covariate;
-        })
+        });
       });
     }
 

@@ -1,16 +1,10 @@
 'use strict';
 define([], function() {
-    var dependencies = ['$scope', '$location', '$q', '$modal', '$filter', '$window',
-      '$stateParams', 'DatasetResource'
+    var dependencies = ['$scope', '$modal', '$filter', '$stateParams', 'DatasetResource'
     ];
 
-    var DatasetsController = function($scope, $location, $q, $modal, $filter, $window,
-      $stateParams, DatasetResource) {
-      console.log('datasets controller');
+    var DatasetsController = function($scope, $modal, $filter, $stateParams, DatasetResource) {
       $scope.stripFrontFilter = $filter('stripFrontFilter');
-      $scope.otherUsers = [];
-      $scope.userUid = Number($stateParams.userUid);
-      $scope.loginUser = $window.config.user;
       $scope.datasetsLoaded = false;
       $scope.reloadDatasets = reloadDatasets;
 
