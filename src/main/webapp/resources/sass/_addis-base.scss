@@ -36,6 +36,7 @@
 
 .tabs dd, .tabs .tab-title {
     top: 1px;
+    border-right: 1px white solid;
 }
 
 .tabs dd.active > a, .tabs .tab-title.active > a {

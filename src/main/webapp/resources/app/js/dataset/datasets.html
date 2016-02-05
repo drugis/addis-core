@@ -1,41 +1,49 @@
 <div ui-view>
   <div class="row">
-    <div class="columns large-6">
-      <h2>Datasets</h2>
-      <button ng-show="loginUser.id === userUid" tabindex="0" class="button small" ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button>
-    </div>
-    <div class="columns large-6">
+    <div class="columns large-8" >
+  <h2>Datasets<button ng-show="loginUser.id === userUid" tabindex="0" class="right button " ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button></h2>
+
+      <div ng-show="!datasetsLoaded" class="row">
+        <div class="column center large-12">
+          <i class="fa fa-spinner fa-spin fa-3x"></i>
+          <p>Loading datasets...</p>
+        </div>
+      </div>
+      <div class="row" ng-show="datasetsLoaded">
+
+        <div style="margin-top: 2rem;" class="columns large-12">
+          <em ng-show="datasets.length === 0">No datasets have been created</em>
+          <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="dataset in datasets">
+
+            <div class="row">
+              <div class="columns large-6">
+                <h5><a  ui-sref="dataset({userUid: userUid, datasetUUID: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">{{dataset.title}}</a></h5>
+              </div>
+              <div class="columns large-6 end">
+                <button style="margin-bottom: 1rem;" class="right button small radius" ng-click="createProjectDialog(dataset)">create project</button>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="columns large-12">
+                <p class="subheader">
+                  <em ng-if="!dataset.description">no description</em>{{dataset.description}}
+                  <p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+      <div class="columns large-6">
       <h5> <a ui-sref="search" style="text-decoration: underline;"><i class="fa fa-search"></i> Go to Search</a>
         <h5>
     </div>
-  </div>
-  <div ng-show="!datasetsLoaded" class="row">
-    <div class="column center large-12">
-      <i class="fa fa-spinner fa-spin fa-3x"></i>
-      <p>Loading datasets...</p>
     </div>
-  </div>
-  <div class="row" ng-show="datasetsLoaded">
-    <div class="columns large-12">
-      <em ng-show="datasets.length === 0">No datasets have been created</em>
-      <table ng-show="datasets.length > 0">
-        <tr>
-          <th class="large-3">Name</th>
-          <th class="large-9">Description</th>
-        </tr>
-        <tr ng-repeat="dataset in datasets">
-          <td style="vertical-align: top;">
-            <a ui-sref="dataset({userUid: userUid, datasetUUID: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">{{dataset.title}}</a></td>
-          <td style="white-space: pre-wrap;">{{dataset.description}}</td>
-        </tr>
-      </table>
-    </div>
-  </div>
-  <div class="row">
-    <div class="columns large-12">
-      <h3>Other users</h3>
-    </div>
-    <div class="columns large-12">
+
+    <div class="columns large-4">
+      <h2>Other users</h2>
       <ul class="no-bullet">
         <li ng-cloak class="ng-cloak" ng-show="!otherUsers.length">
           <em>You are the only user of trialverse</em>

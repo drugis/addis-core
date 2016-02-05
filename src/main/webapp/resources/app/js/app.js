@@ -23,6 +23,7 @@ define(
     'search/search',
     'user/user',
     'dataset/dataset',
+    'project/project',
     'util/util',
     'study/study',
     'graph/graph',
@@ -87,6 +88,7 @@ define(
       'mm.foundation.typeahead',
       'mm.foundation.tabs',
       'help-directive',
+      'addis.project',
       'addis.controllers',
       'addis.directives',
       'addis.resources',
@@ -199,7 +201,7 @@ define(
         $urlRouterProvider.otherwise(function($injector) {
           var $window = $injector.get('$window');
           var $state = $injector.get('$state');
-          $state.go('projects', {
+          $state.go('datasets', {
             userUid: $window.config.user.id
           });
         });
@@ -223,6 +225,12 @@ define(
             templateUrl: 'app/js/dataset/datasets.html',
             controller: 'DatasetsController'
           })
+          .state('search', {
+              url: '/search?searchTerm',
+              parent: 'user',
+              templateUrl: 'app/js/search/search.html',
+              controller: 'SearchController'
+            })
           .state('create-project', {
             url: '/users/:userUid/projects/create-project',
             templateUrl: baseTemplatePath + 'createProject.html',
@@ -359,11 +367,6 @@ define(
           })
 
         // trialverse states
-        .state('search', {
-            url: '/search?searchTerm',
-            templateUrl: 'app/js/search/search.html',
-            controller: 'SearchController'
-          })
           .state('dataset', {
             url: '/users/:userUid/datasets/:datasetUUID',
             templateUrl: 'app/js/dataset/dataset.html',

@@ -22,17 +22,10 @@ define(['lodash'],
         $scope.activetab = $state.current.name;
       }
 
-      $scope.selectProjectsTab = function() {
-        if ($state.current.name !== 'projects') {
-          $scope.activetab = 'projects';
-          $state.go('projects', {userUid: $stateParams.userUid});
-        }
-      };
-
-      $scope.selectDatasetsTab = function() {
-        if ($state.current.name !== 'datasets') {
-          $scope.activetab = 'datasets';
-          $state.go('datasets', {userUid: $stateParams.userUid});
+      $scope.selectTab = function(tab) {
+        if ($state.current.name !== tab) {
+          $scope.activetab = tab;
+          $state.go(tab, {userUid: $stateParams.userUid});
         }
       };
 

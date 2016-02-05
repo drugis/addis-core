@@ -1,0 +1,34 @@
+<form novalidate ng-submit="createProject(project)">
+  <div class="row">
+    <div class="large-9 columns">
+      <label>Dataset
+        <h3>{{dataset.title}}</h3>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <h3>Create a new project</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <label>Name
+        <input autofocus type="text" ng-model="project.title">
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <label>Description
+        <textarea rows="8" ng-model="project.description"></textarea>
+      </label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-9 columns">
+      <button class="success" type="submit" ng-disabled="!project.title">Create</button>
+    </div>
+  </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
+</form>
