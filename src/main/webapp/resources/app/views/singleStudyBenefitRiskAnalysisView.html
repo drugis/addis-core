@@ -1,8 +1,8 @@
 <navbar-directive>
 </navbar-directive>
 <ul ng-show="loading.loaded" class="breadcrumbs">
-  <li><a href="#/projects">Projects</a></li>
-  <li><a href="#/projects/{{project.id}}">{{project.name}}</a></li>
+  <li><a ui-sref="projects({userUid: userId})">Projects</a></li>
+  <li><a ui-sref="project({userUid: userId, projectId: project.id})">{{project.name}}</a></li>
   <li class="current active">{{analysis.title}}</li>
 </ul>
 <div ng-if="error" class="row" ng-cloak>

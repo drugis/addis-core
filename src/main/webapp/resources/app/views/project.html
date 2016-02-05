@@ -1,6 +1,6 @@
 <navbar-directive></navbar-directive>
 <ul ng-show="loading.loaded" class="breadcrumbs">
-    <li><a href="#/projects">Projects</a></li>
+    <li><a ui-sref="projects({userUid: userId})">Projects</a></li>
   <li class="current active">{{project.name}}</li>
 </ul>
 
@@ -31,10 +31,6 @@
                 class="fa fa-plus"></i> Add Analysis
         </button>
 
-        <!--  <div class="panel callout radius">
-          Create an analysis on the basis of the defined outcomes and interventions, and the data in the project's
-          trialverse namespace.
-        </div> -->
         <div ng-show="!analysesLoaded">
             <i class="fa fa-spinner fa-spin fa-3x"></i>
 

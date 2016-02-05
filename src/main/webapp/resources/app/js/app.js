@@ -229,12 +229,12 @@ define(
             controller: 'CreateProjectController'
           })
           .state('namespace', {
-            url: '/users/:userUid/namespaces/:namespaceUid',
+            url: '/namespaces/:namespaceUid',
             templateUrl: baseTemplatePath + 'namespaceView.html',
             controller: 'NamespaceController'
           })
           .state('study', {
-            url: '/users/:userUid/namespaces/:namespaceUid/study/:studyUid',
+            url: '/namespaces/:namespaceUid/study/:studyUid',
             templateUrl: baseTemplatePath + 'study.html',
             controller: 'StudyReadOnlyController'
           })

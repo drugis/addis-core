@@ -3,11 +3,12 @@ define([], function() {
 	var dependencies = ['$scope', '$state', 'ProjectResource', 'TrialverseResource'];
 	var CreateProjectController = function($scope, $state, ProjectResource, TrialverseResource) {
     $scope.namespaces = TrialverseResource.query();
+    $scope.userId = $state.params.userUid;
 
     $scope.showCreateProjectModal = function(selectedNamespace) {
       $scope.createProjectModal.selectedNamespace = selectedNamespace;
       $scope.createProjectModal.open();
-    }
+    };
 
     $scope.createProject = function(newProject) {
       this.model = {};  // clear modal form by resetting model in current scope

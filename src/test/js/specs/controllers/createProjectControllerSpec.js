@@ -22,7 +22,7 @@ define(['angular', 'angular-mocks', 'controllers'],
         };
         ctrl = $controller('CreateProjectController', {
           $scope: scope,
-          $state: {},
+          $state: {params: {userUid: 1}},
           'ProjectResource': projectResource,
           'TrialverseResource': trialverseResource
         });

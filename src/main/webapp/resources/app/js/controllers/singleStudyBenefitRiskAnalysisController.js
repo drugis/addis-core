@@ -1,12 +1,12 @@
 'use strict';
-define(['underscore'], function() {
-  var dependencies = ['$scope', '$stateParams', '$state', '$q', '$window',
+define(['lodash'], function(_) {
+  var dependencies = ['$scope', '$stateParams', '$state', '$window',
     'currentAnalysis', 'currentProject',
-    'OutcomeResource', 'InterventionResource', 'TrialverseStudyResource', 'ProblemResource',
+    'OutcomeResource', 'InterventionResource', 'TrialverseStudyResource',
     'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW', 'AnalysisResource'
   ];
-  var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $q, $window,
-   currentAnalysis, currentProject, OutcomeResource, InterventionResource, TrialverseStudyResource, ProblemResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW, AnalysisResource) {
+  var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $window,
+   currentAnalysis, currentProject, OutcomeResource, InterventionResource, TrialverseStudyResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW, AnalysisResource) {
 
     var deregisterOutcomeWatch, deregisterInterventionWatch;
     $scope.$parent.loading = {
@@ -29,6 +29,7 @@ define(['underscore'], function() {
       isUserOwner: $window.config.user.id === currentProject.owner.id,
     };
     $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined;
+    $scope.userId = $stateParams.userUid;
 
     var projectIdParam = {
       projectId: $stateParams.projectId
@@ -151,14 +152,19 @@ define(['underscore'], function() {
         .getDefaultScenario()
         .then(function(scenario) {
           $state.go(DEFAULT_VIEW, {
+            userUid: $scope.userId,
             id: scenario.id
           });
         });
     };
 
     $scope.createProblem = function() {
-      deregisterOutcomeWatch && deregisterOutcomeWatch();
-      deregisterInterventionWatch && deregisterInterventionWatch();
+      if(deregisterOutcomeWatch) {
+        deregisterOutcomeWatch();
+      }
+      if(deregisterInterventionWatch) {
+        deregisterInterventionWatch();
+      }
       SingleStudyBenefitRiskAnalysisService.getProblem($scope.analysis).then(function(problem) {
         $scope.analysis.problem = problem;
         AnalysisResource.save($scope.analysis).$promise.then(function(response) {

@@ -1,3 +1,4 @@
+'use strict';
 define(['angular', 'angular-mocks', 'controllers'],
   function() {
     describe("The namespaceController", function() {
@@ -9,9 +10,17 @@ define(['angular', 'angular-mocks', 'controllers'],
         mockStateParams = {
           namespaceUid: 'asd-123'
         };
-    
+
         trialverseStudiesWithDetailsResource = jasmine.createSpyObj('trialverseStudiesWithDetailsResource', ['get']);
-        trialverseStudiesWithDetailsResource.get.and.returnValue([{study:{name:'name1'}},{study: {name:'name2'}}]);
+        trialverseStudiesWithDetailsResource.get.and.returnValue([{
+          study: {
+            name: 'name1'
+          }
+        }, {
+          study: {
+            name: 'name2'
+          }
+        }]);
 
         trialverseResource = jasmine.createSpyObj('trialverseResource', ['get']);
         trialverseResource.get.and.returnValue({
@@ -23,6 +32,13 @@ define(['angular', 'angular-mocks', 'controllers'],
         ctrl = $controller('NamespaceController', {
           $scope: scope,
           $stateParams: mockStateParams,
+          $window: {
+            config: {
+              user: {
+                id: 1
+              }
+            }
+          },
           'TrialverseResource': trialverseResource,
           'TrialverseStudiesWithDetailsResource': trialverseStudiesWithDetailsResource
         });

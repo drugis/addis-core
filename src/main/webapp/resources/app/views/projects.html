@@ -7,7 +7,7 @@
         and look at (but not modify) other people's projects.
       </p>
       <div ng-if="user.id === loginUser.id">
-        <a id="create-project-btn" ui-sref="create-project" class="button "><i class="fa fa-plus"></i> Create project</a>
+        <a id="create-project-btn" ui-sref="create-project({userUid: userId})" class="button "><i class="fa fa-plus"></i> Create project</a>
       </div>
     </div>
   </div>

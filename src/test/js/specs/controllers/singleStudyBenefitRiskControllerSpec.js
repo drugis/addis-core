@@ -1,7 +1,11 @@
+'use strict';
 define(['angular', 'angular-mocks', 'controllers'], function() {
   describe("The Single Study Benefit-Risk AnalysisController", function() {
     var scope;
-    var mockStateParams = {};
+    var userId = 54;
+    var mockStateParams = {
+      userUid: userId
+    };
     var state = jasmine.createSpyObj('state', ['go']);
     var mockWindow = {
       config: {
@@ -25,6 +29,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
     var mockInterventions = [{
       name: 'mock intervention 1'
     }];
+    var studiesDeferred;
     var mockStudies = [{
       studyGraphUid: 'graphUid1',
       studyUid: 'uid1',
@@ -58,7 +63,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       mockStateParams.analysisId = 2;
 
       // set a mockNameSpace for the current project
-      scope.project = mockProject
+      scope.project = mockProject;
 
       // set some mock outcomes anU interventions
       scope.analysis = {
@@ -95,7 +100,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       mockStudies.$promise = studiesDeferred.promise;
       trialverseStudyResource.query.and.returnValue(mockStudies);
 
-      ctrl = $controller('SingleStudyBenefitRiskAnalysisController', {
+      $controller('SingleStudyBenefitRiskAnalysisController', {
         $scope: scope,
         $stateParams: mockStateParams,
         $state: state,
@@ -299,6 +304,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       it('should go to the default view using the default scenario id', function() {
         expect(singleStudyBenefitRiskAnalysisService.getDefaultScenario).toHaveBeenCalled();
         expect(state.go).toHaveBeenCalledWith('DEFAULT_VIEW', {
+          userUid: userId,
           id: defaultScenarioId
         });
       });
@@ -309,6 +315,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       var problem = {
         name: 'problem'
       };
+      var saveDeferred;
       var problemDeferred;
       var analysisDeferred;
 

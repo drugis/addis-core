@@ -1,3 +1,4 @@
+'use strict';
 define(['angular', 'angular-mocks', 'underscore'], function() {
   describe('the SingleProjectController', function() {
     var $q, controllerArguments,
@@ -13,7 +14,9 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         label: 'type2',
         stateName: 'stateName2'
       }],
+      userId = 568,
       stateParams = {
+        userUid: userId,
         param: 1
       };
     beforeEach(module('addis.controllers'));
@@ -103,9 +106,6 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         describe('goToAnalysis', function() {
           var state;
           beforeEach(inject(function($controller) {
-            controllerArguments.stateParams = {
-              param: 1
-            };
             state = jasmine.createSpyObj('$state', ['go']);
             controllerArguments.$state = state;
             controllerArguments.ANALYSIS_TYPES = analysisTypes;
@@ -117,6 +117,7 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
             state.go.calls.reset();
             scope.goToAnalysis(analysisId, analysisTypes[0].label);
             expect(state.go).toHaveBeenCalledWith(analysisTypes[0].stateName, {
+              userUid: userId,
               projectId: mockProject.id,
               analysisId: analysisId
             });

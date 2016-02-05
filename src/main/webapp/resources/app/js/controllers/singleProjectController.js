@@ -33,6 +33,7 @@ define(['lodash'], function(_) {
       isDuplicate: false
     };
     $scope.analysisTypes = ANALYSIS_TYPES;
+    $scope.userId = $stateParams.userUid;
 
     $scope.project = ProjectResource.get($stateParams);
     $scope.project.$promise.then(function() {
@@ -147,6 +148,7 @@ define(['lodash'], function(_) {
       });
       //todo if analysis is gemtc type and has a problem go to models view
       $state.go(analysisType.stateName, {
+        userUid: $scope.userId,
         projectId: $scope.project.id,
         analysisId: analysisId
       });

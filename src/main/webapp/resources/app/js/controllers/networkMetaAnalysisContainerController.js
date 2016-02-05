@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$state', '$window', '$stateParams', 'currentAnalysis', 'currentProject', 'OutcomeResource',
     'InterventionResource', 'CovariateResource', 'ModelResource', 'NetworkMetaAnalysisService', 'TrialverseTrialDataResource'
   ];
@@ -19,6 +19,7 @@ define([], function() {
     $scope.loading = {
       loaded: false
     };
+    $scope.userId = $stateParams.userUid;
 
     $scope.models = ModelResource.query({
       projectId: $stateParams.projectId,
@@ -35,10 +36,9 @@ define([], function() {
 
     $scope.covariates = CovariateResource.query({
       projectId: $stateParams.projectId
-    })
+    });
 
-    $q
-      .all([
+    $q.all([
         $scope.analysis.$promise,
         $scope.project.$promise,
         $scope.models.$promise,
@@ -56,10 +56,11 @@ define([], function() {
 
     $scope.gotoCreateModel = function() {
       $state.go('createModel', {
+        userUid: $stateParams.userUid,
         projectId: $stateParams.projectId,
         analysisId: $stateParams.analysisId
       });
-    }
+    };
 
     $scope.lessThanTwoInterventionArms = function(dataRow) {
       var matchedAndIncludedRows = _.filter(dataRow.studyRows, function(studyRow) {

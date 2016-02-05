@@ -1,9 +1,9 @@
 <navbar-directive>
 </navbar-directive>
 <ul class="breadcrumbs">
-    <li><a href="#/projects">Projects</a></li>
-    <li><a href="#/projects/{{project.id}}">{{project.name}}</a></li>
-    <li><a href="#/projects/{{project.id}}/nma/{{analysis.id}}">{{analysis.title}}</a></li>
+    <li><a ui-sref="projects({userUid: userId})">Projects</a></li>
+    <li><a ui-sref="project({userUid: userId, projectId: project.id})">{{project.name}}</a></li>
+    <li><a ui-sref="networkMetaAnalysis({userUid: userId, projectId: project.id, analysisId: analysis.id})">{{analysis.title}}</a></li>
     <li ng-show="model.title" class="current active">{{model.title}}</li>
 </ul>
  <div ng-if="error" class="row" ng-cloak>

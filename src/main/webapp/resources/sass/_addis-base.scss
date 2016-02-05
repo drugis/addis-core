@@ -25,6 +25,26 @@
   display: inline;
 }
 
+// tabs borders
+.tabs {
+  border-bottom: 1px solid black;
+}
+
+.tabs dd > a, .tabs .tab-title > a {
+    padding: 1rem 2rem;
+}
+
+.tabs dd, .tabs .tab-title {
+    top: 1px;
+}
+
+.tabs dd.active > a, .tabs .tab-title.active > a {
+    border-top: 1px black solid;
+    border-left: 1px black solid;
+    border-right: 1px black solid;
+    border-bottom: 1px white solid;
+}
+
 // workaround for missing style on disabled anchor tags in foundaton menu
 li#top-bar-commit > a.success.disabled:hover{
   background-color: #29A329

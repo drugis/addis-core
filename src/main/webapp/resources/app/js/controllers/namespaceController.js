@@ -1,9 +1,10 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$scope', '$stateParams', 'TrialverseResource', 'TrialverseStudiesWithDetailsResource'];
-  var NamespaceController = function($scope, $stateParams, TrialverseResource, TrialverseStudiesWithDetailsResource) {
+  var dependencies = ['$scope', '$stateParams', '$window','TrialverseResource', 'TrialverseStudiesWithDetailsResource'];
+  var NamespaceController = function($scope, $stateParams, $window, TrialverseResource, TrialverseStudiesWithDetailsResource) {
     $scope.namespace = TrialverseResource.get($stateParams);
     $scope.studiesWithDetails = TrialverseStudiesWithDetailsResource.get($stateParams);
+    $scope.loginUserId = $window.config.user.id;
     $scope.tableOptions = {
       columns: [{
         id: 'title',
