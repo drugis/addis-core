@@ -27,11 +27,11 @@
       </div>
     </div>
     <tabset>
-      <tab heading="Projects" select="selectProjectsTab()">
-        <div ng-if="activetab === 'projects'" ui-view></div>
+      <tab heading="Projects" ng-click="selectProjectsTab()" active="activetab === 'projects'">
+        <div ui-view></div>
       </tab>
-      <tab heading="Datasets" select="selectDatasetsTab()">
-        <div ng-if="activetab === 'datasets'" ui-view></div>
+      <tab heading="Datasets" ng-click="selectDatasetsTab()" active="activetab === 'datasets'">
+        <div ui-view></div>
       </tab>
     </tabset>
   </div>

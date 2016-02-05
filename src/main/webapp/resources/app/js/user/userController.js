@@ -7,15 +7,17 @@ define(['lodash'],
 
     var UserController = function($scope, $location, $q, $modal, $filter, $window,
       $stateParams, $state, UserResource, md5) {
+      console.log('user controller');
       $scope.stripFrontFilter = $filter('stripFrontFilter');
       $scope.otherUsers = [];
       $scope.userUid = Number($stateParams.userUid);
       $scope.loginUser = $window.config.user;
-
       $scope.user = $window.config.user;
 
       if(!$scope.activetab) {
-        $scope.activetab = 'projects';
+        console.log('set active as no other tab is');
+        console.log('state is ' + $state.current.name);
+        $scope.activetab = $state.current.name;
       }
 
       $scope.selectProjectsTab = function() {

@@ -103,7 +103,7 @@ define(
       'gemtc.services',
       'gemtc.directives',
     ];
-    var trialverseDependencies =  [
+    var trialverseDependencies = [
       'trialverse.search',
       'trialverse.user',
       'trialverse.dataset',
@@ -128,9 +128,9 @@ define(
     ];
 
     Number.isInteger = Number.isInteger || function(value) {
-        return typeof value === 'number' &&
-          isFinite(value) &&
-          Math.floor(value) === value;
+      return typeof value === 'number' &&
+        isFinite(value) &&
+        Math.floor(value) === value;
     };
 
     var app = angular.module('addis', dependencies.concat(mcdaDependencies, gemtcWebDependencies, trialverseDependencies));
@@ -194,8 +194,19 @@ define(
         $httpProvider.interceptors.push('errorInterceptor');
         $httpProvider.interceptors.push('SessionExpiredInterceptor');
 
+        // Default route
+        //  $urlRouterProvider.otherwise('/users/:userUid/projects');
+        $urlRouterProvider.otherwise(function($injector) {
+          var $window = $injector.get('$window');
+          var $state = $injector.get('$state');
+          $state.go('projects', {
+            userUid: $window.config.user.id
+          });
+        });
+
         $stateProvider
           .state('user', {
+            abstract: true,
             url: '/users/:userUid',
             templateUrl: 'app/js/user/user.html',
             controller: 'UserController',
@@ -269,7 +280,7 @@ define(
                 }
               ]
             },
-            abstract:true
+            abstract: true
           })
           .state('networkMetaAnalysis', {
             parent: 'networkMetaAnalysisContainer',
@@ -299,14 +310,14 @@ define(
           .state('nmaModelContainer', {
             templateUrl: baseTemplatePath + 'networkMetaAnalysisModelContainerView.html',
             controller: 'NetworkMetaAnalysisModelContainerController',
-            abstract:true,
+            abstract: true,
           })
           .state('model', {
             url: '/projects/:projectId/nma/:analysisId/models/:modelId',
             parent: 'nmaModelContainer',
             templateUrl: gemtcWebBaseTemplatePath + 'views/modelView.html',
             controller: 'ModelController',
-                        resolve: {
+            resolve: {
               currentAnalysis: ['$stateParams', 'AnalysisResource',
                 function($stateParams, AnalysisResource) {
                   return AnalysisResource.get($stateParams).$promise;
@@ -347,8 +358,8 @@ define(
             }
           })
 
-          // trialverse states
-          .state('search', {
+        // trialverse states
+        .state('search', {
             url: '/search?searchTerm',
             templateUrl: 'app/js/search/search.html',
             controller: 'SearchController'
@@ -389,13 +400,6 @@ define(
             controller: 'StudyController'
           });
 
-        // Default route
-      //  $urlRouterProvider.otherwise('/users/:userUid/projects');
-        $urlRouterProvider.otherwise(function($injector){
-          var $window = $injector.get('$window');
-          var $state = $injector.get('$state');
-          $state.go('projects', {userUid: $window.config.user.id});
-        });
         MCDARouteProvider.buildRoutes($stateProvider, 'singleStudyBenefitRisk', mcdaBaseTemplatePath);
       }
     ]);

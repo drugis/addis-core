@@ -37,17 +37,5 @@ define(['angular-mocks'], function(angularMocks) {
 
     }));
 
-    it('should place createDatasetDialog on the scope', function() {
-      expect(scope.createDatasetDialog).not.toBe(null);
-    });
-
-
-    describe('createDatasetDialog', function() {
-      it('should open a modal', function() {
-        scope.createDatasetDialog();
-        expect(mockModal.open).toHaveBeenCalled();
-      });
-    });
-
   });
 });
