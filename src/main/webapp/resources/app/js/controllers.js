@@ -8,6 +8,5 @@ define(function (require) {
     .controller('SingleStudyBenefitRiskAnalysisController', require('controllers/singleStudyBenefitRiskAnalysisController'))
     .controller('NetworkMetaAnalysisContainerController', require('controllers/networkMetaAnalysisContainerController'))
     .controller('NetworkMetaAnalysisModelContainerController', require('controllers/networkMetaAnalysisModelContainerController'))
-    .controller('NamespaceController', require('controllers/namespaceController'))
     .controller('StudyReadOnlyController', require('controllers/studyReadOnlyController'));
 });

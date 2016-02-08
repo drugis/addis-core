@@ -5,9 +5,11 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
-SELECT * WHERE {
-GRAPH ?studyGraphUri {
-    ?studyUri 
+SELECT
+  ?graphUri ?studyUri ?title ?label ?studySize ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria
+ ?publications ?status ?numberOfCenters ?indication ?startDate ?endDate ?numberOfArms ?doseType WHERE {
+GRAPH ?graphUri {
+    ?studyUri
       rdfs:label ?label ;
       a ontology:Study ;
       rdfs:comment ?title .
@@ -58,20 +60,39 @@ GRAPH ?studyGraphUri {
     }
     OPTIONAL
     {
-      SELECT ?studyUri (group_concat(?drugName; separator = ', ') as ?drugNames)
+      SELECT ?graphUri (group_concat(?drugName; separator = ', ') as ?drugNames)
       WHERE {
-        {
-          SELECT DISTINCT ?studyUri ?drugName WHERE {
-            ?studyUri ontology:has_activity ?activityInstance .
-            ?activityInstance ontology:has_drug_treatment [
-              ontology:treatment_has_drug ?instance
+        GRAPH ?graphUri {
+          ?instance owl:sameAs ?drug .
+          ?instance a ontology:Drug .
+          ?instance rdfs:label ?drugName .
+        }
+      } GROUP BY ?graphUri
+    }
+    OPTIONAL
+    {
+      SELECT ?graphUri (group_concat(?publication; separator = ', ') as ?publications)
+      WHERE {
+        GRAPH ?graphUri {
+          OPTIONAL {
+            ?studyUri ontology:has_publication [
+              ontology:has_id ?publication
             ] .
-            ?instance owl:sameAs ?drug .
-            ?instance a ontology:Drug .
-            ?instance rdfs:label ?drugName .
           }
         }
-      } GROUP BY ?studyUri
+      } GROUP BY ?graphUri
+    }
+    OPTIONAL {
+      SELECT ?graphUri (COUNT(?arm) as ?numberOfArms) (SUM(?numberOfParticipantsStarting) as ?studySize)
+        WHERE {
+          GRAPH ?graphUri {
+            ?arm a ontology:Arm .
+            OPTIONAL {
+              ?participantsStarting ontology:of_arm ?arm .
+              ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .
+            }
+          }
+        } GROUP BY ?graphUri
     }
   }
 }
