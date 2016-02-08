@@ -226,11 +226,11 @@ define(
             controller: 'DatasetsController'
           })
           .state('search', {
-              url: '/search?searchTerm',
-              parent: 'user',
-              templateUrl: 'app/js/search/search.html',
-              controller: 'SearchController'
-            })
+            url: '/search?searchTerm',
+            parent: 'user',
+            templateUrl: 'app/js/search/search.html',
+            controller: 'SearchController'
+          })
           .state('create-project', {
             url: '/users/:userUid/projects/create-project',
             templateUrl: baseTemplatePath + 'createProject.html',
@@ -241,7 +241,7 @@ define(
             templateUrl: baseTemplatePath + 'namespaceView.html',
             controller: 'NamespaceController'
           })
-          .state('study', {
+          .state('namespace-study', {
             url: '/namespaces/:namespaceUid/study/:studyUid',
             templateUrl: baseTemplatePath + 'study.html',
             controller: 'StudyReadOnlyController'
@@ -367,7 +367,7 @@ define(
           })
 
         // trialverse states
-          .state('dataset', {
+        .state('dataset', {
             url: '/users/:userUid/datasets/:datasetUUID',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'

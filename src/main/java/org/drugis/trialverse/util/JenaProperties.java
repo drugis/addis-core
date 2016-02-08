@@ -15,6 +15,7 @@ public class JenaProperties {
 
   private static final String DATASET = "dataset";
   private static final String DATASET_VERSION = "DatasetVersion";
+  private static final String HEAD = "head";
   private static final String PREVIOUS = "previous";
   private static final String RDF_TYPE_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
   private static final String DC_TITLE = "http://purl.org/dc/terms/title";
@@ -22,8 +23,8 @@ public class JenaProperties {
   private static final String DC_CREATOR = "http://purl.org/dc/terms/creator";
   private static final String DC_DATE = "http://purl.org/dc/terms/date";
   private static final Model defaultModel = ModelFactory.createDefaultModel();
-  private static final String esPrefix = "http://drugis.org/eventSourcing/es#";
 
+  private static final String esPrefix = "http://drugis.org/eventSourcing/es#";
   public static final String REVISION = "revision";
   public static final String VERSION = "version";
   public static final String GRAPH = "graph";
@@ -32,6 +33,7 @@ public class JenaProperties {
   public static final Property DATE_PROPERTY = defaultModel.getProperty(DC_DATE);
   public static final Property TITLE_PROPERTY = defaultModel.getProperty(DC_TITLE);
   public static final Property creatorProperty = defaultModel.getProperty(DC_CREATOR);
+  public static final Property headVersionProperty = defaultModel.getProperty(esPrefix, HEAD);
   public static final Property datasetVersionObject = defaultModel.getProperty(esPrefix, DATASET_VERSION);
   public static final Property previousProperty = defaultModel.getProperty(esPrefix, PREVIOUS);
   public static final Property mergedRevisionProperty = defaultModel.getProperty(esPrefix, MERGED_REVISION);

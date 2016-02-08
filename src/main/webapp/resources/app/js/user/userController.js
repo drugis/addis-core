@@ -12,9 +12,6 @@ define(['lodash'],
       $scope.otherUsers = [];
       $scope.userUid = Number($stateParams.userUid);
       $scope.loginUser = $window.config.user;
-      // if(!$scope.user) {
-      //   $scope.user = $window.config.user;
-      // }
 
       if(!$scope.activetab) {
         console.log('set active as no other tab is');

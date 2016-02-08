@@ -268,7 +268,6 @@ define([],
           resolve: {
             callback: function() {
               return function(newVersion) {
-                $scope.reloadDatasets();
                 $scope.loadStudiesWithDetail();
                 StudyService.studySaved();
                 $location.path('/users/' + $stateParams.userUid + '/datasets/' + $stateParams.datasetUUID + '/versions/' + newVersion + '/studies/' + $stateParams.studyGraphUuid);

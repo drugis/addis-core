@@ -15,6 +15,7 @@ define([], function() {
         };
         scope.isOwnUserPage = $state.current.name === 'user' &&
          $window.config.user.id === $stateParams.userUid;
+        scope.loginUser = $window.config.user;
       }
     };
   };

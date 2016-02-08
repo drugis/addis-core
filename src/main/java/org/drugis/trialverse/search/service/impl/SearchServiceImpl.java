@@ -10,7 +10,6 @@ import org.drugis.trialverse.search.model.SearchResult;
 import org.drugis.trialverse.search.service.SearchService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.inject.Inject;
 import java.io.IOException;
