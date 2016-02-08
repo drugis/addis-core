@@ -236,20 +236,16 @@ define(
             templateUrl: baseTemplatePath + 'createProject.html',
             controller: 'CreateProjectController'
           })
-          .state('namespace', {
-            url: '/namespaces/:namespaceUid',
-            templateUrl: baseTemplatePath + 'namespaceView.html',
-            controller: 'NamespaceController'
-          })
-          .state('namespace-study', {
-            url: '/namespaces/:namespaceUid/study/:studyUid',
-            templateUrl: baseTemplatePath + 'study.html',
-            controller: 'StudyReadOnlyController'
-          })
           .state('project', {
             url: '/users/:userUid/projects/:projectId',
             templateUrl: baseTemplatePath + 'project.html',
             controller: 'SingleProjectController'
+          })
+          .state('namespace-study', {
+            url: '/users/:userUid/projects/:projectId/study/:studyUid',
+            templateUrl: baseTemplatePath + 'study.html',
+            controller: 'StudyReadOnlyController',
+            parent: 'project'
           })
           .state('singleStudyBenefitRisk', {
             url: '/users/:userUid/projects/:projectId/ssbr/:analysisId',

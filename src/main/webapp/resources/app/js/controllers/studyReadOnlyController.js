@@ -8,27 +8,35 @@ define([], function() {
     StudyTreatmentActivityResource, StudyArmResource, StudyEpochResource,
     StudyPopulationCharacteristicsResource, StudyEndpointsResource, StudyAdverseEventsResource) {
 
-    $scope.namespace = TrialverseResource.get($stateParams);
-    $scope.studyDetails = StudyDetailsResource.get($stateParams);
-    $scope.studyArms = StudyArmResource.query($stateParams);
-    $scope.studyEpochs = StudyEpochResource.query($stateParams);
-    $scope.treatmentActivities = StudyTreatmentActivityResource.query($stateParams);
-    $scope.studyPopulationCharacteristics = StudyPopulationCharacteristicsResource
-      .get($stateParams, function(populationCharacteristics) {
-        $scope.populationCharacteristicsRows = flattenOutcomesToTableRows(populationCharacteristics);
+    $scope.project.$promise.then(function() {
+      var studyCoordinates = {
+        namespaceUid: $scope.project.namespaceUid,
+        studyUid: $stateParams.studyUid
+      };
+      $scope.namespace = TrialverseResource.get({
+        namespaceUid: $scope.project.namespaceUid
       });
-    $scope.studyEndpoints = StudyEndpointsResource.get($stateParams, function(endpoints) {
-      $scope.endpointRows = flattenOutcomesToTableRows(endpoints);
-    });
-    $scope.studyAdverseEvents = StudyAdverseEventsResource.get($stateParams, function(adverseEvents) {
-      $scope.adverseEventsRows = flattenOutcomesToTableRows(adverseEvents);
+      $scope.studyDetails = StudyDetailsResource.get(studyCoordinates);
+      $scope.studyArms = StudyArmResource.query(studyCoordinates);
+      $scope.studyEpochs = StudyEpochResource.query(studyCoordinates);
+      $scope.treatmentActivities = StudyTreatmentActivityResource.query(studyCoordinates);
+      $scope.studyPopulationCharacteristics = StudyPopulationCharacteristicsResource
+        .get(studyCoordinates, function(populationCharacteristics) {
+          $scope.populationCharacteristicsRows = flattenOutcomesToTableRows(populationCharacteristics);
+        });
+      $scope.studyEndpoints = StudyEndpointsResource.get(studyCoordinates, function(endpoints) {
+        $scope.endpointRows = flattenOutcomesToTableRows(endpoints);
+      });
+      $scope.studyAdverseEvents = StudyAdverseEventsResource.get(studyCoordinates, function(adverseEvents) {
+        $scope.adverseEventsRows = flattenOutcomesToTableRows(adverseEvents);
+      });
+      $q.all([$scope.studyArms.$promise, $scope.studyEpochs.$promise, $scope.treatmentActivities.$promise])
+        .then(function() {
+          $scope.designRows = $scope.designRows.concat(constructStudyDesignTableRows());
+        });
     });
     $scope.designRows = [];
 
-    $q.all([$scope.studyArms.$promise, $scope.studyEpochs.$promise, $scope.treatmentActivities.$promise])
-      .then(function() {
-        $scope.designRows = $scope.designRows.concat(constructStudyDesignTableRows());
-      });
 
     function constructStudyDesignTableRows() {
       var rows = [];
@@ -56,7 +64,7 @@ define([], function() {
           row.relativeToEpochLabel = moment.relativeToEpochLabel;
           row.timeOffsetDuration = moment.timeOffsetDuration;
           row.studyDataArmValues = moment.studyDataArmValues;
-          row.studyDataArmValues.sort(function(a, b){
+          row.studyDataArmValues.sort(function(a, b) {
             return a.armLabel.localeCompare(b.armLabel);
           });
           rows.push(row);
