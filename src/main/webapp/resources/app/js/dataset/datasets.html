@@ -1,7 +1,10 @@
 <div ui-view>
   <div class="row">
-    <div class="columns large-8" >
-  <h2>Datasets<button ng-show="loginUser.id === userUid" tabindex="0" class="right button " ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button></h2>
+    <div class="columns large-8">
+      <h2>Datasets
+        <button ng-show="loginUser.id === userUid" tabindex="0" class="right button "
+        ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button>
+      </h2>
 
       <div ng-show="!datasetsLoaded" class="row">
         <div class="column center large-12">
@@ -17,7 +20,7 @@
 
             <div class="row">
               <div class="columns large-6">
-                <h5><a  ui-sref="dataset({userUid: userUid, datasetUUID: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">{{dataset.title}}</a></h5>
+                <h5><a ui-sref="dataset({userUid: userUid, datasetUUID: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">{{dataset.title}}</a></h5>
               </div>
               <div class="columns large-6 end">
                 <button style="margin-bottom: 1rem;" class="right button small radius" ng-click="createProjectDialog(dataset)">create project</button>
@@ -31,15 +34,10 @@
                   <p>
               </div>
             </div>
-
           </div>
         </div>
 
       </div>
-      <div class="columns large-6">
-      <h5> <a ui-sref="search" style="text-decoration: underline;"><i class="fa fa-search"></i> Go to Search</a>
-        <h5>
-    </div>
     </div>
 
     <div class="columns large-4">
