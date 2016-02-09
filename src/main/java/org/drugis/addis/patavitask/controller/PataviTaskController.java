@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 
 /**
@@ -28,7 +29,7 @@ public class PataviTaskController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/task", method = RequestMethod.GET)
   @ResponseBody
-  public PataviTaskUriHolder get(@PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException {
+  public PataviTaskUriHolder get(@PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException, URISyntaxException {
     return pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId);
   }
 

@@ -15,6 +15,7 @@ import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.remarks.repository.RemarksRepository;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
@@ -121,6 +122,11 @@ public class TestConfig {
   @Bean
   public VersionMappingRepository mockVersionMappingRepository() {
     return mock(VersionMappingRepository.class);
+  }
+
+  @Bean
+  public MappingService mockMappingService() {
+    return mock(MappingService.class);
   }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
+import java.net.URISyntaxException;
 
 /**
  * Created by daan on 3/21/14.
@@ -25,7 +26,7 @@ public class ProblemController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/problem", method = RequestMethod.GET)
   @ResponseBody
-  public AbstractProblem get(@PathVariable Integer projectId, @PathVariable Integer analysisId) throws ResourceDoesNotExistException {
+  public AbstractProblem get(@PathVariable Integer projectId, @PathVariable Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException {
     return problemService.getProblem(projectId, analysisId);
   }
 }

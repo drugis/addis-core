@@ -17,12 +17,14 @@ import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -57,8 +59,11 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   private CovariateRepository covariateRepository;
 
+  @Inject
+  private MappingService mappingService;
+
   @Override
-  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
+  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
     if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
@@ -69,7 +74,7 @@ public class ProblemServiceImpl implements ProblemService {
     throw new RuntimeException("unknown analysis type");
   }
 
-  private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) {
+  private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws URISyntaxException {
     List<String> alternativeUris = new ArrayList<>();
     List<Intervention> interventions = interventionRepository.query(project.getId());
     Map<String, Integer> interventionIdsByUrisMap = new HashMap<>();
@@ -91,7 +96,8 @@ public class ProblemServiceImpl implements ProblemService {
             .map(ic -> definedMap.get(ic.getCovariateId()).getDefinitionKey())
             .collect(Collectors.toList());
 
-    List<ObjectNode> trialDataStudies = trialverseService.getTrialData(project.getNamespaceUid(), project.getDatasetVersion(),
+    String namespaceUid = mappingService.getVersionedUuid(project.getNamespaceUid());
+    List<ObjectNode> trialDataStudies = trialverseService.getTrialData(namespaceUid, project.getDatasetVersion(),
             analysis.getOutcome().getSemanticOutcomeUri(), alternativeUris, includedCovariateKeys);
     ObjectMapper mapper = new ObjectMapper();
     List<TrialDataStudy> convertedTrialDataStudies = new ArrayList<>();
@@ -208,7 +214,7 @@ public class ProblemServiceImpl implements ProblemService {
     return interventionByIdMap.get(arm.getDrugConceptUid()) != null;
   }
 
-  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException {
+  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, URISyntaxException {
     List<String> outcomeUids = new ArrayList<>();
     for (Outcome outcome : analysis.getSelectedOutcomes()) {
       outcomeUids.add(outcome.getSemanticOutcomeUri());
@@ -217,8 +223,9 @@ public class ProblemServiceImpl implements ProblemService {
     for (Intervention intervention : analysis.getSelectedInterventions()) {
       alternativeUids.add(intervention.getSemanticInterventionUri());
     }
+    String versionedUuid = mappingService.getVersionedUuid(project.getNamespaceUid());
     List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementNodes =
-            triplestoreService.getSingleStudyMeasurements(project.getNamespaceUid(), analysis.getStudyGraphUid(), project.getDatasetVersion(), outcomeUids, alternativeUids);
+            triplestoreService.getSingleStudyMeasurements(versionedUuid, analysis.getStudyGraphUid(), project.getDatasetVersion(), outcomeUids, alternativeUids);
 
     Map<String, AlternativeEntry> alternatives = new HashMap<>();
     Map<String, CriterionEntry> criteria = new HashMap<>();

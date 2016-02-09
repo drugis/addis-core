@@ -3,17 +3,15 @@ package org.drugis.addis.trialverse;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.apache.commons.collections.ListUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
+import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.model.VersionMapping;
-import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.util.Namespaces;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -30,8 +28,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -60,24 +62,27 @@ public class TrialverseControllerTest {
   private TriplestoreService triplestoreService;
 
   @Inject
-  private VersionMappingRepository versionMappingRepository;
+  private MappingService mappingService;
 
   private Principal user;
 
   private Account gert = new Account(3, "gert", "Gert", "van Valkenhoef", "gert@test.com");
+  private String namespaceUid = "UID-1";
+  private String versionedUuid = "versionedUuid";
 
   @Before
-  public void setUp() {
-    reset(accountRepository, triplestoreService, versionMappingRepository);
+  public void setUp() throws URISyntaxException {
+    reset(accountRepository, triplestoreService, mappingService);
     mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     user = mock(Principal.class);
     when(user.getName()).thenReturn("gert");
     when(accountRepository.findAccountByUsername("gert")).thenReturn(gert);
+    when(mappingService.getVersionedUuid(namespaceUid)).thenReturn(versionedUuid);
   }
 
   @After
-  public void cleanUp() {
-    verifyNoMoreInteractions(accountRepository, triplestoreService, versionMappingRepository);
+  public void cleanUp() throws URISyntaxException {
+    verifyNoMoreInteractions(accountRepository, triplestoreService, mappingService);
   }
 
   @Test
@@ -113,75 +118,53 @@ public class TrialverseControllerTest {
   @Test
   public void testGetNamespaceById() throws Exception {
     int numberOfStudies = 666;
-    String uid = "UID-1";
     String versionUid = "current";
-    Namespace namespace1 = new Namespace(uid, "a", "descrea", numberOfStudies, versionUid);
-    String versionedUUID = "versionedUUID";
-    VersionMapping mapping = new VersionMapping("http://trials.drugis.org/datasets/" + versionedUUID, "owner@bar.com", uid);
-    URI namespaceUri = new URI(Namespaces.DATASET_NAMESPACE + uid);
-    when(triplestoreService.getNamespaceVersioned(versionedUUID, versionUid)).thenReturn(namespace1);
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(namespaceUri)).thenReturn(mapping);
+    Namespace namespace1 = new Namespace(namespaceUid, "a", "descrea", numberOfStudies, versionUid);
+    when(triplestoreService.getNamespaceVersioned(versionedUuid, versionUid)).thenReturn(namespace1);
 
     mockMvc.perform(get("/namespaces/UID-1").param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.name", is("a")));
 
-    verify(triplestoreService).getNamespaceVersioned(versionedUUID, versionUid);
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(namespaceUri);
-  }
+    verify(triplestoreService).getNamespaceVersioned(versionedUuid, versionUid);
+    verify(mappingService).getVersionedUuid(namespaceUid);
+ }
 
   @Test
   public void testQuerySemanticOutcomes() throws Exception {
-    String namespaceUid = "uid-1";
     String versionUid = "current";
     SemanticOutcome testOutCome = new SemanticOutcome("http://test/com", "test label");
-    String versionedUUID = "versionedUUID";
-    VersionMapping mapping = new VersionMapping("http://trials.drugis.org/datasets/" + versionedUUID, "owner@bar.com", namespaceUid);
-    URI namespaceUri = new URI(Namespaces.DATASET_NAMESPACE + namespaceUid);
-
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(namespaceUri)).thenReturn(mapping);
-    when(triplestoreService.getOutcomes(versionedUUID, versionUid)).thenReturn(Collections.singletonList(testOutCome));
+    when(triplestoreService.getOutcomes(versionedUuid, versionUid)).thenReturn(Collections.singletonList(testOutCome));
 
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/outcomes").param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0].uri", is(testOutCome.getUri())));
 
-    verify(triplestoreService).getOutcomes(versionedUUID, versionUid);
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(namespaceUri);
+    verify(triplestoreService).getOutcomes(versionedUuid, versionUid);
+    verify(mappingService).getVersionedUuid(namespaceUid);
   }
 
   @Test
   public void testQuerySemanticInterventions() throws Exception {
-    String namespaceUid = "abc";
     String versionUid = "current";
     SemanticIntervention testIntervention = new SemanticIntervention("http://test/com", "test label");
-    String versionedUUID = "versionedUUID";
-    VersionMapping mapping = new VersionMapping("http://trials.drugis.org/datasets/" + versionedUUID, "owner@bar.com", namespaceUid);
-    URI namespaceUri = new URI(Namespaces.DATASET_NAMESPACE + namespaceUid);
-
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(namespaceUri)).thenReturn(mapping);
-    when(triplestoreService.getInterventions(versionedUUID, versionUid)).thenReturn(Collections.singletonList(testIntervention));
+    when(triplestoreService.getInterventions(versionedUuid, versionUid)).thenReturn(Collections.singletonList(testIntervention));
 
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/interventions").param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$[0].uri", is(testIntervention.getUri())));
-    verify(triplestoreService).getInterventions(versionedUUID, versionUid);
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(namespaceUri);
+    verify(triplestoreService).getInterventions(versionedUuid, versionUid);
+    verify(mappingService).getVersionedUuid(namespaceUid);
   }
 
   @Test
   public void testQuerySemanticStudies() throws Exception {
-    String namespaceUid = "abc";
     String versionUid = "current";
     Study study = new Study("studyUid", "studyGraphUid", "name", "this is a title", Arrays.asList("outcome1", "outcome2"));
-    String versionedUUID = "versionedUUID";
-    VersionMapping mapping = new VersionMapping("http://trials.drugis.org/datasets/" + versionedUUID, "owner@bar.com", namespaceUid);
-    URI namespaceUri = new URI(Namespaces.DATASET_NAMESPACE + namespaceUid);
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(namespaceUri)).thenReturn(mapping);
-    when(triplestoreService.queryStudies(versionedUUID, versionUid)).thenReturn(Collections.singletonList(study));
+    when(triplestoreService.queryStudies(versionedUuid, versionUid)).thenReturn(Collections.singletonList(study));
 
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/studies").param("version", versionUid))
             .andExpect(status().isOk())
@@ -190,64 +173,49 @@ public class TrialverseControllerTest {
             .andExpect(jsonPath("$[0].name", is(study.getName())))
             .andExpect(jsonPath("$[0].title", is(study.getTitle())));
 
-    verify(triplestoreService).queryStudies(versionedUUID, versionUid);
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(namespaceUri);
+    verify(triplestoreService).queryStudies(versionedUuid, versionUid);
+    verify(mappingService).getVersionedUuid(namespaceUid);
   }
 
   @Test
   public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Exception {
     List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy("abc", "study name", Collections.emptyList(), Collections.emptyList()));
-    String namespaceUid = "namespaceUid";
     List<String> interventionUris = Arrays.asList("uri1", "uri2");
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     String versionUid = "current";
-    String versionedUUID = "versionedUUID";
-    VersionMapping mapping = new VersionMapping("http://trials.drugis.org/datasets/" + versionedUUID, "owner@bar.com", namespaceUid);
-    URI namespaceUri = new URI(Namespaces.DATASET_NAMESPACE + namespaceUid);
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(namespaceUri)).thenReturn(mapping);
-    when(triplestoreService.getTrialData(versionedUUID, versionUid, outcomeUri, interventionUris, Collections.emptyList())).thenReturn(trialDataStudies);
+    when(triplestoreService.getTrialData(versionedUuid, versionUid, outcomeUri, interventionUris, Collections.emptyList())).thenReturn(trialDataStudies);
 
-    mockMvc.perform(get("/namespaces/namespaceUid/trialData?interventionUris=uri1&interventionUris=uri2&outcomeUri=" + outcomeUri).principal(user).param("version", versionUid))
+    mockMvc.perform(get("/namespaces/" + namespaceUid + "/trialData?interventionUris=uri1&interventionUris=uri2&outcomeUri=" + outcomeUri).principal(user).param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", notNullValue()));
 
-    verify(triplestoreService).getTrialData(versionedUUID, versionUid, outcomeUri, interventionUris, Collections.emptyList());
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(namespaceUri);
+    verify(triplestoreService).getTrialData(versionedUuid, versionUid, outcomeUri, interventionUris, Collections.emptyList());
+    verify(mappingService).getVersionedUuid(namespaceUid);
   }
 
   @Test
   public void testGetTrialDataWithOutcomeAndNoInterventionsInQuery() throws Exception {
     List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy("abc", "study name", Collections.emptyList(), Collections.emptyList()));
-    String namespaceUid = "namespaceUid";
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     String versionUid = "current";
-    String versionedUUID = "versionedUUID";
-    VersionMapping mapping = new VersionMapping("http://trials.drugis.org/datasets/" + versionedUUID, "owner@bar.com", namespaceUid);
-    URI namespaceUri = new URI(Namespaces.DATASET_NAMESPACE + namespaceUid);
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(namespaceUri)).thenReturn(mapping);
-    when(triplestoreService.getTrialData(versionedUUID, versionUid, outcomeUri, Collections.emptyList(), Collections.emptyList())).thenReturn(trialDataStudies);
+    when(triplestoreService.getTrialData(versionedUuid, versionUid, outcomeUri, Collections.emptyList(), Collections.emptyList())).thenReturn(trialDataStudies);
 
-    mockMvc.perform(get("/namespaces/namespaceUid/trialData?outcomeUri=" + outcomeUri).param("version", versionUid))
+    mockMvc.perform(get("/namespaces/"+namespaceUid+"/trialData?outcomeUri=" + outcomeUri).param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", notNullValue()));
-    verify(triplestoreService).getTrialData(versionedUUID, versionUid, outcomeUri, Collections.emptyList(), Collections.emptyList());
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(namespaceUri);
+    verify(triplestoreService).getTrialData(versionedUuid, versionUid, outcomeUri, Collections.emptyList(), Collections.emptyList());
+    verify(mappingService).getVersionedUuid(namespaceUid);
   }
 
   @Test
   public void testQueryStudiesWithDetails() throws Exception {
-    String namespaceUid = "namespaceUid";
     String versionUid = "current";
     List<StudyWithDetails> studyWithDetailsList = Collections.singletonList(createStudyWithDetials());
-    String versionedUUID = "versionedUUID";
-    VersionMapping mapping = new VersionMapping("http://trials.drugis.org/datasets/" + versionedUUID, "owner@bar.com", namespaceUid);
-    URI namespaceUri = new URI(Namespaces.DATASET_NAMESPACE + namespaceUid);
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(namespaceUri)).thenReturn(mapping);
-    when(triplestoreService.queryStudydetailsHead(versionedUUID)).thenReturn(studyWithDetailsList);
+    when(triplestoreService.queryStudydetailsHead(versionedUuid)).thenReturn(studyWithDetailsList);
 
-    ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail").param("version", versionUid));
+    ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail").param("version", versionUid));
     resultActions
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
@@ -255,46 +223,36 @@ public class TrialverseControllerTest {
             .andExpect(jsonPath("$[0].title", is("studyTitle")))
             .andExpect(jsonPath("$[0].pubmedUrls", is("publicationURL, moreurls")));
 
-    verify(triplestoreService).queryStudydetailsHead(versionedUUID);
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(namespaceUri);
+    verify(triplestoreService).queryStudydetailsHead(versionedUuid);
+    verify(mappingService).getVersionedUuid(namespaceUid);
   }
 
   @Test
   public void testGetStudyWithDetails() throws Exception {
-    String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
     String versionUid = "current";
-    String versionedUUID = "versionedUUID";
-    VersionMapping mapping = new VersionMapping("http://trials.drugis.org/datasets/" + versionedUUID, "owner@bar.com", namespaceUid);
-    URI namespaceUri = new URI(Namespaces.DATASET_NAMESPACE + namespaceUid);
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(namespaceUri)).thenReturn(mapping);
-    when(triplestoreService.getStudydetails(versionedUUID, studyUid)).thenReturn(createStudyWithDetials());
+    when(triplestoreService.getStudydetails(versionedUuid, studyUid)).thenReturn(createStudyWithDetials());
 
-    ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid").param("version", versionUid));
+    ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUid").param("version", versionUid));
     resultActions
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$", notNullValue()));
 
-    verify(triplestoreService).getStudydetails(versionedUUID, studyUid);
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(namespaceUri);
+    verify(triplestoreService).getStudydetails(versionedUuid, studyUid);
+    verify(mappingService).getVersionedUuid(namespaceUid);
   }
 
   @Test
   public void testGetStudyArms() throws Exception {
-    String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
     String versionUid = "current";
 
     JSONArray result = new JSONArray();
     result.add(createTestResultObject());
-    String versionedUUID = "versionedUUID";
-    VersionMapping mapping = new VersionMapping("http://trials.drugis.org/datasets/" + versionedUUID, "owner@bar.com", namespaceUid);
-    URI namespaceUri = new URI(Namespaces.DATASET_NAMESPACE + namespaceUid);
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(namespaceUri)).thenReturn(mapping);
-    when(triplestoreService.getStudyArms(versionedUUID, studyUid)).thenReturn(result);
+    when(triplestoreService.getStudyArms(versionedUuid, studyUid)).thenReturn(result);
 
-    ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/arms").param("version", versionUid));
+    ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUid/arms").param("version", versionUid));
     resultActions
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
@@ -302,113 +260,88 @@ public class TrialverseControllerTest {
             .andExpect(jsonPath("$[0].numberObject", is(1)))
             .andExpect(jsonPath("$[0].dateObject", is(new DateTime(1980, 9, 10, 12, 0).getMillis())));
 
-    verify(triplestoreService).getStudyArms(versionedUUID, studyUid);
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(namespaceUri);
+    verify(triplestoreService).getStudyArms(versionedUuid, studyUid);
+    verify(mappingService).getVersionedUuid(namespaceUid);
   }
 
   @Test
   public void testGetStudyEpochs() throws Exception {
-    String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
     String versionUid = "current";
 
     JSONArray result = new JSONArray();
     result.add(createTestResultObject());
-    String versionedUUID = "versionedUUID";
-    VersionMapping mapping = new VersionMapping("http://trials.drugis.org/datasets/" + versionedUUID, "owner@bar.com", namespaceUid);
-    URI namespaceUri = new URI(Namespaces.DATASET_NAMESPACE + namespaceUid);
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(namespaceUri)).thenReturn(mapping);
-    when(triplestoreService.getStudyEpochs(versionedUUID, studyUid)).thenReturn(result);
+    when(triplestoreService.getStudyEpochs(versionedUuid, studyUid)).thenReturn(result);
 
-    ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/epochs").param("version", versionUid));
+    ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUid/epochs").param("version", versionUid));
     resultActions.andExpect(status().isOk()); // returns generic result
 
-    verify(triplestoreService).getStudyEpochs(versionedUUID, studyUid);
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(namespaceUri);
+    verify(triplestoreService).getStudyEpochs(versionedUuid, studyUid);
+    verify(mappingService).getVersionedUuid(namespaceUid);
   }
 
   @Test
   public void testGetStudyTreatmentActivities() throws Exception {
-    String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
     String versionUid = "current";
     List<TreatmentActivity> result = Collections.singletonList(new TreatmentActivity("uir", "type"));
-    String versionedUUID = "versionedUUID";
-    VersionMapping mapping = new VersionMapping("http://trials.drugis.org/datasets/" + versionedUUID, "owner@bar.com", namespaceUid);
-    URI namespaceUri = new URI(Namespaces.DATASET_NAMESPACE + namespaceUid);
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(namespaceUri)).thenReturn(mapping);
-    when(triplestoreService.getStudyTreatmentActivities(versionedUUID, studyUid)).thenReturn(result);
+    when(triplestoreService.getStudyTreatmentActivities(versionedUuid, studyUid)).thenReturn(result);
 
-    ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/treatmentActivities").param("version", versionUid));
+    ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUid/treatmentActivities").param("version", versionUid));
     resultActions.andExpect(status().isOk());
     resultActions.andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
 
-    verify(triplestoreService).getStudyTreatmentActivities(versionedUUID, studyUid);
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(namespaceUri);
+    verify(triplestoreService).getStudyTreatmentActivities(versionedUuid, studyUid);
+    verify(mappingService).getVersionedUuid(namespaceUid);
   }
 
   @Test
   public void testGetStudyPopulationCharacteristicsData() throws Exception {
-    String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
     String versionUid = "current";
 
     StudyDataSection studyDataSection = StudyDataSection.BASE_LINE_CHARACTERISTICS;
     List<StudyData> result = Collections.singletonList(new StudyData(studyDataSection, "studyDataTypeUri", "studyDataTypeLabel"));
-    String versionedUUID = "versionedUUID";
-    VersionMapping mapping = new VersionMapping("http://trials.drugis.org/datasets/" + versionedUUID, "owner@bar.com", namespaceUid);
-    URI namespaceUri = new URI(Namespaces.DATASET_NAMESPACE + namespaceUid);
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(namespaceUri)).thenReturn(mapping);
-    when(triplestoreService.getStudyData(versionedUUID, studyUid, studyDataSection)).thenReturn(result);
-    ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/studyData/populationCharacteristics").param("version", versionUid));
+    when(triplestoreService.getStudyData(versionedUuid, studyUid, studyDataSection)).thenReturn(result);
+    ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUid/studyData/populationCharacteristics").param("version", versionUid));
     resultActions.andExpect(status().isOk());
     resultActions.andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
 
-    verify(triplestoreService).getStudyData(versionedUUID, studyUid, studyDataSection);
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(namespaceUri);
-
+    verify(triplestoreService).getStudyData(versionedUuid, studyUid, studyDataSection);
+    verify(mappingService).getVersionedUuid(namespaceUid);
   }
 
   @Test
   public void testGetStudyEndpointsData() throws Exception {
-    String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
     String versionUid = "current";
 
     StudyDataSection studyDataSection = StudyDataSection.ENDPOINTS;
     List<StudyData> result = Collections.singletonList(new StudyData(studyDataSection, "studyDataTypeUri", "studyDataTypeLabel"));
-    String versionedUUID = "versionedUUID";
-    VersionMapping mapping = new VersionMapping("http://trials.drugis.org/datasets/" + versionedUUID, "owner@bar.com", namespaceUid);
-    URI namespaceUri = new URI(Namespaces.DATASET_NAMESPACE + namespaceUid);
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(namespaceUri)).thenReturn(mapping);
-    when(triplestoreService.getStudyData(versionedUUID, studyUid, studyDataSection)).thenReturn(result);
-    ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/studyData/endpoints").param("version", versionUid));
+    String versionedUuid = "versionedUuid";
+    ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUid/studyData/endpoints").param("version", versionUid));
     resultActions.andExpect(status().isOk());
     resultActions.andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
 
-    verify(triplestoreService).getStudyData(versionedUUID, studyUid, studyDataSection);
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(namespaceUri);
+    verify(triplestoreService).getStudyData(versionedUuid, studyUid, studyDataSection);
+    verify(mappingService).getVersionedUuid(namespaceUid);
   }
 
   @Test
   public void testGetStudyAdverseEventsData() throws Exception {
-    String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
     String versionUid = "current";
 
     StudyDataSection studyDataSection = StudyDataSection.ADVERSE_EVENTS;
     List<StudyData> result = Collections.singletonList(new StudyData(studyDataSection, "studyDataTypeUri", "studyDataTypeLabel"));
-    String versionedUUID = "versionedUUID";
-    VersionMapping mapping = new VersionMapping("http://trials.drugis.org/datasets/" + versionedUUID, "owner@bar.com", namespaceUid);
-    URI namespaceUri = new URI(Namespaces.DATASET_NAMESPACE + namespaceUid);
-    when(versionMappingRepository.getVersionMappingByDatasetUrl(namespaceUri)).thenReturn(mapping);
-    when(triplestoreService.getStudyData(versionedUUID, studyUid, studyDataSection)).thenReturn(result);
-    ResultActions resultActions = mockMvc.perform(get("/namespaces/namespaceUid/studiesWithDetail/studyUid/studyData/adverseEvents").param("version", versionUid));
+    when(triplestoreService.getStudyData(versionedUuid, studyUid, studyDataSection)).thenReturn(result);
+
+    ResultActions resultActions = mockMvc.perform(get("/namespaces/"+namespaceUid+"/studiesWithDetail/studyUid/studyData/adverseEvents").param("version", versionUid));
     resultActions.andExpect(status().isOk());
     resultActions.andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
 
-    verify(triplestoreService).getStudyData(versionedUUID, studyUid, studyDataSection);
-    verify(versionMappingRepository).getVersionMappingByDatasetUrl(namespaceUri);
+    verify(triplestoreService).getStudyData(versionedUuid, studyUid, studyDataSection);
+    verify(mappingService).getVersionedUuid(namespaceUid);
   }
 
   private JSONObject createTestResultObject() {
