@@ -1,9 +1,8 @@
 <navbar-directive>
 </navbar-directive>
 <ul class="breadcrumbs">
-    <li><a ui-sref="projects">Projects</a></li>
-    <li><a ui-sref="create-project">Datasets</a></li>
-    <li><a ui-sref="namespace({namespaceUid: namespace.uid})">{{namespace.name}}</a></li>
+    <li><a ui-sref="projects({useruID: loginUser.id})">Projects</a></li>
+    <li><a ui-sref="project({useruID: loginUser.id, projectId: project.id})">{{project.name}}</a></li>
     <li class="current active">{{studyDetails.name}}</li>
 </ul>
 
