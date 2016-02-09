@@ -1,20 +1,11 @@
 <div ui-view>
   <div class="row">
     <div class="columns large-8">
-      <h2 id="projects-page-header" class="nested-view-header">Projects</h2>
-      <p>A project consists of a number of analyses based on a PICO definition (Population,
-        Interventions, Comparisons, Outcomes). You can now define your own projects
-        and look at (but not modify) other people's projects.
-      </p>
       <div>
-        <h3>Your projects</h3>
-      </div>
-      <div>
-        <em ng-show="!(projects | ownProjectsFilter:user.id).length">No projects</em>
+        <em ng-show="!(projects | ownProjectsFilter:user.id).length">No projects have been created</em>
         <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="project in projects | ownProjectsFilter:user.id ">
           <div class="row">
             <div class="columns large-6">
-
               <h5>
                 <a ui-sref="project({userUid: user.id, projectId: project.id})">
                   <span title="project name">{{project.name}}</span>
@@ -34,7 +25,7 @@
       <h2>Other users</h2>
       <ul class="no-bullet">
         <li ng-cloak class="ng-cloak" ng-show="!otherUsers.length">
-          <em>You are the only user of trialverse</em>
+          <em>You are the only user of addis</em>
         </li>
         <li ng-repeat="otherUser in otherUsers" style="margin-bottom: 1rem;">
           <a ui-sref="datasets({userUid: otherUser.id})">

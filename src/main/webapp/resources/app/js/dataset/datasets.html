@@ -1,10 +1,7 @@
 <div ui-view>
   <div class="row">
     <div class="columns large-8">
-      <h2>Datasets
-        <button ng-show="loginUser.id === userUid" tabindex="0" class="right button "
-        ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button>
-      </h2>
+      <button ng-show="loginUser.id === userUid" tabindex="0" class="button " ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button>
 
       <div ng-show="!datasetsLoaded" class="row">
         <div class="column center large-12">
