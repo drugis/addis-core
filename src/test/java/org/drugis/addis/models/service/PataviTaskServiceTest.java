@@ -21,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 
 import static org.junit.Assert.assertTrue;
@@ -57,7 +58,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test
-  public void testFindTaskWhenThereIsNoTask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testFindTaskWhenThereIsNoTask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException, InvalidHeterogeneityTypeException, URISyntaxException {
     Integer modelId = -2;
     String problem = "Yo";
     Integer projectId = -6;
@@ -99,7 +100,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test
-  public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testFindTaskWhenThereAlreadyIsATask() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException, InvalidHeterogeneityTypeException, URISyntaxException {
     Integer modelId = -2;
     Integer projectId = -6;
     Integer analysisId = -7;
@@ -134,7 +135,7 @@ public class PataviTaskServiceTest {
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
-  public void testFindTaskForInvalidModel() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException {
+  public void testFindTaskForInvalidModel() throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException, URISyntaxException {
     Integer projectId = -6;
     Integer analysisId = -7;
     Integer invalidModelId = -2;

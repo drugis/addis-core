@@ -1,6 +1,7 @@
 package org.drugis.addis.config;
 
 import org.drugis.addis.security.SimpleSocialUsersDetailService;
+import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -57,7 +58,8 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.models",
         "org.drugis.addis.remarks",
         "org.drugis.addis.covariates",
-        "org.drugis.addis.security"
+        "org.drugis.addis.security",
+        "org.drugis.addis.trialverse"
 })
 public class JpaRepositoryTestConfig {
 
@@ -149,7 +151,10 @@ public class JpaRepositoryTestConfig {
   public UserDetailsService userDetailsService() {
     return mock(UserDetailsService.class);
   }
-
+  @Bean
+  public VersionMappingRepository mockVersionMappingRepository() {
+    return mock(VersionMappingRepository.class);
+  }
 
   Properties additionalProperties() {
     return new Properties() {

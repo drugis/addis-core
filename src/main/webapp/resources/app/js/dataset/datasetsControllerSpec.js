@@ -3,7 +3,10 @@ define(['angular-mocks'], function(angularMocks) {
   describe('datasets controller', function() {
 
     var scope,
-      mockModal = jasmine.createSpyObj('$mock', ['open']);
+      mockModal = jasmine.createSpyObj('$mock', ['open']),
+      mockState = {
+        params: {}
+      };
 
     beforeEach(module('trialverse.user'));
 
@@ -13,6 +16,7 @@ define(['angular-mocks'], function(angularMocks) {
       $controller('DatasetsController', {
         $scope: scope,
         $modal: mockModal,
+        $state: mockState,
         $stateParams: {userUid: 1},
         DatasetResource: DatasetResource
       });

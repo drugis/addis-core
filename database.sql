@@ -321,3 +321,9 @@ ALTER TABLE account ADD CONSTRAINT unique_email UNIQUE (email);
 --rollback ALTER TABLE account DROP CONSTRAINT unique_email;
 ALTER TABLE account ALTER email SET NOT NULL;
 --rollback ALTER TABLE account ALTER email DROP NOT NULL;
+
+--changeset reidd:35
+ALTER TABLE versionmapping ADD CONSTRAINT unique_versionedDatasetUrl unique(versionedDatasetUrl);
+--rollback ALTER TABLE versionmapping DROP CONSTRAINT unique_versionedDatasetUrl;
+ALTER TABLE versionmapping ADD CONSTRAINT unique_trialverseDatasetUrl UNIQUE(trialverseDatasetUrl);
+--rollback ALTER TABLE versionmapping DROP CONSTRAINT unique_trialverseDatasetUrl;

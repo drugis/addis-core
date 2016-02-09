@@ -22,6 +22,7 @@ import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
+import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
@@ -33,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.net.URISyntaxException;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -62,30 +64,35 @@ public class ProblemServiceTest {
   InterventionRepository interventionRepository;
 
   @Mock
+  MappingService mappingService;
+
+  @Mock
   TrialverseService trialverseService;
   @InjectMocks
   ProblemService problemService;
   @Mock
   private TriplestoreService triplestoreService;
+  private String namespaceUid = "UID 1";
+  private String versionedUuid = "versionedUuid";
 
   @Before
-  public void setUp() {
+  public void setUp() throws URISyntaxException {
     problemService = new ProblemServiceImpl();
     MockitoAnnotations.initMocks(this);
-
+    versionedUuid = "versionedUuid";
+    when(mappingService.getVersionedUuid(namespaceUid)).thenReturn(versionedUuid);
   }
 
   @After
-  public void cleanUp() {
+  public void cleanUp() throws URISyntaxException {
+    verify(mappingService).getVersionedUuid(namespaceUid);
     verifyNoMoreInteractions(analysisRepository, projectRepository, singleStudyBenefitRiskAnalysisRepository,
-            interventionRepository, trialverseService, triplestoreService);
+            interventionRepository, trialverseService, triplestoreService, mappingService);
   }
 
   @Test
-  public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException {
-
+  public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException, URISyntaxException {
     int projectId = 1;
-    String namespaceUid = "namespaceUid";
     String projectVersion = "projectVersion";
     Project project = mock(Project.class);
     when(project.getNamespaceUid()).thenReturn(namespaceUid);
@@ -150,7 +157,7 @@ public class ProblemServiceTest {
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
-    verify(triplestoreService).getSingleStudyMeasurements(namespaceUid, studyUid, projectVersion, outcomeUids, interventionUids);
+    verify(triplestoreService).getSingleStudyMeasurements(versionedUuid, studyUid, projectVersion, outcomeUids, interventionUids);
     verify(performanceTablebuilder).build(measurementRows);
 
     assertNotNull(actualProblem);
@@ -164,8 +171,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisProblem() throws ResourceDoesNotExistException {
-    String namespaceUid = "UID 1";
+  public void testGetNetworkMetaAnalysisProblem() throws ResourceDoesNotExistException, URISyntaxException {
     String version = "version 1";
     Integer projectId = 2;
     Integer analysisId = 3;
@@ -216,14 +222,14 @@ public class ProblemServiceTest {
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
-    when(trialverseService.getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
+    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"), Collections.EMPTY_LIST);
+    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"), Collections.EMPTY_LIST);
 
     assertNotNull(problem);
     assertEquals(3, problem.getEntries().size());
@@ -232,8 +238,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNetworkAnalysisProblemWithInterventionInclusions() throws ResourceDoesNotExistException {
-    String namespaceUid = "UID 1";
+  public void testGetNetworkAnalysisProblemWithInterventionInclusions() throws ResourceDoesNotExistException, URISyntaxException {
     String version = "version 1";
     Integer projectId = 2;
     Integer analysisId = 3;
@@ -284,21 +289,20 @@ public class ProblemServiceTest {
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
-    when(trialverseService.getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
+    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"), Collections.EMPTY_LIST);
+    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), Collections.EMPTY_LIST);
 
     assertEquals(2, problem.getEntries().size());
   }
 
   @Test
-  public void testGetNetworkAnalysisProblemWithCovaraites() throws ResourceDoesNotExistException {
-    String namespaceUid = "UID 1";
+  public void testGetNetworkAnalysisProblemWithCovaraites() throws ResourceDoesNotExistException, URISyntaxException {
     String version = "version 1";
     Integer projectId = 2;
     Integer analysisId = 3;
@@ -356,14 +360,14 @@ public class ProblemServiceTest {
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     List<String> includedCovariateKeys = Arrays.asList(covariate1.getDefinitionKey(), covariate2.getDefinitionKey());
-    when(trialverseService.getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"), includedCovariateKeys)).thenReturn(trialDataNode);
+    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), includedCovariateKeys)).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(namespaceUid, version, outcomeUri, Arrays.asList("uri1", "uri3"), includedCovariateKeys);
+    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), includedCovariateKeys);
 
     assertEquals(2, problem.getEntries().size());
     assertEquals(2, problem.getStudyLevelCovariates().size());

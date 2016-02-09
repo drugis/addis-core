@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 
 /**
@@ -36,7 +37,7 @@ public class PataviTaskServiceImpl implements PataviTaskService {
   ProblemService problemService;
 
   @Override
-  public PataviTaskUriHolder getPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException {
+  public PataviTaskUriHolder getPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException, URISyntaxException {
     logger.trace("PataviTaskServiceImpl.getPataviTaskUriHolder, projectId = " + projectId + " analysisId = " + analysisId + "modelId = " + modelId);
     Model model = modelRepository.find(modelId);
     if(model == null) {
