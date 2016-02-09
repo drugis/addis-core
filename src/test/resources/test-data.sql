@@ -1,5 +1,5 @@
 INSERT INTO public.account (id, username, firstname, lastname, email) VALUES (1, '1000123', 'Connor', 'Bonnor', 'connor@test.com');
-INSERT INTO public.account (id, username, firstname, lastname, email) VALUES (2, '2000123', 'Daan', 'Baan', null);
+INSERT INTO public.account (id, username, firstname, lastname, email) VALUES (2, '2000123', 'Daan', 'Baan', 'foo@bar.com');
 
 INSERT INTO public.ApplicationKey (id, secretKey, accountId, applicationName, creationDate, revocationDate) VALUES (1, 'supersecretkey', 1, 'Test Application', '2015-09-01', '2080-12-31');
 

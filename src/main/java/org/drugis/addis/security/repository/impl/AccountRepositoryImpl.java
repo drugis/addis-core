@@ -16,11 +16,9 @@
 package org.drugis.addis.security.repository.impl;
 
 import org.drugis.addis.security.Account;
-import org.drugis.addis.security.UsernameAlreadyInUseException;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.security.TooManyAccountsException;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -45,14 +43,10 @@ public class AccountRepositoryImpl implements AccountRepository {
   };
 
   @Transactional("ptmAddisCore")
-  public void createAccount(Account user) throws UsernameAlreadyInUseException {
-    try {
-      jdbcTemplate.update(
-              "insert into Account (firstName, lastName, username, email) values (?, ?, ?, ?)",
-              user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail());
-    } catch (DuplicateKeyException e) {
-      throw new UsernameAlreadyInUseException(user.getUsername());
-    }
+  public void createAccount(Account user) {
+    jdbcTemplate.update(
+            "insert into Account (firstName, lastName, username, email) values (?, ?, ?, ?)",
+            user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail());
   }
 
   public Account findAccountByUsername(String username) {

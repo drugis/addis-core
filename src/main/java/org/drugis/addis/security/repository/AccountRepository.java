@@ -23,7 +23,7 @@ import java.util.List;
 
 public interface AccountRepository {
 
-	void createAccount(Account account) throws UsernameAlreadyInUseException;
+	void createAccount(Account account);
 
 	Account findAccountByUsername(String username);
 

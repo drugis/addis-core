@@ -242,7 +242,7 @@ define(
             controller: 'SingleProjectController'
           })
           .state('namespace-study', {
-            url: '/users/:userUid/projects/:projectId/study/:studyUid',
+            url: '/study/:studyUid',
             templateUrl: baseTemplatePath + 'study.html',
             controller: 'StudyReadOnlyController',
             parent: 'project'

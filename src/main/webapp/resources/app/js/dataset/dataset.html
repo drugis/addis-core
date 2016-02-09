@@ -2,7 +2,8 @@
   <navbar-directive>
   </navbar-directive>
   <ul class="breadcrumbs">
-      <li><a ui-sref="datasets({userUid: userUid})">Datasets</a></li>
+    <li>{{userInfo.name}}</li>
+    <li><a ui-sref="datasets({userUid: userUid})">Datasets</a></li>
     <li class="current active">{{dataset.label}}</li>
   </ul>
   <div class="row nav-bar-spacer">
@@ -37,13 +38,18 @@
           <tr>
             <th class="sortable" ng-click="tableOptions.orderByField = 'label'; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
               Name
-              <i ng-show="tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'" class="fa fa-caret-up"></i>
-              <i ng-show="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'" class="fa fa-caret-down"></i>
+              <i ng-show="tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'"
+              class="fa fa-caret-up"></i>
+              <i ng-show="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'"
+              class="fa fa-caret-down"></i>
             </th>
-            <th class="sortable" ng-show="column.visible" ng-repeat="column in tableOptions.columns" ng-click="tableOptions.orderByField = column.id; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
+            <th class="sortable" ng-show="column.visible" ng-repeat="column in tableOptions.columns"
+            ng-click="tableOptions.orderByField = column.id; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
               {{column.label}}
-              <i ng-show="tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id" class="fa fa-caret-up"></i>
-              <i ng-show="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id" class="fa fa-caret-down"></i>
+              <i ng-show="tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id"
+              class="fa fa-caret-up"></i>
+              <i ng-show="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id"
+              class="fa fa-caret-down"></i>
             </th>
           </tr>
         </thead>
@@ -64,8 +70,8 @@
               <span ng-show="column.type === 'removePreamble'">{{studyWithDetails[column.id] | stripFrontFilter : column.frontStr}}</span>
               <span ng-show="column.type === 'dosing'">{{studyWithDetails[column.id] | dosingFilter}}</span>
               <span ng-show="column.type === 'urlList'" ng-repeat="uri in studyWithDetails.publications | splitOnTokenFilter">
-                    <a target="_blank" ng-href={{uri}}>{{uri}}</a>
-                    <span ng-show=!$last>, </span>
+                <a target="_blank" ng-href={{uri}}>{{uri}}</a>
+                <span ng-show=!$last>, </span>
               </span>
             </td>
           </tr>

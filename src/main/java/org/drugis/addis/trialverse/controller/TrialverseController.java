@@ -61,7 +61,8 @@ public class TrialverseController {
   @ResponseBody
   public Namespace get(@PathVariable String namespaceUid, @RequestParam(required = false) String version) throws ResourceDoesNotExistException, URISyntaxException {
     if (version != null) {
-      return triplestoreService.getNamespaceVersioned(getJenaUuid(namespaceUid), version);
+      String jenaUuid = getJenaUuid(namespaceUid);
+      return triplestoreService.getNamespaceVersioned(jenaUuid, version);
     } else {
       return triplestoreService.getNamespaceHead(getJenaUuid(namespaceUid));
     }

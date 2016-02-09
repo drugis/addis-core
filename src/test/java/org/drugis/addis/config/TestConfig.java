@@ -16,6 +16,8 @@ import org.drugis.addis.remarks.repository.RemarksRepository;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.trialverse.dataset.model.VersionMapping;
+import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -115,6 +117,11 @@ public class TestConfig {
 
   @Bean
   public RemarksRepository mockRemarksRepository() { return mock(RemarksRepository.class);}
+
+  @Bean
+  public VersionMappingRepository mockVersionMappingRepository() {
+    return mock(VersionMappingRepository.class);
+  }
 
 }
 

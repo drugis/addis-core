@@ -5,6 +5,8 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.UsernameAlreadyInUseException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -52,26 +54,6 @@ public class AccountRepositoryTest {
   }
 
   @Test
-  public void testCreateAccountWithNoEmail() throws UsernameAlreadyInUseException {
-
-    String username = "username";
-    String fistName = "firstName";
-    String lastName = "lastName";
-    String email = null;
-    Account accountToCreate = new Account(username, fistName, lastName, email);
-
-    accountRepository.createAccount(accountToCreate);
-
-    Account result = accountRepository.findAccountByUsername(username);
-    assertNotNull(result);
-    assertNotNull(result.getId());
-    assertEquals(username, result.getUsername());
-    assertEquals(fistName, result.getFirstName());
-    assertEquals(lastName, result.getLastName());
-    assertNull(result.getEmail());
-  }
-
-  @Test
   public void testFindAccountByUsername() {
     String connorUserName = "1000123";
     Account result = accountRepository.findAccountByUsername(connorUserName);
@@ -84,18 +66,6 @@ public class AccountRepositoryTest {
   }
 
   @Test
-  public void testFindAccountByUsernameWithNoEmail() {
-    String daanUserName = "2000123";
-    Account result = accountRepository.findAccountByUsername(daanUserName);
-    assertNotNull(result);
-    assertNotNull(result.getId());
-    assertEquals(daanUserName, result.getUsername());
-    assertEquals("Daan", result.getFirstName());
-    assertEquals("Baan", result.getLastName());
-    assertNull(result.getEmail());
-  }
-
-  @Test
   public void testFindAccountById() {
     int daanUserRowId = 2;
     Account result = accountRepository.findAccountById(daanUserRowId);
@@ -104,6 +74,19 @@ public class AccountRepositoryTest {
     assertEquals("2000123", result.getUsername());
     assertEquals("Daan", result.getFirstName());
     assertEquals("Baan", result.getLastName());
-    assertNull(result.getEmail());
+    assertEquals("foo@bar.com", result.getEmail());
   }
+
+  @Test(expected = DuplicateKeyException.class)
+  public void testAddExtantEmailFails() {
+    Account account = new Account("duplicate", "first", "last", "connor@test.com");
+    accountRepository.createAccount(account);
+  }
+
+  @Test(expected = DataIntegrityViolationException.class)
+  public void testNullEmailFails() {
+    Account account = new Account("something", "first", "last", null);
+    accountRepository.createAccount(account);
+  }
+
 }

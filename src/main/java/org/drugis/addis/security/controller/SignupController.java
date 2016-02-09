@@ -17,8 +17,6 @@ package org.drugis.addis.security.controller;
 
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.SignInUtilService;
-import org.drugis.addis.security.SignInUtils;
-import org.drugis.addis.security.UsernameAlreadyInUseException;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,14 +75,9 @@ public class SignupController {
   }
 
   private Account createAccount(UserProfile profile) {
-		try {
-			Account account = new Account(profile.getUsername(), profile.getFirstName(), profile.getLastName(), profile.getEmail());
-			accountRepository.createAccount(account);
-      logger.info("new account created");
-			return account;
-		} catch (UsernameAlreadyInUseException e) {
-			logger.error("UsernameAlreadyInUseException");
-      return null;
-		}
-	}
+    Account account = new Account(profile.getUsername(), profile.getFirstName(), profile.getLastName(), profile.getEmail());
+    accountRepository.createAccount(account);
+    logger.info("new account created");
+    return account;
+  }
 }

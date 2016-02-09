@@ -317,3 +317,9 @@ CREATE TABLE ApplicationKey (id SERIAL NOT NULL,
             revocationDate DATE NOT NULL,
             PRIMARY KEY (id),
             FOREIGN KEY (accountId) REFERENCES Account(id));
+
+--changeset reidd:34
+ALTER TABLE account ADD CONSTRAINT unique_email UNIQUE (email);
+--rollback ALTER TABLE account DROP CONSTRAINT unique_email;
+ALTER TABLE account ALTER email SET NOT NULL;
+--rollback ALTER TABLE account ALTER email DROP NOT NULL;
