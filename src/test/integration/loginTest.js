@@ -5,12 +5,8 @@ var login = require('./util/login.js');
 module.exports = {
   "Addis login test" : function (browser) {
     login(browser, 'https://addis-test.drugis.org')
-      .waitForElementVisible('h2.nested-view-header', 50000)
+      .waitForElementVisible('#user-view-user-name', 50000)
       .pause(1000)
-      .source(function (result){
-              // Source will be stored in result.value
-              console.log(result.value);
-          })
       .assert.containsText('#user-view-user-name', 'Ulrika Tester')
       .pause(1000)
       .end();
