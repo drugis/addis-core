@@ -12,7 +12,7 @@ define([], function() {
       ProjectResource.save(newProject, function(savedProject) {
         $modalInstance.close();
         $state.go('project', {
-          userUid: $state.params.userUid,
+          userUid: savedProject.owner.id,
           projectId: savedProject.id
         });
       });
