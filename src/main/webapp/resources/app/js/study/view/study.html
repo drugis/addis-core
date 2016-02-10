@@ -15,6 +15,7 @@
     </ul>
   </navbar-directive>
   <ul class="breadcrumbs">
+    <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
     <li><a ui-sref="datasets({userUid: userUid})">Datasets</a></li>
     <li ng-if="versionUuid"><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">{{dataset.label}}</a></li>
     <li ng-if="versionUuid"><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">Studies</a></li>

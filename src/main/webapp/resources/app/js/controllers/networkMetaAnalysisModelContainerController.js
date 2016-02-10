@@ -8,6 +8,7 @@ define([], function() {
     });
     $scope.analysis = AnalysisResource.get($state.params);
     $scope.userId = $state.params.userUid;
+    $scope.userUid = $state.params.userUid;
   };
 
   return dependencies.concat(NetworkMetaAnalysisModelContainerController);

@@ -19,7 +19,9 @@ define(['lodash'], function(_) {
     $scope.loading = {
       loaded: false
     };
-    $scope.userId = $stateParams.userUid;
+    // make available for create model permission check in models.html (which is in gemtc subproject)
+    $scope.userId = Number($stateParams.userUid);
+    $scope.loginUserId = $window.config.user.id;
 
     $scope.models = ModelResource.query({
       projectId: $stateParams.projectId,

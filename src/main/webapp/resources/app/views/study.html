@@ -1,6 +1,7 @@
 <navbar-directive>
 </navbar-directive>
 <ul class="breadcrumbs">
+    <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
     <li><a ui-sref="projects({useruID: loginUser.id})">Projects</a></li>
     <li><a ui-sref="project({useruID: loginUser.id, projectId: project.id})">{{project.name}}</a></li>
     <li class="current active">{{studyDetails.name}}</li>
