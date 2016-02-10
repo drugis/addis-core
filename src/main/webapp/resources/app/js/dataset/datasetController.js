@@ -47,10 +47,8 @@ define(['lodash'],
 
       $scope.userUid = $stateParams.userUid;
       $scope.datasetUUID = $stateParams.datasetUUID;
-      $scope.versionUuid = $stateParams.versionUuid;
 
       $scope.stripFrontFilter = $filter('stripFrontFilter');
-      $scope.userUid = $stateParams.userUid;
       $scope.isEditingAllowed = false;
       $scope.datasetConcepts = $scope.loadConcepts();
 
@@ -81,7 +79,6 @@ define(['lodash'],
         if ($scope.isHeadView) {
           $scope.currentRevision = historyItems[historyItems.length - 1];
           $scope.currentRevision.isHead = true;
-          $scope.versionUuid = segmentAfterLastSlash($scope.currentRevision.uri);
         } else {
           // sort to know iF curentRevission is head
           $scope.currentRevision = _.find(historyItems, function(item) {
