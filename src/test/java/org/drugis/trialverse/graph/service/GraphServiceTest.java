@@ -1,23 +1,20 @@
 package org.drugis.trialverse.graph.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import net.minidev.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.drugis.addis.security.Account;
+import org.drugis.addis.security.ApiKey;
+import org.drugis.addis.security.AuthenticationService;
+import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.service.impl.GraphServiceImpl;
-import org.drugis.addis.security.ApiKey;
-import org.drugis.addis.security.AuthenticationService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
-import org.hsqldb.lib.StringInputStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -28,7 +25,10 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
@@ -43,6 +43,9 @@ public class GraphServiceTest {
 
   @InjectMocks
   GraphService graphService;
+
+  @Mock
+  AccountRepository accountRepository;
 
   @Mock
   AuthenticationService authenticationService;
@@ -98,12 +101,14 @@ public class GraphServiceTest {
     when(versionMappingRepository.getVersionMappingByDatasetUrl(targetDatasetUri)).thenReturn(targetMapping);
     when(versionMappingRepository.getVersionMappingByDatasetUrl(sourceDatasetUri)).thenReturn(sourceMapping);
     ApiKey apiKey = mock(ApiKey.class);
-    when(authenticationService.getAuthentication()).thenReturn(new TrialversePrincipal(new PreAuthenticatedAuthenticationToken(owner, apiKey)));
+    TrialversePrincipal trialversePrincipal = new TrialversePrincipal(new PreAuthenticatedAuthenticationToken(owner, apiKey));
+    when(authenticationService.getAuthentication()).thenReturn(trialversePrincipal);
     when(datasetReadRepository.getHistory(sourceMapping.getVersionedDatasetUri())).thenReturn(historyModel);
     HttpHeaders headers = new HttpHeaders();
     headers.add(WebConstants.EVENT_SOURCE_CREATOR_HEADER, "https://trialverse.org/apikeys/0");
     headers.add(WebConstants.EVENT_SOURCE_TITLE_HEADER, Base64.encodeBase64String("Study copied from other dataset".getBytes()));
     when(restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(headers), String.class)).thenReturn(responseEntity);
+    when( accountRepository.findAccountByUsername(trialversePrincipal.getUserName())).thenReturn(owner);
 
     URI newVersion = graphService.copy(targetDatasetUri, targetGraphUri, sourceGraphUri);
 

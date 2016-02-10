@@ -1,9 +1,8 @@
 package org.drugis.trialverse.graph.controller;
 
 import org.apache.http.Header;
-
-import org.apache.http.HttpHeaders;
 import org.apache.jena.riot.RDFLanguages;
+import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -14,9 +13,6 @@ import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.graph.service.GraphService;
-import org.drugis.addis.security.Account;
-import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.WebConstants;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
@@ -28,7 +24,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -134,7 +129,6 @@ public class GraphController extends AbstractTrialverseController {
     logger.trace("copy graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      Account currentUserAccount = accountRepository.findAccountByUsername(currentUser.getName());
       URI targetGraphUri = new URI(Namespaces.GRAPH_NAMESPACE + graphUuid);
       URI newVersion = graphService.copy(trialverseDatasetUri, targetGraphUri, URI.create(copyOfUri));
       trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion.toString());
