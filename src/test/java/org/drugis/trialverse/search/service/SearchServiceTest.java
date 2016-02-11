@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.drugis.addis.security.Account;
+import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
@@ -40,6 +42,9 @@ public class SearchServiceTest {
   @Mock
   DatasetReadRepository datasetReadRepository;
 
+  @Mock
+  AccountRepository accountRepository;
+
   @InjectMocks
   SearchService searchService;
 
@@ -55,7 +60,9 @@ public class SearchServiceTest {
     String versionedDatasetUrl = "versiondDatasetUrl";
     VersionMapping versionMapping = new VersionMapping(versionedDatasetUrl, "ownerUid", trialverseDatasetUrl);
     List<VersionMapping> versionMappings = Arrays.asList(versionMapping);
+    Account account = new Account(1, "username", "first", "last", "foo@bar.com");
     when(versionMappingRepository.getVersionMappings()).thenReturn(versionMappings);
+    when(accountRepository.findAccountByEmail(versionMapping.getOwnerUuid())).thenReturn(account);
 
     String searchQuery = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
             "prefix ontology: <http://trials.drugis.org/ontology#>\n" +

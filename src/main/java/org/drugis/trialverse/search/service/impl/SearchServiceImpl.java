@@ -3,6 +3,8 @@ package org.drugis.trialverse.search.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import org.apache.commons.io.IOUtils;
+import org.drugis.addis.security.Account;
+import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
@@ -32,6 +34,10 @@ public class SearchServiceImpl implements SearchService {
   @Inject
   DatasetReadRepository datasetReadRepository;
 
+  @Inject
+  AccountRepository accountRepository;
+
+
   private static String readQueryTemplate() {
     try {
       return IOUtils.toString(new ClassPathResource(FIND_STUDIES_BY_TERMS_SPARQL).getInputStream(), "UTF-8");
@@ -47,11 +53,11 @@ public class SearchServiceImpl implements SearchService {
     String queryString = SEARCH_QUERY_TEMPLATE.replace("$searchTerm", searchTerm);
     List<SearchResult> aggregateResults = new ArrayList<>();
     for (VersionMapping mapping : mappings) {
-      mapping.getVersionedDatasetUrl();
+      Account account = accountRepository.findAccountByEmail(mapping.getOwnerUuid());
       JSONObject queryResult = datasetReadRepository.executeHeadQuery(queryString, mapping);
       Object result =  new ObjectMapper().readValue(queryResult.toJSONString(), SearchResult.class);
       List<SearchResult> searchResults = (ArrayList<SearchResult>) result;
-      searchResults.stream().forEach((streamResult) -> streamResult.addMetaData(mapping));
+      searchResults.stream().forEach((streamResult) -> streamResult.addMetaData(mapping, account));
       System.out.println(queryResult);
       aggregateResults.addAll(searchResults);
     }

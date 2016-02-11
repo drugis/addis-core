@@ -10,7 +10,7 @@ define([], function() {
       },
       link: function(scope) {
         scope.studyRefParams = {
-          userUid: scope.result.ownerUuid,
+          userUid: scope.result.owner,
           datasetUUID: UUIDService.getUuidFromNamespaceUrl(scope.result.datasetUrl),
           versionUuid: scope.result.versionUuid,
           studyGraphUuid: UUIDService.getUuidFromNamespaceUrl(scope.result.graphUri),

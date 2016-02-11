@@ -2,6 +2,7 @@ package org.drugis.trialverse.search.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.drugis.addis.security.Account;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 
 /**
@@ -15,7 +16,7 @@ public class SearchResult {
   private String comment;
   private String versionUuid;
 
-  private String owner;
+  private Integer owner;
   private String ownerUuid;
   private String datasetUrl;
 
@@ -43,7 +44,7 @@ public class SearchResult {
     return comment;
   }
 
-  public String getOwner() {
+  public Integer getOwner() {
     return owner;
   }
 
@@ -59,7 +60,7 @@ public class SearchResult {
     return versionUuid;
   }
 
-  public void setOwner(String owner) {
+  public void setOwner(Integer owner) {
     this.owner = owner;
   }
 
@@ -70,9 +71,9 @@ public class SearchResult {
     this.datasetUrl = datasetUrl;
   }
 
-  public void addMetaData(VersionMapping mapping) {
+  public void addMetaData(VersionMapping mapping, Account account) {
     this.setDatasetUrl(mapping.getTrialverseDatasetUrl());
-    this.setOwner(mapping.getOwnerUuid());
+    this.setOwner(account.getId());
     this.setOwnerUuid(DigestUtils.sha256Hex(mapping.getOwnerUuid()));
   }
 
