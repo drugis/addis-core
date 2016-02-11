@@ -1,0 +1,36 @@
+'use strict';
+define(['lodash'], function(_) {
+  var dependencies = ['$scope', '$modalInstance', 'callback', 'OutcomeResource'];
+  var AddOutcomeController = function($scope, $modalInstance, callback, OutcomeResource) {
+    $scope.checkForDuplicateOutcomeName = checkForDuplicateOutcomeName;
+    $scope.cancel = cancel;
+    $scope.addOutcome = addOutcome;
+
+    $scope.newOutcome = {};
+    $scope.duplicateOutcomeName = {
+      isDuplicate: false
+    };
+    $scope.isAddingOutcome = false;
+
+    function addOutcome(newOutcome) {
+      $scope.isAddingOutcome = true;
+      OutcomeResource.save(newOutcome, function() {
+        $modalInstance.close();
+        callback(newOutcome);
+        $scope.isAddingOutcome = false;
+      });
+    }
+
+    function checkForDuplicateOutcomeName(name) {
+      $scope.duplicateOutcomeName.isDuplicate = _.find($scope.outcomes, function(item) {
+        return item.name === name;
+      });
+    }
+
+    function cancel() {
+      $modalInstance.dismiss('cancel');
+    }
+
+  };
+  return dependencies.concat(AddOutcomeController);
+});

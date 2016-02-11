@@ -10,7 +10,7 @@ define(function (require) {
   return angular.module('trialverse.outcome',
     dependencies)
     // controllers
-
+    .controller('AddOutcomeController', require('outcome/addOutcomeController'))
 
     //services
     .factory('OutcomeService', require('outcome/outcomeService'))
