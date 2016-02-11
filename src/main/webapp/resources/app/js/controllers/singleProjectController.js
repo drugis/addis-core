@@ -1,6 +1,6 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window',
+  var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window', '$modal',
     'ProjectResource',
     'TrialverseResource',
     'TrialverseStudyResource',
@@ -14,9 +14,9 @@ define(['lodash'], function(_) {
     'ANALYSIS_TYPES',
     '$modal'
   ];
-  var ProjectsController = function($scope, $q, $state, $stateParams, $window, ProjectResource, TrialverseResource,
+  var SingleProjectController = function($scope, $q, $state, $stateParams, $window, $modal, ProjectResource, TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
-    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, $modal) {
+    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES) {
 
     $scope.analysesLoaded = false;
     $scope.covariatesLoaded = true;
@@ -98,16 +98,20 @@ define(['lodash'], function(_) {
       });
     }
 
-    $scope.addOutcome = function(newOutcome) {
-      newOutcome.projectId = $scope.project.id;
-      $scope.createOutcomeModal.close();
-      this.model = {};
-      OutcomeResource
-        .save(newOutcome)
-        .$promise.then(function(outcome) {
-          $scope.outcomes.push(outcome);
-        });
-    };
+    $scope.openCreatOutcomeDialog = function() {
+      $modal.open({
+        templateUrl: './app/js/outcome/addOutcome.html',
+        scope: $scope,
+        controller: 'AddOutcomeController',
+        resolve: {
+          callback: function() {
+            return function(newOutcome) {
+              $scope.outcomes.push(newOutcome);
+            }
+          }
+        }
+      })
+    }
 
     $scope.addIntervention = function(newIntervention) {
       newIntervention.projectId = $scope.project.id;
@@ -126,6 +130,9 @@ define(['lodash'], function(_) {
         scope: $scope,
         controller: 'AddCovariateController',
         resolve: {
+          outcomes: function() {
+            return $scope.outcomes;
+          },
           callback: function() {
             return loadCovariates;
           }
@@ -160,14 +167,10 @@ define(['lodash'], function(_) {
       });
     }
 
-    $scope.checkForDuplicateOutcomeName = function(name) {
-      $scope.duplicateOutcomeName.isDuplicate = findDuplicateName($scope.outcomes, name);
-    };
-
     $scope.checkForDuplicateInterventionName = function(name) {
       $scope.duplicateInterventionName.isDuplicate = findDuplicateName($scope.interventions, name);
     };
 
   };
-  return dependencies.concat(ProjectsController);
+  return dependencies.concat(SingleProjectController);
 });

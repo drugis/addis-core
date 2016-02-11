@@ -28,7 +28,7 @@
           <em>You are the only user of addis</em>
         </li>
         <li ng-repeat="otherUser in otherUsers" style="margin-bottom: 1rem;">
-          <a ui-sref="datasets({userUid: otherUser.id})">
+          <a ui-sref="projects({userUid: otherUser.id})">
             <img class="user-image" ng-src="https://secure.gravatar.com/avatar/{{::otherUser.md5}}?s=43&d=mm"> {{::otherUser.firstName}} {{::otherUser.lastName}}
           </a>
           <span ng-show="loginUser.id === otherUser.id">
