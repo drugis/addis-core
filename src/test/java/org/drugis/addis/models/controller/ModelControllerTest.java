@@ -502,4 +502,61 @@ public class ModelControllerTest {
     verify(modelRepository).get(model.getId());
   }
 
+  @Test
+  public void testCreateNodeSplit() throws Exception {
+    Integer projectId = 1;
+    Integer analysisId = 2;
+
+    String modelTitle = "Nodesplit model (Paroxetine - Fluoxetine)";
+    String linearModel = "random";
+    NodeCommand fromNode = new NodeCommand(12, "Paroxetine");
+    NodeCommand toNode = new NodeCommand(13, "Fluoxetine");
+    DetailsCommand detailsCommand = new DetailsCommand(fromNode, toNode);
+    ModelTypeCommand modelTypeCommand = new ModelTypeCommand("node-split", detailsCommand);
+    HeterogeneityPriorCommand heterogeneityPriorCommand = new StdDevHeterogeneityPriorCommand(null);
+    Integer burnInIterations = 500;
+    Integer inferenceIterations = 2000;
+    Integer thinningFactor = 10;
+
+    String likelihood = "binom";
+    String link = "logit";
+
+    CreateModelCommand createModelCommand = new CreateModelCommand.CreateModelCommandBuilder()
+            .setTitle(modelTitle)
+            .setLinearModel(linearModel)
+            .setModelType(modelTypeCommand)
+            .setHeterogeneityPriorCommand(heterogeneityPriorCommand)
+            .setBurnInIterations(burnInIterations)
+            .setInferenceIterations(inferenceIterations)
+            .setThinningFactor(thinningFactor)
+            .setLikelihood(likelihood)
+            .setLink(link)
+            .setOutcomeScale(null)
+            .setRegressor(null)
+            .setSensitivity(null)
+            .build();
+    String body = TestUtils.createJson(createModelCommand);
+
+    Model model = modelBuilder.build();
+    when(modelService.createModel(analysisId, createModelCommand)).thenReturn(model);
+
+    String content = "{\"title\":\"Nodesplit model (Paroxetine - Fluoxetine)\",\"linearModel\":\"random\"," +
+            "\"modelType\":{\"type\":\"node-split\",\"details\":{\"from\":{\"name\":\"Paroxetine\",\"id\":12}," +
+            "\"to\":{\"name\":\"Fluoxetine\",\"id\":13}}},\"heterogeneityPrior\":{\"type\":\"automatic\",\"values\":null}," +
+            "\"burnInIterations\":500,\"inferenceIterations\":2000,\"thinningFactor\":10," +
+            "\"likelihood\":\"binom\",\"link\":\"logit\",\"outcomeScale\":null,\"regressor\":null,\"sensitivity\":null}";
+
+    mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/models")
+            .param("userUid", "1")
+            .content(content)
+            .principal(user)
+            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(status().isCreated());
+
+    verify(analysisService).checkCoordinates(projectId, analysisId);
+    verify(projectService).checkOwnership(projectId, user);
+
+    verify(modelService).createModel(analysisId, createModelCommand);
+  }
+
 }

@@ -24,12 +24,12 @@ public class StdDevHeterogeneityPriorCommand extends HeterogeneityPriorCommand {
 
     StdDevHeterogeneityPriorCommand that = (StdDevHeterogeneityPriorCommand) o;
 
-    return values.equals(that.values);
+    return values != null ? values.equals(that.values) : that.values == null;
 
   }
 
   @Override
   public int hashCode() {
-    return values.hashCode();
+    return values != null ? values.hashCode() : 0;
   }
 }

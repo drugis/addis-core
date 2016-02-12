@@ -9,19 +9,18 @@ import net.minidev.json.JSONObject;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateModelCommand {
 
-  private String title;
-  private String linearModel;
-  private ModelTypeCommand modelType;
-  private HeterogeneityPriorCommand heterogeneityPrior;
   private Integer burnInIterations;
+  private HeterogeneityPriorCommand heterogeneityPrior;
   private Integer inferenceIterations;
-  private Integer thinningFactor;
   private String likelihood;
+  private String linearModel;
   private String link;
+  private ModelTypeCommand modelType;
   private Double outcomeScale;
-
   private JSONObject regressor;
   private JSONObject sensitivity;
+  private Integer thinningFactor;
+  private String title;
 
   public CreateModelCommand() {
   }
