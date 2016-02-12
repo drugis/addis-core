@@ -1,6 +1,6 @@
 package org.drugis.addis.trialverse.service;
 
-import org.springframework.stereotype.Service;
+import org.drugis.addis.trialverse.model.VersionedUuidAndOwner;
 
 import java.net.URISyntaxException;
 
@@ -9,4 +9,8 @@ import java.net.URISyntaxException;
  */
 public interface MappingService {
   public String getVersionedUuid(String namespaceUid) throws URISyntaxException;
+
+  VersionedUuidAndOwner getVersionedUuidAndOwner(String namespaceUuid) throws URISyntaxException;
+
+
 }

@@ -94,32 +94,33 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       JSONObject jsonNode = (JSONObject) namespaceNode;
       String namespaceUri = jsonNode.get("id").toString();
       logger.debug("query namespaces; URI: " + namespaceUri);
-      namespaces.add(getNamespaceHead(namespaceUri));
+
+      namespaces.add(getNamespaceHead(new VersionedUuidAndOwner(namespaceUri, null)));
     }
 
     return namespaces;
   }
 
   @Override
-  public Namespace getNamespaceVersioned(String datasetUri, String versionUri) {
-    ResponseEntity<String> response = queryTripleStoreVersion(datasetUri, NAMESPACE, versionUri);
+  public Namespace getNamespaceVersioned(VersionedUuidAndOwner datasetUri, String versionUri) {
+    ResponseEntity<String> response = queryTripleStoreVersion(datasetUri.getVersionedUuid(), NAMESPACE, versionUri);
     return buildNameSpace(datasetUri, response);
   }
 
   @Override
-  public Namespace getNamespaceHead(String datasetUri) {
-    ResponseEntity<String> response = queryTripleStoreHead(datasetUri, NAMESPACE);
-    return buildNameSpace(datasetUri, response);
+  public Namespace getNamespaceHead(VersionedUuidAndOwner datasetUriAndOwner) {
+    ResponseEntity<String> response = queryTripleStoreHead(datasetUriAndOwner.getVersionedUuid(), NAMESPACE);
+    return buildNameSpace(datasetUriAndOwner, response);
   }
 
-  private Namespace buildNameSpace(String datasetUri, ResponseEntity<String> response) {
+  private Namespace buildNameSpace(VersionedUuidAndOwner datasetUriAndOwnerId, ResponseEntity<String> response) {
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
     JSONObject binding = (JSONObject) bindings.get(0);
     String name = JsonPath.read(binding, "$.label.value");
     String description = binding.containsKey("comment") ? (String) JsonPath.read(binding, "$.comment.value") : "";
     Integer numberOfStudies = Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfStudies.value"));
     String version = response.getHeaders().get(X_EVENT_SOURCE_VERSION).get(0);
-    return new Namespace(subStringAfterLastSymbol(datasetUri, '/'), name, description, numberOfStudies, version);
+    return new Namespace(subStringAfterLastSymbol(datasetUriAndOwnerId.getVersionedUuid(), '/'), datasetUriAndOwnerId.getOwnerId(), name, description, numberOfStudies, version);
   }
 
 
@@ -500,7 +501,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       TrialDataStudy trialDataStudy = trialDataStudies.get(studyUid);
       if (trialDataStudy == null) {
         String studyName = JsonPath.read(binding, "$.studyName.value");
-        trialDataStudy = new TrialDataStudy(studyUid, studyName, new ArrayList<TrialDataIntervention>(), new ArrayList<TrialDataArm>());
+        trialDataStudy = new TrialDataStudy(studyUid, studyName, new ArrayList<>(), new ArrayList<>());
         trialDataStudies.put(studyUid, trialDataStudy);
       }
       String drugInstanceUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.drugInstance.value"), '/');
@@ -530,7 +531,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     }
 
     // transform covariate keys to object
-    List<CovariateOption> covariates = covariateKeys.stream().map(c -> CovariateOption.fromKey(c)).collect(Collectors.toList());
+    List<CovariateOption> covariates = covariateKeys.stream().map(CovariateOption::fromKey).collect(Collectors.toList());
 
     // fetch the values for each study
     List<CovariateStudyValue> covariateValues = getCovariateValues(namespaceUid, version, covariates);
@@ -587,7 +588,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     final double monthInDay = 365D / 12D;
     final double yearInDays = 365D;
 
-    Double nDays = (period.getMillis() * milliInDays) +
+    return (period.getMillis() * milliInDays) +
             ((double) period.getSeconds() * secondInDays) +
             ((double) period.getMinutes() * minuteInDays) +
             ((double) period.getHours() * hourInDays) +
@@ -595,8 +596,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             ((double) period.getWeeks() * weekInDays) +
             ((double) period.getMonths() * monthInDay) +
             ((double) period.getYears() * yearInDays);
-
-    return nDays;
   }
 
 
@@ -634,7 +633,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return measurementObjects;
   }
 
-  private ResponseEntity queryTripleStoreHead(String datasetUri, String query) {
+  private ResponseEntity<String> queryTripleStoreHead(String datasetUri, String query) {
     String datasetUuid = subStringAfterLastSymbol(datasetUri, '/');
 
     logger.debug("Triplestore uri = " + TRIPLESTORE_BASE_URI);
@@ -651,7 +650,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
 
-  private ResponseEntity queryTripleStoreVersion(String namespaceUid, String query, String versionUri) {
+  private ResponseEntity<String> queryTripleStoreVersion(String namespaceUid, String query, String versionUri) {
     logger.debug("Triplestore uri = " + TRIPLESTORE_BASE_URI);
     logger.debug("sparql query = " + query);
 

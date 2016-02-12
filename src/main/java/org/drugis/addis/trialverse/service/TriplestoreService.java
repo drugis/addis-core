@@ -35,9 +35,9 @@ public interface TriplestoreService {
 
   Collection<Namespace> queryNameSpaces() throws ParseException;
 
-  Namespace getNamespaceHead(String uid);
+  Namespace getNamespaceHead(VersionedUuidAndOwner uuidAndOwner);
 
-  Namespace getNamespaceVersioned(String datasetUri, String versionUri);
+  Namespace getNamespaceVersioned(VersionedUuidAndOwner datasetUri, String versionUri);
 
   List<SemanticOutcome> getOutcomes(String namespaceUid, String version);
 

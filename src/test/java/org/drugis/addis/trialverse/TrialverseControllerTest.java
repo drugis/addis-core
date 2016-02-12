@@ -11,8 +11,6 @@ import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
-import org.drugis.trialverse.dataset.model.VersionMapping;
-import org.drugis.trialverse.util.Namespaces;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -27,7 +25,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.Arrays;
@@ -69,6 +66,8 @@ public class TrialverseControllerTest {
   private Account gert = new Account(3, "gert", "Gert", "van Valkenhoef", "gert@test.com");
   private String namespaceUid = "UID-1";
   private String versionedUuid = "versionedUuid";
+  private Integer ownerId = 1;
+  private VersionedUuidAndOwner versionedUuidAndOwner = new VersionedUuidAndOwner(versionedUuid, ownerId);
 
   @Before
   public void setUp() throws URISyntaxException {
@@ -78,6 +77,7 @@ public class TrialverseControllerTest {
     when(user.getName()).thenReturn("gert");
     when(accountRepository.findAccountByUsername("gert")).thenReturn(gert);
     when(mappingService.getVersionedUuid(namespaceUid)).thenReturn(versionedUuid);
+    when(mappingService.getVersionedUuidAndOwner(namespaceUid)).thenReturn(versionedUuidAndOwner);
   }
 
   @After
@@ -91,8 +91,8 @@ public class TrialverseControllerTest {
     String uid2 = "uid 2";
     String versionURI = "current";
     int numberOfStudies = 666;
-    Namespace namespace1 = new Namespace(uid1, "a", "descra", numberOfStudies, versionURI);
-    Namespace namespace2 = new Namespace(uid2, "b", "descrb", numberOfStudies, versionURI);
+    Namespace namespace1 = new Namespace(uid1, ownerId, "a", "descra", numberOfStudies, versionURI);
+    Namespace namespace2 = new Namespace(uid2, ownerId, "b", "descrb", numberOfStudies, versionURI);
     Collection<Namespace> namespaceCollection = Arrays.asList(namespace1, namespace2);
     when(triplestoreService.queryNameSpaces()).thenReturn(namespaceCollection);
     mockMvc.perform(get("/namespaces"))
@@ -119,16 +119,16 @@ public class TrialverseControllerTest {
   public void testGetNamespaceById() throws Exception {
     int numberOfStudies = 666;
     String versionUid = "current";
-    Namespace namespace1 = new Namespace(namespaceUid, "a", "descrea", numberOfStudies, versionUid);
-    when(triplestoreService.getNamespaceVersioned(versionedUuid, versionUid)).thenReturn(namespace1);
+    Namespace namespace1 = new Namespace(namespaceUid, ownerId, "a", "descrea", numberOfStudies, versionUid);
+    when(triplestoreService.getNamespaceVersioned(versionedUuidAndOwner, versionUid)).thenReturn(namespace1);
 
     mockMvc.perform(get("/namespaces/UID-1").param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.name", is("a")));
 
-    verify(triplestoreService).getNamespaceVersioned(versionedUuid, versionUid);
-    verify(mappingService).getVersionedUuid(namespaceUid);
+    verify(triplestoreService).getNamespaceVersioned(versionedUuidAndOwner, versionUid);
+    verify(mappingService).getVersionedUuidAndOwner(namespaceUid);
  }
 
   @Test
@@ -317,7 +317,6 @@ public class TrialverseControllerTest {
     String versionUid = "current";
 
     StudyDataSection studyDataSection = StudyDataSection.ENDPOINTS;
-    List<StudyData> result = Collections.singletonList(new StudyData(studyDataSection, "studyDataTypeUri", "studyDataTypeLabel"));
     String versionedUuid = "versionedUuid";
     ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUid/studyData/endpoints").param("version", versionUid));
     resultActions.andExpect(status().isOk());

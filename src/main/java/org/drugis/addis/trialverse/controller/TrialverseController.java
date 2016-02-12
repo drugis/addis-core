@@ -52,10 +52,10 @@ public class TrialverseController {
   @ResponseBody
   public Namespace get(@PathVariable String namespaceUid, @RequestParam(required = false) String version) throws ResourceDoesNotExistException, URISyntaxException {
     if (version != null) {
-      String jenaUuid = mappingService.getVersionedUuid(namespaceUid);
-      return triplestoreService.getNamespaceVersioned(jenaUuid, version);
+      VersionedUuidAndOwner versionedUuidAndOwner = mappingService.getVersionedUuidAndOwner(namespaceUid);
+      return triplestoreService.getNamespaceVersioned(versionedUuidAndOwner, version);
     } else {
-      return triplestoreService.getNamespaceHead(mappingService.getVersionedUuid(namespaceUid));
+      return triplestoreService.getNamespaceHead(mappingService.getVersionedUuidAndOwner(namespaceUid));
     }
   }
 
