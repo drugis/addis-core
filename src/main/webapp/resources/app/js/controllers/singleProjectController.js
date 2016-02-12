@@ -98,7 +98,7 @@ define(['lodash'], function(_) {
       });
     }
 
-    $scope.openCreatOutcomeDialog = function() {
+    $scope.openCreateOutcomeDialog = function() {
       $modal.open({
         templateUrl: './app/js/outcome/addOutcome.html',
         scope: $scope,
@@ -107,21 +107,25 @@ define(['lodash'], function(_) {
           callback: function() {
             return function(newOutcome) {
               $scope.outcomes.push(newOutcome);
-            }
+            };
           }
         }
-      })
-    }
+      });
+    };
 
-    $scope.addIntervention = function(newIntervention) {
-      newIntervention.projectId = $scope.project.id;
-      $scope.createInterventionModal.close();
-      this.model = {};
-      InterventionResource
-        .save(newIntervention)
-        .$promise.then(function(intervention) {
-          $scope.interventions.push(intervention);
-        });
+    $scope.openCreateInterventionDialog = function() {
+      $modal.open({
+        templateUrl: './app/js/intervention/addIntervention.html',
+        scope: $scope,
+        controller: 'AddInterventionController',
+        resolve: {
+          callback: function() {
+            return function(newIntervention) {
+              $scope.outcomes.push(newIntervention);
+            };
+          }
+        }
+      });
     };
 
     $scope.addCovariate = function() {

@@ -30,6 +30,7 @@ define(
     'populationInformation/populationInformation',
     'arm/arm',
     'outcome/outcome',
+    'intervention/intervention',
     'populationCharacteristic/populationCharacteristic',
     'endpoint/endpoint',
     'adverseEvent/adverseEvent',
@@ -96,7 +97,8 @@ define(
       'addis.filters',
       'addis.interceptors',
       'addis.directives',
-      'addis.covariates'
+      'addis.covariates',
+      'addis.interventions'
     ];
     var gemtcWebDependencies = [
       'gemtc.controllers',

@@ -14,6 +14,8 @@ define(['lodash'], function(_) {
 
     function addOutcome(newOutcome) {
       $scope.isAddingOutcome = true;
+      newOutcome.projectId = $scope.project.id;
+      newOutcome.semanticOutcomeLabel = newOutcome.semanticOutcome.label;
       OutcomeResource.save(newOutcome, function() {
         $modalInstance.close();
         callback(newOutcome);

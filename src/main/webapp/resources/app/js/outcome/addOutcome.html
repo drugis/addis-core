@@ -4,7 +4,7 @@
     <div class="large-10 columns">
       <label>Semantic outcome
         <select ng-model="newOutcome.semanticOutcome" ng-options="semanticOutcome as semanticOutcome.label for semanticOutcome in semanticOutcomes | orderBy:'label'"
-          ng-change="newOutcome.name = newOutcome.semanticOutcome.label; checkForDuplicateOutcomeName(newOutcome.name)"></select>
+        ng-change="newOutcome.name = newOutcome.semanticOutcome.label; checkForDuplicateOutcomeName(newOutcome.name)"></select>
       </label>
     </div>
   </div>
@@ -23,16 +23,10 @@
     </div>
   </div>
   <div class="row">
-    <ul class="button-group">
-      <li>
-        <button class="button small secondary" type="submit">Cancel</button>
-      </li>
-      <li>
-        <button class="button small success" ng-disabled="!newOutcome.name || !newOutcome.semanticOutcome || duplicateOutcomeName.isDuplicate"
-          ng-click="addOutcome(model)">Add outcome
-        </button>
-        <div class="alert" ng-show="duplicateOutcomeName.isDuplicate">Duplicate name.</div>
-      </li>
-    </ul>
+    <button class="button small success" ng-disabled="!newOutcome.name || !newOutcome.semanticOutcome || duplicateOutcomeName.isDuplicate"
+    type="submit">Add outcome
+    </button>
+    <div class="alert" ng-show="duplicateOutcomeName.isDuplicate">Duplicate name.</div>
   </div>
+  <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
 </form>
