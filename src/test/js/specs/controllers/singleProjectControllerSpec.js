@@ -334,53 +334,6 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
           expect(scope.goToAnalysis).toHaveBeenCalledWith(newAnalysis.id, newAnalysis.analysisType);
         });
       });
-
-      describe('addOutcome', function() {
-
-        it("should make an update call when an outcome is added", function() {
-          projectDeferred.resolve();
-          scope.$apply();
-          var newOutcome = {
-            property: 'value'
-          };
-          var newOutcomeWithProjectId = _.extend(newOutcome, {
-            projectId: 1
-          });
-
-          scope.model = newOutcome;
-          scope.addOutcome(newOutcome);
-          expect(scope.createOutcomeModal.close).toHaveBeenCalled();
-          expect(scope.model).toEqual({});
-          expect(outcomeResource.save).toHaveBeenCalledWith(newOutcomeWithProjectId);
-
-          outcomeDeferred.resolve(mockOutcome);
-          scope.$apply();
-          expect(scope.outcomes).toContain(mockOutcome);
-        });
-      });
-
-
-      describe('addIntervention', function() {
-        it("should make an update call when an intervention is added", function() {
-          projectDeferred.resolve();
-          scope.$apply();
-          var newIntervention = {
-            key: 'value'
-          };
-          var newInterventionWithProjectId = _.extend(newIntervention, {
-            projectId: 1
-          });
-          scope.model = newIntervention;
-          scope.addIntervention(newIntervention);
-          expect(scope.createInterventionModal.close).toHaveBeenCalled();
-          expect(scope.model).toEqual({});
-          expect(interventionResource.save).toHaveBeenCalledWith(newInterventionWithProjectId);
-          interventionDeferred.resolve(mockIntervention);
-          scope.$apply();
-          expect(scope.interventions).toContain(mockIntervention);
-        });
-      });
-
     });
   });
 });
