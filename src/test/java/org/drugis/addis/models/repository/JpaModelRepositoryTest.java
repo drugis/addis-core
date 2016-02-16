@@ -48,7 +48,6 @@ public class JpaModelRepositoryTest {
             .title(modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
-            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)
@@ -61,7 +60,7 @@ public class JpaModelRepositoryTest {
     assertNotNull(model.getId());
     assertEquals("fixed", model.getLinearModel());
     assertEquals(Model.NETWORK_MODEL_TYPE, model.getModelTypeTypeAsString());
-    assertEquals(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, model.getHeterogeneityPrior().getType());
+    assertNull(model.getHeterogeneityPrior());
     assertEquals(burnInIterations, model.getBurnInIterations());
     assertEquals(inferenceIterations, model.getInferenceIterations());
     assertEquals(thinningFactor, model.getThinningFactor());

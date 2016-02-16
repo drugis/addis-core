@@ -32,7 +32,6 @@ public class Model {
   public final static String LINK_LOG = "log";
   public final static String LINK_CLOGLOG = "cloglog";
 
-  public final static String AUTOMATIC_HETEROGENEITY_PRIOR_TYPE = "automatic";
   public final static String STD_DEV_HETEROGENEITY_PRIOR_TYPE = "standard-deviation";
   public final static String VARIANCE_HETEROGENEITY_PRIOR_TYPE = "variance";
   public final static String PRECISION_HETEROGENEITY_PRIOR_TYPE = "precision";
@@ -86,8 +85,6 @@ public class Model {
     }
     if (builder.heterogeneityPriorType == null) {
       this.heterogeneityPrior = null;
-    } else if (Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE.equals(builder.heterogeneityPriorType)) {
-      this.heterogeneityPrior = String.format("{'type': '%s' }", builder.heterogeneityPriorType);
     } else if (Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE.equals(builder.heterogeneityPriorType)) {
       this.heterogeneityPrior = String.format("{'type': '%s', values: {'lower': %s, 'upper': %s} }", builder.heterogeneityPriorType, builder.lower, builder.upper);
     } else if (Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE.equals(builder.heterogeneityPriorType)) {
@@ -193,25 +190,29 @@ public class Model {
 
   public HeterogeneityPrior getHeterogeneityPrior() {
     JSONObject heterogeneityObject = (JSONObject) JSONValue.parse(heterogeneityPrior);
-    String priorType = (String) heterogeneityObject.get("type");
-    HeterogeneityValues values = null;
-    if (Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE.equals(priorType)) {
-      JSONObject values1 = (JSONObject) heterogeneityObject.get("values");
-      Double lower = (Double) values1.get("lower");
-      Double upper = (Double) values1.get("upper");
-      values = new HeterogeneityStdDevValues(lower, upper);
-    } else if (Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE.equals(priorType)) {
-      JSONObject values1 = (JSONObject) heterogeneityObject.get("values");
-      Double mean = (Double) values1.get("mean");
-      Double stdDev = (Double) values1.get("stdDev");
-      values = new HeterogeneityVarianceValues(mean, stdDev);
-    } else if (Model.PRECISION_HETEROGENEITY_PRIOR_TYPE.equals(priorType)) {
-      JSONObject values1 = (JSONObject) heterogeneityObject.get("values");
-      Double rate = (Double) values1.get("rate");
-      Double shape = (Double) values1.get("shape");
-      values = new HeterogeneityPrecisionValues(rate, shape);
+    if (heterogeneityObject != null) {
+      String priorType = (String) heterogeneityObject.get("type");
+      HeterogeneityValues values = null;
+      if (Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE.equals(priorType)) {
+        JSONObject values1 = (JSONObject) heterogeneityObject.get("values");
+        Double lower = (Double) values1.get("lower");
+        Double upper = (Double) values1.get("upper");
+        values = new HeterogeneityStdDevValues(lower, upper);
+      } else if (Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE.equals(priorType)) {
+        JSONObject values1 = (JSONObject) heterogeneityObject.get("values");
+        Double mean = (Double) values1.get("mean");
+        Double stdDev = (Double) values1.get("stdDev");
+        values = new HeterogeneityVarianceValues(mean, stdDev);
+      } else if (Model.PRECISION_HETEROGENEITY_PRIOR_TYPE.equals(priorType)) {
+        JSONObject values1 = (JSONObject) heterogeneityObject.get("values");
+        Double rate = (Double) values1.get("rate");
+        Double shape = (Double) values1.get("shape");
+        values = new HeterogeneityPrecisionValues(rate, shape);
+      }
+      return new HeterogeneityPrior(priorType, values);
+    } else {
+      return null;
     }
-    return new HeterogeneityPrior(priorType, values);
   }
 
   @JsonIgnore

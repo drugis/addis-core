@@ -67,7 +67,6 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     JSONObject jsonProblem = new JSONObject(problemString);
     jsonProblem.put("linearModel", model.getLinearModel());
     jsonProblem.put("modelType", new JSONObject(objectMapper.writeValueAsString(model.getModelType())));
-    jsonProblem.put("heterogeneityPrior", new JSONObject(objectMapper.writeValueAsString(model.getHeterogeneityPrior())));
     jsonProblem.put("burnInIterations", model.getBurnInIterations());
     jsonProblem.put("inferenceIterations", model.getInferenceIterations());
     jsonProblem.put("thinningFactor", model.getThinningFactor());
@@ -75,11 +74,15 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     jsonProblem.put("link", model.getLink());
     jsonProblem.put("regressor", model.getRegressor());
 
-    if(model.getSensitivity() != null) {
+    if (model.getHeterogeneityPrior() != null) {
+      jsonProblem.put("heterogeneityPrior", new JSONObject(objectMapper.writeValueAsString(model.getHeterogeneityPrior())));
+    }
+
+    if (model.getSensitivity() != null) {
       jsonProblem.put("sensitivity", model.getSensitivity());
     }
 
-    if(model.getOutcomeScale() != null) {
+    if (model.getOutcomeScale() != null) {
       jsonProblem.put("outcomeScale", model.getOutcomeScale());
     }
 
@@ -103,7 +106,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     // Use different query for live psql db as psql does accept a set as part of the in clause
     boolean isHsqlDrive = dataSource instanceof EmbeddedDatabase;
     String query;
-    if(isHsqlDrive) {
+    if (isHsqlDrive) {
       query = SELECTOR_PART + " FROM patavitask WHERE id IN(UNNEST(?)) ";
     } else {
       query = SELECTOR_PART + " FROM patavitask WHERE id IN(select(UNNEST(?))) ";

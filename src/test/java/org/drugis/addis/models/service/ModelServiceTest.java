@@ -70,7 +70,6 @@ public class ModelServiceTest {
             .title(modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
-            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(burnInIterations)
             .inferenceIterations(inferenceIterations)
             .thinningFactor(thinningFactor)

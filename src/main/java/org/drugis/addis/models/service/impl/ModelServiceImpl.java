@@ -93,7 +93,7 @@ public class ModelServiceImpl implements ModelService {
     } else if (heterogeneityPriorCommand instanceof PrecisionHeterogeneityPriorCommand) {
       return Model.PRECISION_HETEROGENEITY_PRIOR_TYPE;
     } else {
-      return Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE;
+      return null;
     }
   }
 

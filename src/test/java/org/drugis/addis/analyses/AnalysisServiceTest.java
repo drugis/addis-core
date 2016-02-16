@@ -112,7 +112,6 @@ public class AnalysisServiceTest {
             .title("modelTitle")
             .linearModel("fixedModel")
             .modelType(Model.NETWORK_MODEL_TYPE)
-            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .burnInIterations(5000)
             .inferenceIterations(20000)
             .thinningFactor(10)

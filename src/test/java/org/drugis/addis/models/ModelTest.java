@@ -35,7 +35,6 @@ public class ModelTest {
             .title(title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.NETWORK_MODEL_TYPE)
-            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .build();
     stdDevHeterogeneityPriorNetworkModel = new Model.ModelBuilder()
             .analysisId(analysisId)
@@ -69,7 +68,6 @@ public class ModelTest {
             .title(title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.PAIRWISE_MODEL_TYPE)
-            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .from(new Model.DetailNode(-1, "treatment1"))
             .to(new Model.DetailNode(-2, "treatment2"))
             .build();
@@ -78,7 +76,6 @@ public class ModelTest {
             .title(title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.NODE_SPLITTING_MODEL_TYPE)
-            .heterogeneityPriorType(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE)
             .from(new Model.DetailNode(-1, "treatment1"))
             .to(new Model.DetailNode(-2, "treatment2"))
             .build();
@@ -125,8 +122,8 @@ public class ModelTest {
   }
 
   @Test
-  public void testGetAutomaticHeterogeneityPriorType() {
-    assertEquals(Model.AUTOMATIC_HETEROGENEITY_PRIOR_TYPE, networkModel.getHeterogeneityPrior().getType());
+  public void testGetAutomaticHeterogeneityPrior() {
+    assertNull(networkModel.getHeterogeneityPrior());
   }
 
   @Test

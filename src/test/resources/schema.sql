@@ -323,3 +323,6 @@ ALTER TABLE account ADD CONSTRAINT unique_email UNIQUE (email);
 --rollback ALTER TABLE account DROP CONSTRAINT unique_email;
 ALTER TABLE account ALTER email SET NOT NULL;
 --rollback ALTER TABLE account ALTER email DROP NOT NULL;
+
+--changeset reidd:36
+UPDATE model SET heterogeneityprior = NULL WHERE heterogeneityprior = '{''type'': ''automatic'' }';

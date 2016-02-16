@@ -327,3 +327,7 @@ ALTER TABLE versionmapping ADD CONSTRAINT unique_versionedDatasetUrl unique(vers
 --rollback ALTER TABLE versionmapping DROP CONSTRAINT unique_versionedDatasetUrl;
 ALTER TABLE versionmapping ADD CONSTRAINT unique_trialverseDatasetUrl UNIQUE(trialverseDatasetUrl);
 --rollback ALTER TABLE versionmapping DROP CONSTRAINT unique_trialverseDatasetUrl;
+
+--changeset reidd:36
+UPDATE model SET heterogeneityprior = NULL WHERE heterogeneityprior = '{''type'': ''automatic'' }';
+
