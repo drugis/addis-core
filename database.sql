@@ -331,3 +331,54 @@ ALTER TABLE versionmapping ADD CONSTRAINT unique_trialverseDatasetUrl UNIQUE(tri
 --changeset reidd:36
 UPDATE model SET heterogeneityprior = NULL WHERE heterogeneityprior = '{''type'': ''automatic'' }';
 
+--changeset reidd:37
+ALTER TABLE covariate DROP CONSTRAINT covariate_project_fkey ;
+ALTER TABLE covariate ADD CONSTRAINT covariate_project_fkey FOREIGN KEY (project) REFERENCES project(id) ON DELETE CASCADE ;
+
+ALTER TABLE intervention DROP CONSTRAINT intervention_project_fkey ;
+ALTER TABLE intervention ADD CONSTRAINT intervention_project_fkey FOREIGN KEY (project) REFERENCES project(id) ON DELETE CASCADE ;
+
+ALTER TABLE outcome DROP CONSTRAINT outcome_project_fkey ;
+ALTER TABLE outcome ADD CONSTRAINT outcome_project_fkey FOREIGN KEY (project) REFERENCES project(id) ON DELETE CASCADE ;
+
+ALTER TABLE networkmetaanalysis DROP CONSTRAINT networkmetaanalysis_projectid_fkey ;
+ALTER TABLE networkmetaanalysis ADD CONSTRAINT networkmetaanalysis_projectid_fkey FOREIGN KEY (projectid) REFERENCES project(id) ON DELETE CASCADE ;
+
+ALTER TABLE singlestudybenefitriskanalysis DROP CONSTRAINT singlestudybenefitriskanalysis_projectid_fkey ;
+ALTER TABLE singlestudybenefitriskanalysis ADD CONSTRAINT singlestudybenefitriskanalysis_projectid_fkey FOREIGN KEY (projectid) REFERENCES project(id) ON DELETE CASCADE ;
+
+ALTER TABLE singlestudybenefitriskanalysis_intervention DROP CONSTRAINT analysis_interventions_interventionid_fkey ;
+ALTER TABLE singlestudybenefitriskanalysis_intervention ADD CONSTRAINT analysis_interventions_interventionid_fkey FOREIGN KEY (interventionid) REFERENCES intervention(id) ON DELETE CASCADE ;
+
+ALTER TABLE interventioninclusion DROP CONSTRAINT interventioninclusion_interventionid_fkey ;
+ALTER TABLE interventioninclusion ADD CONSTRAINT interventioninclusion_interventionid_fkey FOREIGN KEY (interventionid) REFERENCES intervention(id) ON DELETE CASCADE ;
+
+ALTER TABLE singlestudybenefitriskanalysis_outcome DROP CONSTRAINT analysis_outcomes_outcomeid_fkey ;
+ALTER TABLE singlestudybenefitriskanalysis_outcome ADD CONSTRAINT analysis_outcomes_outcomeid_fkey FOREIGN KEY (outcomeid) REFERENCES outcome(id) ON DELETE CASCADE ;
+
+ALTER TABLE networkmetaanalysis DROP CONSTRAINT networkmetaanalysis_outcomeid_fkey ;
+ALTER TABLE networkmetaanalysis ADD CONSTRAINT networkmetaanalysis_outcomeid_fkey FOREIGN KEY (outcomeid) REFERENCES outcome(id) ON DELETE CASCADE ;
+
+ALTER TABLE remarks DROP CONSTRAINT remarks_analysisid_fkey ;
+ALTER TABLE remarks ADD CONSTRAINT remarks_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES singlestudybenefitriskanalysis(id) ON DELETE CASCADE ;
+
+ALTER TABLE singlestudybenefitriskanalysis_intervention DROP CONSTRAINT ssbr_analysis_interventions_analysisid_fkey ;
+ALTER TABLE singlestudybenefitriskanalysis_intervention ADD CONSTRAINT ssbr_analysis_interventions_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES singlestudybenefitriskanalysis(id) ON DELETE CASCADE ;
+
+ALTER TABLE singlestudybenefitriskanalysis_outcome DROP CONSTRAINT ssbr_analysis_outcomes_analysisid_fkey ;
+ALTER TABLE singlestudybenefitriskanalysis_outcome ADD CONSTRAINT ssbr_analysis_outcomes_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES singlestudybenefitriskanalysis(id) ON DELETE CASCADE ;
+
+ALTER TABLE scenario DROP CONSTRAINT ssbr_scenario_workspace_fkey ;
+ALTER TABLE scenario ADD CONSTRAINT ssbr_scenario_workspace_fkey FOREIGN KEY (workspace) REFERENCES singlestudybenefitriskanalysis(id) ON DELETE CASCADE ;
+
+ALTER TABLE covariateinclusion DROP CONSTRAINT covariateinclusion_covariateid_fkey ;
+ALTER TABLE covariateinclusion ADD CONSTRAINT covariateinclusion_covariateid_fkey FOREIGN KEY (covariateid) REFERENCES covariate(id) ON DELETE CASCADE ;
+
+ALTER TABLE networkmetaanalysis DROP CONSTRAINT networkmetaanalysis_primarymodel_fkey ;
+ALTER TABLE networkmetaanalysis ADD CONSTRAINT networkmetaanalysis_primarymodel_fkey FOREIGN KEY (primarymodel) REFERENCES model(id) ON DELETE SET NULL ;
+
+ALTER TABLE model DROP CONSTRAINT model_analysisid_fkey ;
+ALTER TABLE model ADD CONSTRAINT model_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES networkmetaanalysis(id) ON DELETE CASCADE ;
+
+ALTER TABLE armexclusion DROP CONSTRAINT armexclusion_analysisid_fkey ;
+ALTER TABLE armexclusion ADD CONSTRAINT armexclusion_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES networkmetaanalysis(id) ON DELETE CASCADE ;

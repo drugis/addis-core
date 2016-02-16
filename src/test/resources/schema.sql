@@ -326,3 +326,6 @@ ALTER TABLE account ALTER email SET NOT NULL;
 
 --changeset reidd:36
 UPDATE model SET heterogeneityprior = NULL WHERE heterogeneityprior = '{''type'': ''automatic'' }';
+
+--changeset reidd:37
+-- nb changeset is about constraints, hsql has different syntax and we're never going to test cascading deletes in it anyway
