@@ -121,7 +121,7 @@ define(['lodash'], function(_) {
         resolve: {
           callback: function() {
             return function(newIntervention) {
-              $scope.outcomes.push(newIntervention);
+              $scope.interventions.push(newIntervention);
             };
           }
         }
