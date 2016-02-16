@@ -91,7 +91,7 @@ public class ScenarioControllerTest {
     when(scenarioRepository.get(scenario.getId())).thenReturn(scenario);
     mockMvc.perform(get("/projects/1/analyses/1/scenarios/" + scenario.getId()).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", is(scenario.getId())));
     verify(scenarioRepository).get(scenario.getId());
   }
@@ -106,7 +106,7 @@ public class ScenarioControllerTest {
     when(scenarioRepository.query(projectId, analysisId)).thenReturn(scenarios);
     mockMvc.perform(get("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].id", is(scenario1.getId())))
             .andExpect(jsonPath("$[1].id", is(scenario2.getId())));
@@ -124,8 +124,8 @@ public class ScenarioControllerTest {
     mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios/" + scenario.getId())
             .content(content)
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk());
 
     verify(scenarioService).checkCoordinates(projectId, analysisId, scenario);
@@ -141,9 +141,9 @@ public class ScenarioControllerTest {
     String content = TestUtils.createJson(scenario);
     when(scenarioRepository.create(analysisId, scenario.getTitle(), scenario.getState())).thenReturn(scenario);
     mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios/")
-      .content(content).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .content(content).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(status().isCreated())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$.title", is(scenario.getTitle())));
 
     verify(scenarioService).checkCoordinates(projectId, analysisId, scenario);
@@ -162,7 +162,7 @@ public class ScenarioControllerTest {
     //NB: controller sets workspace/analysisID in scenario
     scenario.setWorkspace(analysisId);
     mockMvc.perform(post("/projects/" + projectId + "/analyses/" + analysisId + "/scenarios/")
-      .content(content).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .content(content).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(status().isCreated());
     verify(scenarioService).checkCoordinates(projectId, analysisId, scenario);
     verify(projectService).checkOwnership(projectId, user);

@@ -94,7 +94,7 @@ public class ProjectsControllerTest {
 
     mockMvc.perform(get("/projects").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", hasSize(0)));
 
     verify(projectRepository).query();
@@ -111,7 +111,7 @@ public class ProjectsControllerTest {
 
     mockMvc.perform(get("/projects").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", hasSize(projects.size())))
             .andExpect(jsonPath("$[0].id", is(project.getId())))
             .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())))
@@ -132,7 +132,7 @@ public class ProjectsControllerTest {
 
     mockMvc.perform(get("/projects?owner=2").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", hasSize(projects.size())))
             .andExpect(jsonPath("$[0].owner.id", is(project.getOwner().getId())));
 
@@ -146,9 +146,9 @@ public class ProjectsControllerTest {
     Project project = new Project(1, gert, "testname", "testdescription", "uid1", "version 1");
     String jsonContent = TestUtils.createJson(projectCommand);
     when(projectRepository.create(gert, projectCommand)).thenReturn(project);
-    mockMvc.perform(post("/projects").principal(user).content(jsonContent).contentType(WebConstants.APPLICATION_JSON_UTF8))
+    mockMvc.perform(post("/projects").principal(user).content(jsonContent).contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.name", is("testname")));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).create(gert, projectCommand);
@@ -160,7 +160,7 @@ public class ProjectsControllerTest {
     when(projectRepository.get(project.getId())).thenReturn(project);
     mockMvc.perform(get("/projects/" + project.getId()).principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", is(project.getId())));
     verify(projectRepository).get(project.getId());
   }
@@ -180,9 +180,9 @@ public class ProjectsControllerTest {
     Project project = new Project(1, gert, "testname", StringUtils.EMPTY, "uid1", "version 1");
     String requestBody = TestUtils.createJson(projectCommand);
     when(projectRepository.create(gert, projectCommand)).thenReturn(project);
-    mockMvc.perform(post("/projects").principal(user).content(requestBody).contentType(WebConstants.APPLICATION_JSON_UTF8))
+    mockMvc.perform(post("/projects").principal(user).content(requestBody).contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.name", is("testname")));
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(projectRepository).create(gert, projectCommand);

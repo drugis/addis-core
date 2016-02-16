@@ -88,9 +88,9 @@ public class CovariateControllerTest {
     ResultActions resultActions = mockMvc.perform(post("/projects/1/covariates")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8));
+            .contentType(WebConstants.getApplicationJsonUtf8Value()));
     resultActions.andExpect(status().isCreated());
-    resultActions.andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
+    resultActions.andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
     resultActions.andExpect(jsonPath("$.name", is("name")));
     resultActions.andExpect(jsonPath("$.definitionKey", is(CovariateOption.MULTI_CENTER_STUDY.toString())));
     verify(accountRepository).findAccountByUsername(gert.getUsername());

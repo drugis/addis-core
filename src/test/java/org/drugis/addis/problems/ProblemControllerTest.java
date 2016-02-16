@@ -67,7 +67,7 @@ public class ProblemControllerTest {
     when(problemService.getProblem(projectId, analysisId)).thenReturn(problem);
     mockMvc.perform(get("/projects/1/analyses/1/problem"))
       .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$", notNullValue()))
       .andExpect(jsonPath("$.title", equalTo(problem.getTitle())))
       .andExpect(jsonPath("$.performanceTable", hasSize(2)))
@@ -91,7 +91,7 @@ public class ProblemControllerTest {
     when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
     mockMvc.perform(get("/projects/1/analyses/2/problem"))
       .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$", notNullValue()))
       .andExpect(jsonPath("$.entries", hasSize(2)))
       .andExpect((jsonPath("$.entries[0].treatment", equalTo(entry1.getTreatment()))))
@@ -116,7 +116,7 @@ public class ProblemControllerTest {
     when(problemService.getProblem(projectId, analysisId)).thenReturn(networkMetaAnalysisProblem);
     mockMvc.perform(get("/projects/1/analyses/2/problem"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$.entries", hasSize(2)))
             .andExpect(jsonPath("$.entries[0].treatment", equalTo(entry1.getTreatment())))

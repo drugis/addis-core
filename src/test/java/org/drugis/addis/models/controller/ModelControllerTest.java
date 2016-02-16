@@ -144,9 +144,9 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", notNullValue()))
             .andExpect(jsonPath("$.analysisId", notNullValue()));
 
@@ -186,9 +186,9 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", notNullValue()))
             .andExpect(jsonPath("$.analysisId", notNullValue()));
 
@@ -228,9 +228,9 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", notNullValue()))
             .andExpect(jsonPath("$.analysisId", notNullValue()));
 
@@ -269,9 +269,9 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", notNullValue()))
             .andExpect(jsonPath("$.analysisId", notNullValue()));
 
@@ -305,7 +305,7 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated());
 
     verify(analysisService).checkCoordinates(projectId, analysisId);
@@ -336,9 +336,9 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", notNullValue()))
             .andExpect(jsonPath("$.analysisId", notNullValue()));
 
@@ -384,9 +384,9 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models")
             .content(body)
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", notNullValue()))
             .andExpect(jsonPath("$.analysisId", notNullValue()));
 
@@ -404,7 +404,7 @@ public class ModelControllerTest {
 
     mockMvc.perform(get("/projects/45/analyses/55/models/1").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", is(model.getId())))
             .andExpect(jsonPath("$.analysisId", is(analysisId)));
 
@@ -420,7 +420,7 @@ public class ModelControllerTest {
 
     mockMvc.perform(get("/projects/45/analyses/55/models").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$[0].id", notNullValue()));
 
     verify(modelService).query(analysisId);
@@ -466,7 +466,7 @@ public class ModelControllerTest {
     mockMvc.perform(post("/projects/45/analyses/55/models/1")
             .content(postBodyStr)
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk());
 
     verify(modelService).checkOwnership(modelId, user);
@@ -484,7 +484,7 @@ public class ModelControllerTest {
     ResultActions resultActions = mockMvc.perform(get("/projects/45/analyses/55/models/1/result").principal(user));
     resultActions
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", notNullValue()));
     verify(modelRepository).get(model.getId());
     verify(pataviTaskRepository).getResult(model.getTaskId());

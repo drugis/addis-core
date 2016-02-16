@@ -30,7 +30,7 @@ import org.drugis.trialverse.dataset.repository.impl.DatasetReadRepositoryImpl;
 import org.drugis.addis.security.Account;
 import org.drugis.trialverse.util.JenaGraphMessageConverter;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.trialverse.util.WebConstants;
+import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +44,6 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import sun.security.acl.PrincipalImpl;
 
 import java.io.*;
 import java.net.URI;

@@ -14,7 +14,7 @@ import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.trialverse.util.WebConstants;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
@@ -129,7 +129,7 @@ public class GraphController extends AbstractTrialverseController {
     logger.trace("copy graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      URI targetGraphUri = new URI(Namespaces.GRAPH_NAMESPACE + graphUuid);
+      URI targetGraphUri = graphService.buildGraphUri(graphUuid);
       URI newVersion = graphService.copy(trialverseDatasetUri, targetGraphUri, URI.create(copyOfUri));
       trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, newVersion.toString());
       trialverseResponse.setStatus(HttpStatus.OK.value());

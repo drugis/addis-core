@@ -22,7 +22,7 @@ import org.drugis.addis.security.ApiKey;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.security.repository.ApiKeyRepository;
 import org.drugis.trialverse.util.JenaProperties;
-import org.drugis.trialverse.util.WebConstants;
+import org.drugis.addis.util.WebConstants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

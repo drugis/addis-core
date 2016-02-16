@@ -11,8 +11,9 @@ import org.apache.http.message.BasicStatusLine;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.exception.ReadGraphException;
 import org.drugis.trialverse.graph.repository.impl.GraphReadRepositoryImpl;
+import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.trialverse.util.WebConstants;
+import org.drugis.addis.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -41,6 +42,9 @@ public class GraphReadRepositoryTest {
   @Mock
   VersionMappingRepository versionMappingRepository;
 
+  @Mock
+  GraphService graphService;
+
   @InjectMocks
   GraphReadRepository graphReadRepository;
 
@@ -60,10 +64,11 @@ public class GraphReadRepositoryTest {
     HttpResponse mockResponse = mock(CloseableHttpResponse.class);
     org.apache.http.HttpEntity entity = mock(org.apache.http.HttpEntity.class);
     when(mockResponse.getStatusLine()).thenReturn(new BasicStatusLine(HttpVersion.HTTP_1_1, org.apache.http.HttpStatus.SC_OK, "FINE!"));
-    String responceString = "check me out";
-    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responceString));
+    String responseString = "check me out";
+    when(entity.getContent()).thenReturn(IOUtils.toInputStream(responseString));
     when(mockResponse.getEntity()).thenReturn(entity);
     when(webConstants.buildVersionUri(versionUuid)).thenReturn(new URI("version/versionedUri"));
+    when(graphService.buildGraphUri(graphUUID)).thenReturn(URI.create(Namespaces.GRAPH_NAMESPACE + graphUUID));
     when(httpClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
     graphReadRepository.getGraph(versionedDatasetUrl, versionUuid, graphUUID, WebConstants.TURTLE);
 

@@ -3,6 +3,7 @@ package org.drugis.trialverse.graph.service.impl;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -20,7 +21,7 @@ import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.trialverse.util.WebConstants;
+import org.drugis.addis.util.WebConstants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -82,7 +83,13 @@ public class GraphServiceImpl implements GraphService {
     Matcher matcher = graphUriPattern.matcher(sourceGraphUri.getPath());
     matcher.matches();
     String versionUuid = matcher.group(2);
-    return URI.create(webConstants.getTriplestoreBaseUri() + "/versions/" + versionUuid);
+    try {
+      URIBuilder builder = new URIBuilder(webConstants.getTriplestoreBaseUri());
+      builder.setPath("/versions/" + versionUuid);
+      return builder.build();
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("failed to build uri" + e.getMessage());
+    }
   }
 
   @Override
@@ -90,7 +97,18 @@ public class GraphServiceImpl implements GraphService {
     Matcher matcher = graphUriPattern.matcher(sourceGraphUri.getPath());
     matcher.matches();
     String graphUuid = matcher.group(3);
-    return URI.create(Namespaces.GRAPH_NAMESPACE + graphUuid);
+    return buildGraphUri(graphUuid);
+  }
+
+  @Override
+  public URI buildGraphUri(String graphUuid) {
+    try {
+      URIBuilder builder = new URIBuilder(Namespaces.BASE_NAMESPACE);
+      builder.setPath("/graphs/" + graphUuid);
+      return builder.build();
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("failed to build uri" + e.getMessage());
+    }
   }
 
   @Override

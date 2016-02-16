@@ -8,8 +8,6 @@ import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.remarks.Remarks;
 import org.drugis.addis.remarks.repository.RemarksRepository;
 import org.drugis.addis.scenarios.Scenario;
-import org.drugis.addis.scenarios.repository.ScenarioRepository;
-import org.drugis.addis.scenarios.service.ScenarioService;
 import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
@@ -88,7 +86,7 @@ public class RemarksControllerTest {
     when(remarksRepository.find(analysisId)).thenReturn(remarks);
     mockMvc.perform(get("/projects/22/analyses/2/remarks").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.analysisId", is(analysisId)));
     verify(remarksRepository).find(analysisId);
   }
@@ -109,9 +107,9 @@ public class RemarksControllerTest {
     mockMvc.perform(post("/projects/22/analyses/2/remarks")
       .principal(user)
       .content(content)
-      .contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .contentType(WebConstants.getApplicationJsonUtf8Value()))
     .andExpect(status().isCreated())
-    .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+    .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
     .andExpect(jsonPath("$.analysisId", is(analysisId)));
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);
@@ -136,9 +134,9 @@ public class RemarksControllerTest {
     mockMvc.perform(post("/projects/22/analyses/2/remarks")
             .principal(user)
             .content(content)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.analysisId", is(analysisId)));
     verify(analysisService).checkCoordinates(projectId, analysisId);
     verify(projectService).checkOwnership(projectId, user);

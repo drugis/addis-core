@@ -16,9 +16,10 @@ import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.addis.security.AuthenticationService;
+import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.trialverse.util.WebConstants;
+import org.drugis.addis.util.WebConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.http.HttpEntity;
@@ -51,6 +52,9 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
   @Inject
   private AccountRepository accountRepository;
 
+  @Inject
+  private GraphService graphService;
+
   public static final String DATA_ENDPOINT = "/data";
 
   private final static Logger logger = LoggerFactory.getLogger(GraphWriteRepositoryImpl.class);
@@ -61,7 +65,7 @@ public class GraphWriteRepositoryImpl implements GraphWriteRepository {
 
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionMapping.getVersionedDatasetUrl())
             .path(DATA_ENDPOINT)
-            .queryParam("graph", Namespaces.GRAPH_NAMESPACE + graphUuid)
+            .queryParam("graph", graphService.buildGraphUri(graphUuid))
             .build();
 
     HttpPut putRequest = new HttpPut(uriComponents.toUri());

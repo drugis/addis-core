@@ -80,7 +80,7 @@ public class OutcomeControllerTest {
 
     mockMvc.perform(get("/projects/1/outcomes").principal(user))
       .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$", hasSize(1)))
       .andExpect(jsonPath("$[0].id", is(outcome.getId())));
 
@@ -103,7 +103,7 @@ public class OutcomeControllerTest {
     when(outcomeRepository.get(projectId, outcome.getId())).thenReturn(outcome);
     mockMvc.perform(get("/projects/1/outcomes/1").principal(user))
       .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$.id", is(outcome.getId())));
     verify(accountRepository).findAccountByUsername("gert");
     verify(outcomeRepository).get(projectId, outcome.getId());
@@ -115,9 +115,9 @@ public class OutcomeControllerTest {
     OutcomeCommand outcomeCommand = new OutcomeCommand(1, "name", "motivation", new SemanticOutcome("http://semantic.com", "labelnew"));
     when(outcomeRepository.create(gert, outcomeCommand)).thenReturn(outcome);
     String body = TestUtils.createJson(outcomeCommand);
-    mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
+    mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(status().isCreated())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(outcomeRepository).create(gert, outcomeCommand);
@@ -129,9 +129,9 @@ public class OutcomeControllerTest {
     Outcome outcome = new Outcome(1, 1, "name", "", new SemanticOutcome("http://semantic.com", "labelnew"));
     when(outcomeRepository.create(gert, outcomeCommand)).thenReturn(outcome);
     String body = "{\"name\":\"name\",\"semanticOutcome\":{\"uri\":\"http://semantic.com\",\"label\":\"labelnew\"},\"projectId\":1}";
-    mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
+    mockMvc.perform(post("/projects/1/outcomes").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(status().isCreated())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(outcomeRepository).create(gert, outcomeCommand);

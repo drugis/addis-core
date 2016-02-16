@@ -21,7 +21,7 @@ import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
 import org.drugis.trialverse.util.Utils;
-import org.drugis.trialverse.util.WebConstants;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.junit.After;
 import org.junit.Before;

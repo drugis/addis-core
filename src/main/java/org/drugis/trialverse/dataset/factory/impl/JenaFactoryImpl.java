@@ -5,7 +5,7 @@ import org.apache.jena.query.DatasetAccessorFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.drugis.trialverse.dataset.factory.JenaFactory;
-import org.drugis.trialverse.util.WebConstants;
+import org.drugis.addis.util.WebConstants;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

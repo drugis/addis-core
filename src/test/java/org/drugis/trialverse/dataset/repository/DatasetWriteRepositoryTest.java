@@ -6,7 +6,7 @@ import org.drugis.trialverse.dataset.factory.JenaFactory;
 import org.drugis.trialverse.dataset.repository.impl.DatasetWriteRepositoryImpl;
 import org.drugis.addis.security.ApiKey;
 import org.drugis.trialverse.security.TrialversePrincipal;
-import org.drugis.trialverse.util.WebConstants;
+import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

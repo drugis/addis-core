@@ -68,7 +68,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   private static HttpHeaders createGetJsonHeader() {
     HttpHeaders headers = new HttpHeaders();
-    headers.add(ACCEPT_HEADER, WebConstants.APPLICATION_JSON_UTF8_VALUE);
+    headers.add(ACCEPT_HEADER, WebConstants.getApplicationJsonUtf8Value());
     return headers;
   }
 

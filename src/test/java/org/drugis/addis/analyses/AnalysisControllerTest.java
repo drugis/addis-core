@@ -108,7 +108,7 @@ public class AnalysisControllerTest {
     ResultActions result = mockMvc.perform(get("/projects/1/analyses").principal(user));
     result
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].analysisType", Matchers.notNullValue()));
 
@@ -130,9 +130,9 @@ public class AnalysisControllerTest {
     AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL);
     when(analysisService.createSingleStudyBenefitRiskAnalysis(gert, analysisCommand)).thenReturn(analysis);
     String body = TestUtils.createJson(analysisCommand);
-    mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
+    mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).createSingleStudyBenefitRiskAnalysis(gert, analysisCommand);
@@ -144,9 +144,9 @@ public class AnalysisControllerTest {
     AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.NETWORK_META_ANALYSIS_LABEL);
     when(analysisService.createNetworkMetaAnalysis(gert, analysisCommand)).thenReturn(analysis);
     String body = TestUtils.createJson(analysisCommand);
-    mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
+    mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).createNetworkMetaAnalysis(gert, analysisCommand);
@@ -157,7 +157,7 @@ public class AnalysisControllerTest {
     AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", "unknown type");
     String body = TestUtils.createJson(analysisCommand);
     try {
-      mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8));
+      mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()));
     } catch (Exception e) {
       verify(accountRepository).findAccountByUsername("gert");
       throw e;
@@ -170,7 +170,7 @@ public class AnalysisControllerTest {
     when(analysisRepository.get(analysis.getId())).thenReturn(analysis);
     mockMvc.perform(get("/projects/1/analyses/1").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", is(analysis.getId())))
             .andExpect(jsonPath("$.analysisType", is(AnalysisType.SINGLE_STUDY_BENEFIT_RISK_LABEL)));
     verify(accountRepository).findAccountByUsername("gert");
@@ -185,7 +185,7 @@ public class AnalysisControllerTest {
     ResultActions result = mockMvc.perform(get("/projects/1/analyses/1").principal(user));
 
     result.andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", is(analysis.getId())))
             .andExpect(jsonPath("$.analysisType", is(AnalysisType.NETWORK_META_ANALYSIS_LABEL)))
             .andExpect(jsonPath("$.excludedArms", hasSize(0)));
@@ -201,7 +201,7 @@ public class AnalysisControllerTest {
     when(analysisRepository.get(analysis.getId())).thenReturn(analysis);
     mockMvc.perform(get("/projects/1/analyses/1").principal(user))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", is(analysis.getId())))
             .andExpect(jsonPath("$.problem.key", is("value")));
     verify(accountRepository).findAccountByUsername("gert");
@@ -229,9 +229,9 @@ public class AnalysisControllerTest {
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
             .content(exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem())
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.selectedOutcomes", hasSize(3)))
             .andExpect(jsonPath("$.selectedInterventions", hasSize(2)));
     verify(analysisRepository).get(analysisId);
@@ -252,9 +252,9 @@ public class AnalysisControllerTest {
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
             .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(analysisId);
     verify(scenarioRepository).create(analysisId, Scenario.DEFAULT_TITLE, "{\"problem\":" + newAnalysis.getProblem() + "}");
@@ -273,7 +273,7 @@ public class AnalysisControllerTest {
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
             .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isForbidden());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(analysisId);
@@ -291,7 +291,7 @@ public class AnalysisControllerTest {
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", 1, 1)
             .content(exampleUpdateSingleStudyBenefitRiskRequestWithProblem())
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisRepository).get(analysisId);
@@ -313,7 +313,7 @@ public class AnalysisControllerTest {
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
             .content(jsonCommand)
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
@@ -332,7 +332,7 @@ public class AnalysisControllerTest {
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
             .content(jsonCommand)
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
@@ -352,7 +352,7 @@ public class AnalysisControllerTest {
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
             .content(jsonCommand)
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);
@@ -372,7 +372,7 @@ public class AnalysisControllerTest {
     mockMvc.perform(post("/projects/{projectId}/analyses/{analysisId}", projectId, analysisId)
             .content(jsonCommand)
             .principal(user)
-            .contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isOk());
     verify(accountRepository).findAccountByUsername("gert");
     verify(analysisService).updateNetworkMetaAnalysis(gert, newAnalysis);

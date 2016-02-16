@@ -80,7 +80,7 @@ public class InterventionControllerTest {
 
     mockMvc.perform(get("/projects/1/interventions").principal(user))
       .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$", hasSize(1)))
       .andExpect(jsonPath("$[0].id", is(intervention.getId())));
 
@@ -103,7 +103,7 @@ public class InterventionControllerTest {
     when(interventionRepository.get(projectId, intervention.getId())).thenReturn(intervention);
     mockMvc.perform(get("/projects/1/interventions/1").principal(user))
       .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$.id", is(intervention.getId())));
     verify(accountRepository).findAccountByUsername("gert");
     verify(interventionRepository).get(projectId, intervention.getId());
@@ -115,9 +115,9 @@ public class InterventionControllerTest {
     InterventionCommand interventionCommand = new InterventionCommand(1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
     when(interventionRepository.create(gert, interventionCommand)).thenReturn(intervention);
     String body = TestUtils.createJson(interventionCommand);
-    mockMvc.perform(post("/projects/1/interventions").content(body).principal(user).contentType(WebConstants.APPLICATION_JSON_UTF8))
+    mockMvc.perform(post("/projects/1/interventions").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(status().isCreated())
-      .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
       .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(interventionRepository).create(gert, interventionCommand);

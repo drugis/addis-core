@@ -7,12 +7,12 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
-import org.apache.jena.riot.RDFLanguages;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.exception.ReadGraphException;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
+import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.trialverse.util.WebConstants;
+import org.drugis.addis.util.WebConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -40,13 +40,16 @@ public class GraphReadRepositoryImpl implements GraphReadRepository {
   @Inject
   private WebConstants webConstants;
 
+  @Inject
+  private GraphService graphService;
+
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
   @Override
   public byte[] getGraph(String versionedDatasetUrl, String versionUuid, String graphUUID, String contentType) throws IOException, ReadGraphException {
     UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(versionedDatasetUrl)
             .path(DATA_ENDPOINT)
-            .queryParam(GRAPH, Namespaces.GRAPH_NAMESPACE + graphUUID)
+            .queryParam(GRAPH, graphService.buildGraphUri(graphUUID))
             .build();
     HttpGet request = new HttpGet(uriComponents.toUri());
     if(versionUuid != null) {

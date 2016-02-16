@@ -16,9 +16,10 @@ import org.drugis.trialverse.graph.exception.UpdateGraphException;
 import org.drugis.trialverse.graph.repository.impl.GraphWriteRepositoryImpl;
 import org.drugis.addis.security.ApiKey;
 import org.drugis.addis.security.AuthenticationService;
+import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.trialverse.util.WebConstants;
+import org.drugis.addis.util.WebConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +61,9 @@ public class GraphWriteRepositoryTest {
 
   @Mock
   private AccountRepository accountRepository;
+
+  @Mock
+  private GraphService graphService;
 
   @InjectMocks
   GraphWriteRepository graphWriteRepository;
@@ -111,7 +115,7 @@ public class GraphWriteRepositoryTest {
 
     when(versionMappingRepository.getVersionMappingByDatasetUrl(datasetUrl)).thenReturn(versionMapping);
     when(accountRepository.findAccountByUsername(username)).thenReturn(account);
-
+    when(graphService.buildGraphUri(graphUuid)).thenReturn(URI.create(Namespaces.GRAPH_NAMESPACE + graphUuid));
     Header resultHeader = graphWriteRepository.updateGraph(datasetUrl, graphUuid, delegatingServletInputStream, titleValue, null );
 
     assertEquals(versionHeader, resultHeader);

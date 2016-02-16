@@ -13,8 +13,7 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.util.Utils;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.trialverse.util.Utils;
-import org.drugis.trialverse.util.WebConstants;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.junit.After;
 import org.junit.Before;
@@ -29,9 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
@@ -208,6 +205,7 @@ public class GraphControllerTest {
 
     when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(true);
     when(graphService.copy(targetDatasetUri, targetGraphUri, sourceGraphUri)).thenReturn(URI.create(newVersion));
+    when(graphService.buildGraphUri(graphUuid)).thenReturn(targetGraphUri);
 
     mockMvc.perform(
             put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid)

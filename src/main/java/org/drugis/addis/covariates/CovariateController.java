@@ -49,7 +49,7 @@ public class CovariateController extends AbstractAddisCoreController {
       projectService.checkProjectExistsAndModifiable(user, projectId);
       Covariate covariate = covariateRepository.createForProject(projectId, command.getCovariateDefinitionKey(), command.getName(), command.getMotivation());
       response.setStatus(HttpServletResponse.SC_CREATED);
-      response.setContentType(WebConstants.APPLICATION_JSON_UTF8.toString());
+      response.setContentType(WebConstants.getApplicationJsonUtf8Value().toString());
       response.setHeader("Location", request.getRequestURL() + "/");
       return covariate;
     } else {

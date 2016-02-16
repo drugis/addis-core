@@ -97,7 +97,7 @@ public class TrialverseControllerTest {
     when(triplestoreService.queryNameSpaces()).thenReturn(namespaceCollection);
     mockMvc.perform(get("/namespaces"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].name", is("a")));
     verify(triplestoreService).queryNameSpaces();
@@ -109,7 +109,7 @@ public class TrialverseControllerTest {
     when(triplestoreService.queryNameSpaces()).thenReturn(namespaceCollection);
     mockMvc.perform(get("/namespaces"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", hasSize(0)));
     verify(triplestoreService).queryNameSpaces();
   }
@@ -124,7 +124,7 @@ public class TrialverseControllerTest {
 
     mockMvc.perform(get("/namespaces/UID-1").param("version", versionUid))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.name", is("a")));
 
     verify(triplestoreService).getNamespaceVersioned(versionedUuidAndOwner, versionUid);
@@ -139,7 +139,7 @@ public class TrialverseControllerTest {
 
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/outcomes").param("version", versionUid))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$[0].uri", is(testOutCome.getUri())));
 
     verify(triplestoreService).getOutcomes(versionedUuid, versionUid);
@@ -154,7 +154,7 @@ public class TrialverseControllerTest {
 
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/interventions").param("version", versionUid))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$[0].uri", is(testIntervention.getUri())));
     verify(triplestoreService).getInterventions(versionedUuid, versionUid);
     verify(mappingService).getVersionedUuid(namespaceUid);
@@ -168,7 +168,7 @@ public class TrialverseControllerTest {
 
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/studies").param("version", versionUid))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$[0].studyUid", is(study.getStudyUid())))
             .andExpect(jsonPath("$[0].name", is(study.getName())))
             .andExpect(jsonPath("$[0].title", is(study.getTitle())));
@@ -187,7 +187,7 @@ public class TrialverseControllerTest {
 
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/trialData?interventionUris=uri1&interventionUris=uri2&outcomeUri=" + outcomeUri).principal(user).param("version", versionUid))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", notNullValue()));
 
     verify(triplestoreService).getTrialData(versionedUuid, versionUid, outcomeUri, interventionUris, Collections.emptyList());
@@ -203,7 +203,7 @@ public class TrialverseControllerTest {
 
     mockMvc.perform(get("/namespaces/"+namespaceUid+"/trialData?outcomeUri=" + outcomeUri).param("version", versionUid))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", notNullValue()));
     verify(triplestoreService).getTrialData(versionedUuid, versionUid, outcomeUri, Collections.emptyList(), Collections.emptyList());
     verify(mappingService).getVersionedUuid(namespaceUid);
@@ -218,7 +218,7 @@ public class TrialverseControllerTest {
     ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail").param("version", versionUid));
     resultActions
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$[0]", notNullValue()))
             .andExpect(jsonPath("$[0].title", is("studyTitle")))
             .andExpect(jsonPath("$[0].pubmedUrls", is("publicationURL, moreurls")));
@@ -236,7 +236,7 @@ public class TrialverseControllerTest {
     ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUid").param("version", versionUid));
     resultActions
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", notNullValue()));
 
     verify(triplestoreService).getStudydetails(versionedUuid, studyUid);
@@ -255,7 +255,7 @@ public class TrialverseControllerTest {
     ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUid/arms").param("version", versionUid));
     resultActions
             .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$[0].stringObject", is("string value")))
             .andExpect(jsonPath("$[0].numberObject", is(1)))
             .andExpect(jsonPath("$[0].dateObject", is(new DateTime(1980, 9, 10, 12, 0).getMillis())));
@@ -289,7 +289,7 @@ public class TrialverseControllerTest {
 
     ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUid/treatmentActivities").param("version", versionUid));
     resultActions.andExpect(status().isOk());
-    resultActions.andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
+    resultActions.andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
 
     verify(triplestoreService).getStudyTreatmentActivities(versionedUuid, studyUid);
     verify(mappingService).getVersionedUuid(namespaceUid);
@@ -305,7 +305,7 @@ public class TrialverseControllerTest {
     when(triplestoreService.getStudyData(versionedUuid, studyUid, studyDataSection)).thenReturn(result);
     ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUid/studyData/populationCharacteristics").param("version", versionUid));
     resultActions.andExpect(status().isOk());
-    resultActions.andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
+    resultActions.andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
 
     verify(triplestoreService).getStudyData(versionedUuid, studyUid, studyDataSection);
     verify(mappingService).getVersionedUuid(namespaceUid);
@@ -320,7 +320,7 @@ public class TrialverseControllerTest {
     String versionedUuid = "versionedUuid";
     ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUid/studyData/endpoints").param("version", versionUid));
     resultActions.andExpect(status().isOk());
-    resultActions.andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
+    resultActions.andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
 
     verify(triplestoreService).getStudyData(versionedUuid, studyUid, studyDataSection);
     verify(mappingService).getVersionedUuid(namespaceUid);
@@ -337,7 +337,7 @@ public class TrialverseControllerTest {
 
     ResultActions resultActions = mockMvc.perform(get("/namespaces/"+namespaceUid+"/studiesWithDetail/studyUid/studyData/adverseEvents").param("version", versionUid));
     resultActions.andExpect(status().isOk());
-    resultActions.andExpect(content().contentType(WebConstants.APPLICATION_JSON_UTF8));
+    resultActions.andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()));
 
     verify(triplestoreService).getStudyData(versionedUuid, studyUid, studyDataSection);
     verify(mappingService).getVersionedUuid(namespaceUid);
