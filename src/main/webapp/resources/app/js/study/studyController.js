@@ -159,7 +159,7 @@ define([],
           resolve: {
             datasets: function() {
               return DatasetResource.queryForJson({
-                userUid: $scope.loginUser.id
+                userUid: $scope.loginUserInfo.id
               }).$promise.then(function(result) {
                 return _.filter(result, function(dataset) {
                   return dataset.uri !== 'http://trials.drugis.org/datasets/' + $scope.datasetUUID;
@@ -167,7 +167,7 @@ define([],
               });
             },
             userUuid: function() {
-              return $scope.loginUser.id;
+              return $scope.loginUserInfo.id;
             },
             datasetUuid: function() {
               return $stateParams.datasetUUID;
@@ -176,7 +176,7 @@ define([],
               return $stateParams.studyGraphUuid;
             },
             versionUuid: function() {
-              return $scope.versionUuid;
+              return $scope.currentRevision.uri.split('/versions/')[1];
             },
             successCallback: function() {
               return $scope.reloadDatasets;
@@ -203,7 +203,7 @@ define([],
           });
         }
 
-        // place loaded data into fontend cache
+        // place loaded data into frontend cache
         StudyService.loadJson(getStudyFromBackendDefer.$promise);
 
         // use the loaded data to fill the view and alert the subviews
