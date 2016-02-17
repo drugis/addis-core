@@ -10,7 +10,7 @@ define(['angular','lodash'], function(angular, _) {
               // create branch
               var addItem = {
                 '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
-                of_arm: row.arm.armURI,
+                of_group: row.arm.armURI,
                 of_moment: row.measurementMoment.uri,
                 of_outcome: row.variable.uri
               };
@@ -60,7 +60,7 @@ define(['angular','lodash'], function(angular, _) {
         // ?instance ?armUri ?momentUri ?result_property ?value
         var baseItem = {
           instance: backEndItem['@id'],
-          armUri: backEndItem.of_arm,
+          armUri: backEndItem.of_group,
           momentUri: backEndItem.of_moment,
           outcomeUri: backEndItem.of_outcome,
         };
@@ -93,7 +93,7 @@ define(['angular','lodash'], function(angular, _) {
       }
 
       function isResult(node) {
-        return node.of_outcome && node.of_arm && node.of_moment;
+        return node.of_outcome && node.of_group && node.of_moment;
       }
 
       function isMoment(node) {
@@ -133,7 +133,7 @@ define(['angular','lodash'], function(angular, _) {
           // now its time for cleaning
           var filterdGraph = _.filter(graph, function(node) {
             if (isResult(node)) {
-              return hasArmMap[node.of_arm] && momentMap[node.of_moment] && hasOutcomeMap[node.of_outcome];
+              return hasArmMap[node.of_group] && momentMap[node.of_moment] && hasOutcomeMap[node.of_outcome];
             } else {
               return true;
             }

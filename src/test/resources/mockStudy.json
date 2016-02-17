@@ -83,7 +83,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/078b338c-87f9-43fb-bd5e-565b6ce96ea9",
                  "category_count" : [ "_:b3", "_:b4" ],
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/ddfe1d6f-7d85-4510-89e1-2dd63b5cafc1",
                  "of_outcome" : "http://trials.drugis.org/instances/594fd5f8-a369-4208-aab3-6286a5573b85"
                }, {
@@ -98,7 +98,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/175cd620-9d0b-454a-a6ef-695eaa735a8d",
                  "ontology:count" : 19,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/15384821-2225-4882-87d8-80571cf58f42",
                  "ontology:sample_size" : 176
@@ -125,7 +125,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/22922d7e-47b1-418f-9dfb-e69a4aaed263",
                  "ontology:count" : 5,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/92667789-13e3-4731-a7fd-f9871e04eae3",
                  "ontology:sample_size" : 176
@@ -142,14 +142,14 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/33ebdce5-0b64-49f6-ad45-9fa0bc7109c2",
                  "ontology:count" : 19,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/92667789-13e3-4731-a7fd-f9871e04eae3",
                  "ontology:sample_size" : 177
                }, {
                  "@id" : "http://trials.drugis.org/instances/36320dc0-0b53-4582-b64c-c7c73e522eb6",
                  "ontology:count" : 12,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/1a949b32-23c0-4c0d-bc33-c549ca8f5a32",
                  "ontology:sample_size" : 177
@@ -161,21 +161,21 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/3ae4dedb-6f8f-4723-bb78-4ccb4dd99ce9",
                  "ontology:count" : 18,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/37c68c68-7346-4359-9eb2-4ba93c892072",
                  "ontology:sample_size" : 177
                }, {
                  "@id" : "http://trials.drugis.org/instances/3e4917fe-eb03-46ce-a0d2-c5abf9a6beb9",
                  "ontology:count" : 46,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/6aa7c501-ff6d-4ce1-a56d-2970f20ed5ff",
                  "ontology:sample_size" : 177
                }, {
                  "@id" : "http://trials.drugis.org/instances/438e5766-8cab-453b-865b-f54ba7fb6bc6",
                  "ontology:count" : 39,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/589ba631-9858-44c3-964b-da4857a991b8",
                  "ontology:sample_size" : 177
@@ -187,28 +187,28 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/4d0c2700-bc15-4c79-8e4f-dae4491d58f0",
                  "ontology:count" : 16,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/274c8d22-073c-499c-9f82-6662154b33be",
                  "ontology:sample_size" : 177
                }, {
                  "@id" : "http://trials.drugis.org/instances/5193f851-3d08-405d-8cdb-a05299974a13",
                  "ontology:count" : 8,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/9ebb2205-bafe-456c-8ad1-3391d5f34284",
                  "ontology:sample_size" : 176
                }, {
                  "@id" : "http://trials.drugis.org/instances/54419806-97d5-448a-b6a2-94b15587ba2b",
                  "ontology:count" : 15,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/e8efa0dd-4afc-47ca-8d7a-16c2ce7ccbf1",
                  "ontology:sample_size" : 176
                }, {
                  "@id" : "http://trials.drugis.org/instances/54f6b60c-13a5-4bcc-8d1b-c384cfb62f52",
                  "ontology:count" : 12,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/c33137b6-052e-46d3-ba06-4742554a2485",
                  "ontology:sample_size" : 176
@@ -225,7 +225,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/59bb510b-209c-4eef-a9e0-bc4975b329ad",
                  "ontology:count" : 22,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/eb604010-3b93-4efe-9ca6-5323c477a382",
                  "ontology:sample_size" : 177
@@ -236,7 +236,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/66dbd06a-fd28-45c5-b1ab-74af796fee17",
                  "ontology:count" : 26,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/c33137b6-052e-46d3-ba06-4742554a2485",
                  "ontology:sample_size" : 177
@@ -250,7 +250,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/69ad7ced-bc7b-49e7-8be4-0517ce8479da",
                  "ontology:count" : 26,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/15384821-2225-4882-87d8-80571cf58f42",
                  "ontology:sample_size" : 177
@@ -262,7 +262,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/6ac8d01e-4524-4e64-bffb-e9371ff2588b",
                  "ontology:count" : 37,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/f80cc6ff-613b-42d6-ba91-623d4d492912",
                  "ontology:sample_size" : 176
@@ -274,7 +274,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/73ba8063-fb31-4e30-8704-cf747fa329c1",
                  "ontology:count" : 20,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/37c68c68-7346-4359-9eb2-4ba93c892072",
                  "ontology:sample_size" : 176
@@ -286,28 +286,28 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/7b024c12-d7b3-40db-9024-0a6533377426",
                  "ontology:count" : 157,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/748fdb05-8ebb-4d52-91d3-23bb976013f3",
                  "ontology:sample_size" : 176
                }, {
                  "@id" : "http://trials.drugis.org/instances/7c39e965-064a-4c3a-b41a-04711b7029fc",
                  "ontology:count" : 19,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/43c681ca-1cc5-4043-85a6-30bb4796a7fd",
                  "ontology:sample_size" : 177
                }, {
                  "@id" : "http://trials.drugis.org/instances/8145e775-29f4-424d-a85f-6de52069b1b5",
                  "ontology:count" : 27,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/eff33289-f1de-4cea-97c4-7e4cadeee8c4",
                  "ontology:sample_size" : 176
                }, {
                  "@id" : "http://trials.drugis.org/instances/82126aa4-e9cd-4613-a147-2eefd44abe84",
                  "mean" : "-2.500000e+00",
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/c976f708-60f1-463f-be26-8efeb525b8dd",
                  "ontology:sample_size" : 177,
@@ -315,7 +315,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/87eee06e-0b3a-47a7-86ad-c50bee831fd8",
                  "ontology:count" : 20,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/eb604010-3b93-4efe-9ca6-5323c477a382",
                  "ontology:sample_size" : 176
@@ -336,14 +336,14 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/9aa029c8-7570-4f4a-b06f-1269aea50b87",
                  "ontology:count" : 158,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/748fdb05-8ebb-4d52-91d3-23bb976013f3",
                  "ontology:sample_size" : 177
                }, {
                  "@id" : "http://trials.drugis.org/instances/9b0add98-6e5f-4e4c-aa2a-7143140fc04d",
                  "mean" : "4.300000e+01",
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/ddfe1d6f-7d85-4510-89e1-2dd63b5cafc1",
                  "of_outcome" : "http://trials.drugis.org/instances/e7f9494b-46cb-49f0-8e46-0a38d5c74520",
                  "ontology:sample_size" : 177,
@@ -351,14 +351,14 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/9b93a953-dcf9-4c0b-b4bf-9fef2c55914f",
                  "ontology:count" : 36,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/f15328e2-6c91-433b-8d29-99a3b7bf5a2f",
                  "ontology:sample_size" : 176
                }, {
                  "@id" : "http://trials.drugis.org/instances/9c81c929-483f-4151-97b7-8431c4bfbe20",
                  "ontology:count" : 9,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/eff33289-f1de-4cea-97c4-7e4cadeee8c4",
                  "ontology:sample_size" : 177
@@ -370,14 +370,14 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/a3a05299-c1fc-416a-b8a6-1573445757f0",
                  "ontology:count" : 22,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/1a949b32-23c0-4c0d-bc33-c549ca8f5a32",
                  "ontology:sample_size" : 176
                }, {
                  "@id" : "http://trials.drugis.org/instances/a5ecbd3e-5b3f-4009-897d-5dcfbab4df0b",
                  "ontology:count" : 8,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/c0762af7-5803-4cdf-a64e-c0efc0811f3d",
                  "ontology:sample_size" : 177
@@ -394,14 +394,14 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/bd729250-7da9-4472-a35e-8100b0f8d93c",
                  "ontology:count" : 59,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/f15328e2-6c91-433b-8d29-99a3b7bf5a2f",
                  "ontology:sample_size" : 177
                }, {
                  "@id" : "http://trials.drugis.org/instances/bed2d03d-7575-47b6-9019-06052669f558",
                  "ontology:count" : 30,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/589ba631-9858-44c3-964b-da4857a991b8",
                  "ontology:sample_size" : 176
@@ -423,7 +423,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/c39d706c-5763-4fad-99ca-8d3f9f5fc685",
                  "ontology:count" : 13,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/274c8d22-073c-499c-9f82-6662154b33be",
                  "ontology:sample_size" : 176
@@ -439,7 +439,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/d13d16b1-bb0c-4c1e-89ba-825c2583a5f6",
                  "ontology:count" : 64,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/c09653dd-474d-4ae6-ae13-579429a41224",
                  "ontology:sample_size" : 176
@@ -447,25 +447,25 @@
                  "@id" : "http://trials.drugis.org/instances/d2231959-f40b-4e45-867e-109407c0ad37",
                  "@type" : "ontology:ParticipantFlow",
                  "in_epoch" : "http://trials.drugis.org/instances/8a718f2b-12d3-4c32-b5b2-707546baa39e",
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "ontology:participants_starting" : 177
                }, {
                  "@id" : "http://trials.drugis.org/instances/d30cda0c-4471-4a0c-8d78-d50fcb0117ff",
                  "@type" : "ontology:ParticipantFlow",
                  "in_epoch" : "http://trials.drugis.org/instances/8a718f2b-12d3-4c32-b5b2-707546baa39e",
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "ontology:participants_starting" : 176
                }, {
                  "@id" : "http://trials.drugis.org/instances/d59d4984-eb0d-45af-a1b5-f70de8653148",
                  "ontology:count" : 20,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/43c681ca-1cc5-4043-85a6-30bb4796a7fd",
                  "ontology:sample_size" : 176
                }, {
                  "@id" : "http://trials.drugis.org/instances/daac0080-60a6-46d3-b8e7-723f35adcaef",
                  "ontology:count" : 30,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/30e960d6-5fe4-43fd-83f1-0b605c86ce52",
                  "ontology:sample_size" : 177
@@ -477,7 +477,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/e19521ff-a5d0-4d4b-95c8-5edb2c3b3542",
                  "ontology:count" : 33,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/6aa7c501-ff6d-4ce1-a56d-2970f20ed5ff",
                  "ontology:sample_size" : 176
@@ -488,13 +488,13 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/e1a96601-246a-4219-a8c0-1eb2eb54f434",
                  "category_count" : [ "_:b23", "_:b13" ],
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/ddfe1d6f-7d85-4510-89e1-2dd63b5cafc1",
                  "of_outcome" : "http://trials.drugis.org/instances/594fd5f8-a369-4208-aab3-6286a5573b85"
                }, {
                  "@id" : "http://trials.drugis.org/instances/e5e258d3-44bb-4fdf-9e98-c91f651c467a",
                  "ontology:count" : 27,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/9ebb2205-bafe-456c-8ad1-3391d5f34284",
                  "ontology:sample_size" : 177
@@ -511,7 +511,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/ea42aa64-e10d-4960-8250-03e9bb8d2fa8",
                  "mean" : "4.300000e+01",
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/ddfe1d6f-7d85-4510-89e1-2dd63b5cafc1",
                  "of_outcome" : "http://trials.drugis.org/instances/e7f9494b-46cb-49f0-8e46-0a38d5c74520",
                  "ontology:sample_size" : 176,
@@ -519,7 +519,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/ea5a1e5a-8811-4147-bd69-5310aa087653",
                  "ontology:count" : 19,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/30e960d6-5fe4-43fd-83f1-0b605c86ce52",
                  "ontology:sample_size" : 176
@@ -541,7 +541,7 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/f6848f66-3430-44e8-ac33-4c9b77474438",
                  "mean" : "-2.600000e+00",
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/c976f708-60f1-463f-be26-8efeb525b8dd",
                  "ontology:sample_size" : 176,
@@ -554,28 +554,28 @@
                }, {
                  "@id" : "http://trials.drugis.org/instances/f9f7831a-a5e5-484c-b266-ca4e17829230",
                  "ontology:count" : 61,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/c09653dd-474d-4ae6-ae13-579429a41224",
                  "ontology:sample_size" : 177
                }, {
                  "@id" : "http://trials.drugis.org/instances/fc680675-a6b0-4860-b224-9e6cd7e263c2",
                  "ontology:count" : 24,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/e8efa0dd-4afc-47ca-8d7a-16c2ce7ccbf1",
                  "ontology:sample_size" : 177
                }, {
                  "@id" : "http://trials.drugis.org/instances/fc9fad88-0116-482c-adf5-36e2df73290e",
                  "ontology:count" : 49,
-                 "of_arm" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
+                 "of_group" : "http://trials.drugis.org/instances/960c25d3-830f-41ae-9e23-a8e3fb9fff93",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/f80cc6ff-613b-42d6-ba91-623d4d492912",
                  "ontology:sample_size" : 177
                }, {
                  "@id" : "http://trials.drugis.org/instances/fee2d092-d844-4ec2-b965-b697bd950d4f",
                  "ontology:count" : 11,
-                 "of_arm" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
+                 "of_group" : "http://trials.drugis.org/instances/e1a30a8f-2af8-4151-89f0-4abec7698b0d",
                  "of_moment" : "http://trials.drugis.org/instances/bac17e8e-51f4-4775-bbdf-3fdf1dd19e0f",
                  "of_outcome" : "http://trials.drugis.org/instances/c0762af7-5803-4cdf-a64e-c0efc0811f3d",
                  "ontology:sample_size" : 176
@@ -616,8 +616,8 @@
       "@id" : "http://trials.drugis.org/ontology#of_moment",
       "@type" : "@id"
     },
-    "of_arm" : {
-      "@id" : "http://trials.drugis.org/ontology#of_arm",
+    "of_group" : {
+      "@id" : "http://trials.drugis.org/ontology#of_group",
       "@type" : "@id"
     },
     "of_outcome" : {

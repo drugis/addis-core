@@ -59,7 +59,7 @@ WHERE {
     ?measurement
       ontology:of_moment ?measurementMoment ;
       ontology:of_outcome ?outcomeInstance ;
-      ontology:of_arm ?arm .
+      ontology:of_group ?arm .
 
     OPTIONAL {
       ?measurement

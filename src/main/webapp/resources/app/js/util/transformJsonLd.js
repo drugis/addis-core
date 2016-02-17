@@ -137,6 +137,8 @@ define(['lodash'], function(_) {
     var study = _.find(linkedData['@graph'], propertyValuePredicate('@type', 'ontology:Study'));
     inlineObjects(study, 'has_outcome');
     inlineObjects(study, 'has_arm');
+    inlineObjects(study, 'has_group');
+    inlineObjects(study, 'has_included_population')
     inlineObjects(study, 'has_activity');
     inlineObjects(study, 'has_indication');
     inlineObjects(study, 'has_objective');
@@ -162,8 +164,8 @@ define(['lodash'], function(_) {
         '@id': 'http://trials.drugis.org/ontology#of_moment',
         '@type': '@id'
       },
-      'of_arm': {
-        '@id': 'http://trials.drugis.org/ontology#of_arm',
+      'of_group': {
+        '@id': 'http://trials.drugis.org/ontology#of_group',
         '@type': '@id'
       },
       'mean': {

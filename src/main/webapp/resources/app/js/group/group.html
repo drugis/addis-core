@@ -1,0 +1,17 @@
+<ul class="no-bullet">
+  <li>
+    <span>
+      <strong>Group: </strong>
+    </span>
+    <span ng-if="item['@type'] !== 'ontology:StudyPopulation'">{{item.label}}</span>
+    <span ng-if="item['@type'] ==='ontology:StudyPopulation'">Study Population</span>
+  </li>
+  <li ng-show=" ::item.comment ">
+    <span>
+      <strong>Description: </strong>
+    </span>
+  </li>
+  <li ng-show="::item.comment ">
+    <span style="white-space: pre-wrap; ">{{::item.comment}}</span>
+  </li>
+</ul>

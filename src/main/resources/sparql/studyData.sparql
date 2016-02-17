@@ -40,7 +40,7 @@ SELECT
        ] .
      ?measurementJoinInstance
          ontology:of_outcome ?outcomeUid ;
-         ontology:of_arm ?armInstanceUid ;
+         ontology:of_group ?armInstanceUid ;
          ontology:of_moment ?momentUid .
      ?armInstanceUid rdfs:label ?armLabel ;
              a ontology:Arm .

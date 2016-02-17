@@ -88,7 +88,7 @@ GRAPH ?graphUri {
           GRAPH ?graphUri {
             ?arm a ontology:Arm .
             OPTIONAL {
-              ?participantsStarting ontology:of_arm ?arm .
+              ?participantsStarting ontology:of_group ?arm .
               ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .
             }
           }

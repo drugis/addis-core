@@ -29,7 +29,7 @@ define(['angular-mocks'], function(angularMocks) {
       var graphJsonObject = [{
         '@id': 'http://trials.drugis.org/instances/result1',
         'count': 24,
-        'of_arm': 'http://trials.drugis.org/instances/arm1',
+        'of_group': 'http://trials.drugis.org/instances/arm1',
         'of_moment': 'http://trials.drugis.org/instances/moment1',
         'of_outcome': 'http://trials.drugis.org/instances/outcome1',
         'sample_size': 70
@@ -37,14 +37,14 @@ define(['angular-mocks'], function(angularMocks) {
         '@id': 'http://trials.drugis.org/instances/result2',
         'standard_deviation': 2,
         'mean': 5,
-        'of_arm': 'http://trials.drugis.org/instances/arm2',
+        'of_group': 'http://trials.drugis.org/instances/arm2',
         'of_moment': 'http://trials.drugis.org/instances/moment1',
         'of_outcome': 'http://trials.drugis.org/instances/outcome1',
         'sample_size': 33
       }, {
         '@id': 'http://trials.drugis.org/instances/result3',
         'count': 3,
-        'of_arm': 'http://trials.drugis.org/instances/arm2',
+        'of_group': 'http://trials.drugis.org/instances/arm2',
         'of_moment': 'http://trials.drugis.org/instances/moment1',
         'of_outcome': 'http://trials.drugis.org/instances/outcome2',
         'sample_size': 33
@@ -119,7 +119,7 @@ define(['angular-mocks'], function(angularMocks) {
             var expextedGraph = [{
               '@id': 'http://trials.drugis.org/instances/newUuid',
               'count': 123,
-              'of_arm': 'http://trials.drugis.org/instances/arm1',
+              'of_group': 'http://trials.drugis.org/instances/arm1',
               'of_moment': 'http://trials.drugis.org/instances/moment1',
               'of_outcome': 'http://trials.drugis.org/instances/outcome1',
             }];
@@ -141,7 +141,7 @@ define(['angular-mocks'], function(angularMocks) {
         var graphJsonObject = [{
           '@id': 'http://trials.drugis.org/instances/result1',
           'count': 24,
-          'of_arm': 'http://trials.drugis.org/instances/arm1',
+          'of_group': 'http://trials.drugis.org/instances/arm1',
           'of_moment': 'http://trials.drugis.org/instances/moment1',
           'of_outcome': 'http://trials.drugis.org/instances/outcome1',
           'sample_size': 70
@@ -177,7 +177,7 @@ define(['angular-mocks'], function(angularMocks) {
             var expextedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
               'count': 24,
-              'of_arm': 'http://trials.drugis.org/instances/arm1',
+              'of_group': 'http://trials.drugis.org/instances/arm1',
               'of_moment': 'http://trials.drugis.org/instances/moment1',
               'of_outcome': 'http://trials.drugis.org/instances/outcome1',
               'sample_size': 789
@@ -260,7 +260,7 @@ define(['angular-mocks'], function(angularMocks) {
         var graphJsonObject = [{
           '@id': 'http://trials.drugis.org/instances/result1',
           'count': 24,
-          'of_arm': 'http://trials.drugis.org/instances/arm1',
+          'of_group': 'http://trials.drugis.org/instances/arm1',
           'of_moment': 'http://trials.drugis.org/instances/moment1',
           'of_outcome': 'http://trials.drugis.org/instances/outcome1',
           'sample_size': 70
@@ -279,7 +279,7 @@ define(['angular-mocks'], function(angularMocks) {
             var expextedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
               'count': 24,
-              'of_arm': 'http://trials.drugis.org/instances/arm1',
+              'of_group': 'http://trials.drugis.org/instances/arm1',
               'of_moment': 'http://trials.drugis.org/instances/moment1',
               'of_outcome': 'http://trials.drugis.org/instances/outcome1',
             }];
@@ -314,7 +314,7 @@ define(['angular-mocks'], function(angularMocks) {
 
         var graphJsonObject = [{
           '@id': 'http://trials.drugis.org/instances/result1',
-          'of_arm': 'http://trials.drugis.org/instances/arm1',
+          'of_group': 'http://trials.drugis.org/instances/arm1',
           'of_moment': 'http://trials.drugis.org/instances/moment1',
           'of_outcome': 'http://trials.drugis.org/instances/outcome1',
           'sample_size': 70
@@ -333,7 +333,7 @@ define(['angular-mocks'], function(angularMocks) {
             var expextedGraph = [{
               '@id': 'http://trials.drugis.org/instances/result1',
               'count': 24,
-              'of_arm': 'http://trials.drugis.org/instances/arm1',
+              'of_group': 'http://trials.drugis.org/instances/arm1',
               'of_moment': 'http://trials.drugis.org/instances/moment1',
               'of_outcome': 'http://trials.drugis.org/instances/outcome1',
             }];
@@ -427,7 +427,7 @@ define(['angular-mocks'], function(angularMocks) {
 
       var result1 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_arm': arm1['@id'],
+        'of_group': arm1['@id'],
         'of_moment': measurementMoment1['@id'],
         'of_outcome': outcome1['@id'],
         'sample_size': 70
@@ -435,7 +435,7 @@ define(['angular-mocks'], function(angularMocks) {
 
       var result2 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_arm': arm2['@id'],
+        'of_group': arm2['@id'],
         'of_moment': measurementMoment2['@id'],
         'of_outcome': outcome2['@id'],
         'count': 3
@@ -443,7 +443,7 @@ define(['angular-mocks'], function(angularMocks) {
 
       var result3 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_arm': 'non existent arm id',
+        'of_group': 'non existent arm id',
         'of_moment': measurementMoment2['@id'],
         'of_outcome': outcome2['@id'],
         'count': 6
@@ -451,7 +451,7 @@ define(['angular-mocks'], function(angularMocks) {
 
       var result4 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_arm': arm1['@id'],
+        'of_group': arm1['@id'],
         'of_moment': 'non existent moment id',
         'of_outcome': outcome1['@id'],
         'sample_size': 140
@@ -459,7 +459,7 @@ define(['angular-mocks'], function(angularMocks) {
 
       var result5 = {
         '@id': 'http://trials.drugis.org/instances/result1',
-        'of_arm': arm2['@id'],
+        'of_group': arm2['@id'],
         'of_moment': measurementMoment2['@id'],
         'of_outcome': 'non existent outcome id',
         'count': 6

@@ -14,7 +14,7 @@ SELECT ?armUid ?armLabel ?numberOfParticipantsStarting {
        OPTIONAL {
          ?participantFlow a ontology:ParticipantFlow ;
              ontology:participants_starting ?numberOfParticipantsStarting ;
-             ontology:of_arm ?armUid .
+             ontology:of_group ?armUid .
        }
    }
  }

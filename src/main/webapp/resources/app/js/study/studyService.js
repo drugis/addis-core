@@ -23,8 +23,8 @@ define(['lodash'], function(_) {
         '@id': 'http://trials.drugis.org/ontology#of_moment',
         '@type': '@id'
       },
-      'of_arm': {
-        '@id': 'http://trials.drugis.org/ontology#of_arm',
+      'of_group': {
+        '@id': 'http://trials.drugis.org/ontology#of_group',
         '@type': '@id'
       },
       'mean': {
@@ -224,6 +224,7 @@ define(['lodash'], function(_) {
           label: study.label,
           has_activity: [],
           has_arm: [],
+          has_group: [],
           has_eligibility_criteria: [],
           has_epochs: [],
           has_indication: [],

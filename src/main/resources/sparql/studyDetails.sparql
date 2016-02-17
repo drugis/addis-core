@@ -100,7 +100,7 @@ GRAPH graph:$studyGraphUid {
         WHERE {
             ?arm a ontology:Arm .
             OPTIONAL {
-              ?participantsStarting ontology:of_arm ?arm .
+              ?participantsStarting ontology:of_group ?arm .
               ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .
             }
         } GROUP BY ?studyUri
