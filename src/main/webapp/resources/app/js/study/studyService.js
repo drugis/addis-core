@@ -55,6 +55,10 @@ define(['lodash'], function(_) {
         '@id': 'http://trials.drugis.org/ontology#has_outcome',
         '@type': '@id'
       },
+      'has_included_population': {
+        '@id': 'http://trials.drugis.org/ontology#has_included_population',
+        '@type': '@id'
+      },
       'has_primary_epoch': {
         '@id': 'http://trials.drugis.org/ontology#has_primary_epoch',
         '@type': '@id'
@@ -85,6 +89,10 @@ define(['lodash'], function(_) {
       },
       'has_arm': {
         '@id': 'http://trials.drugis.org/ontology#has_arm',
+        '@type': '@id'
+      },
+      'has_group': {
+        '@id': 'http://trials.drugis.org/ontology#has_group',
         '@type': '@id'
       },
       'has_blinding': {
@@ -225,6 +233,10 @@ define(['lodash'], function(_) {
           has_activity: [],
           has_arm: [],
           has_group: [],
+          has_included_population: [{
+            '@id': 'instance:' + UUIDService.generate(),
+            '@type': 'ontology:StudyPopulation'
+          }],
           has_eligibility_criteria: [],
           has_epochs: [],
           has_indication: [],

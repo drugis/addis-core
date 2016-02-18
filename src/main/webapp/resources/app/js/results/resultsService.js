@@ -10,7 +10,7 @@ define(['angular', 'lodash'], function(angular, _) {
             // create branch
             var addItem = {
               '@id': 'http://trials.drugis.org/instances/' + UUIDService.generate(),
-              of_group: row.arm ? row.arm.armURI : row.group.groupUri,
+              of_group: row.group.armURI || row.group.groupUri,
               of_moment: row.measurementMoment.uri,
               of_outcome: row.variable.uri
             };

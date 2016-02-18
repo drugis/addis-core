@@ -35,7 +35,7 @@ define(['lodash'], function(_) {
 
     function queryItems() {
       return StudyService.getStudy().then(function(study) {
-        var groups = study.has_group ? study.has_group.map(toFrontEnd) : [];
+        var groups = study.has_group ? study.has_group : [];
         var studyPopulation = study.has_included_population ? study.has_included_population : [];
         return groups.concat(studyPopulation).map(toFrontEnd);
       });
