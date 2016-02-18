@@ -6,8 +6,12 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
 SELECT
-  ?graphUri ?studyUri ?title ?label ?studySize ?allocation ?blinding ?objective ?drugNames ?inclusionCriteria
- ?publications ?status ?numberOfCenters ?indication ?startDate ?endDate ?numberOfArms ?doseType WHERE {
+  ?graphUri ?studyUri ?title ?label ?allocation ?blinding ?objective ?inclusionCriteria
+  (COUNT(?arm) as ?numberOfArms)
+  (SUM(?numberOfParticipantsStarting) as ?studySize)
+  (group_concat(?publication; separator = ', ') as ?publications)
+  (group_concat(?drugName; separator = ', ') as ?drugNames)
+  ?status ?numberOfCenters ?indication ?startDate ?endDate ?doseType WHERE {
 GRAPH ?graphUri {
     ?studyUri
       rdfs:label ?label ;
@@ -60,39 +64,23 @@ GRAPH ?graphUri {
     }
     OPTIONAL
     {
-      SELECT ?graphUri (group_concat(?drugName; separator = ', ') as ?drugNames)
-      WHERE {
-        GRAPH ?graphUri {
-          ?instance owl:sameAs ?drug .
-          ?instance a ontology:Drug .
-          ?instance rdfs:label ?drugName .
-        }
-      } GROUP BY ?graphUri
+      ?instance owl:sameAs ?drug .
+      ?instance a ontology:Drug .
+      ?instance rdfs:label ?drugName .
     }
     OPTIONAL
     {
-      SELECT ?graphUri (group_concat(?publication; separator = ', ') as ?publications)
-      WHERE {
-        GRAPH ?graphUri {
-          OPTIONAL {
-            ?studyUri ontology:has_publication [
-              ontology:has_id ?publication
-            ] .
-          }
-        }
-      } GROUP BY ?graphUri
+      ?studyUri ontology:has_publication [
+        ontology:has_id ?publication
+      ] .
     }
     OPTIONAL {
-      SELECT ?graphUri (COUNT(?arm) as ?numberOfArms) (SUM(?numberOfParticipantsStarting) as ?studySize)
-        WHERE {
-          GRAPH ?graphUri {
-            ?arm a ontology:Arm .
-            OPTIONAL {
-              ?participantsStarting ontology:of_group ?arm .
-              ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .
-            }
-          }
-        } GROUP BY ?graphUri
+      ?arm a ontology:Arm .
+      OPTIONAL {
+        ?participantsStarting ontology:of_group ?arm .
+        ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .
+      }
     }
   }
-}
+} GROUP BY ?graphUri ?studyUri ?title ?label ?allocation ?blinding ?objective ?inclusionCriteria ?status ?numberOfCenters ?indication ?startDate ?endDate ?doseType
+
