@@ -3,8 +3,7 @@
     <span>
       <strong>Group: </strong>
     </span>
-    <span ng-if="item['@type'] !== 'ontology:StudyPopulation'">{{item.label}}</span>
-    <span ng-if="item['@type'] ==='ontology:StudyPopulation'">Study Population</span>
+    <span>{{item.label}}</span>
   </li>
   <li ng-show=" ::item.comment ">
     <span>

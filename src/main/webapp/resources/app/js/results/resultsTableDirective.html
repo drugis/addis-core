@@ -6,8 +6,8 @@
     <th ng-repeat="inputHeader in inputHeaders">{{inputHeader}}</th>
   </tr>
   <tr ng-repeat="inputRow in inputRows">
-    <td class="y-head" rowspan="{{inputRow.numberOfArms}}" ng-if="$index % inputRow.numberOfArms === 0" style="vertical-align:baseline">{{inputRow.measurementMoment.label}}</td>
-    <td class="y-head">{{inputRow.arm.label}}</td>
+    <td class="y-head" rowspan="{{inputRow.numberOfGroups}}" ng-if="$index % inputRow.numberOfGroups === 0" style="vertical-align:baseline">{{inputRow.measurementMoment.label}}</td>
+    <td class="y-head">{{inputRow.group.label}}</td>
     <td class="input-cell" ng-repeat="inputColumn in inputRow.inputColumns">
       <result-input-directive is-editing-allowed="isEditingAllowed" row="inputRow" column="inputColumn" />
     </td>

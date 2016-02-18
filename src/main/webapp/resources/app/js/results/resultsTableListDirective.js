@@ -1,8 +1,8 @@
 'use strict';
-define([], function() {
-  var dependencies = ['$q', '$injector', '$stateParams', 'ArmService', 'MeasurementMomentService'];
+define(['lodash'], function(_) {
+  var dependencies = ['$q', '$injector', '$stateParams', 'ArmService', 'MeasurementMomentService', 'GroupService'];
 
-  var resultsTableListDirective = function($q, $injector, $stateParams, ArmService, MeasurementMomentService) {
+  var resultsTableListDirective = function($q, $injector, $stateParams, ArmService, MeasurementMomentService, GroupService) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/results/resultsTableListDirective.html',
@@ -14,7 +14,7 @@ define([], function() {
       link: function(scope) {
         var refreshListener;
         var variableService = $injector.get(scope.variableType + 'Service');
-        var variablesPromise, armsPromise, measurementMomentsPromise;
+        var variablesPromise, armsPromise, groupsPromise, measurementMomentsPromise;
         scope.showResults = false;
 
         function reloadResultTables() {
@@ -29,6 +29,11 @@ define([], function() {
             return result;
           });
 
+          groupsPromise = GroupService.queryItems($stateParams.studyUUID).then(function(result) {
+            scope.groups = result;
+            return result;
+          });
+
           measurementMomentsPromise = MeasurementMomentService.queryItems($stateParams.studyUUID).then(function(result) {
             scope.measurementMoments = result;
             return result;
@@ -38,22 +43,22 @@ define([], function() {
             scope.variables = result;
           });
 
-          $q.all([armsPromise, variablesPromise]).then(function() {
+          $q.all([armsPromise, groupsPromise, variablesPromise]).then(function() {
             var isAnyMeasuredVariable = _.find(scope.variables, function(variable) {
               return variable.measuredAtMoments.length > 0;
             });
-            scope.showResults = isAnyMeasuredVariable && scope.arms.length > 0;
+            scope.showResults = isAnyMeasuredVariable && (scope.arms.length > 0 || scope.groups.length > 0);
           });
 
-          $q.all([armsPromise, measurementMomentsPromise, variablesPromise]).then(function() {
+          $q.all([armsPromise, groupsPromise, measurementMomentsPromise, variablesPromise]).then(function() {
             // register listnener as the loading is now done
-            refreshListener = scope.$on('refreshResults', function(event, args) {
+            refreshListener = scope.$on('refreshResults', function() {
               reloadResultTables();
             });
-          })
+          });
         }
 
-        // initialize the directive 
+        // initialize the directive
         reloadResultTables();
 
       }
