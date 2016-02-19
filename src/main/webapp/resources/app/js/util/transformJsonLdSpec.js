@@ -3,211 +3,219 @@ define(['lodash', 'util/transformJsonLd'], function(_, transformJsonLd) {
   describe('transformJsonLd', function() {
 
     var context = {
-      "standard_deviation": {
-        "@id": "http://trials.drugis.org/ontology#standard_deviation",
-        "@type": "http://www.w3.org/2001/XMLSchema#double"
+      'standard_deviation': {
+        '@id': 'http://trials.drugis.org/ontology#standard_deviation',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
       },
-      "sample_size": {
-        "@id": "http://trials.drugis.org/ontology#sample_size",
-        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      'sample_size': {
+        '@id': 'http://trials.drugis.org/ontology#sample_size',
+        '@type': 'http://www.w3.org/2001/XMLSchema#integer'
       },
-      "of_outcome": {
-        "@id": "http://trials.drugis.org/ontology#of_outcome",
-        "@type": "@id"
+      'of_outcome': {
+        '@id': 'http://trials.drugis.org/ontology#of_outcome',
+        '@type': '@id'
       },
-      "of_moment": {
-        "@id": "http://trials.drugis.org/ontology#of_moment",
-        "@type": "@id"
+      'of_moment': {
+        '@id': 'http://trials.drugis.org/ontology#of_moment',
+        '@type': '@id'
       },
-      "of_group": {
-        "@id": "http://trials.drugis.org/ontology#of_group",
-        "@type": "@id"
+      'of_group': {
+        '@id': 'http://trials.drugis.org/ontology#of_group',
+        '@type': '@id'
       },
-      "mean": {
-        "@id": "http://trials.drugis.org/ontology#mean",
-        "@type": "http://www.w3.org/2001/XMLSchema#double"
+      'mean': {
+        '@id': 'http://trials.drugis.org/ontology#mean',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
       },
-      "sameAs": {
-        "@id": "http://www.w3.org/2002/07/owl#sameAs",
-        "@type": "@id"
+      'sameAs': {
+        '@id': 'http://www.w3.org/2002/07/owl#sameAs',
+        '@type': '@id'
       },
-      "measurementType": {
-        "@id": "http://trials.drugis.org/ontology#measurementType",
-        "@type": "@id"
+      'measurementType': {
+        '@id': 'http://trials.drugis.org/ontology#measurementType',
+        '@type': '@id'
       },
-      "label": {
-        "@id": "http://www.w3.org/2000/01/rdf-schema#label",
-        "@type": "http://www.w3.org/2001/XMLSchema#string"
+      'label': {
+        '@id': 'http://www.w3.org/2000/01/rdf-schema#label',
+        '@type': 'http://www.w3.org/2001/XMLSchema#string'
       },
-      "comment": {
-        "@id": "http://www.w3.org/2000/01/rdf-schema#comment",
-        "@type": "http://www.w3.org/2001/XMLSchema#string"
+      'comment': {
+        '@id': 'http://www.w3.org/2000/01/rdf-schema#comment',
+        '@type': 'http://www.w3.org/2001/XMLSchema#string'
       },
-      "categoryList": {
-        "@id": "http://trials.drugis.org/ontology#categoryList",
-        "@type": "@id"
+      'categoryList': {
+        '@id': 'http://trials.drugis.org/ontology#categoryList',
+        '@type': '@id'
       },
-      "has_outcome": {
-        "@id": "http://trials.drugis.org/ontology#has_outcome",
-        "@type": "@id"
+      'has_outcome': {
+        '@id': 'http://trials.drugis.org/ontology#has_outcome',
+        '@type': '@id'
       },
-      "has_primary_epoch": {
-        "@id": "http://trials.drugis.org/ontology#has_primary_epoch",
-        "@type": "@id"
+      'has_included_population': {
+        '@id': 'http://trials.drugis.org/ontology#has_included_population',
+        '@type': '@id'
       },
-      "has_publication": {
-        "@id": "http://trials.drugis.org/ontology#has_publication",
-        "@type": "@id"
+      'has_primary_epoch': {
+        '@id': 'http://trials.drugis.org/ontology#has_primary_epoch',
+        '@type': '@id'
       },
-      "has_allocation": {
-        "@id": "http://trials.drugis.org/ontology#has_allocation",
-        "@type": "@id"
+      'has_publication': {
+        '@id': 'http://trials.drugis.org/ontology#has_publication',
+        '@type': '@id'
       },
-      "has_objective": {
-        "@id": "http://trials.drugis.org/ontology#has_objective",
-        "@type": "@id"
+      'has_allocation': {
+        '@id': 'http://trials.drugis.org/ontology#has_allocation',
+        '@type': '@id'
       },
-      "has_indication": {
-        "@id": "http://trials.drugis.org/ontology#has_indication",
-        "@type": "@id"
+      'has_objective': {
+        '@id': 'http://trials.drugis.org/ontology#has_objective',
+        '@type': '@id'
       },
-      "has_activity": {
-        "@id": "http://trials.drugis.org/ontology#has_activity",
-        "@type": "@id"
+      'has_indication': {
+        '@id': 'http://trials.drugis.org/ontology#has_indication',
+        '@type': '@id'
       },
-      "status": {
-        "@id": "http://trials.drugis.org/ontology#status",
-        "@type": "@id"
+      'has_activity': {
+        '@id': 'http://trials.drugis.org/ontology#has_activity',
+        '@type': '@id'
       },
-      "has_arm": {
-        "@id": "http://trials.drugis.org/ontology#has_arm",
-        "@type": "@id"
+      'status': {
+        '@id': 'http://trials.drugis.org/ontology#status',
+        '@type': '@id'
       },
-      "has_blinding": {
-        "@id": "http://trials.drugis.org/ontology#has_blinding",
-        "@type": "@id"
+      'has_arm': {
+        '@id': 'http://trials.drugis.org/ontology#has_arm',
+        '@type': '@id'
       },
-      "has_epochs": {
-        "@id": "http://trials.drugis.org/ontology#has_epochs",
-        "@container": "@list"
+      'has_group': {
+        '@id': 'http://trials.drugis.org/ontology#has_group',
+        '@type': '@id'
       },
-      "has_eligibility_criteria": {
-        "@id": "http://trials.drugis.org/ontology#has_eligibility_criteria",
-        "@type": "@id"
+      'has_blinding': {
+        '@id': 'http://trials.drugis.org/ontology#has_blinding',
+        '@type': '@id'
       },
-      "has_number_of_centers": {
-        "@id": "http://trials.drugis.org/ontology#has_number_of_centers",
-        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      'has_epochs': {
+        '@id': 'http://trials.drugis.org/ontology#has_epochs',
+        '@container': '@list'
       },
-      "rest": {
-        "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest",
-        "@type": "@id"
+      'has_eligibility_criteria': {
+        '@id': 'http://trials.drugis.org/ontology#has_eligibility_criteria',
+        '@type': '@id'
       },
-      "first": {
-        "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#first",
-        "@type": "@id"
+      'has_number_of_centers': {
+        '@id': 'http://trials.drugis.org/ontology#has_number_of_centers',
+        '@type': 'http://www.w3.org/2001/XMLSchema#integer'
       },
-      "of_variable": {
-        "@id": "http://trials.drugis.org/ontology#of_variable",
-        "@type": "@id"
+      'rest': {
+        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest',
+        '@type': '@id'
       },
-      "is_measured_at": {
-        "@id": "http://trials.drugis.org/ontology#is_measured_at",
-        "@type": "@id"
+      'first': {
+        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first',
+        '@type': '@id'
       },
-      "has_result_property": {
-        "@id": "http://trials.drugis.org/ontology#has_result_property",
-        "@type": "@id"
+      'of_variable': {
+        '@id': 'http://trials.drugis.org/ontology#of_variable',
+        '@type': '@id'
       },
-      "count": {
-        "@id": "http://trials.drugis.org/ontology#count",
-        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      'is_measured_at': {
+        '@id': 'http://trials.drugis.org/ontology#is_measured_at',
+        '@type': '@id'
       },
-      "has_drug_treatment": {
-        "@id": "http://trials.drugis.org/ontology#has_drug_treatment",
-        "@type": "@id"
+      'has_result_property': {
+        '@id': 'http://trials.drugis.org/ontology#has_result_property',
+        '@type': '@id'
       },
-      "has_activity_application": {
-        "@id": "http://trials.drugis.org/ontology#has_activity_application",
-        "@type": "@id"
+      'count': {
+        '@id': 'http://trials.drugis.org/ontology#count',
+        '@type': 'http://www.w3.org/2001/XMLSchema#integer'
       },
-      "category_count": {
-        "@id": "http://trials.drugis.org/ontology#category_count",
-        "@type": "@id"
+      'has_drug_treatment': {
+        '@id': 'http://trials.drugis.org/ontology#has_drug_treatment',
+        '@type': '@id'
       },
-      "duration": {
-        "@id": "http://trials.drugis.org/ontology#duration",
-        "@type": "http://www.w3.org/2001/XMLSchema#duration"
+      'has_activity_application': {
+        '@id': 'http://trials.drugis.org/ontology#has_activity_application',
+        '@type': '@id'
       },
-      "unit": {
-        "@id": "http://trials.drugis.org/ontology#unit",
-        "@type": "@id"
+      'category_count': {
+        '@id': 'http://trials.drugis.org/ontology#category_count',
+        '@type': '@id'
       },
-      "dosingPeriodicity": {
-        "@id": "http://trials.drugis.org/ontology#dosingPeriodicity",
-        "@type": "http://www.w3.org/2001/XMLSchema#duration"
+      'duration': {
+        '@id': 'http://trials.drugis.org/ontology#duration',
+        '@type': 'http://www.w3.org/2001/XMLSchema#duration'
       },
-      "value": {
-        "@id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#value",
-        "@type": "http://www.w3.org/2001/XMLSchema#double"
+      'unit': {
+        '@id': 'http://trials.drugis.org/ontology#unit',
+        '@type': '@id'
       },
-      "category": {
-        "@id": "http://trials.drugis.org/ontology#category",
-        "@type": "http://www.w3.org/2001/XMLSchema#string"
+      'dosingPeriodicity': {
+        '@id': 'http://trials.drugis.org/ontology#dosingPeriodicity',
+        '@type': 'http://www.w3.org/2001/XMLSchema#duration'
       },
-      "has_id": {
-        "@id": "http://trials.drugis.org/ontology#has_id",
-        "@type": "@id"
+      'value': {
+        '@id': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#value',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
       },
-      "time_offset": {
-        "@id": "http://trials.drugis.org/ontology#time_offset",
-        "@type": "http://www.w3.org/2001/XMLSchema#duration"
+      'category': {
+        '@id': 'http://trials.drugis.org/ontology#category',
+        '@type': 'http://www.w3.org/2001/XMLSchema#string'
       },
-      "relative_to_epoch": {
-        "@id": "http://trials.drugis.org/ontology#relative_to_epoch",
-        "@type": "@id"
+      'has_id': {
+        '@id': 'http://trials.drugis.org/ontology#has_id',
+        '@type': '@id'
       },
-      "relative_to_anchor": {
-        "@id": "http://trials.drugis.org/ontology#relative_to_anchor",
-        "@type": "@id"
+      'time_offset': {
+        '@id': 'http://trials.drugis.org/ontology#time_offset',
+        '@type': 'http://www.w3.org/2001/XMLSchema#duration'
       },
-      "applied_to_arm": {
-        "@id": "http://trials.drugis.org/ontology#applied_to_arm",
-        "@type": "@id"
+      'relative_to_epoch': {
+        '@id': 'http://trials.drugis.org/ontology#relative_to_epoch',
+        '@type': '@id'
       },
-      "applied_in_epoch": {
-        "@id": "http://trials.drugis.org/ontology#applied_in_epoch",
-        "@type": "@id"
+      'relative_to_anchor': {
+        '@id': 'http://trials.drugis.org/ontology#relative_to_anchor',
+        '@type': '@id'
       },
-      "participants_starting": {
-        "@id": "http://trials.drugis.org/ontology#participants_starting",
-        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      'applied_to_arm': {
+        '@id': 'http://trials.drugis.org/ontology#applied_to_arm',
+        '@type': '@id'
       },
-      "in_epoch": {
-        "@id": "http://trials.drugis.org/ontology#in_epoch",
-        "@type": "@id"
+      'applied_in_epoch': {
+        '@id': 'http://trials.drugis.org/ontology#applied_in_epoch',
+        '@type': '@id'
+      },
+      'participants_starting': {
+        '@id': 'http://trials.drugis.org/ontology#participants_starting',
+        '@type': 'http://www.w3.org/2001/XMLSchema#integer'
+      },
+      'in_epoch': {
+        '@id': 'http://trials.drugis.org/ontology#in_epoch',
+        '@type': '@id'
       },
       'treatment_dose': {
         '@id': 'http://trials.drugis.org/ontology#treatment_dose',
         '@type': '@id'
       },
-      "treatment_min_dose": {
-        "@id": "http://trials.drugis.org/ontology#treatment_min_dose",
-        "@type": "@id"
+      'treatment_min_dose': {
+        '@id': 'http://trials.drugis.org/ontology#treatment_min_dose',
+        '@type': '@id'
       },
-      "treatment_max_dose": {
-        "@id": "http://trials.drugis.org/ontology#treatment_max_dose",
-        "@type": "@id"
+      'treatment_max_dose': {
+        '@id': 'http://trials.drugis.org/ontology#treatment_max_dose',
+        '@type': '@id'
       },
-      "treatment_has_drug": {
-        "@id": "http://trials.drugis.org/ontology#treatment_has_drug",
-        "@type": "@id"
+      'treatment_has_drug': {
+        '@id': 'http://trials.drugis.org/ontology#treatment_has_drug',
+        '@type': '@id'
       },
-      "conversionMultiplier": {
-        "@id": "http://qudt.org/schema/qudt#conversionMultiplier",
-        "@type": "http://www.w3.org/2001/XMLSchema#double"
+      'conversionMultiplier': {
+        '@id': 'http://qudt.org/schema/qudt#conversionMultiplier',
+        '@type': 'http://www.w3.org/2001/XMLSchema#double'
       },
-      "ontology": "http://trials.drugis.org/ontology#"
+      'ontology': 'http://trials.drugis.org/ontology#'
     };
 
     var emptyStudy = {
@@ -230,6 +238,8 @@ define(['lodash', 'util/transformJsonLd'], function(_, transformJsonLd) {
         "comment": "my study",
         "has_outcome": [],
         "has_arm": [],
+        "has_group": [],
+        "has_included_population": [],
         "has_activity": [],
         "has_indication": [],
         "has_objective": [],

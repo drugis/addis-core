@@ -148,8 +148,6 @@ define(['lodash'], function(_) {
       inlineListLinkedListType(study, 'has_epochs');
     }
 
-
-
     linkedData['@context'] = {
       'standard_deviation': {
         '@id': 'http://trials.drugis.org/ontology#standard_deviation',
