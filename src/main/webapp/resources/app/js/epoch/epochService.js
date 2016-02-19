@@ -35,8 +35,7 @@ define(['lodash'], function(_) {
 
       function queryItems() {
         return StudyService.getStudy().then(function(study) {
-          return study.has_epochs
-            .map(tofrontEnd)
+          return _.map(study.has_epochs, tofrontEnd)
             .map(addPosition)
             .map(addIsPrimary.bind(this, study.has_primary_epoch));
         });

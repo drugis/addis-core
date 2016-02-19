@@ -48,7 +48,7 @@ define(['lodash'],
             measurementMoment.epoch = _.find(epochs, function(epoch) {
               return measurementMoment.epochUri === epoch.uri;
             });
-            measurementMoment.epochLabel = measurementMoment.epoch.label;
+            measurementMoment.epochLabel = measurementMoment.epoch ? measurementMoment.epoch.label : undefined;
             return measurementMoment;
           });
 
