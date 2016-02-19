@@ -1,0 +1,51 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix study: <http://trials.drugis.org/studies/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ontology: <http://trials.drugis.org/ontology#> .
+@prefix graph: <http://trials.drugis.org/graphs/> .
+@prefix instance: <http://trials.drugis.org/instances/> .
+
+  study:12345-abcde
+    rdf:type ontology:Study ;
+    rdfs:label "McPartlin et al, 1998" ;
+    rdfs:comment "A comparison of once-daily venlafaxine XR and paroxetine in depressed outpatients treated in general practice. Primary Care Psychiatry 1998; 4: 127-132" ;
+    ontology:has_allocation ontology:AllocationRandomized ;
+    ontology:has_blinding ontology:DoubleBlind ;
+    ontology:has_number_of_centers 43 ;
+    ontology:has_objective [
+      rdfs:comment "To evaluate the efficacy and safety of venlafaxine XR and paroxetine"
+    ] ;
+    ontology:has_eligibility_criteria [
+      rdfs:comment "Inclusion criteria:\n\nMale or female outpatients at least 18 years major depression"
+    ] ;
+    ontology:status ontology:StatusCompleted ;
+    ontology:has_start_date "2008-04-01"^^<http://www.w3.org/2001/XMLSchema#date> ;
+    ontology:has_end_date "2009-04-01"^^<http://www.w3.org/2001/XMLSchema#date> ;
+    ontology:has_arm instance:23e55d1c-6dd1-40f8-a63b-937619712e58 ;
+    ontology:has_publication [
+      ontology:has_id
+      <http://pubmed.com/21282560>
+    ] .
+
+
+<http://trials.drugis.org/instances/27307f7e-ba1b-46a5-be38-431ef6c69b87>
+        a       <http://trials.drugis.org/ontology#TreatmentActivity> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Valsartan" ;
+        <http://trials.drugis.org/ontology#has_activity_application>
+        [
+          <http://trials.drugis.org/ontology#applied_in_epoch> <http://trials.drugis.org/instances/22a1529f-4e91-4847-8040-1c748dd3acd2> ;
+          <http://trials.drugis.org/ontology#applied_to_arm> <http://trials.drugis.org/instances/23e55d1c-6dd1-40f8-a63b-937619712e58>
+        ];
+        <http://trials.drugis.org/ontology#has_drug_treatment>
+        [
+          a <http://trials.drugis.org/ontology#TitratedDoseDrugTreatment>
+        ].
+
+<http://trials.drugis.org/instances/13c604a2-78ae-48a0-9425-6b5007fddc26>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Azilsartan" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://trials.drugis.org/concepts/26bc78a4-a395-4d74-bf95-eaa1ff582a56> .
+

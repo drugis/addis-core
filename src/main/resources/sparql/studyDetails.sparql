@@ -4,15 +4,28 @@ PREFIX dataset: <http://trials.drugis.org/datasets/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX graph: <http://trials.drugis.org/graphs/>
 
 SELECT
-  ?graphUri ?studyUri ?title ?label ?allocation ?blinding ?objective ?inclusionCriteria
-  (COUNT(distinct ?arm) as ?numberOfArms)
-  (SUM(distinct ?numberOfParticipantsStarting) as ?studySize)
-  (group_concat(DISTINCT ?publication; separator = ', ') as ?publications)
-  (group_concat(DISTINCT ?drugName; separator = ', ') as ?drugNames)
-  ?status ?numberOfCenters ?indication ?startDate ?endDate ?doseType WHERE {
-GRAPH ?graphUri {
+    ?studyUri
+    ?title
+    ?label
+    ?allocation
+    ?blinding
+    ?objective
+    ?inclusionCriteria
+    ?status
+    ?numberOfCenters
+    ?indication
+    ?startDate
+    ?endDate
+    ?doseType
+    ?drugNames
+    ?publications
+    ?numberOfArms
+    ?studySize
+WHERE {
+GRAPH graph:$studyGraphUid {
     ?studyUri
       rdfs:label ?label ;
       a ontology:Study ;
@@ -64,23 +77,33 @@ GRAPH ?graphUri {
     }
     OPTIONAL
     {
-      ?instance owl:sameAs ?drug .
-      ?instance a ontology:Drug .
-      ?instance rdfs:label ?drugName .
+      SELECT ?studyUri (group_concat(?drugName; separator = ', ') as ?drugNames)
+      WHERE {
+        ?instance owl:sameAs ?drug .
+        ?instance a ontology:Drug .
+        ?instance rdfs:label ?drugName .
+      } GROUP BY ?studyUri
     }
     OPTIONAL
     {
-      ?studyUri ontology:has_publication [
-        ontology:has_id ?publication
-      ] .
+      SELECT ?studyUri (group_concat(?publication; separator = ', ') as ?publications)
+      WHERE {
+          OPTIONAL {
+            ?studyUri ontology:has_publication [
+              ontology:has_id ?publication
+            ] .
+        }
+      } GROUP BY ?studyUri
     }
     OPTIONAL {
-      ?arm a ontology:Arm .
-      OPTIONAL {
-        ?participantsStarting ontology:of_group ?arm .
-        ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .
-      }
+      SELECT ?studyUri (COUNT(?arm) as ?numberOfArms) (SUM(?numberOfParticipantsStarting) as ?studySize)
+        WHERE {
+            ?arm a ontology:Arm .
+            OPTIONAL {
+              ?participantsStarting ontology:of_group ?arm .
+              ?participantsStarting ontology:participants_starting ?numberOfParticipantsStarting .
+            }
+        } GROUP BY ?studyUri
     }
   }
-} GROUP BY ?graphUri ?studyUri ?title ?label ?allocation ?blinding ?objective ?inclusionCriteria ?status ?numberOfCenters ?indication ?startDate ?endDate ?doseType
-
+}
