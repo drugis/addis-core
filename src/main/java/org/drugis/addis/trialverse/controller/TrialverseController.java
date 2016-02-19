@@ -77,12 +77,6 @@ public class TrialverseController {
     return triplestoreService.queryStudies(mappingService.getVersionedUuid(namespaceUid), version);
   }
 
-  @RequestMapping(value = "/{namespaceUid}/studiesWithDetail", method = RequestMethod.GET)
-  @ResponseBody
-  public Collection<StudyWithDetails> queryStudiesWithDetails(@PathVariable String namespaceUid) throws URISyntaxException {
-    return triplestoreService.queryStudydetailsHead(mappingService.getVersionedUuid(namespaceUid));
-  }
-
   @RequestMapping(value = "/{namespaceUid}/studiesWithDetail/{studyUid}", method = RequestMethod.GET)
   @ResponseBody
   public StudyWithDetails getStudyWithDetails(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException, URISyntaxException {

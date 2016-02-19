@@ -41,7 +41,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public final static String NAMESPACE = TriplestoreService.loadResource("sparql/namespace.sparql");
   public final static String STUDY_QUERY = TriplestoreService.loadResource("sparql/studyQuery.sparql");
   public final static String STUDY_DETAILS_QUERY = TriplestoreService.loadResource("sparql/studyDetails.sparql");
-  public final static String STUDIES_WITH_DETAILS_QUERY = TriplestoreService.loadResource("sparql/studiesWithDetails.sparql");
   public final static String STUDY_ARMS_QUERY = TriplestoreService.loadResource("sparql/studyArms.sparql");
   public final static String STUDY_ARMS_EPOCHS = TriplestoreService.loadResource("sparql/studyEpochs.sparql");
   public final static String STUDY_TREATMENT_ACTIVITIES = TriplestoreService.loadResource("sparql/studyTreatmentActivities.sparql");
@@ -408,18 +407,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       newObject.put(key, value);
     }
     return newObject;
-  }
-
-  @Override
-  public List<StudyWithDetails> queryStudydetailsHead(String namespaceUid) {
-    List<StudyWithDetails> studiesWithDetail = new ArrayList<>();
-    String query = STUDIES_WITH_DETAILS_QUERY.replace("$namespaceUid", namespaceUid);
-    ResponseEntity<String> response = queryTripleStoreHead(namespaceUid, query);
-    JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
-    for (Object binding : bindings) {
-      studiesWithDetail.add(buildStudyWithDetailsFromJsonObject(binding));
-    }
-    return studiesWithDetail;
   }
 
   private StudyWithDetails buildStudyWithDetailsFromJsonObject(Object binding) {

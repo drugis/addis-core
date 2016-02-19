@@ -45,8 +45,6 @@ public interface TriplestoreService {
 
   List<Study> queryStudies(String namespaceUid, String version);
 
-  List<StudyWithDetails> queryStudydetailsHead(String namespaceUid);
-
   StudyWithDetails getStudydetails(String namespaceUid, String studyUid) throws ResourceDoesNotExistException;
 
   JSONArray getStudyArms(String namespaceUid, String studyUid);

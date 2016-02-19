@@ -210,24 +210,6 @@ public class TrialverseControllerTest {
   }
 
   @Test
-  public void testQueryStudiesWithDetails() throws Exception {
-    String versionUid = "current";
-    List<StudyWithDetails> studyWithDetailsList = Collections.singletonList(createStudyWithDetials());
-    when(triplestoreService.queryStudydetailsHead(versionedUuid)).thenReturn(studyWithDetailsList);
-
-    ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail").param("version", versionUid));
-    resultActions
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$[0]", notNullValue()))
-            .andExpect(jsonPath("$[0].title", is("studyTitle")))
-            .andExpect(jsonPath("$[0].pubmedUrls", is("publicationURL, moreurls")));
-
-    verify(triplestoreService).queryStudydetailsHead(versionedUuid);
-    verify(mappingService).getVersionedUuid(namespaceUid);
-  }
-
-  @Test
   public void testGetStudyWithDetails() throws Exception {
     String studyUid = "studyUid";
     String versionUid = "current";

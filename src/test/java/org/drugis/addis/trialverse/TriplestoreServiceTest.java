@@ -100,41 +100,6 @@ public class TriplestoreServiceTest {
     assertEquals(expectedSemanticIntervention, intervention);
   }
 
-
-  @Test
-  public void testQueryStudydetails() {
-    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleQueryStudyDetailsResult.json");
-    createMockTrialverseService(mockResult);
-
-    String namespaceUid = "namespaceUid";
-    List<StudyWithDetails> studyWithDetailsList = triplestoreService.queryStudydetailsHead(namespaceUid);
-
-    assertNotNull(studyWithDetailsList);
-    assertEquals(2, studyWithDetailsList.size());
-    StudyWithDetails studyWithDetailsNoStartOrEndDate = studyWithDetailsList.get(0);
-
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getStudyUid());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getName());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getTitle());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getAllocation());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getBlinding());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getInclusionCriteria());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getNumberOfStudyCenters());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getPubmedUrls());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getStatus());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getIndication());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getObjectives());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getInvestigationalDrugNames());
-    assertNotNull(studyWithDetailsNoStartOrEndDate.getNumberOfArms());
-
-    assertNull(studyWithDetailsNoStartOrEndDate.getStartDate());
-    assertNull(studyWithDetailsNoStartOrEndDate.getEndDate());
-
-    StudyWithDetails studyWithDetailsWithStartAndEndDate = studyWithDetailsList.get(1);
-    assertNotNull(studyWithDetailsWithStartAndEndDate.getStartDate());
-    assertNotNull(studyWithDetailsWithStartAndEndDate.getEndDate());
-  }
-
   @Test
   public void testGetStudyDetails() throws ResourceDoesNotExistException {
     String namespaceUid = "namespaceUid";
