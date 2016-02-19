@@ -5,7 +5,8 @@ define(['moment'], function(moment) {
     return function(values) {
       var separator = ' / ';
       var mappedVals = _.map(values, function(value) {
-        return value.key + '=' + value.value;
+        var key = Object.keys(value)[0];
+        return key + '=' + value[key];
       });
       return mappedVals.join(separator);
     };

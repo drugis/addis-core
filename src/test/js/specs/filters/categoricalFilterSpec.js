@@ -1,3 +1,4 @@
+'use strict';
 define(['angular', 'angular-mocks', 'filters'], function() {
   describe("The categorical measurement filter", function() {
     var categoricalFilter;
@@ -9,16 +10,7 @@ define(['angular', 'angular-mocks', 'filters'], function() {
     }));
 
     it('should convert a list of values to a slash-separated string of key=value pairs', function() {
-      var values = [{
-        key: 'key1',
-        value: 20
-      }, {
-        key: 'key 2',
-        value: 256
-      },{
-        key: 'key tres',
-        value: 37
-      }];
+      var values = [{key1: 20},{'key 2': 256},{'key tres': 37}   ];
 
       expect(categoricalFilter(values)).toEqual('key1=20 / key 2=256 / key tres=37');
     });
