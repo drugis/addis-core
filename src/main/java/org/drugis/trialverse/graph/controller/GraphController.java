@@ -3,6 +3,7 @@ package org.drugis.trialverse.graph.controller;
 import org.apache.http.Header;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
@@ -14,7 +15,6 @@ import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.graph.service.GraphService;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
@@ -100,38 +100,43 @@ public class GraphController extends AbstractTrialverseController {
   }
 
 
-  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, params = {WebConstants.COMMIT_TITLE_PARAM}, consumes = WebConstants.JSON_LD)
-  public void setJsonGraph(HttpServletRequest request, HttpServletResponse trialversResponse, Principal currentUser,
-                       @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
-                       @RequestParam(value = WebConstants.COMMIT_TITLE_PARAM, required = false) String commitDescription,
-                       @PathVariable String datasetUuid, @PathVariable String graphUuid)
+  @RequestMapping(value = "/graphs/{graphUuid}",
+          method = RequestMethod.PUT, consumes = WebConstants.JSON_LD)
+  public void setJsonGraph(HttpServletRequest request, HttpServletResponse trialverseResponse, Principal currentUser,
+                           @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
+                           @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription,
+                           @PathVariable String datasetUuid, @PathVariable String graphUuid)
           throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
     logger.trace("set graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      InputStream graph = request.getInputStream();
-      graph = graphService.jsonGraphInputStreamToTurtleInputStream(graph);
-      Header versionHeader = graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, graph, commitTitle, commitDescription);
-      trialversResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
-      trialversResponse.setStatus(HttpStatus.OK.value());
+      InputStream turtleStream = graphService.jsonGraphInputStreamToTurtleInputStream(request.getInputStream());
+      createGraph(trialverseResponse, commitTitle, commitDescription, datasetUuid, graphUuid, turtleStream);
     } else {
       throw new MethodNotAllowedException();
     }
   }
 
-  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, params = {WebConstants.COMMIT_TITLE_PARAM}, consumes = WebConstants.TURTLE)
-  public void setTurtleGraph(HttpServletRequest request, HttpServletResponse trialversResponse, Principal currentUser,
-                       @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
-                       @RequestParam(value = WebConstants.COMMIT_TITLE_PARAM, required = false) String commitDescription,
-                       @PathVariable String datasetUuid, @PathVariable String graphUuid)
+  private void createGraph(HttpServletResponse trialverseResponse,
+                           String commitTitle,
+                           String commitDescription,
+                           String datasetUuid,
+                           String graphUuid, InputStream graph) throws IOException, UpdateGraphException, URISyntaxException {
+    Header versionHeader = graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, graph, commitTitle, commitDescription);
+    trialverseResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
+    trialverseResponse.setStatus(HttpStatus.OK.value());
+  }
+
+  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, consumes = WebConstants.TURTLE)
+  public void setTurtleGraph(HttpServletRequest request, HttpServletResponse trialverseResponse, Principal currentUser,
+                             @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
+                             @RequestParam(value = WebConstants.COMMIT_DESCRIPTION_PARAM, required = false) String commitDescription,
+                             @PathVariable String datasetUuid, @PathVariable String graphUuid)
           throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
     logger.trace("set graph");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
-      InputStream graph = request.getInputStream();
-      Header versionHeader = graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, graph, commitTitle, commitDescription);
-      trialversResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
-      trialversResponse.setStatus(HttpStatus.OK.value());
+      createGraph(trialverseResponse, commitTitle, commitDescription, datasetUuid, graphUuid, request.getInputStream());
     } else {
       throw new MethodNotAllowedException();
     }

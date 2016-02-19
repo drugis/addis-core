@@ -24,11 +24,10 @@ import org.mockito.Mock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
@@ -44,9 +43,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class GraphControllerTest {
 
   private MockMvc mockMvc;
-
-  @Inject
-  private WebApplicationContext webApplicationContext;
 
   @Mock
   private WebConstants webConstants;
@@ -96,6 +92,60 @@ public class GraphControllerTest {
   @After
   public void tearDown() throws Exception {
     verifyNoMoreInteractions(graphWriteRepository);
+  }
+
+  @Test
+  public void testCreateGraphJson() throws Exception {
+    String newGraph = "{}";
+    String datasetUuid = "datasetUuid";
+    String graphUuid = "graphUuid";
+    String commitTitle = "commit+title";
+    String commitDescription = "commit+description";
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    InputStream inputStream = new ByteArrayInputStream(new byte[]{});
+    Header versionHeader = new BasicHeader("version", "http://trials.drugis.org/versions/3012");
+
+    when(datasetReadRepository.isOwner(trialverseDatasetUri, user)).thenReturn(true);
+    when(graphService.jsonGraphInputStreamToTurtleInputStream(any())).thenReturn(inputStream);
+    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString())).thenReturn(versionHeader);
+
+    mockMvc.perform(put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid)
+            .principal(user)
+            .content(newGraph)
+            .param(WebConstants.COMMIT_TITLE_PARAM, commitTitle)
+            .param(WebConstants.COMMIT_DESCRIPTION_PARAM, commitDescription)
+            .contentType(WebConstants.JSON_LD))
+            .andExpect(status().isOk())
+            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue()));
+
+    verify(datasetReadRepository).isOwner(trialverseDatasetUri, user);
+    verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString());
+  }
+
+  @Test
+  public void testCreateGraphTurtle() throws Exception {
+    String newGraph = "<a> <b> <c>";
+    String datasetUuid = "datasetUuid";
+    String graphUuid = "graphUuid";
+    String commitTitle = "commit+title";
+    String commitDescription = "commit+description";
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    Header versionHeader = new BasicHeader("version", "http://trials.drugis.org/versions/3012");
+
+    when(datasetReadRepository.isOwner(trialverseDatasetUri, user)).thenReturn(true);
+    when(graphWriteRepository.updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString())).thenReturn(versionHeader);
+
+    mockMvc.perform(put("/users/" + userHash + "/datasets/" + datasetUuid + "/graphs/" + graphUuid)
+            .principal(user)
+            .content(newGraph)
+            .param(WebConstants.COMMIT_TITLE_PARAM, commitTitle)
+            .param(WebConstants.COMMIT_DESCRIPTION_PARAM, commitDescription)
+            .contentType(WebConstants.JSON_LD))
+            .andExpect(status().isOk())
+            .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue()));
+
+    verify(datasetReadRepository).isOwner(trialverseDatasetUri, user);
+    verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString());
   }
 
   @Test
@@ -194,14 +244,12 @@ public class GraphControllerTest {
   @Test
   public void testCopyGraph() throws Exception {
     String datasetUuid = "datasetUuid";
-    String versionUuid = "versionUuid";
     String graphUuid = "graphUuid";
     URI datasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
     URI sourceGraphUri = URI.create("http://testhost/datasets/sourceDatasetUuid/versions/sourceVersionUuid/graphs/sourceGraphUuid");
     String newVersion = "http://myVersion";
 
     URI targetDatasetUri = URI.create(Namespaces.DATASET_NAMESPACE + datasetUuid);
-    String testHost = "http://testhost";
     URI targetGraphUri = URI.create(Namespaces.GRAPH_NAMESPACE + graphUuid);
 
     when(datasetReadRepository.isOwner(datasetUri, user)).thenReturn(true);
