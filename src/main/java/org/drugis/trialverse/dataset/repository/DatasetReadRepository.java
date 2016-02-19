@@ -30,6 +30,4 @@ public interface DatasetReadRepository {
   byte[] executeQuery(String query, URI trialverseDatasetUri, String versionUuid, String acceptHeader) throws IOException;
 
   JSONObject executeHeadQuery(String sparqlQuery, VersionMapping versionMapping) throws URISyntaxException;
-
-  void copyGraph(URI targetDataset, URI targetGraph, URI sourceRevision);
 }
