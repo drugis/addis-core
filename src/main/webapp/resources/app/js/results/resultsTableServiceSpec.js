@@ -65,28 +65,28 @@ define(['angular', 'angular-mocks'], function() {
           uri: 'uri 3'
         }];
 
-        resultRows = resultsTableService.createInputRows(variable, arms, measurementMoments);
+        resultRows = resultsTableService.createInputRows(variable, arms, [], measurementMoments);
       });
 
       it('should set the number of arms', function() {
-        expect(resultRows[0].numberOfArms).toEqual(3);
+        expect(resultRows[0].numberOfGroups).toEqual(3);
       });
       it('should return one row for each combination of arm and measurement moment at which the variable is measured', function() {
         expect(resultRows.length).toEqual(6);
       });
       it('should place the appropriate measurement moment and arm on each row', function() {
         expect(resultRows[0].measurementMoment).toEqual(measurementMoments[0]);
-        expect(resultRows[0].arm).toEqual(arms[0]);
+        expect(resultRows[0].group).toEqual(arms[0]);
         expect(resultRows[1].measurementMoment).toEqual(measurementMoments[0]);
-        expect(resultRows[1].arm).toEqual(arms[1]);
+        expect(resultRows[1].group).toEqual(arms[1]);
         expect(resultRows[2].measurementMoment).toEqual(measurementMoments[0]);
-        expect(resultRows[2].arm).toEqual(arms[2]);
+        expect(resultRows[2].group).toEqual(arms[2]);
         expect(resultRows[3].measurementMoment).toEqual(measurementMoments[2]);
-        expect(resultRows[3].arm).toEqual(arms[0]);
+        expect(resultRows[3].group).toEqual(arms[0]);
         expect(resultRows[4].measurementMoment).toEqual(measurementMoments[2]);
-        expect(resultRows[4].arm).toEqual(arms[1]);
+        expect(resultRows[4].group).toEqual(arms[1]);
         expect(resultRows[5].measurementMoment).toEqual(measurementMoments[2]);
-        expect(resultRows[5].arm).toEqual(arms[2]);
+        expect(resultRows[5].group).toEqual(arms[2]);
       });
 
       describe('for a continuous type', function() {
@@ -99,7 +99,7 @@ define(['angular', 'angular-mocks'], function() {
             value: '2'
           }];
           variable.measurementType = resultsTableService.CONTINUOUS_TYPE;
-          resultRows = resultsTableService.createInputRows(variable, arms, measurementMoments, results);
+          resultRows = resultsTableService.createInputRows(variable, arms, [], measurementMoments, results);
         });
 
         it('should create input columns', function() {
@@ -128,7 +128,7 @@ define(['angular', 'angular-mocks'], function() {
             value: '66'
           }];
           variable.measurementType = resultsTableService.DICHOTOMOUS_TYPE;
-          resultRows = resultsTableService.createInputRows(variable, arms, measurementMoments, results);
+          resultRows = resultsTableService.createInputRows(variable, arms, [], measurementMoments, results);
         });
 
         it('should create input columns', function() {

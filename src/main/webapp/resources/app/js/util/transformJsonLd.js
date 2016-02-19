@@ -144,8 +144,9 @@ define(['lodash'], function(_) {
     inlineObjects(study, 'has_objective');
     inlineObjects(study, 'has_publication');
     inlineObjects(study, 'has_eligibility_criteria');
-    inlineListLinkedListType(study, 'has_epochs');
-
+    if (study.has_epochs) {
+      inlineListLinkedListType(study, 'has_epochs');
+    }
 
     linkedData['@context'] = {
       'standard_deviation': {

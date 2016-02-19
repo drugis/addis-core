@@ -102,7 +102,7 @@ define(['angular-mocks'], function(angularMocks) {
             variable: {
               uri: 'http://trials.drugis.org/instances/outcome1'
             },
-            arm: {
+            group: {
               armURI: 'http://trials.drugis.org/instances/arm1'
             },
             measurementMoment: {
@@ -477,6 +477,7 @@ define(['angular-mocks'], function(angularMocks) {
         comment: 'my study',
         has_outcome: [outcome1, outcome2],
         has_arm: [arm1, arm2],
+        has_group: [],
         has_activity: [],
         has_indication: [],
         has_objective: [],

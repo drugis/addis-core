@@ -3,17 +3,17 @@ package org.drugis.trialverse.graph.controller;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.apache.jena.riot.RDFLanguages;
+import org.drugis.addis.security.Account;
+import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.graph.repository.GraphReadRepository;
 import org.drugis.trialverse.graph.repository.GraphWriteRepository;
 import org.drugis.trialverse.graph.service.GraphService;
-import org.drugis.addis.security.Account;
-import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.trialverse.util.Utils;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.addis.util.WebConstants;
+import org.drugis.trialverse.util.Utils;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.junit.After;
 import org.junit.Before;
@@ -133,7 +133,8 @@ public class GraphControllerTest {
                     .content(jsonContent)
                     .contentType(WebConstants.JSON_LD)
                     .param(WebConstants.COMMIT_TITLE_PARAM, "test title header")
-                    .principal(user)).andExpect(status().isForbidden());
+                    .principal(user))
+            .andExpect(status().isForbidden());
 
     verify(datasetReadRepository).isOwner(datasetUri, user);
     verifyZeroInteractions(graphWriteRepository);
@@ -160,7 +161,7 @@ public class GraphControllerTest {
             .andExpect(status().isOk())
             .andExpect(header().string(WebConstants.X_EVENT_SOURCE_VERSION, "http://myVersion"));
 
-    verify(graphService).jsonGraphInputStreamToTurtleInputStream( any(InputStream.class));
+    verify(graphService).jsonGraphInputStreamToTurtleInputStream(any(InputStream.class));
     verify(datasetReadRepository).isOwner(datasetUrl, user);
     verify(graphWriteRepository).updateGraph(Matchers.<URI>anyObject(), anyString(), any(InputStream.class), anyString(), anyString());
   }
