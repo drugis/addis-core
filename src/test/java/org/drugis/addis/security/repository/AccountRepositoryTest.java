@@ -3,6 +3,7 @@ package org.drugis.addis.security.repository;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.UsernameAlreadyInUseException;
+import org.drugis.trialverse.security.TooManyAccountsException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -87,6 +88,12 @@ public class AccountRepositoryTest {
   public void testNullEmailFails() {
     Account account = new Account("something", "first", "last", null);
     accountRepository.createAccount(account);
+  }
+
+  @Test
+  public void testFindAccountByApplicationKey() throws TooManyAccountsException {
+    Account authorisingAccount = accountRepository.findAccountByActiveApplicationKey("supersecretkey");
+    assertEquals("Connor", authorisingAccount.getFirstName());
   }
 
 }

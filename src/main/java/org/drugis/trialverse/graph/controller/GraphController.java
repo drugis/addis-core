@@ -101,7 +101,7 @@ public class GraphController extends AbstractTrialverseController {
 
 
   @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, params = {WebConstants.COMMIT_TITLE_PARAM}, consumes = WebConstants.JSON_LD)
-  public void setGraph(HttpServletRequest request, HttpServletResponse trialversResponse, Principal currentUser,
+  public void setJsonGraph(HttpServletRequest request, HttpServletResponse trialversResponse, Principal currentUser,
                        @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
                        @RequestParam(value = WebConstants.COMMIT_TITLE_PARAM, required = false) String commitDescription,
                        @PathVariable String datasetUuid, @PathVariable String graphUuid)
@@ -119,6 +119,23 @@ public class GraphController extends AbstractTrialverseController {
     }
   }
 
+  @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, params = {WebConstants.COMMIT_TITLE_PARAM}, consumes = WebConstants.TURTLE)
+  public void setTurtleGraph(HttpServletRequest request, HttpServletResponse trialversResponse, Principal currentUser,
+                       @RequestParam(WebConstants.COMMIT_TITLE_PARAM) String commitTitle,
+                       @RequestParam(value = WebConstants.COMMIT_TITLE_PARAM, required = false) String commitDescription,
+                       @PathVariable String datasetUuid, @PathVariable String graphUuid)
+          throws IOException, MethodNotAllowedException, URISyntaxException, UpdateGraphException {
+    logger.trace("set graph");
+    URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);
+    if (datasetReadRepository.isOwner(trialverseDatasetUri, currentUser)) {
+      InputStream graph = request.getInputStream();
+      Header versionHeader = graphWriteRepository.updateGraph(new URI(Namespaces.DATASET_NAMESPACE + datasetUuid), graphUuid, graph, commitTitle, commitDescription);
+      trialversResponse.setHeader(WebConstants.X_EVENT_SOURCE_VERSION, versionHeader.getValue());
+      trialversResponse.setStatus(HttpStatus.OK.value());
+    } else {
+      throw new MethodNotAllowedException();
+    }
+  }
 
 
   @RequestMapping(value = "/graphs/{graphUuid}", method = RequestMethod.PUT, params = {WebConstants.COPY_OF_QUERY_PARAM})

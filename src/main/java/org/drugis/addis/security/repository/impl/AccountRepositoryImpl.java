@@ -71,7 +71,7 @@ public class AccountRepositoryImpl implements AccountRepository {
   public Account findAccountByActiveApplicationKey(String applicationKey) throws TooManyAccountsException {
 
     List<org.drugis.addis.security.Account> result = jdbcTemplate.query(
-            "select id, username, firstName, lastNamefrom Account where id = (" +
+            "select id, username, firstName, lastName, email from Account where id = (" +
                     "select accountId from ApplicationKey where secretkey = ? " +
                     "AND revocationDate > now() " +
                     "AND creationDate < now() )",
