@@ -97,7 +97,7 @@
             </thead>
             <tbody>
             <tr ng-repeat="row in designRows">
-                <td>{{row.armLabel}}</td>
+                <td>{{row.label}}</td>
                 <td class="text-center">{{row.numberOfParticipantsStarting}}</td>
                 <td ng-repeat="cell in row.epochCells">
               <span ng-show="cell.administeredDrugs.length === 0">
@@ -132,8 +132,8 @@
             <tr>
                 <th>Population characaristic</th>
                 <th>Measurement moment</th>
-                <th ng-repeat="dataArmValue in studyPopulationCharacteristics[1].studyDataMoments[0].studyDataArmValues">
-                    {{dataArmValue.armLabel}}
+                <th ng-repeat="group in studyGroups">
+                    {{group.label}}
                 </th>
             </tr>
             </thead>
@@ -145,13 +145,13 @@
                     {{row.relativeToEpochLabel}}
                     {{row.relativeToAnchorOntology | addisOntologyFilter | anchorEpochFilter}}
                 </td>
-                <td ng-repeat="dataArmValue in row.studyDataArmValues">
-                    <span ng-show="dataArmValue.mean">{{dataArmValue.mean}}</span>
-                    <span ng-show="dataArmValue.mean">&plusmn; {{dataArmValue.std}}</span>
-                    <span ng-show="dataArmValue.count">{{dataArmValue.count}}</span>
-                    <span ng-show="dataArmValue.sampleSize && dataArmValue.count"> / {{dataArmValue.sampleSize}}</span>
-                    <span ng-show="dataArmValue.sampleSize && dataArmValue.mean">({{dataArmValue.sampleSize}})</span>
-                    <span ng-show="dataArmValue.values">{{dataArmValue.values | categoricalFilter}}</span>
+                <td ng-repeat="dataValue in row.studyDataValues">
+                    <span ng-show="dataValue.mean">{{dataValue.mean}}</span>
+                    <span ng-show="dataValue.mean">&plusmn; {{dataValue.std}}</span>
+                    <span ng-show="dataValue.count">{{dataValue.count}}</span>
+                    <span ng-show="dataValue.sampleSize && dataValue.count"> / {{dataValue.sampleSize}}</span>
+                    <span ng-show="dataValue.sampleSize && dataValue.mean">({{dataValue.sampleSize}})</span>
+                    <span ng-show="dataValue.values">{{dataValue.values | categoricalFilter}}</span>
                 </td>
             </tr>
             </tbody>
@@ -169,8 +169,8 @@
             <tr>
                 <th>Endpoints</th>
                 <th>Measurement moment</th>
-                <th ng-repeat="dataArmValue in studyEndpoints[0].studyDataMoments[0].studyDataArmValues">
-                    {{dataArmValue.armLabel}}
+                <th ng-repeat="dataValue in studyEndpoints[0].studyDataMoments[0].studyDataValues">
+                    {{dataValue.label}}
                 </th>
             </tr>
             </thead>
@@ -182,13 +182,13 @@
                     {{row.relativeToEpochLabel}}
                     {{row.relativeToAnchorOntology | addisOntologyFilter | anchorEpochFilter}}
                 </td>
-                <td ng-repeat="dataArmValue in row.studyDataArmValues">
-                    <span ng-show="dataArmValue.mean">{{dataArmValue.mean}}</span>
-                    <span ng-show="dataArmValue.mean">&plusmn; {{dataArmValue.std}}</span>
-                    <span ng-show="dataArmValue.count || (dataArmValue.count === 0)">{{dataArmValue.count}}</span>
-                    <span ng-show="dataArmValue.sampleSize && dataArmValue.count || (dataArmValue.count === 0)"> / {{dataArmValue.sampleSize}}</span>
-                    <span ng-show="dataArmValue.sampleSize && dataArmValue.mean">({{dataArmValue.sampleSize}})</span>
-                    <span ng-show="dataArmValue.values">{{dataArmValue.values | categoricalFilter}}</span>
+                <td ng-repeat="dataValue in row.studyDataValues">
+                    <span ng-show="dataValue.mean">{{dataValue.mean}}</span>
+                    <span ng-show="dataValue.mean">&plusmn; {{dataValue.std}}</span>
+                    <span ng-show="dataValue.count || (dataValue.count === 0)">{{dataValue.count}}</span>
+                    <span ng-show="dataValue.sampleSize && dataValue.count || (dataValue.count === 0)"> / {{dataValue.sampleSize}}</span>
+                    <span ng-show="dataValue.sampleSize && dataValue.mean">({{dataValue.sampleSize}})</span>
+                    <span ng-show="dataValue.values">{{dataValue.values | categoricalFilter}}</span>
                 </td>
             </tr>
             </tbody>
@@ -206,8 +206,8 @@
             <tr>
                 <th>AdverseEvents</th>
                 <th>Measurement moment</th>
-                <th ng-repeat="dataArmValue in studyAdverseEvents[0].studyDataMoments[0].studyDataArmValues">
-                    {{dataArmValue.armLabel}}
+                <th ng-repeat="dataValue in studyAdverseEvents[0].studyDataMoments[0].studyDataValues">
+                    {{dataValue.label}}
                 </th>
             </tr>
             </thead>
@@ -219,13 +219,13 @@
                     {{row.relativeToEpochLabel}}
                     {{row.relativeToAnchorOntology | addisOntologyFilter | anchorEpochFilter}}
                 </td>
-                <td ng-repeat="dataArmValue in row.studyDataArmValues">
-                    <span ng-show="dataArmValue.mean">{{dataArmValue.mean}}</span>
-                    <span ng-show="dataArmValue.mean">&plusmn; {{dataArmValue.std}}</span>
-                    <span ng-show="dataArmValue.count || (dataArmValue.count === 0)">{{dataArmValue.count}}</span>
-                    <span ng-show="dataArmValue.sampleSize && dataArmValue.count || (dataArmValue.count === 0)"> / {{dataArmValue.sampleSize}}</span>
-                    <span ng-show="dataArmValue.sampleSize && dataArmValue.mean">({{dataArmValue.sampleSize}})</span>
-                    <span ng-show="dataArmValue.values">{{dataArmValue.values | categoricalFilter}}</span>
+                <td ng-repeat="dataValue in row.studyDataValues">
+                    <span ng-show="dataValue.mean">{{dataValue.mean}}</span>
+                    <span ng-show="dataValue.mean">&plusmn; {{dataValue.std}}</span>
+                    <span ng-show="dataValue.count || (dataValue.count === 0)">{{dataValue.count}}</span>
+                    <span ng-show="dataValue.sampleSize && dataValue.count || (dataValue.count === 0)"> / {{dataValue.sampleSize}}</span>
+                    <span ng-show="dataValue.sampleSize && dataValue.mean">({{dataValue.sampleSize}})</span>
+                    <span ng-show="dataValue.values">{{dataValue.values | categoricalFilter}}</span>
                 </td>
             </tr>
             </tbody>

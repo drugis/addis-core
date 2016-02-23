@@ -12,7 +12,7 @@ public class StudyDataMoment {
   private final String timeOffsetDuration;
   private final String relativeToEpochLabel;
 
-  private List<AbstractStudyDataArmValue> studyDataArmValues = new ArrayList<>();
+  private List<AbstractStudyDataValue> studyDataValues = new ArrayList<>();
 
   public StudyDataMoment(String relativeToAnchorOntology, String timeOffsetDuration, String relativeToEpochLabel) {
     this.relativeToAnchorOntology = relativeToAnchorOntology;
@@ -32,7 +32,7 @@ public class StudyDataMoment {
     return relativeToEpochLabel;
   }
 
-  public List<AbstractStudyDataArmValue> getStudyDataArmValues() {
-    return studyDataArmValues;
+  public List<AbstractStudyDataValue> getStudyDataValues() {
+    return studyDataValues;
   }
 }

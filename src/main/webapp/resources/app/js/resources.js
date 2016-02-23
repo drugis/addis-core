@@ -15,7 +15,7 @@ define(function (require) {
     .factory('ScenarioResource', require('resources/scenarioResource'))
     .factory('StudyDetailsResource', require('resources/studyDetailsResource'))
     .factory('StudyDesignResource', require('resources/studyDesignResource'))
-    .factory('StudyArmResource', require('resources/studyArmResource'))
+    .factory('StudyGroupResource', require('resources/studyGroupResource'))
     .factory('StudyEpochResource', require('resources/studyEpochResource'))
     .factory('StudyTreatmentActivityResource', require('resources/studyTreatmentActivityResource'))
     .factory('StudyPopulationCharacteristicsResource', require('resources/studyPopulationCharacteristicsResource'))

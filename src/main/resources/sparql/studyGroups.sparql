@@ -1,0 +1,33 @@
+PREFIX ontology: <http://trials.drugis.org/ontology#>
+PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX graph: <http://trials.drugis.org/graphs/>
+PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
+PREFIX instance: <http://trials.drugis.org/instances/>
+
+SELECT ?groupUri ?label ?numberOfParticipantsStarting ?isArm {
+   GRAPH graph:$studyUid {
+       {
+       ?study ontology:has_arm ?groupUri .
+       ?groupUri a ontology:Arm ;
+         rdfs:label ?label .
+         BIND (TRUE AS ?isArm) .
+       } UNION {
+          ?study ontology:has_group ?groupUri .
+          ?groupUri a ontology:Group ;
+          rdfs:label ?label .
+          BIND (FALSE AS ?isArm) .
+       } UNION {
+           ?study ontology:has_included_population ?groupUri .
+           ?groupUri a ontology:StudyPopulation .
+           BIND ("Overall population" AS ?label ).
+           BIND (FALSE AS ?isArm) .
+       }
+       OPTIONAL {
+         ?participantFlow a ontology:ParticipantFlow ;
+             ontology:participants_starting ?numberOfParticipantsStarting ;
+             ontology:of_group ?groupUri .
+       }
+   }
+ }

@@ -226,15 +226,15 @@ public class TrialverseControllerTest {
   }
 
   @Test
-  public void testGetStudyArms() throws Exception {
+  public void testGetStudyGroups() throws Exception {
     String studyUid = "studyUid";
     String versionUid = "current";
 
     JSONArray result = new JSONArray();
     result.add(createTestResultObject());
-    when(triplestoreService.getStudyArms(versionedUuid, studyUid)).thenReturn(result);
+    when(triplestoreService.getStudyGroups(versionedUuid, studyUid)).thenReturn(result);
 
-    ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUid/arms").param("version", versionUid));
+    ResultActions resultActions = mockMvc.perform(get("/namespaces/" + namespaceUid + "/studiesWithDetail/studyUid/groups").param("version", versionUid));
     resultActions
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
@@ -242,7 +242,7 @@ public class TrialverseControllerTest {
             .andExpect(jsonPath("$[0].numberObject", is(1)))
             .andExpect(jsonPath("$[0].dateObject", is(new DateTime(1980, 9, 10, 12, 0).getMillis())));
 
-    verify(triplestoreService).getStudyArms(versionedUuid, studyUid);
+    verify(triplestoreService).getStudyGroups(versionedUuid, studyUid);
     verify(mappingService).getVersionedUuid(namespaceUid);
   }
 

@@ -1,11 +1,11 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$stateParams', 'TrialverseResource', 'StudyDetailsResource',
-    'StudyTreatmentActivityResource', 'StudyArmResource', 'StudyEpochResource',
+    'StudyTreatmentActivityResource', 'StudyGroupResource', 'StudyEpochResource',
     'StudyPopulationCharacteristicsResource', 'StudyEndpointsResource', 'StudyAdverseEventsResource'
   ];
   var StudyController = function($scope, $q, $stateParams, TrialverseResource, StudyDetailsResource,
-    StudyTreatmentActivityResource, StudyArmResource, StudyEpochResource,
+    StudyTreatmentActivityResource, StudyGroupResource, StudyEpochResource,
     StudyPopulationCharacteristicsResource, StudyEndpointsResource, StudyAdverseEventsResource) {
 
     $scope.project.$promise.then(function() {
@@ -17,7 +17,7 @@ define([], function() {
         namespaceUid: $scope.project.namespaceUid
       });
       $scope.studyDetails = StudyDetailsResource.get(studyCoordinates);
-      $scope.studyArms = StudyArmResource.query(studyCoordinates);
+      $scope.studyGroups = StudyGroupResource.query(studyCoordinates);
       $scope.studyEpochs = StudyEpochResource.query(studyCoordinates);
       $scope.treatmentActivities = StudyTreatmentActivityResource.query(studyCoordinates);
       $scope.studyPopulationCharacteristics = StudyPopulationCharacteristicsResource
@@ -30,7 +30,7 @@ define([], function() {
       $scope.studyAdverseEvents = StudyAdverseEventsResource.get(studyCoordinates, function(adverseEvents) {
         $scope.adverseEventsRows = flattenOutcomesToTableRows(adverseEvents);
       });
-      $q.all([$scope.studyArms.$promise, $scope.studyEpochs.$promise, $scope.treatmentActivities.$promise])
+      $q.all([$scope.studyGroups.$promise, $scope.studyEpochs.$promise, $scope.treatmentActivities.$promise])
         .then(function() {
           $scope.designRows = $scope.designRows.concat(constructStudyDesignTableRows());
         });
@@ -40,14 +40,17 @@ define([], function() {
 
     function constructStudyDesignTableRows() {
       var rows = [];
-      _.each($scope.studyArms, function(arm) {
+      var arms  = $scope.studyGroups.filter(function (group){
+        return group.isArm === 'true'; //evil, moe haha ha
+       });
+      _.each(arms, function(group) {
         var row = {};
-        row.armLabel = arm.armLabel;
-        row.numberOfParticipantsStarting = arm.numberOfParticipantsStarting;
+        row.label = group.label;
+        row.numberOfParticipantsStarting = group.numberOfParticipantsStarting;
         row.epochCells = [];
 
         _.each($scope.studyEpochs, function(epoch) {
-          row.epochCells.push(getCellTreatments(epoch.epochUid, arm.armUid)[0]);
+          row.epochCells.push(getCellTreatments(epoch.epochUid, group.groupUri)[0]);
         });
         rows.push(row);
       });
@@ -63,9 +66,9 @@ define([], function() {
           row.relativeToAnchorOntology = moment.relativeToAnchorOntology;
           row.relativeToEpochLabel = moment.relativeToEpochLabel;
           row.timeOffsetDuration = moment.timeOffsetDuration;
-          row.studyDataArmValues = moment.studyDataArmValues;
-          row.studyDataArmValues.sort(function(a, b) {
-            return a.armLabel.localeCompare(b.armLabel);
+          row.studyDataValues = moment.studyDataValues;
+          row.studyDataValues.sort(function(a, b) {
+            return a.label.localeCompare(b.label);
           });
           rows.push(row);
         });
@@ -74,10 +77,10 @@ define([], function() {
       return rows;
     }
 
-    function getCellTreatments(epochUid, armUid) {
+    function getCellTreatments(epochUid, groupUri) {
       return _.filter($scope.treatmentActivities, function(activity) {
         var cellHasApplication = _.find(activity.activityApplications, function(application) {
-          return (application.epochUid === epochUid && application.armUid === armUid);
+          return (application.epochUid === epochUid && application.armUid === groupUri);
         });
         if (cellHasApplication) {
           return activity;

@@ -47,7 +47,7 @@ public interface TriplestoreService {
 
   StudyWithDetails getStudydetails(String namespaceUid, String studyUid) throws ResourceDoesNotExistException;
 
-  JSONArray getStudyArms(String namespaceUid, String studyUid);
+  JSONArray getStudyGroups(String namespaceUid, String studyUid);
 
   JSONArray getStudyEpochs(String namespaceUid, String studyUid);
 

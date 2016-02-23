@@ -3,7 +3,7 @@ define(['angular', 'angular-mocks', 'controllers'],
   function() {
     describe("The study readOnly controller", function() {
       var ctrl, TrialverseResource, StudyDetailsResource,
-        StudyTreatmentActivityResource, StudyArmResource, StudyEpochResource,
+        StudyTreatmentActivityResource, StudyGroupResource, StudyEpochResource,
         StudyPopulationCharacteristicsResource, StudyEndpointsResource, StudyAdverseEventsResource,
         treatmentActivity;
 
@@ -20,7 +20,7 @@ define(['angular', 'angular-mocks', 'controllers'],
 
         TrialverseResource = jasmine.createSpyObj('TrialverseResource', ['get']);
         StudyDetailsResource = jasmine.createSpyObj('StudyDetailsResource', ['get']);
-        StudyArmResource = jasmine.createSpyObj('StudyArmResource', ['query']);
+        StudyGroupResource = jasmine.createSpyObj('StudyGroupResource', ['query']);
         StudyEpochResource = jasmine.createSpyObj('StudyEpochResource', ['query']);
 
         StudyPopulationCharacteristicsResource = jasmine.createSpyObj('StudyEpochResource', ['get']);
@@ -38,7 +38,7 @@ define(['angular', 'angular-mocks', 'controllers'],
           TrialverseResource: TrialverseResource,
           StudyDetailsResource: StudyDetailsResource,
           StudyTreatmentActivityResource: StudyTreatmentActivityResource,
-          StudyArmResource: StudyArmResource,
+          StudyGroupResource: StudyGroupResource,
           StudyEpochResource: StudyEpochResource,
           StudyPopulationCharacteristicsResource: StudyPopulationCharacteristicsResource,
           StudyEndpointsResource: StudyEndpointsResource,

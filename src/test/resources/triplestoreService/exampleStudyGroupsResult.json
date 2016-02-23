@@ -1,0 +1,33 @@
+{
+  "head": {
+    "vars": [ "groupUri" , "label" , "numberOfParticipantsStarting", "isArm" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "groupUri": { "type": "uri" , "value": "http://trials.drugis.org/instances/5959fd08-9c5b-4016-8118-d195cdb80c70" } ,
+        "label": { "type": "literal" , "value": "Olmesartan medoxomil 20-40mg/hydrochlorothiazide 12.5-25mg QD" } ,
+        "numberOfParticipantsStarting": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "356" },
+        "isArm": {"value": true}
+      } ,
+      {
+        "groupUri": { "type": "uri" , "value": "http://trials.drugis.org/instances/bf34362a-c4e9-430c-b648-15eee9c3b0ef" } ,
+        "label": { "type": "literal" , "value": "Azilsartan Medoxomil 40-80mg plus Chlorthalidone 12.5-25 mg QD" } ,
+        "numberOfParticipantsStarting": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "357" },
+        "isArm": {"value": true}
+      } ,
+      {
+        "groupUri": { "type": "uri" , "value": "http://trials.drugis.org/instances/a8f1626d-f34d-4895-b5d7-ab000a19453d" } ,
+        "label": { "type": "literal" , "value": "Azilsartan Medoxomil 20-40mg plus Chlorthalidone 12.5-25 mg QD" } ,
+        "numberOfParticipantsStarting": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "372" },
+        "isArm": {"value": true}
+      },
+      {
+        "groupUri": { "type": "uri" , "value": "http://trials.drugis.org/instances/a8f1626d-f34d-4895-b5d7-ab000a19abc" } ,
+        "label": { "type": "literal" , "value": "Old people" } ,
+        "numberOfParticipantsStarting": { "datatype": "http://www.w3.org/2001/XMLSchema#integer" , "type": "typed-literal" , "value": "22" },
+        "isArm": {"value": false}
+      }
+    ]
+  }
+}

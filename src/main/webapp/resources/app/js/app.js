@@ -247,7 +247,7 @@ define(
           })
           .state('namespace-study', {
             url: '/study/:studyUid',
-            templateUrl: baseTemplatePath + 'study.html',
+            templateUrl: baseTemplatePath + 'studyReadOnly.html',
             controller: 'StudyReadOnlyController',
             parent: 'project'
           })

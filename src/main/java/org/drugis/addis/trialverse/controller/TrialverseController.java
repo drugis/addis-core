@@ -83,10 +83,10 @@ public class TrialverseController {
     return triplestoreService.getStudydetails(mappingService.getVersionedUuid(namespaceUid), studyUid);
   }
 
-  @RequestMapping(value = "/{namespaceUid}/studiesWithDetail/{studyUid}/arms", method = RequestMethod.GET)
+  @RequestMapping(value = "/{namespaceUid}/studiesWithDetail/{studyUid}/groups", method = RequestMethod.GET)
   @ResponseBody
-  public JSONArray getStudyArms(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException, URISyntaxException {
-    return triplestoreService.getStudyArms(mappingService.getVersionedUuid(namespaceUid), studyUid);
+  public JSONArray getStudyGroups(@PathVariable String namespaceUid, @PathVariable String studyUid) throws ResourceDoesNotExistException, URISyntaxException {
+    return triplestoreService.getStudyGroups(mappingService.getVersionedUuid(namespaceUid), studyUid);
   }
 
   @RequestMapping(value = "/{namespaceUid}/studiesWithDetail/{studyUid}/epochs", method = RequestMethod.GET)

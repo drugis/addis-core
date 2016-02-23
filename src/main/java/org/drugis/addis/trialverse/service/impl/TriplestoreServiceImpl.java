@@ -41,7 +41,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public final static String NAMESPACE = TriplestoreService.loadResource("sparql/namespace.sparql");
   public final static String STUDY_QUERY = TriplestoreService.loadResource("sparql/studyQuery.sparql");
   public final static String STUDY_DETAILS_QUERY = TriplestoreService.loadResource("sparql/studyDetails.sparql");
-  public final static String STUDY_ARMS_QUERY = TriplestoreService.loadResource("sparql/studyArms.sparql");
+  public final static String STUDY_GROUPS_QUERY = TriplestoreService.loadResource("sparql/studyGroups.sparql");
   public final static String STUDY_ARMS_EPOCHS = TriplestoreService.loadResource("sparql/studyEpochs.sparql");
   public final static String STUDY_TREATMENT_ACTIVITIES = TriplestoreService.loadResource("sparql/studyTreatmentActivities.sparql");
   public final static String STUDY_DATA = TriplestoreService.loadResource("sparql/studyData.sparql");
@@ -211,8 +211,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public JSONArray getStudyArms(String namespaceUid, String studyUid) {
-    String query = StringUtils.replace(STUDY_ARMS_QUERY, "$studyUid", studyUid);
+  public JSONArray getStudyGroups(String namespaceUid, String studyUid) {
+    String query = StringUtils.replace(STUDY_GROUPS_QUERY, "$studyUid", studyUid);
     return getQueryResultList(namespaceUid, query);
   }
 
@@ -304,8 +304,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Override
   public List<StudyData> getStudyData(String namespaceUid, String studyUid, StudyDataSection studyDataSection) {
-    String query = StringUtils.replace(STUDY_DATA, "$namespaceUid", namespaceUid);
-    query = StringUtils.replace(query, "$studyUid", studyUid);
+    String query = StringUtils.replace(STUDY_DATA, "$studyUid", studyUid);
     query = StringUtils.replace(query, "$studyDataType", studyDataSection.toString());
     logger.debug(query);
     JSONArray queryResult = getQueryResultList(namespaceUid, query);
@@ -336,34 +335,33 @@ public class TriplestoreServiceImpl implements TriplestoreService {
         studyData.getStudyDataMoments().add(moment);
       }
 
-      AbstractStudyDataArmValue studyDataArmValue;
-      String armInstanceUid = (String) jsonObject.get("armInstanceUid");
-      String armLabel = (String) jsonObject.get("armLabel");
+      AbstractStudyDataValue studyDataArmValue;
+      String armInstanceUid = (String) jsonObject.get("instanceUid");
+      String label = (String) jsonObject.get("groupLabel");
+      Boolean isArm = Boolean.parseBoolean((String) jsonObject.get("isArm"));
       Integer sampleSize = jsonObject.containsKey("sampleSize") ? tryParseInt((String) jsonObject.get("sampleSize")) : null; // FIXME: why is this an integer when the count is Long?
       String sampleDuration = jsonObject.containsKey("sampleDuration") ? (String) jsonObject.get("sampleDuration") : null;
 
       if (jsonObject.containsKey("count")) {
-        studyDataArmValue = new RateStudyDataArmValue
-                .RateStudyDataArmValueBuilder(armInstanceUid, armLabel)
+        studyDataArmValue = new RateStudyDataValue.RateStudyDataValueBuilder(armInstanceUid, label, isArm)
                 .count(tryParseLong((String) jsonObject.get("count")))
                 .sampleSize(sampleSize)
                 .sampleDuration(sampleDuration)
                 .build();
-        moment.getStudyDataArmValues().add(studyDataArmValue);
+        moment.getStudyDataValues().add(studyDataArmValue);
       } else if (jsonObject.containsKey("mean")) {
-        studyDataArmValue = new ContinuousStudyDataArmValue
-                .ContinuousStudyDataArmValueBuilder(armInstanceUid, armLabel)
+        studyDataArmValue = new ContinuousStudyDataValue.ContinuousStudyDataValueBuilder(armInstanceUid, label, isArm)
                 .mean(jsonObject.containsKey("mean") ? tryParseDouble((String) jsonObject.get("mean")) : null)
                 .std(jsonObject.containsKey("std") ? tryParseDouble((String) jsonObject.get("std")) : null)
                 .sampleSize(sampleSize)
                 .sampleDuration(sampleDuration)
                 .build();
-        moment.getStudyDataArmValues().add(studyDataArmValue);
+        moment.getStudyDataValues().add(studyDataArmValue);
       } else if (jsonObject.containsKey("categoryCount")) {
-        CategoricalStudyDataArmValue existingValue = findExistingCategoricalArmValue(armInstanceUid, moment.getStudyDataArmValues());
+        CategoricalStudyDataValue existingValue = findExistingCategoricalArmValue(armInstanceUid, moment.getStudyDataValues());
         if(existingValue == null) {
-          existingValue = new CategoricalStudyDataArmValue(armInstanceUid, armLabel);
-          moment.getStudyDataArmValues().add(existingValue);
+          existingValue = new CategoricalStudyDataValue(armInstanceUid, label, isArm);
+          moment.getStudyDataValues().add(existingValue);
         }
         Pair<String, Integer> value = Pair.of((String) jsonObject.get("categoryLabel"), Integer.parseInt((String) jsonObject.get("categoryCount")));
         existingValue.getValues().add(value);
@@ -373,10 +371,10 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return new ArrayList<>(stringStudyDataMap.values());
   }
 
-  private CategoricalStudyDataArmValue findExistingCategoricalArmValue(String armInstanceUid, List<AbstractStudyDataArmValue> studyDataArmValues) {
-    for(AbstractStudyDataArmValue armValue: studyDataArmValues) {
-      if (armValue.getArmInstanceUid().equals(armInstanceUid) && armValue instanceof CategoricalStudyDataArmValue) {
-        return (CategoricalStudyDataArmValue) armValue;
+  private CategoricalStudyDataValue findExistingCategoricalArmValue(String armInstanceUid, List<AbstractStudyDataValue> studyDataArmValues) {
+    for(AbstractStudyDataValue armValue: studyDataArmValues) {
+      if (armValue.getInstanceUid().equals(armInstanceUid) && armValue instanceof CategoricalStudyDataValue) {
+        return (CategoricalStudyDataValue) armValue;
       }
     }
     return null;
@@ -403,7 +401,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONObject jsonObject = (JSONObject) binding;
     JSONObject newObject = new JSONObject();
     for (String key : jsonObject.keySet()) {
-      String value = JsonPath.read(binding, "$. " + key + ".value");
+      Object value = JsonPath.read(binding, "$. " + key + ".value");
       newObject.put(key, value);
     }
     return newObject;

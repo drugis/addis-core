@@ -1,0 +1,1048 @@
+<http://trials.drugis.org/concepts/62d1a23e-4110-47f2-b9b7-2c233c46cd42>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Age in years" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Age (cut-off 45, 65)" ;
+        <http://trials.drugis.org/ontology#categoryList>
+                ( "< 45" "45-64" "> 64" ) ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#categorical> .
+
+<http://trials.drugis.org/concepts/af28599c-d900-411d-a668-a609682d60e1>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Intentional overdose (Injury, poisoning and procedural complications)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Intentional overdose" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/3dd748ee-b618-48ef-8cd5-178e27ff66d0>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Diverticulitis (Infections and infestations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Diverticulitis" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/bc20642b-1ec5-4663-b12b-3b0ad5ae31eb>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Placebo" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://www.whocc.no/ATC2011/Placebo> .
+
+<http://trials.drugis.org/concepts/3748d541-f832-47f2-a57c-5efa9e557253>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Change from baseline in the 24-hour mean diastolic blood pressure" , "mmHg" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "DBP 24-hour mean" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/812ca8bc-7692-4ed0-a61e-4d012587b41a>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Breast cancer (Neoplasms benign, malignant and unspecified (incl cysts and polyps))" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Breast cancer" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/a9248af9-ccf5-4134-a470-ff823e65c026>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Fall (Injury, poisoning and procedural complications)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Fall" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/1c2861b3-3e44-406b-a9c6-a566ae074461>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Valsartan" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://www.whocc.no/ATC2011/C09CA03> .
+
+<http://trials.drugis.org/concepts/1dc5407c-0ef4-415a-a544-d2c74d84fad1>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Non-serious adverse events (total)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Non-SAE" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/cef60060-eb9d-40fc-ab45-91e39bcfcdf4>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "mmHg" , "Change from baseline in mean trough clinic sitting systolic blood pressure" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "SBP mean trough (clinic, sitting)" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/26d0d59a-bb3d-421a-905e-62c526cb2229>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Partial seizures (Nervous system disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Partial seizures" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/b53610d3-cd24-4b81-b906-d8fae700fc49>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "mmHg" , "Change from baseline in mean trough clinic sitting diastolic blood pressure" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "DBP mean trough (clinic, sitting)" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/9856f296-1380-4add-9929-57e3dd95de44>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "mmHg" , "Change from baseline in daytime (6am - 10pm) mean diastolic blood pressure" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "DBP daytime mean" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/f493b401-2390-4899-b26c-e4d15f6f9f9e>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "mmHg" , "Change from baseline in the nighttime (12am - 6am) mean diastolic blood pressure" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "DBP nighttime mean" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/41e91266-0a4f-4771-b377-758730461fbe>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Serious adverse events" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "SAE" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/39bff1c0-61cf-4e94-a573-ff6f76abf8bd>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Cellulitis (Infections and infestations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Cellulitis" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/c04df631-88ed-4d2b-8a5a-7fcd4b419b10>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Cholecystitis (Hepatobiliary disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Cholecystitis" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/93db6554-417c-4d5c-8ebb-c3cf6e462990>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "mmHg" , "Change from baseline in the trough (22-24hr) mean diastolic blood pressure" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "DBP trough mean" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/b6c8a2d1-7428-48fd-9558-7021acac8d56>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "mmHg" , "Change from baseline in the 24-hour mean systolic blood pressure" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "SBP 24-hour mean" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/ab9824bf-071a-4247-8ec1-747277db1281>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Infected bites (Infections and infestations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Infected bites" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/d2345823-6c8e-4d0c-9326-0ed37217ae51>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "mmHg" , "Change from baseline in nighttime (12am - 6am) mean systolic blood pressure" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "SBP nighttime mean" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/a06d16c9-6afc-4dac-8f03-9157bad5d36e>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "mmHg" , "Change from baseline in the trough (22-24hr) mean systolic blood pressure" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "SBP trough mean" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/8e2ae3dc-699d-4a4c-83f7-646b387354c2>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Participants who achieve a clinic systolic blood pressure response, defined as < 140 mmHg and/or reduction frome baseline at least 20 mmHg" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "SBP response (clinic)" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/ed689d28-ade1-4b64-be72-dda89f105e0e>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Deep vein thrombosis (Vascular disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Deep vein thrombosis" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/04f4f226-87e7-48d2-a607-91e23c9e6cef>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Cholelithiasis (Hepatobiliary disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Cholelithiasis" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/a57c4db5-f4dc-4f4e-93c2-12f02f97ed7b>
+        a       <http://www.w3.org/2002/07/owl#Class> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "gram" ;
+        <http://qudt.org/schema/qudt#symbol>
+                "g" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://qudt.org/schema/qudt#Gram> .
+
+<http://trials.drugis.org/concepts/a812d7ac-7e61-48e1-acb4-56672c36adbd>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Dysfunctional uterine bleeding (Reproductive system and breast disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Dysfunctional uterine bleeding" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/3493f602-7ee7-4aa6-babc-3c41ff1460c3>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Abdominal adhesions (Gastrointestinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Abdominal adhesions" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/daae6f18-c5c8-4a20-b224-7da3d054d430>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Headache (Nervous system disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Headache" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/9a689016-4f48-4a5a-9e0a-f1a8aee9b40e>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Gender (male, female)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Gender" ;
+        <http://trials.drugis.org/ontology#categoryList>
+                ( "Female" "Male" ) ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#categorical> .
+
+<http://trials.drugis.org/concepts/3215e733-4e94-4ccf-9e70-336631d1f51f>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Blood pressure increased (Investigations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Blood pressure increased" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/5f675759-f246-4d1f-aa61-ab0bed9b1b5c>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Participants who achieve both clinic SBP and clinic DBP response" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "SBP and DBP response (clinic)" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/411dddc8-a5a8-489d-949b-9a7ff6c9d522>
+        a       <http://trials.drugis.org/ontology#Indication> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Hypertensive disorder" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://www.ihtsdo.org/SCT_38341003> .
+
+<http://trials.drugis.org/concepts/f1819c7c-4d59-4a31-9a17-08a77ba02254>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "mmHg" , "Change from baseline in the 12-hour mean diastolic blood pressure" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "DBP 12-hour mean" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/26bc78a4-a395-4d74-bf95-eaa1ff582a56>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Azilsartan" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://www.whocc.no/ATC2011/C09CA09> .
+
+<http://trials.drugis.org/concepts/07a8d3b2-e7e4-49d8-8e8e-260d6608a6ef>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Subdural haematoma (Injury, poisoning and procedural complications)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Subdural haematoma" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/5c17fe7d-42da-45d3-98b9-1f332983182f>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Eye irritation (Eye disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Eye irritation" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/7cce382d-62ca-4545-b355-3dac55bcf5f1>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Olmesartan" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://www.whocc.no/ATC2011/C09CA08> .
+
+<http://trials.drugis.org/concepts/f30cf3ee-296a-47d6-bdf0-8a8eba5adbdf>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Gastrointestinal haemorrhage (Gastrointestinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Gastrointestinal haemorrhage" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/0b91e70e-4592-4bb2-a8fb-e19b04653c3e>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "mmHg" , "Change from baseline in the 12-hour mean systolic blood pressure" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "SBP 12-hour mean" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/81cf129b-7ae9-44ff-86a3-7820784a2c6e>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Participants who achieve a clinic diastolic blood pressure response, defined as < 90 mmHg and/or reduction from baseline at least 10 mmHg" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "DBP response (clinic)" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/b825c2dd-261c-445a-8eac-a55abc1e47a7>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Change from baseline in daytime (6am - 10pm) mean systolic blood pressure" , "mmHg" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "SBP daytime mean" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/e2ce2d0f-f19e-4179-897a-b364a80c4950>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Angioedema (Skin and subcutaneous tissue disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Angioedema" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/ca887bb7-fff1-4e4f-9c2b-36d0ac02c5ab>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Pancreatitis (Gastrointestinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Pancreatitis" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/c500aae8-419e-4e5c-a6ed-5e9156f6068e>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Diarrhoea (Gastrointestinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Diarrhoea" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/4ab1b4d4-8f8d-494e-945a-51e13784872b>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Estimated Glomerular Filtration Rate Category" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "eGFR category" ;
+        <http://trials.drugis.org/ontology#categoryList>
+                ( "Moderate impairment" "Mild impairment" "Normal" ) ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#categorical> .
+
+<http://trials.drugis.org/concepts/bda4b6c5-d1dc-4333-83f8-7a4bdb323f25>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Vomiting (Gastrointestinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Vomiting" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/e93f3a89-cd92-49e6-9d9b-00ef1c320bf6>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Chest pain (General disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Chest pain" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/41d6e0b9-e3a1-4a4e-b08d-33bc10805945>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Ethnicity (NIH/OMB)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Ethnicity" ;
+        <http://trials.drugis.org/ontology#categoryList>
+                ( "Hispanic or Latino" "Not Hispanic or Latino" "Unknown or Not Reported" ) ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#categorical> .
+
+<http://trials.drugis.org/concepts/1c4803f0-8017-4ccc-9d30-98dca99c34e5>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Diastolic dysfunction (Cardiac disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Diastolic dysfunction" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/2482885e-b238-4f33-b61d-4921be196714>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Shock (Vascular disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Shock" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/8546ce17-0b26-457a-aa4b-e9820ed6b6f8>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Gastroenteritis (Infections and infestations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Gastroenteritis" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/a0936519-dbb2-477d-a89c-2b78e489c183>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Body height in cm" , "cm" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Height" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/c87f460c-b1d0-4571-8619-f17529ccf034>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Asthma (Respiratory, thoracic and mediastinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Asthma" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/10f3094a-7755-4773-9532-83a317665a46>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Blood creatinine increased (Investigations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Blood creatinine increased" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/d152d8c0-7898-470a-85bd-6ec8b14609c8>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Chlortalidone" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://www.whocc.no/ATC2011/C03BA04> .
+
+<http://trials.drugis.org/concepts/c41fcb6f-58cd-4403-aea0-3dcecff27c1a>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Chronic Kidney Disease (CKD) Status" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Chronic Kidney Disease" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/3b2e80b1-4202-45e0-b645-12734d223d7c>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Pneumonia (Infections and infestations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Pneumonia" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/7162bfae-cd7e-440a-a369-ba053061c698>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Blood creatinine increased (Investigations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Blood creatinine increased (non-serious)" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/616118b6-01ed-439c-a8f0-04175c598364>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Pulmonary embolism (Respiratory, thoracic and mediastinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Pulmonary embolism" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/ba997ca1-486f-49cb-9c4d-c170c36eb2c3>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Nausea (Gastrointestinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Nausea" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/e4e373a7-a6c0-428b-a55e-df5c4937869c>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Race (NIH/OMB)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Race" ;
+        <http://trials.drugis.org/ontology#categoryList>
+                ( "American Indian or Alaska Native" "Asian" "Native Hawaiian or Other Pacific Islander" "Black or African American" "White" "More than one race" "Unknown or Not Reported" ) ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#categorical> .
+
+<http://trials.drugis.org/concepts/adbbfa22-2823-4dab-89d4-2263fe7811a0>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Diabetes Status" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Diabetes" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/5646ec22-6db5-4c07-9212-d716a87a4f04>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Heat exhaustion (Injury, poisoning and procedural complications)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Heat exhaustion" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/98adcc3f-d3bc-437c-ae0d-903771cf5eb6>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Body weight in kg" , "kg" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Weight" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/8705113b-876b-464b-b1cd-0915067bcac9>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Systemic inflammatory response syndrome (General disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Systemic inflammatory response syndrome" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/1ff3881e-320f-48cd-95b7-a48ab2940762>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Cardiac arrest (Cardiac disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Cardiac arrest" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/81cbc87b-07a6-45b0-b119-fbebb21ad626>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Coronary artery disease (Cardiac disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Coronary artery disease" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/c19b8c35-4d0e-4c69-82f0-5d61436b8eea>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Road traffic accident (Injury, poisoning and procedural complications)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Road traffic accident" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/97923f93-4bf4-4b38-84dd-4eacef8ad7b5>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Dehydration (Metabolism and nutrition disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Dehydration" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/8d5202e6-3d53-44c2-bfdf-24d95d626d6e>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Epigastric discomfort (Gastrointestinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Epigastric discomfort" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/da5e190f-676a-44d9-9165-3f7cf08fc248>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Age in years" , "years" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Age" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/f331af7a-515c-434b-80a7-6c2d37b3419c>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Viral infection (Infections and infestations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Viral infection" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/f5c5b6d2-f48b-4a44-829d-47f29246a4d9>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Region of Enrollment" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Region of Enrollment" ;
+        <http://trials.drugis.org/ontology#categoryList>
+                ( "United States" "Mexico" "Chile" "Argentina" ) ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#categorical> .
+
+<http://trials.drugis.org/concepts/fe221675-02d3-4590-a319-9786e8c5eb7b>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Dizziness (Nervous system disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Dizziness" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/e409c131-20b2-4c97-a0ed-c18ee1095100>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Troponin increased (Investigations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Troponin increased" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/f805d7be-dec1-4e86-bc29-350fdc37e01a>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Cerebral infarction (Nervous system disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Cerebral infarction" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/4036f39b-2511-43d9-a3a2-c5b70f2cf143>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Body Mass Index" , "kg/m^2" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "BMI" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#continuous> .
+
+<http://trials.drugis.org/concepts/3ca2b8d6-6fea-4233-992b-6001428a4ec8>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Sleep apnoea syndrome (Respiratory, thoracic and mediastinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Sleep apnoea syndrome" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/48decdca-52b6-4e2e-b7df-a5ef707e3067>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Generalised oedema (General disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Generalised oedema" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/bf71210d-9925-4430-80d7-7358fe6482ea>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Hydrochlorothiazide" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://www.whocc.no/ATC2011/C03AA03> .
+
+<http://trials.drugis.org/concepts/45bf013d-5dc5-40a1-8593-fae88b879df8>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Atrial fibrillation (Cardiac disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Atrial fibrillation" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/75a6503b-af6a-4df6-9db0-8a3c1bc9ace1>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Status asthmaticus (Respiratory, thoracic and mediastinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Status asthmaticus" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/35423531-2772-41e3-8493-c8d1c552440f>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Cholecystitis chronic (Hepatobiliary disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Cholecystitis chronic" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/1b410fef-ce70-4229-9d44-9400b48b08fe>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Lower respiratory tract infection (Infections and infestations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Lower respiratory tract infection" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/227f74db-8f89-4d66-aebc-3ef9bb6d78f2>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Ischaemic stroke (Nervous system disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Ischaemic stroke" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/d28e68c8-7d93-4e91-893c-f375ed9ed1c1>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Inguinal hernia (Gastrointestinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Inguinal hernia" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/f47ddc7f-ad89-4cb3-a7fe-0b10b75ccd86>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Myocardial infarction (Cardiac disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Myocardial infarction" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/bffbf706-6244-4279-b176-77ef1c9a954c>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Epilepsy (Nervous system disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Epilepsy" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/9ae2b9a9-f7a5-4057-a1f6-e5965378d721>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Myelodysplastic syndrome (Neoplasms benign, malignant and unspecified (incl cysts and polyps))" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Myelodysplastic syndrome" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/8024ab57-c5bd-4dbe-bf97-e93e410501ea>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Ischaemia (Vascular disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Ischaemia" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/53a20c5c-bfc7-4109-a19d-b798c66cd85a>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Transient ischaemic attack (Nervous system disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Transient ischaemic attack" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/53b2ad8e-f6e9-434f-893b-4360374c0339>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Dyslipidemia (Metabolism and nutrition disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Dyslipidemia" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/c39da54d-f411-470c-9522-deac6266062d>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Angina pectoris (Cardiac disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Angina pectoris" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/b7834049-994e-4aa8-b330-affb37a2f068>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Lung neoplasm malignant (Neoplasms benign, malignant and unspecified (incl cysts and polyps))" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Lung neoplasm malignant" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/ed7bc048-b09f-4d9c-b38c-e3c813ec917d>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Nasopharyngitis (Infections and infestations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Nasopharyngitis" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/23ea717e-aba6-4c12-86de-72cb95522024>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Cerebral haemorrhage (Nervous system disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Cerebral haemorrhage" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/19707bef-3a4b-484b-8235-ec893702aaa0>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Hepatitis C (Infections and infestations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Hepatitis C" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/fd8df25b-9288-4002-902d-63a1aa2cef5b>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Appendicitis (Infections and infestations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Appendicitis" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/2d9ec58b-0b2b-45c5-9de8-acfb70a428fe>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Upper respiratory tract infection (Infections and infestations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Upper respiratory tract infection" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/3e384086-4df1-41a6-958a-4cbd7304fa02>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Ankle fracture (Injury, poisoning and procedural complications)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Ankle fracture" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/08d899b2-bbb8-4497-aa38-023a66b16920>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Retinal detachment (Eye disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Retinal detachment" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/41d78e65-8c62-41aa-adcd-98af54145ec1>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Cerebral ischaemia (Nervous system disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Cerebral ischaemia" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/66489bc0-d6d8-4cf3-babd-e452bfa8b00b>
+        a       <http://trials.drugis.org/ontology#Drug> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Ramipril" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://www.whocc.no/ATC2011/C09AA05> .
+
+<http://trials.drugis.org/concepts/f80779f4-ee1f-472f-b1e7-5cc579c50c98>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Renal cancer (Neoplasms benign, malignant and unspecified (incl cysts and polyps))" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Renal cancer" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/f480e9a8-06d6-41e3-a47e-a7fd2f94aa6f>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Cough (Respiratory, thoracic and mediastinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Cough" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/bfed32be-38b5-4350-bac1-bd002613fcd8>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Laryngeal oedema (Respiratory, thoracic and mediastinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Laryngeal oedema" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/99a777ad-025c-4701-b82d-28cd2c4dc17a>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Salivary gland calculus (Gastrointestinal disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Salivary gland calculus" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/45940b09-37cf-4e86-87e1-4f3487d007d3>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Syncope (Nervous system disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Syncope" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/db8220f6-ebab-4a71-8491-8733d9dfccfa>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Hyperkalaemia (Metabolism and nutrition disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Hyperkalaemia" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/6311ec62-01a8-495e-85dd-7c45cbbf9ec5>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Acute coronary syndrome (Cardiac disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Acute coronary syndrome" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/708a0df0-cadd-48cc-be87-e8bcc89c7878>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Urosepsis (Infections and infestations)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Urosepsis" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/f1b04987-b024-460a-a7ba-f8e918709822>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Cataract (Eye disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Cataract" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/6fa718dd-4fd0-4287-8a16-3c6403afe881>
+        a       <http://www.w3.org/2002/07/owl#Class> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "liter" ;
+        <http://qudt.org/schema/qudt#symbol>
+                "l" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://qudt.org/schema/qudt#Liter> .
+
+<http://trials.drugis.org/concepts/f56f6d8f-c935-4502-a569-a4ac63fd7d8b>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Diabetic ketoacidosis (Metabolism and nutrition disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Diabetic ketoacidosis" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/62054d8b-4af1-4e3b-b6b6-ce3a3588672e>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Grand mal convulsion (Nervous system disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Grand mal convulsion" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .
+
+<http://trials.drugis.org/concepts/92681795-e79b-4297-a5c8-8d815faa9d5e>
+        a       <http://trials.drugis.org/ontology#Variable> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Hydrocele (Congenital, familial and genetic disorders)" ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Hydrocele" ;
+        <http://trials.drugis.org/ontology#measurementType>
+                <http://trials.drugis.org/ontology#dichotomous> .

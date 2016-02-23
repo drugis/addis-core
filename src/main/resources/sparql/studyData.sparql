@@ -7,12 +7,13 @@ PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
 PREFIX instance: <http://trials.drugis.org/instances/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
-SELECT
+SELECT DISTINCT
   ?outcomeUid
   ?studyDataTypeUri
   ?studyDataTypeLabel
-  ?armInstanceUid
-  ?armLabel
+  ?instanceUid
+  ?groupLabel
+  ?isArm
   ?sampleSize
   ?count
   ?mean
@@ -38,12 +39,35 @@ SELECT
        ontology:of_variable [
          owl:sameAs ?studyDataTypeUri
        ] .
-     ?measurementJoinInstance
+     {
+       ?measurementJoinInstance
          ontology:of_outcome ?outcomeUid ;
-         ontology:of_group ?armInstanceUid ;
+         ontology:of_group ?instanceUid ;
          ontology:of_moment ?momentUid .
-     ?armInstanceUid rdfs:label ?armLabel ;
-             a ontology:Arm .
+     } UNION {
+       ?measurementJoinInstance
+              ontology:of_outcome ?outcomeUid ;
+              ontology:of_group ?instanceUid  ;
+              ontology:of_moment ?momentUid .
+     } UNION {
+       ?measurementJoinInstance
+              ontology:of_outcome ?outcomeUid ;
+              ontology:of_group ?instanceUid  ;
+              ontology:of_moment ?momentUid .
+     }
+     {
+       ?instanceUid rdfs:label ?groupLabel ;
+         a ontology:Arm .
+       BIND (TRUE AS ?isArm) .
+     } UNION {
+       ?instanceUid rdfs:label ?groupLabel ;
+         a ontology:Group .
+          BIND (FALSE AS ?isArm) .
+     } UNION {
+       ?instanceUid a ontology:StudyPopulation .
+       BIND ("StudyPopulation" AS ?groupLabel) .
+        BIND (FALSE AS ?isArm) .
+     }
      OPTIONAL {
           ?measurementJoinInstance ontology:sample_size ?sampleSize .
      }

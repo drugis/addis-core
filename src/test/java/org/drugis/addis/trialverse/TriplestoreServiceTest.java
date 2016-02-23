@@ -116,24 +116,26 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testGetStudyArms() throws ResourceDoesNotExistException {
+  public void testGetStudyGroups() throws ResourceDoesNotExistException {
     String namespaceUid = "namespaceUid";
     String studyUid = "studyUid";
 
-    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleStudyArmsResult.json");
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleStudyGroupsResult.json");
     createMockTrialverseService(mockResult);
 
-    JSONArray arms = triplestoreService.getStudyArms(namespaceUid, "version");
+    JSONArray arms = triplestoreService.getStudyGroups(namespaceUid, "version");
 
-    assertEquals(3, arms.size());
+    assertEquals(4, arms.size());
     JSONObject jsonObject = (JSONObject) arms.get(0);
-    assertTrue(jsonObject.containsKey("arm"));
-    assertTrue(jsonObject.containsKey("armLabel"));
+    assertTrue(jsonObject.containsKey("groupUri"));
+    assertTrue(jsonObject.containsKey("label"));
     assertTrue(jsonObject.containsKey("numberOfParticipantsStarting"));
+    assertTrue(jsonObject.containsKey("isArm"));
 
     assertTrue(jsonObject.containsValue("http://trials.drugis.org/instances/5959fd08-9c5b-4016-8118-d195cdb80c70"));
     assertTrue(jsonObject.containsValue("Olmesartan medoxomil 20-40mg/hydrochlorothiazide 12.5-25mg QD"));
     assertTrue(jsonObject.containsValue("356"));
+    assertTrue(jsonObject.containsValue(true));
   }
 
   @Test

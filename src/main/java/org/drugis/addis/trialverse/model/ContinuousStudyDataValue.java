@@ -3,16 +3,15 @@ package org.drugis.addis.trialverse.model;
 /**
  * Created by connor on 21-8-14.
  */
-public class ContinuousStudyDataArmValue extends AbstractStudyDataArmValue {
+public class ContinuousStudyDataValue extends AbstractStudyDataValue {
 
   private Integer sampleSize;
   private String sampleDuration;
   private Double mean;
   private Double std;
 
-  private ContinuousStudyDataArmValue(ContinuousStudyDataArmValueBuilder builder) {
-    super(builder.armInstanceUid,
-            builder.armLabel);
+  private ContinuousStudyDataValue(ContinuousStudyDataValueBuilder builder) {
+    super(builder.instanceUid, builder.label, builder.isArm);
     this.sampleSize = builder.sampleSize;
     this.sampleDuration = builder.sampleDuration;
     this.mean = builder.mean;
@@ -36,10 +35,11 @@ public class ContinuousStudyDataArmValue extends AbstractStudyDataArmValue {
     return sampleDuration;
   }
 
-  public static class ContinuousStudyDataArmValueBuilder {
+  public static class ContinuousStudyDataValueBuilder {
 
-    private final String armInstanceUid;
-    private final String armLabel;
+    private final String instanceUid;
+    private final String label;
+    private final Boolean isArm;
 
     private Double mean;
     private Double std;
@@ -47,31 +47,32 @@ public class ContinuousStudyDataArmValue extends AbstractStudyDataArmValue {
     private Integer sampleSize;
     private String sampleDuration;
 
-    public ContinuousStudyDataArmValueBuilder(String armInstanceUid, String armLabel) {
-      this.armInstanceUid = armInstanceUid;
-      this.armLabel = armLabel;
+    public ContinuousStudyDataValueBuilder(String instanceUid, String label, Boolean isArm) {
+      this.instanceUid = instanceUid;
+      this.label = label;
+      this.isArm = isArm;
     }
 
-    public ContinuousStudyDataArmValue build() {
-      return new ContinuousStudyDataArmValue(this);
+    public ContinuousStudyDataValue build() {
+      return new ContinuousStudyDataValue(this);
     }
 
-    public ContinuousStudyDataArmValueBuilder mean(Double mean) {
+    public ContinuousStudyDataValueBuilder mean(Double mean) {
       this.mean = mean;
       return this;
     }
 
-    public ContinuousStudyDataArmValueBuilder std(Double std) {
+    public ContinuousStudyDataValueBuilder std(Double std) {
       this.std = std;
       return this;
     }
 
-    public ContinuousStudyDataArmValueBuilder sampleSize(Integer sampleSize) {
+    public ContinuousStudyDataValueBuilder sampleSize(Integer sampleSize) {
       this.sampleSize = sampleSize;
       return this;
     }
 
-    public ContinuousStudyDataArmValueBuilder sampleDuration(String sampleDuration) {
+    public ContinuousStudyDataValueBuilder sampleDuration(String sampleDuration) {
       this.sampleDuration = sampleDuration;
       return this;
     }
