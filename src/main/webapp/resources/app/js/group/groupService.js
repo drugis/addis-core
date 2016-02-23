@@ -11,6 +11,7 @@ define(['lodash'], function(_) {
 
       if (backEndGroup['@type'] === 'ontology:StudyPopulation') {
         frontEndGroup.label = 'Overall population';
+        frontEndGroup.disableEditing = true;
       }
 
       if (backEndGroup.comment) {
