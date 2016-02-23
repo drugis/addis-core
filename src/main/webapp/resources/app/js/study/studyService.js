@@ -278,8 +278,25 @@ define(['lodash'], function(_) {
       modified = false;
     }
 
+    function findStudyNode(graph) {
+      return _.find(graph['@graph'], function(graphNode) {
+        return graphNode['@type'] === 'ontology:Study';
+      });
+    }
+
     function loadJson(jsonPromise) {
       studyJsonPromise = jsonPromise;
+      jsonPromise.then(function(data) {
+        var studyNode = findStudyNode(data);
+        if (studyNode) {
+          if (!studyNode.has_epochs) {
+            studyNode.has_epochs = [];
+          }
+          if (!studyNode.has_included_population) {
+            studyNode.has_included_population = [];
+          }
+        }
+      });
     }
 
     function getGraphAndContext() {
@@ -303,9 +320,7 @@ define(['lodash'], function(_) {
 
     function getStudy() {
       return studyJsonPromise.then(function(graph) {
-        return _.find(graph['@graph'], function(graphNode) {
-          return graphNode['@type'] === 'ontology:Study';
-        });
+        return findStudyNode(graph);
       });
     }
 
