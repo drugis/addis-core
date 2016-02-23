@@ -1,26 +1,35 @@
 <div ui-view>
   <div class="row">
     <div class="columns large-8">
-      <div>
-        <em ng-show="!(projects | ownProjectsFilter:user.id).length">No projects have been created</em>
-        <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="project in projects | ownProjectsFilter:user.id ">
-          <div class="row">
-            <div class="columns large-6">
-              <h5>
-                <a ui-sref="project({userUid: user.id, projectId: project.id})">
-                  <span title="project name">{{project.name}}</span>
-                </a>
-              </h5>
-            </div>
-          </div>
-          <div class="row">
-            <div class="columns large-6">
-              {{project.description}}
-            </div>
+      <div ng-if="!loadedProjects">
+        <i class="fa fa-spinner fa-spin fa-3x"></i>
+        <p>Loading projects...</p>
+      </div>
+
+      <em ng-if="loadedProjects && !(projects | ownProjectsFilter:user.id).length">No projects have been created</em>
+      <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="project in projects | ownProjectsFilter:user.id ">
+
+        <div class="row">
+          <div class="columns large-6">
+            <h5>
+              <a ui-sref="project({userUid: user.id, projectId: project.id})">
+                <span title="project name">{{project.name}}</span>
+              </a>
+            </h5>
           </div>
         </div>
+
+        <div class="row">
+          <div class="columns large-6">
+            {{project.description}}
+          </div>
+        </div>
+
       </div>
+      <!-- end project item ng-repeat -->
     </div>
+    <!-- end projects column -->
+
     <div class="columns large-4">
       <h2>Other users</h2>
       <ul class="no-bullet">

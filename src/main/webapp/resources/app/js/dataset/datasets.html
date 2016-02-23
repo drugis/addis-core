@@ -3,7 +3,7 @@
     <div class="columns large-8">
       <button ng-show="loginUser.id === userUid" tabindex="0" class="button " ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button>
 
-      <div ng-show="!datasetsLoaded" class="row">
+      <div ng-if="!datasetsLoaded" class="row">
         <div class="column center large-12">
           <i class="fa fa-spinner fa-spin fa-3x"></i>
           <p>Loading datasets...</p>
