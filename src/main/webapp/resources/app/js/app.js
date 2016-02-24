@@ -24,6 +24,7 @@ define(
     'user/user',
     'dataset/dataset',
     'project/project',
+    'analysis/analysis',
     'util/util',
     'study/study',
     'graph/graph',
@@ -91,6 +92,7 @@ define(
       'mm.foundation.tabs',
       'help-directive',
       'addis.project',
+      'addis.analysis',
       'addis.controllers',
       'addis.directives',
       'addis.resources',
@@ -152,6 +154,9 @@ define(
     }, {
       label: 'Single-study Benefit-Risk',
       stateName: 'singleStudyBenefitRisk'
+    }, {
+      label: 'Benefit-risk analysis based on meta-analyses',
+      stateName: 'metaBenefitRisk'
     }]);
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');

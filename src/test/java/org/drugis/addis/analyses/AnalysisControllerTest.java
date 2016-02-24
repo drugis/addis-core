@@ -139,6 +139,20 @@ public class AnalysisControllerTest {
   }
 
   @Test
+  public void testCreateMetaBenefitRiskAnalysis() throws Exception {
+    MetaBenefitRiskAnalysis analysis = new MetaBenefitRiskAnalysis(1);
+    AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL);
+    when(analysisService.createMetaBenefitRiskAnalysis(gert, analysisCommand)).thenReturn(analysis);
+    String body = TestUtils.createJson(analysisCommand);
+    mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$.analysisId", notNullValue()));
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(analysisService).createMetaBenefitRiskAnalysis(gert, analysisCommand);
+  }
+
+  @Test
   public void testCreateNetworkMetaAnalysis() throws Exception {
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "name");
     AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.NETWORK_META_ANALYSIS_LABEL);

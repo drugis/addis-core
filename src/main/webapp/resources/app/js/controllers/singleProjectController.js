@@ -11,8 +11,7 @@ define(['lodash'], function(_) {
     'CovariateOptionsResource',
     'CovariateResource',
     'AnalysisResource',
-    'ANALYSIS_TYPES',
-    '$modal'
+    'ANALYSIS_TYPES'
   ];
   var SingleProjectController = function($scope, $q, $state, $stateParams, $window, $modal, ProjectResource, TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
@@ -32,7 +31,6 @@ define(['lodash'], function(_) {
     $scope.duplicateInterventionName = {
       isDuplicate: false
     };
-    $scope.analysisTypes = ANALYSIS_TYPES;
     $scope.userId = $stateParams.userUid;
 
     $scope.project = ProjectResource.get($stateParams);
@@ -98,6 +96,26 @@ define(['lodash'], function(_) {
       });
     }
 
+    $scope.goToAnalysis = function(analysisId, analysisTypeLabel) {
+      var analysisType = _.find(ANALYSIS_TYPES, function(type) {
+        return type.label === analysisTypeLabel;
+      });
+      //todo if analysis is gemtc type and has a problem go to models view
+      $state.go(analysisType.stateName, {
+        userUid: $scope.userId,
+        projectId: $scope.project.id,
+        analysisId: analysisId
+      });
+    };
+
+    $scope.openAddAnalysisDialog = function() {
+      $modal.open({
+        templateUrl: './app/js/analysis/addAnalysis.html',
+        scope: $scope,
+        controller: 'AddAnalysisController'
+      });
+    };
+
     $scope.openCreateOutcomeDialog = function() {
       $modal.open({
         templateUrl: './app/js/outcome/addOutcome.html',
@@ -142,37 +160,6 @@ define(['lodash'], function(_) {
           }
         }
       });
-    };
-
-    $scope.addAnalysis = function(newAnalysis) {
-      newAnalysis.projectId = $scope.project.id;
-      AnalysisResource
-        .save(newAnalysis)
-        .$promise.then(function(savedAnalysis) {
-          $scope.goToAnalysis(savedAnalysis.id, savedAnalysis.analysisType);
-        });
-    };
-
-    $scope.goToAnalysis = function(analysisId, analysisTypeLabel) {
-      var analysisType = _.find(ANALYSIS_TYPES, function(type) {
-        return type.label === analysisTypeLabel;
-      });
-      //todo if analysis is gemtc type and has a problem go to models view
-      $state.go(analysisType.stateName, {
-        userUid: $scope.userId,
-        projectId: $scope.project.id,
-        analysisId: analysisId
-      });
-    };
-
-    function findDuplicateName(list, name) {
-      return _.find(list, function(item) {
-        return item.name === name;
-      });
-    }
-
-    $scope.checkForDuplicateInterventionName = function(name) {
-      $scope.duplicateInterventionName.isDuplicate = findDuplicateName($scope.interventions, name);
     };
 
   };

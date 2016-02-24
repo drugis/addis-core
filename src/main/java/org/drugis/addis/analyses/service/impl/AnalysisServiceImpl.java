@@ -91,4 +91,9 @@ public class AnalysisServiceImpl implements AnalysisService {
     projectService.checkProjectExistsAndModifiable(user, analysisCommand.getProjectId());
     return singleStudyBenefitRiskAnalysisRepository.create(analysisCommand);
   }
+
+  @Override
+  public MetaBenefitRiskAnalysis createMetaBenefitRiskAnalysis(Account user, AnalysisCommand analysisCommand) {
+    return null;
+  }
 }

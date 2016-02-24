@@ -1,6 +1,7 @@
 package org.drugis.addis.analyses.repository.impl;
 
 import org.drugis.addis.analyses.AbstractAnalysis;
+import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
 import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
@@ -15,7 +16,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,23 +37,30 @@ public class AnalysisRepositoryImpl implements AnalysisRepository {
   public AbstractAnalysis get(Integer analysisId) throws ResourceDoesNotExistException {
     TypedQuery<SingleStudyBenefitRiskAnalysis> singleStudyQuery = em.createQuery(
       "FROM SingleStudyBenefitRiskAnalysis a WHERE a.id = :analysisId", SingleStudyBenefitRiskAnalysis.class);
-    singleStudyQuery.setParameter("analysisId", analysisId);
-    List<SingleStudyBenefitRiskAnalysis> singleStudyResults = singleStudyQuery.getResultList();
-
-    if (singleStudyResults.size() == 1) {
-      return singleStudyResults.get(0);
-    }
+    AbstractAnalysis analysis = findAnalysis(analysisId, singleStudyQuery);
+    if (analysis != null) return analysis;
 
     TypedQuery<NetworkMetaAnalysis> networkMetaAnalysisQuery = em.createQuery(
       "FROM NetworkMetaAnalysis a WHERE a.id = :analysisId", NetworkMetaAnalysis.class);
-    networkMetaAnalysisQuery.setParameter("analysisId", analysisId);
-    List<NetworkMetaAnalysis> networkMetaAnalysisResults = networkMetaAnalysisQuery.getResultList();
+    AbstractAnalysis networkMetaAnalysisResults = findAnalysis(analysisId, networkMetaAnalysisQuery);
+    if (networkMetaAnalysisResults != null) return networkMetaAnalysisResults;
+
+    TypedQuery<MetaBenefitRiskAnalysis> metaBenefitRiskQuery = em.createQuery(
+            "FROM metBenefitRiskAnalysis a WHERE a.id = :analysisId", MetaBenefitRiskAnalysis.class);
+    AbstractAnalysis metaBenefitRiskResults = findAnalysis(analysisId, metaBenefitRiskQuery);
+    if (metaBenefitRiskResults != null) return metaBenefitRiskResults;
+
+    throw new ResourceDoesNotExistException();
+  }
+
+  private <T extends AbstractAnalysis> T findAnalysis(Integer analysisId, TypedQuery<T> analysisQuery)  {
+    analysisQuery.setParameter("analysisId", analysisId);
+    List<T> networkMetaAnalysisResults = analysisQuery.getResultList();
 
     if(networkMetaAnalysisResults.size() == 1) {
       return networkMetaAnalysisResults.get(0);
     }
-
-    throw new ResourceDoesNotExistException();
+    return null;
   }
 
   @Override

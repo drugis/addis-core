@@ -90,6 +90,9 @@ public class AnalysisController extends AbstractAddisCoreController {
         case AnalysisType.NETWORK_META_ANALYSIS_LABEL:
           analysis = analysisService.createNetworkMetaAnalysis(user, analysisCommand);
           break;
+        case AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL:
+          analysis = analysisService.createMetaBenefitRiskAnalysis(user, analysisCommand);
+          break;
         default:
           throw new RuntimeException("unknown analysis type.");
       }

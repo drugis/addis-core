@@ -382,3 +382,20 @@ ALTER TABLE model ADD CONSTRAINT model_analysisid_fkey FOREIGN KEY (analysisid) 
 
 ALTER TABLE armexclusion DROP CONSTRAINT armexclusion_analysisid_fkey ;
 ALTER TABLE armexclusion ADD CONSTRAINT armexclusion_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES networkmetaanalysis(id) ON DELETE CASCADE ;
+
+--changeset reidd:38
+CREATE TABLE MetaBenefitRiskAnalysis_Alternative (
+   analysisId INT,
+   alternativeId INT,
+   PRIMARY KEY(analysisId, alternativeId),
+   FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id) ON DELETE CASCADE ,
+   FOREIGN KEY(alternativeId) REFERENCES Intervention(id) ON DELETE CASCADE
+);
+
+CREATE TABLE MetaBenefitRiskAnalysis (
+  id SERIAL NOT NULL,
+  title VARCHAR NOT NULL,
+  projectId INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(projectId) REFERENCES Project(id) ON DELETE CASCADE
+);
