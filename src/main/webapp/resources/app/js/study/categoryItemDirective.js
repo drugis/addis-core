@@ -18,6 +18,7 @@ define(['angular'], function(angular) {
 
         var service = $injector.get(scope.settings.service);
 
+        console.log('editallowed? ' + scope.isEditingAllowed + ', disableEditing ' + scope.item.disableEditing + ' label ' + scope.item.label);
         scope.isEditingAllowed = scope.isEditingAllowed && !scope.item.disableEditing;
 
         function onEdit() {

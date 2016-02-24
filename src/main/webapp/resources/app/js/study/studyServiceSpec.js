@@ -121,9 +121,7 @@ define(['angular', 'angular-mocks'],
           studyService.getGraphAndContext().then(function(res) {
             var expectedData = {
               '@graph': [{
-                '@type': 'ontology:Study',
-                has_epochs: [],
-                has_included_population: []
+                '@type': 'ontology:Study'
               }]
             };
             expect(res).toEqual(expectedData);

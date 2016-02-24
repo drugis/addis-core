@@ -233,10 +233,7 @@ define(['lodash'], function(_) {
           has_activity: [],
           has_arm: [],
           has_group: [],
-          has_included_population: [{
-            '@id': 'instance:' + UUIDService.generate(),
-            '@type': 'ontology:StudyPopulation'
-          }],
+          has_included_population: createIncludedPopulation(),
           has_eligibility_criteria: [],
           has_epochs: [],
           has_indication: [],
@@ -278,6 +275,13 @@ define(['lodash'], function(_) {
       modified = false;
     }
 
+    function createIncludedPopulation() {
+      return [{
+        '@id': 'instance:' + UUIDService.generate(),
+        '@type': 'ontology:StudyPopulation'
+      }];
+    }
+
     function findStudyNode(graph) {
       return _.find(graph['@graph'], function(graphNode) {
         return graphNode['@type'] === 'ontology:Study';
@@ -286,17 +290,7 @@ define(['lodash'], function(_) {
 
     function loadJson(jsonPromise) {
       studyJsonPromise = jsonPromise;
-      jsonPromise.then(function(data) {
-        var studyNode = findStudyNode(data);
-        if (studyNode) {
-          if (!studyNode.has_epochs) {
-            studyNode.has_epochs = [];
-          }
-          if (!studyNode.has_included_population) {
-            studyNode.has_included_population = [];
-          }
-        }
-      });
+
     }
 
     function getGraphAndContext() {
