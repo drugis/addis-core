@@ -19,6 +19,7 @@ define(function (require) {
 
     //services
     .factory('StudyService', require('study/studyService'))
+    .factory('StudyReadOnlyService', require('study/studyReadOnlyService'))
 
     //resources
     .factory('CopyStudyResource', require('study/copyStudyResource'))

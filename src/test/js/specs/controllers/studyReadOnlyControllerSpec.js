@@ -31,7 +31,7 @@ define(['angular', 'angular-mocks', 'controllers'],
         StudyTreatmentActivityResource = jasmine.createSpyObj('StudyTreatmentActivityResource', ['query']);
         StudyTreatmentActivityResource.query.and.returnValue(treatmentActivities);
 
-        ctrl = $controller('StudyController', {
+        ctrl = $controller('StudyReadOnlyController', {
 
           $q: $q,
           $stateParams: {},
@@ -46,6 +46,7 @@ define(['angular', 'angular-mocks', 'controllers'],
         });
 
       }));
+
 
     });
   });

@@ -1,238 +1,274 @@
 <navbar-directive>
 </navbar-directive>
 <ul class="breadcrumbs">
-    <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
-    <li><a ui-sref="projects({useruID: loginUser.id})">Projects</a></li>
-    <li><a ui-sref="project({useruID: loginUser.id, projectId: project.id})">{{project.name}}</a></li>
-    <li class="current active">{{studyDetails.name}}</li>
+  <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
+  <li><a ui-sref="projects({useruID: loginUser.id})">Projects</a></li>
+  <li><a ui-sref="project({useruID: loginUser.id, projectId: project.id})">{{project.name}}</a></li>
+  <li class="current active">{{studyDetails.name}}</li>
 </ul>
 
- <div ng-if="error" class="row" ng-cloak>
-    <div class="columns">
-        <app-alert type="alert" close="error.close()" error="error"></span></app-alert>
-    </div>
+<div ng-if="error" class="row" ng-cloak>
+  <div class="columns">
+    <app-alert type="alert" close="error.close()" error="error">
+      </span>
+    </app-alert>
+  </div>
 </div>
 
 <div class="row">
-<div class="column large-12">
-<h2>{{studyDetails.name}}</h2>
+  <div class="column large-12">
+    <h2>{{studyDetails.name}}</h2>
 
-<p>
-    <em>{{studyDetails.title}}</em>
-</p>
+    <p>
+      <em>{{studyDetails.title}}</em>
+    </p>
 
-<h5 class="subheader">Study details</h5>
+    <h5 class="subheader">Study details</h5>
 
-<div class="panel">
-    <div class="row">
+    <div class="panel">
+      <div class="row">
         <div class="column large-4">
-            <dl class="horizontal horizontal-large">
-                <dt>Indication</dt>
-                <dd>{{studyDetails.indication}}</dd>
-                <dt>Allocation</dt>
-                <dd>{{studyDetails.allocation}}</dd>
-                <dt>Blinding</dt>
-                <dd>{{studyDetails.blinding}}</dd>
-                <dt>Size</dt>
-                <dd>{{studyDetails.studySize}}</dd>
-            </dl>
+          <dl class="horizontal horizontal-large">
+            <dt>Indication</dt>
+            <dd>{{studyDetails.indication}}</dd>
+            <dt>Allocation</dt>
+            <dd>{{studyDetails.allocation}}</dd>
+            <dt>Blinding</dt>
+            <dd>{{studyDetails.blinding}}</dd>
+            <dt>Size</dt>
+            <dd>{{studyDetails.studySize}}</dd>
+          </dl>
         </div>
 
         <div class="column large-4 end">
-            <dl class="horizontal horizontal-large">
-                <dt>Number of study centers</dt>
-                <dd>{{studyDetails.numberOfStudyCenters}}</dd>
-                <dd ng-show="!studyDetails.numberOfStudyCenters"><em>not available</em></dd>
-                <dt>Dosing</dt>
-                <dd>{{studyDetails.dosing}}</dd>
-                <dt>Number of arms</dt>
-                <dd>{{studyDetails.numberOfArms}}</dd>
-                <dt>Investigational drugs</dt>
-                <dd>{{studyDetails.investigationalDrugNames}}</dd>
-            </dl>
+          <dl class="horizontal horizontal-large">
+            <dt>Number of study centers</dt>
+            <dd>{{studyDetails.numberOfStudyCenters}}</dd>
+            <dd ng-show="!studyDetails.numberOfStudyCenters">
+              <em>not available</em>
+            </dd>
+            <dt>Dosing</dt>
+            <dd>{{studyDetails.dosing}}</dd>
+            <dt>Number of arms</dt>
+            <dd>{{studyDetails.numberOfArms}}</dd>
+            <dt>Investigational drugs</dt>
+            <dd>{{studyDetails.investigationalDrugNames}}</dd>
+          </dl>
         </div>
-    </div>
+      </div>
 
-    <div class="row">
+      <div class="row">
         <div class="column large-4">
-            <dl class="horizontal horizontal-large">
-                <dt>Status</dt>
-                <dd>{{studyDetails.status}}</dd>
-                <dt>Start date</dt>
-                <dd ng-show="studyDetails.startDate">{{studyDetails.startDate.millis | date:'yyyy-MM-dd'}}</dd>
-                <dd ng-show="!studyDetails.startDate"><em>not available</em></dd>
-                <dt>End date</dt>
-                <dd ng-show="studyDetails.startDate">{{studyDetails.endDate.millis | date:'yyyy-MM-dd'}}</dd>
-                <dd ng-show="!studyDetails.startDate"><em>not available</em></dd>
-            </dl>
+          <dl class="horizontal horizontal-large">
+            <dt>Status</dt>
+            <dd>{{studyDetails.status}}</dd>
+            <dt>Start date</dt>
+            <dd ng-show="studyDetails.startDate">{{studyDetails.startDate.millis | date:'yyyy-MM-dd'}}</dd>
+            <dd ng-show="!studyDetails.startDate">
+              <em>not available</em>
+            </dd>
+            <dt>End date</dt>
+            <dd ng-show="studyDetails.startDate">{{studyDetails.endDate.millis | date:'yyyy-MM-dd'}}</dd>
+            <dd ng-show="!studyDetails.startDate">
+              <em>not available</em>
+            </dd>
+          </dl>
         </div>
 
         <div class="column large-4 end">
-            <dl class="horizontal horizontal-large">
-                <dt>Pubmed links</dt>
-                <dd ng-repeat="uri in studyDetails.pubmedUrls | splitOnTokenFilter">
-                    <a target="_blank" ng-href={{uri}}>{{uri}} <i class="fa fa-external-link"></i></a>
-                </dd>
-                <dd ng-show="!studyDetails.pubmedUrls.length"><em>no links available</em></dd>
-            </dl>
+          <dl class="horizontal horizontal-large">
+            <dt>Pubmed links</dt>
+            <dd ng-repeat="uri in studyDetails.pubmedUrls | splitOnTokenFilter">
+              <a target="_blank" ng-href={{uri}}>{{uri}} <i class="fa fa-external-link"></i></a>
+            </dd>
+            <dd ng-show="!studyDetails.pubmedUrls.length">
+              <em>no links available</em>
+            </dd>
+          </dl>
         </div>
+      </div>
     </div>
-</div>
 
 
-<div class="row property-section">
-    <h5 class="subheader">Study design</h5>
+    <div class="row property-section">
+      <h5 class="subheader">Study design</h5>
 
-    <div id="study-design-table" class="column large-12">
+      <div id="study-design-table" class="column large-12">
         <table>
-            <thead>
+          <thead>
             <tr>
-                <th>Arms</th>
-                <th>Participants starting</th>
-                <th ng-repeat="epoch in studyEpochs">
-                    {{epoch.label}}
-                    <span ng-show="epoch.duration">({{epoch.duration | durationFilter}})</span>
-                </th>
+              <th>Arms</th>
+              <th>Participants starting</th>
+              <th ng-repeat="epoch in studyEpochs">
+                {{epoch.label}}
+                <span ng-show="epoch.duration">({{epoch.duration | durationFilter}})</span>
+              </th>
             </tr>
-            </thead>
-            <tbody>
+          </thead>
+          <tbody>
             <tr ng-repeat="row in designRows">
-                <td>{{row.label}}</td>
-                <td class="text-center">{{row.numberOfParticipantsStarting}}</td>
-                <td ng-repeat="cell in row.epochCells">
-              <span ng-show="cell.administeredDrugs.length === 0">
-                <div>{{cell.treatmentActivityType |
-                    addisOntologyFilter |activityTypeFilter}}
-                </div>
-              </span>
-              <span ng-show="cell.administeredDrugs.length !== 0">
-                <div ng-repeat="drug in cell.administeredDrugs">
+              <td>{{row.label}}</td>
+              <td class="text-center">{{row.numberOfParticipantsStarting}}</td>
+              <td ng-repeat="cell in row.epochCells">
+                <span ng-show="cell.administeredDrugs.length === 0">
+                  <div>{{cell.treatmentActivityType | addisOntologyFilter |activityTypeFilter}}
+                  </div>
+                </span>
+                <span ng-show="cell.administeredDrugs.length !== 0">
+                  <div ng-repeat="drug in cell.administeredDrugs">
                     {{drug.drugLabel}}
-                  <span ng-show="drug.minValue">
-                    ( {{drug.minValue}} - {{drug.maxValue}} {{drug.minUnitLabel}} {{drug.minDosingPeriodicity | durationFilter}} )
-                  </span>
-                  <span ng-show="drug.fixedValue">( {{drug.fixedValue}} {{drug.fixedUnitLabel}} {{drug.fixedDosingPeriodicity | durationFilter}} )
-                  </span>
-                </div>
-              </span>
-                </td>
+                    <span ng-show="drug.minValue">
+                      ( {{drug.minValue}} - {{drug.maxValue}} {{drug.minUnitLabel}} {{drug.minDosingPeriodicity
+                      | durationFilter}} )
+                    </span>
+                    <span ng-show="drug.fixedValue">( {{drug.fixedValue}} {{drug.fixedUnitLabel}} {{drug.fixedDosingPeriodicity
+                      | durationFilter}} )
+                    </span>
+                  </div>
+                </span>
+              </td>
             </tr>
-            </tbody>
+          </tbody>
         </table>
+      </div>
     </div>
-</div>
 
-<div class="row property-section">
-    <h5 class="subheader">Population characteristics</h5>
+    <div class="row property-section">
+      <h5 class="subheader">Population characteristics</h5>
 
-    <div class="column large-12">
+      <div class="column large-12">
 
         <table id="population-characteristics-table">
-            <thead>
+          <thead>
             <tr>
-                <th>Population characaristic</th>
-                <th>Measurement moment</th>
-                <th ng-repeat="group in studyGroups">
-                    {{group.label}}
-                </th>
+              <th colspan="2"></th>
+              <th colspan="{{numberOfArms}}">
+                Arms
+              </th>
+              <th colspan="{{numberOfNonArmGroups}}">
+                Other Groups
+              </th>
             </tr>
-            </thead>
-            <tbody>
+            <tr>
+              <th>Population characaristic</th>
+              <th>Measurement moment</th>
+              <th ng-repeat="group in studyGroups">
+                {{group.label}}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
             <tr ng-repeat="row in populationCharacteristicsRows">
-                <td>{{row.studyDataTypeLabel}}</td>
-                <td>
-                    {{row.timeOffsetDuration | durationOffsetFilter}}
-                    {{row.relativeToEpochLabel}}
-                    {{row.relativeToAnchorOntology | addisOntologyFilter | anchorEpochFilter}}
-                </td>
-                <td ng-repeat="dataValue in row.studyDataValues">
-                    <span ng-show="dataValue.mean">{{dataValue.mean}}</span>
-                    <span ng-show="dataValue.mean">&plusmn; {{dataValue.std}}</span>
-                    <span ng-show="dataValue.count">{{dataValue.count}}</span>
-                    <span ng-show="dataValue.sampleSize && dataValue.count"> / {{dataValue.sampleSize}}</span>
-                    <span ng-show="dataValue.sampleSize && dataValue.mean">({{dataValue.sampleSize}})</span>
-                    <span ng-show="dataValue.values">{{dataValue.values | categoricalFilter}}</span>
-                </td>
+              <td>{{row.studyDataTypeLabel}}</td>
+              <td>
+                {{row.timeOffsetDuration | durationOffsetFilter}} {{row.relativeToEpochLabel}} {{row.relativeToAnchorOntology
+                | addisOntologyFilter | anchorEpochFilter}}
+              </td>
+              <td ng-repeat="dataValue in row.studyDataValues">
+                <span ng-show="dataValue.mean">{{dataValue.mean}}</span>
+                <span ng-show="dataValue.mean">&plusmn; {{dataValue.std}}</span>
+                <span ng-show="dataValue.count">{{dataValue.count}}</span>
+                <span ng-show="dataValue.sampleSize && dataValue.count"> / {{dataValue.sampleSize}}</span>
+                <span ng-show="dataValue.sampleSize && dataValue.mean">({{dataValue.sampleSize}})</span>
+                <span ng-show="dataValue.values">{{dataValue.values | categoricalFilter}}</span>
+              </td>
             </tr>
-            </tbody>
+          </tbody>
         </table>
+      </div>
     </div>
-</div>
 
-<div class="row property-section">
-    <h5 class="subheader">Endpoints</h5>
+    <div class="row property-section">
+      <h5 class="subheader">Endpoints</h5>
 
-    <div class="column large-12">
+      <div class="column large-12">
 
         <table>
-            <thead id="endpoints-table">
+          <thead id="endpoints-table">
             <tr>
-                <th>Endpoints</th>
-                <th>Measurement moment</th>
-                <th ng-repeat="dataValue in studyEndpoints[0].studyDataMoments[0].studyDataValues">
-                    {{dataValue.label}}
-                </th>
+              <th colspan="2"></th>
+              <th colspan="{{numberOfArms}}">
+                Arms
+              </th>
+              <th colspan="{{numberOfNonArmGroups}}">
+                Other Groups
+              </th>
             </tr>
-            </thead>
-            <tbody>
+            <tr>
+              <th>Endpoints</th>
+              <th>Measurement moment</th>
+              <th ng-repeat="group in studyGroups">
+                {{group.label}}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
             <tr ng-repeat="row in endpointRows">
-                <td>{{row.studyDataTypeLabel}}</td>
-                <td>
-                    {{row.timeOffsetDuration | durationOffsetFilter}}
-                    {{row.relativeToEpochLabel}}
-                    {{row.relativeToAnchorOntology | addisOntologyFilter | anchorEpochFilter}}
-                </td>
-                <td ng-repeat="dataValue in row.studyDataValues">
-                    <span ng-show="dataValue.mean">{{dataValue.mean}}</span>
-                    <span ng-show="dataValue.mean">&plusmn; {{dataValue.std}}</span>
-                    <span ng-show="dataValue.count || (dataValue.count === 0)">{{dataValue.count}}</span>
-                    <span ng-show="dataValue.sampleSize && dataValue.count || (dataValue.count === 0)"> / {{dataValue.sampleSize}}</span>
-                    <span ng-show="dataValue.sampleSize && dataValue.mean">({{dataValue.sampleSize}})</span>
-                    <span ng-show="dataValue.values">{{dataValue.values | categoricalFilter}}</span>
-                </td>
+              <td>{{row.studyDataTypeLabel}}</td>
+              <td>
+                {{row.timeOffsetDuration | durationOffsetFilter}} {{row.relativeToEpochLabel}} {{row.relativeToAnchorOntology
+                | addisOntologyFilter | anchorEpochFilter}}
+              </td>
+              <td ng-repeat="dataValue in row.studyDataValues">
+                <span ng-show="dataValue.mean">{{dataValue.mean}}</span>
+                <span ng-show="dataValue.mean">&plusmn; {{dataValue.std}}</span>
+                <span ng-show="dataValue.count || (dataValue.count === 0)">{{dataValue.count}}</span>
+                <span ng-show="dataValue.sampleSize && dataValue.count || (dataValue.count === 0)">
+                  / {{dataValue.sampleSize}}</span>
+                <span ng-show="dataValue.sampleSize && dataValue.mean">({{dataValue.sampleSize}})</span>
+                <span ng-show="dataValue.values">{{dataValue.values | categoricalFilter}}</span>
+              </td>
             </tr>
-            </tbody>
+          </tbody>
         </table>
+      </div>
     </div>
-</div>
 
-<div class="row property-section">
-    <h5 class="subheader">Adverse events</h5>
+    <div class="row property-section">
+      <h5 class="subheader">Adverse events</h5>
 
-    <div class="column large-12">
+      <div class="column large-12">
 
         <table>
-            <thead id="adverse-events-table">
+          <thead id="adverse-events-table">
             <tr>
-                <th>AdverseEvents</th>
-                <th>Measurement moment</th>
-                <th ng-repeat="dataValue in studyAdverseEvents[0].studyDataMoments[0].studyDataValues">
-                    {{dataValue.label}}
-                </th>
+              <th colspan="2"></th>
+              <th colspan="{{numberOfArms}}">
+                Arms
+              </th>
+              <th colspan="{{numberOfNonArmGroups}}">
+                Other Groups
+              </th>
             </tr>
-            </thead>
-            <tbody>
+            <tr>
+              <th>AdverseEvents</th>
+              <th>Measurement moment</th>
+              <th ng-repeat="group in studyGroups">
+                {{group.label}}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
             <tr ng-repeat="row in adverseEventsRows">
-                <td>{{row.studyDataTypeLabel}}</td>
-                <td>
-                    {{row.timeOffsetDuration | durationOffsetFilter}}
-                    {{row.relativeToEpochLabel}}
-                    {{row.relativeToAnchorOntology | addisOntologyFilter | anchorEpochFilter}}
-                </td>
-                <td ng-repeat="dataValue in row.studyDataValues">
-                    <span ng-show="dataValue.mean">{{dataValue.mean}}</span>
-                    <span ng-show="dataValue.mean">&plusmn; {{dataValue.std}}</span>
-                    <span ng-show="dataValue.count || (dataValue.count === 0)">{{dataValue.count}}</span>
-                    <span ng-show="dataValue.sampleSize && dataValue.count || (dataValue.count === 0)"> / {{dataValue.sampleSize}}</span>
-                    <span ng-show="dataValue.sampleSize && dataValue.mean">({{dataValue.sampleSize}})</span>
-                    <span ng-show="dataValue.values">{{dataValue.values | categoricalFilter}}</span>
-                </td>
+              <td>{{row.studyDataTypeLabel}}</td>
+              <td>
+                {{row.timeOffsetDuration | durationOffsetFilter}} {{row.relativeToEpochLabel}} {{row.relativeToAnchorOntology
+                | addisOntologyFilter | anchorEpochFilter}}
+              </td>
+              <td ng-repeat="dataValue in row.studyDataValues">
+                <span ng-show="dataValue.mean">{{dataValue.mean}}</span>
+                <span ng-show="dataValue.mean">&plusmn; {{dataValue.std}}</span>
+                <span ng-show="dataValue.count || (dataValue.count === 0)">{{dataValue.count}}</span>
+                <span ng-show="dataValue.sampleSize && dataValue.count || (dataValue.count === 0)">
+                  / {{dataValue.sampleSize}}</span>
+                <span ng-show="dataValue.sampleSize && dataValue.mean">({{dataValue.sampleSize}})</span>
+                <span ng-show="dataValue.values">{{dataValue.values | categoricalFilter}}</span>
+              </td>
             </tr>
-            </tbody>
+          </tbody>
         </table>
+      </div>
     </div>
-</div>
 
-
-</div>
+  </div>
 </div>

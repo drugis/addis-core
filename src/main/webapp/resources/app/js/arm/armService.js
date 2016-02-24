@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
-    var dependencies = ['$q', 'StudyService', 'UUIDService'];
-    var ArmService = function($q, StudyService, UUIDService) {
+    var dependencies = ['StudyService', 'UUIDService'];
+    var ArmService = function(StudyService, UUIDService) {
 
       function toFrontEnd(backEndArm) {
         var frontEndArm = {

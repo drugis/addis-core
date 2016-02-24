@@ -1,13 +1,15 @@
 'use strict';
-define(['lodash'], function(_) {
+define([], function() {
   var dependencies = ['$scope', '$q', '$stateParams', 'TrialverseResource', 'StudyDetailsResource',
     'StudyTreatmentActivityResource', 'StudyGroupResource', 'StudyEpochResource',
-    'StudyPopulationCharacteristicsResource', 'StudyEndpointsResource', 'StudyAdverseEventsResource'
+    'StudyPopulationCharacteristicsResource', 'StudyEndpointsResource', 'StudyAdverseEventsResource',
+    'StudyReadOnlyService'
   ];
   var StudyController = function($scope, $q, $stateParams, TrialverseResource, StudyDetailsResource,
     StudyTreatmentActivityResource, StudyGroupResource, StudyEpochResource,
-    StudyPopulationCharacteristicsResource, StudyEndpointsResource, StudyAdverseEventsResource) {
+    StudyPopulationCharacteristicsResource, StudyEndpointsResource, StudyAdverseEventsResource, StudyReadOnlyService) {
 
+    $scope.designRows = [];
     $scope.project.$promise.then(function() {
       var studyCoordinates = {
         namespaceUid: $scope.project.namespaceUid,
@@ -20,74 +22,44 @@ define(['lodash'], function(_) {
       $scope.studyGroups = StudyGroupResource.query(studyCoordinates);
       $scope.studyEpochs = StudyEpochResource.query(studyCoordinates);
       $scope.treatmentActivities = StudyTreatmentActivityResource.query(studyCoordinates);
-      $scope.studyPopulationCharacteristics = StudyPopulationCharacteristicsResource
-        .get(studyCoordinates, function(populationCharacteristics) {
-          $scope.populationCharacteristicsRows = flattenOutcomesToTableRows(populationCharacteristics);
-        });
-      $scope.studyEndpoints = StudyEndpointsResource.get(studyCoordinates, function(endpoints) {
-        $scope.endpointRows = flattenOutcomesToTableRows(endpoints);
+      $scope.studyPopulationCharacteristics = StudyPopulationCharacteristicsResource.get(studyCoordinates);
+      $scope.studyEndpoints = StudyEndpointsResource.get(studyCoordinates);
+      $scope.studyAdverseEvents = StudyAdverseEventsResource.get(studyCoordinates);
+
+      $scope.studyGroups.$promise.then(function(groups) {
+        $scope.numberOfArms = groups.reduce(function(accum, group) {
+          if (group.isArm === 'true') { // i will go to hell for this
+            accum = accum + 1;
+          }
+          return accum;
+        }, 0);
+
+        $scope.numberOfNonArmGroups = groups.length - $scope.numberOfArms;
       });
-      $scope.studyAdverseEvents = StudyAdverseEventsResource.get(studyCoordinates, function(adverseEvents) {
-        $scope.adverseEventsRows = flattenOutcomesToTableRows(adverseEvents);
+
+      $q.all([$scope.studyPopulationCharacteristics.$promise, $scope.studyGroups.$promise]).then(function(results) {
+        var popChars = results[0];
+        var groups = results[1];
+        $scope.populationCharacteristicsRows = StudyReadOnlyService.flattenOutcomesToTableRows(popChars, groups);
       });
+
+      $q.all([$scope.studyEndpoints.$promise, $scope.studyGroups.$promise]).then(function(results) {
+        var endPoints = results[0];
+        var groups = results[1];
+        $scope.endpointRows = StudyReadOnlyService.flattenOutcomesToTableRows(endPoints, groups);
+      });
+
+      $q.all([$scope.studyAdverseEvents.$promise, $scope.studyGroups.$promise]).then(function(results) {
+        var adverseEvents = results[0];
+        var groups = results[1];
+        $scope.adverseEventsRows = StudyReadOnlyService.flattenOutcomesToTableRows(adverseEvents, groups);
+      });
+
       $q.all([$scope.studyGroups.$promise, $scope.studyEpochs.$promise, $scope.treatmentActivities.$promise])
-        .then(function() {
-          $scope.designRows = $scope.designRows.concat(constructStudyDesignTableRows());
+        .then(function(results) {
+          $scope.designRows = $scope.designRows.concat(StudyReadOnlyService.constructStudyDesignTableRows(results[0], results[1], results[2]));
         });
     });
-    $scope.designRows = [];
-
-
-    function constructStudyDesignTableRows() {
-      var rows = [];
-      var arms  = $scope.studyGroups.filter(function (group){
-        return group.isArm === 'true'; //evil, moe haha ha
-       });
-      _.each(arms, function(group) {
-        var row = {};
-        row.label = group.label;
-        row.numberOfParticipantsStarting = group.numberOfParticipantsStarting;
-        row.epochCells = [];
-
-        _.each($scope.studyEpochs, function(epoch) {
-          row.epochCells.push(getCellTreatments(epoch.epochUid, group.groupUri)[0]);
-        });
-        rows.push(row);
-      });
-      return rows;
-    }
-
-    function flattenOutcomesToTableRows(outcomes) {
-      var rows = [];
-      _.each(outcomes, function(outcome) {
-        _.each(outcome.studyDataMoments, function(moment) {
-          var row = {};
-          row.studyDataTypeLabel = outcome.studyDataTypeLabel;
-          row.relativeToAnchorOntology = moment.relativeToAnchorOntology;
-          row.relativeToEpochLabel = moment.relativeToEpochLabel;
-          row.timeOffsetDuration = moment.timeOffsetDuration;
-          row.studyDataValues = moment.studyDataValues;
-          row.studyDataValues.sort(function(a, b) {
-            return a.label.localeCompare(b.label);
-          });
-          rows.push(row);
-        });
-
-      });
-      return rows;
-    }
-
-    function getCellTreatments(epochUid, groupUri) {
-      return _.filter($scope.treatmentActivities, function(activity) {
-        var cellHasApplication = _.find(activity.activityApplications, function(application) {
-          return (application.epochUid === epochUid && application.armUid === groupUri);
-        });
-        if (cellHasApplication) {
-          return activity;
-        }
-      });
-    }
-
 
   };
   return dependencies.concat(StudyController);

@@ -20,7 +20,7 @@ define(['angular', 'angular-mocks'],
 
       describe('createEmptyStudy', function() {
 
-        beforeEach(angularMocks.inject(function($rootScope, $q, StudyService) {
+        beforeEach(angularMocks.inject(function($rootScope, StudyService) {
           rootScope = $rootScope;
           studyService = StudyService;
         }));
