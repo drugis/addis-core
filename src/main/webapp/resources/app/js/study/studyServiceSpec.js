@@ -109,13 +109,24 @@ define(['angular', 'angular-mocks'],
           studyService = StudyService;
           var defer = $q.defer();
           jsonPromise = defer.promise;
-          defer.resolve('test');
+          defer.resolve({
+            '@graph': [{
+              '@type': 'ontology:Study'
+            }]
+          });
         }));
         it('should store the json in the service', function(done) {
           studyService.loadJson(jsonPromise);
           // check if we get back what we stored
           studyService.getGraphAndContext().then(function(res) {
-            expect(res).toEqual('test');
+            var expectedData = {
+              '@graph': [{
+                '@type': 'ontology:Study',
+                has_epochs: [],
+                has_included_population: []
+              }]
+            };
+            expect(res).toEqual(expectedData);
             done();
           });
           rootScope.$digest();
@@ -198,7 +209,9 @@ define(['angular', 'angular-mocks'],
       describe('getStudy', function() {
         var graphPlusContext = {
           '@graph': [{
-            '@type': 'ontology:Study'
+            '@type': 'ontology:Study',
+            has_epochs: [],
+            has_included_population: []
           }]
         };
         beforeEach(angularMocks.inject(function($rootScope, $q, StudyService) {
@@ -213,7 +226,9 @@ define(['angular', 'angular-mocks'],
         it('should return just the study part', function(done) {
           studyService.getJsonGraph().then(function(res) {
             expect(res).toEqual([{
-              '@type': 'ontology:Study'
+              '@type': 'ontology:Study',
+              has_epochs: [],
+              has_included_population: []
             }]);
             done();
           });

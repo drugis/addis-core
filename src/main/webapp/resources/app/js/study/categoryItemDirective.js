@@ -1,8 +1,8 @@
 'use strict';
-define([], function() {
-  var dependencies = ['$stateParams', '$modal', '$injector'];
+define(['angular'], function(angular) {
+  var dependencies = ['$modal', '$injector'];
 
-  var CategoryItemDirective = function($stateParams, $modal, $injector) {
+  var CategoryItemDirective = function($modal, $injector) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/study/categoryItemDirective.html',
@@ -14,9 +14,11 @@ define([], function() {
         isEditingAllowed: '=',
         isSingleItem: '='
       },
-      link: function(scope, element, attibutes) {
+      link: function(scope) {
 
         var service = $injector.get(scope.settings.service);
+
+        scope.isEditingAllowed = scope.isEditingAllowed && !scope.item.disableEditing;
 
         function onEdit() {
           scope.$emit('updateStudyDesign');
@@ -36,7 +38,7 @@ define([], function() {
                 return service;
               },
               actionType: function() {
-                return 'Edit'
+                return 'Edit';
               },
               item: function() {
                 return angular.copy(scope.item);
