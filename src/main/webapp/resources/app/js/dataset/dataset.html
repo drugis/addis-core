@@ -2,14 +2,14 @@
   <navbar-directive>
   </navbar-directive>
   <ul class="breadcrumbs">
-    <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
+    <li><a ui-sref="datasets({userUid: user.id})">{{::user.firstName}} {{::user.lastName}}</a></li>
     <li><a ui-sref="datasets({userUid: user.id})">Datasets</a></li>
-    <li class="current active">{{dataset.label}}</li>
+    <li class="current active">{{::dataset.label}}</li>
   </ul>
   <div class="row nav-bar-spacer">
     <div class="column large-10">
-      <h1>{{dataset.label}}</h1>
-      <p>{{dataset.comment}}</p>
+      <h1>{{::dataset.label}}</h1>
+      <p>{{::dataset.comment}}</p>
       <version-info></version-info>
       <div class="row application-link">
         <div class="column large-10">
@@ -38,17 +38,17 @@
           <tr>
             <th class="sortable" ng-click="tableOptions.orderByField = 'label'; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
               Name
-              <i ng-show="tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'"
+              <i ng-if="tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'"
               class="fa fa-caret-up"></i>
-              <i ng-show="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'"
+              <i ng-if="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'"
               class="fa fa-caret-down"></i>
             </th>
-            <th class="sortable" ng-show="column.visible" ng-repeat="column in tableOptions.columns"
+            <th class="sortable" ng-if="column.visible" ng-repeat="column in tableOptions.columns"
             ng-click="tableOptions.orderByField = column.id; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
-              {{column.label}}
-              <i ng-show="tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id"
+              {{::column.label}}
+              <i ng-if="tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id"
               class="fa fa-caret-up"></i>
-              <i ng-show="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id"
+              <i ng-if="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id"
               class="fa fa-caret-down"></i>
             </th>
           </tr>
@@ -61,17 +61,17 @@
             <td style="vertical-align: top;">
 
               <a ng-if="!isHeadView" ui-sref="versionedDataset.study({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'),
-            studyGraphUuid: (studyWithDetails.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/'), versionUuid: versionUuid})">{{studyWithDetails.label}}</a>
+            studyGraphUuid: (studyWithDetails.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/'), versionUuid: versionUuid})">{{::studyWithDetails.label}}</a>
               <a ng-if="isHeadView" ui-sref="dataset.study({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'),
-            studyGraphUuid: (studyWithDetails.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/')})">{{studyWithDetails.label}}</a>
+            studyGraphUuid: (studyWithDetails.graphUri | stripFrontFilter:'http://trials.drugis.org/graphs/')})">{{::studyWithDetails.label}}</a>
             </td>
-            <td style="vertical-align: top;" ng-show="column.visible" ng-repeat="column in tableOptions.columns">
-              <span ng-show="!column.type" style="white-space: pre-wrap;">{{studyWithDetails[column.id]}}</span>
-              <span ng-show="column.type === 'removePreamble'">{{studyWithDetails[column.id] | stripFrontFilter : column.frontStr}}</span>
-              <span ng-show="column.type === 'dosing'">{{studyWithDetails[column.id] | dosingFilter}}</span>
-              <span ng-show="column.type === 'urlList'" ng-repeat="uri in studyWithDetails.publications | splitOnTokenFilter">
-                <a target="_blank" ng-href={{uri}}>{{uri}}</a>
-                <span ng-show=!$last>, </span>
+            <td style="vertical-align: top;" ng-if="column.visible" ng-repeat="column in tableOptions.columns">
+              <span ng-if="!column.type" style="white-space: pre-wrap;">{{::studyWithDetails[column.id]}}</span>
+              <span ng-if="column.type === 'removePreamble'">{{::studyWithDetails[column.id] | stripFrontFilter : column.frontStr}}</span>
+              <span ng-if="column.type === 'dosing'">{{::studyWithDetails[column.id] | dosingFilter}}</span>
+              <span ng-if="column.type === 'urlList'" ng-repeat="uri in studyWithDetails.publications | splitOnTokenFilter">
+                <a target="_blank" ng-href={{uri}}>{{::uri}}</a>
+                <span ng-if=!$last>, </span>
               </span>
             </td>
           </tr>
