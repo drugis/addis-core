@@ -1,15 +1,15 @@
 'use strict';
 define(['lodash'],
   function(_) {
-    var dependencies = ['$scope', '$q', '$window', '$location', '$stateParams', '$modal', '$filter', 'DatasetVersionedResource', 'StudiesWithDetailsService',
-     'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource'
+    var dependencies = ['$scope', '$window', '$location', '$stateParams', '$modal', '$filter', 'DatasetVersionedResource', 'StudiesWithDetailsService',
+      'HistoryResource', 'ConceptService', 'VersionedGraphResource', 'DatasetResource', 'GraphResource'
     ];
-    var DatasetController = function($scope, $q, $window, $location, $stateParams, $modal, $filter, DatasetVersionedResource, StudiesWithDetailsService,
-       HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource) {
+    var DatasetController = function($scope, $window, $location, $stateParams, $modal, $filter, DatasetVersionedResource, StudiesWithDetailsService,
+      HistoryResource, ConceptService, VersionedGraphResource, DatasetResource, GraphResource) {
 
       // no version so this must be head view
       $scope.isHeadView = !$stateParams.versionUuid;
-      if(!$scope.isHeadView) {
+      if (!$scope.isHeadView) {
         $scope.versionUuid = $stateParams.versionUuid;
       }
 
@@ -71,10 +71,6 @@ define(['lodash'],
       }
 
       HistoryResource.query($stateParams).$promise.then(function(historyItems) {
-
-        function segmentAfterLastSlash(str) {
-          return str.substr(str.lastIndexOf('/') + 1);
-        }
 
         if ($scope.isHeadView) {
           $scope.currentRevision = historyItems[historyItems.length - 1];
