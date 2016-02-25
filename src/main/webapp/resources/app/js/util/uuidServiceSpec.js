@@ -17,7 +17,7 @@ define(['angular', 'angular-mocks'], function () {
     describe('generate graph uri', function() {
       it('should generate a random graph uri', inject(function(UUIDService) {
         var studyUri = UUIDService.generateGraphUri();
-        expect(studyUri.slice(0,32)).toEqual('http://trials.drugis.org/graphs/')
+        expect(studyUri.slice(0,32)).toEqual('http://trials.drugis.org/graphs/');
         expect(studyUri.slice(32).length).toEqual(36);
       }));
     });

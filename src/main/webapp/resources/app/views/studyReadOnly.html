@@ -145,7 +145,7 @@
               <th colspan="{{numberOfArms}}">
                 Arms
               </th>
-              <th colspan="{{numberOfNonArmGroups}}">
+              <th ng-if="numberOfNonArmGroups > 0" colspan="{{numberOfNonArmGroups}}">
                 Other Groups
               </th>
             </tr>
@@ -190,7 +190,7 @@
               <th colspan="{{numberOfArms}}">
                 Arms
               </th>
-              <th colspan="{{numberOfNonArmGroups}}">
+              <th ng-if="numberOfNonArmGroups > 0" colspan="{{numberOfNonArmGroups}}">
                 Other Groups
               </th>
             </tr>
@@ -236,7 +236,7 @@
               <th colspan="{{numberOfArms}}">
                 Arms
               </th>
-              <th colspan="{{numberOfNonArmGroups}}">
+              <th ng-if="numberOfNonArmGroups > 0" colspan="{{numberOfNonArmGroups}}">
                 Other Groups
               </th>
             </tr>

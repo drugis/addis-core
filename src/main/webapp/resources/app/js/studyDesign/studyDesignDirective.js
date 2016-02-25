@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = ['$stateParams', '$q', 'ArmService', 'EpochService', 'ActivityService', 'StudyDesignService'];
 
   var StudyDesignDirective = function($stateParams, $q, ArmService, EpochService, ActivityService, StudyDesignService) {

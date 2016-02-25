@@ -24,7 +24,7 @@ define(['angular', 'angular-mocks'], function() {
           isTime: false,
           label: 'week(s)'
         }];
-        expect(durationService.getPeriodTypeOptions()).toEqual(periodTypeOptions)
+        expect(durationService.getPeriodTypeOptions()).toEqual(periodTypeOptions);  
       });
     });
 

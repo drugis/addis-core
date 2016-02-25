@@ -3,10 +3,11 @@ define([], function() {
   var dependencies = ['DurationService'];
 
   var DurationInputDirective = function(DurationService) {
+    /* jslint unused: true  */
     return {
       restrict: 'E',
       templateUrl: function(element, attr) {
-        return attr.templateUrl ? attr.templateUrl : 'app/js/util/directives/durationInput/durationInputDirective.html'
+        return attr.templateUrl ? attr.templateUrl : 'app/js/util/directives/durationInput/durationInputDirective.html';
       },
       scope: {
         durationString: '='
