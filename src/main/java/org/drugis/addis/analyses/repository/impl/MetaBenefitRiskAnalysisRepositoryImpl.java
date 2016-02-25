@@ -6,6 +6,8 @@ import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,6 +18,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by daan on 25-2-16.
@@ -32,6 +35,9 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
   @Inject
   ProjectService projectService;
 
+  @Inject
+  InterventionRepository interventionRepository;
+
   @Override
   public Collection<MetaBenefitRiskAnalysis> queryByProject(Integer projectId) {
     TypedQuery<MetaBenefitRiskAnalysis> query = em.createQuery("FROM MetaBenefitRiskAnalysis " +
@@ -44,6 +50,10 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
   public MetaBenefitRiskAnalysis create(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
     projectService.checkProjectExistsAndModifiable(user, analysisCommand.getProjectId());
     MetaBenefitRiskAnalysis metaBenefitRiskAnalysis = new MetaBenefitRiskAnalysis(analysisCommand.getProjectId(), analysisCommand.getTitle());
+
+    List<Intervention> interventions = interventionRepository.query(metaBenefitRiskAnalysis.getProjectId());
+    metaBenefitRiskAnalysis.setIncludedAlternatives(interventions);
+
     em.persist(metaBenefitRiskAnalysis);
     return metaBenefitRiskAnalysis;
   }

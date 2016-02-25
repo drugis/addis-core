@@ -7,9 +7,11 @@ import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -25,14 +27,16 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;
 
+  @Inject
+  InterventionRepository interventionRepository;
+
   @Override
   public NetworkMetaAnalysis create(AnalysisCommand analysisCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisCommand.getProjectId(), analysisCommand.getTitle());
     em.persist(networkMetaAnalysis);
 
-    TypedQuery<Intervention> query = em.createQuery("FROM Intervention i where i.project = :projectId", Intervention.class);
-    query.setParameter("projectId", analysisCommand.getProjectId());
-    for(Intervention intervention: query.getResultList()) {
+    List<Intervention> interventions = interventionRepository.query(networkMetaAnalysis.getProjectId());
+    for (Intervention intervention : interventions) {
       InterventionInclusion newInterventionInclusion = new InterventionInclusion(networkMetaAnalysis, intervention.getId());
       networkMetaAnalysis.getIncludedInterventions().add(newInterventionInclusion);
     }
