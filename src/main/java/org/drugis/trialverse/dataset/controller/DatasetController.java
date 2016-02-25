@@ -6,6 +6,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFLanguages;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.dataset.controller.command.DatasetCommand;
 import org.drugis.trialverse.dataset.exception.CreateDatasetException;
 import org.drugis.trialverse.dataset.exception.RevisionNotFoundException;
@@ -18,7 +19,6 @@ import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.dataset.service.HistoryService;
 import org.drugis.trialverse.security.TrialversePrincipal;
 import org.drugis.trialverse.util.Namespaces;
-import org.drugis.addis.util.WebConstants;
 import org.drugis.trialverse.util.controller.AbstractTrialverseController;
 import org.drugis.trialverse.util.service.TrialverseIOUtilsService;
 import org.slf4j.Logger;
@@ -142,7 +142,7 @@ public class DatasetController extends AbstractTrialverseController {
   @ResponseBody
   public void executeVersionedQuery(HttpServletResponse httpServletResponse,
                                     @RequestHeader(value = "Accept") String acceptHeaderValue,
-                                    @RequestParam(value = "query") String query,
+                                    @RequestParam(value = "queryByProject") String query,
                                     @PathVariable String datasetUuid, @PathVariable String versionUuid) throws URISyntaxException, IOException {
     logger.trace("executing gertseki query");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);

@@ -24,6 +24,9 @@ INSERT INTO public.NetworkMetaAnalysis(id, projectId, title) VALUES (-5, 1, 'nma
 INSERT INTO public.NetworkMetaAnalysis(id, projectId, title) VALUES (-6, 1, 'nma 2');
 INSERT INTO public.NetworkMetaAnalysis(id, projectId, title) VALUES (-7, 2, 'nma task test');
 
+INSERT INTO public.MetaBenefitRiskAnalysis(id, projectId, title) VALUES (-10, 1, 'metabr 1');
+INSERT INTO public.MetaBenefitRiskAnalysis_Alternative(analysisId, alternativeId) VALUES (-10, 1);
+
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (1, -1, 'Default', 'problem state');
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (2, -1, 'Scenario title', 'problem state modified');
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (3, -2, 'Default for different analysis', 'problem state modified');

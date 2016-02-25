@@ -329,3 +329,22 @@ UPDATE model SET heterogeneityprior = NULL WHERE heterogeneityprior = '{''type''
 
 --changeset reidd:37
 -- nb changeset is about constraints, hsql has different syntax and we're never going to test cascading deletes in it anyway
+
+--changeset reidd:38
+CREATE TABLE MetaBenefitRiskAnalysis (
+  id SERIAL NOT NULL,
+  title VARCHAR NOT NULL,
+  projectId INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(projectId) REFERENCES Project(id) ON DELETE CASCADE
+);
+
+CREATE TABLE MetaBenefitRiskAnalysis_Alternative (
+   analysisId INT,
+   alternativeId INT,
+   PRIMARY KEY(analysisId, alternativeId),
+   FOREIGN KEY(analysisId) REFERENCES MetaBenefitRiskAnalysis(id) ON DELETE CASCADE ,
+   FOREIGN KEY(alternativeId) REFERENCES Intervention(id) ON DELETE CASCADE
+);
+--rollback DROP TABLE MetaBenefitRiskAnalysis_Alternative;;
+--rollback DROP TABLE MetaBenefitRiskAnalysis;;

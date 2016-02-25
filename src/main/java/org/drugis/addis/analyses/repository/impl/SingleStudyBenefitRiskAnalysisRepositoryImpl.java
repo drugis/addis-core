@@ -30,7 +30,8 @@ public class SingleStudyBenefitRiskAnalysisRepositoryImpl implements org.drugis.
 
   @Override
   public Collection<SingleStudyBenefitRiskAnalysis> query(Integer projectId) {
-    TypedQuery<SingleStudyBenefitRiskAnalysis> query = em.createQuery("FROM SingleStudyBenefitRiskAnalysis a WHERE a.projectId = :projectId", SingleStudyBenefitRiskAnalysis.class);
+    TypedQuery<SingleStudyBenefitRiskAnalysis> query = em.createQuery("FROM SingleStudyBenefitRiskAnalysis " +
+            "a WHERE a.projectId = :projectId", SingleStudyBenefitRiskAnalysis.class);
     query.setParameter("projectId", projectId);
     return query.getResultList();
   }

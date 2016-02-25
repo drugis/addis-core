@@ -1,13 +1,10 @@
 package org.drugis.addis.analyses;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.drugis.addis.interventions.Intervention;
-import org.drugis.addis.outcomes.Outcome;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by daan on 24-2-16.
@@ -27,12 +24,17 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
   @JoinTable(name = "MetaBenefitRiskAnalysis_Alternative",
           joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
           inverseJoinColumns = {@JoinColumn(name = "alternativeId", referencedColumnName = "id")})
-  private List<Intervention> includedAlternatives = new ArrayList<>();
+  private Set<Intervention> includedAlternatives = new HashSet<>();
 
   public MetaBenefitRiskAnalysis() {
   }
 
-  public MetaBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Intervention> includedAlternatives) {
+  public MetaBenefitRiskAnalysis(Integer projectId, String title) {
+    this.projectId = projectId;
+    this.title = title;
+  }
+
+  public MetaBenefitRiskAnalysis(Integer id, Integer projectId, String title, Set<Intervention> includedAlternatives) {
     this.id = id;
     this.projectId = projectId;
     this.title = title;
@@ -49,7 +51,7 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
   }
 
   public List<Intervention> getIncludedAlternatives() {
-    return includedAlternatives;
+    return Collections.unmodifiableList(new ArrayList<>(includedAlternatives));
   }
 
   @Override
@@ -59,13 +61,20 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
 
     MetaBenefitRiskAnalysis that = (MetaBenefitRiskAnalysis) o;
 
-    return id != null ? id.equals(that.id) : that.id == null;
+    if (!id.equals(that.id)) return false;
+    if (!projectId.equals(that.projectId)) return false;
+    if (!title.equals(that.title)) return false;
+    return includedAlternatives != null ? includedAlternatives.equals(that.includedAlternatives) : that.includedAlternatives == null;
 
   }
 
   @Override
   public int hashCode() {
-    return id != null ? id.hashCode() : 0;
+    int result = id.hashCode();
+    result = 31 * result + projectId.hashCode();
+    result = 31 * result + title.hashCode();
+    result = 31 * result + (includedAlternatives != null ? includedAlternatives.hashCode() : 0);
+    return result;
   }
 
 //  private class OutcomeInclusion {
