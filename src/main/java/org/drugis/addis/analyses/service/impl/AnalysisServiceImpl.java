@@ -2,7 +2,6 @@ package org.drugis.addis.analyses.service.impl;
 
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
-import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -10,6 +9,7 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.models.repository.ModelRepository;
+import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.springframework.stereotype.Service;
@@ -86,6 +86,14 @@ public class AnalysisServiceImpl implements AnalysisService {
       // do not allow selection of interventions that are not in the project
       for (Intervention intervention : analysis.getIncludedAlternatives()) {
         if (!intervention.getProject().equals(analysis.getProjectId())) {
+          throw new ResourceDoesNotExistException();
+        }
+      }
+    }
+    if (isNotEmpty(analysis.getIncludedOutcomes())) {
+      // do not allow selection of outcomes that are not in the project
+      for (Outcome outcome : analysis.getIncludedOutcomes()) {
+        if (!outcome.getProject().equals(analysis.getProjectId())) {
           throw new ResourceDoesNotExistException();
         }
       }

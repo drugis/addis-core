@@ -1,6 +1,7 @@
 package org.drugis.addis.analyses;
 
 import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.outcomes.Outcome;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -25,6 +26,12 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
           joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
           inverseJoinColumns = {@JoinColumn(name = "alternativeId", referencedColumnName = "id")})
   private Set<Intervention> includedAlternatives = new HashSet<>();
+
+  @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
+  @JoinTable(name = "MetaBenefitRiskAnalysis_Outcome",
+          joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
+          inverseJoinColumns = {@JoinColumn(name = "outcomeId", referencedColumnName = "id")})
+  private Set<Outcome> includedOutcomes = new HashSet<>();
 
   public MetaBenefitRiskAnalysis() {
   }
@@ -53,6 +60,10 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
 
   public List<Intervention> getIncludedAlternatives() {
     return Collections.unmodifiableList(new ArrayList<>(includedAlternatives));
+  }
+
+  public List<Outcome> getIncludedOutcomes() {
+    return Collections.unmodifiableList(new ArrayList<>(includedOutcomes));
   }
 
   public String getTitle() {
@@ -86,17 +97,8 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
     this.includedAlternatives = new HashSet<>(interventions);
   }
 
-//  private class OutcomeInclusion {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @JsonIgnore
-//    private Integer id;
-//
-//    @ManyToOne()
-//    @JoinColumn(name="analysisId")
-//    private NetworkMetaAnalysis networkMetaAnalysis;
-//
-//    private Integer outcomeId;
-//    private Integer modelId;
-//  }
+  public void setIncludedOutcomes(List<Outcome> outcomes) {
+    this.includedOutcomes = new HashSet<>(outcomes);
+  }
+
 }

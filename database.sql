@@ -401,5 +401,13 @@ CREATE TABLE MetaBenefitRiskAnalysis_Alternative (
    FOREIGN KEY(alternativeId) REFERENCES Intervention(id)
 );
 
---rollback DROP TABLE MetaBenefitRiskAnalysis_Alternative;;
+CREATE TABLE MetaBenefitRiskAnalysis_Outcome (
+   analysisId INT,
+   outcomeId INT,
+   PRIMARY KEY(analysisId, outcomeId),
+   FOREIGN KEY(analysisId) REFERENCES MetaBenefitRiskAnalysis(id) ON DELETE CASCADE ,
+   FOREIGN KEY(outcomeId) REFERENCES Outcome(id)
+);
+--rollback DROP TABLE MetaBenefitRiskAnalysis_Alternative;
+--rollback DROP TABLE MetaBenefitRiskAnalysis_Outcome;
 --rollback DROP TABLE MetaBenefitRiskAnalysis;
