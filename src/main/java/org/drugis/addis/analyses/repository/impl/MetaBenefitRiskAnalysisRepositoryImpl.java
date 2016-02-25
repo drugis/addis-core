@@ -3,9 +3,15 @@ package org.drugis.addis.analyses.repository.impl;
 import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.service.AnalysisService;
+import org.drugis.addis.exception.MethodNotAllowedException;
+import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.projects.service.ProjectService;
+import org.drugis.addis.security.Account;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -20,6 +26,12 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;
 
+  @Inject
+  AnalysisService analysisService;
+
+  @Inject
+  ProjectService projectService;
+
   @Override
   public Collection<MetaBenefitRiskAnalysis> queryByProject(Integer projectId) {
     TypedQuery<MetaBenefitRiskAnalysis> query = em.createQuery("FROM MetaBenefitRiskAnalysis " +
@@ -29,9 +41,16 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
   }
 
   @Override
-  public MetaBenefitRiskAnalysis create(AnalysisCommand analysisCommand) {
+  public MetaBenefitRiskAnalysis create(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    projectService.checkProjectExistsAndModifiable(user, analysisCommand.getProjectId());
     MetaBenefitRiskAnalysis metaBenefitRiskAnalysis = new MetaBenefitRiskAnalysis(analysisCommand.getProjectId(), analysisCommand.getTitle());
     em.persist(metaBenefitRiskAnalysis);
     return metaBenefitRiskAnalysis;
+  }
+
+  @Override
+  public MetaBenefitRiskAnalysis update(Account user, MetaBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    analysisService.checkMetaBenefitRiskAnalysis(user, analysis);
+    return em.merge(analysis);
   }
 }

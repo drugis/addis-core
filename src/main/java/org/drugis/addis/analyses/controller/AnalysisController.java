@@ -1,9 +1,9 @@
 package org.drugis.addis.analyses.controller;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -43,6 +43,8 @@ public class AnalysisController extends AbstractAddisCoreController {
   SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
   @Inject
   NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
+  @Inject
+  MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
   @Inject
   AccountRepository accountRepository;
   @Inject
@@ -91,7 +93,7 @@ public class AnalysisController extends AbstractAddisCoreController {
           analysis = analysisService.createNetworkMetaAnalysis(user, analysisCommand);
           break;
         case AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL:
-          analysis = analysisService.createMetaBenefitRiskAnalysis(user, analysisCommand);
+          analysis = metaBenefitRiskAnalysisRepository.create(user, analysisCommand);
           break;
         default:
           throw new RuntimeException("unknown analysis type.");
@@ -124,6 +126,8 @@ public class AnalysisController extends AbstractAddisCoreController {
         return updateSingleStudyBenefitRiskAnalysis(user, singleStudyBenefitRiskAnalysis);
       } else if (analysis instanceof NetworkMetaAnalysis) {
         return analysisService.updateNetworkMetaAnalysis(user, (NetworkMetaAnalysis) analysis);
+      } else if (analysis instanceof MetaBenefitRiskAnalysis) {
+        return metaBenefitRiskAnalysisRepository.update(user, (MetaBenefitRiskAnalysis) analysis);
       }
       throw new ResourceDoesNotExistException();
     } else {

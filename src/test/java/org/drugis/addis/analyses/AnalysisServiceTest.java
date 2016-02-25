@@ -117,8 +117,10 @@ public class AnalysisServiceTest {
             .thinningFactor(10)
             .build();
     List<Model> models = Collections.singletonList(model);
+    when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(modelRepository.findByAnalysis(analysis.getId())).thenReturn(models);
     when(modelRepository.find(modelId)).thenReturn(null);
+
     analysisService.updateNetworkMetaAnalysis(user, analysis);
   }
 

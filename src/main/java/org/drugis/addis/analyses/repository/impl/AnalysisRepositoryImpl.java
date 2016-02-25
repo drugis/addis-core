@@ -10,6 +10,7 @@ import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
@@ -29,10 +30,13 @@ public class AnalysisRepositoryImpl implements AnalysisRepository {
   EntityManager em;
 
   @Inject
+  @Lazy
   NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
   @Inject
+  @Lazy
   SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
   @Inject
+  @Lazy
   MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
 
   @Override

@@ -142,7 +142,7 @@ public class DatasetController extends AbstractTrialverseController {
   @ResponseBody
   public void executeVersionedQuery(HttpServletResponse httpServletResponse,
                                     @RequestHeader(value = "Accept") String acceptHeaderValue,
-                                    @RequestParam(value = "queryByProject") String query,
+                                    @RequestParam(value = "query") String query,
                                     @PathVariable String datasetUuid, @PathVariable String versionUuid) throws URISyntaxException, IOException {
     logger.trace("executing gertseki query");
     URI trialverseDatasetUri = new URI(Namespaces.DATASET_NAMESPACE + datasetUuid);

@@ -1,9 +1,6 @@
 package org.drugis.addis.analyses.service;
 
-import org.drugis.addis.analyses.AnalysisCommand;
-import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
-import org.drugis.addis.analyses.NetworkMetaAnalysis;
-import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
+import org.drugis.addis.analyses.*;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.security.Account;
@@ -22,5 +19,5 @@ public interface AnalysisService {
 
   SingleStudyBenefitRiskAnalysis createSingleStudyBenefitRiskAnalysis(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException;
 
-  MetaBenefitRiskAnalysis createMetaBenefitRiskAnalysis(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException;
+  void checkMetaBenefitRiskAnalysis(Account user, MetaBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException;
 }

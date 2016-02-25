@@ -44,7 +44,7 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan(excludeFilters = {@Filter(Configuration.class)}, basePackages = {
-        "org.drugis.addis", "org.drugis.trialverse"})
+        "org.drugis.addis", "org.drugis.trialverse"}, lazyInit = true)
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {"org.drugis.addis.projects",
         "org.drugis.addis.security",

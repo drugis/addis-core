@@ -2,10 +2,7 @@ package org.drugis.addis.analyses;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drugis.addis.TestUtils;
-import org.drugis.addis.analyses.repository.AnalysisRepository;
-import org.drugis.addis.analyses.repository.CriteriaRepository;
-import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
-import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.repository.*;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.interventions.Intervention;
@@ -69,6 +66,8 @@ public class AnalysisControllerTest {
   private SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
   @Inject
   private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
+  @Inject
+  private MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
   @Inject
   private WebApplicationContext webApplicationContext;
   @Inject
@@ -142,14 +141,14 @@ public class AnalysisControllerTest {
   public void testCreateMetaBenefitRiskAnalysis() throws Exception {
     MetaBenefitRiskAnalysis analysis = new MetaBenefitRiskAnalysis(1, 1, "title", Collections.emptySet());
     AnalysisCommand analysisCommand = new AnalysisCommand(1, "name", AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL);
-    when(analysisService.createMetaBenefitRiskAnalysis(gert, analysisCommand)).thenReturn(analysis);
+    when(metaBenefitRiskAnalysisRepository.create(gert, analysisCommand)).thenReturn(analysis);
     String body = TestUtils.createJson(analysisCommand);
     mockMvc.perform(post("/projects/1/analyses").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
-    verify(analysisService).createMetaBenefitRiskAnalysis(gert, analysisCommand);
+    verify(metaBenefitRiskAnalysisRepository).create(gert, analysisCommand);
   }
 
   @Test

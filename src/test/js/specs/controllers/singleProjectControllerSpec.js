@@ -1,11 +1,16 @@
 'use strict';
-define(['angular', 'angular-mocks', 'underscore'], function() {
+define(['angular-mocks'], function(angularMocks) {
   describe('the SingleProjectController', function() {
     var $q, controllerArguments,
       covariateOptionsResource = jasmine.createSpyObj('CovariateOptionsResource', ['query']),
       covariateResource = jasmine.createSpyObj('CovariateResource', ['query']),
-      covariateOptions = [{key: 'COV_OPTION_KEY', label: 'covariate option label'}],
-      covariates = [{definitionKey: 'COV_OPTION_KEY'}],
+      covariateOptions = [{
+        key: 'COV_OPTION_KEY',
+        label: 'covariate option label'
+      }],
+      covariates = [{
+        definitionKey: 'COV_OPTION_KEY'
+      }],
       covariateOptionsDeferred, covariatesDeferred,
       analysisTypes = [{
         label: 'type1',
@@ -19,7 +24,7 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         userUid: userId,
         param: 1
       };
-    beforeEach(module('addis.controllers'));
+    beforeEach(angularMocks.module('addis.controllers'));
 
     beforeEach(inject(function(_$q_) {
       $q = _$q_;
@@ -85,11 +90,6 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         expect(scope.loading.loaded).toBeFalsy();
       });
 
-      it('should place the analysis types on the scope', function() {
-        expect(scope.analysisTypes[0]).toEqual(analysisTypes[0]);
-        expect(scope.analysisTypes[1]).toEqual(analysisTypes[1]);
-      });
-
       it('should place project information on the scope', function() {
         expect(projectResource.get).toHaveBeenCalledWith(stateParams);
         expect(scope.project).toEqual(mockProject);
@@ -98,35 +98,6 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
       it('should not initially allow editing', function() {
         expect(scope.editMode.allowEditing).toBeFalsy();
       });
-
-
-      // controller functions
-      describe('should have the function', function() {
-
-        describe('goToAnalysis', function() {
-          var state;
-          beforeEach(inject(function($controller) {
-            state = jasmine.createSpyObj('$state', ['go']);
-            controllerArguments.$state = state;
-            controllerArguments.ANALYSIS_TYPES = analysisTypes;
-            $controller('SingleProjectController', controllerArguments);
-          }));
-
-          it("which should go to the analysis when it is called", function() {
-            var analysisId = 1;
-            state.go.calls.reset();
-            scope.goToAnalysis(analysisId, analysisTypes[0].label);
-            expect(state.go).toHaveBeenCalledWith(analysisTypes[0].stateName, {
-              userUid: userId,
-              projectId: mockProject.id,
-              analysisId: analysisId
-            });
-          });
-        });
-
-
-      });
-
     });
 
 
@@ -308,30 +279,12 @@ define(['angular', 'angular-mocks', 'underscore'], function() {
         expect(scope.semanticInterventions).toEqual(mockSemanticInterventions);
       });
 
-       it("should add the covariate options label to the covariates and place them on the scope", function() {
+      it("should add the covariate options label to the covariates and place them on the scope", function() {
         projectDeferred.resolve();
         scope.$apply();
-        expect(scope.covariates[0]).toEqual({definitionKey: 'COV_OPTION_KEY', definitionLabel: 'covariate option label'});
-      });
-
-      describe('addAnalysis', function() {
-
-        it("should add an analysis and make an update call", function() {
-          projectDeferred.resolve();
-          scope.$apply();
-          var newAnalysis = {
-              id: 2,
-              analysisType: analysisTypes[0].label
-            },
-            newAnalysisWithProjectId = _.extend(newAnalysis, {
-              projectId: 1
-            });
-          spyOn(scope, 'goToAnalysis');
-          scope.addAnalysis(newAnalysis);
-          expect(analysisResource.save).toHaveBeenCalledWith(newAnalysisWithProjectId);
-          analysisDeferred.resolve(mockAnalysis);
-          scope.$apply();
-          expect(scope.goToAnalysis).toHaveBeenCalledWith(newAnalysis.id, newAnalysis.analysisType);
+        expect(scope.covariates[0]).toEqual({
+          definitionKey: 'COV_OPTION_KEY',
+          definitionLabel: 'covariate option label'
         });
       });
     });

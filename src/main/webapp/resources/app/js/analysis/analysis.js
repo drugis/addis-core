@@ -8,6 +8,7 @@ define(function (require) {
     dependencies)
     // controllers
     .controller('AddAnalysisController', require('analysis/addAnalysisController'))
+    .controller('MetaBenefitRiskStep1Controller', require('analysis/metaBenefitRiskStep1Controller'))
 
     //services
 

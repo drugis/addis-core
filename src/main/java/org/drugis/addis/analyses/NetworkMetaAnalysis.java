@@ -62,10 +62,12 @@ public class NetworkMetaAnalysis extends AbstractAnalysis {
     this.outcome = outcome;
   }
 
+  @Override
   public Integer getId() {
     return id;
   }
 
+  @Override
   public Integer getProjectId() {
     return projectId;
   }

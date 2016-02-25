@@ -8,6 +8,7 @@ import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisReposi
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.sql.SQLException;
+
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 /**
  * Created by daan on 22-5-14.
@@ -32,9 +35,6 @@ public class AnalysisServiceImpl implements AnalysisService {
   SingleStudyBenefitRiskAnalysisRepository singleStudyBenefitRiskAnalysisRepository;
 
   @Inject
-  MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository;
-
-  @Inject
   ProjectService projectService;
 
   @Inject
@@ -50,30 +50,24 @@ public class AnalysisServiceImpl implements AnalysisService {
 
   @Override
   public NetworkMetaAnalysis updateNetworkMetaAnalysis(Account user, NetworkMetaAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException {
-    Integer analysisProjectId = analysis.getProjectId();
-    projectService.checkProjectExistsAndModifiable(user, analysisProjectId);
+    projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
+    checkProjectIdChange(analysis);
 
     if (!modelRepository.findByAnalysis(analysis.getId()).isEmpty()) {
       // can not update locked exception
       throw new MethodNotAllowedException();
     }
 
-    // do not allow changing of project ID
-    NetworkMetaAnalysis oldAnalysis = (NetworkMetaAnalysis) analysisRepository.get(analysis.getId());
-    if (!oldAnalysis.getProjectId().equals(analysisProjectId)) {
-      throw new ResourceDoesNotExistException();
-    }
-
     // do not allow selection of outcome that is not in the project
-    if (analysis.getOutcome() != null && !analysis.getOutcome().getProject().equals(analysisProjectId)) {
+    if (analysis.getOutcome() != null && !analysis.getOutcome().getProject().equals(analysis.getProjectId())) {
       throw new ResourceDoesNotExistException();
     }
 
-    for(ArmExclusion armExclusion: analysis.getExcludedArms()) {
+    for (ArmExclusion armExclusion : analysis.getExcludedArms()) {
       armExclusion.setAnalysis(analysis);
     }
 
-    for(InterventionInclusion interventionInclusion: analysis.getIncludedInterventions()) {
+    for (InterventionInclusion interventionInclusion : analysis.getIncludedInterventions()) {
       interventionInclusion.setAnalysis(analysis);
     }
 
@@ -82,6 +76,20 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
     return networkMetaAnalysisRepository.update(analysis);
+  }
+
+  @Override
+  public void checkMetaBenefitRiskAnalysis(Account user, MetaBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
+    checkProjectIdChange(analysis);
+    if (isNotEmpty(analysis.getIncludedAlternatives())) {
+      // do not allow selection of interventions that are not in the project
+      for (Intervention intervention : analysis.getIncludedAlternatives()) {
+        if (!intervention.getProject().equals(analysis.getProjectId())) {
+          throw new ResourceDoesNotExistException();
+        }
+      }
+    }
   }
 
   @Override
@@ -96,9 +104,13 @@ public class AnalysisServiceImpl implements AnalysisService {
     return singleStudyBenefitRiskAnalysisRepository.create(analysisCommand);
   }
 
-  @Override
-  public MetaBenefitRiskAnalysis createMetaBenefitRiskAnalysis(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException {
-    projectService.checkProjectExistsAndModifiable(user, analysisCommand.getProjectId());
-    return metaBenefitRiskAnalysisRepository.create(analysisCommand);
+  private void checkProjectIdChange(AbstractAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
+    // do not allow changing of project ID
+    AbstractAnalysis oldAnalysis = analysisRepository.get(analysis.getId());
+    if (!oldAnalysis.getProjectId().equals(analysis.getProjectId())) {
+      throw new ResourceDoesNotExistException();
+    }
   }
+
+
 }

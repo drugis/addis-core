@@ -384,13 +384,6 @@ ALTER TABLE armexclusion DROP CONSTRAINT armexclusion_analysisid_fkey ;
 ALTER TABLE armexclusion ADD CONSTRAINT armexclusion_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES networkmetaanalysis(id) ON DELETE CASCADE ;
 
 --changeset reidd:38
-CREATE TABLE MetaBenefitRiskAnalysis_Alternative (
-   analysisId INT,
-   alternativeId INT,
-   PRIMARY KEY(analysisId, alternativeId),
-   FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id) ON DELETE CASCADE ,
-   FOREIGN KEY(alternativeId) REFERENCES Intervention(id) ON DELETE CASCADE
-);
 
 CREATE TABLE MetaBenefitRiskAnalysis (
   id SERIAL NOT NULL,
@@ -399,3 +392,14 @@ CREATE TABLE MetaBenefitRiskAnalysis (
   PRIMARY KEY (id),
   FOREIGN KEY(projectId) REFERENCES Project(id) ON DELETE CASCADE
 );
+
+CREATE TABLE MetaBenefitRiskAnalysis_Alternative (
+   analysisId INT,
+   alternativeId INT,
+   PRIMARY KEY(analysisId, alternativeId),
+   FOREIGN KEY(analysisId) REFERENCES MetaBenefitRiskAnalysis(id) ON DELETE CASCADE ,
+   FOREIGN KEY(alternativeId) REFERENCES Intervention(id)
+);
+
+--rollback DROP TABLE MetaBenefitRiskAnalysis_Alternative;;
+--rollback DROP TABLE MetaBenefitRiskAnalysis;

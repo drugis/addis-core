@@ -20,7 +20,7 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
 
   private String title;
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
   @JoinTable(name = "MetaBenefitRiskAnalysis_Alternative",
           joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
           inverseJoinColumns = {@JoinColumn(name = "alternativeId", referencedColumnName = "id")})
@@ -43,15 +43,20 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
 
   @Override
   public Integer getProjectId() {
-    return null;
+    return projectId;
   }
 
+  @Override
   public Integer getId() {
     return id;
   }
 
   public List<Intervention> getIncludedAlternatives() {
     return Collections.unmodifiableList(new ArrayList<>(includedAlternatives));
+  }
+
+  public String getTitle() {
+    return title;
   }
 
   @Override
@@ -75,6 +80,10 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
     result = 31 * result + title.hashCode();
     result = 31 * result + (includedAlternatives != null ? includedAlternatives.hashCode() : 0);
     return result;
+  }
+
+  public void setIncludedAlternatives(List<Intervention> interventions) {
+    this.includedAlternatives = new HashSet<>(interventions);
   }
 
 //  private class OutcomeInclusion {

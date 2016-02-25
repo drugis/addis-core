@@ -64,6 +64,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     this(null, projectId, title, selectedOutcomes, selectedInterventions, problem);
   }
 
+  @Override
   public Integer getId() {
     return id;
   }

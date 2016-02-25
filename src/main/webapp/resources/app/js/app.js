@@ -156,7 +156,7 @@ define(
       stateName: 'singleStudyBenefitRisk'
     }, {
       label: 'Benefit-risk analysis based on meta-analyses',
-      stateName: 'metaBenefitRisk'
+      stateName: 'MetaBenefitRiskCreationStep-1'
     }]);
     app.constant('mcdaRootPath', 'app/js/bower_components/mcda-web/app/');
     app.constant('gemtcRootPath', 'app/js/bower_components/gemtc-web/app/');
@@ -295,7 +295,10 @@ define(
             },
             abstract: true
           })
-          .state('networkMetaAnalysis', {
+
+
+        // Network meta-analysis states
+        .state('networkMetaAnalysis', {
             parent: 'networkMetaAnalysisContainer',
             url: '',
             views: {
@@ -370,6 +373,15 @@ define(
 
             }
           })
+
+        // meta-benefit-risk states
+
+        .state('MetaBenefitRiskCreationStep-1', {
+          url: '/users/:userUid/projects/:projectId/metabr/:analysisId/step-1',
+          templateUrl: 'app/js/analysis/metabrStep-1.html',
+          controller: 'MetaBenefitRiskStep1Controller',
+          parent: 'project'
+        })
 
         // trialverse states
         .state('dataset', {

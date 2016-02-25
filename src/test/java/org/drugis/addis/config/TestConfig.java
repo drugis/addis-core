@@ -1,14 +1,11 @@
 package org.drugis.addis.config;
 
-import org.drugis.addis.analyses.repository.AnalysisRepository;
-import org.drugis.addis.analyses.repository.CriteriaRepository;
-import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
-import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.repository.*;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.models.repository.ModelRepository;
-import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
+import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.ProjectService;
@@ -17,7 +14,6 @@ import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
-import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -84,6 +80,11 @@ public class TestConfig {
   @Bean
   public NetworkMetaAnalysisRepository networkMetaAnalysisRepository() {
     return mock(NetworkMetaAnalysisRepository.class);
+  }
+
+  @Bean
+  public MetaBenefitRiskAnalysisRepository metaBenefitRiskAnalysisRepository() {
+    return mock(MetaBenefitRiskAnalysisRepository.class);
   }
 
   @Bean
