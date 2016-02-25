@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(['lodash'], function(_) {
   var dependencies = ['$injector'];
   var EnumOptionsDirective = function($injector) {
     return {

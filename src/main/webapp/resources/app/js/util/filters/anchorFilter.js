@@ -1,5 +1,6 @@
 'use strict';
 define([], function() {
+  /* jslint unused: true  */
   var dependencies = ['$filter', 'MeasurementMomentService'];
   var AnchorFilter = function($filter, MeasurementMomentService) {
     return function(measurementMoment) {

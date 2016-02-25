@@ -30,7 +30,7 @@ define(['angular', 'angular-mocks'], function () {
 
     it('should do nothing if the frontstr is not actually the beginning of the input', function() {
       expect(stripFrontFilter('bbbbbbb', 'aa')).toEqual('bbbbbbb');
-    })
+    });
 
     it('should handle nulls', function() {
       expect(stripFrontFilter(null, 'aaaa')).toEqual(null);

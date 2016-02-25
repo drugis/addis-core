@@ -24,6 +24,7 @@ define(['lodash'], function(_) {
         return [pair[1]['@id'], pair[0]];
       }));
     linkedData['@graph'] = _.map(linkedData['@graph'], function(subjectWithTriples) {
+      /* jslint unused: true  */
       return _.mapKeys(subjectWithTriples, function(v, k) {
         var mapped = typedProperties[k];
         return mapped ? mapped : k;
@@ -138,7 +139,7 @@ define(['lodash'], function(_) {
     inlineObjects(study, 'has_outcome');
     inlineObjects(study, 'has_arm');
     inlineObjects(study, 'has_group');
-    inlineObjects(study, 'has_included_population')
+    inlineObjects(study, 'has_included_population');
     inlineObjects(study, 'has_activity');
     inlineObjects(study, 'has_indication');
     inlineObjects(study, 'has_objective');
