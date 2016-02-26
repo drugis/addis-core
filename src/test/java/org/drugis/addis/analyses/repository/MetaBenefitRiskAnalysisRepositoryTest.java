@@ -80,7 +80,6 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
     interventions.add(interventionToInclude);
     analysis.setIncludedAlternatives(interventions);
     List<MbrOutcomeInclusion> mbrOutcomeInclusions = new ArrayList<>(analysis.getMbrOutcomeInclusions());
-    Outcome outcomeToInclude = em.find(Outcome.class, outcomeId);
     mbrOutcomeInclusions.add(new MbrOutcomeInclusion(analysis.getId(), outcomeId, 1));
     analysis.setIncludedAlternatives(interventions);
     metaBenefitRiskAnalysisRepository.update(user, analysis);
