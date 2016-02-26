@@ -92,10 +92,11 @@ define([], function() {
         return outcomeWithAnalyses.outcome.isIncluded;
       }).map(function(outcomeWithAnalyses) {
         return {
-          outcome: outcomeWithAnalyses.outcome,
-          networkMetaAnalysis: outcomeWithAnalyses.networkMetaAnalyses.filter(function(networkAnalysis) {
+          metaBenefitRiskAnalysisId: $scope.analysis.id,
+          outcomeId: outcomeWithAnalyses.outcome.id,
+          networkMetaAnalysisId: outcomeWithAnalyses.networkMetaAnalyses.filter(function(networkAnalysis) {
             return networkAnalysis.isIncluded;
-          })[0]
+          })[0].id
         };
       });
       $scope.analysis.$save();

@@ -28,7 +28,7 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
           inverseJoinColumns = {@JoinColumn(name = "alternativeId", referencedColumnName = "id")})
   private Set<Intervention> includedAlternatives = new HashSet<>();
 
-  @OneToMany(fetch = FetchType.EAGER, mappedBy = "metaBenefitRiskAnalysisId", orphanRemoval = true)
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "metaBenefitRiskAnalysisId", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<MbrOutcomeInclusion> mbrOutcomeInclusions = new HashSet<>();
 
   public MetaBenefitRiskAnalysis() {

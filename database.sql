@@ -401,12 +401,11 @@ CREATE TABLE MetaBenefitRiskAnalysis_Alternative (
 );
 
 CREATE TABLE MbrOutcomeInclusion (
-    id SERIAL NOT NULL,
-    analysisId INT,
+    metaBenefitRiskAnalysisId INT,
     outcomeId INT,
     networkMetaAnalysisId INT,
-    PRIMARY KEY (id),
-    FOREIGN KEY(analysisId) REFERENCES MetaBenefitRiskAnalysis(id),
+    PRIMARY KEY (metaBenefitRiskAnalysisId, outcomeId, networkMetaAnalysisId),
+    FOREIGN KEY(metaBenefitRiskAnalysisId) REFERENCES MetaBenefitRiskAnalysis(id),
     FOREIGN KEY(outcomeId) REFERENCES Outcome(id),
     FOREIGN KEY(networkMetaAnalysisId) REFERENCES NetworkMetaAnalysis(id)
 );
