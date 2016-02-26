@@ -1,8 +1,10 @@
 package org.drugis.addis.analyses;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.drugis.addis.outcomes.Outcome;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +12,8 @@ import java.util.List;
  * Created by connor on 6-5-14.
  */
 @Entity
-public class NetworkMetaAnalysis extends AbstractAnalysis {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializable {
   @Id
   @SequenceGenerator(name = "analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")

@@ -5,7 +5,8 @@ define([], function() {
     return $resource('/projects/:projectId/analyses/:analysisId', {
       projectId: '@projectId',
       analysisId: '@id',
-      modelId: '@modelId'
+      modelId: '@modelId',
+      outcomeIds: '@outcomeIds'
     }, {
       setPrimaryModel: {
         url: '/projects/:projectId/analyses/:analysisId/setPrimaryModel',

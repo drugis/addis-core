@@ -336,25 +336,29 @@ CREATE TABLE MetaBenefitRiskAnalysis (
   title VARCHAR NOT NULL,
   projectId INT NOT NULL,
   PRIMARY KEY (id),
-  FOREIGN KEY(projectId) REFERENCES Project(id) ON DELETE CASCADE
+  FOREIGN KEY(projectId) REFERENCES Project(id)
 );
 
 CREATE TABLE MetaBenefitRiskAnalysis_Alternative (
    analysisId INT,
    alternativeId INT,
    PRIMARY KEY(analysisId, alternativeId),
-   FOREIGN KEY(analysisId) REFERENCES MetaBenefitRiskAnalysis(id) ON DELETE CASCADE ,
+   FOREIGN KEY(analysisId) REFERENCES MetaBenefitRiskAnalysis(id),
    FOREIGN KEY(alternativeId) REFERENCES Intervention(id)
 );
 
-CREATE TABLE MetaBenefitRiskAnalysis_Outcome (
-   analysisId INT,
-   outcomeId INT,
-   PRIMARY KEY(analysisId, outcomeId),
-   FOREIGN KEY(analysisId) REFERENCES MetaBenefitRiskAnalysis(id) ON DELETE CASCADE ,
-   FOREIGN KEY(outcomeId) REFERENCES Outcome(id)
+CREATE TABLE MbrOutcomeInclusion (
+    id SERIAL NOT NULL,
+    analysisId INT,
+    outcomeId INT,
+    networkMetaAnalysisId INT,
+    PRIMARY KEY (id),
+    FOREIGN KEY(analysisId) REFERENCES MetaBenefitRiskAnalysis(id),
+    FOREIGN KEY(outcomeId) REFERENCES Outcome(id),
+    FOREIGN KEY(networkMetaAnalysisId) REFERENCES NetworkMetaAnalysis(id)
 );
 
+--rollback DROP TABLE MbrOutcomeInclusion;
 --rollback DROP TABLE MetaBenefitRiskAnalysis_Alternative;
---rollback DROP TABLE MetaBenefitRiskAnalysis_Outcome;
 --rollback DROP TABLE MetaBenefitRiskAnalysis;
+

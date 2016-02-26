@@ -1,0 +1,58 @@
+<div ui-view>
+  <navbar-directive></navbar-directive>
+  <ul class="breadcrumbs">
+    <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
+    <li><a ui-sref="projects({userUid: userId})">Projects</a></li>
+    <li><a ui-sref="project({userUid: userId, projectId: project.id})">{{project.name}}</a></li>
+    <li class="current active">{{analysis.title}} Step 1</li>
+  </ul>
+  <div ng-if="error" class="row" ng-cloak>
+    <div class="columns">
+      <app-alert type="alert" close="error.close()" error="error">
+        </span>
+      </app-alert>
+    </div>
+  </div>
+  <div>
+    <div class="project-header row">
+      <div class="columns large-12">
+        <h1 class="inline-header" title="Analysis title">{{analysis.title}}</h1>
+        <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.analysisType}}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="columns large-12">
+      <label>Alternatives</label>
+      <div class="checkbox-group">
+        <div class="alternative-item" ng-repeat="alternative in alternatives">
+          <label>
+            <input type="checkbox" ng-model="alternative.isIncluded" name="{{alternative.name}}"
+            ng-change="updateAlternatives()"> {{alternative.name}}
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="columns large-12">
+      <label>Outcomes</label>
+      <div class="checkbox-group">
+        <div class="outcome-item" ng-repeat="outcomeWithAnalyses in outcomesWithAnalyses">
+          <label>
+            <input type="checkbox" ng-model="outcomeWithAnalyses.outcome.isIncluded" name="{{outcomeWithAnalyses.outcome.name}}"
+            ng-change="updateMbrOutcomeInclusions()"> {{outcomeWithAnalyses.outcome.name}}
+          </label>
+          <div class="outcome-analyses" ng-repeat="networkMetaAnalyse in outcomeWithAnalyses.networkMetaAnalyses">
+            <div class="analysis">
+              <label>
+                <input name="{{networkMetaAnalyse.name}}" ng-model="outcomeWithAnalyses.networkMetaAnalyse.isIncluded" ng-change="changeSelectedOutcomeAnalysis()"
+                type="radio"> {{networkMetaAnalyse.title}}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

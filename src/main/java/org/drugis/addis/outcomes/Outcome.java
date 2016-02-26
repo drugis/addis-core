@@ -2,13 +2,17 @@ package org.drugis.addis.outcomes;
 
 import org.drugis.addis.trialverse.model.SemanticOutcome;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.io.Serializable;
 
 /**
  * Created by daan on 2/20/14.
  */
 @Entity
-public class Outcome {
+public class Outcome implements Serializable{
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

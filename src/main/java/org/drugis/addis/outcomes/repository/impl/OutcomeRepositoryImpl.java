@@ -35,6 +35,11 @@ public class OutcomeRepositoryImpl implements OutcomeRepository {
   }
 
   @Override
+  public Outcome get(Integer outcomeId) throws ResourceDoesNotExistException {
+    return em.find(Outcome.class, outcomeId);
+  }
+
+  @Override
   public Outcome get(Integer projectId, Integer outcomeId) throws ResourceDoesNotExistException {
     TypedQuery<Outcome> query = em.createQuery("FROM Outcome o WHERE o.id = :outcomeId AND o.project = :projectId", Outcome.class);
     query.setParameter("outcomeId", outcomeId);

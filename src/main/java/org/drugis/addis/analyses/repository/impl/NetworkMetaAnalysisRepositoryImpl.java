@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -45,9 +46,21 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
 
   @Override
   public Collection<NetworkMetaAnalysis> query(Integer projectId) {
-    TypedQuery<NetworkMetaAnalysis> query = em.createQuery("FROM NetworkMetaAnalysis a WHERE a.projectId = :projectId", NetworkMetaAnalysis.class);
-    query.setParameter("projectId", projectId);
+    TypedQuery<NetworkMetaAnalysis>  query = em.createQuery("FROM NetworkMetaAnalysis a WHERE a.projectId = :projectId", NetworkMetaAnalysis.class);
+      query.setParameter("projectId", projectId);
     return query.getResultList();
+  }
+
+  @Override
+  public Collection<NetworkMetaAnalysis> queryByOutcomes(Integer projectId, List<Integer> outcomeIds) {
+    if(outcomeIds == null || outcomeIds.isEmpty()) {
+      return Collections.emptyList();
+    } else {
+      TypedQuery<NetworkMetaAnalysis> query = em.createQuery("FROM NetworkMetaAnalysis a WHERE a.projectId = :projectId AND outcomeId IN :outcomeIds", NetworkMetaAnalysis.class);
+      query.setParameter("projectId", projectId);
+      query.setParameter("outcomeIds", outcomeIds);
+      return query.getResultList();
+    }
   }
 
   @Override

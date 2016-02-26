@@ -1,7 +1,7 @@
 package org.drugis.addis.analyses;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.drugis.addis.interventions.Intervention;
-import org.drugis.addis.outcomes.Outcome;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,6 +11,7 @@ import java.util.*;
  * Created by daan on 24-2-16.
  */
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Serializable {
   @Id
   @SequenceGenerator(name = "analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
@@ -27,16 +28,19 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
           inverseJoinColumns = {@JoinColumn(name = "alternativeId", referencedColumnName = "id")})
   private Set<Intervention> includedAlternatives = new HashSet<>();
 
-  @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
-  @JoinTable(name = "MetaBenefitRiskAnalysis_Outcome",
-          joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
-          inverseJoinColumns = {@JoinColumn(name = "outcomeId", referencedColumnName = "id")})
-  private Set<Outcome> includedOutcomes = new HashSet<>();
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "analysis", orphanRemoval = true)
+  private Set<MbrOutcomeInclusion> mbrOutcomeInclusions = new HashSet<>();
 
   public MetaBenefitRiskAnalysis() {
   }
 
   public MetaBenefitRiskAnalysis(Integer projectId, String title) {
+    this.projectId = projectId;
+    this.title = title;
+  }
+
+  public MetaBenefitRiskAnalysis(Integer id, Integer projectId, String title) {
+    this.id = id;
     this.projectId = projectId;
     this.title = title;
   }
@@ -62,12 +66,20 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
     return Collections.unmodifiableList(new ArrayList<>(includedAlternatives));
   }
 
-  public List<Outcome> getIncludedOutcomes() {
-    return Collections.unmodifiableList(new ArrayList<>(includedOutcomes));
+  public List<MbrOutcomeInclusion> getMbrOutcomeInclusions() {
+    return Collections.unmodifiableList(new ArrayList<>(mbrOutcomeInclusions));
   }
 
   public String getTitle() {
     return title;
+  }
+
+  public void setIncludedAlternatives(List<Intervention> interventions) {
+    this.includedAlternatives = new HashSet<>(interventions);
+  }
+
+  public void setMbrOutcomeInclusions(Set<MbrOutcomeInclusion> mbrOutcomeInclusions) {
+    this.mbrOutcomeInclusions = new HashSet<>(mbrOutcomeInclusions);
   }
 
   @Override
@@ -91,14 +103,6 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
     result = 31 * result + title.hashCode();
     result = 31 * result + (includedAlternatives != null ? includedAlternatives.hashCode() : 0);
     return result;
-  }
-
-  public void setIncludedAlternatives(List<Intervention> interventions) {
-    this.includedAlternatives = new HashSet<>(interventions);
-  }
-
-  public void setIncludedOutcomes(List<Outcome> outcomes) {
-    this.includedOutcomes = new HashSet<>(outcomes);
   }
 
 }

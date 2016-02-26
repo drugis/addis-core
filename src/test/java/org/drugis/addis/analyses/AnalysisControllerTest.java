@@ -72,7 +72,7 @@ public class AnalysisControllerTest {
   private WebApplicationContext webApplicationContext;
   @Inject
   private ProjectService projectService;
-  
+
   private Principal user;
 
   private Account john = new Account(1, "a", "john", "lennon", null),
@@ -113,6 +113,32 @@ public class AnalysisControllerTest {
 
     verify(analysisRepository).query(projectId);
     verify(accountRepository).findAccountByUsername("gert");
+  }
+
+  @Test
+  public void testQueryNetworkMetaAnalysisByOutcomes() throws Exception {
+    Outcome outcome = new Outcome(1, 1, "name", "motivation", new SemanticOutcome("uri", "label"));
+    NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(1, 1, "name", outcome);
+    Integer projectId = 1;
+    List<Integer> outcomeIds = Arrays.asList(1);
+    List<NetworkMetaAnalysis> analyses = Arrays.asList(networkMetaAnalysis);
+    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds)).thenReturn(analyses);
+
+    ResultActions result = mockMvc
+            .perform(
+                    get("/projects/{projectId}/analyses", projectId)
+                            .param("outcomeIds", "1")
+                            .principal(user)
+            );
+    result
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].analysisType", Matchers.equalTo(AnalysisType.NETWORK_META_ANALYSIS_LABEL)));
+
+    verify(accountRepository).findAccountByUsername("gert");
+    verify(networkMetaAnalysisRepository).queryByOutcomes(projectId, outcomeIds);
+
   }
 
   @Test
@@ -397,9 +423,9 @@ public class AnalysisControllerTest {
     Integer analysisId = 4;
     String modelId = "5";
     mockMvc.perform((post("/projects/{projectId}/analyses/{analysisId}/setPrimaryModel", projectId, analysisId)
-      .param("modelId", modelId))
-      .principal(user))
-      .andExpect(status().isOk());
+            .param("modelId", modelId))
+            .principal(user))
+            .andExpect(status().isOk());
     verify(projectService).checkOwnership(projectId, user);
     verify(analysisRepository).setPrimaryModel(analysisId, Integer.parseInt(modelId));
   }

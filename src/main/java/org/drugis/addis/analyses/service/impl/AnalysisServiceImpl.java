@@ -10,6 +10,7 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
+import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,9 @@ public class AnalysisServiceImpl implements AnalysisService {
 
   @Inject
   ModelRepository modelRepository;
+
+  @Inject
+  OutcomeRepository outcomeRepository;
 
   @Override
   public void checkCoordinates(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException {
@@ -90,9 +94,11 @@ public class AnalysisServiceImpl implements AnalysisService {
         }
       }
     }
-    if (isNotEmpty(analysis.getIncludedOutcomes())) {
+    if (isNotEmpty(analysis.getMbrOutcomeInclusions())) {
       // do not allow selection of outcomes that are not in the project
-      for (Outcome outcome : analysis.getIncludedOutcomes()) {
+      for (MbrOutcomeInclusion mbrOutcomeInclusion : analysis.getMbrOutcomeInclusions()) {
+        Integer outcomeId = mbrOutcomeInclusion.getOutcomeId();
+        Outcome outcome = outcomeRepository.get(outcomeId);
         if (!outcome.getProject().equals(analysis.getProjectId())) {
           throw new ResourceDoesNotExistException();
         }

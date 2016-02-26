@@ -2,6 +2,7 @@ package org.drugis.addis.analyses.repository;
 
 import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.analyses.AnalysisType;
+import org.drugis.addis.analyses.MbrOutcomeInclusion;
 import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
@@ -78,9 +79,9 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
     List<Intervention> interventions = new ArrayList<>(analysis.getIncludedAlternatives());
     interventions.add(interventionToInclude);
     analysis.setIncludedAlternatives(interventions);
-    List<Outcome> outcomes = new ArrayList<>(analysis.getIncludedOutcomes());
+    List<MbrOutcomeInclusion> mbrOutcomeInclusions = new ArrayList<>(analysis.getMbrOutcomeInclusions());
     Outcome outcomeToInclude = em.find(Outcome.class, outcomeId);
-    outcomes.add(outcomeToInclude);
+    mbrOutcomeInclusions.add(new MbrOutcomeInclusion(analysis.getId(), outcomeId, 1));
     analysis.setIncludedAlternatives(interventions);
     metaBenefitRiskAnalysisRepository.update(user, analysis);
     assertEquals(2, analysis.getIncludedAlternatives().size());

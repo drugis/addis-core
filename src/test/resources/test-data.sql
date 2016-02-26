@@ -21,12 +21,12 @@ INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title) VALUES 
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title, problem) VALUES (-4, 1, 'analysis 3', 'singlestudy problem');
 
 INSERT INTO public.NetworkMetaAnalysis(id, projectId, title) VALUES (-5, 1, 'nma');
-INSERT INTO public.NetworkMetaAnalysis(id, projectId, title) VALUES (-6, 1, 'nma 2');
+INSERT INTO public.NetworkMetaAnalysis(id, projectId, title, outcomeId) VALUES (-6, 1, 'nma 2', 1);
 INSERT INTO public.NetworkMetaAnalysis(id, projectId, title) VALUES (-7, 2, 'nma task test');
 
 INSERT INTO public.MetaBenefitRiskAnalysis(id, projectId, title) VALUES (-10, 1, 'metabr 1');
 INSERT INTO public.MetaBenefitRiskAnalysis_Alternative(analysisId, alternativeId) VALUES (-10, 1);
-INSERT INTO public.MetaBenefitRiskAnalysis_Outcome(analysisId, outcomeId) VALUES (-10, 1);
+INSERT INTO public.MbrOutcomeInclusion(id, analysisId, outcomeId, networkMetaAnalysisId) VALUES (-1, -10, 1, -5);
 
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (1, -1, 'Default', 'problem state');
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (2, -1, 'Scenario title', 'problem state modified');

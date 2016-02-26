@@ -6603,50 +6603,55 @@ tr.clickable td {
   color: #452F8C;
 }
 
-/* line 166, ../../sass/_addis-base.scss */
+/* line 165, ../../sass/_addis-base.scss */
+.outcome-analyses {
+  margin-left: 2rem;
+}
+
+/* line 171, ../../sass/_addis-base.scss */
 .cell-with-single-btn {
   display: inline;
 }
-/* line 168, ../../sass/_addis-base.scss */
+/* line 173, ../../sass/_addis-base.scss */
 .cell-with-single-btn select {
   width: 66%;
   margin: 0;
   margin-right: 1rem;
   padding-right: 1rem;
 }
-/* line 174, ../../sass/_addis-base.scss */
+/* line 179, ../../sass/_addis-base.scss */
 .cell-with-single-btn button {
   margin: 0;
   padding-top: 0.7rem;
   padding-bottom: 0.7rem;
 }
 
-/* line 184, ../../sass/_addis-base.scss */
+/* line 189, ../../sass/_addis-base.scss */
 .scrollable-wrapper {
   overflow-y: auto;
   margin-top: 1.5rem;
 }
 
 /* Tabs */
-/* line 191, ../../sass/_addis-base.scss */
+/* line 196, ../../sass/_addis-base.scss */
 div.tabs {
   padding: 10px;
 }
 
-/* line 194, ../../sass/_addis-base.scss */
+/* line 199, ../../sass/_addis-base.scss */
 ul.tabsNavigation {
   margin: 0 10px;
   padding: 0;
   text-align: left;
 }
 
-/* line 199, ../../sass/_addis-base.scss */
+/* line 204, ../../sass/_addis-base.scss */
 ul.tabsNavigation > li {
   list-style: none;
   display: inline;
 }
 
-/* line 203, ../../sass/_addis-base.scss */
+/* line 208, ../../sass/_addis-base.scss */
 ul.tabsNavigation > li > a {
   font-size: 0.875em;
   border: 1px solid #E0E0E0;
@@ -6655,35 +6660,35 @@ ul.tabsNavigation > li > a {
   text-decoration: none;
 }
 
-/* line 210, ../../sass/_addis-base.scss */
+/* line 215, ../../sass/_addis-base.scss */
 ul.tabsNavigation > li > a:hover {
   background-color: #F6F6F6;
 }
 
-/* line 213, ../../sass/_addis-base.scss */
+/* line 218, ../../sass/_addis-base.scss */
 ul.tabsNavigation > li.current > a {
   background: #fff;
   color: #222;
   border-bottom: 1px solid #fff;
 }
 
-/* line 218, ../../sass/_addis-base.scss */
+/* line 223, ../../sass/_addis-base.scss */
 div.fakeTabsContent {
   border-top: 1px solid #E0E0E0;
 }
 
 /* inline results */
-/* line 223, ../../sass/_addis-base.scss */
+/* line 228, ../../sass/_addis-base.scss */
 #results .loader, .hidden {
   display: none;
 }
 
-/* line 227, ../../sass/_addis-base.scss */
+/* line 232, ../../sass/_addis-base.scss */
 #results.loading > img {
   opacity: 0.5;
 }
 
-/* line 231, ../../sass/_addis-base.scss */
+/* line 236, ../../sass/_addis-base.scss */
 #results.loading .loader {
   float: left;
   position: relative;
@@ -6697,12 +6702,12 @@ div.fakeTabsContent {
   padding: 5px;
 }
 
-/* line 244, ../../sass/_addis-base.scss */
+/* line 249, ../../sass/_addis-base.scss */
 #results.loading .graph {
   display: none;
 }
 
-/* line 248, ../../sass/_addis-base.scss */
+/* line 253, ../../sass/_addis-base.scss */
 .jslider-bg i.x {
   -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
   -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
@@ -6712,12 +6717,12 @@ div.fakeTabsContent {
   display: inline-block;
 }
 
-/* line 257, ../../sass/_addis-base.scss */
+/* line 262, ../../sass/_addis-base.scss */
 input[type='file'] {
   width: auto !important;
 }
 
-/* line 261, ../../sass/_addis-base.scss */
+/* line 266, ../../sass/_addis-base.scss */
 .alert-box {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
@@ -6727,317 +6732,317 @@ input[type='file'] {
 * This product includes color specifications and designs developed by Cynthia
 * Brewer (http://colorbrewer.org/).
 */
-/* line 270, ../../sass/_addis-base.scss */
+/* line 275, ../../sass/_addis-base.scss */
 .RdYlGn .q0-3 {
   background-color: #fc8d59;
 }
 
-/* line 271, ../../sass/_addis-base.scss */
+/* line 276, ../../sass/_addis-base.scss */
 .RdYlGn .q1-3 {
   background-color: #ffffbf;
 }
 
-/* line 272, ../../sass/_addis-base.scss */
+/* line 277, ../../sass/_addis-base.scss */
 .RdYlGn .q2-3 {
   background-color: #91cf60;
 }
 
-/* line 273, ../../sass/_addis-base.scss */
+/* line 278, ../../sass/_addis-base.scss */
 .RdYlGn .q0-4 {
   background-color: #d7191c;
 }
 
-/* line 274, ../../sass/_addis-base.scss */
+/* line 279, ../../sass/_addis-base.scss */
 .RdYlGn .q1-4 {
   background-color: #fdae61;
 }
 
-/* line 275, ../../sass/_addis-base.scss */
+/* line 280, ../../sass/_addis-base.scss */
 .RdYlGn .q2-4 {
   background-color: #a6d96a;
 }
 
-/* line 276, ../../sass/_addis-base.scss */
+/* line 281, ../../sass/_addis-base.scss */
 .RdYlGn .q3-4 {
   background-color: #1a9641;
 }
 
-/* line 277, ../../sass/_addis-base.scss */
+/* line 282, ../../sass/_addis-base.scss */
 .RdYlGn .q0-5 {
   background-color: #d7191c;
 }
 
-/* line 278, ../../sass/_addis-base.scss */
+/* line 283, ../../sass/_addis-base.scss */
 .RdYlGn .q1-5 {
   background-color: #fdae61;
 }
 
-/* line 279, ../../sass/_addis-base.scss */
+/* line 284, ../../sass/_addis-base.scss */
 .RdYlGn .q2-5 {
   background-color: #ffffbf;
 }
 
-/* line 280, ../../sass/_addis-base.scss */
+/* line 285, ../../sass/_addis-base.scss */
 .RdYlGn .q3-5 {
   background-color: #a6d96a;
 }
 
-/* line 281, ../../sass/_addis-base.scss */
+/* line 286, ../../sass/_addis-base.scss */
 .RdYlGn .q4-5 {
   background-color: #1a9641;
 }
 
-/* line 282, ../../sass/_addis-base.scss */
+/* line 287, ../../sass/_addis-base.scss */
 .RdYlGn .q0-6 {
   background-color: #d73027;
 }
 
-/* line 283, ../../sass/_addis-base.scss */
+/* line 288, ../../sass/_addis-base.scss */
 .RdYlGn .q1-6 {
   background-color: #fc8d59;
 }
 
-/* line 284, ../../sass/_addis-base.scss */
+/* line 289, ../../sass/_addis-base.scss */
 .RdYlGn .q2-6 {
   background-color: #fee08b;
 }
 
-/* line 285, ../../sass/_addis-base.scss */
+/* line 290, ../../sass/_addis-base.scss */
 .RdYlGn .q3-6 {
   background-color: #d9ef8b;
 }
 
-/* line 286, ../../sass/_addis-base.scss */
+/* line 291, ../../sass/_addis-base.scss */
 .RdYlGn .q4-6 {
   background-color: #91cf60;
 }
 
-/* line 287, ../../sass/_addis-base.scss */
+/* line 292, ../../sass/_addis-base.scss */
 .RdYlGn .q5-6 {
   background-color: #1a9850;
 }
 
-/* line 288, ../../sass/_addis-base.scss */
+/* line 293, ../../sass/_addis-base.scss */
 .RdYlGn .q0-7 {
   background-color: #d73027;
 }
 
-/* line 289, ../../sass/_addis-base.scss */
+/* line 294, ../../sass/_addis-base.scss */
 .RdYlGn .q1-7 {
   background-color: #fc8d59;
 }
 
-/* line 290, ../../sass/_addis-base.scss */
+/* line 295, ../../sass/_addis-base.scss */
 .RdYlGn .q2-7 {
   background-color: #fee08b;
 }
 
-/* line 291, ../../sass/_addis-base.scss */
+/* line 296, ../../sass/_addis-base.scss */
 .RdYlGn .q3-7 {
   background-color: #ffffbf;
 }
 
-/* line 292, ../../sass/_addis-base.scss */
+/* line 297, ../../sass/_addis-base.scss */
 .RdYlGn .q4-7 {
   background-color: #d9ef8b;
 }
 
-/* line 293, ../../sass/_addis-base.scss */
+/* line 298, ../../sass/_addis-base.scss */
 .RdYlGn .q5-7 {
   background-color: #91cf60;
 }
 
-/* line 294, ../../sass/_addis-base.scss */
+/* line 299, ../../sass/_addis-base.scss */
 .RdYlGn .q6-7 {
   background-color: #1a9850;
 }
 
-/* line 295, ../../sass/_addis-base.scss */
+/* line 300, ../../sass/_addis-base.scss */
 .RdYlGn .q0-8 {
   background-color: #d73027;
 }
 
-/* line 296, ../../sass/_addis-base.scss */
+/* line 301, ../../sass/_addis-base.scss */
 .RdYlGn .q1-8 {
   background-color: #f46d43;
 }
 
-/* line 297, ../../sass/_addis-base.scss */
+/* line 302, ../../sass/_addis-base.scss */
 .RdYlGn .q2-8 {
   background-color: #fdae61;
 }
 
-/* line 298, ../../sass/_addis-base.scss */
+/* line 303, ../../sass/_addis-base.scss */
 .RdYlGn .q3-8 {
   background-color: #fee08b;
 }
 
-/* line 299, ../../sass/_addis-base.scss */
+/* line 304, ../../sass/_addis-base.scss */
 .RdYlGn .q4-8 {
   background-color: #d9ef8b;
 }
 
-/* line 300, ../../sass/_addis-base.scss */
+/* line 305, ../../sass/_addis-base.scss */
 .RdYlGn .q5-8 {
   background-color: #a6d96a;
 }
 
-/* line 301, ../../sass/_addis-base.scss */
+/* line 306, ../../sass/_addis-base.scss */
 .RdYlGn .q6-8 {
   background-color: #66bd63;
 }
 
-/* line 302, ../../sass/_addis-base.scss */
+/* line 307, ../../sass/_addis-base.scss */
 .RdYlGn .q7-8 {
   background-color: #1a9850;
 }
 
-/* line 303, ../../sass/_addis-base.scss */
+/* line 308, ../../sass/_addis-base.scss */
 .RdYlGn .q0-9 {
   background-color: #d73027;
 }
 
-/* line 304, ../../sass/_addis-base.scss */
+/* line 309, ../../sass/_addis-base.scss */
 .RdYlGn .q1-9 {
   background-color: #f46d43;
 }
 
-/* line 305, ../../sass/_addis-base.scss */
+/* line 310, ../../sass/_addis-base.scss */
 .RdYlGn .q2-9 {
   background-color: #fdae61;
 }
 
-/* line 306, ../../sass/_addis-base.scss */
+/* line 311, ../../sass/_addis-base.scss */
 .RdYlGn .q3-9 {
   background-color: #fee08b;
 }
 
-/* line 307, ../../sass/_addis-base.scss */
+/* line 312, ../../sass/_addis-base.scss */
 .RdYlGn .q4-9 {
   background-color: #ffffbf;
 }
 
-/* line 308, ../../sass/_addis-base.scss */
+/* line 313, ../../sass/_addis-base.scss */
 .RdYlGn .q5-9 {
   background-color: #d9ef8b;
 }
 
-/* line 309, ../../sass/_addis-base.scss */
+/* line 314, ../../sass/_addis-base.scss */
 .RdYlGn .q6-9 {
   background-color: #a6d96a;
 }
 
-/* line 310, ../../sass/_addis-base.scss */
+/* line 315, ../../sass/_addis-base.scss */
 .RdYlGn .q7-9 {
   background-color: #66bd63;
 }
 
-/* line 311, ../../sass/_addis-base.scss */
+/* line 316, ../../sass/_addis-base.scss */
 .RdYlGn .q8-9 {
   background-color: #1a9850;
 }
 
-/* line 312, ../../sass/_addis-base.scss */
+/* line 317, ../../sass/_addis-base.scss */
 .RdYlGn .q0-10 {
   background-color: #a50026;
 }
 
-/* line 313, ../../sass/_addis-base.scss */
+/* line 318, ../../sass/_addis-base.scss */
 .RdYlGn .q1-10 {
   background-color: #d73027;
 }
 
-/* line 314, ../../sass/_addis-base.scss */
+/* line 319, ../../sass/_addis-base.scss */
 .RdYlGn .q2-10 {
   background-color: #f46d43;
 }
 
-/* line 315, ../../sass/_addis-base.scss */
+/* line 320, ../../sass/_addis-base.scss */
 .RdYlGn .q3-10 {
   background-color: #fdae61;
 }
 
-/* line 316, ../../sass/_addis-base.scss */
+/* line 321, ../../sass/_addis-base.scss */
 .RdYlGn .q4-10 {
   background-color: #fee08b;
 }
 
-/* line 317, ../../sass/_addis-base.scss */
+/* line 322, ../../sass/_addis-base.scss */
 .RdYlGn .q5-10 {
   background-color: #d9ef8b;
 }
 
-/* line 318, ../../sass/_addis-base.scss */
+/* line 323, ../../sass/_addis-base.scss */
 .RdYlGn .q6-10 {
   background-color: #a6d96a;
 }
 
-/* line 319, ../../sass/_addis-base.scss */
+/* line 324, ../../sass/_addis-base.scss */
 .RdYlGn .q7-10 {
   background-color: #66bd63;
 }
 
-/* line 320, ../../sass/_addis-base.scss */
+/* line 325, ../../sass/_addis-base.scss */
 .RdYlGn .q8-10 {
   background-color: #1a9850;
 }
 
-/* line 321, ../../sass/_addis-base.scss */
+/* line 326, ../../sass/_addis-base.scss */
 .RdYlGn .q9-10 {
   background-color: #006837;
 }
 
-/* line 322, ../../sass/_addis-base.scss */
+/* line 327, ../../sass/_addis-base.scss */
 .RdYlGn .q0-11 {
   background-color: #a50026;
 }
 
-/* line 323, ../../sass/_addis-base.scss */
+/* line 328, ../../sass/_addis-base.scss */
 .RdYlGn .q1-11 {
   background-color: #d73027;
 }
 
-/* line 324, ../../sass/_addis-base.scss */
+/* line 329, ../../sass/_addis-base.scss */
 .RdYlGn .q2-11 {
   background-color: #f46d43;
 }
 
-/* line 325, ../../sass/_addis-base.scss */
+/* line 330, ../../sass/_addis-base.scss */
 .RdYlGn .q3-11 {
   background-color: #fdae61;
 }
 
-/* line 326, ../../sass/_addis-base.scss */
+/* line 331, ../../sass/_addis-base.scss */
 .RdYlGn .q4-11 {
   background-color: #fee08b;
 }
 
-/* line 327, ../../sass/_addis-base.scss */
+/* line 332, ../../sass/_addis-base.scss */
 .RdYlGn .q5-11 {
   background-color: #ffffbf;
 }
 
-/* line 328, ../../sass/_addis-base.scss */
+/* line 333, ../../sass/_addis-base.scss */
 .RdYlGn .q6-11 {
   background-color: #d9ef8b;
 }
 
-/* line 329, ../../sass/_addis-base.scss */
+/* line 334, ../../sass/_addis-base.scss */
 .RdYlGn .q7-11 {
   background-color: #a6d96a;
 }
 
-/* line 330, ../../sass/_addis-base.scss */
+/* line 335, ../../sass/_addis-base.scss */
 .RdYlGn .q8-11 {
   background-color: #66bd63;
 }
 
-/* line 331, ../../sass/_addis-base.scss */
+/* line 336, ../../sass/_addis-base.scss */
 .RdYlGn .q9-11 {
   background-color: #1a9850;
 }
 
-/* line 332, ../../sass/_addis-base.scss */
+/* line 337, ../../sass/_addis-base.scss */
 .RdYlGn .q10-11 {
   background-color: #006837;
 }

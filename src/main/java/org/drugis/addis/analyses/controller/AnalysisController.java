@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -53,6 +54,22 @@ public class AnalysisController extends AbstractAddisCoreController {
   private ScenarioRepository scenarioRepository;
   @Inject
   private ProjectService projectService;
+
+
+
+  @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET, params = {"outcomeIds"})
+  @ResponseBody
+  public NetworkMetaAnalysis[] queryNetworkMetaAnalysisByOutcomes(Principal currentUser, @PathVariable Integer projectId, @RequestParam(name = "outcomeIds", required=false) List<Integer> outcomeIds) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    Account user = accountRepository.findAccountByUsername(currentUser.getName());
+    if (user != null) {
+      Collection<NetworkMetaAnalysis> networkMetaAnalysises = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
+      NetworkMetaAnalysis[] networkMetaAnalysisesArray = new NetworkMetaAnalysis[networkMetaAnalysises.size()];
+      return networkMetaAnalysises.toArray(networkMetaAnalysisesArray);
+    } else {
+      throw new MethodNotAllowedException();
+    }
+  }
+
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET)
   @ResponseBody
