@@ -47,7 +47,7 @@
             <div class="analysis">
               <label>
                 <input ng-model="outcomeWithAnalyses.selectedAnalysisId" ng-change="updateAnalysesInclusions()"
-                type="radio" ng-value="networkMetaAnalysis.id" ng-disabled="!outcomeWithAnalyses.outcome.isIncluded"> {{networkMetaAnalysis.title}}
+                type="radio" ng-value="networkMetaAnalysis.id" ng-disabled="!outcomeWithAnalyses.outcome.isIncluded || !networkMetaAnalysis.models.length"> {{networkMetaAnalysis.title}}
               </label>
             </div>
           </div>
