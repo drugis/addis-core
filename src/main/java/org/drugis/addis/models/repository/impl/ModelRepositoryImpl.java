@@ -86,4 +86,11 @@ public class ModelRepositoryImpl implements ModelRepository {
 
     return modelsWithTask;
   }
+
+  @Override
+  public List<Model> findNetworkModelsByProject(Integer projectId) {
+    TypedQuery<Model> query = em.createQuery("SELECT m FROM Model m, NetworkMetaAnalysis a WHERE m.analysisId = a.id AND a.projectId = :projectId", Model.class);
+    query.setParameter("projectId", projectId);
+    return query.getResultList();
+  }
 }

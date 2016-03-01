@@ -40,11 +40,8 @@
       <div class="checkbox-group">
         <div class="outcome-item" ng-repeat="outcomeWithAnalyses in outcomesWithAnalyses">
           <label>
-            <input type="checkbox"
-            ng-model="outcomeWithAnalyses.outcome.isIncluded"
-            ng-disabled="!outcomeWithAnalyses.networkMetaAnalyses.length"
-            name="{{outcomeWithAnalyses.outcome.name}}"
-            ng-change="updateMbrOutcomeInclusions(outcomeWithAnalyses)"> {{outcomeWithAnalyses.outcome.name}}
+            <input type="checkbox" ng-model="outcomeWithAnalyses.outcome.isIncluded" ng-disabled="!outcomeWithAnalyses.networkMetaAnalyses.length"
+            name="{{outcomeWithAnalyses.outcome.name}}" ng-change="updateMbrOutcomeInclusions(outcomeWithAnalyses)"> {{outcomeWithAnalyses.outcome.name}}
           </label>
           <div class="outcome-analyses" ng-repeat="networkMetaAnalysis in outcomeWithAnalyses.networkMetaAnalyses">
             <div class="analysis">
@@ -53,6 +50,9 @@
                 type="radio" ng-value="networkMetaAnalysis.id" ng-disabled="!outcomeWithAnalyses.outcome.isIncluded"> {{networkMetaAnalysis.title}}
               </label>
             </div>
+          </div>
+          <div ng-show="!outcomeWithAnalyses.networkMetaAnalyses.length" class="outcome-analyses">
+            <label><em>No meta-analyses available</em></label>
           </div>
         </div>
       </div>

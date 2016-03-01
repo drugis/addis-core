@@ -67,9 +67,8 @@ public class PataviTaskRepositoryImplTest {
     Integer thinningFactor = 10;
     String likelihood = Model.LIKELIHOOD_BINOM;
     String link = Model.LINK_LOG;
-    Model model = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title("title")
+    String modelTitle = "title";
+    Model model = new Model.ModelBuilder(analysisId, modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .burnInIterations(burnInIterations)
@@ -115,9 +114,8 @@ public class PataviTaskRepositoryImplTest {
     Integer thinningFactor = 10;
     String likelihood = Model.LIKELIHOOD_BINOM;
     String link = Model.LINK_LOG;
-    Model model = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title("title")
+    String modelTitle = "title";
+    Model model = new Model.ModelBuilder(analysisId, modelTitle)
             .linearModel(linearModel)
             .modelType(Model.PAIRWISE_MODEL_TYPE)
             .from(new Model.DetailNode(-1, fromTreatment))
@@ -163,9 +161,8 @@ public class PataviTaskRepositoryImplTest {
     String likelihood = Model.LIKELIHOOD_BINOM;
     String link = Model.LINK_LOG;
     Double outcomeScale = 2.2;
-    Model model = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title("title")
+    String modelTitle = "title";
+    Model model = new Model.ModelBuilder(analysisId, modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .burnInIterations(burnInIterations)
@@ -202,9 +199,8 @@ public class PataviTaskRepositoryImplTest {
     Integer thinningFactor = 10;
     String likelihood = Model.LIKELIHOOD_BINOM;
     String link = Model.LINK_LOG;
-    Model model = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title("title")
+    String modelTitle = "title";
+    Model model = new Model.ModelBuilder(analysisId, modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .burnInIterations(burnInIterations)
@@ -243,9 +239,8 @@ public class PataviTaskRepositoryImplTest {
     String link = Model.LINK_LOG;
     net.minidev.json.JSONObject regressor = new net.minidev.json.JSONObject();
     regressor.put("coefficient", "shared");
-    Model model = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title("title")
+    String modelTitle = "title";
+    Model model = new Model.ModelBuilder(analysisId, modelTitle)
             .linearModel(linearModel)
             .modelType(Model.REGRESSION_MODEL_TYPE)
             .burnInIterations(burnInIterations)

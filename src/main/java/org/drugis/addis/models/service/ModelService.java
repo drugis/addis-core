@@ -16,7 +16,6 @@ import java.util.List;
  * Created by daan on 22-5-14.
  */
 public interface ModelService {
-
   Model createModel(Integer analysisId, CreateModelCommand createModelCommand) throws ResourceDoesNotExistException, InvalidModelTypeException, InvalidHeterogeneityTypeException;
 
   List<Model> query(Integer analysisId) throws SQLException;
@@ -24,4 +23,6 @@ public interface ModelService {
   void checkOwnership(Integer modelId, Principal principal) throws ResourceDoesNotExistException, MethodNotAllowedException;
 
   void increaseRunLength(UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, InvalidModelTypeException;
+
+  List<Model> queryConsistencyModels(Integer projectId);
 }

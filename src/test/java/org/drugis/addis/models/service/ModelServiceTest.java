@@ -22,10 +22,11 @@ import org.mockito.MockitoAnnotations;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -65,9 +66,7 @@ public class ModelServiceTest {
     String likelihood = Model.LIKELIHOOD_BINOM;
     String link = Model.LINK_LOG;
 
-    modelBuilder = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title(modelTitle)
+    modelBuilder = new Model.ModelBuilder(analysisId, modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .burnInIterations(burnInIterations)
@@ -291,7 +290,7 @@ public class ModelServiceTest {
 
 
   @Test
-  public void testQueryModelIsPresent() throws Exception, InvalidHeterogeneityTypeException {
+  public void testQueryModelIsPresent() throws Exception {
     Integer analysisId = -1;
     Model model = modelBuilder.build();
 
@@ -365,13 +364,11 @@ public class ModelServiceTest {
     Integer thinningFactor = 2;
     String likelihood = Model.LIKELIHOOD_BINOM;
     String link = Model.LINK_LOG;
-    Double outcomeScale = 1D;
+    String title = "title";
 
     UpdateModelCommand updateModelCommand = new UpdateModelCommand.UpdateModelCommandBuilder().setId(modelId).setTitle(modelTitle).setLinearModel(linearModel).setModelTypeCommand(modelTypeCommand).setBurnInIterations(burnInIterations).setInferenceIterations(inferenceIterations).setThinningFactor(thinningFactor).setLikelihood(likelihood).setLink(link).build();
 
-    Model oldModel = new Model.ModelBuilder()
-            .analysisId(2)
-            .title("old title")
+    Model oldModel = new Model.ModelBuilder(2, title)
             .linearModel(Model.LINEAR_MODEL_RANDOM)
             .modelType(modelTypeCommand.getType())
             .burnInIterations(burnInIterations - 1)
@@ -404,13 +401,22 @@ public class ModelServiceTest {
     Integer thinningFactor = 2;
     String likelihood = Model.LIKELIHOOD_BINOM;
     String link = Model.LINK_LOG;
-    Double outcomeScale = 1D;
+    String title = "title";
 
-    UpdateModelCommand updateModelCommand = new UpdateModelCommand.UpdateModelCommandBuilder().setId(modelId).setTitle(modelTitle).setLinearModel(linearModel).setModelTypeCommand(modelTypeCommand).setBurnInIterations(burnInIterations).setInferenceIterations(inferenceIterations).setThinningFactor(thinningFactor).setLikelihood(likelihood).setLink(link).build();
+    UpdateModelCommand updateModelCommand = new UpdateModelCommand
+            .UpdateModelCommandBuilder()
+            .setId(modelId)
+            .setTitle(modelTitle)
+            .setLinearModel(linearModel)
+            .setModelTypeCommand(modelTypeCommand)
+            .setBurnInIterations(burnInIterations)
+            .setInferenceIterations(inferenceIterations)
+            .setThinningFactor(thinningFactor)
+            .setLikelihood(likelihood)
+            .setLink(link)
+            .build();
 
-    Model oldModel = new Model.ModelBuilder()
-            .analysisId(2)
-            .title("old title")
+    Model oldModel = new Model.ModelBuilder(2, title)
             .linearModel(Model.LINEAR_MODEL_RANDOM)
             .modelType(modelTypeCommand.getType())
             .burnInIterations(burnInIterations + 1)
@@ -426,6 +432,24 @@ public class ModelServiceTest {
     verify(modelRepository).get(modelId);
     verifyNoMoreInteractions(modelRepository);
     verifyZeroInteractions(pataviTaskRepository);
+  }
+
+  @Test
+  public void testQueryConsistencyModels() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
+    Integer projectId = 1;
+    Integer analysisId = 3;
+    String modelTitle = "title";
+    Model networkTypeModel = new Model.ModelBuilder(analysisId, modelTitle).modelType(Model.NETWORK_MODEL_TYPE).build();
+    Model pairwiseTypeModel = new Model.ModelBuilder(analysisId, modelTitle).modelType(Model.PAIRWISE_MODEL_TYPE).from(new Model.DetailNode(1, "from")).to(new Model.DetailNode(2, "to")).build();
+    Model otherTypeModel = new Model.ModelBuilder(analysisId, modelTitle).modelType(Model.NODE_SPLITTING_MODEL_TYPE).from(new Model.DetailNode(1, "from")).to(new Model.DetailNode(2, "to")).build();
+    List<Model> projectModels = Arrays.asList(networkTypeModel, pairwiseTypeModel, otherTypeModel);
+    when(modelRepository.findNetworkModelsByProject(projectId)).thenReturn(projectModels);
+
+    List<Model> result = modelService.queryConsistencyModels(projectId);
+
+    assertTrue(result.contains(pairwiseTypeModel));
+    assertTrue(result.contains(networkTypeModel));
+    assertFalse(result.contains(otherTypeModel));
   }
 
 }

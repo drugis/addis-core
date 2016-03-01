@@ -74,6 +74,12 @@ public class ModelController extends AbstractAddisCoreController {
     return modelService.query(analysisId);
   }
 
+  @RequestMapping(value = "/projects/{projectId}/consistencyModels", method = RequestMethod.GET)
+  @ResponseBody
+  public List<Model> consistencyModels(@PathVariable Integer projectId) throws SQLException {
+    return modelService.queryConsistencyModels(projectId);
+  }
+
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}", method = RequestMethod.POST)
   @ResponseBody
   public void update(Principal principal, @RequestBody UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidModelTypeException {

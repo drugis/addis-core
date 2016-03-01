@@ -43,9 +43,7 @@ public class JpaModelRepositoryTest {
     String link = Model.LINK_LOG;
     JSONObject regressor = new JSONObject();
     regressor.put("a", "b");
-    Model toPersist = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title(modelTitle)
+    Model toPersist = new Model.ModelBuilder(analysisId, modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .burnInIterations(burnInIterations)
@@ -140,5 +138,13 @@ public class JpaModelRepositoryTest {
   public void testGetNonExistentModel() throws SQLException {
     Integer modelId = -999;
     modelRepository.get(modelId);
+  }
+
+  @Test
+  public void testFindByProject() throws Exception {
+    Integer projectId = 1;
+    List<Model> models = modelRepository.findNetworkModelsByProject(projectId);
+    assertEquals(2, models.size());
+
   }
 }

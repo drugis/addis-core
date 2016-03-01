@@ -71,10 +71,8 @@ public class PataviTaskServiceTest {
     String likelihood = Model.LIKELIHOOD_BINOM;
     String link = Model.LINK_LOG;
 
-    Model model = new Model.ModelBuilder()
+    Model model = new Model.ModelBuilder(analysisId, modelTitle)
             .id(modelId)
-            .analysisId(analysisId)
-            .title(modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .burnInIterations(burnInIterations)
@@ -112,11 +110,9 @@ public class PataviTaskServiceTest {
     String likelihood = Model.LIKELIHOOD_BINOM;
     String link = Model.LINK_LOG;
 
-    Model model = new Model.ModelBuilder()
+    Model model = new Model.ModelBuilder(analysisId, modelTitle)
             .id(modelId)
             .taskId(-7)
-            .analysisId(analysisId)
-            .title(modelTitle)
             .linearModel(linearModel)
             .modelType(modelType)
             .burnInIterations(burnInIterations)

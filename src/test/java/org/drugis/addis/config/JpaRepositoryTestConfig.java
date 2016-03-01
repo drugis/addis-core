@@ -111,8 +111,8 @@ public class JpaRepositoryTestConfig {
   @Bean
   public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
     HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-    vendorAdapter.setGenerateDdl(false);
-    vendorAdapter.setShowSql(false);
+    vendorAdapter.setGenerateDdl(true);
+    vendorAdapter.setShowSql(true);
     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
     em.setJpaVendorAdapter(vendorAdapter);
     em.setPackagesToScan("org.drugis.addis.outcomes",

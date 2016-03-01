@@ -94,10 +94,8 @@ public class ModelControllerTest {
     Integer inferenceIterations = 20000;
     Integer thinningFactor = 10;
 
-    modelBuilder = new Model.ModelBuilder()
+    modelBuilder = new Model.ModelBuilder(analysisId, modelTitle)
             .id(1)
-            .analysisId(analysisId)
-            .title(modelTitle)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .burnInIterations(burnInIterations)
@@ -499,6 +497,17 @@ public class ModelControllerTest {
     resultActions
             .andExpect(status().isNotFound());
     verify(modelRepository).get(model.getId());
+  }
+
+  @Test
+  public void testConsistencyModels() throws Exception {
+    Integer projectId = 1;
+    when(modelService.queryConsistencyModels(projectId)).thenReturn(Collections.<Model>emptyList());
+    ResultActions resultActions = mockMvc.perform(get("/projects/1/consistencyModels").principal(user));
+    resultActions
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", empty()));
+    verify(modelService).queryConsistencyModels(projectId);
   }
 
 }

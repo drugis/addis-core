@@ -114,10 +114,9 @@ public class AnalysisServiceTest {
     Integer modelId = 83473458;
 
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "new name", outcome);
-    Model model = new Model.ModelBuilder()
+    String modelTitle = "modelTitle";
+    Model model = new Model.ModelBuilder(analysisId, modelTitle)
             .id(-10)
-            .analysisId(analysisId)
-            .title("modelTitle")
             .linearModel("fixedModel")
             .modelType(Model.NETWORK_MODEL_TYPE)
             .burnInIterations(5000)

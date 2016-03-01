@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by daan on 22-5-14.
@@ -42,9 +43,7 @@ public class ModelServiceImpl implements ModelService {
     ModelTypeCommand modelTypeCommand = command.getModelType();
     HeterogeneityPriorCommand heterogeneityPrior = command.getHeterogeneityPrior();
     String heterogeneityPriorType = determineHeterogeneityPriorType(heterogeneityPrior);
-    Model.ModelBuilder builder = new Model.ModelBuilder()
-            .analysisId(analysisId)
-            .title(command.getTitle())
+    Model.ModelBuilder builder = new Model.ModelBuilder(analysisId, command.getTitle())
             .linearModel(command.getLinearModel())
             .modelType(modelTypeCommand.getType())
             .heterogeneityPriorType(heterogeneityPriorType)
@@ -131,6 +130,15 @@ public class ModelServiceImpl implements ModelService {
     oldModel.setTaskId(null);
 
     modelRepository.persist(oldModel);
+  }
 
+  @Override
+  public List<Model> queryConsistencyModels(Integer projectId) {
+    return modelRepository
+            .findNetworkModelsByProject(projectId)
+            .stream()
+              .filter(m -> m.getModelType().getType().equals(Model.NETWORK_MODEL_TYPE) ||
+                        m.getModelType().getType().equals(Model.PAIRWISE_MODEL_TYPE))
+              .collect(Collectors.toList());
   }
 }

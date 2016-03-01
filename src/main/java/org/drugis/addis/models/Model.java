@@ -330,6 +330,11 @@ public class Model {
     private JSONObject regressor;
     private JSONObject sensitivity;
 
+    public ModelBuilder(Integer analysisId, String title) {
+      this.analysisId = analysisId;
+      this.title = title;
+    }
+
     public ModelBuilder taskId(Integer taskId) {
       this.taskId = taskId;
       return this;
@@ -337,16 +342,6 @@ public class Model {
 
     public ModelBuilder id(Integer id) {
       this.id = id;
-      return this;
-    }
-
-    public ModelBuilder analysisId(Integer analysisId) {
-      this.analysisId = analysisId;
-      return this;
-    }
-
-    public ModelBuilder title(String title) {
-      this.title = title;
       return this;
     }
 
