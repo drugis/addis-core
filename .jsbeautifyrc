@@ -29,6 +29,7 @@
     "max_preserve_newlines": 4,
     "preserve_newlines": true,
     "unformatted": ["a", "sub", "sup", "b", "i", "u"],
-    "wrap_line_length": 80
+    "wrap_line_length": 80,
+    "wrap-attributes": "force"
   }
 }
