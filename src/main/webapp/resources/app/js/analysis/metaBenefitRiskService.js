@@ -3,7 +3,7 @@ define([], function() {
     var dependencies = [];
     var MetaBenefitRiskAnalysisService = function() {
 
-      function buildOutcomesWithAnalyses(outcome, analysis, networkMetaAnalyses) {
+      function buildOutcomesWithAnalyses(analysis, networkMetaAnalyses, outcome) {
         var outcomeAnalyses = networkMetaAnalyses.filter(function(nma) {
           return nma.outcome.id === outcome.id;
         });
@@ -33,8 +33,16 @@ define([], function() {
         };
       }
 
+      function joinModelsWithAnalysis(models, networkMetaAnalysis) {
+        networkMetaAnalysis.models = models.filter(function(model) {
+          return model.analysisId === networkMetaAnalysis.id;
+        });
+        return networkMetaAnalysis;
+      }
+
       return {
-        buildOutcomesWithAnalyses: buildOutcomesWithAnalyses
+        buildOutcomesWithAnalyses: buildOutcomesWithAnalyses,
+        joinModelsWithAnalysis: joinModelsWithAnalysis
       };
     };
 

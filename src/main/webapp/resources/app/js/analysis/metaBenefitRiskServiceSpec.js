@@ -47,7 +47,7 @@ define(['angular-mocks'], function(angularMocks) {
           selectedAnalysisId: 3
         };
 
-        var result = metaBenefitRiskService.buildOutcomesWithAnalyses(outcome, analysis, networkMetaAnalyses);
+        var result = metaBenefitRiskService.buildOutcomesWithAnalyses(analysis, networkMetaAnalyses, outcome);
 
         expect(result).toEqual(expectedResult);
       });
@@ -87,11 +87,21 @@ define(['angular-mocks'], function(angularMocks) {
           selectedAnalysisId: 3
         };
 
-        var result = metaBenefitRiskService.buildOutcomesWithAnalyses(outcome, analysis, networkMetaAnalyses);
+        var result = metaBenefitRiskService.buildOutcomesWithAnalyses(analysis, networkMetaAnalyses, outcome);
 
         expect(result).toEqual(expectedResult);
       });
+    });
 
+    describe('joinModelsWithAnalysis', function(){
+      it('should add the models to the analyses if they belong to it',function(){
+        var models = [{analysisId: 1}, {analysisId: 2}, {analysisId: 1}];
+        var analysis = {
+          id: 1
+        };
+        var result = metaBenefitRiskService.joinModelsWithAnalysis(models, analysis);
+        expect(result.models).toEqual([models[0], models[2]]);
+      });
     });
 
   });

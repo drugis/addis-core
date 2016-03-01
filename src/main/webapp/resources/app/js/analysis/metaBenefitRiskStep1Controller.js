@@ -1,17 +1,20 @@
 'use strict';
-define([], function() {
-  var dependencies = ['$scope', '$q', '$stateParams', 'AnalysisResource', 'InterventionResource', 'OutcomeResource', 'MetaBenefitRiskService'];
-  var MetBenefitRiskStep1Controller = function($scope, $q, $stateParams, AnalysisResource, InterventionResource, OutcomeResource, MetaBenefitRiskService) {
-    $scope.analysis = AnalysisResource.get($stateParams);
-    $scope.alternatives = InterventionResource.query($stateParams);
-    $scope.outcomes = OutcomeResource.query($stateParams);
+define(['lodash'], function(_) {
+  var dependencies = ['$scope', '$q', '$stateParams', 'AnalysisResource', 'InterventionResource', 'OutcomeResource', 'MetaBenefitRiskService', 'ModelResource'];
+  var MetBenefitRiskStep1Controller = function($scope, $q, $stateParams, AnalysisResource, InterventionResource, OutcomeResource, MetaBenefitRiskService, ModelResource) {
     $scope.updateAlternatives = updateAlternatives;
     $scope.updateMbrOutcomeInclusions = updateMbrOutcomeInclusions;
     $scope.updateAnalysesInclusions = updateAnalysesInclusions;
 
-    $q.all([$scope.analysis.$promise, $scope.outcomes.$promise]).then(function(result) {
+    $scope.analysis = AnalysisResource.get($stateParams);
+    $scope.alternatives = InterventionResource.query($stateParams);
+    $scope.outcomes = OutcomeResource.query($stateParams);
+    $scope.models = ModelResource.getConsistencyModels($stateParams);
+
+  $q.all([$scope.analysis.$promise, $scope.outcomes.$promise, $scope.models.$promise]).then(function(result) {
       var analysis = result[0];
       var outcomes = result[1];
+      var models   = result[2];
       var outcomeIds = outcomes.map(function(outcome) {
         return outcome.id;
       });
@@ -19,9 +22,8 @@ define([], function() {
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
-        $scope.outcomesWithAnalyses = outcomes.map(function(outcome) {
-          return MetaBenefitRiskService.buildOutcomesWithAnalyses(outcome, analysis, networkMetaAnalyses);
-        });
+        networkMetaAnalyses.map(_.partial(MetaBenefitRiskService.joinModelsWithAnalysis, models));
+        $scope.outcomesWithAnalyses = outcomes.map(_.partial(MetaBenefitRiskService.buildOutcomesWithAnalyses, analysis, networkMetaAnalyses));
       });
     });
 

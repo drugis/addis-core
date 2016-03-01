@@ -9,11 +9,13 @@ define(['angular-mocks'], function(angularMocks) {
       analysisResourceMock = jasmine.createSpyObj('AnalysisResource', ['get', 'query']),
       interventionResourceMock = jasmine.createSpyObj('InterventionResource', ['query']),
       outcomeResourceMock = jasmine.createSpyObj('OutcomeResource', ['query']),
+      modelResourceMock = jasmine.createSpyObj('OutcomeResource', ['getConsistencyModels']),
       analysisDefer,
       analysisQueryDefer,
       interventionDefer,
       outcomeDefer,
-      metaBenefitRiskService = jasmine.createSpyObj('MetaBenefitRiskService', ['buildOutcomesWithAnalyses']);
+      modelsDefer,
+      metaBenefitRiskService = jasmine.createSpyObj('MetaBenefitRiskService', ['joinModelsWithAnalysis', 'buildOutcomesWithAnalyses']);
 
     beforeEach(module('addis.analysis'));
 
@@ -25,6 +27,7 @@ define(['angular-mocks'], function(angularMocks) {
       analysisQueryDefer = q.defer();
       interventionDefer = q.defer();
       outcomeDefer = q.defer();
+      modelsDefer = q.defer();
 
       analysisResourceMock.get.and.returnValue({
         $promise: analysisDefer.promise
@@ -38,6 +41,9 @@ define(['angular-mocks'], function(angularMocks) {
       outcomeResourceMock.query.and.returnValue({
         $promise: outcomeDefer.promise
       });
+      modelResourceMock.getConsistencyModels.and.returnValue({
+        $promise: modelsDefer.promise
+      });
 
       metaBenefitRiskService.buildOutcomesWithAnalyses.and.returnValue([]);
 
@@ -48,7 +54,8 @@ define(['angular-mocks'], function(angularMocks) {
         AnalysisResource: analysisResourceMock,
         InterventionResource: interventionResourceMock,
         OutcomeResource: outcomeResourceMock,
-        MetaBenefitRiskService: metaBenefitRiskService
+        MetaBenefitRiskService: metaBenefitRiskService,
+        ModelResource: modelResourceMock
       });
 
     }));
@@ -89,6 +96,7 @@ define(['angular-mocks'], function(angularMocks) {
         interventionDefer.resolve(interventions);
         outcomeDefer.resolve(outcomes);
         analysisQueryDefer.resolve(networkAnalyses);
+        modelsDefer.resolve([]);
         scope.$digest();
       });
 
