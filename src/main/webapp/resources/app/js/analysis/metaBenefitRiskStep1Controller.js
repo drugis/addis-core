@@ -7,6 +7,7 @@ define([], function() {
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.updateAlternatives = updateAlternatives;
     $scope.updateMbrOutcomeInclusions = updateMbrOutcomeInclusions;
+    $scope.updateAnalysesInclusions = updateAnalysesInclusions;
 
     $q.all([$scope.analysis.$promise, $scope.outcomes.$promise]).then(function(result) {
       var analysis = result[0];
@@ -60,7 +61,7 @@ define([], function() {
       $scope.analysis.$save();
     }
 
-    function initAnalyisRadios(outcomeWithAnalyses) {
+    function initAnalysisRadios(outcomeWithAnalyses) {
       if (outcomeWithAnalyses.outcome.isIncluded) {
         outcomeWithAnalyses.selectedAnalysisId = outcomeWithAnalyses.networkMetaAnalyses[0].id;
       } else {
@@ -68,10 +69,16 @@ define([], function() {
       }
     }
 
-    function updateMbrOutcomeInclusions(outcomeWithAnalyses) {
+    function updateAnalysesInclusions() {
+      buildInclusions();
+    }
 
-      initAnalyisRadios(outcomeWithAnalyses);
+    function updateMbrOutcomeInclusions(changedOutcome) {
+      initAnalysisRadios(changedOutcome);
+      buildInclusions();
+    }
 
+    function buildInclusions() {
       $scope.analysis.mbrOutcomeInclusions = $scope.outcomesWithAnalyses.filter(function(outcomeWithAnalyses) {
         return outcomeWithAnalyses.outcome.isIncluded;
       }).map(function(outcomeWithAnalyses) {
@@ -83,7 +90,6 @@ define([], function() {
       });
       $scope.analysis.$save();
     }
-
 
   };
   return dependencies.concat(MetBenefitRiskStep1Controller);

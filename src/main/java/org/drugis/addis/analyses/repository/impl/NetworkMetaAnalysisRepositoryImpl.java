@@ -52,7 +52,7 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
   }
 
   @Override
-  public Collection<NetworkMetaAnalysis> queryByOutcomes(Integer projectId, List<Integer> outcomeIds) {
+  public List<NetworkMetaAnalysis> queryByOutcomes(Integer projectId, List<Integer> outcomeIds) {
     if(outcomeIds == null || outcomeIds.isEmpty()) {
       return Collections.emptyList();
     } else {

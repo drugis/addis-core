@@ -12,7 +12,8 @@ define(['angular-mocks'], function(angularMocks) {
       analysisDefer,
       analysisQueryDefer,
       interventionDefer,
-      outcomeDefer;
+      outcomeDefer,
+      metaBenefitRiskService = jasmine.createSpyObj('MetaBenefitRiskService', ['buildOutcomesWithAnalyses']);
 
     beforeEach(module('addis.analysis'));
 
@@ -38,18 +39,21 @@ define(['angular-mocks'], function(angularMocks) {
         $promise: outcomeDefer.promise
       });
 
+      metaBenefitRiskService.buildOutcomesWithAnalyses.and.returnValue([]);
+
       $controller('MetaBenefitRiskStep1Controller', {
         $scope: scope,
         $q: q,
         $stateParams: stateParamsMock,
         AnalysisResource: analysisResourceMock,
         InterventionResource: interventionResourceMock,
-        OutcomeResource: outcomeResourceMock
+        OutcomeResource: outcomeResourceMock,
+        MetaBenefitRiskService: metaBenefitRiskService
       });
 
     }));
 
-    describe('when the crap has loaded', function() {
+    describe('when the analysis, outcomes and alternatives are loaded', function() {
       beforeEach(function() {
         var analysis = {
           includedAlternatives: [{
@@ -87,47 +91,83 @@ define(['angular-mocks'], function(angularMocks) {
         analysisQueryDefer.resolve(networkAnalyses);
         scope.$digest();
       });
-      it('should set included alternatives isIncluded to true', function() {
-        expect(scope.alternatives[0].isIncluded).toBeTruthy();
-        expect(scope.alternatives[1].isIncluded).toBeFalsy();
-      });
-      it('should set included outcomes isIncluded to true', function() {
-        expect(scope.outcomes[0].isIncluded).toBeTruthy();
-        expect(scope.outcomes[1].isIncluded).toBeFalsy();
-      });
-      it('should query the network analyses', function() {
-        expect(analysisResourceMock.query).toHaveBeenCalledWith({
-          projectId: 1,
-          outcomeIds: [1, 2]
-        });
-      });
-      it('should filter and join the networkAnalyses with the outcomes', function() {
 
-        var expectedOutcomesWithAnlyses = [{
-          outcome: {
-            id: 1,
-            isIncluded: true
-          },
-          analyses: [{
-            outcome: {
-              id: 1
-            }
-          }]
-        }, {
-          outcome: {
-            id: 2
-          },
-          analyses: [{
-            outcome: {
-              id: 2
-            }
-          }]
-        }];
-
-        expect(scope.outcomesWithAnalyses).toEqual(expectedOutcomesWithAnlyses);
+      it('should build the outcomesWithAnalyses', function() {
+        expect(metaBenefitRiskService.buildOutcomesWithAnalyses).toHaveBeenCalled();
       });
 
     });
+
+    describe('when updateMbrOutcomeInclusions is called by checking the outcome', function() {
+      var outcomeWithAnalysis;
+      beforeEach(function() {
+        outcomeWithAnalysis = {
+          outcome: {
+            id: 3,
+            isIncluded: true
+          },
+          networkMetaAnalyses: [{
+            id: 5
+          }]
+        };
+        scope.analysis = {
+          id: 1,
+          $save: function() {}
+        };
+        scope.outcomesWithAnalyses = [outcomeWithAnalysis];
+
+        scope.updateMbrOutcomeInclusions(outcomeWithAnalysis);
+      });
+
+      it('should select the first analysis belonging to the outcome', function() {
+        expect(outcomeWithAnalysis.selectedAnalysisId).toBe(5);
+      });
+
+      it('should build the metabenefitrisk analysis inclusions', function() {
+        expect(scope.analysis.mbrOutcomeInclusions).toEqual([{
+          metaBenefitRiskAnalysisId: 1,
+          outcomeId: 3,
+          networkMetaAnalysisId: 5
+        }]);
+      });
+    });
+
+
+    describe('when updateMbrOutcomeInclusions is called by UNchecking the outcome', function() {
+      var outcomeWithAnalysis;
+      beforeEach(function() {
+        outcomeWithAnalysis = {
+          outcome: {
+            id: 3,
+            isIncluded: false
+          },
+          networkMetaAnalyses: [{
+            id: 5
+          }]
+        };
+        scope.analysis = {
+          id: 1,
+          mbrOutcomeInclusions: [{
+            metaBenefitRiskAnalysisId: 1,
+            outcomeId: 3,
+            networkMetaAnalysisId: 5
+          }],
+          $save: function() {}
+        };
+        scope.outcomesWithAnalyses = [outcomeWithAnalysis];
+
+        scope.updateMbrOutcomeInclusions(outcomeWithAnalysis);
+      });
+
+      it('should unselect the analysis belonging to the outcome', function() {
+        expect(outcomeWithAnalysis.selectedAnalysisId).toBeUndefined();
+      });
+
+      it('should remove the unchecked outcome', function() {
+        expect(scope.analysis.mbrOutcomeInclusions).toEqual([]);
+      });
+    });
+
 
   });
 });

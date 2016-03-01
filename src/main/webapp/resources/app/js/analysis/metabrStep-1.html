@@ -49,7 +49,7 @@
           <div class="outcome-analyses" ng-repeat="networkMetaAnalysis in outcomeWithAnalyses.networkMetaAnalyses">
             <div class="analysis">
               <label>
-                <input ng-model="outcomeWithAnalyses.selectedAnalysisId" ng-change="changeSelectedOutcomeAnalysis()"
+                <input ng-model="outcomeWithAnalyses.selectedAnalysisId" ng-change="updateAnalysesInclusions()"
                 type="radio" ng-value="networkMetaAnalysis.id" ng-disabled="!outcomeWithAnalyses.outcome.isIncluded"> {{networkMetaAnalysis.title}}
               </label>
             </div>

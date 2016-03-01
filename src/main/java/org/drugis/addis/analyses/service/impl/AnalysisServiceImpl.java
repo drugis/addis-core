@@ -17,6 +17,10 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
@@ -104,6 +108,23 @@ public class AnalysisServiceImpl implements AnalysisService {
         }
       }
     }
+  }
+
+  @Override
+  public List<MbrOutcomeInclusion> buildInitialOutcomeInclusions(Integer projectId, Integer metabenefitRiskAnalysisId) {
+    Collection<Outcome> outcomes = outcomeRepository.query(projectId);
+    List<Integer> outcomeIds = outcomes.stream()
+            .map(Outcome::getId)
+            .collect(Collectors.toList());
+    List<NetworkMetaAnalysis> networkMetaAnalyses = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
+    return outcomes.stream()
+            .filter(o -> networkMetaAnalyses
+                    .stream()
+                    .filter(nma -> nma.getOutcome() != null && Objects.equals(nma.getOutcome().getId(), o.getId()))
+                    .findFirst()
+                    .isPresent())
+            .map(o -> new MbrOutcomeInclusion(metabenefitRiskAnalysisId, o.getId(), networkMetaAnalyses.get(0).getId()))
+            .collect(Collectors.toList());
   }
 
   @Override

@@ -1,6 +1,6 @@
 'use strict';
 define(['angular-mocks'], function(angularMocks) {
-  fdescribe('meta-benefit-risk service', function() {
+  describe('meta-benefit-risk service', function() {
     var metaBenefitRiskService;
 
     beforeEach(angularMocks.module('addis.analysis'));

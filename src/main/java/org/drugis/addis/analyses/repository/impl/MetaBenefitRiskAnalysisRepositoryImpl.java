@@ -1,6 +1,7 @@
 package org.drugis.addis.analyses.repository.impl;
 
 import org.drugis.addis.analyses.AnalysisCommand;
+import org.drugis.addis.analyses.MbrOutcomeInclusion;
 import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
@@ -55,6 +56,10 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
     metaBenefitRiskAnalysis.setIncludedAlternatives(interventions);
 
     em.persist(metaBenefitRiskAnalysis);
+
+    List<MbrOutcomeInclusion> outcomeInclusions = analysisService.buildInitialOutcomeInclusions(analysisCommand.getProjectId(), metaBenefitRiskAnalysis.getId());
+    metaBenefitRiskAnalysis.setMbrOutcomeInclusions(outcomeInclusions);
+
     return metaBenefitRiskAnalysis;
   }
 

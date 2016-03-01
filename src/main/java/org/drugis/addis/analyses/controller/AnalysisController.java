@@ -62,9 +62,9 @@ public class AnalysisController extends AbstractAddisCoreController {
   public NetworkMetaAnalysis[] queryNetworkMetaAnalysisByOutcomes(Principal currentUser, @PathVariable Integer projectId, @RequestParam(name = "outcomeIds", required=false) List<Integer> outcomeIds) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      Collection<NetworkMetaAnalysis> networkMetaAnalysises = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
-      NetworkMetaAnalysis[] networkMetaAnalysisesArray = new NetworkMetaAnalysis[networkMetaAnalysises.size()];
-      return networkMetaAnalysises.toArray(networkMetaAnalysisesArray);
+      Collection<NetworkMetaAnalysis> networkMetaAnalyses = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
+      NetworkMetaAnalysis[] networkMetaAnalysesArray = new NetworkMetaAnalysis[networkMetaAnalyses.size()];
+      return networkMetaAnalyses.toArray(networkMetaAnalysesArray);
     } else {
       throw new MethodNotAllowedException();
     }

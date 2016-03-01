@@ -1,6 +1,7 @@
 package org.drugis.addis.analyses;
 
 import org.drugis.addis.analyses.repository.AnalysisRepository;
+import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.analyses.service.impl.AnalysisServiceImpl;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -10,18 +11,20 @@ import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
 import org.drugis.addis.models.exceptions.InvalidModelTypeException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
+import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
+import org.drugis.addis.trialverse.model.SemanticOutcome;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -36,9 +39,14 @@ public class AnalysisServiceTest {
   @Mock
   ModelRepository modelRepository;
 
+  @Mock
+  OutcomeRepository outcomeRepository;
+
+  @Mock
+  private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
+
   @InjectMocks
   private AnalysisService analysisService;
-
   private Integer projectId = 3;
   private Integer analysisId = 2;
 
@@ -135,5 +143,37 @@ public class AnalysisServiceTest {
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
     analysisService.updateNetworkMetaAnalysis(user, analysis);
   }
+
+  @Test
+  public void testBuildInitialOutcomeInclusionsCheckNmaNoOutcome(){
+    Integer projectId = 1;
+    Integer metabenefitRiskAnalysisId = 1;
+    Integer outcomeId = 1;
+
+    Collection<Outcome> outcomes = Arrays.asList(new Outcome(outcomeId, 1, "name", "moti", new SemanticOutcome("uri", "label")));
+    when(outcomeRepository.query(projectId)).thenReturn(outcomes);
+    List<NetworkMetaAnalysis> analyses = Arrays.asList(new NetworkMetaAnalysis(analysisId, "title"));
+    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Arrays.asList(1))).thenReturn(analyses);
+    List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
+    assertTrue(result.isEmpty());
+  }
+
+  @Test
+  public void testBuildInitialOutcomeInclusions(){
+    Integer projectId = 1;
+    Integer metabenefitRiskAnalysisId = 1;
+    Integer outcomeId = 1;
+    Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticOutcome("uri", "label"));
+    Collection<Outcome> outcomes = Arrays.asList(outcome);
+    List<NetworkMetaAnalysis> analyses = Arrays.asList(new NetworkMetaAnalysis(analysisId, projectId, "tittle", outcome));
+
+    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Arrays.asList(1))).thenReturn(analyses);
+    when(outcomeRepository.query(projectId)).thenReturn(outcomes);
+
+    List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
+
+    assertEquals(Arrays.asList(new MbrOutcomeInclusion(metabenefitRiskAnalysisId, 1, analysisId)), result);
+  }
+
 
 }
