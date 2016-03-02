@@ -40,7 +40,8 @@
       <div class="checkbox-group">
         <div class="outcome-item" ng-repeat="outcomeWithAnalyses in outcomesWithAnalyses">
           <label>
-            <input type="checkbox" ng-model="outcomeWithAnalyses.outcome.isIncluded" ng-disabled="!outcomeWithAnalyses.networkMetaAnalyses.length"
+            <input type="checkbox" ng-model="outcomeWithAnalyses.outcome.isIncluded"
+            ng-disabled="isOutcomeDisabled(outcomeWithAnalyses)"
             name="{{outcomeWithAnalyses.outcome.name}}" ng-change="updateMbrOutcomeInclusions(outcomeWithAnalyses)"> {{outcomeWithAnalyses.outcome.name}}
           </label>
           <div class="outcome-analyses" ng-repeat="networkMetaAnalysis in outcomeWithAnalyses.networkMetaAnalyses">

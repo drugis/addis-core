@@ -1,20 +1,24 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$q', '$stateParams', 'AnalysisResource', 'InterventionResource', 'OutcomeResource', 'MetaBenefitRiskService', 'ModelResource'];
-  var MetBenefitRiskStep1Controller = function($scope, $q, $stateParams, AnalysisResource, InterventionResource, OutcomeResource, MetaBenefitRiskService, ModelResource) {
+  var dependencies = ['$scope', '$q', '$stateParams', 'AnalysisResource', 'InterventionResource',
+    'OutcomeResource', 'MetaBenefitRiskService', 'ModelResource'
+  ];
+  var MetBenefitRiskStep1Controller = function($scope, $q, $stateParams, AnalysisResource, InterventionResource,
+    OutcomeResource, MetaBenefitRiskService, ModelResource) {
     $scope.updateAlternatives = updateAlternatives;
     $scope.updateMbrOutcomeInclusions = updateMbrOutcomeInclusions;
     $scope.updateAnalysesInclusions = updateAnalysesInclusions;
+    $scope.isOutcomeDisabled = isOutcomeDisabled;
 
     $scope.analysis = AnalysisResource.get($stateParams);
     $scope.alternatives = InterventionResource.query($stateParams);
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.models = ModelResource.getConsistencyModels($stateParams);
 
-  $q.all([$scope.analysis.$promise, $scope.outcomes.$promise, $scope.models.$promise]).then(function(result) {
+    $q.all([$scope.analysis.$promise, $scope.outcomes.$promise, $scope.models.$promise]).then(function(result) {
       var analysis = result[0];
       var outcomes = result[1];
-      var models   = result[2];
+      var models = result[2];
       var outcomeIds = outcomes.map(function(outcome) {
         return outcome.id;
       });
@@ -23,7 +27,12 @@ define(['lodash'], function(_) {
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
         networkMetaAnalyses.map(_.partial(MetaBenefitRiskService.joinModelsWithAnalysis, models));
-        $scope.outcomesWithAnalyses = outcomes.map(_.partial(MetaBenefitRiskService.buildOutcomesWithAnalyses, analysis, networkMetaAnalyses));
+        $scope.outcomesWithAnalyses = outcomes
+          .map(_.partial(MetaBenefitRiskService.buildOutcomesWithAnalyses, analysis, networkMetaAnalyses))
+          .map(function(owa) {
+            owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
+            return owa;
+          });
       });
     });
 
@@ -56,6 +65,11 @@ define(['lodash'], function(_) {
       });
     });
 
+    function isOutcomeDisabled(outcomeWithAnalyses) {
+      return !outcomeWithAnalyses.networkMetaAnalyses.length ||
+        !hasSelectableAnalysis(outcomeWithAnalyses);
+    }
+
     function updateAlternatives() {
       $scope.analysis.includedAlternatives = $scope.alternatives.filter(function(alternative) {
         return alternative.isIncluded;
@@ -64,11 +78,16 @@ define(['lodash'], function(_) {
     }
 
     function initAnalysisRadios(outcomeWithAnalyses) {
-      if (outcomeWithAnalyses.outcome.isIncluded) {
+      if (hasSelectableAnalysis(outcomeWithAnalyses) && outcomeWithAnalyses.outcome.isIncluded) {
         outcomeWithAnalyses.selectedAnalysisId = outcomeWithAnalyses.networkMetaAnalyses[0].id;
       } else {
         outcomeWithAnalyses.selectedAnalysisId = undefined;
       }
+    }
+
+    function hasSelectableAnalysis(outcomeWithAnalyses) {
+      var firstAnalysis = outcomeWithAnalyses.networkMetaAnalyses[0];
+      return firstAnalysis && firstAnalysis.models.length;
     }
 
     function updateAnalysesInclusions() {

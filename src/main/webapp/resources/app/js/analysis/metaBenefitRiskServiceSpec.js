@@ -93,9 +93,15 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
-    describe('joinModelsWithAnalysis', function(){
-      it('should add the models to the analyses if they belong to it',function(){
-        var models = [{analysisId: 1}, {analysisId: 2}, {analysisId: 1}];
+    describe('joinModelsWithAnalysis', function() {
+      it('should add the models to the analyses if they belong to it', function() {
+        var models = [{
+          analysisId: 1
+        }, {
+          analysisId: 2
+        }, {
+          analysisId: 1
+        }];
         var analysis = {
           id: 1
         };
@@ -104,5 +110,37 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
+    describe('compareAnalysesByModels', function() {
+      it('should place analyses with models before those without', function() {
+        var a = {
+          models: [1]
+        };
+        var b = {
+          models: []
+        };
+        expect(metaBenefitRiskService.compareAnalysesByModels(a, b)).toBe(-1);
+        expect(metaBenefitRiskService.compareAnalysesByModels(b, a)).toBe(1);
+      });
+      it('should do nothing if both analyses have models', function() {
+        var a = {
+          models: [1]
+        };
+        var b = {
+          models: [1]
+        };
+        expect(metaBenefitRiskService.compareAnalysesByModels(a, b)).toBe(0);
+        expect(metaBenefitRiskService.compareAnalysesByModels(b, a)).toBe(0);
+      });
+      it('should do nothing if neither analysis has a model', function() {
+        var a = {
+          models: []
+        };
+        var b = {
+          models: []
+        };
+        expect(metaBenefitRiskService.compareAnalysesByModels(a, b)).toBe(0);
+        expect(metaBenefitRiskService.compareAnalysesByModels(b, a)).toBe(0);
+      });
+    });
   });
 });

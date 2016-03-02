@@ -8,6 +8,7 @@ import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.models.Model;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
@@ -117,14 +118,24 @@ public class AnalysisServiceImpl implements AnalysisService {
             .map(Outcome::getId)
             .collect(Collectors.toList());
     List<NetworkMetaAnalysis> networkMetaAnalyses = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
+    List<Model> models = modelRepository.findNetworkModelsByProject(projectId);
     return outcomes.stream()
             .filter(o -> networkMetaAnalyses
                     .stream()
                     .filter(nma -> nma.getOutcome() != null && Objects.equals(nma.getOutcome().getId(), o.getId()))
+                    .filter(nma -> analysisHasModel(models, nma))
                     .findFirst()
                     .isPresent())
             .map(o -> new MbrOutcomeInclusion(metabenefitRiskAnalysisId, o.getId(), networkMetaAnalyses.get(0).getId()))
             .collect(Collectors.toList());
+  }
+
+  private boolean analysisHasModel(List<Model> models, NetworkMetaAnalysis nma) {
+    return models
+            .stream()
+            .filter(m -> m.getAnalysisId().equals(nma.getId()))
+            .findFirst()
+            .isPresent();
   }
 
   @Override

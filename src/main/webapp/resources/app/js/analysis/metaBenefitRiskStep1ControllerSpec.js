@@ -1,6 +1,6 @@
 'use strict';
 define(['angular-mocks'], function(angularMocks) {
-  describe('meta benefit-risk step 1 controller', function() {
+  fdescribe('meta benefit-risk step 1 controller', function() {
 
     var scope, q,
       stateParamsMock = {
@@ -15,7 +15,10 @@ define(['angular-mocks'], function(angularMocks) {
       interventionDefer,
       outcomeDefer,
       modelsDefer,
-      metaBenefitRiskService = jasmine.createSpyObj('MetaBenefitRiskService', ['joinModelsWithAnalysis', 'buildOutcomesWithAnalyses']);
+      metaBenefitRiskService = jasmine.createSpyObj('MetaBenefitRiskService', [
+        'compareAnalysesByModels',
+        'joinModelsWithAnalysis',
+        'buildOutcomesWithAnalyses']);
 
     beforeEach(module('addis.analysis'));
 
@@ -45,7 +48,7 @@ define(['angular-mocks'], function(angularMocks) {
         $promise: modelsDefer.promise
       });
 
-      metaBenefitRiskService.buildOutcomesWithAnalyses.and.returnValue([]);
+      metaBenefitRiskService.compareAnalysesByModels.and.returnValue(0);
 
       $controller('MetaBenefitRiskStep1Controller', {
         $scope: scope,
@@ -62,45 +65,22 @@ define(['angular-mocks'], function(angularMocks) {
 
     describe('when the analysis, outcomes and alternatives are loaded', function() {
       beforeEach(function() {
-        var analysis = {
-          includedAlternatives: [{
-            id: 1
-          }],
-          mbrOutcomeInclusions: [{
-            outcome: {
-              id: 1
-            },
-            networkMetaAnalysis: undefined
-          }]
-        };
-        var interventions = [{
-          id: 1
-        }, {
-          id: 2
-        }];
-        var outcomes = [{
-          id: 1
-        }, {
-          id: 2
-        }];
-        var networkAnalyses = [{
-          outcome: {
-            id: 1
-          }
-        }, {
-          outcome: {
-            id: 2
-          }
-        }];
-        analysisDefer.resolve(analysis);
-        interventionDefer.resolve(interventions);
-        outcomeDefer.resolve(outcomes);
-        analysisQueryDefer.resolve(networkAnalyses);
+        metaBenefitRiskService.buildOutcomesWithAnalyses.and.returnValue({
+          networkMetaAnalyses: []
+        });
+
+        analysisDefer.resolve({
+          mbrOutcomeInclusions: []
+        });
+        interventionDefer.resolve([]);
+        outcomeDefer.resolve([{}]);
+        analysisQueryDefer.resolve([{}]);
         modelsDefer.resolve([]);
         scope.$digest();
       });
 
       it('should build the outcomesWithAnalyses', function() {
+        expect(metaBenefitRiskService.joinModelsWithAnalysis).toHaveBeenCalled();
         expect(metaBenefitRiskService.buildOutcomesWithAnalyses).toHaveBeenCalled();
       });
 
@@ -115,7 +95,8 @@ define(['angular-mocks'], function(angularMocks) {
             isIncluded: true
           },
           networkMetaAnalyses: [{
-            id: 5
+            id: 5,
+            models: [{}]
           }]
         };
         scope.analysis = {
@@ -140,7 +121,6 @@ define(['angular-mocks'], function(angularMocks) {
       });
     });
 
-
     describe('when updateMbrOutcomeInclusions is called by UNchecking the outcome', function() {
       var outcomeWithAnalysis;
       beforeEach(function() {
@@ -150,8 +130,10 @@ define(['angular-mocks'], function(angularMocks) {
             isIncluded: false
           },
           networkMetaAnalyses: [{
-            id: 5
-          }]
+            id: 5,
+            models: []
+          }],
+          selectedAnalysisId: 1
         };
         scope.analysis = {
           id: 1,

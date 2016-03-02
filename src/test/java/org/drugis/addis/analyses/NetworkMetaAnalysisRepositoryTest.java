@@ -65,7 +65,7 @@ public class NetworkMetaAnalysisRepositoryTest {
     Collection<NetworkMetaAnalysis> result = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
     NetworkMetaAnalysis expectedAnalysis = em.find(NetworkMetaAnalysis.class, analysisId);
     assertTrue(result.contains(expectedAnalysis));
-    assertEquals(1, result.size());
+    assertEquals(2, result.size());
     assertEquals((Integer) 1, new ArrayList<>(result).get(0).getOutcome().getId());
   }
 

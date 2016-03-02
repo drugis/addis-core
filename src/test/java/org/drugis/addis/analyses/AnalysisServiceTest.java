@@ -148,26 +148,33 @@ public class AnalysisServiceTest {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
-
     Collection<Outcome> outcomes = Arrays.asList(new Outcome(outcomeId, 1, "name", "moti", new SemanticOutcome("uri", "label")));
-    when(outcomeRepository.query(projectId)).thenReturn(outcomes);
     List<NetworkMetaAnalysis> analyses = Arrays.asList(new NetworkMetaAnalysis(analysisId, "title"));
+
+    when(outcomeRepository.query(projectId)).thenReturn(outcomes);
     when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Arrays.asList(1))).thenReturn(analyses);
+
     List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
+
     assertTrue(result.isEmpty());
   }
 
   @Test
-  public void testBuildInitialOutcomeInclusions(){
+  public void testBuildInitialOutcomeInclusions() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
     Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticOutcome("uri", "label"));
     Collection<Outcome> outcomes = Arrays.asList(outcome);
-    List<NetworkMetaAnalysis> analyses = Arrays.asList(new NetworkMetaAnalysis(analysisId, projectId, "tittle", outcome));
+    String tittle = "tittle";
+    List<NetworkMetaAnalysis> analyses = Arrays.asList(new NetworkMetaAnalysis(analysisId, projectId, tittle, outcome),
+            new NetworkMetaAnalysis(4, projectId, tittle, outcome));
+    List<Model> models = Arrays.asList(new Model.ModelBuilder(analysisId, tittle).modelType(Model.NETWORK_MODEL_TYPE).build(),
+            new Model.ModelBuilder(3, tittle).modelType(Model.NETWORK_MODEL_TYPE).build());
 
     when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Arrays.asList(1))).thenReturn(analyses);
     when(outcomeRepository.query(projectId)).thenReturn(outcomes);
+    when(modelRepository.findNetworkModelsByProject(projectId)).thenReturn(models);
 
     List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
 

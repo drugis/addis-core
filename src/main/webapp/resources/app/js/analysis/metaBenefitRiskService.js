@@ -40,7 +40,23 @@ define([], function() {
         return networkMetaAnalysis;
       }
 
+      function compareAnalysesByModels(a, b) {
+        if(a.models.length > 0) {
+          if (!b.models.length) {
+            return -1;
+          } else {
+            return 0;
+          }
+        } else {
+          if (b.models.length > 0) {
+            return 1;
+          }
+        }
+        return 0;
+      }
+
       return {
+        compareAnalysesByModels: compareAnalysesByModels,
         buildOutcomesWithAnalyses: buildOutcomesWithAnalyses,
         joinModelsWithAnalysis: joinModelsWithAnalysis
       };
