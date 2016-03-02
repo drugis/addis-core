@@ -9,6 +9,7 @@ define(['lodash'], function(_) {
     $scope.updateMbrOutcomeInclusions = updateMbrOutcomeInclusions;
     $scope.updateAnalysesInclusions = updateAnalysesInclusions;
     $scope.isOutcomeDisabled = isOutcomeDisabled;
+    $scope.updateModelSelection = updateModelSelection;
 
     $scope.analysis = AnalysisResource.get($stateParams);
     $scope.alternatives = InterventionResource.query($stateParams);
@@ -26,9 +27,11 @@ define(['lodash'], function(_) {
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
       }).$promise.then(function(networkMetaAnalyses) {
-        networkMetaAnalyses.map(_.partial(MetaBenefitRiskService.joinModelsWithAnalysis, models));
+        networkMetaAnalyses = networkMetaAnalyses
+          .map(_.partial(MetaBenefitRiskService.joinModelsWithAnalysis, models))
+          .map(MetaBenefitRiskService.addModelsGroup);
         $scope.outcomesWithAnalyses = outcomes
-          .map(_.partial(MetaBenefitRiskService.buildOutcomesWithAnalyses, analysis, networkMetaAnalyses))
+          .map(_.partial(MetaBenefitRiskService.buildOutcomesWithAnalyses, analysis, networkMetaAnalyses, models))
           .map(function(owa) {
             owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
             return owa;
@@ -77,12 +80,15 @@ define(['lodash'], function(_) {
       $scope.analysis.$save();
     }
 
-    function initAnalysisRadios(outcomeWithAnalyses) {
+    function changeAnalysisSelection(outcomeWithAnalyses) {
+      var analysis;
       if (hasSelectableAnalysis(outcomeWithAnalyses) && outcomeWithAnalyses.outcome.isIncluded) {
-        outcomeWithAnalyses.selectedAnalysisId = outcomeWithAnalyses.networkMetaAnalyses[0].id;
+        analysis = outcomeWithAnalyses.networkMetaAnalyses[0];
+        outcomeWithAnalyses.selectedAnalysisId = analysis.id;
       } else {
         outcomeWithAnalyses.selectedAnalysisId = undefined;
       }
+      return analysis;
     }
 
     function hasSelectableAnalysis(outcomeWithAnalyses) {
@@ -90,12 +96,32 @@ define(['lodash'], function(_) {
       return firstAnalysis && firstAnalysis.models.length;
     }
 
-    function updateAnalysesInclusions() {
+    function changeModelSelection(selectedNma, changedOutcome) {
+      if (selectedNma && changedOutcome.selectedAnalysisId !== undefined) {
+        var primaryModel = selectedNma.models.find(function(model) {
+          return model.id === selectedNma.primaryModel;
+        });
+        if (primaryModel) {
+          changedOutcome.selectedModel = primaryModel;
+        } else {
+          changedOutcome.selectedModel = selectedNma.models[0];
+        }
+      } else {
+        changedOutcome.selectedModel = undefined;
+      }
+    }
+
+    function updateAnalysesInclusions(analysis, changedOutcome) {
+      changeModelSelection(analysis, changedOutcome);
       buildInclusions();
     }
 
     function updateMbrOutcomeInclusions(changedOutcome) {
-      initAnalysisRadios(changedOutcome);
+      var selectedAnalysis = changeAnalysisSelection(changedOutcome);
+      updateAnalysesInclusions(selectedAnalysis, changedOutcome);
+    }
+
+    function updateModelSelection() {
       buildInclusions();
     }
 
@@ -106,7 +132,8 @@ define(['lodash'], function(_) {
         return {
           metaBenefitRiskAnalysisId: $scope.analysis.id,
           outcomeId: outcomeWithAnalyses.outcome.id,
-          networkMetaAnalysisId: outcomeWithAnalyses.selectedAnalysisId
+          networkMetaAnalysisId: outcomeWithAnalyses.selectedAnalysisId,
+          modelId: outcomeWithAnalyses.selectedModel.id
         };
       });
       $scope.analysis.$save();

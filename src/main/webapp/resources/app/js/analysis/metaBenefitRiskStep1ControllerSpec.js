@@ -1,6 +1,6 @@
 'use strict';
 define(['angular-mocks'], function(angularMocks) {
-  fdescribe('meta benefit-risk step 1 controller', function() {
+  describe('meta benefit-risk step 1 controller', function() {
 
     var scope, q,
       stateParamsMock = {
@@ -16,9 +16,11 @@ define(['angular-mocks'], function(angularMocks) {
       outcomeDefer,
       modelsDefer,
       metaBenefitRiskService = jasmine.createSpyObj('MetaBenefitRiskService', [
+        'addModelsGroup',
         'compareAnalysesByModels',
         'joinModelsWithAnalysis',
-        'buildOutcomesWithAnalyses']);
+        'buildOutcomesWithAnalyses'
+      ]);
 
     beforeEach(module('addis.analysis'));
 
@@ -49,6 +51,7 @@ define(['angular-mocks'], function(angularMocks) {
       });
 
       metaBenefitRiskService.compareAnalysesByModels.and.returnValue(0);
+      metaBenefitRiskService.joinModelsWithAnalysis.and.returnValue([]);
 
       $controller('MetaBenefitRiskStep1Controller', {
         $scope: scope,
@@ -81,6 +84,7 @@ define(['angular-mocks'], function(angularMocks) {
 
       it('should build the outcomesWithAnalyses', function() {
         expect(metaBenefitRiskService.joinModelsWithAnalysis).toHaveBeenCalled();
+        expect(metaBenefitRiskService.addModelsGroup).toHaveBeenCalled();
         expect(metaBenefitRiskService.buildOutcomesWithAnalyses).toHaveBeenCalled();
       });
 
@@ -96,7 +100,9 @@ define(['angular-mocks'], function(angularMocks) {
           },
           networkMetaAnalyses: [{
             id: 5,
-            models: [{}]
+            models: [{
+              id: 1
+            }]
           }]
         };
         scope.analysis = {
@@ -116,7 +122,8 @@ define(['angular-mocks'], function(angularMocks) {
         expect(scope.analysis.mbrOutcomeInclusions).toEqual([{
           metaBenefitRiskAnalysisId: 1,
           outcomeId: 3,
-          networkMetaAnalysisId: 5
+          networkMetaAnalysisId: 5,
+          modelId: 1
         }]);
       });
     });

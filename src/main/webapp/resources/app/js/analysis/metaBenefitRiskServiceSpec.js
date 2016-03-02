@@ -19,7 +19,8 @@ define(['angular-mocks'], function(angularMocks) {
           id: 7,
           mbrOutcomeInclusions: [{
             outcomeId: 1,
-            networkMetaAnalysisId: 3
+            networkMetaAnalysisId: 3,
+            modelId: 1
           }]
         };
         var networkMetaAnalyses = [{
@@ -29,6 +30,10 @@ define(['angular-mocks'], function(angularMocks) {
           id: 5,
           outcome: outcome
         }];
+        var models = [
+          {id: 1},
+          {id: 2}
+        ];
         var expectedResult = {
           outcome: outcome,
           networkMetaAnalyses: [{
@@ -44,50 +49,11 @@ define(['angular-mocks'], function(angularMocks) {
               isIncluded: true
             }
           }],
-          selectedAnalysisId: 3
+          selectedAnalysisId: 3,
+          selectedModel: models[0]
         };
 
-        var result = metaBenefitRiskService.buildOutcomesWithAnalyses(analysis, networkMetaAnalyses, outcome);
-
-        expect(result).toEqual(expectedResult);
-      });
-
-      it('should include the first analysis if no inclusions are set', function() {
-        var outcome = {
-          id: 1,
-          isIncluded: true
-        };
-        var analysis = {
-          id: 7,
-          mbrOutcomeInclusions: []
-        };
-        var networkMetaAnalyses = [{
-          id: 3,
-          outcome: outcome
-        }, {
-          id: 5,
-          outcome: outcome
-        }];
-
-        var expectedResult = {
-          outcome: outcome,
-          networkMetaAnalyses: [{
-            id: 3,
-            outcome: {
-              id: 1,
-              isIncluded: true
-            }
-          }, {
-            id: 5,
-            outcome: {
-              id: 1,
-              isIncluded: true
-            }
-          }],
-          selectedAnalysisId: 3
-        };
-
-        var result = metaBenefitRiskService.buildOutcomesWithAnalyses(analysis, networkMetaAnalyses, outcome);
+        var result = metaBenefitRiskService.buildOutcomesWithAnalyses(analysis, networkMetaAnalyses, models ,outcome);
 
         expect(result).toEqual(expectedResult);
       });
@@ -140,6 +106,29 @@ define(['angular-mocks'], function(angularMocks) {
         };
         expect(metaBenefitRiskService.compareAnalysesByModels(a, b)).toBe(0);
         expect(metaBenefitRiskService.compareAnalysesByModels(b, a)).toBe(0);
+      });
+    });
+    describe('addModelsGroup', function() {
+      it('should decorate the models with their group', function() {
+
+        var result = metaBenefitRiskService.addModelsGroup({
+          primaryModel: 1,
+          models: [{
+            id: 1
+          }, {
+            id: 2
+          }]
+        });
+        expect(result).toEqual({
+          primaryModel: 1,
+          models: [{
+            id: 1,
+            group: 'Primary model'
+          }, {
+            id: 2,
+            group: 'Other models'
+          }]
+        });
       });
     });
   });

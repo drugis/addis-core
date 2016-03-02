@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
@@ -120,14 +121,36 @@ public class AnalysisServiceImpl implements AnalysisService {
     List<NetworkMetaAnalysis> networkMetaAnalyses = networkMetaAnalysisRepository.queryByOutcomes(projectId, outcomeIds);
     List<Model> models = modelRepository.findNetworkModelsByProject(projectId);
     return outcomes.stream()
-            .filter(o -> networkMetaAnalyses
-                    .stream()
-                    .filter(nma -> nma.getOutcome() != null && Objects.equals(nma.getOutcome().getId(), o.getId()))
-                    .filter(nma -> analysisHasModel(models, nma))
-                    .findFirst()
-                    .isPresent())
-            .map(o -> new MbrOutcomeInclusion(metabenefitRiskAnalysisId, o.getId(), networkMetaAnalyses.get(0).getId()))
+            .filter(o -> findValidNetworkMetaAnalysis(networkMetaAnalyses, models, o).isPresent())
+            .map(o -> {
+              NetworkMetaAnalysis validNma = findValidNetworkMetaAnalysis(networkMetaAnalyses, models, o).get();
+              return new MbrOutcomeInclusion(metabenefitRiskAnalysisId, o.getId(), validNma.getId(), selectModelId(validNma, models));
+            })
             .collect(Collectors.toList());
+  }
+
+  private Optional<NetworkMetaAnalysis> findValidNetworkMetaAnalysis(List<NetworkMetaAnalysis> networkMetaAnalyses, List<Model> models, Outcome o) {
+    return networkMetaAnalyses
+            .stream()
+            .filter(nma -> nma.getOutcome() != null && Objects.equals(nma.getOutcome().getId(), o.getId()))
+            .filter(nma -> analysisHasModel(models, nma))
+            .findFirst();
+  }
+
+  private Integer selectModelId(NetworkMetaAnalysis networkMetaAnalysis, List<Model> consistencyModels) {
+
+    List<Model> analysisModels = consistencyModels.stream().filter(m -> m.getAnalysisId() == networkMetaAnalysis.getId()).collect(Collectors.toList());
+
+    if (networkMetaAnalysis.getPrimaryModel() != null) {
+      Optional<Model> primaryModel = analysisModels.stream()
+              .filter(m -> m.getId().equals(networkMetaAnalysis.getPrimaryModel()))
+              .findFirst();
+      return primaryModel.get().getId();
+    } else {
+      return analysisModels.stream()
+              .sorted((object1, object2) -> object1.getTitle().compareTo(object2.getTitle()))
+              .findFirst().get().getId();
+    }
   }
 
   private boolean analysisHasModel(List<Model> models, NetworkMetaAnalysis nma) {

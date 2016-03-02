@@ -3,13 +3,14 @@ define([], function() {
     var dependencies = [];
     var MetaBenefitRiskAnalysisService = function() {
 
-      function buildOutcomesWithAnalyses(analysis, networkMetaAnalyses, outcome) {
+      function buildOutcomesWithAnalyses(analysis, networkMetaAnalyses, models, outcome) {
         var outcomeAnalyses = networkMetaAnalyses.filter(function(nma) {
           return nma.outcome.id === outcome.id;
         });
 
         // set the radioBtn state based on the stored inclusions
         var selectedAnalysisId;
+        var selectedModel;
         outcomeAnalyses.forEach(function(outcomeAnalysis) {
           var isInclusionSet = false;
 
@@ -18,6 +19,10 @@ define([], function() {
               outcomeInclusion.networkMetaAnalysisId === outcomeAnalysis.id) {
               selectedAnalysisId = outcomeAnalysis.id;
               isInclusionSet = true;
+
+              selectedModel = models.find(function(model){
+                return model.id === outcomeInclusion.modelId;
+              });
             }
           });
 
@@ -29,7 +34,8 @@ define([], function() {
         return {
           outcome: outcome,
           networkMetaAnalyses: outcomeAnalyses,
-          selectedAnalysisId: selectedAnalysisId
+          selectedAnalysisId: selectedAnalysisId,
+          selectedModel: selectedModel
         };
       }
 
@@ -55,7 +61,16 @@ define([], function() {
         return 0;
       }
 
+      function addModelsGroup(analysis) {
+        analysis.models = analysis.models.map(function(model) {
+          model.group = analysis.primaryModel === model.id ? 'Primary model' : 'Other models';
+          return model;
+        });
+        return analysis;
+      }
+
       return {
+        addModelsGroup: addModelsGroup,
         compareAnalysesByModels: compareAnalysesByModels,
         buildOutcomesWithAnalyses: buildOutcomesWithAnalyses,
         joinModelsWithAnalysis: joinModelsWithAnalysis

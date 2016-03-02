@@ -160,17 +160,21 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void testBuildInitialOutcomeInclusions() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testBuildInitialOutcomeInclusionsWithoutPrimary() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
+    Integer modelId1 = 1;
+    Integer modelId2 = 2;
     Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticOutcome("uri", "label"));
     Collection<Outcome> outcomes = Arrays.asList(outcome);
-    String tittle = "tittle";
-    List<NetworkMetaAnalysis> analyses = Arrays.asList(new NetworkMetaAnalysis(analysisId, projectId, tittle, outcome),
-            new NetworkMetaAnalysis(4, projectId, tittle, outcome));
-    List<Model> models = Arrays.asList(new Model.ModelBuilder(analysisId, tittle).modelType(Model.NETWORK_MODEL_TYPE).build(),
-            new Model.ModelBuilder(3, tittle).modelType(Model.NETWORK_MODEL_TYPE).build());
+    String title1 = "bbbbb";
+    String title2 = "aaaaa";
+    List<NetworkMetaAnalysis> analyses = Arrays.asList(new NetworkMetaAnalysis(analysisId, projectId, title1, outcome),
+            new NetworkMetaAnalysis(4, projectId, title1, outcome));
+    List<Model> models = Arrays.asList(new Model.ModelBuilder(analysisId, title1).id(modelId1).modelType(Model.NETWORK_MODEL_TYPE).build(),
+            new Model.ModelBuilder(analysisId, title2).id(modelId2).modelType(Model.NETWORK_MODEL_TYPE).build(),
+            new Model.ModelBuilder(-23, title2).id(modelId2).modelType(Model.NETWORK_MODEL_TYPE).build());
 
     when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Arrays.asList(1))).thenReturn(analyses);
     when(outcomeRepository.query(projectId)).thenReturn(outcomes);
@@ -178,7 +182,34 @@ public class AnalysisServiceTest {
 
     List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
 
-    assertEquals(Arrays.asList(new MbrOutcomeInclusion(metabenefitRiskAnalysisId, 1, analysisId)), result);
+    assertEquals(Arrays.asList(new MbrOutcomeInclusion(metabenefitRiskAnalysisId, 1, analysisId, modelId2)), result);
+  }
+
+  @Test
+  public void testBuildInitialOutcomeInclusionsWithPrimary() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
+    Integer projectId = 1;
+    Integer metabenefitRiskAnalysisId = 1;
+    Integer outcomeId = 1;
+    Integer modelId1 = 1;
+    Integer modelId2 = 2;
+    Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticOutcome("uri", "label"));
+    Collection<Outcome> outcomes = Arrays.asList(outcome);
+    String title1 = "bbbbb";
+    String title2 = "aaaaa";
+    NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, projectId, title1, outcome);
+    networkMetaAnalysis.setPrimaryModel(modelId1);
+    List<NetworkMetaAnalysis> analyses = Arrays.asList(networkMetaAnalysis,
+            new NetworkMetaAnalysis(4, projectId, title1, outcome));
+    List<Model> models = Arrays.asList(new Model.ModelBuilder(analysisId, title1).id(modelId1).modelType(Model.NETWORK_MODEL_TYPE).build(),
+            new Model.ModelBuilder(3, title2).id(modelId2).modelType(Model.NETWORK_MODEL_TYPE).build());
+
+    when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Arrays.asList(1))).thenReturn(analyses);
+    when(outcomeRepository.query(projectId)).thenReturn(outcomes);
+    when(modelRepository.findNetworkModelsByProject(projectId)).thenReturn(models);
+
+    List<MbrOutcomeInclusion> result = analysisService.buildInitialOutcomeInclusions(projectId, metabenefitRiskAnalysisId);
+
+    assertEquals(Arrays.asList(new MbrOutcomeInclusion(metabenefitRiskAnalysisId, 1, analysisId, modelId1)), result);
   }
 
 

@@ -351,10 +351,12 @@ CREATE TABLE MbrOutcomeInclusion (
     metaBenefitRiskAnalysisId INT,
     outcomeId INT,
     networkMetaAnalysisId INT,
-    PRIMARY KEY (metaBenefitRiskAnalysisId, outcomeId, networkMetaAnalysisId),
+    modelId INT,
+    PRIMARY KEY (metaBenefitRiskAnalysisId, outcomeId, networkMetaAnalysisId, modelId),
     FOREIGN KEY(metaBenefitRiskAnalysisId) REFERENCES MetaBenefitRiskAnalysis(id),
     FOREIGN KEY(outcomeId) REFERENCES Outcome(id),
-    FOREIGN KEY(networkMetaAnalysisId) REFERENCES NetworkMetaAnalysis(id)
+    FOREIGN KEY(networkMetaAnalysisId) REFERENCES NetworkMetaAnalysis(id),
+    FOREIGN KEY(modelId) REFERENCES Model(id)
 );
 
 --rollback DROP TABLE MbrOutcomeInclusion;

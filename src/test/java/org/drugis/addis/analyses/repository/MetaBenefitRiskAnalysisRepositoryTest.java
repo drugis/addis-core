@@ -72,6 +72,7 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
     int analysisId = -10;
     int interventionId = 2;
     int outcomeId = 2;
+    int modelId  = 1;
 
     Account user = em.find(Account.class, accountId);
     MetaBenefitRiskAnalysis analysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);
@@ -80,7 +81,7 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
     interventions.add(interventionToInclude);
     analysis.setIncludedAlternatives(interventions);
     List<MbrOutcomeInclusion> mbrOutcomeInclusions = new ArrayList<>(analysis.getMbrOutcomeInclusions());
-    mbrOutcomeInclusions.add(new MbrOutcomeInclusion(analysis.getId(), outcomeId, 1));
+    mbrOutcomeInclusions.add(new MbrOutcomeInclusion(analysis.getId(), outcomeId, 1, modelId));
     analysis.setIncludedAlternatives(interventions);
     metaBenefitRiskAnalysisRepository.update(user, analysis);
     assertEquals(2, analysis.getIncludedAlternatives().size());
