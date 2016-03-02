@@ -23,7 +23,7 @@
   </div>
   <div class="row">
     <div class="columns large-12">
-      <label>Alternatives</label>
+      <h3 class="subheader">Alternatives</h3>
       <div class="checkbox-group">
         <div class="alternative-item" ng-repeat="alternative in alternatives">
           <label>
@@ -36,7 +36,7 @@
   </div>
   <div class="row">
     <div class="columns large-12">
-      <label>Outcomes</label>
+      <h3 class="subheader">Outcomes</h3>
       <div class="checkbox-group">
         <div class="outcome-item" ng-repeat="outcomeWithAnalyses in outcomesWithAnalyses">
           <label>
@@ -46,7 +46,7 @@
           <div class="indent-one" ng-repeat="networkMetaAnalysis in outcomeWithAnalyses.networkMetaAnalyses">
             <div class="analysis">
               <label>
-                <input ng-model="outcomeWithAnalyses.selectedAnalysis" ng-change="updateAnalysesInclusions(outcomeWithAnalyses, networkMetaAnalyses)"
+                <input ng-model="outcomeWithAnalyses.selectedAnalysis" ng-change="updateAnalysesInclusions(networkMetaAnalyses)"
                 type="radio" ng-value="networkMetaAnalysis" ng-disabled="!outcomeWithAnalyses.outcome.isIncluded || !networkMetaAnalysis.models.length"> {{networkMetaAnalysis.title}}
               </label>
               <div class="row" ng-show="outcomeWithAnalyses.selectedAnalysis.id === networkMetaAnalysis.id && networkMetaAnalysis.models.length">

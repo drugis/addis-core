@@ -122,14 +122,14 @@ define(['lodash'], function(_) {
       }
     }
 
-    function updateAnalysesInclusions(analysis, changedOutcome) {
-      changeModelSelection(analysis, changedOutcome);
+    function updateAnalysesInclusions(changedOutcome) {
+      changeModelSelection(changedOutcome);
       buildInclusions();
     }
 
     function updateMbrOutcomeInclusions(changedOutcome) {
-      var selectedAnalysis = changeAnalysisSelection(changedOutcome);
-      updateAnalysesInclusions(selectedAnalysis, changedOutcome);
+      changeAnalysisSelection(changedOutcome);
+      updateAnalysesInclusions(changedOutcome);
     }
 
     function updateModelSelection(outcome) {
@@ -138,7 +138,6 @@ define(['lodash'], function(_) {
     }
 
     function updateMissingAlternatives(outcome) {
-
       outcome.selectedModel.missingAlternatives = $scope.analysis.includedAlternatives.filter(function(alternative) {
         var modelType = outcome.selectedModel.modelType;
         if (modelType.type === 'pairwise') {
@@ -150,9 +149,7 @@ define(['lodash'], function(_) {
           });
         }
       });
-
       outcome.selectedModel.missingAlternativesNames = _.map(outcome.selectedModel.missingAlternatives, 'name');
-
     }
 
     function buildInclusions() {

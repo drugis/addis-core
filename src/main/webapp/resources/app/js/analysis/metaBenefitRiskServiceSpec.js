@@ -30,10 +30,11 @@ define(['angular-mocks'], function(angularMocks) {
           id: 5,
           outcome: outcome
         }];
-        var models = [
-          {id: 1},
-          {id: 2}
-        ];
+        var models = [{
+          id: 1
+        }, {
+          id: 2
+        }];
         var expectedResult = {
           outcome: outcome,
           networkMetaAnalyses: [{
@@ -49,11 +50,17 @@ define(['angular-mocks'], function(angularMocks) {
               isIncluded: true
             }
           }],
-          selectedAnalysisId: 3,
+          selectedAnalysis: {
+            id: 3,
+            outcome: {
+              id: 1,
+              isIncluded: true
+            }
+          },
           selectedModel: models[0]
         };
 
-        var result = metaBenefitRiskService.buildOutcomesWithAnalyses(analysis, networkMetaAnalyses, models ,outcome);
+        var result = metaBenefitRiskService.buildOutcomesWithAnalyses(analysis, networkMetaAnalyses, models, outcome);
 
         expect(result).toEqual(expectedResult);
       });

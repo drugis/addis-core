@@ -115,7 +115,7 @@ define(['angular-mocks'], function(angularMocks) {
       });
 
       it('should select the first analysis belonging to the outcome', function() {
-        expect(outcomeWithAnalysis.selectedAnalysisId).toBe(5);
+        expect(outcomeWithAnalysis.selectedAnalysis.id).toBe(5);
       });
 
       it('should build the metabenefitrisk analysis inclusions', function() {
@@ -140,7 +140,9 @@ define(['angular-mocks'], function(angularMocks) {
             id: 5,
             models: []
           }],
-          selectedAnalysisId: 1
+          selectedAnalysis: {
+            id: 1
+          }
         };
         scope.analysis = {
           id: 1,
