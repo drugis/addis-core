@@ -46,15 +46,18 @@
           <div class="indent-one" ng-repeat="networkMetaAnalysis in outcomeWithAnalyses.networkMetaAnalyses">
             <div class="analysis">
               <label>
-                <input ng-model="outcomeWithAnalyses.selectedAnalysisId" ng-change="updateAnalysesInclusions(outcomeWithAnalyses, networkMetaAnalyses)"
-                type="radio" ng-value="networkMetaAnalysis.id" ng-disabled="!outcomeWithAnalyses.outcome.isIncluded || !networkMetaAnalysis.models.length"> {{networkMetaAnalysis.title}}
+                <input ng-model="outcomeWithAnalyses.selectedAnalysis" ng-change="updateAnalysesInclusions(outcomeWithAnalyses, networkMetaAnalyses)"
+                type="radio" ng-value="networkMetaAnalysis" ng-disabled="!outcomeWithAnalyses.outcome.isIncluded || !networkMetaAnalysis.models.length"> {{networkMetaAnalysis.title}}
               </label>
-              <div class="row" ng-show="outcomeWithAnalyses.selectedAnalysisId === networkMetaAnalysis.id && networkMetaAnalysis.models.length">
+              <div class="row" ng-show="outcomeWithAnalyses.selectedAnalysis.id === networkMetaAnalysis.id && networkMetaAnalysis.models.length">
                 <div class="indent-one columns large-4">
                   <select ng-model="outcomeWithAnalyses.selectedModel" class="model-select"
-                  ng-change="updateModelSelection(outcomeWithAnalyses)"
+                  ng-change="updateModelSelection(outcomeWithAnalyses, networkMetaAnalysis.includedInterventions)"
                   ng-options="model.title  group by model.group for model in networkMetaAnalysis.models | orderBy:['-group','+title']">
                   </select>
+                  <div class="alert" ng-show="outcomeWithAnalyses.selectedModel.missingAlternatives.length">
+                    Selected model is missing alternatives: {{outcomeWithAnalyses.selectedModel.missingAlternativesNames.join(', ')}}
+                  </div>
                 </div>
                 <!-- <div class="columns large-2 end" style="padding-top:0.5rem;">
                   <a class="details"  ng-click="showModelDetails(outcomeWithAnalyses.selectedModel)">show details</a>
@@ -69,6 +72,11 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="columns large-12">
+      <button type="button" class="primary">Next Step</button>
     </div>
   </div>
 </div>

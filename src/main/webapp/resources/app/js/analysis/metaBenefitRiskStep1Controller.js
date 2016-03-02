@@ -16,13 +16,17 @@ define(['lodash'], function(_) {
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.models = ModelResource.getConsistencyModels($stateParams);
 
-    $q.all([$scope.analysis.$promise, $scope.outcomes.$promise, $scope.models.$promise]).then(function(result) {
+    var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise];
+
+    $q.all(promises).then(function(result) {
       var analysis = result[0];
-      var outcomes = result[1];
-      var models = result[2];
+      var alternatives = result[1];
+      var outcomes = result[2];
+      var models = result[3];
       var outcomeIds = outcomes.map(function(outcome) {
         return outcome.id;
       });
+
       AnalysisResource.query({
         projectId: $stateParams.projectId,
         outcomeIds: outcomeIds
@@ -36,12 +40,8 @@ define(['lodash'], function(_) {
             owa.networkMetaAnalyses = owa.networkMetaAnalyses.sort(MetaBenefitRiskService.compareAnalysesByModels);
             return owa;
           });
+        updateMissingAlternativesForAllOutcomes();
       });
-    });
-
-    $q.all([$scope.analysis.$promise, $scope.alternatives.$promise]).then(function(result) {
-      var analysis = result[0];
-      var alternatives = result[1];
 
       $scope.alternatives = alternatives.map(function(alternative) {
         var isAlternativeInInclusions = analysis.includedAlternatives.find(function(includedAlternative) {
@@ -52,11 +52,8 @@ define(['lodash'], function(_) {
         }
         return alternative;
       });
-    });
+      setIncludedAlternatives();
 
-    $q.all([$scope.analysis.$promise, $scope.outcomes.$promise]).then(function(result) {
-      var analysis = result[0];
-      var outcomes = result[1];
       $scope.outcomes = outcomes.map(function(outcome) {
         var isOutcomeInInclusions = analysis.mbrOutcomeInclusions.find(function(mbrOutcomeInclusion) {
           return mbrOutcomeInclusion.outcomeId === outcome.id;
@@ -73,10 +70,23 @@ define(['lodash'], function(_) {
         !hasSelectableAnalysis(outcomeWithAnalyses);
     }
 
-    function updateAlternatives() {
+    function setIncludedAlternatives() {
       $scope.analysis.includedAlternatives = $scope.alternatives.filter(function(alternative) {
         return alternative.isIncluded;
       });
+    }
+
+    function updateMissingAlternativesForAllOutcomes() {
+      $scope.outcomesWithAnalyses.filter(function(outcome) {
+        return outcome.selectedModel;
+      }).forEach(function(outcome) {
+        updateMissingAlternatives(outcome);
+      });
+    }
+
+    function updateAlternatives() {
+      setIncludedAlternatives();
+      updateMissingAlternativesForAllOutcomes();
       $scope.analysis.$save();
     }
 
@@ -84,9 +94,9 @@ define(['lodash'], function(_) {
       var analysis;
       if (hasSelectableAnalysis(outcomeWithAnalyses) && outcomeWithAnalyses.outcome.isIncluded) {
         analysis = outcomeWithAnalyses.networkMetaAnalyses[0];
-        outcomeWithAnalyses.selectedAnalysisId = analysis.id;
+        outcomeWithAnalyses.selectedAnalysis = analysis;
       } else {
-        outcomeWithAnalyses.selectedAnalysisId = undefined;
+        outcomeWithAnalyses.selectedAnalysis = undefined;
       }
       return analysis;
     }
@@ -96,8 +106,9 @@ define(['lodash'], function(_) {
       return firstAnalysis && firstAnalysis.models.length;
     }
 
-    function changeModelSelection(selectedNma, changedOutcome) {
-      if (selectedNma && changedOutcome.selectedAnalysisId !== undefined) {
+    function changeModelSelection(changedOutcome) {
+      var selectedNma = changedOutcome.selectedAnalysis;
+      if (selectedNma !== undefined) {
         var primaryModel = selectedNma.models.find(function(model) {
           return model.id === selectedNma.primaryModel;
         });
@@ -121,8 +132,27 @@ define(['lodash'], function(_) {
       updateAnalysesInclusions(selectedAnalysis, changedOutcome);
     }
 
-    function updateModelSelection() {
+    function updateModelSelection(outcome) {
+      updateMissingAlternatives(outcome);
       buildInclusions();
+    }
+
+    function updateMissingAlternatives(outcome) {
+
+      outcome.selectedModel.missingAlternatives = $scope.analysis.includedAlternatives.filter(function(alternative) {
+        var modelType = outcome.selectedModel.modelType;
+        if (modelType.type === 'pairwise') {
+          return alternative.id !== modelType.details.from.id &&
+            alternative.id !== modelType.details.to.id;
+        } else {
+          return outcome.selectedAnalysis.includedInterventions.find(function(includedIntervention) {
+            return alternative.id !== includedIntervention.interventionId;
+          });
+        }
+      });
+
+      outcome.selectedModel.missingAlternativesNames = _.map(outcome.selectedModel.missingAlternatives, 'name');
+
     }
 
     function buildInclusions() {
@@ -132,7 +162,7 @@ define(['lodash'], function(_) {
         return {
           metaBenefitRiskAnalysisId: $scope.analysis.id,
           outcomeId: outcomeWithAnalyses.outcome.id,
-          networkMetaAnalysisId: outcomeWithAnalyses.selectedAnalysisId,
+          networkMetaAnalysisId: outcomeWithAnalyses.selectedAnalysis.id,
           modelId: outcomeWithAnalyses.selectedModel.id
         };
       });

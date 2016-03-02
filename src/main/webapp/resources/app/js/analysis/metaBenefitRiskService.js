@@ -9,7 +9,7 @@ define([], function() {
         });
 
         // set the radioBtn state based on the stored inclusions
-        var selectedAnalysisId;
+        var selectedAnalysis;
         var selectedModel;
         outcomeAnalyses.forEach(function(outcomeAnalysis) {
           var isInclusionSet = false;
@@ -17,7 +17,7 @@ define([], function() {
           analysis.mbrOutcomeInclusions.forEach(function(outcomeInclusion) {
             if (outcomeInclusion.outcomeId === outcomeAnalysis.outcome.id &&
               outcomeInclusion.networkMetaAnalysisId === outcomeAnalysis.id) {
-              selectedAnalysisId = outcomeAnalysis.id;
+              selectedAnalysis = outcomeAnalysis;
               isInclusionSet = true;
 
               selectedModel = models.find(function(model){
@@ -27,14 +27,14 @@ define([], function() {
           });
 
           if (!isInclusionSet && outcomeAnalyses.length > 0 && outcome.isIncluded) {
-            selectedAnalysisId = outcomeAnalyses[0].id;
+            selectedAnalysis = outcomeAnalyses[0];
           }
 
         });
         return {
           outcome: outcome,
           networkMetaAnalyses: outcomeAnalyses,
-          selectedAnalysisId: selectedAnalysisId,
+          selectedAnalysis: selectedAnalysis,
           selectedModel: selectedModel
         };
       }
