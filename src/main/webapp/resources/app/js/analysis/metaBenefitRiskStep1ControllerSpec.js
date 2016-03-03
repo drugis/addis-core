@@ -62,6 +62,7 @@ define(['angular-mocks'], function(angularMocks) {
         $scope: scope,
         $q: q,
         $stateParams: stateParamsMock,
+        $state: {go: function(){}},
         AnalysisResource: analysisResourceMock,
         InterventionResource: interventionResourceMock,
         OutcomeResource: outcomeResourceMock,

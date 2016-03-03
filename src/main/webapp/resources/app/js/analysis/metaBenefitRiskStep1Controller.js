@@ -1,21 +1,26 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['$scope', '$q', '$stateParams', 'AnalysisResource', 'InterventionResource',
+  var dependencies = ['$scope', '$q', '$stateParams', '$state', 'AnalysisResource', 'InterventionResource',
     'OutcomeResource', 'MetaBenefitRiskService', 'ModelResource'
   ];
-  var MetBenefitRiskStep1Controller = function($scope, $q, $stateParams, AnalysisResource, InterventionResource,
+  var MetBenefitRiskStep1Controller = function($scope, $q, $stateParams, $state, AnalysisResource, InterventionResource,
     OutcomeResource, MetaBenefitRiskService, ModelResource) {
     $scope.updateAlternatives = updateAlternatives;
     $scope.updateMbrOutcomeInclusions = updateMbrOutcomeInclusions;
     $scope.updateAnalysesInclusions = updateAnalysesInclusions;
     $scope.isOutcomeDisabled = isOutcomeDisabled;
     $scope.updateModelSelection = updateModelSelection;
+    $scope.goToStep2 = goToStep2;
 
     $scope.analysis = AnalysisResource.get($stateParams);
     $scope.alternatives = InterventionResource.query($stateParams);
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.models = ModelResource.getConsistencyModels($stateParams);
 
+
+    function goToStep2() {
+      $state.go('MetaBenefitRiskCreationStep-2', $stateParams);
+    }
 
     /*
      ** (1) two or more interventions have been selected,

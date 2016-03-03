@@ -88,4 +88,22 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
     assertEquals(2, analysis.getIncludedAlternatives().size());
   }
 
+  @Test
+  public void testUpdateMetaBrBaseLine() throws ResourceDoesNotExistException, MethodNotAllowedException {
+    int accountId = 1;
+    int analysisId = -10;
+
+    Account user = em.find(Account.class, accountId);
+    MetaBenefitRiskAnalysis analysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);
+
+    ArrayList<MbrOutcomeInclusion> mbrOutcomeInclusions = new ArrayList<>(analysis.getMbrOutcomeInclusions());
+    String baseline = "{outcome:{a:'b'}, mean:-0.1, stdDev:0.001)";
+    mbrOutcomeInclusions.get(0).setBaseline(baseline);
+
+    analysis.setMbrOutcomeInclusions(mbrOutcomeInclusions);
+    MetaBenefitRiskAnalysis updated = metaBenefitRiskAnalysisRepository.update(user, analysis);
+    assertEquals(1, updated.getMbrOutcomeInclusions().size());
+    assertEquals(baseline, updated.getMbrOutcomeInclusions().get(0).getBaseline());
+  }
+
 }

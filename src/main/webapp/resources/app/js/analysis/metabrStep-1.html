@@ -79,7 +79,7 @@
   </div>
   <div class="row">
     <div class="columns large-12">
-      <button ng-disabled="step1AlertMessages.length" type="button" class="primary">Next Step</button>
+      <button ng-disabled="step1AlertMessages.length" type="button" class="primary" ng-click="goToStep2()">Next Step</button>
       <div ng-repeat="message in step1AlertMessages">
         <div class="alert">{{message}}</div>
       <div>

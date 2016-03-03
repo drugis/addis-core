@@ -1,5 +1,9 @@
 package org.drugis.addis.analyses;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.drugis.addis.util.ObjectToStringDeserializer;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
@@ -59,6 +63,8 @@ public class MbrOutcomeInclusion implements Serializable {
   private Integer networkMetaAnalysisId;
   @Id
   private Integer modelId;
+  @JsonRawValue
+  private String baseline;
 
   public MbrOutcomeInclusion() {
   }
@@ -86,6 +92,16 @@ public class MbrOutcomeInclusion implements Serializable {
     return modelId;
   }
 
+  @JsonRawValue
+  public String getBaseline() {
+    return baseline;
+  }
+
+  @JsonDeserialize(using = ObjectToStringDeserializer.class)
+  public void setBaseline(String baseline) {
+    this.baseline = baseline;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -96,7 +112,8 @@ public class MbrOutcomeInclusion implements Serializable {
     if (!metaBenefitRiskAnalysisId.equals(that.metaBenefitRiskAnalysisId)) return false;
     if (!outcomeId.equals(that.outcomeId)) return false;
     if (!networkMetaAnalysisId.equals(that.networkMetaAnalysisId)) return false;
-    return modelId.equals(that.modelId);
+    if (!modelId.equals(that.modelId)) return false;
+    return baseline != null ? baseline.equals(that.baseline) : that.baseline == null;
 
   }
 
@@ -106,6 +123,7 @@ public class MbrOutcomeInclusion implements Serializable {
     result = 31 * result + outcomeId.hashCode();
     result = 31 * result + networkMetaAnalysisId.hashCode();
     result = 31 * result + modelId.hashCode();
+    result = 31 * result + (baseline != null ? baseline.hashCode() : 0);
     return result;
   }
 }

@@ -352,6 +352,7 @@ CREATE TABLE MbrOutcomeInclusion (
     outcomeId INT,
     networkMetaAnalysisId INT,
     modelId INT,
+    baseline VARCHAR,
     PRIMARY KEY (metaBenefitRiskAnalysisId, outcomeId, networkMetaAnalysisId, modelId),
     FOREIGN KEY(metaBenefitRiskAnalysisId) REFERENCES MetaBenefitRiskAnalysis(id),
     FOREIGN KEY(outcomeId) REFERENCES Outcome(id),
