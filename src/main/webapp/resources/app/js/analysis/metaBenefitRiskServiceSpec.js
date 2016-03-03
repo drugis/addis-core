@@ -115,6 +115,7 @@ define(['angular-mocks'], function(angularMocks) {
         expect(metaBenefitRiskService.compareAnalysesByModels(b, a)).toBe(0);
       });
     });
+
     describe('addModelsGroup', function() {
       it('should decorate the models with their group', function() {
 
@@ -136,6 +137,198 @@ define(['angular-mocks'], function(angularMocks) {
             group: 'Other models'
           }]
         });
+      });
+    });
+
+    describe('numberOfSelectedInterventions', function() {
+      it('should return the number of selected interventions', function() {
+        var alternatives = [{
+          isIncluded: false
+        }, {}, {
+          isIncluded: true
+        }, {
+          isIncluded: true
+        }];
+        expect(metaBenefitRiskService.numberOfSelectedInterventions(alternatives)).toBe(2);
+      });
+    });
+
+    describe('numberOfSelectedOutcomes', function() {
+      it('should return the number of selected outcomes', function() {
+        var outcomesWithAnalyses = [{
+          outcome: {
+            isIncluded: false
+          }
+        }, {
+          outcome: {
+            isIncluded: true
+          }
+        }, {
+          outcome: {
+            isIncluded: true
+          }
+        }];
+        expect(metaBenefitRiskService.numberOfSelectedOutcomes(outcomesWithAnalyses)).toBe(2);
+      });
+    });
+
+    describe('isModelWithMissingAlternatives', function() {
+      it('should return true if any selected outcome has a model with missing alternatives', function() {
+        var outcomesWithAnalyses = [{
+          outcome: {
+            isIncluded: false
+          },
+          selectedModel: {
+            missingAlternatives: []
+          }
+        }, {
+          outcome: {
+            isIncluded: true
+          },
+          selectedModel: {
+            missingAlternatives: [1, 2, 3]
+          }
+        }, {
+          outcome: {
+            isIncluded: true
+          },
+          selectedModel: {
+            missingAlternatives: []
+          }
+        }];
+        expect(metaBenefitRiskService.isModelWithMissingAlternatives(outcomesWithAnalyses)).toBeTruthy();
+      });
+      it('should return false if none of the selected outcomes has a model with missing alternatives', function() {
+        var outcomesWithAnalyses = [{
+          outcome: {
+            isIncluded: false
+          },
+          selectedModel: {
+            missingAlternatives: []
+          }
+        }, {
+          outcome: {
+            isIncluded: true
+          },
+          selectedModel: {
+            missingAlternatives: []
+          }
+        }, {
+          outcome: {
+            isIncluded: true
+          },
+          selectedModel: {
+            missingAlternatives: []
+          }
+        }];
+        expect(metaBenefitRiskService.isModelWithMissingAlternatives(outcomesWithAnalyses)).toBeFalsy();
+      });
+    });
+
+    describe('isModelWithoutResults', function() {
+      it('should return true if any selected outcome has a model with missing results', function() {
+        var outcomesWithAnalyses = [{
+          outcome: {
+            isIncluded: false
+          },
+          selectedModel: {
+            hasResult: true
+          }
+        }, {
+          outcome: {
+            isIncluded: true
+          },
+          selectedModel: {
+            hasResult: false
+          }
+        }, {
+          outcome: {
+            isIncluded: true
+          },
+          selectedModel: {
+            hasResult: true
+          }
+        }];
+        expect(metaBenefitRiskService.isModelWithoutResults(outcomesWithAnalyses)).toBeTruthy();
+      });
+      it('should return false if none of the selected outcomes has a model with missing results', function() {
+        var outcomesWithAnalyses = [{
+          outcome: {
+            isIncluded: false
+          },
+          selectedModel: {
+            hasResult: true
+          }
+        }, {
+          outcome: {
+            isIncluded: true
+          },
+          selectedModel: {
+            hasResult: true
+          }
+        }];
+        expect(metaBenefitRiskService.isModelWithoutResults(outcomesWithAnalyses)).toBeFalsy();
+      });
+    });
+    describe('findMissingAlternatives for a pairwise analysis', function() {
+      it('should return a list of alternatives that are included in the analysis but not in the model', function() {
+        var includedAlternatives = [{
+          id: 1
+        }, {
+          id: 2
+        }, {
+          id: 3
+        }, {
+          id: 4
+        }];
+        var expectedResult = includedAlternatives.slice(2);
+        var owa = {
+          selectedModel: {
+            modelType: {
+              type: 'pairwise',
+              details: {
+                from: {
+                  id: 1
+                },
+                to: {
+                  id: 2
+                }
+              }
+            }
+          }
+        };
+        var result = metaBenefitRiskService.findMissingAlternatives(includedAlternatives, owa);
+        expect(result).toEqual(expectedResult);
+      });
+    });
+    describe('findMissingAlternatives for a network meta-analysis', function() {
+      it('should return a list of alternatives that are included in the analysis but not in the model', function() {
+        var includedAlternatives = [{
+          id: 1
+        }, {
+          id: 2
+        }, {
+          id: 3
+        }, {
+          id: 4
+        }];
+        var expectedResult = includedAlternatives.slice(2);
+        var owa = {
+          selectedModel: {
+            modelType: {
+              type: 'network'
+            }
+          },
+          selectedAnalysis: {
+            includedInterventions: [{
+              interventionId: 1
+            }, {
+              interventionId: 2
+            }]
+          }
+        };
+        var result = metaBenefitRiskService.findMissingAlternatives(includedAlternatives, owa);
+        expect(result).toEqual(expectedResult);
       });
     });
   });

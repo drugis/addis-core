@@ -145,6 +145,14 @@ public class JpaModelRepositoryTest {
     Integer projectId = 1;
     List<Model> models = modelRepository.findNetworkModelsByProject(projectId);
     assertEquals(2, models.size());
+  }
 
+  @Test
+  public void testFindNetworkModelsByProject() throws SQLException {
+    Integer projectId = 2;
+    List<Model> networkModelsByProject = modelRepository.findNetworkModelsByProject(projectId);
+    assertEquals(2, networkModelsByProject.size());
+    assertTrue(networkModelsByProject.get(0).isHasResult());
+    assertFalse(networkModelsByProject.get(1).isHasResult());
   }
 }

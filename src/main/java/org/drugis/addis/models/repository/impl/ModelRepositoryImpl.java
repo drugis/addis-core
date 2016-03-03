@@ -74,23 +74,28 @@ public class ModelRepositoryImpl implements ModelRepository {
     TypedQuery<Model> query = em.createQuery("FROM Model m WHERE m.analysisId = :analysisId", Model.class);
     query.setParameter("analysisId", networkMetaAnalysisId);
     List<Model> models = query.getResultList();
+
+    return addTasksToModels(models);
+  }
+
+  @Override
+  public List<Model> findNetworkModelsByProject(Integer projectId) throws SQLException {
+    TypedQuery<Model> query = em.createQuery("SELECT m FROM Model m, NetworkMetaAnalysis a WHERE m.analysisId = a.id AND a.projectId = :projectId", Model.class);
+    query.setParameter("projectId", projectId);
+    List<Model> models = query.getResultList();
+
+    return addTasksToModels(models);
+  }
+
+  private List<Model> addTasksToModels(List<Model> models) throws SQLException {
     List<Integer> taskIds = models.stream().map(Model::getTaskId).collect(Collectors.toList());
     List<PataviTask> pataviTasks = pataviTaskRepository.findByIds(taskIds);
 
     Map<Integer, PataviTask> taskMap = pataviTasks.stream()
             .collect(Collectors.toMap(PataviTask::getId, Function.identity()));
 
-    List<Model> modelsWithTask = models.stream()
+    return models.stream()
             .map(model -> setHasRunStatus(model, taskMap.get(model.getTaskId())))
             .collect(Collectors.toList());
-
-    return modelsWithTask;
-  }
-
-  @Override
-  public List<Model> findNetworkModelsByProject(Integer projectId) {
-    TypedQuery<Model> query = em.createQuery("SELECT m FROM Model m, NetworkMetaAnalysis a WHERE m.analysisId = a.id AND a.projectId = :projectId", Model.class);
-    query.setParameter("projectId", projectId);
-    return query.getResultList();
   }
 }

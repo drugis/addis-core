@@ -144,7 +144,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void testBuildInitialOutcomeInclusionsCheckNmaNoOutcome(){
+  public void testBuildInitialOutcomeInclusionsCheckNmaNoOutcome() throws SQLException {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
@@ -160,7 +160,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void testBuildInitialOutcomeInclusionsWithoutPrimary() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testBuildInitialOutcomeInclusionsWithoutPrimary() throws InvalidModelTypeException, InvalidHeterogeneityTypeException, SQLException {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
@@ -186,7 +186,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void testBuildInitialOutcomeInclusionsWithPrimary() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testBuildInitialOutcomeInclusionsWithPrimary() throws InvalidModelTypeException, InvalidHeterogeneityTypeException, SQLException {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;

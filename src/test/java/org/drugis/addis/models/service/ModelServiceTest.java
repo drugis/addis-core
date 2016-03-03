@@ -21,6 +21,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.security.Principal;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -435,7 +436,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testQueryConsistencyModels() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void testQueryConsistencyModels() throws InvalidModelTypeException, InvalidHeterogeneityTypeException, SQLException {
     Integer projectId = 1;
     Integer analysisId = 3;
     String modelTitle = "title";

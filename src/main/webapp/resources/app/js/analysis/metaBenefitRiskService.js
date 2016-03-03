@@ -69,11 +69,54 @@ define([], function() {
         return analysis;
       }
 
+      function numberOfSelectedInterventions(alternatives) {
+        return alternatives.reduce(function(count, alternative) {
+          return alternative.isIncluded ? ++count : count;
+        }, 0);
+      }
+
+      function numberOfSelectedOutcomes(outcomesWithAnalyses) {
+        return outcomesWithAnalyses.reduce(function(count, owa) {
+          return owa.outcome.isIncluded ? ++count : count;
+        }, 0);
+      }
+
+      function isModelWithMissingAlternatives(outcomesWithAnalyses) {
+        return outcomesWithAnalyses.find(function(owa) {
+          return owa.outcome.isIncluded && owa.selectedModel.missingAlternatives.length;
+        });
+      }
+
+      function isModelWithoutResults(outcomesWithAnalyses) {
+        return outcomesWithAnalyses.find(function(owa) {
+          return owa.outcome.isIncluded && !owa.selectedModel.hasResult;
+        });
+      }
+
+      function findMissingAlternatives(includedAlternatives, owa) {
+        return includedAlternatives.filter(function(alternative) {
+          var modelType = owa.selectedModel.modelType;
+          if (modelType.type === 'pairwise') {
+            return alternative.id !== modelType.details.from.id &&
+              alternative.id !== modelType.details.to.id;
+          } else {
+            return !owa.selectedAnalysis.includedInterventions.find(function(includedIntervention) {
+              return alternative.id === includedIntervention.interventionId;
+            });
+          }
+        });
+      }
+
       return {
         addModelsGroup: addModelsGroup,
         compareAnalysesByModels: compareAnalysesByModels,
         buildOutcomesWithAnalyses: buildOutcomesWithAnalyses,
-        joinModelsWithAnalysis: joinModelsWithAnalysis
+        joinModelsWithAnalysis: joinModelsWithAnalysis,
+        numberOfSelectedInterventions: numberOfSelectedInterventions,
+        numberOfSelectedOutcomes: numberOfSelectedOutcomes,
+        isModelWithMissingAlternatives: isModelWithMissingAlternatives,
+        isModelWithoutResults: isModelWithoutResults,
+        findMissingAlternatives: findMissingAlternatives
       };
     };
 

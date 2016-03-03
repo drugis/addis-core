@@ -16,6 +16,57 @@ define(['lodash'], function(_) {
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.models = ModelResource.getConsistencyModels($stateParams);
 
+
+    /*
+     ** (1) two or more interventions have been selected,
+     ** (2) two or more outcomes have been selected,
+     ** (3) for each outcome, an analysis and model have been selected,
+     **     and the selected model includes all selected interventions and has results
+     */
+    function checkStep1Validity() {
+      $scope.step1AlertMessages = [];
+      //(1)
+      var numberOfSelectedInterventions = MetaBenefitRiskService.numberOfSelectedInterventions($scope.alternatives);
+      if (numberOfSelectedInterventions < 2) {
+        $scope.step1AlertMessages.push('At least two alternatives must be selected.');
+      }
+      //(2)
+      var numberOfSelectedOutcomes = MetaBenefitRiskService.numberOfSelectedOutcomes($scope.outcomesWithAnalyses);
+      if (numberOfSelectedOutcomes < 2) {
+        $scope.step1AlertMessages.push('At least two outcomes must be selected.');
+      }
+      //(3)
+      var isModelWithMissingAlternatives = MetaBenefitRiskService.isModelWithMissingAlternatives($scope.outcomesWithAnalyses);
+      if (isModelWithMissingAlternatives) {
+        $scope.step1AlertMessages.push('A model with missing alternatives is selected');
+      }
+      //(3)
+      var isModelWithoutResults = MetaBenefitRiskService.isModelWithoutResults($scope.outcomesWithAnalyses);
+      if (isModelWithoutResults) {
+        $scope.step1AlertMessages.push('A model that has not yet run is selected');
+      }
+    }
+
+    function updateAnalysesInclusions(changedOutcome) {
+      changeModelSelection(changedOutcome);
+      if (changedOutcome.selectedModel) {
+        updateMissingAlternatives(changedOutcome);
+      }
+      buildInclusions();
+    }
+
+    function updateMbrOutcomeInclusions(changedOutcome) {
+      changeAnalysisSelection(changedOutcome);
+      updateAnalysesInclusions(changedOutcome);
+    }
+
+    function updateModelSelection(owa) {
+      if (owa.selectedModel) {
+        updateMissingAlternatives(owa);
+      }
+      buildInclusions();
+    }
+
     var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise];
 
     $q.all(promises).then(function(result) {
@@ -41,6 +92,9 @@ define(['lodash'], function(_) {
             return owa;
           });
         updateMissingAlternativesForAllOutcomes();
+
+        // when view setup is completed
+        checkStep1Validity();
       });
 
       $scope.alternatives = alternatives.map(function(alternative) {
@@ -88,6 +142,7 @@ define(['lodash'], function(_) {
       setIncludedAlternatives();
       updateMissingAlternativesForAllOutcomes();
       $scope.analysis.$save();
+      checkStep1Validity();
     }
 
     function changeAnalysisSelection(outcomeWithAnalyses) {
@@ -122,34 +177,9 @@ define(['lodash'], function(_) {
       }
     }
 
-    function updateAnalysesInclusions(changedOutcome) {
-      changeModelSelection(changedOutcome);
-      buildInclusions();
-    }
-
-    function updateMbrOutcomeInclusions(changedOutcome) {
-      changeAnalysisSelection(changedOutcome);
-      updateAnalysesInclusions(changedOutcome);
-    }
-
-    function updateModelSelection(outcome) {
-      updateMissingAlternatives(outcome);
-      buildInclusions();
-    }
-
-    function updateMissingAlternatives(outcome) {
-      outcome.selectedModel.missingAlternatives = $scope.analysis.includedAlternatives.filter(function(alternative) {
-        var modelType = outcome.selectedModel.modelType;
-        if (modelType.type === 'pairwise') {
-          return alternative.id !== modelType.details.from.id &&
-            alternative.id !== modelType.details.to.id;
-        } else {
-          return outcome.selectedAnalysis.includedInterventions.find(function(includedIntervention) {
-            return alternative.id !== includedIntervention.interventionId;
-          });
-        }
-      });
-      outcome.selectedModel.missingAlternativesNames = _.map(outcome.selectedModel.missingAlternatives, 'name');
+    function updateMissingAlternatives(owa) {
+      owa.selectedModel.missingAlternatives = MetaBenefitRiskService.findMissingAlternatives($scope.analysis.includedAlternatives, owa);
+      owa.selectedModel.missingAlternativesNames = _.map(owa.selectedModel.missingAlternatives, 'name');
     }
 
     function buildInclusions() {
@@ -163,6 +193,7 @@ define(['lodash'], function(_) {
           modelId: outcomeWithAnalyses.selectedModel.id
         };
       });
+      checkStep1Validity();
       $scope.analysis.$save();
     }
 

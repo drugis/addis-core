@@ -133,7 +133,7 @@ public class ModelServiceImpl implements ModelService {
   }
 
   @Override
-  public List<Model> queryConsistencyModels(Integer projectId) {
+  public List<Model> queryConsistencyModels(Integer projectId) throws SQLException {
     return modelRepository
             .findNetworkModelsByProject(projectId)
             .stream()

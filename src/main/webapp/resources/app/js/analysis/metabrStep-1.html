@@ -56,7 +56,10 @@
                   ng-options="model.title  group by model.group for model in networkMetaAnalysis.models | orderBy:['-group','+title']">
                   </select>
                   <div class="alert" ng-show="outcomeWithAnalyses.selectedModel.missingAlternatives.length">
-                    Selected model is missing alternatives: {{outcomeWithAnalyses.selectedModel.missingAlternativesNames.join(', ')}}
+                    Selected model is missing alternatives: {{outcomeWithAnalyses.selectedModel.missingAlternativesNames.join(', ')}}.
+                  </div>
+                  <div class="alert" ng-show="!outcomeWithAnalyses.selectedModel.hasResult">
+                    This model has not yet been run.
                   </div>
                 </div>
                 <!-- <div class="columns large-2 end" style="padding-top:0.5rem;">
@@ -76,7 +79,10 @@
   </div>
   <div class="row">
     <div class="columns large-12">
-      <button type="button" class="primary">Next Step</button>
+      <button ng-disabled="step1AlertMessages.length" type="button" class="primary">Next Step</button>
+      <div ng-repeat="message in step1AlertMessages">
+        <div class="alert">{{message}}</div>
+      <div>
     </div>
   </div>
 </div>

@@ -19,5 +19,5 @@ public interface ModelRepository {
 
   List<Model> findByAnalysis(Integer networkMetaAnalysisId) throws SQLException;
 
-  List<Model> findNetworkModelsByProject(Integer projectId);
+  List<Model> findNetworkModelsByProject(Integer projectId) throws SQLException;
 }

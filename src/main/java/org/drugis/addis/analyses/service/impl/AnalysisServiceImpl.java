@@ -113,7 +113,7 @@ public class AnalysisServiceImpl implements AnalysisService {
   }
 
   @Override
-  public List<MbrOutcomeInclusion> buildInitialOutcomeInclusions(Integer projectId, Integer metabenefitRiskAnalysisId) {
+  public List<MbrOutcomeInclusion> buildInitialOutcomeInclusions(Integer projectId, Integer metabenefitRiskAnalysisId) throws SQLException {
     Collection<Outcome> outcomes = outcomeRepository.query(projectId);
     List<Integer> outcomeIds = outcomes.stream()
             .map(Outcome::getId)

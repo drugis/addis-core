@@ -19,7 +19,12 @@ define(['angular-mocks'], function(angularMocks) {
         'addModelsGroup',
         'compareAnalysesByModels',
         'joinModelsWithAnalysis',
-        'buildOutcomesWithAnalyses'
+        'buildOutcomesWithAnalyses',
+        'numberOfSelectedInterventions',
+        'numberOfSelectedOutcomes',
+        'isModelWithMissingAlternatives',
+        'isModelWithoutResults',
+        'findMissingAlternatives'
       ]);
 
     beforeEach(module('addis.analysis'));
@@ -107,7 +112,8 @@ define(['angular-mocks'], function(angularMocks) {
         };
         scope.analysis = {
           id: 1,
-          $save: function() {}
+          $save: function() {},
+          includedAlternatives: []
         };
         scope.outcomesWithAnalyses = [outcomeWithAnalysis];
 
@@ -142,7 +148,8 @@ define(['angular-mocks'], function(angularMocks) {
           }],
           selectedAnalysis: {
             id: 1
-          }
+          },
+          selectedModel: {}
         };
         scope.analysis = {
           id: 1,
@@ -151,7 +158,8 @@ define(['angular-mocks'], function(angularMocks) {
             outcomeId: 3,
             networkMetaAnalysisId: 5
           }],
-          $save: function() {}
+          $save: function() {},
+          includedAlternatives: []
         };
         scope.outcomesWithAnalyses = [outcomeWithAnalysis];
 

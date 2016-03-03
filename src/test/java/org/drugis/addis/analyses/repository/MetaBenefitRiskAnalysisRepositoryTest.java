@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -54,7 +55,7 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
   }
 
   @Test
-  public void testCreate() throws ResourceDoesNotExistException, MethodNotAllowedException {
+  public void testCreate() throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException {
     int projectId = 1;
     int accountId = 1;
     AnalysisCommand analysisCommand = new AnalysisCommand(projectId, "new analysis", AnalysisType.META_BENEFIT_RISK_ANALYSIS_LABEL);
