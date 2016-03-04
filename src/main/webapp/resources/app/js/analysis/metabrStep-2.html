@@ -37,13 +37,38 @@
       <tbody>
         <tr ng-repeat="owa in outcomesWithAnalyses | filter:{outcome: {isIncluded: true}}">
           <td class="table-head">{{owa.outcome.name}}</td>
-          <td ng-show="owa.baselineDistribution">{{owa.baselineDistribution.scale}} ({{owa.baselineDistribution.selectedAlternative.name}})
-            ~ N({{owa.baselineDistribution.mean}}, {{owa.baselineDistribution.stdDev}})</td>
+          <td ng-show="owa.baselineDistribution">{{owa.baselineDistribution.scale}}
+             ({{owa.baselineDistribution.name}})
+            ~ N({{owa.baselineDistribution.mu}}, {{owa.baselineDistribution.sigma}})</td>
           <td ng-show="!owa.baselineDistribution"><em>Not defined.</em></td>
           <td class="button-cell">
             <button class="small" ng-click="openDistributionModal(owa)">Set</button>
           </td>
         </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="row">
+  <div class="columns large-12">
+    <table class="">
+      <caption>Effects table</caption>
+      <thead>
+        <tr>
+          <td></td>
+          <td ng-repeat="alternative in analysis.includedAlternatives">{{alternative.name}}</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="owa in outcomesWithAnalyses">
+          <td class="table-head">{{owa.outcome.name}}</td>
+          <td ng-repeat="alternative in analysis.includedAlternatives">
+            <span ng-if="effectsTable[owa.outcome.id][alternative.id]">
+             {{effectsTable[owa.outcome.id][alternative.id]['50%']}}
+            ({{effectsTable[owa.outcome.id][alternative.id]['2.5%']}},
+             {{effectsTable[owa.outcome.id][alternative.id]['97.5%']}})</span>
+            <span ng-if="!effectsTable[owa.outcome.id][alternative.id]">NA</span>
+          </td>
       </tbody>
     </table>
   </div>

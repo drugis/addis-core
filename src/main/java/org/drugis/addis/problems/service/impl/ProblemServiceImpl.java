@@ -1,6 +1,7 @@
 package org.drugis.addis.problems.service.impl;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.drugis.addis.analyses.*;
@@ -11,7 +12,12 @@ import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.models.Model;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
+import org.drugis.addis.outcomes.repository.OutcomeRepository;
+import org.drugis.addis.patavitask.PataviTask;
+import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
@@ -24,9 +30,12 @@ import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 /**
@@ -62,16 +71,81 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   private MappingService mappingService;
 
+  @Inject
+  private ModelRepository modelRepository;
+
+  @Inject
+  private OutcomeRepository outcomeRepository;
+
+  @Inject
+  private PataviTaskRepository pataviTaskRepository;
+
   @Override
-  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException {
+  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
     if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
       return getSingleStudyBenefitRiskProblem(project, (SingleStudyBenefitRiskAnalysis) analysis);
     } else if (analysis instanceof NetworkMetaAnalysis) {
       return getNetworkMetaAnalysisProblem(project, (NetworkMetaAnalysis) analysis);
+    } else if (analysis instanceof MetaBenefitRiskAnalysis) {
+      return getMetaBenefitRiskAnalysisProblem(project, (MetaBenefitRiskAnalysis) analysis);
     }
     throw new RuntimeException("unknown analysis type");
+  }
+
+  private MetaBenefitRiskProblem getMetaBenefitRiskAnalysisProblem(Project project, MetaBenefitRiskAnalysis analysis) throws SQLException, IOException {
+    final List<Integer> networkModelIds = getInclusionIds(analysis, MbrOutcomeInclusion::getModelId);
+    final List<Integer> outcomeIds = getInclusionIds(analysis, MbrOutcomeInclusion::getOutcomeId);
+    final List<Model> models = modelRepository.get(networkModelIds);
+    final Map<Integer, Model> modelMap = models.stream().collect(Collectors.toMap(Model::getId, Function.identity()));
+    final List<Outcome> outcomes = outcomeRepository.get(outcomeIds);
+    final Map<Integer,PataviTask> pataviTaskMap = pataviTaskRepository.findByIds(models.stream().map(Model::getTaskId).collect(Collectors.toList()))
+            .stream().collect(Collectors.toMap(PataviTask::getId, Function.identity()));
+    final Map<Integer, PataviTask> tasksByModelId = models.stream().collect(Collectors.toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskId())));
+    final Map<Integer, JsonNode> resultsByTaskId = pataviTaskRepository.getResults(new ArrayList<>(pataviTaskMap.keySet()));
+
+
+    List<Intervention> includedAlternatives = analysis.getIncludedAlternatives();
+
+
+    Map<String, CriterionEntry> criteria = outcomes
+            .stream()
+            .collect(Collectors.toMap(Outcome::getName, o -> new CriterionEntry(o.getSemanticOutcomeUri(), o.getName())));
+    Map<String, AlternativeEntry> alternatives = includedAlternatives
+            .stream()
+            .collect(Collectors.toMap(Intervention::getName, i -> new AlternativeEntry(i.getSemanticInterventionUri(), i.getName())));
+
+
+    List<MetaBenefitRiskProblem.PerformanceTableEntry> performanceTable = new ArrayList<>(outcomes.size());
+    for(MbrOutcomeInclusion outcomeInclusion : analysis.getMbrOutcomeInclusions()) {
+
+//      String baseline = outcomeInclusion.getBaseline();
+//      Integer taskId = tasksByModelId.get(outcomeInclusion.getModelId()).getId();
+//      JsonNode taskResults = resultsByTaskId.get(taskId);
+//      JsonPath.<String>read(taskResults, "$.multivariateSummary");
+//      Map<String, Double> mu;
+//      List<String> rownames = new ArrayList<>();
+//      List<String> colnames new ArrayList<>();
+//      List<List<Double>> data = new ArrayList<>();
+//      MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters.Relative.CovarianceMatrix cov =
+//              new MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters.Relative.CovarianceMatrix(rownames, colnames, data);
+//      MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters.Relative relative =
+//              new MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters.Relative("dmnorm", mu, cov);
+//      MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters parameters =
+//              new MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters(baseline, relative);
+//      MetaBenefitRiskProblem.PerformanceTableEntry.Performance performance =
+//              new MetaBenefitRiskProblem.PerformanceTableEntry.Performance("relateive-logit-normal", parameters); // FIXME
+//      MetaBenefitRiskProblem.PerformanceTableEntry entry =
+//              new MetaBenefitRiskProblem.PerformanceTableEntry(outcome.getName(), performance);
+//      performanceTable.add(entry);
+    }
+
+    return new MetaBenefitRiskProblem(criteria, alternatives, performanceTable);
+  }
+
+  private List<Integer> getInclusionIds(MetaBenefitRiskAnalysis analysis, ToIntFunction<MbrOutcomeInclusion> idSelector) {
+    return analysis.getMbrOutcomeInclusions().stream().mapToInt(idSelector).boxed().collect(Collectors.toList());
   }
 
   private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws URISyntaxException {

@@ -19,7 +19,9 @@ define([], function() {
     }).absoluteScale;
 
     $scope.setBaselineDistribution = function(baselineDistribution) {
-      outcomeWithAnalysis.baselineDistribution = baselineDistribution;
+      baselineDistribution.name = baselineDistribution.selectedAlternative.name;
+      baselineDistribution.type = 'dmnorm';
+      delete baselineDistribution.selectedAlternative;
       setBaselineDistribution(baselineDistribution);
       $modalInstance.close();
     };

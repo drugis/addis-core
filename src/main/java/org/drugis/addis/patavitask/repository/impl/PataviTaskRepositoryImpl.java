@@ -27,7 +27,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by connor on 26-6-14.
@@ -121,7 +123,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
       ResultSet rs = statement.executeQuery();
       while (rs.next()) {
         result.add(rowMapper.mapRow(rs, i));
-        i++;
+        ++i;
       }
       return result;
     }
@@ -140,5 +142,31 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
     }
     ObjectMapper objectMapper = new ObjectMapper();
     return objectMapper.readTree(result).get("results");
+  }
+
+  @Override
+  public Map<Integer, JsonNode> getResults(List<Integer> taskIds) throws SQLException, IOException {
+    // Use different query for live psql db as psql does accept a set as part of the in clause
+    boolean isHsqlDrive = dataSource instanceof EmbeddedDatabase;
+    String query;
+    if (isHsqlDrive) {
+      query = "SELECT id, result FROM patavitask WHERE id IN(UNNEST(?)) ";
+    } else {
+      query = "SELECT id, result FROM patavitask WHERE id IN(select(UNNEST(?))) ";
+    }
+
+    try (Connection connection = dataSource.getConnection()) {
+      final PreparedStatement statement = connection.prepareStatement(query);
+      statement.setArray(1, connection.createArrayOf("int", taskIds.toArray()));
+
+      ObjectMapper objectMapper = new ObjectMapper();
+
+      ResultSet rs = statement.executeQuery();
+      Map<Integer, JsonNode> result = new HashMap<>();
+      while (rs.next()) {
+        result.put(rs.getInt("id"), objectMapper.readTree(rs.getString("result")).get("results"));
+      }
+      return result;
+    }
   }
 }

@@ -52,6 +52,11 @@ public class OutcomeRepositoryImpl implements OutcomeRepository {
   }
 
   @Override
+  public List<Outcome> get(List<Integer> outcomeIds) {
+    return null;
+  }
+
+  @Override
   public Outcome create(Account user, OutcomeCommand outcomeCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Outcome newOutcome = new Outcome(outcomeCommand.getProjectId(), outcomeCommand.getName(), outcomeCommand.getMotivation(), outcomeCommand.getSemanticOutcome());
     Project project = em.find(Project.class, newOutcome.getProject());

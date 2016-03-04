@@ -12,6 +12,11 @@ public class CriterionEntry {
   private PartialValueFunction pvf;
   private String uri;
 
+  public CriterionEntry(String criterionUri, String title) {
+    this.criterionUri = criterionUri;
+    this.title = title;
+  }
+
   public CriterionEntry(String criterionUri, String title, List<Double> scale, PartialValueFunction partialValueFunction) {
     this.criterionUri = criterionUri;
     this.title = title;

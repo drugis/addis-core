@@ -34,7 +34,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -91,7 +93,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException, URISyntaxException {
+  public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
     int projectId = 1;
     String projectVersion = "projectVersion";
     Project project = mock(Project.class);
@@ -171,7 +173,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisProblem() throws ResourceDoesNotExistException, URISyntaxException {
+  public void testGetNetworkMetaAnalysisProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
     String version = "version 1";
     Integer projectId = 2;
     Integer analysisId = 3;
@@ -238,7 +240,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNetworkAnalysisProblemWithInterventionInclusions() throws ResourceDoesNotExistException, URISyntaxException {
+  public void testGetNetworkAnalysisProblemWithInterventionInclusions() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
     String version = "version 1";
     Integer projectId = 2;
     Integer analysisId = 3;
@@ -302,7 +304,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNetworkAnalysisProblemWithCovaraites() throws ResourceDoesNotExistException, URISyntaxException {
+  public void testGetNetworkAnalysisProblemWithCovaraites() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
     String version = "version 1";
     Integer projectId = 2;
     Integer analysisId = 3;

@@ -14,6 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -67,6 +68,17 @@ public class ModelRepositoryImpl implements ModelRepository {
       throw new ObjectRetrievalFailureException("model not found", modelId);
     }
     return model;
+  }
+
+  @Override
+  public List<Model> get(List<Integer> modelIds) {
+    if(modelIds.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    TypedQuery<Model> query = em.createQuery("FROM Model WHERE id IN :modelIds", Model.class);
+    query.setParameter("modelIds", modelIds);
+    return query.getResultList();
   }
 
   @Override

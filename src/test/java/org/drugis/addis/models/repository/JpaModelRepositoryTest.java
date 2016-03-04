@@ -16,6 +16,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -132,6 +134,21 @@ public class JpaModelRepositoryTest {
     Integer modelId = 1;
     Model result = modelRepository.get(modelId);
     assertNotNull(result);
+  }
+
+  @Test
+  public void testGetByModelIds() {
+    List<Integer> modelIds = Arrays.asList(1, 2);
+    List<Model> result = modelRepository.get(modelIds);
+    assertNotNull(result);
+    assertEquals(2, result.size());
+  }
+
+  @Test
+  public void testGetByModelIdsWithEmptyList() {
+    List<Integer> modelIds = Collections.emptyList();
+    List<Model> result = modelRepository.get(modelIds);
+    assertTrue(result.isEmpty());
   }
 
   @Test(expected = DataAccessException.class)
