@@ -7,8 +7,7 @@ import org.drugis.addis.analyses.service.impl.AnalysisServiceImpl;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
-import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
@@ -27,6 +26,8 @@ import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+
+;
 
 public class AnalysisServiceTest {
 
@@ -106,7 +107,7 @@ public class AnalysisServiceTest {
   }
 
   @Test(expected = MethodNotAllowedException.class)
-  public void testUpdateLockedAnalysisFails() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelTypeException, SQLException, InvalidHeterogeneityTypeException {
+  public void testUpdateLockedAnalysisFails() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelException, SQLException  {
     Integer analysisId = -6;
     Account user = mock(Account.class);
     Integer projectId = 1;
@@ -160,7 +161,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void testBuildInitialOutcomeInclusionsWithoutPrimary() throws InvalidModelTypeException, InvalidHeterogeneityTypeException, SQLException {
+  public void testBuildInitialOutcomeInclusionsWithoutPrimary() throws InvalidModelException, SQLException {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
@@ -186,7 +187,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void testBuildInitialOutcomeInclusionsWithPrimary() throws InvalidModelTypeException, InvalidHeterogeneityTypeException, SQLException {
+  public void testBuildInitialOutcomeInclusionsWithPrimary() throws InvalidModelException , SQLException {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;

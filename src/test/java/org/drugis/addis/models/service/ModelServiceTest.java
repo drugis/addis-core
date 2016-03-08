@@ -7,8 +7,7 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.controller.command.*;
-import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
-import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.impl.ModelServiceImpl;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
@@ -29,6 +28,8 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+
+;
 
 /**
  * Created by daan on 24-6-14.
@@ -79,7 +80,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testCreateNetwork() throws InvalidModelTypeException, ResourceDoesNotExistException, InvalidHeterogeneityTypeException {
+  public void testCreateNetwork() throws InvalidModelException, ResourceDoesNotExistException  {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_FIXED;
@@ -115,7 +116,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testCreateHeterogeneityStdDevNetwork() throws InvalidModelTypeException, ResourceDoesNotExistException, InvalidHeterogeneityTypeException {
+  public void testCreateHeterogeneityStdDevNetwork() throws InvalidModelException, ResourceDoesNotExistException  {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_RANDOM;
@@ -148,7 +149,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testCreateHeterogeneityVarianceNetwork() throws InvalidModelTypeException, ResourceDoesNotExistException, InvalidHeterogeneityTypeException {
+  public void testCreateHeterogeneityVarianceNetwork() throws InvalidModelException, ResourceDoesNotExistException  {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_FIXED;
@@ -180,7 +181,7 @@ public class ModelServiceTest {
     verify(modelRepository).persist(internalModel);
   }
   @Test
-  public void testCreateHeterogeneityPrecisionNetwork() throws InvalidModelTypeException, ResourceDoesNotExistException, InvalidHeterogeneityTypeException {
+  public void testCreateHeterogeneityPrecisionNetwork() throws InvalidModelException, ResourceDoesNotExistException  {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_FIXED;
@@ -212,7 +213,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testCreatePairwise() throws InvalidModelTypeException, ResourceDoesNotExistException, InvalidHeterogeneityTypeException {
+  public void testCreatePairwise() throws InvalidModelException, ResourceDoesNotExistException  {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_FIXED;
@@ -249,7 +250,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testCreateMetaRegression() throws InvalidModelTypeException, ResourceDoesNotExistException, InvalidHeterogeneityTypeException {
+  public void testCreateMetaRegression() throws InvalidModelException, ResourceDoesNotExistException  {
     Integer analysisId = 55;
     String modelTitle = "model title";
     String linearModel = Model.LINEAR_MODEL_FIXED;
@@ -312,7 +313,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testCheckOwnership() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelTypeException {
+  public void testCheckOwnership() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelException {
     Integer modelId = 1;
     Integer analysisId = 2;
     Integer projectId = 3;
@@ -333,7 +334,7 @@ public class ModelServiceTest {
   }
 
   @Test(expected = MethodNotAllowedException.class)
-  public void testCheckOwnershipOnNonOwnedModel() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelTypeException {
+  public void testCheckOwnershipOnNonOwnedModel() throws ResourceDoesNotExistException, MethodNotAllowedException, InvalidModelException {
     Integer modelId = 1;
     Integer analysisId = 2;
     Integer projectId = 3;
@@ -355,7 +356,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testyIncreaseRunLength() throws InvalidModelTypeException, MethodNotAllowedException, InvalidHeterogeneityTypeException {
+  public void testyIncreaseRunLength() throws InvalidModelException, MethodNotAllowedException  {
     Integer modelId = 1;
     String modelTitle = "new title";
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
@@ -392,7 +393,7 @@ public class ModelServiceTest {
   }
 
   @Test(expected = MethodNotAllowedException.class)
-  public void testyIncreaseRunLengthWithInvalidSettings() throws InvalidModelTypeException, MethodNotAllowedException, InvalidHeterogeneityTypeException {
+  public void testyIncreaseRunLengthWithInvalidSettings() throws InvalidModelException, MethodNotAllowedException  {
     Integer modelId = 1;
     String modelTitle = "new title";
     ModelTypeCommand modelTypeCommand = new ModelTypeCommand("network", null);
@@ -436,7 +437,7 @@ public class ModelServiceTest {
   }
 
   @Test
-  public void testQueryConsistencyModels() throws InvalidModelTypeException, InvalidHeterogeneityTypeException, SQLException {
+  public void testQueryConsistencyModels() throws InvalidModelException , SQLException {
     Integer projectId = 1;
     Integer analysisId = 3;
     String modelTitle = "title";

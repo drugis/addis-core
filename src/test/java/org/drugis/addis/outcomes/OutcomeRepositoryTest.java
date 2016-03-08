@@ -16,7 +16,9 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -51,6 +53,12 @@ public class OutcomeRepositoryTest {
   @Test(expected = ResourceDoesNotExistException.class)
   public void testGetFromWrongProjectFails() throws ResourceDoesNotExistException {
     outcomeRepository.get(2, 1);
+  }
+
+  @Test
+  public void testGetByProjectAndIds() throws ResourceDoesNotExistException {
+    List<Outcome> outcome = outcomeRepository.get(1, Arrays.asList(1, 2));
+    assertEquals(2, outcome.size());
   }
 
   @Test

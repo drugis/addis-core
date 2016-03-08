@@ -2,7 +2,7 @@ package org.drugis.addis.patavitask.service.impl;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.PataviTaskUriHolder;
@@ -37,7 +37,7 @@ public class PataviTaskServiceImpl implements PataviTaskService {
   ProblemService problemService;
 
   @Override
-  public PataviTaskUriHolder getPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelTypeException, URISyntaxException {
+  public PataviTaskUriHolder getPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException {
     logger.trace("PataviTaskServiceImpl.getPataviTaskUriHolder, projectId = " + projectId + " analysisId = " + analysisId + "modelId = " + modelId);
     Model model = modelRepository.find(modelId);
     if(model == null) {
@@ -57,7 +57,7 @@ public class PataviTaskServiceImpl implements PataviTaskService {
               || Model.REGRESSION_MODEL_TYPE.equals(model.getModelTypeTypeAsString())) {
         pataviTask = pataviTaskRepository.createPataviTask(problem, model);
       } else {
-        throw new InvalidModelTypeException("Invalid model type");
+        throw new InvalidModelException("Invalid model type");
       }
 
       pataviTaskId = pataviTask.getId();

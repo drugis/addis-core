@@ -1,5 +1,6 @@
 package org.drugis.addis.problems;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.drugis.addis.analyses.*;
@@ -10,7 +11,13 @@ import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.models.Model;
+import org.drugis.addis.models.exceptions.InvalidModelException;
+import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
+import org.drugis.addis.outcomes.repository.OutcomeRepository;
+import org.drugis.addis.patavitask.PataviTask;
+import org.drugis.addis.patavitask.repository.PataviTaskRepository;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
@@ -42,6 +49,8 @@ import java.util.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+;
+
 /**
  * Created by daan on 3/21/14.
  */
@@ -66,6 +75,15 @@ public class ProblemServiceTest {
   InterventionRepository interventionRepository;
 
   @Mock
+  ModelRepository modelRepository;
+
+  @Mock
+  OutcomeRepository outcomeRepository;
+
+  @Mock
+  PataviTaskRepository pataviTaskRepository;
+
+  @Mock
   MappingService mappingService;
 
   @Mock
@@ -87,9 +105,8 @@ public class ProblemServiceTest {
 
   @After
   public void cleanUp() throws URISyntaxException {
-    verify(mappingService).getVersionedUuid(namespaceUid);
     verifyNoMoreInteractions(analysisRepository, projectRepository, singleStudyBenefitRiskAnalysisRepository,
-            interventionRepository, trialverseService, triplestoreService, mappingService);
+            interventionRepository, trialverseService, triplestoreService, mappingService, modelRepository);
   }
 
   @Test
@@ -161,6 +178,7 @@ public class ProblemServiceTest {
     verify(analysisRepository).get(analysisId);
     verify(triplestoreService).getSingleStudyMeasurements(versionedUuid, studyUid, projectVersion, outcomeUids, interventionUids);
     verify(performanceTablebuilder).build(measurementRows);
+    verify(mappingService).getVersionedUuid(namespaceUid);
 
     assertNotNull(actualProblem);
     assertNotNull(actualProblem.getTitle());
@@ -232,6 +250,7 @@ public class ProblemServiceTest {
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
     verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"), Collections.EMPTY_LIST);
+    verify(mappingService).getVersionedUuid(namespaceUid);
 
     assertNotNull(problem);
     assertEquals(3, problem.getEntries().size());
@@ -299,6 +318,7 @@ public class ProblemServiceTest {
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
     verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), Collections.EMPTY_LIST);
+    verify(mappingService).getVersionedUuid(namespaceUid);
 
     assertEquals(2, problem.getEntries().size());
   }
@@ -370,10 +390,134 @@ public class ProblemServiceTest {
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
     verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), includedCovariateKeys);
+    verify(mappingService).getVersionedUuid(namespaceUid);
 
     assertEquals(2, problem.getEntries().size());
     assertEquals(2, problem.getStudyLevelCovariates().size());
     assertTrue(problem.getStudyLevelCovariates().get("study1").keySet().contains("cov1"));
+  }
+
+  @Test
+  public void testGetMetaBRProblem() throws ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, InvalidModelException {
+
+    String version = "version 1";
+    Integer projectId = 1;
+    Integer analysisId = 2;
+    String title = "title";
+
+    Project project = mock(Project.class);
+    when(project.getId()).thenReturn(projectId);
+    when(project.getNamespaceUid()).thenReturn(namespaceUid);
+    when(project.getDatasetVersion()).thenReturn(version);
+
+    Set<Intervention> includedAlternatives = new HashSet<>(3);
+    Intervention intervention1 = new Intervention(11, projectId, "fluox", "", new SemanticIntervention("uri1", "fluoxS"));
+    Intervention intervention2 = new Intervention(12, projectId, "parox", "", new SemanticIntervention("uri2", "paroxS"));
+    Intervention intervention3 = new Intervention(13, projectId, "sertr", "", new SemanticIntervention("uri3", "sertrS"));
+    includedAlternatives.addAll(Arrays.asList(intervention1, intervention2, intervention3));
+    Intervention intervention4 = new Intervention(14, projectId, "foo", "", new SemanticIntervention("uri4", "fooS"));
+    List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3, intervention4);
+
+    PataviTask pataviTask1 = new PataviTask(41, "gemtc", "problem");
+    PataviTask pataviTask2 = new PataviTask(42, "gemtc", "problem");
+    List<PataviTask> pataviTasks = Arrays.asList(pataviTask1, pataviTask2);
+
+    Model model1 = new Model.ModelBuilder(analysisId, "model 1")
+            .id(71)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .taskId(pataviTask1.getId())
+            .link(Model.LINK_IDENTITY)
+            .build();
+    Model model2 = new Model.ModelBuilder(analysisId, "model 2")
+            .id(72)
+            .modelType(Model.NETWORK_MODEL_TYPE)
+            .taskId(pataviTask2.getId())
+            .link(Model.LINK_CLOGLOG)
+            .build();
+    List<Model> models = Arrays.asList(model1, model2);
+
+    Outcome outcome1 = new Outcome(21, projectId, "ham", "", new SemanticOutcome("outUri1", "hamS"));
+    Outcome outcome2 = new Outcome(22, projectId, "headache", "", new SemanticOutcome("outUri2", "headacheS"));
+    List<Outcome> outcomes = Arrays.asList(outcome1, outcome2);
+
+
+    MetaBenefitRiskAnalysis analysis = new MetaBenefitRiskAnalysis(analysisId, projectId, title, includedAlternatives);
+    Integer nma1Id = 31;
+    Integer nma2Id = 32;
+    String baseline1JsonString = "{\n" +
+            "\"scale\": \"log odds\",\n" +
+            "\"mu\": 4,\n" +
+            "\"sigma\": 6,\n" +
+            "\"name\": \"fluox\"\n" +
+            "}";
+    String baseline2JsonString ="{\n" +
+            "\"scale\": \"log odds\",\n" +
+            "\"mu\": 4,\n" +
+            "\"sigma\": 6,\n" +
+            "\"name\": \"fluox\"\n" +
+            "}";;
+
+    MbrOutcomeInclusion inclusion1 = new MbrOutcomeInclusion(analysisId, outcome1.getId(), nma1Id, model1.getId());
+    inclusion1.setBaseline(baseline1JsonString);
+    MbrOutcomeInclusion inclusion2 = new MbrOutcomeInclusion(analysisId, outcome2.getId(), nma2Id, model2.getId());
+    inclusion2.setBaseline(baseline2JsonString);
+    List<MbrOutcomeInclusion> outcomeInclusions = Arrays.asList(inclusion1, inclusion2);
+    analysis.setMbrOutcomeInclusions(outcomeInclusions);
+
+    ObjectMapper om = new ObjectMapper();
+    String results1 = "{\n" +
+            "  \"multivariateSummary\": {\n" +
+            "    \"11\": {\n" +
+            "      \"mu\": {\n" +
+            "        \"d.11.12\": 0.55302,\n" +
+            "        \"d.11.13\": 0.46622\n" +
+            "      },\n" +
+            "      \"sigma\": {\n" +
+            "        \"d.11.12\": {\n" +
+            "          \"d.11.12\": 74.346,\n" +
+            "          \"d.11.13\": 1.9648\n" +
+            "        },\n" +
+            "        \"d.11.13\": {\n" +
+            "          \"d.11.12\": 1.9648,\n" +
+            "          \"d.11.13\": 74.837\n" +
+            "        }\n" +
+            "      }\n" +
+            "    }\n" +
+            "  }\n" +
+            "}\n";
+
+    Map<Integer, JsonNode> results = new HashMap<>();
+    JsonNode task1Results = om.readTree(results1);
+    JsonNode task2Results = om.readTree(results1);
+    results.put(pataviTask1.getId(), task1Results);
+    results.put(pataviTask2.getId(), task2Results);
+
+    List<Integer> modelIds = Arrays.asList(model2.getId(), model1.getId());
+    List<Integer> outcomeIds = Arrays.asList(outcome2.getId(), outcome1.getId());
+    when(projectRepository.get(projectId)).thenReturn(project);
+    when(modelRepository.get(modelIds)).thenReturn(models);
+    when(outcomeRepository.get(projectId, outcomeIds)).thenReturn(outcomes);
+    when(analysisRepository.get(analysisId)).thenReturn(analysis);
+    List<Integer> taskIds = Arrays.asList(model1.getTaskId(), model2.getTaskId());
+    when(pataviTaskRepository.findByIds(taskIds)).thenReturn(pataviTasks);
+    when(pataviTaskRepository.getResults(taskIds)).thenReturn(results);
+    when(interventionRepository.query(projectId)).thenReturn(interventions);
+
+    MetaBenefitRiskProblem problem = (MetaBenefitRiskProblem) problemService.getProblem(projectId, analysisId);
+
+    verify(projectRepository).get(projectId);
+    verify(modelRepository).get(modelIds);
+    verify(outcomeRepository).get(projectId, outcomeIds);
+    verify(analysisRepository).get(analysisId);
+    verify(pataviTaskRepository).findByIds(taskIds);
+    verify(pataviTaskRepository).getResults(taskIds);
+    verify(interventionRepository).query(projectId);
+
+    assertEquals(3, problem.getAlternatives().size());
+    assertEquals(2, problem.getCriteria().size());
+    assertEquals(2, problem.getPerformanceTable().size());
+    assertEquals("relative-cloglog-normal", problem.getPerformanceTable().get(0).getPerformance().getType());
+    assertEquals("relative-normal", problem.getPerformanceTable().get(1).getPerformance().getType());
   }
 
 

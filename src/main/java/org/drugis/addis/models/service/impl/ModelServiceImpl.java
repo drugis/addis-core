@@ -6,8 +6,7 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.controller.command.*;
-import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
-import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.models.service.ModelService;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
@@ -39,7 +38,7 @@ public class ModelServiceImpl implements ModelService {
 
   @Override
 
-  public Model createModel(Integer analysisId, CreateModelCommand command) throws ResourceDoesNotExistException, InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public Model createModel(Integer analysisId, CreateModelCommand command) throws ResourceDoesNotExistException, InvalidModelException {
     ModelTypeCommand modelTypeCommand = command.getModelType();
     HeterogeneityPriorCommand heterogeneityPrior = command.getHeterogeneityPrior();
     String heterogeneityPriorType = determineHeterogeneityPriorType(heterogeneityPrior);
@@ -117,7 +116,7 @@ public class ModelServiceImpl implements ModelService {
   }
 
   @Override
-  public void increaseRunLength(UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, InvalidModelTypeException {
+  public void increaseRunLength(UpdateModelCommand updateModelCommand) throws MethodNotAllowedException, InvalidModelException {
     Model oldModel = modelRepository.get(updateModelCommand.getId());
 
     // check that increase is not a decrease

@@ -1,12 +1,13 @@
 package org.drugis.addis.models;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.models.exceptions.InvalidHeterogeneityTypeException;
-import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+
+;
 
 /**
  * Created by connor on 7/3/15.
@@ -29,7 +30,7 @@ public class ModelTest {
   private Double shape = 3.3;
 
   @Before
-  public void setup() throws InvalidModelTypeException, InvalidHeterogeneityTypeException {
+  public void setup() throws InvalidModelException  {
     networkModel = new Model.ModelBuilder(analysisId, title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.NETWORK_MODEL_TYPE)

@@ -1,10 +1,12 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$stateParams', '$state', '$modal',
-    'AnalysisResource', 'InterventionResource', 'OutcomeResource', 'MetaBenefitRiskService', 'ModelResource'
+    'AnalysisResource', 'InterventionResource', 'OutcomeResource',
+    'MetaBenefitRiskService', 'ModelResource', 'ProblemResource', 'MCDAPataviService'
   ];
   var MetBenefitRiskStep2Controller = function($scope, $q, $stateParams, $state, $modal,
-    AnalysisResource, InterventionResource, OutcomeResource, MetaBenefitRiskService, ModelResource) {
+    AnalysisResource, InterventionResource, OutcomeResource, MetaBenefitRiskService,
+    ModelResource, ProblemResource, MCDAPataviService) {
 
     $scope.goToStep1 = goToStep1;
     $scope.openDistributionModal = openDistributionModal;
@@ -36,9 +38,19 @@ define(['lodash'], function(_) {
           .map(MetaBenefitRiskService.addModelsGroup);
 
         $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models);
-          // // problem ?
-          // ProblemResource.
-          // WorkspaceService.MCDAPataviService.run(_.extend(problem, {method: 'scales'}))
+
+        $scope.scales = ProblemResource.get($stateParams).$promise.then(function(problem) {
+          return MCDAPataviService.run(_.extend(problem, {
+            method: 'scales'
+          })).then(function(result) {
+            console.log('MCDAPataviService.run succes');
+            console.log('result = ' + JSON.stringify(result));
+            return result.results;
+          }, function() {
+            console.log('MCDAPataviService.run error');
+          });
+        });
+
       });
 
       $scope.alternatives = alternatives.map(function(alternative) {
@@ -99,9 +111,11 @@ define(['lodash'], function(_) {
           },
           setBaselineDistribution: function() {
             return function(baseline) {
-              $scope.analysis.mbrOutcomeInclusions.map(function(mbrOutcomeInclusion){
-                if(mbrOutcomeInclusion.outcomeId === owa.outcome.id) {
-                  return _.extend(mbrOutcomeInclusion, {baseline: baseline});
+              $scope.analysis.mbrOutcomeInclusions.map(function(mbrOutcomeInclusion) {
+                if (mbrOutcomeInclusion.outcomeId === owa.outcome.id) {
+                  return _.extend(mbrOutcomeInclusion, {
+                    baseline: baseline
+                  });
                 } else {
                   return mbrOutcomeInclusion;
                 }

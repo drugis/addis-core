@@ -1,7 +1,7 @@
 package org.drugis.addis.models.repository.impl;
 
 import org.drugis.addis.models.Model;
-import org.drugis.addis.models.exceptions.InvalidModelTypeException;
+import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.patavitask.PataviTask;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
@@ -45,7 +45,7 @@ public class ModelRepositoryImpl implements ModelRepository {
 
 
   @Override
-  public Model persist(Model model) throws InvalidModelTypeException {
+  public Model persist(Model model) throws InvalidModelException {
     em.persist(model);
     return model;
   }

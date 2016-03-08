@@ -1,6 +1,7 @@
 package org.drugis.addis.problems.service.impl;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -80,6 +81,8 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   private PataviTaskRepository pataviTaskRepository;
 
+  private ObjectMapper objectMapper = new ObjectMapper();
+
   @Override
   public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
     Project project = projectRepository.get(projectId);
@@ -99,46 +102,118 @@ public class ProblemServiceImpl implements ProblemService {
     final List<Integer> outcomeIds = getInclusionIds(analysis, MbrOutcomeInclusion::getOutcomeId);
     final List<Model> models = modelRepository.get(networkModelIds);
     final Map<Integer, Model> modelMap = models.stream().collect(Collectors.toMap(Model::getId, Function.identity()));
-    final List<Outcome> outcomes = outcomeRepository.get(outcomeIds);
+    final Map<String, Outcome> outcomesByName = outcomeRepository.get(project.getId(), outcomeIds).stream().collect(Collectors.toMap(Outcome::getName, Function.identity()));
     final Map<Integer,PataviTask> pataviTaskMap = pataviTaskRepository.findByIds(models.stream().map(Model::getTaskId).collect(Collectors.toList()))
             .stream().collect(Collectors.toMap(PataviTask::getId, Function.identity()));
     final Map<Integer, PataviTask> tasksByModelId = models.stream().collect(Collectors.toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskId())));
-    final Map<Integer, JsonNode> resultsByTaskId = pataviTaskRepository.getResults(new ArrayList<>(pataviTaskMap.keySet()));
-
+    ArrayList<Integer> taskIds = new ArrayList<>(pataviTaskMap.keySet());
+    final Map<Integer, JsonNode> resultsByTaskId = pataviTaskRepository.getResults(taskIds);
 
     List<Intervention> includedAlternatives = analysis.getIncludedAlternatives();
 
-
-    Map<String, CriterionEntry> criteria = outcomes
+    Map<String, CriterionEntry> criteria = outcomesByName.values()
             .stream()
             .collect(Collectors.toMap(Outcome::getName, o -> new CriterionEntry(o.getSemanticOutcomeUri(), o.getName())));
     Map<String, AlternativeEntry> alternatives = includedAlternatives
             .stream()
             .collect(Collectors.toMap(Intervention::getName, i -> new AlternativeEntry(i.getSemanticInterventionUri(), i.getName())));
+    final Map<Integer, Intervention> includedInterventionsById = includedAlternatives.stream().collect(Collectors.toMap(Intervention::getId, Function.identity()));
+    final  Map<Integer, Intervention> interventions = interventionRepository.query(project.getId()).stream().collect(Collectors.toMap(Intervention::getId, Function.identity()));;
+    final Map<String, Intervention> includedInterventionsByName = includedAlternatives.stream().collect(Collectors.toMap(Intervention::getName, Function.identity()));
 
-
-    List<MetaBenefitRiskProblem.PerformanceTableEntry> performanceTable = new ArrayList<>(outcomes.size());
+    List<MetaBenefitRiskProblem.PerformanceTableEntry> performanceTable = new ArrayList<>(outcomesByName.size());
     for(MbrOutcomeInclusion outcomeInclusion : analysis.getMbrOutcomeInclusions()) {
 
-//      String baseline = outcomeInclusion.getBaseline();
-//      Integer taskId = tasksByModelId.get(outcomeInclusion.getModelId()).getId();
-//      JsonNode taskResults = resultsByTaskId.get(taskId);
-//      JsonPath.<String>read(taskResults, "$.multivariateSummary");
-//      Map<String, Double> mu;
-//      List<String> rownames = new ArrayList<>();
-//      List<String> colnames new ArrayList<>();
-//      List<List<Double>> data = new ArrayList<>();
-//      MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters.Relative.CovarianceMatrix cov =
-//              new MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters.Relative.CovarianceMatrix(rownames, colnames, data);
-//      MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters.Relative relative =
-//              new MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters.Relative("dmnorm", mu, cov);
-//      MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters parameters =
-//              new MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters(baseline, relative);
-//      MetaBenefitRiskProblem.PerformanceTableEntry.Performance performance =
-//              new MetaBenefitRiskProblem.PerformanceTableEntry.Performance("relateive-logit-normal", parameters); // FIXME
-//      MetaBenefitRiskProblem.PerformanceTableEntry entry =
-//              new MetaBenefitRiskProblem.PerformanceTableEntry(outcome.getName(), performance);
-//      performanceTable.add(entry);
+      Baseline baseline = objectMapper.readValue(outcomeInclusion.getBaseline(), Baseline.class);
+      Integer taskId = tasksByModelId.get(outcomeInclusion.getModelId()).getId();
+      JsonNode taskResults = resultsByTaskId.get(taskId);
+
+      Map<Integer, MultiVariateDistribution> distributionByInterventionId = objectMapper
+              .readValue(taskResults.get("multivariateSummary").toString(),  new TypeReference<Map<Integer, MultiVariateDistribution>>() {});
+
+      Intervention baselineIntervention = includedInterventionsByName.get(baseline.getName());
+      MultiVariateDistribution distr = distributionByInterventionId.get(baselineIntervention.getId());
+      //
+      Map<String,Double> mu = distr.getMu().entrySet().stream()
+              .collect(Collectors.toMap(
+                      e -> {
+                       String key = e.getKey();
+                        int interventionId = Integer.parseInt(key.substring(key.lastIndexOf('.') + 1));
+                        return interventions.get(interventionId).getName();
+                      },
+                      Map.Entry::getValue));
+
+      // filter mu
+      mu = mu.entrySet().stream().filter(m -> includedInterventionsByName.keySet().contains(m.getKey()))
+              .collect(Collectors.toMap(m -> m.getKey(), m -> m.getValue()));
+
+
+      List<String> rowNames = new ArrayList<>();
+      rowNames.add(baseline.getName());
+      rowNames.addAll(mu.keySet());
+      final List<String> colNames = rowNames;
+      final List<List<Double>> data = new ArrayList<>(rowNames.size());
+      // add baseLine row (which means covariance is zero)
+      final Map<String, Map<String, Double>> sigma = distr.getSigma();
+
+
+      Map<String, Map<String, Double>> sigmaByInterventionName = distr.getSigma().entrySet().stream().collect(Collectors.toMap(
+              e -> {
+                String key = e.getKey();
+                int interventionId = Integer.parseInt(key.substring(key.lastIndexOf('.') + 1));
+                return interventions.get(interventionId).getName();
+              },
+              Map.Entry::getValue));
+
+      //filter sigma comparison to only included comparisons for included interventions
+      sigmaByInterventionName  = sigmaByInterventionName.entrySet().stream().filter(m -> includedInterventionsByName.keySet().contains(m.getKey()))
+              .collect(Collectors.toMap(m -> m.getKey(), m -> m.getValue()));
+
+      Map<String, Map<String, Double>> collect = sigmaByInterventionName.entrySet().stream().collect(Collectors.toMap(
+              Map.Entry::getKey,
+              e -> e.getValue().entrySet().stream().filter(m -> {
+                String key = m.getKey();
+                int interventionId = Integer.parseInt(key.substring(key.lastIndexOf('.') + 1));
+                return includedInterventionsById.keySet().contains(interventionId);
+              })
+              .collect(Collectors.toMap(m -> m.getKey(), m -> m.getValue()))
+      ));
+
+      List<String> sigmaKeys = new ArrayList<>(collect.keySet());
+
+      // setup data structure and init with null values
+      for(int i=0; i<rowNames.size(); ++i){
+        List<Double> row = new ArrayList<>(colNames.size());
+        for(int j=0; j<colNames.size(); ++j) {
+          row.add(0.0);
+        }
+        data.add(row);
+      }
+
+      for(int i=1; i<rowNames.size(); ++i){
+        for(int j=1; j<colNames.size(); ++j) {
+            data.get(i).set(j, collect.get(sigmaKeys.get(i-1)).get(sigmaKeys.get(j-1)));
+        }
+      }
+
+      MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters.Relative.CovarianceMatrix cov =
+              new MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters.Relative.CovarianceMatrix(rowNames, colNames, data);
+      MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters.Relative relative =
+              new MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters.Relative("dmnorm", mu, cov);
+      MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters parameters =
+              new MetaBenefitRiskProblem.PerformanceTableEntry.Performance.Parameters(outcomeInclusion.getBaseline(), relative);
+      String modelLinkType = modelMap.get(outcomeInclusion.getModelId()).getLink();
+
+      String modelPerformanceType = "relative-normal";
+      if(!Model.LINK_IDENTITY.equals(modelLinkType)){
+         modelPerformanceType = "relative-" + modelLinkType + "-normal";
+      }
+
+      MetaBenefitRiskProblem.PerformanceTableEntry.Performance performance =
+              new MetaBenefitRiskProblem.PerformanceTableEntry.Performance(modelPerformanceType, parameters);
+      MetaBenefitRiskProblem.PerformanceTableEntry entry =
+              new MetaBenefitRiskProblem.PerformanceTableEntry("criterion", performance);
+      performanceTable.add(entry);
     }
 
     return new MetaBenefitRiskProblem(criteria, alternatives, performanceTable);

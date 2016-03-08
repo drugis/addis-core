@@ -103,7 +103,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
   }
 
   @Override
-  public List<PataviTask> findByIds(List<Integer> ids) throws SQLException {
+  public List<PataviTask> findByIds(List<Integer> taskIds) throws SQLException {
 
     // Use different query for live psql db as psql does accept a set as part of the in clause
     boolean isHsqlDrive = dataSource instanceof EmbeddedDatabase;
@@ -116,7 +116,7 @@ public class PataviTaskRepositoryImpl implements PataviTaskRepository {
 
     try (Connection connection = dataSource.getConnection()) {
       final PreparedStatement statement = connection.prepareStatement(query);
-      statement.setArray(1, connection.createArrayOf("int", ids.toArray()));
+      statement.setArray(1, connection.createArrayOf("int", taskIds.toArray()));
 
       List<PataviTask> result = new ArrayList<>();
       int i = 0;

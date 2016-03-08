@@ -20,7 +20,7 @@ public interface PataviTaskRepository {
 
   PataviTask createPataviTask(NetworkMetaAnalysisProblem problem, Model model) throws IOException, SQLException;
 
-  List<PataviTask> findByIds(List<Integer> ids) throws SQLException;
+  List<PataviTask> findByIds(List<Integer> taskIds) throws SQLException;
 
   void delete(Integer id);
 

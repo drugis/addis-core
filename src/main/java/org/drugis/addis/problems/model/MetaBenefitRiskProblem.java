@@ -10,10 +10,26 @@ import java.util.Map;
  */
 public class MetaBenefitRiskProblem extends AbstractProblem {
 
-  private List<CriterionEntry> criteria;
-  private List<AlternativeEntry> alternatives;
+  private Map<String, CriterionEntry> criteria;
+  private Map<String, AlternativeEntry> alternatives;
+  private List<PerformanceTableEntry> performanceTable;
 
   public MetaBenefitRiskProblem(Map<String, CriterionEntry> criteria, Map<String, AlternativeEntry> alternatives, List<PerformanceTableEntry> performanceTable) {
+    this.criteria = criteria;
+    this.alternatives = alternatives;
+    this.performanceTable = performanceTable;
+  }
+
+  public Map<String, CriterionEntry> getCriteria() {
+    return criteria;
+  }
+
+  public Map<String, AlternativeEntry> getAlternatives() {
+    return alternatives;
+  }
+
+  public List<PerformanceTableEntry> getPerformanceTable() {
+    return performanceTable;
   }
 
   public static class PerformanceTableEntry {
@@ -222,7 +238,7 @@ public class MetaBenefitRiskProblem extends AbstractProblem {
             return result;
           }
 
-          public class CovarianceMatrix {
+          public static class CovarianceMatrix {
             private List<String> rownames;
             private List<String> colnames;
             private List<List<Double>> data;
