@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
@@ -145,41 +147,31 @@ public class ProblemServiceImpl implements ProblemService {
 
       // filter mu
       mu = mu.entrySet().stream().filter(m -> includedInterventionsByName.keySet().contains(m.getKey()))
-              .collect(Collectors.toMap(m -> m.getKey(), m -> m.getValue()));
+              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 
       List<String> rowNames = new ArrayList<>();
       rowNames.add(baseline.getName());
       rowNames.addAll(mu.keySet());
       final List<String> colNames = rowNames;
-      final List<List<Double>> data = new ArrayList<>(rowNames.size());
-      // add baseLine row (which means covariance is zero)
+
+      Map<Pair<String, String>, Double> dataMap = new HashMap<>();
+
       final Map<String, Map<String, Double>> sigma = distr.getSigma();
+      for(String interventionY : rowNames) {
+        for (String interventionX: rowNames) {
+          if (!interventionX.equals(baseline.getName()) && !interventionY.equals(baseline.getName())) {
+            Double value =
+                sigma
+                    .get(getD(includedInterventionsByName, baseline.getName(), interventionX))
+                    .get(getD(includedInterventionsByName, baseline.getName(), interventionY));
+            dataMap.put(new ImmutablePair<>(interventionX, interventionY), value);
+            dataMap.put(new ImmutablePair<>(interventionY, interventionX), value);
+          }
+        }
+      }
 
-
-      Map<String, Map<String, Double>> sigmaByInterventionName = distr.getSigma().entrySet().stream().collect(Collectors.toMap(
-              e -> {
-                String key = e.getKey();
-                int interventionId = Integer.parseInt(key.substring(key.lastIndexOf('.') + 1));
-                return interventions.get(interventionId).getName();
-              },
-              Map.Entry::getValue));
-
-      //filter sigma comparison to only included comparisons for included interventions
-      sigmaByInterventionName  = sigmaByInterventionName.entrySet().stream().filter(m -> includedInterventionsByName.keySet().contains(m.getKey()))
-              .collect(Collectors.toMap(m -> m.getKey(), m -> m.getValue()));
-
-      Map<String, Map<String, Double>> collect = sigmaByInterventionName.entrySet().stream().collect(Collectors.toMap(
-              Map.Entry::getKey,
-              e -> e.getValue().entrySet().stream().filter(m -> {
-                String key = m.getKey();
-                int interventionId = Integer.parseInt(key.substring(key.lastIndexOf('.') + 1));
-                return includedInterventionsById.keySet().contains(interventionId);
-              })
-              .collect(Collectors.toMap(m -> m.getKey(), m -> m.getValue()))
-      ));
-
-      List<String> sigmaKeys = new ArrayList<>(collect.keySet());
+      final List<List<Double>> data = new ArrayList<>(rowNames.size());
 
       // setup data structure and init with null values
       for(int i=0; i<rowNames.size(); ++i){
@@ -192,7 +184,7 @@ public class ProblemServiceImpl implements ProblemService {
 
       for(int i=1; i<rowNames.size(); ++i){
         for(int j=1; j<colNames.size(); ++j) {
-            data.get(i).set(j, collect.get(sigmaKeys.get(i-1)).get(sigmaKeys.get(j-1)));
+            data.get(i).set(j, dataMap.get(ImmutablePair.of(rowNames.get(i), colNames.get(j))));
         }
       }
 
@@ -217,6 +209,10 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     return new MetaBenefitRiskProblem(criteria, alternatives, performanceTable);
+  }
+
+  private String getD(Map<String, Intervention> includedInterventionsByName, String base, String otherIntervention) {
+    return "d." + includedInterventionsByName.get(base).getId() + '.' +  includedInterventionsByName.get(otherIntervention).getId();
   }
 
   private List<Integer> getInclusionIds(MetaBenefitRiskAnalysis analysis, ToIntFunction<MbrOutcomeInclusion> idSelector) {
