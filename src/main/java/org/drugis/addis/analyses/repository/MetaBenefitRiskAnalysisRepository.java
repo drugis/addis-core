@@ -18,4 +18,6 @@ public interface MetaBenefitRiskAnalysisRepository {
   MetaBenefitRiskAnalysis create(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException, SQLException;
 
   MetaBenefitRiskAnalysis update(Account user, MetaBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException;
+
+  MetaBenefitRiskAnalysis find(Integer id);
 }

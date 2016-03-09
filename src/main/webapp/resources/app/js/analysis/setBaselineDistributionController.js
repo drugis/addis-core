@@ -20,7 +20,7 @@ define([], function() {
 
     $scope.setBaselineDistribution = function(baselineDistribution) {
       baselineDistribution.name = baselineDistribution.selectedAlternative.name;
-      baselineDistribution.type = 'dmnorm';
+      baselineDistribution.type = 'dnorm';
       delete baselineDistribution.selectedAlternative;
       setBaselineDistribution(baselineDistribution);
       $modalInstance.close();

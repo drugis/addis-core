@@ -1,0 +1,19 @@
+<div>
+  <navbar-directive></navbar-directive>
+  <ul class="breadcrumbs">
+    <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
+    <li><a ui-sref="projects({userUid: userId})">Projects</a></li>
+    <li><a ui-sref="project({userUid: userId, projectId: project.id})">{{project.name}}</a></li>
+    <li ng-if="workspace.type === 'singlestudy'"><a ui-sref="singleStudyBenefitRisk({userUid: userId, projectId: project.id})">{{workspace.name}}</a></li>
+    <li ng-if="workspace.type === 'metaBenefitRisk'"><a ui-sref="metaBenefitRisk({userUid: userId, projectId: project.id})">{{workspace.name}}</a></li>
+    <li class="current active">MCDA</li>
+  </ul>
+  <div ng-if="error" class="row" ng-cloak>
+    <div class="columns">
+      <app-alert type="alert" close="error.close()" error="error">
+      </app-alert>
+    </div>
+  </div>
+  <div ui-view>
+  </div>
+</div>

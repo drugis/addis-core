@@ -8,7 +8,7 @@ public class Baseline {
   private Double mu;
   private Double sigma;
   private String name;
-  private String type = "dmnorm";
+  private String type = "dnorm";
 
   public String getScale() {
     return scale;

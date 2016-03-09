@@ -32,13 +32,15 @@ INSERT INTO public.model(id, analysisId, taskId, title, linearModel, modelType, 
 
 UPDATE public.NetworkMetaAnalysis SET primaryModel = 1 WHERE id = -7;
 
-INSERT INTO public.MetaBenefitRiskAnalysis(id, projectId, title) VALUES (-10, 1, 'metabr 1');
+INSERT INTO public.MetaBenefitRiskAnalysis(id, projectId, title, finalized) VALUES (-10, 1, 'metabr 1', FALSE);
 INSERT INTO public.MetaBenefitRiskAnalysis_Alternative(analysisId, alternativeId) VALUES (-10, 1);
 INSERT INTO public.MbrOutcomeInclusion(metaBenefitRiskAnalysisId, outcomeId, networkMetaAnalysisId, modelId) VALUES (-10, 1, -5, 1);
 
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (1, -1, 'Default', 'problem state');
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (2, -1, 'Scenario title', 'problem state modified');
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (3, -2, 'Default for different analysis', 'problem state modified');
+INSERT INTO public.scenario (id, workspace, title, state) VALUES (4, -10, 'Default', 'problem state');
+
 
 INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-1, '-101', -6);
 INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-2, '-102', -6);

@@ -10,6 +10,7 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.projects.service.ProjectService;
+import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -40,6 +41,10 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
   @Inject
   InterventionRepository interventionRepository;
 
+  @Inject
+  ScenarioRepository scenarioRepository;
+
+
   @Override
   public Collection<MetaBenefitRiskAnalysis> queryByProject(Integer projectId) {
     TypedQuery<MetaBenefitRiskAnalysis> query = em.createQuery("FROM MetaBenefitRiskAnalysis " +
@@ -68,5 +73,10 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
   public MetaBenefitRiskAnalysis update(Account user, MetaBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
     analysisService.checkMetaBenefitRiskAnalysis(user, analysis);
     return em.merge(analysis);
+  }
+
+  @Override
+  public MetaBenefitRiskAnalysis find(Integer id) {
+    return em.find(MetaBenefitRiskAnalysis.class, id);
   }
 }

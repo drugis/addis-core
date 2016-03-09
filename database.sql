@@ -388,6 +388,8 @@ CREATE TABLE MetaBenefitRiskAnalysis (
   id SERIAL NOT NULL,
   title VARCHAR NOT NULL,
   projectId INT NOT NULL,
+  finalized BOOLEAN NOT NULL,
+  problem VARCHAR,
   PRIMARY KEY (id),
   FOREIGN KEY(projectId) REFERENCES Project(id)
 );
@@ -405,7 +407,7 @@ CREATE TABLE MbrOutcomeInclusion (
     outcomeId INT,
     networkMetaAnalysisId INT,
     modelId INT,
-    baseline, VARCHAR,
+    baseline VARCHAR,
     PRIMARY KEY (metaBenefitRiskAnalysisId, outcomeId, networkMetaAnalysisId, modelId),
     FOREIGN KEY(metaBenefitRiskAnalysisId) REFERENCES MetaBenefitRiskAnalysis(id),
     FOREIGN KEY(outcomeId) REFERENCES Outcome(id),
@@ -413,6 +415,9 @@ CREATE TABLE MbrOutcomeInclusion (
     FOREIGN KEY(modelId) REFERENCES Model(id)
 );
 
+ALTER TABLE scenario DROP CONSTRAINT IF EXISTS ssbr_scenario_workspace_fkey;
+
 --rollback DROP TABLE MbrOutcomeInclusion;
 --rollback DROP TABLE MetaBenefitRiskAnalysis_Alternative;
 --rollback DROP TABLE MetaBenefitRiskAnalysis;
+--rollback ALTER TABLE scenario ADD CONSTRAINT ssbr_scenario_workspace_fkey FOREIGN KEY (workspace) REFERENCES SingleStudyBenefitRiskAnalysis(id);

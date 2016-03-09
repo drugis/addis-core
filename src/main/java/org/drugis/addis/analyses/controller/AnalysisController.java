@@ -7,6 +7,7 @@ import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
+import org.drugis.addis.analyses.service.MetaBenefitRiskAnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -54,8 +57,8 @@ public class AnalysisController extends AbstractAddisCoreController {
   private ScenarioRepository scenarioRepository;
   @Inject
   private ProjectService projectService;
-
-
+  @Inject
+  private MetaBenefitRiskAnalysisService metaBenefitRiskAnalysisService;
 
   @RequestMapping(value = "/projects/{projectId}/analyses", method = RequestMethod.GET, params = {"outcomeIds"})
   @ResponseBody
@@ -135,7 +138,7 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractAnalysis update(Principal currentUser, @RequestBody AbstractAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException {
+  public AbstractAnalysis update(Principal currentUser, @PathVariable Integer projectId, @RequestBody AbstractAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException, URISyntaxException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
@@ -144,7 +147,7 @@ public class AnalysisController extends AbstractAddisCoreController {
       } else if (analysis instanceof NetworkMetaAnalysis) {
         return analysisService.updateNetworkMetaAnalysis(user, (NetworkMetaAnalysis) analysis);
       } else if (analysis instanceof MetaBenefitRiskAnalysis) {
-        return metaBenefitRiskAnalysisRepository.update(user, (MetaBenefitRiskAnalysis) analysis);
+        return metaBenefitRiskAnalysisService.update(user, projectId, (MetaBenefitRiskAnalysis) analysis);
       }
       throw new ResourceDoesNotExistException();
     } else {

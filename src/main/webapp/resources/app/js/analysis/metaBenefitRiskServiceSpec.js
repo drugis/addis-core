@@ -331,5 +331,105 @@ define(['angular-mocks'], function(angularMocks) {
         expect(result).toEqual(expectedResult);
       });
     });
+
+    describe('addScales', function() {
+      it('should add the scales to the effects table', function() {
+        var owas = [{
+          outcome: {
+            name: 'hamd'
+          }
+        }, {
+          outcome: {
+            name: 'headache'
+          }
+        }];
+        var alternatives = [{
+          name: 'fluox'
+        }, {
+          name: 'sertra'
+        }];
+        var scaleResults = {
+          hamd: {
+            fluox: {
+              result: {
+                '2.5%': 1,
+                '50%': 2,
+                '97.5%': 3
+              }
+            },
+            sertra: {
+              result: {
+                '2.5%': 4,
+                '50%': 5,
+                '97.5%': 6
+              }
+            }
+          },
+          headache: {
+            fluox: {
+              result: {
+                '2.5%': 7,
+                '50%': 8,
+                '97.5%': 9
+              }
+            },
+            sertra: {
+              result: {
+                '2.5%': 10,
+                '50%': 11,
+                '97.5%': 12
+              }
+            }
+          }
+        };
+
+        var expected = [{
+          'outcome': {
+            'name': 'hamd'
+          },
+          'scales': {
+            'fluox': {
+              'result': {
+                '2.5%': 1,
+                '50%': 2,
+                '97.5%': 3
+              }
+            },
+            'sertra': {
+              'result': {
+                '2.5%': 4,
+                '50%': 5,
+                '97.5%': 6
+              }
+            }
+          }
+        }, {
+          'outcome': {
+            'name': 'headache'
+          },
+          'scales': {
+            'fluox': {
+              'result': {
+                '2.5%': 7,
+                '50%': 8,
+                '97.5%': 9
+              }
+            },
+            'sertra': {
+              'result': {
+                '2.5%': 10,
+                '50%': 11,
+                '97.5%': 12
+              }
+            }
+          }
+        }];
+
+        var result = metaBenefitRiskService.addScales(owas, alternatives, scaleResults);
+        expect(result.length).toBe(owas.length);
+        expect(result[0].scales).not.toBeNull();
+        expect(result).toEqual(expected);
+      });
+    });
   });
 });

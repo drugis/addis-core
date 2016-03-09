@@ -63,11 +63,11 @@
         <tr ng-repeat="owa in outcomesWithAnalyses">
           <td class="table-head">{{owa.outcome.name}}</td>
           <td ng-repeat="alternative in analysis.includedAlternatives">
-            <span ng-if="effectsTable[owa.outcome.id][alternative.id]">
-             {{effectsTable[owa.outcome.id][alternative.id]['50%']}}
-            ({{effectsTable[owa.outcome.id][alternative.id]['2.5%']}},
-             {{effectsTable[owa.outcome.id][alternative.id]['97.5%']}})</span>
-            <span ng-if="!effectsTable[owa.outcome.id][alternative.id]">NA</span>
+            <span ng-if="owa.scales[alternative.name]">
+             {{owa.scales[alternative.name]['50%']}}
+            ({{owa.scales[alternative.name]['2.5%']}},
+             {{owa.scales[alternative.name]['97.5%']}})</span>
+            <span ng-if="!owa.scales[alternative.name]">NA</span>
           </td>
       </tbody>
     </table>
@@ -76,7 +76,8 @@
 <div class="row">
   <div class="columns large-12">
     <button type="button" class="primary" ng-click="goToStep1()">Previous step </button>
-    <button ng-disabled="step2AlertMessages.length" type="button" class="success">Finalize</button>
+    <button ng-cloak ng-if="!analysis.finalized" ng-disabled="hasMissingBaseLine()" ng-click="finalizeAndGoToDefaultScenario()" type="button" class="success">Finalize</button>
+    <button ng-cloak ng-if="analysis.finalized" ng-click="goToDefaultScenario()" type="button" class="">Go to MCDA</button>
     <div ng-repeat="message in step1AlertMessages">
       <div class="alert">{{message}}</div>
       <div></div>

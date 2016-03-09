@@ -100,46 +100,50 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private MetaBenefitRiskProblem getMetaBenefitRiskAnalysisProblem(Project project, MetaBenefitRiskAnalysis analysis) throws SQLException, IOException {
-    final List<Integer> networkModelIds = getInclusionIds(analysis, MbrOutcomeInclusion::getModelId);
-    final List<Integer> outcomeIds = getInclusionIds(analysis, MbrOutcomeInclusion::getOutcomeId);
-    final List<Model> models = modelRepository.get(networkModelIds);
+    final List<Integer> modelIdsWithBaseline = getInclusionIdsWithBaseline(analysis.getMbrOutcomeInclusions(), MbrOutcomeInclusion::getModelId);
+    final List<Integer> outcomeIdsWithBaseline = getInclusionIdsWithBaseline(analysis.getMbrOutcomeInclusions(), MbrOutcomeInclusion::getOutcomeId);
+    final List<Model> models = modelRepository.get(modelIdsWithBaseline);
     final Map<Integer, Model> modelMap = models.stream().collect(Collectors.toMap(Model::getId, Function.identity()));
-    final Map<String, Outcome> outcomesByName = outcomeRepository.get(project.getId(), outcomeIds).stream().collect(Collectors.toMap(Outcome::getName, Function.identity()));
-    final Map<Integer,PataviTask> pataviTaskMap = pataviTaskRepository.findByIds(models.stream().map(Model::getTaskId).collect(Collectors.toList()))
+    List<Outcome> outcomes = outcomeRepository.get(project.getId(), outcomeIdsWithBaseline);
+    final Map<String, Outcome> outcomesByName = outcomes.stream().collect(Collectors.toMap(Outcome::getName, Function.identity()));
+    final Map<Integer, Outcome> outcomesById = outcomes.stream().collect(Collectors.toMap(Outcome::getId, Function.identity()));
+    final Map<Integer, PataviTask> pataviTaskMap = pataviTaskRepository.findByIds(models.stream().map(Model::getTaskId).collect(Collectors.toList()))
             .stream().collect(Collectors.toMap(PataviTask::getId, Function.identity()));
     final Map<Integer, PataviTask> tasksByModelId = models.stream().collect(Collectors.toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskId())));
     ArrayList<Integer> taskIds = new ArrayList<>(pataviTaskMap.keySet());
     final Map<Integer, JsonNode> resultsByTaskId = pataviTaskRepository.getResults(taskIds);
+    List<MbrOutcomeInclusion> inclusionsWithBaseline = analysis.getMbrOutcomeInclusions().stream().filter(moi -> moi.getBaseline() != null).collect(Collectors.toList());
 
     List<Intervention> includedAlternatives = analysis.getIncludedAlternatives();
 
-    Map<String, CriterionEntry> criteria = outcomesByName.values()
+    Map<String, CriterionEntry> criteriaWithBaseline = outcomesByName.values()
             .stream()
             .collect(Collectors.toMap(Outcome::getName, o -> new CriterionEntry(o.getSemanticOutcomeUri(), o.getName())));
     Map<String, AlternativeEntry> alternatives = includedAlternatives
             .stream()
             .collect(Collectors.toMap(Intervention::getName, i -> new AlternativeEntry(i.getSemanticInterventionUri(), i.getName())));
-    final Map<Integer, Intervention> includedInterventionsById = includedAlternatives.stream().collect(Collectors.toMap(Intervention::getId, Function.identity()));
-    final  Map<Integer, Intervention> interventions = interventionRepository.query(project.getId()).stream().collect(Collectors.toMap(Intervention::getId, Function.identity()));;
+    final Map<Integer, Intervention> interventions = interventionRepository.query(project.getId()).stream().collect(Collectors.toMap(Intervention::getId, Function.identity()));
+    ;
     final Map<String, Intervention> includedInterventionsByName = includedAlternatives.stream().collect(Collectors.toMap(Intervention::getName, Function.identity()));
 
     List<MetaBenefitRiskProblem.PerformanceTableEntry> performanceTable = new ArrayList<>(outcomesByName.size());
-    for(MbrOutcomeInclusion outcomeInclusion : analysis.getMbrOutcomeInclusions()) {
+    for (MbrOutcomeInclusion outcomeInclusion : inclusionsWithBaseline) {
 
       Baseline baseline = objectMapper.readValue(outcomeInclusion.getBaseline(), Baseline.class);
       Integer taskId = tasksByModelId.get(outcomeInclusion.getModelId()).getId();
       JsonNode taskResults = resultsByTaskId.get(taskId);
 
       Map<Integer, MultiVariateDistribution> distributionByInterventionId = objectMapper
-              .readValue(taskResults.get("multivariateSummary").toString(),  new TypeReference<Map<Integer, MultiVariateDistribution>>() {});
+              .readValue(taskResults.get("multivariateSummary").toString(), new TypeReference<Map<Integer, MultiVariateDistribution>>() {
+              });
 
       Intervention baselineIntervention = includedInterventionsByName.get(baseline.getName());
       MultiVariateDistribution distr = distributionByInterventionId.get(baselineIntervention.getId());
       //
-      Map<String,Double> mu = distr.getMu().entrySet().stream()
+      Map<String, Double> mu = distr.getMu().entrySet().stream()
               .collect(Collectors.toMap(
                       e -> {
-                       String key = e.getKey();
+                        String key = e.getKey();
                         int interventionId = Integer.parseInt(key.substring(key.lastIndexOf('.') + 1));
                         return interventions.get(interventionId).getName();
                       },
@@ -149,22 +153,29 @@ public class ProblemServiceImpl implements ProblemService {
       mu = mu.entrySet().stream().filter(m -> includedInterventionsByName.keySet().contains(m.getKey()))
               .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
+      //add baseline to mu
+      mu.put(baseline.getName(), 0.0);
+
 
       List<String> rowNames = new ArrayList<>();
-      rowNames.add(baseline.getName());
       rowNames.addAll(mu.keySet());
+
+      // place baseline at the front of the list
+      rowNames.sort((rn1, rn2) -> rn1.equals(baseline.getName()) ? -1 : 0);
+
+
       final List<String> colNames = rowNames;
 
       Map<Pair<String, String>, Double> dataMap = new HashMap<>();
 
       final Map<String, Map<String, Double>> sigma = distr.getSigma();
-      for(String interventionY : rowNames) {
-        for (String interventionX: rowNames) {
+      for (String interventionY : rowNames) {
+        for (String interventionX : rowNames) {
           if (!interventionX.equals(baseline.getName()) && !interventionY.equals(baseline.getName())) {
             Double value =
-                sigma
-                    .get(getD(includedInterventionsByName, baseline.getName(), interventionX))
-                    .get(getD(includedInterventionsByName, baseline.getName(), interventionY));
+                    sigma
+                            .get(getD(includedInterventionsByName, baseline.getName(), interventionX))
+                            .get(getD(includedInterventionsByName, baseline.getName(), interventionY));
             dataMap.put(new ImmutablePair<>(interventionX, interventionY), value);
             dataMap.put(new ImmutablePair<>(interventionY, interventionX), value);
           }
@@ -174,17 +185,20 @@ public class ProblemServiceImpl implements ProblemService {
       final List<List<Double>> data = new ArrayList<>(rowNames.size());
 
       // setup data structure and init with null values
-      for(int i=0; i<rowNames.size(); ++i){
+      for (int i = 0; i < rowNames.size(); ++i) {
         List<Double> row = new ArrayList<>(colNames.size());
-        for(int j=0; j<colNames.size(); ++j) {
+        for (int j = 0; j < colNames.size(); ++j) {
           row.add(0.0);
         }
         data.add(row);
       }
 
-      for(int i=1; i<rowNames.size(); ++i){
-        for(int j=1; j<colNames.size(); ++j) {
-            data.get(i).set(j, dataMap.get(ImmutablePair.of(rowNames.get(i), colNames.get(j))));
+
+      for (String rowName : rowNames) {
+        for (String colName : colNames) {
+          if (!baseline.getName().equals(rowName) && !baseline.getName().equals(colName)) {
+            data.get(rowNames.indexOf(rowName)).set(colNames.indexOf(colName), dataMap.get(ImmutablePair.of(rowName, colName)));
+          }
         }
       }
 
@@ -197,26 +211,29 @@ public class ProblemServiceImpl implements ProblemService {
       String modelLinkType = modelMap.get(outcomeInclusion.getModelId()).getLink();
 
       String modelPerformanceType = "relative-normal";
-      if(!Model.LINK_IDENTITY.equals(modelLinkType)){
-         modelPerformanceType = "relative-" + modelLinkType + "-normal";
+      if (!Model.LINK_IDENTITY.equals(modelLinkType)) {
+        modelPerformanceType = "relative-" + modelLinkType + "-normal";
       }
 
       MetaBenefitRiskProblem.PerformanceTableEntry.Performance performance =
               new MetaBenefitRiskProblem.PerformanceTableEntry.Performance(modelPerformanceType, parameters);
+
       MetaBenefitRiskProblem.PerformanceTableEntry entry =
-              new MetaBenefitRiskProblem.PerformanceTableEntry("criterion", performance);
+              new MetaBenefitRiskProblem.PerformanceTableEntry(outcomesById.get(outcomeInclusion.getOutcomeId()).getName(), performance);
       performanceTable.add(entry);
     }
 
-    return new MetaBenefitRiskProblem(criteria, alternatives, performanceTable);
+    return new MetaBenefitRiskProblem(criteriaWithBaseline, alternatives, performanceTable);
   }
 
   private String getD(Map<String, Intervention> includedInterventionsByName, String base, String otherIntervention) {
-    return "d." + includedInterventionsByName.get(base).getId() + '.' +  includedInterventionsByName.get(otherIntervention).getId();
+    return "d." + includedInterventionsByName.get(base).getId() + '.' + includedInterventionsByName.get(otherIntervention).getId();
   }
 
-  private List<Integer> getInclusionIds(MetaBenefitRiskAnalysis analysis, ToIntFunction<MbrOutcomeInclusion> idSelector) {
-    return analysis.getMbrOutcomeInclusions().stream().mapToInt(idSelector).boxed().collect(Collectors.toList());
+  private List<Integer> getInclusionIdsWithBaseline(List<MbrOutcomeInclusion> outcomeInclusions, ToIntFunction<MbrOutcomeInclusion> idSelector) {
+    return outcomeInclusions.stream()
+            .filter(moi -> moi.getBaseline() != null)
+            .mapToInt(idSelector).boxed().collect(Collectors.toList());
   }
 
   private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws URISyntaxException {

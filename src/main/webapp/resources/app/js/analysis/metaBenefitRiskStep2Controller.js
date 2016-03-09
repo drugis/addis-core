@@ -2,11 +2,12 @@
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$stateParams', '$state', '$modal',
     'AnalysisResource', 'InterventionResource', 'OutcomeResource',
-    'MetaBenefitRiskService', 'ModelResource', 'ProblemResource', 'MCDAPataviService'
+    'MetaBenefitRiskService', 'ModelResource', 'ProblemResource',
+    'MCDAPataviService', 'ScenarioResource', 'DEFAULT_VIEW'
   ];
   var MetBenefitRiskStep2Controller = function($scope, $q, $stateParams, $state, $modal,
     AnalysisResource, InterventionResource, OutcomeResource, MetaBenefitRiskService,
-    ModelResource, ProblemResource, MCDAPataviService) {
+    ModelResource, ProblemResource, MCDAPataviService, ScenarioResource, DEFAULT_VIEW) {
 
     $scope.goToStep1 = goToStep1;
     $scope.openDistributionModal = openDistributionModal;
@@ -15,7 +16,9 @@ define(['lodash'], function(_) {
     $scope.alternatives = InterventionResource.query($stateParams);
     $scope.outcomes = OutcomeResource.query($stateParams);
     $scope.models = ModelResource.getConsistencyModels($stateParams);
-    $scope.effectsTable = [];
+    $scope.hasMissingBaseLine = hasMissingBaseLine;
+    $scope.finalizeAndGoToDefaultScenario = finalizeAndGoToDefaultScenario;
+    $scope.goToDefaultScenario = goToDefaultScenario;
 
     var promises = [$scope.analysis.$promise, $scope.alternatives.$promise, $scope.outcomes.$promise, $scope.models.$promise];
 
@@ -38,19 +41,7 @@ define(['lodash'], function(_) {
           .map(MetaBenefitRiskService.addModelsGroup);
 
         $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models);
-
-        $scope.scales = ProblemResource.get($stateParams).$promise.then(function(problem) {
-          return MCDAPataviService.run(_.extend(problem, {
-            method: 'scales'
-          })).then(function(result) {
-            console.log('MCDAPataviService.run succes');
-            console.log('result = ' + JSON.stringify(result));
-            return result.results;
-          }, function() {
-            console.log('MCDAPataviService.run error');
-          });
-        });
-
+        resetScales();
       });
 
       $scope.alternatives = alternatives.map(function(alternative) {
@@ -73,6 +64,31 @@ define(['lodash'], function(_) {
         return outcome;
       });
     });
+
+    function hasMissingBaseLine() {
+      return _.find($scope.outcomesWithAnalyses, function(owa) {
+        return !owa.baselineDistribution;
+      });
+    }
+
+    function finalizeAndGoToDefaultScenario() {
+      $scope.analysis.finalized = true;
+      $scope.analysis.$save().then(goToDefaultScenario);
+    }
+
+    function goToDefaultScenario() {
+      ScenarioResource
+        .query(_.omit($stateParams, 'id'))
+        .$promise
+        .then(function(scenarios) {
+          $state.go(DEFAULT_VIEW, {
+            userUid: $scope.userId,
+            projectId: $stateParams.projectId,
+            analysisId: $stateParams.analysisId,
+            id: scenarios[0].id
+          });
+        });
+    }
 
     function buildOutcomesWithAnalyses(analysis, outcomes, networkMetaAnalyses, models) {
       return outcomes
@@ -120,11 +136,28 @@ define(['lodash'], function(_) {
                   return mbrOutcomeInclusion;
                 }
               });
-              $scope.analysis.$save();
-              $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses($scope.analysis, $scope.outcomes, $scope.networkMetaAnalyses, $scope.models);
+              $scope.analysis.$save().then(function() {
+                $scope.outcomesWithAnalyses = buildOutcomesWithAnalyses($scope.analysis, $scope.outcomes, $scope.networkMetaAnalyses, $scope.models);
+                resetScales();
+              });
             };
           }
         }
+      });
+    }
+
+    function resetScales() {
+      ProblemResource.get($stateParams).$promise.then(function(problem) {
+        MCDAPataviService.run(_.extend(problem, {
+          method: 'scales'
+        })).then(function(result) {
+          //    console.log('MCDAPataviService.run succes');
+          //    console.log('result = ' + JSON.stringify(result));
+          $scope.outcomesWithAnalyses = MetaBenefitRiskService.addScales($scope.outcomesWithAnalyses,
+            $scope.analysis.includedAlternatives, result.results);
+        }, function() {
+          console.log('MCDAPataviService.run error');
+        });
       });
     }
 

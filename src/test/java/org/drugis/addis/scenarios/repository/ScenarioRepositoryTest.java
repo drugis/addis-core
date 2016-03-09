@@ -2,7 +2,6 @@ package org.drugis.addis.scenarios.repository;
 
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.scenarios.Scenario;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,7 +11,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-
 import java.util.Collection;
 
 import static org.junit.Assert.*;
@@ -56,6 +54,17 @@ public class ScenarioRepositoryTest {
     assertNotNull(result);
     assertEquals(2, result.size());
     Scenario defaultScenario = em.find(Scenario.class, 1);
+    assertTrue(result.contains(defaultScenario));
+  }
+
+  @Test
+  public void testQueryFromMetaBenefitRisk() {
+    Integer projectId = 1;
+    Integer analysisId = -10;
+    Collection<Scenario> result = scenarioRepository.query(projectId, analysisId);
+    assertNotNull(result);
+    assertEquals(1, result.size());
+    Scenario defaultScenario = em.find(Scenario.class, 4);
     assertTrue(result.contains(defaultScenario));
   }
 
