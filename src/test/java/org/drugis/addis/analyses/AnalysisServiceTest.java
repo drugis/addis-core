@@ -120,6 +120,7 @@ public class AnalysisServiceTest {
             .id(-10)
             .linearModel("fixedModel")
             .modelType(Model.NETWORK_MODEL_TYPE)
+            .link(Model.LINK_IDENTITY)
             .burnInIterations(5000)
             .inferenceIterations(20000)
             .thinningFactor(10)
@@ -173,9 +174,9 @@ public class AnalysisServiceTest {
     String title2 = "aaaaa";
     List<NetworkMetaAnalysis> analyses = Arrays.asList(new NetworkMetaAnalysis(analysisId, projectId, title1, outcome),
             new NetworkMetaAnalysis(4, projectId, title1, outcome));
-    List<Model> models = Arrays.asList(new Model.ModelBuilder(analysisId, title1).id(modelId1).modelType(Model.NETWORK_MODEL_TYPE).build(),
-            new Model.ModelBuilder(analysisId, title2).id(modelId2).modelType(Model.NETWORK_MODEL_TYPE).build(),
-            new Model.ModelBuilder(-23, title2).id(modelId2).modelType(Model.NETWORK_MODEL_TYPE).build());
+    List<Model> models = Arrays.asList(new Model.ModelBuilder(analysisId, title1).id(modelId1).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build(),
+            new Model.ModelBuilder(analysisId, title2).id(modelId2).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build(),
+            new Model.ModelBuilder(-23, title2).id(modelId2).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build());
 
     when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Arrays.asList(1))).thenReturn(analyses);
     when(outcomeRepository.query(projectId)).thenReturn(outcomes);
@@ -201,8 +202,8 @@ public class AnalysisServiceTest {
     networkMetaAnalysis.setPrimaryModel(modelId1);
     List<NetworkMetaAnalysis> analyses = Arrays.asList(networkMetaAnalysis,
             new NetworkMetaAnalysis(4, projectId, title1, outcome));
-    List<Model> models = Arrays.asList(new Model.ModelBuilder(analysisId, title1).id(modelId1).modelType(Model.NETWORK_MODEL_TYPE).build(),
-            new Model.ModelBuilder(3, title2).id(modelId2).modelType(Model.NETWORK_MODEL_TYPE).build());
+    List<Model> models = Arrays.asList(new Model.ModelBuilder(analysisId, title1).id(modelId1).link(Model.LINK_IDENTITY).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build(),
+            new Model.ModelBuilder(3, title2).id(modelId2).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build());
 
     when(networkMetaAnalysisRepository.queryByOutcomes(projectId, Arrays.asList(1))).thenReturn(analyses);
     when(outcomeRepository.query(projectId)).thenReturn(outcomes);

@@ -441,9 +441,9 @@ public class ModelServiceTest {
     Integer projectId = 1;
     Integer analysisId = 3;
     String modelTitle = "title";
-    Model networkTypeModel = new Model.ModelBuilder(analysisId, modelTitle).modelType(Model.NETWORK_MODEL_TYPE).build();
-    Model pairwiseTypeModel = new Model.ModelBuilder(analysisId, modelTitle).modelType(Model.PAIRWISE_MODEL_TYPE).from(new Model.DetailNode(1, "from")).to(new Model.DetailNode(2, "to")).build();
-    Model otherTypeModel = new Model.ModelBuilder(analysisId, modelTitle).modelType(Model.NODE_SPLITTING_MODEL_TYPE).from(new Model.DetailNode(1, "from")).to(new Model.DetailNode(2, "to")).build();
+    Model networkTypeModel = new Model.ModelBuilder(analysisId, modelTitle).link(Model.LINK_IDENTITY).modelType(Model.NETWORK_MODEL_TYPE).build();
+    Model pairwiseTypeModel = new Model.ModelBuilder(analysisId, modelTitle).link(Model.LINK_IDENTITY).modelType(Model.PAIRWISE_MODEL_TYPE).from(new Model.DetailNode(1, "from")).to(new Model.DetailNode(2, "to")).build();
+    Model otherTypeModel = new Model.ModelBuilder(analysisId, modelTitle).link(Model.LINK_IDENTITY).modelType(Model.NODE_SPLITTING_MODEL_TYPE).from(new Model.DetailNode(1, "from")).to(new Model.DetailNode(2, "to")).build();
     List<Model> projectModels = Arrays.asList(networkTypeModel, pairwiseTypeModel, otherTypeModel);
     when(modelRepository.findNetworkModelsByProject(projectId)).thenReturn(projectModels);
 

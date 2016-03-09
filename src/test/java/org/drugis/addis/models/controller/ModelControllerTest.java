@@ -96,6 +96,7 @@ public class ModelControllerTest {
 
     modelBuilder = new Model.ModelBuilder(analysisId, modelTitle)
             .id(1)
+            .link(Model.LINK_IDENTITY)
             .linearModel(linearModel)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .burnInIterations(burnInIterations)

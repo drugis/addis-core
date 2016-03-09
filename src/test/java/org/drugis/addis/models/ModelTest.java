@@ -32,11 +32,13 @@ public class ModelTest {
   @Before
   public void setup() throws InvalidModelException  {
     networkModel = new Model.ModelBuilder(analysisId, title)
+            .link(Model.LINK_IDENTITY)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .build();
     stdDevHeterogeneityPriorNetworkModel = new Model.ModelBuilder(analysisId, title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
+            .link(Model.LINK_IDENTITY)
             .modelType(Model.NETWORK_MODEL_TYPE)
             .heterogeneityPriorType(Model.STD_DEV_HETEROGENEITY_PRIOR_TYPE)
             .lower(lower)
@@ -45,6 +47,7 @@ public class ModelTest {
     varianceHeterogeneityPriorNetworkModel = new Model.ModelBuilder(analysisId, title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.NETWORK_MODEL_TYPE)
+            .link(Model.LINK_IDENTITY)
             .heterogeneityPriorType(Model.VARIANCE_HETEROGENEITY_PRIOR_TYPE)
             .mean(mean)
             .stdDev(stdDev)
@@ -52,6 +55,7 @@ public class ModelTest {
     precisionHeterogeneityPriorNetworkModel = new Model.ModelBuilder(analysisId, title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.NETWORK_MODEL_TYPE)
+            .link(Model.LINK_IDENTITY)
             .heterogeneityPriorType(Model.PRECISION_HETEROGENEITY_PRIOR_TYPE)
             .rate(rate)
             .shape(shape)
@@ -59,11 +63,13 @@ public class ModelTest {
     pairwiseModel = new Model.ModelBuilder(analysisId, title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
             .modelType(Model.PAIRWISE_MODEL_TYPE)
+            .link(Model.LINK_IDENTITY)
             .from(new Model.DetailNode(-1, "treatment1"))
             .to(new Model.DetailNode(-2, "treatment2"))
             .build();
     nodeSplitModel = new Model.ModelBuilder(analysisId, title)
             .linearModel(Model.LINEAR_MODEL_FIXED)
+            .link(Model.LINK_IDENTITY)
             .modelType(Model.NODE_SPLITTING_MODEL_TYPE)
             .from(new Model.DetailNode(-1, "treatment1"))
             .to(new Model.DetailNode(-2, "treatment2"))
