@@ -100,11 +100,11 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private MetaBenefitRiskProblem getMetaBenefitRiskAnalysisProblem(Project project, MetaBenefitRiskAnalysis analysis) throws SQLException, IOException {
-    final List<Integer> modelIdsWithBaseline = getInclusionIdsWithBaseline(analysis.getMbrOutcomeInclusions(), MbrOutcomeInclusion::getModelId);
-    final List<Integer> outcomeIdsWithBaseline = getInclusionIdsWithBaseline(analysis.getMbrOutcomeInclusions(), MbrOutcomeInclusion::getOutcomeId);
-    final List<Model> models = modelRepository.get(modelIdsWithBaseline);
+    final List<Integer> networkModelIds = getInclusionIdsWithBaseline(analysis.getMbrOutcomeInclusions(), MbrOutcomeInclusion::getModelId);
+    final List<Integer> outcomeIds = getInclusionIdsWithBaseline(analysis.getMbrOutcomeInclusions(), MbrOutcomeInclusion::getOutcomeId);
+    final List<Model> models = modelRepository.get(networkModelIds);
     final Map<Integer, Model> modelMap = models.stream().collect(Collectors.toMap(Model::getId, Function.identity()));
-    List<Outcome> outcomes = outcomeRepository.get(project.getId(), outcomeIdsWithBaseline);
+    List<Outcome> outcomes = outcomeRepository.get(project.getId(), outcomeIds);
     final Map<String, Outcome> outcomesByName = outcomes.stream().collect(Collectors.toMap(Outcome::getName, Function.identity()));
     final Map<Integer, Outcome> outcomesById = outcomes.stream().collect(Collectors.toMap(Outcome::getId, Function.identity()));
     final Map<Integer, PataviTask> pataviTaskMap = pataviTaskRepository.findByIds(models.stream().map(Model::getTaskId).collect(Collectors.toList()))
@@ -118,6 +118,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     Map<String, CriterionEntry> criteriaWithBaseline = outcomesByName.values()
             .stream()
+            .filter(o -> inclusionsWithBaseline.stream().filter(moi -> moi.getOutcomeId().equals(o.getId())).findFirst().isPresent())
             .collect(Collectors.toMap(Outcome::getName, o -> new CriterionEntry(o.getSemanticOutcomeUri(), o.getName())));
     Map<String, AlternativeEntry> alternatives = includedAlternatives
             .stream()
@@ -232,7 +233,7 @@ public class ProblemServiceImpl implements ProblemService {
 
   private List<Integer> getInclusionIdsWithBaseline(List<MbrOutcomeInclusion> outcomeInclusions, ToIntFunction<MbrOutcomeInclusion> idSelector) {
     return outcomeInclusions.stream()
-            .filter(moi -> moi.getBaseline() != null)
+
             .mapToInt(idSelector).boxed().collect(Collectors.toList());
   }
 

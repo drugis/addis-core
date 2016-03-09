@@ -12,6 +12,7 @@ define(function (require) {
     .controller('MetaBenefitRiskStep2Controller', require('analysis/metaBenefitRiskStep2Controller'))
     .controller('SetBaselineDistributionController', require('analysis/setBaselineDistributionController'))
     .controller('BenefitRiskController', require('analysis/benefitRiskController'))
+    .controller('MetaBenefitRiskController', require('analysis/metaBenefitRiskController'))
     //services
     .factory('MetaBenefitRiskService', require('analysis/metaBenefitRiskService'))
     //filter

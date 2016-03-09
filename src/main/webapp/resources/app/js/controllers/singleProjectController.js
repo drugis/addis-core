@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash'], function(_) {
+define(['lodash', 'angular'], function(_, angular) {
   var dependencies = ['$scope', '$q', '$state', '$stateParams', '$window', '$modal',
     'ProjectResource',
     'TrialverseResource',
@@ -96,15 +96,20 @@ define(['lodash'], function(_) {
       });
     }
 
-    $scope.goToAnalysis = function(analysisId, analysisTypeLabel) {
-      var analysisType = _.find(ANALYSIS_TYPES, function(type) {
-        return type.label === analysisTypeLabel;
-      });
+    $scope.goToAnalysis = function(analysis) {
+      var analysisType = angular.copy(_.find(ANALYSIS_TYPES, function(type) {
+        return type.label === analysis.analysisType;
+      }));
+
       //todo if analysis is gemtc type and has a problem go to models view
+      if(analysisType.label === 'Benefit-risk analysis based on meta-analyses' && analysis.finalized) {
+        analysisType.stateName = 'metaBenefitRisk';
+      }
+
       $state.go(analysisType.stateName, {
         userUid: $scope.userId,
         projectId: $scope.project.id,
-        analysisId: analysisId
+        analysisId: analysis.id
       });
     };
 

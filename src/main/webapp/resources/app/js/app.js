@@ -384,6 +384,12 @@ define(
             controller: 'MetaBenefitRiskStep2Controller',
             parent: 'project'
           })
+          .state('metaBenefitRisk', {
+            url: '/users/:userUid/projects/:projectId/metabr/:analysisId',
+            templateUrl: 'app/js/analysis/metabr.html',
+            controller: 'MetaBenefitRiskController',
+            parent: 'project'
+          })
           // trialverse states
           .state('dataset', {
             url: '/users/:userUid/datasets/:datasetUUID',
