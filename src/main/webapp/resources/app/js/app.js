@@ -295,10 +295,8 @@ define(
             },
             abstract: true
           })
-
-
-        // Network meta-analysis states
-        .state('networkMetaAnalysis', {
+          // Network meta-analysis states
+          .state('networkMetaAnalysis', {
             parent: 'networkMetaAnalysisContainer',
             url: '',
             views: {
@@ -317,16 +315,16 @@ define(
               }
             }
           })
+          .state('nmaModelContainer', {
+            templateUrl: baseTemplatePath + 'networkMetaAnalysisModelContainerView.html',
+            controller: 'NetworkMetaAnalysisModelContainerController',
+            abstract: true,
+          })
           .state('createModel', {
             parent: 'nmaModelContainer',
             url: '/users/:userUid/projects/:projectId/nma/:analysisId/models/createModel',
             templateUrl: gemtcWebBaseTemplatePath + 'js/models/createModel.html',
             controller: 'CreateModelController'
-          })
-          .state('nmaModelContainer', {
-            templateUrl: baseTemplatePath + 'networkMetaAnalysisModelContainerView.html',
-            controller: 'NetworkMetaAnalysisModelContainerController',
-            abstract: true,
           })
           .state('model', {
             url: '/users/:userUid/projects/:projectId/nma/:analysisId/models/:modelId',
@@ -373,24 +371,21 @@ define(
 
             }
           })
-
-        // meta-benefit-risk states
-
-        .state('MetaBenefitRiskCreationStep-1', {
-          url: '/users/:userUid/projects/:projectId/metabr/:analysisId/step-1',
-          templateUrl: 'app/js/analysis/metabrStep-1.html',
-          controller: 'MetaBenefitRiskStep1Controller',
-          parent: 'project'
-        })
-        .state('MetaBenefitRiskCreationStep-2', {
-          url: '/users/:userUid/projects/:projectId/metabr/:analysisId/step-2',
-          templateUrl: 'app/js/analysis/metabrStep-2.html',
-          controller: 'MetaBenefitRiskStep2Controller',
-          parent: 'project'
-        })
-
-        // trialverse states
-        .state('dataset', {
+          // meta-benefit-risk states
+          .state('MetaBenefitRiskCreationStep-1', {
+            url: '/users/:userUid/projects/:projectId/metabr/:analysisId/step-1',
+            templateUrl: 'app/js/analysis/metabrStep-1.html',
+            controller: 'MetaBenefitRiskStep1Controller',
+            parent: 'project'
+          })
+          .state('MetaBenefitRiskCreationStep-2', {
+            url: '/users/:userUid/projects/:projectId/metabr/:analysisId/step-2',
+            templateUrl: 'app/js/analysis/metabrStep-2.html',
+            controller: 'MetaBenefitRiskStep2Controller',
+            parent: 'project'
+          })
+          // trialverse states
+          .state('dataset', {
             url: '/users/:userUid/datasets/:datasetUUID',
             templateUrl: 'app/js/dataset/dataset.html',
             controller: 'DatasetController'
@@ -424,9 +419,25 @@ define(
             url: '/studies/:studyGraphUuid',
             templateUrl: 'app/js/study/view/study.html',
             controller: 'StudyController'
+          })
+          // mcda states
+          .state('benefitRisk', {
+            abstract: true,
+            controller: 'BenefitRiskController',
+            url:'/users/:userUid/projects/:projectId/benefitRisk/:analysisId',
+            templateUrl: 'app/js/analysis/benefitRiskContainer.html',
+            resolve: {
+              currentAnalysis: ['$stateParams', 'AnalysisResource', function($stateParams, AnalysisResource) {
+                return AnalysisResource.get($stateParams).$promise;
+              }],
+              currentProject: ['$stateParams', 'ProjectResource', function($stateParams, ProjectResource) {
+                return ProjectResource.get($stateParams).$promise;
+              }]
+            }
           });
 
-        MCDARouteProvider.buildRoutes($stateProvider, 'singleStudyBenefitRisk', mcdaBaseTemplatePath);
+        MCDARouteProvider.buildRoutes($stateProvider, 'benefitRisk', mcdaBaseTemplatePath);
+
       }
     ]);
     app.constant('CONCEPT_GRAPH_UUID', 'concepts');
