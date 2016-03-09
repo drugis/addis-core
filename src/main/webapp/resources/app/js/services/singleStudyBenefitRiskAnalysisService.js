@@ -1,5 +1,5 @@
 'use strict';
-define(['angular'], function() {
+define(['lodash'], function(_) {
   var dependencies = ['$location', '$stateParams', '$q', 'ProblemResource', 'ScenarioResource'];
   var SingleStudyBenefitRiskAnalysisService = function($location, $stateParams, $q, ProblemResource, ScenarioResource) {
 
