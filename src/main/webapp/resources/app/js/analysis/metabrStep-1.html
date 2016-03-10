@@ -45,7 +45,7 @@
           <div class="indent-one" ng-repeat="networkMetaAnalysis in outcomeWithAnalyses.networkMetaAnalyses">
             <div class="analysis">
               <label>
-                <input ng-model="outcomeWithAnalyses.selectedAnalysis" ng-change="updateAnalysesInclusions(networkMetaAnalyses)"
+                <input ng-model="outcomeWithAnalyses.selectedAnalysis" ng-change="updateAnalysesInclusions(outcomeWithAnalyses)"
                 type="radio" ng-value="networkMetaAnalysis" ng-disabled="!outcomeWithAnalyses.outcome.isIncluded || !networkMetaAnalysis.models.length"> {{networkMetaAnalysis.title}}
               </label>
               <div class="row" ng-show="outcomeWithAnalyses.selectedAnalysis.id === networkMetaAnalysis.id && networkMetaAnalysis.models.length">

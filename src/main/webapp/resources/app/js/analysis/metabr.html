@@ -35,9 +35,9 @@
       <h3 class="subheader">Alternatives</h3>
       <div class="checkbox-group">
         <div class="alternative-item" ng-repeat="alternative in alternatives">
-          <label>
-            <span ng-if="alternative.isIncluded"> {{alternative.name}}</span>
-          </label>
+        <ul>
+            <li ng-if="alternative.isIncluded"> {{alternative.name}}</li>
+        </ul>
         </div>
       </div>
     </div>
