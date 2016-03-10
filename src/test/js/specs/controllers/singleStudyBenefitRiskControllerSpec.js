@@ -303,10 +303,9 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
       it('should go to the default view using the default scenario id', function() {
         expect(singleStudyBenefitRiskAnalysisService.getDefaultScenario).toHaveBeenCalled();
-        expect(state.go).toHaveBeenCalledWith('DEFAULT_VIEW', {
-          userUid: userId,
+        expect(state.go).toHaveBeenCalledWith('DEFAULT_VIEW', _.extend(mockStateParams, {
           id: defaultScenarioId
-        });
+        }));
       });
 
     });
