@@ -34,11 +34,14 @@ public class ScenarioRepositoryImpl implements ScenarioRepository {
   @Override
   public Collection<Scenario> query(Integer projectId, Integer analysisId) {
     TypedQuery<Scenario> query = em.createQuery(
-            "SELECT DISTINCT s FROM Scenario s, SingleStudyBenefitRiskAnalysis ssbra, MetaBenefitRiskAnalysis metabra " +
-                    "WHERE s.workspace = :analysisId " +
-                    "AND ((ssbra.id = :analysisId AND ssbra.projectId = :projectId) OR " +
-                    "(metabra.id = :analysisId AND metabra.projectId = :projectId))"
-                    , Scenario.class
+            "SELECT DISTINCT s FROM Scenario s\n" +
+                    "  WHERE s.workspace = :analysisId \n" +
+                    "  AND s.workspace in (\n" +
+                    "    SELECT id FROM SingleStudyBenefitRiskAnalysis where id = :analysisId and projectid = :projectId\n" +
+                    "  ) OR s.workspace in (\n" +
+                    "    SELECT id FROM MetaBenefitRiskAnalysis where id = :analysisId and projectid = :projectId\n" +
+                    "  )"
+            , Scenario.class
     );
     query.setParameter("analysisId", analysisId);
     query.setParameter("projectId", projectId);

@@ -7,8 +7,7 @@ import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.util.ObjectToStringDeserializer;
 
 import javax.persistence.*;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by connor on 3/11/14.
@@ -32,13 +31,13 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
   @JoinTable(name = "singleStudyBenefitRiskAnalysis_Outcome",
           joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
           inverseJoinColumns = {@JoinColumn(name = "outcomeId", referencedColumnName = "id")})
-  private List<Outcome> selectedOutcomes;
+  private Set<Outcome> selectedOutcomes;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinTable(name = "singleStudyBenefitRiskAnalysis_Intervention",
           joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
           inverseJoinColumns = {@JoinColumn(name = "interventionId", referencedColumnName = "id")})
-  private List<Intervention> selectedInterventions;
+  private Set<Intervention> selectedInterventions;
 
   public SingleStudyBenefitRiskAnalysis() {
   }
@@ -47,8 +46,8 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     this.id = id;
     this.projectId = projectId;
     this.title = title;
-    this.selectedOutcomes = selectedOutcomes == null ? this.selectedOutcomes : selectedOutcomes;
-    this.selectedInterventions = selectedInterventions == null ? this.selectedInterventions : selectedInterventions;
+    this.selectedOutcomes = selectedOutcomes == null ? this.selectedOutcomes : new HashSet<>(selectedOutcomes);
+    this.selectedInterventions = selectedInterventions == null ? this.selectedInterventions : new HashSet<>(selectedInterventions);
     this.problem = problem;
   }
 
@@ -87,11 +86,11 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
   }
 
   public List<Outcome> getSelectedOutcomes() {
-    return selectedOutcomes == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(selectedOutcomes);
+    return selectedOutcomes == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(new ArrayList<>(selectedOutcomes));
   }
 
   public List<Intervention> getSelectedInterventions() {
-    return selectedInterventions == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(selectedInterventions);
+    return selectedInterventions == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(new ArrayList<>(selectedInterventions));
   }
 
   @JsonRawValue

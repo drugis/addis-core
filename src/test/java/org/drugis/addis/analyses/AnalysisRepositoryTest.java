@@ -38,6 +38,7 @@ public class AnalysisRepositoryTest {
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
     SingleStudyBenefitRiskAnalysis castAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
     SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = em.find(SingleStudyBenefitRiskAnalysis.class, analysisId);
+    assertEquals(2, singleStudyBenefitRiskAnalysis.getSelectedOutcomes().size());
     assertEquals(singleStudyBenefitRiskAnalysis, castAnalysis);
   }
 

@@ -20,6 +20,18 @@ INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title) VALUES 
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title) VALUES (-3 ,2, 'analysis 3');
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title, problem) VALUES (-4, 1, 'analysis 3', 'singlestudy problem');
 
+INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId) VALUES (-3, 1);
+INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId) VALUES (-3, 2);
+
+INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId) VALUES (-4, 1);
+INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId) VALUES (-4, 2);
+
+INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-3, 1);
+INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-3, 2);
+
+INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-4, 1);
+INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-4, 2);
+
 INSERT INTO public.NetworkMetaAnalysis(id, projectId, title, outcomeId) VALUES (-5, 1, 'nma', 1);
 INSERT INTO public.NetworkMetaAnalysis(id, projectId, title, outcomeId) VALUES (-6, 1, 'nma 2', 1);
 INSERT INTO public.NetworkMetaAnalysis(id, projectId, title) VALUES (-7, 2, 'nma task test');
