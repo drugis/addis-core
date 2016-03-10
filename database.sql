@@ -419,5 +419,4 @@ ALTER TABLE scenario DROP CONSTRAINT IF EXISTS ssbr_scenario_workspace_fkey;
 
 --rollback DROP TABLE MbrOutcomeInclusion;
 --rollback DROP TABLE MetaBenefitRiskAnalysis_Alternative;
---rollback DROP TABLE MetaBenefitRiskAnalysis CASCADE;
 --rollback ALTER TABLE scenario ADD CONSTRAINT ssbr_scenario_workspace_fkey FOREIGN KEY (workspace) REFERENCES SingleStudyBenefitRiskAnalysis(id);
