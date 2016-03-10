@@ -373,19 +373,19 @@ define(
           })
           // meta-benefit-risk states
           .state('MetaBenefitRiskCreationStep-1', {
-            url: '/users/:userUid/projects/:projectId/metabr/:analysisId/step-1',
+            url: '/metabr/:analysisId/step-1',
             templateUrl: 'app/js/analysis/metabrStep-1.html',
             controller: 'MetaBenefitRiskStep1Controller',
             parent: 'project'
           })
           .state('MetaBenefitRiskCreationStep-2', {
-            url: '/users/:userUid/projects/:projectId/metabr/:analysisId/step-2',
+            url: '/metabr/:analysisId/step-2',
             templateUrl: 'app/js/analysis/metabrStep-2.html',
             controller: 'MetaBenefitRiskStep2Controller',
             parent: 'project'
           })
           .state('metaBenefitRisk', {
-            url: '/users/:userUid/projects/:projectId/metabr/:analysisId',
+            url: '/metabr/:analysisId',
             templateUrl: 'app/js/analysis/metabr.html',
             controller: 'MetaBenefitRiskController',
             parent: 'project'

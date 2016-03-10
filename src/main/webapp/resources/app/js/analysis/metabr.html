@@ -11,84 +11,87 @@
     <li>
       <a ui-sref="project({userUid: userId, projectId: project.id})">{{project.name}}</a>
     </li>
-    <li class="current active">{{analysis.title}}
-      MEta BRRRR
-    </li>
+    <li class="current active">{{analysis.title}}</li>
   </ul>
   <div ng-if="error" class="row" ng-cloak>
     <div class="columns">
-      <app-alert type="alert" close="error.close()" error="error"></span>
-    </app-alert>
-  </div>
-</div>
-<div>
-  <div class="project-header row">
-    <div class="columns large-12">
-      <h1 class="inline-header" title="Analysis title">{{analysis.title}}</h1>
-      <h3 class="subheader inline-header" title="Analysis type">/
-        {{analysis.analysisType}}</h3>
+      <app-alert type="alert" close="error.close()" error="error">
+        </span>
+      </app-alert>
     </div>
   </div>
-</div>
-
-<div class="row">
-  <div class="columns large-12">
-    <h3 class="subheader">Alternatives</h3>
-    <div class="checkbox-group">
-      <div class="alternative-item" ng-repeat="alternative in alternatives">
-        <label>
-          <span ng-if="alternative.isIncluded"> {{alternative.name}}</span>
-        </label>
+  <div>
+    <div class="project-header row">
+      <div class="columns large-12">
+        <h1 class="inline-header" title="Analysis title">{{analysis.title}}</h1>
+        <h3 class="subheader inline-header" title="Analysis type">/ {{analysis.analysisType}}
+        </h3>
       </div>
     </div>
   </div>
-</div>
 
-<div class="row">
-  <div class="columns large-12">
-    <h3 class="subheader">Outcomes</h3>
-    <div class="checkbox-group">
-      <div class="outcome-item" ng-repeat="outcomeWithAnalyses in outcomesWithAnalyses">
-        <label>
-          <span ng-if="outcomeWithAnalyses.outcome.isIncluded"> {{outcomeWithAnalyses.outcome.name}}</span>
-        </label>
-        <div class="indent-one" ng-repeat="networkMetaAnalysis in outcomeWithAnalyses.networkMetaAnalyses">
-          <div class="analysis">
-            <label>
-              <span> {{outcomeWithAnalyses.selectedAnalysis.title}}</span>
-            </label>
-            <div class="row" ng-show="outcomeWithAnalyses.selectedAnalysis.id === networkMetaAnalysis.id && networkMetaAnalysis.models.length">
-              <div class="indent-one columns large-4">
-                <span>{{outcomeWithAnalyses.selectedModel.title}}</span>
-              </div>
-            </div>
-          </div>
+  <div class="row">
+    <div class="columns large-12">
+      <h3 class="subheader">Alternatives</h3>
+      <div class="checkbox-group">
+        <div class="alternative-item" ng-repeat="alternative in alternatives">
+          <label>
+            <span ng-if="alternative.isIncluded"> {{alternative.name}}</span>
+          </label>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-
-<div class="row">
-  <div class="columns large-12">
-    <table class="">
-      <caption>Baseline distributions</caption>
-      <tbody>
-        <tr ng-repeat="owa in outcomesWithAnalyses | filter:{outcome: {isIncluded: true}}">
-          <td class="table-head">{{owa.outcome.name}}</td>
-          <td ng-show="owa.baselineDistribution">{{owa.baselineDistribution.scale}}
-             ({{owa.baselineDistribution.name}})
-            ~ N({{owa.baselineDistribution.mu}}, {{owa.baselineDistribution.sigma}})</td>
-          <td ng-show="!owa.baselineDistribution"><em>Not defined.</em></td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="row">
+    <div class="columns large-12">
+      <table>
+        <caption>Selected models by outcome and analysis</caption>
+        <thead>
+          <tr>
+            <th>Outcome</th>
+            <th>Analysis</th>
+            <th>Model</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="outcomeWithAnalyses in outcomesWithAnalyses">
+            <td>{{outcomeWithAnalyses.outcome.name}}</td>
+            <td ng-repeat="networkMetaAnalysis in outcomeWithAnalyses.networkMetaAnalyses">{{outcomeWithAnalyses.selectedAnalysis.title}}</td>
+            <td ng-repeat="networkMetaAnalysis in outcomeWithAnalyses.networkMetaAnalyses">{{outcomeWithAnalyses.selectedModel.title}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
 
-<div class="row">
-  <div class="columns large-12">
-    <button ng-click="goToDefaultScenario()" type="button" class="">Go to MCDA</button>
+
+  <div class="row">
+    <div class="columns large-12">
+      <table class="">
+        <caption>Baseline distributions</caption>
+        <thead>
+          <tr>
+            <th>Outcome</th>
+            <th>Distribution</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="owa in outcomesWithAnalyses | filter:{outcome: {isIncluded: true}}">
+            <td class="table-head">{{owa.outcome.name}}</td>
+            <td ng-show="owa.baselineDistribution">{{owa.baselineDistribution.scale}} ({{owa.baselineDistribution.name}})
+              ~ N({{owa.baselineDistribution.mu}}, {{owa.baselineDistribution.sigma}})</td>
+            <td ng-show="!owa.baselineDistribution">
+              <em>Not defined.</em>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
+
+  <div class="row">
+    <div class="columns large-12">
+      <button ng-click="goToDefaultScenario()" type="button" class="">Go to MCDA</button>
+    </div>
+  </div>
