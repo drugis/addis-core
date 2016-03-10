@@ -518,6 +518,10 @@ public class ProblemServiceTest {
     assertEquals(2, problem.getPerformanceTable().size());
     assertEquals("relative-cloglog-normal", problem.getPerformanceTable().get(0).getPerformance().getType());
     assertEquals("relative-normal", problem.getPerformanceTable().get(1).getPerformance().getType());
+    List<List<Double>> expectedDataHeadache = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
+    assertEquals(expectedDataHeadache ,problem.getPerformanceTable().get(0).getPerformance().getParameters().getRelative().getCov().getData());
+    List<List<Double>> expectedDataHam = Arrays.asList(Arrays.asList(0.0, 0.0, 0.0), Arrays.asList(0.0, 74.346, 1.9648), Arrays.asList(0.0, 1.9648, 74.837));
+    assertEquals(expectedDataHam ,problem.getPerformanceTable().get(1).getPerformance().getParameters().getRelative().getCov().getData());
   }
 
 
