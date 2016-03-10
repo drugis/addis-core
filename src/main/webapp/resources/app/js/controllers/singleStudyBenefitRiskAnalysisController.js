@@ -6,7 +6,7 @@ define(['lodash'], function(_) {
     'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW', 'AnalysisResource'
   ];
   var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $window,
-   currentAnalysis, currentProject, OutcomeResource, InterventionResource, TrialverseStudyResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW, AnalysisResource) {
+    currentAnalysis, currentProject, OutcomeResource, InterventionResource, TrialverseStudyResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW, AnalysisResource) {
 
     var deregisterOutcomeWatch, deregisterInterventionWatch;
     $scope.$parent.loading = {
@@ -151,18 +151,17 @@ define(['lodash'], function(_) {
       SingleStudyBenefitRiskAnalysisService
         .getDefaultScenario()
         .then(function(scenario) {
-          $state.go(DEFAULT_VIEW, {
-            userUid: $scope.userId,
+          $state.go(DEFAULT_VIEW, _.extend($stateParams, {
             id: scenario.id
-          });
+          }));
         });
-    };
+    }
 
     $scope.createProblem = function() {
-      if(deregisterOutcomeWatch) {
+      if (deregisterOutcomeWatch) {
         deregisterOutcomeWatch();
       }
-      if(deregisterInterventionWatch) {
+      if (deregisterInterventionWatch) {
         deregisterInterventionWatch();
       }
       SingleStudyBenefitRiskAnalysisService.getProblem($scope.analysis).then(function(problem) {
