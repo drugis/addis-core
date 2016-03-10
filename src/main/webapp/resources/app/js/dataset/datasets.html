@@ -1,8 +1,39 @@
 <div ui-view>
   <div class="row">
+    <div class="columns large-12">
+      <a class="right">
+        <span>hide</span>
+      </a>
+      <h2>Featured Datasets</h2>
+      <div class="row">
+        <div class="columns large-4">
+          <div class="panel" style="box-shadow: 0 1px 4px 0 rgba(0,0,0,0.14);">
+            <h3>Hansen et al. 2005</h3>
+            <p style="height: 8rem; overflow-y: hidden;">
+              Zombie ipsum reversus ab viral inferno, nam mus brains sit​​, morbod survivor dictum
+              mauris. Hi mindless mortuis soulless creaturas, imo evil stalking monstra
+              adventus resi dentevil vultus comedat cerebella viventiu. Zombie ipsum
+              reversus ab viral inferno, nam mus brains sit​​, morbod survivor dictum
+              mauris. Hi mindless mortuis soulless creaturas, imo evil stalking monstra
+              adventus resi dentevil vultus comedat cerebella viventiu
+            </p>
+            <ul class="button-group">
+              <li><a href="#" class="button">View Dataset</a></li>
+              <li><a href="#" class="button">Create project</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="columns large-4 end">
+          <featured-dataset dataset-uuid="'4e2c0831-3b03-432e-b76c-4f76eeb5e547'" user-uid="1"></featured-dataset>
+        </div>
+      </div>
+      <hr/>
+    </div>
+  </div>
+  <div class="row">
     <div class="columns large-8">
+      <h2>Datasets</h2>
       <button ng-show="loginUser.id === userUid" tabindex="0" class="button " ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button>
-
       <div ng-if="!datasetsLoaded" class="row">
         <div class="column center large-12">
           <i class="fa fa-spinner fa-spin fa-3x"></i>
@@ -10,11 +41,9 @@
         </div>
       </div>
       <div class="row" ng-show="datasetsLoaded">
-
         <div style="margin-top: 2rem;" class="columns large-12">
           <em ng-show="datasets.length === 0">No datasets have been created</em>
           <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="dataset in datasets">
-
             <div class="row">
               <div class="columns large-6">
                 <h5><a ui-sref="dataset({userUid: userUid, datasetUUID: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">{{dataset.title}}</a></h5>
@@ -23,7 +52,6 @@
                 <button style="margin-bottom: 1rem;" class="right button small radius" ng-click="createProjectDialog(dataset)">create project</button>
               </div>
             </div>
-
             <div class="row">
               <div class="columns large-12">
                 <p class="subheader">
@@ -33,10 +61,8 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
-
     <div class="columns large-4">
       <h2>Other users</h2>
       <ul class="no-bullet">
