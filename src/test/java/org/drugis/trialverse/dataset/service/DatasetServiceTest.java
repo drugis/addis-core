@@ -3,9 +3,12 @@ package org.drugis.trialverse.dataset.service;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.drugis.addis.security.Account;
+import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.dataset.model.Dataset;
+import org.drugis.trialverse.dataset.model.FeaturedDataset;
 import org.drugis.trialverse.dataset.model.VersionMapping;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
+import org.drugis.trialverse.dataset.repository.FeaturedDatasetRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.impl.DatasetServiceImpl;
 import org.junit.Before;
@@ -34,6 +37,12 @@ public class DatasetServiceTest {
   @Mock
   private VersionMappingRepository versionMappingRepository;
 
+  @Mock
+  private FeaturedDatasetRepository featuredDatasetRepository;
+
+  @Mock
+  private AccountRepository accountRepository;
+
   @InjectMocks
   private DatasetService datasetService;
 
@@ -61,5 +70,29 @@ public class DatasetServiceTest {
 
     assertEquals(1, datasets.size());
     assertEquals("dataset 1", datasets.get(0).getTitle());
+  }
+
+  @Test
+  public void testFindFeatured() throws IOException {
+
+    InputStream datasetsModelStream = new ClassPathResource("mockDatasetsModel.ttl").getInputStream();
+    Model datasetsModel = ModelFactory.createDefaultModel();
+    datasetsModel.read(datasetsModelStream, null, "TTL");
+
+    InputStream datasetsModelStream2 = new ClassPathResource("mockDatasetsModel2.ttl").getInputStream();
+    Model datasetsModel2 = ModelFactory.createDefaultModel();
+    datasetsModel2.read(datasetsModelStream2, null, "TTL");
+
+    VersionMapping versionMapping1 = new VersionMapping("versionDatadetUrl", "ownerUid", "http://trialverseDatasetUrl");
+    VersionMapping versionMapping2 = new VersionMapping("versionDatadetUrl", "ownerUid", "http://trialverseDatasetUrl2");
+    List<VersionMapping> versionMappings = Arrays.asList(versionMapping1, versionMapping2);
+    when(featuredDatasetRepository.findAll()).thenReturn(Arrays.asList(new FeaturedDataset("http://trialverseDatasetUrl"), new FeaturedDataset("http://trialverseDatasetUrl2")));
+    when(versionMappingRepository.findMappingsByTrialverseDatasetUrls(Arrays.asList(versionMapping1.getTrialverseDatasetUrl(), versionMapping2.getTrialverseDatasetUrl()))).thenReturn(versionMappings);
+    when(accountRepository.findAccountByEmail("ownerUid")).thenReturn(account);
+    when(datasetReadRepository.queryDataset(versionMapping1)).thenReturn(datasetsModel);
+    when(datasetReadRepository.queryDataset(versionMapping2)).thenReturn(datasetsModel2);
+
+    List<Dataset> datasets = datasetService.findFeatured();
+    assertEquals(2, datasets.size());
   }
 }

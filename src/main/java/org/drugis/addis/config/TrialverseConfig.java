@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * Created by connor on 2/27/14.
  */
 @Configuration
-@ComponentScan(basePackages = "org.drugis.addis.trialverse", excludeFilters = {@ComponentScan.Filter(Configuration.class)})
+@ComponentScan(basePackages = {"org.drugis.addis.trialverse", "org.drugis.trialverse"}, excludeFilters = {@ComponentScan.Filter(Configuration.class)})
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"org.drugis.addis.trialverse"})
+@EnableJpaRepositories(basePackages = {"org.drugis.addis.trialverse", "org.drugis.trialverse"})
 public class TrialverseConfig {
 
 
