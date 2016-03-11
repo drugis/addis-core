@@ -1,5 +1,7 @@
 package org.drugis.addis.config;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +24,8 @@ import java.util.Properties;
 @Configuration
 @ComponentScan(basePackages = {
         "org.drugis.addis.trialverse.repository",
-        "org.drugis.addis.trialverse.model"},
+        "org.drugis.addis.trialverse.model",
+        "org.drugis.trialverse"},
         excludeFilters = {@ComponentScan.Filter(Configuration.class)})
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "org.drugis.addis.trialverse.repository")
@@ -34,6 +37,15 @@ public class JpaTrialverseRepositoryTestConfig {
             .setType(EmbeddedDatabaseType.HSQL)
             .addScript("classpath:/trialverse-schema.sql")
             .addScript("classpath:/trialverse-test-data.sql")
+            .build();
+  }
+
+  @Bean
+  public HttpClient httpClient() {
+    return HttpClientBuilder
+            .create()
+            .setMaxConnTotal(20)
+            .setMaxConnPerRoute(2)
             .build();
   }
 

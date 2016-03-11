@@ -10,13 +10,15 @@ import java.util.List;
  */
 public interface VersionMappingRepository {
 
-    void save(VersionMapping versionMapping);
+  void save(VersionMapping versionMapping);
 
-    List<VersionMapping> findMappingsByEmail(String username);
+  List<VersionMapping> findMappingsByEmail(String username);
+
+  List<VersionMapping> findMappingsByTrialverseDatasetUrls(List<String> datasetUrls);
 
   List<VersionMapping> getVersionMappings();
 
-    VersionMapping getVersionMappingByDatasetUrl(URI trialverseDatasetUrl);
+  VersionMapping getVersionMappingByDatasetUrl(URI trialverseDatasetUrl);
 
-    VersionMapping getVersionMappingByVersionedURl(URI sourceDatasetUri);
+  VersionMapping getVersionMappingByVersionedURl(URI sourceDatasetUri);
 }

@@ -1,8 +1,9 @@
 <div ui-view>
+<featured-datasets user-uid=userUid create-project-dialog="createProjectDialog(dataset)"></featured-datasets>
   <div class="row">
     <div class="columns large-8">
+      <h2>Datasets</h2>
       <button ng-show="loginUser.id === userUid" tabindex="0" class="button " ng-click="createDatasetDialog()"><i class="fa fa-plus"></i> Add new dataset</button>
-
       <div ng-if="!datasetsLoaded" class="row">
         <div class="column center large-12">
           <i class="fa fa-spinner fa-spin fa-3x"></i>
@@ -10,11 +11,9 @@
         </div>
       </div>
       <div class="row" ng-show="datasetsLoaded">
-
         <div style="margin-top: 2rem;" class="columns large-12">
           <em ng-show="datasets.length === 0">No datasets have been created</em>
           <div style="margin-bottom: 3rem; border-bottom: 1px solid #DCDCDC" ng-repeat="dataset in datasets">
-
             <div class="row">
               <div class="columns large-6">
                 <h5><a ui-sref="dataset({userUid: userUid, datasetUUID: stripFrontFilter(dataset.uri, 'http://trials.drugis.org/datasets/')})">{{dataset.title}}</a></h5>
@@ -23,7 +22,6 @@
                 <button style="margin-bottom: 1rem;" class="right button small radius" ng-click="createProjectDialog(dataset)">create project</button>
               </div>
             </div>
-
             <div class="row">
               <div class="columns large-12">
                 <p class="subheader">
@@ -33,10 +31,8 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
-
     <div class="columns large-4">
       <h2>Other users</h2>
       <ul class="no-bullet">

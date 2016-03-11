@@ -1,11 +1,11 @@
 prefix es:    <http://drugis.org/eventSourcing/es#>
 
-<http://trialverseDatasetUrl>
+<http://trialverseDatasetUrl2>
         a        <http://rdfs.org/ns/void#Dataset> ;
-        es:head  <http://172.17.42.1:8080/versions/5413bdb4-a2d9-4fe1-b4ca-428c635842b9> ;
+        es:head  <http://172.17.42.1:8080/versions/5413bdb4-a2d9-4fe1-b4ca-428c635842c9> ;
         <http://purl.org/dc/terms/description>
-                "een dataset" ;
+                "nog dataset" ;
         <http://purl.org/dc/terms/creator>
                 <mailto:c.stroomberg@gmail.com> ;
         <http://purl.org/dc/terms/title>
-                "dataset 1" .
+                "dataset 2" .
