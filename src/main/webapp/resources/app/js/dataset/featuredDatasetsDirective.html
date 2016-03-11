@@ -5,7 +5,7 @@
 }
 </style>
 
-<div ng-show="isVisible" class="row local-hide">
+<div ng-show="isVisible && featuredDatasets.length > 0" class="row local-hide">
   <div class="columns large-12">
     <a class="right">
       <span ng-click="toggleVisibility()">hide</span>
@@ -35,7 +35,7 @@
   </div>
 </div>
 
-<div ng-show="!isVisible" class="row">
+<div ng-show="!isVisible && featuredDatasets.length > 0" class="row">
   <div class="columns large-12">
     <a class="right">
       <span ng-click="toggleVisibility()">show featured datasets</span>

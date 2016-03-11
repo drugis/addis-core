@@ -23,7 +23,6 @@ define([], function() {
         DatasetResource.getFeatured({
           userUid: scope.userUid
         }).$promise.then(function(response) {
-          console.log(JSON.stringify(response));
           scope.featuredDatasets = response;
         });
 
