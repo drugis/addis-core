@@ -1,6 +1,6 @@
 package org.drugis.addis.outcomes;
 
-import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.SemanticVariable;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,7 +26,7 @@ public class Outcome implements Serializable{
   public Outcome() {
   }
 
-  public Outcome(Integer id, Integer project, String name, String motivation, SemanticOutcome semanticOutcome) {
+  public Outcome(Integer id, Integer project, String name, String motivation, SemanticVariable semanticOutcome) {
     this.id = id;
     this.project = project;
     this.name = name;
@@ -35,7 +35,7 @@ public class Outcome implements Serializable{
     this.semanticOutcomeUri = semanticOutcome.getUri();
   }
 
-  public Outcome(Integer project, String name, String motivation, SemanticOutcome semanticOutcome) {
+  public Outcome(Integer project, String name, String motivation, SemanticVariable semanticOutcome) {
     this(null, project, name, motivation, semanticOutcome);
   }
 

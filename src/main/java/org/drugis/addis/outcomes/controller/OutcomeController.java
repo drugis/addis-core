@@ -8,6 +8,7 @@ import org.drugis.addis.outcomes.OutcomeCommand;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.util.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +54,7 @@ public class OutcomeController extends AbstractAddisCoreController {
     }
   }
 
-  @RequestMapping(value = "/projects/{projectId}/outcomes", method = RequestMethod.POST)
+  @RequestMapping(value = "/projects/{projectId}/outcomes", method = RequestMethod.POST, produces = WebConstants.APPLICATION_JSON_UTF8_VALUE)
   @ResponseBody
   public Outcome create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId, @RequestBody OutcomeCommand outcomeCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());

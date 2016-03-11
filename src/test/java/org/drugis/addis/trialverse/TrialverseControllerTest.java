@@ -134,7 +134,7 @@ public class TrialverseControllerTest {
   @Test
   public void testQuerySemanticOutcomes() throws Exception {
     String versionUid = "current";
-    SemanticOutcome testOutCome = new SemanticOutcome("http://test/com", "test label");
+    SemanticVariable testOutCome = new SemanticVariable("http://test/com", "test label");
     when(triplestoreService.getOutcomes(versionedUuid, versionUid)).thenReturn(Collections.singletonList(testOutCome));
 
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/outcomes").param("version", versionUid))

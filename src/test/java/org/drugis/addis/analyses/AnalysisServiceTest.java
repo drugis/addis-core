@@ -13,7 +13,7 @@ import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
-import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -150,7 +150,7 @@ public class AnalysisServiceTest {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
-    Collection<Outcome> outcomes = Arrays.asList(new Outcome(outcomeId, 1, "name", "moti", new SemanticOutcome("uri", "label")));
+    Collection<Outcome> outcomes = Arrays.asList(new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable("uri", "label")));
     List<NetworkMetaAnalysis> analyses = Arrays.asList(new NetworkMetaAnalysis(analysisId, "title"));
 
     when(outcomeRepository.query(projectId)).thenReturn(outcomes);
@@ -168,7 +168,7 @@ public class AnalysisServiceTest {
     Integer outcomeId = 1;
     Integer modelId1 = 1;
     Integer modelId2 = 2;
-    Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticOutcome("uri", "label"));
+    Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable("uri", "label"));
     Collection<Outcome> outcomes = Arrays.asList(outcome);
     String title1 = "bbbbb";
     String title2 = "aaaaa";
@@ -194,7 +194,7 @@ public class AnalysisServiceTest {
     Integer outcomeId = 1;
     Integer modelId1 = 1;
     Integer modelId2 = 2;
-    Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticOutcome("uri", "label"));
+    Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable("uri", "label"));
     Collection<Outcome> outcomes = Arrays.asList(outcome);
     String title1 = "bbbbb";
     String title2 = "aaaaa";

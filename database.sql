@@ -420,3 +420,8 @@ ALTER TABLE scenario DROP CONSTRAINT IF EXISTS ssbr_scenario_workspace_fkey;
 --rollback DROP TABLE MbrOutcomeInclusion;
 --rollback DROP TABLE MetaBenefitRiskAnalysis_Alternative;
 --rollback ALTER TABLE scenario ADD CONSTRAINT ssbr_scenario_workspace_fkey FOREIGN KEY (workspace) REFERENCES SingleStudyBenefitRiskAnalysis(id);
+
+--changeset reidd:40
+ALTER TABLE covariate ADD COLUMN populationCharacteristicId INT;
+ALTER TABLE covariate ADD FOREIGN KEY (populationCharacteristicId) REFERENCES outcome(id);
+--rollback ALTER TABLE covariate DROP CONSTRAINT "covariate_populationcharacteristicid_fkey";

@@ -84,8 +84,17 @@ public class TriplestoreServiceTest {
   public void testGetOutcomes() {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     createMockTrialverseService(mockResult);
-    List<SemanticOutcome> result = triplestoreService.getOutcomes("abc", "version");
-    SemanticOutcome result1 = new SemanticOutcome("fdszgs-adsfd-1", "DBP 24-hour mean");
+    List<SemanticVariable> result = triplestoreService.getOutcomes("abc", "version");
+    SemanticVariable result1 = new SemanticVariable("fdszgs-adsfd-1", "DBP 24-hour mean");
+    assertEquals(result.get(0), result1);
+  }
+
+  @Test
+  public void testGetPopulationCharacteristics() {
+    String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
+    createMockTrialverseService(mockResult);
+    List<SemanticVariable> result = triplestoreService.getOutcomes("abc", "version");
+    SemanticVariable result1 = new SemanticVariable("fdszgs-adsfd-1", "DBP 24-hour mean");
     assertEquals(result.get(0), result1);
   }
 

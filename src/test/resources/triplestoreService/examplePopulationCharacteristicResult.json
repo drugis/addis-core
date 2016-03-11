@@ -1,0 +1,23 @@
+{
+  "results": {
+    "bindings": [{
+      "populationCharacteristic": {
+        "type": "uri",
+        "value": "http://trials.drugis.org/namespace/1/populationCharacteristic/fdszgs-adsfd-1"
+      },
+      "label": {
+        "type": "literal",
+        "value": "Age"
+      }
+    }, {
+      "populationCharacteristic": {
+        "type": "uri",
+        "value": "http://trials.drugis.org/namespace/1/populationCharacteristic/fdszgs-fgfgdh-2"
+      },
+      "label": {
+        "type": "literal",
+        "value": "Weight"
+      }
+    }]
+  }
+}

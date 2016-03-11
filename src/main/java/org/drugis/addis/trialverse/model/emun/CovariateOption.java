@@ -16,7 +16,9 @@ import java.util.Optional;
 @JsonSerialize(using = CovariateOptionSerializer.class)
 public enum CovariateOption {
 
-  ALLOCATION_RANDOMIZED(CovariateOptionType.STUDY_CHARACTERISTIC, "Allocation: Randomized", TriplestoreService.loadResource("sparql/covariateAllocationRandomized.sparql")),
+  ALLOCATION_RANDOMIZED(CovariateOptionType.STUDY_CHARACTERISTIC,
+          "Allocation: Randomized",
+          TriplestoreService.loadResource("sparql/covariateAllocationRandomized.sparql")),
   BLINDING_AT_LEAST_SINGLE_BLIND(CovariateOptionType.STUDY_CHARACTERISTIC, "Blinding: at least Single Blind", TriplestoreService.loadResource("sparql/covariateAtLeastSingleBlind.sparql")),
   BLINDING_AT_LEAST_DOUBLE_BLIND(CovariateOptionType.STUDY_CHARACTERISTIC, "Blinding: at least Double Blind", TriplestoreService.loadResource("sparql/covariateAtLeastDoubleBlind.sparql")),
   MULTI_CENTER_STUDY(CovariateOptionType.STUDY_CHARACTERISTIC, "Multi-center study", TriplestoreService.loadResource("sparql/covariateIsMultiCenterStudy.sparql")),

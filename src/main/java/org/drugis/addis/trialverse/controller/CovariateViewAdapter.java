@@ -1,25 +1,35 @@
 package org.drugis.addis.trialverse.controller;
 
+import org.drugis.addis.outcomes.Outcome;
+import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
+import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
 
 /**
  * Created by connor on 12/1/15.
  */
-public class CovariateViewAdepter {
+public class CovariateViewAdapter {
 
   private String key;
   private String label;
   private String typeKey;
   private String typeLabel;
 
-  public CovariateViewAdepter() {
+  public CovariateViewAdapter() {
   }
 
-  public CovariateViewAdepter(CovariateOption option) {
+  public CovariateViewAdapter(CovariateOption option) {
     this.key = option.toString();
     this.label = option.getLabel();
     this.typeKey = option.getType().toString();
     this.typeLabel = option.getType().getLabel();
+  }
+
+  public CovariateViewAdapter(SemanticVariable populationCharacteristic) {
+    this.key=populationCharacteristic.getUri();
+    this.label=populationCharacteristic.getLabel();
+    this.typeKey = CovariateOptionType.POPULATION_CHARACTERISTIC.toString();
+    this.typeLabel = CovariateOptionType.POPULATION_CHARACTERISTIC.getLabel();
   }
 
   public String getKey() {
@@ -43,7 +53,7 @@ public class CovariateViewAdepter {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    CovariateViewAdepter that = (CovariateViewAdepter) o;
+    CovariateViewAdapter that = (CovariateViewAdapter) o;
 
     if (!key.equals(that.key)) return false;
     if (!label.equals(that.label)) return false;

@@ -1,9 +1,9 @@
 'use strict';
 define([], function() {
-  var dependencies = ['$scope', 'CovariateResource', 'CovariateOptionsResource','$modalInstance', 'callback'];
-  var AddCovariateController = function($scope, CovariateResource, CovariateOptionsResource, $modalInstance, callback) {
+  var dependencies = ['$scope', '$stateParams', 'CovariateResource', 'CovariateOptionsResource','$modalInstance', 'callback'];
+  var AddCovariateController = function($scope, $stateParams, CovariateResource, CovariateOptionsResource, $modalInstance, callback) {
 
-    $scope.covariatesOptions = CovariateOptionsResource.query();
+    $scope.covariatesOptions = CovariateOptionsResource.getProjectCovariates($stateParams);
     var selectedOptionsKeys = $scope.covariates.map(function(covariate) {
       return covariate.definitionKey;
     });
