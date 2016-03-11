@@ -19,6 +19,7 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.trialverse.security.TooManyAccountsException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -56,9 +57,14 @@ public class AccountRepositoryImpl implements AccountRepository {
   }
 
   public Account findAccountByEmail(String email) {
-    return jdbcTemplate.queryForObject(
-            "select id, username, firstName, lastName, email from Account where email = ?",
-            rowMapper, email);
+    try {
+      return jdbcTemplate.queryForObject(
+              "select id, username, firstName, lastName, email from Account where email = ?",
+              rowMapper, email);
+
+    } catch (EmptyResultDataAccessException e) {
+      throw new EmptyResultDataAccessException("Unknown dataset creator email: " + email, 1);
+    }
   }
 
   public Account findAccountById(int id) {
