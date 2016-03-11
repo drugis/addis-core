@@ -369,3 +369,10 @@ ALTER TABLE scenario DROP CONSTRAINT ssbr_scenario_workspace_fkey;
 --rollback DROP TABLE MetaBenefitRiskAnalysis;
 --rollback ALTER TABLE scenario ADD CONSTRAINT ssbr_scenario_workspace_fkey FOREIGN KEY (workspace) REFERENCES SingleStudyBenefitRiskAnalysis(id);
 
+--changeset stroombergc:39
+CREATE TABLE FeaturedDataset (
+   datasetUrl VARCHAR NOT NULL,
+   PRIMARY KEY(dataseturl)
+);
+--rollback DROP TABLE FeaturedDataset;
+

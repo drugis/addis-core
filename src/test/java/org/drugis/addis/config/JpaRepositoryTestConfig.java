@@ -1,7 +1,8 @@
 package org.drugis.addis.config;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.drugis.addis.security.SimpleSocialUsersDetailService;
-import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +44,7 @@ import static org.mockito.Mockito.mock;
                 "org.drugis.addis.problems",
                 "org.drugis.addis.trialverse.service",
                 "org.drugis.addis.trialverse.factory",
+                "org.drugis.trialverse",
                 "org.drugis.addis.util",
                 "org.drugis.addis.covariates",
                 "org.drugis.addis.remarks"
@@ -59,7 +61,7 @@ import static org.mockito.Mockito.mock;
         "org.drugis.addis.remarks",
         "org.drugis.addis.covariates",
         "org.drugis.addis.security",
-        "org.drugis.addis.trialverse"
+        "org.drugis.trialverse"
 })
 public class JpaRepositoryTestConfig {
 
@@ -74,6 +76,15 @@ public class JpaRepositoryTestConfig {
             .setType(EmbeddedDatabaseType.HSQL)
             .addScript("classpath:/schema.sql")
             .addScript("classpath:/test-data.sql")
+            .build();
+  }
+
+  @Bean
+  public HttpClient httpClient() {
+    return HttpClientBuilder
+            .create()
+            .setMaxConnTotal(20)
+            .setMaxConnPerRoute(2)
             .build();
   }
 
@@ -123,7 +134,9 @@ public class JpaRepositoryTestConfig {
             "org.drugis.addis.security",
             "org.drugis.addis.models",
             "org.drugis.addis.covariates",
-            "org.drugis.addis.remarks");
+            "org.drugis.addis.remarks",
+            "org.drugis.trialverse.dataset",
+            "org.drugis.trialverse.graph");
     em.setDataSource(dataSource());
     em.setPersistenceUnitName("addisCore");
     em.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
@@ -150,10 +163,6 @@ public class JpaRepositoryTestConfig {
   @Bean
   public UserDetailsService userDetailsService() {
     return mock(UserDetailsService.class);
-  }
-  @Bean
-  public VersionMappingRepository mockVersionMappingRepository() {
-    return mock(VersionMappingRepository.class);
   }
 
   Properties additionalProperties() {

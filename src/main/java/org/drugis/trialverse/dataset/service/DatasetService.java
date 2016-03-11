@@ -1,7 +1,7 @@
 package org.drugis.trialverse.dataset.service;
 
-import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.addis.security.Account;
+import org.drugis.trialverse.dataset.model.Dataset;
 
 import java.util.List;
 
@@ -10,4 +10,6 @@ import java.util.List;
  */
 public interface DatasetService {
   List<Dataset> findDatasets(Account user);
+
+  List<Dataset> findFeatured();
 }

@@ -1,0 +1,44 @@
+<style>
+.local-hide.ng-hide {
+  transition:0.33s linear all;
+  opacity:0;
+}
+</style>
+
+<div ng-show="isVisible" class="row local-hide">
+  <div class="columns large-12">
+    <a class="right">
+      <span ng-click="toggleVisibility()">hide</span>
+    </a>
+    <h2>Featured Datasets</h2>
+    <div class="row">
+      <div class="columns large-4 featured-dataset-col" ng-repeat="featuredDataset in featuredDatasets">
+        <div class="panel" style="box-shadow: 0 1px 4px 0 rgba(0,0,0,0.14);">
+          <h3>{{featuredDataset.title}}</h3>
+          <p class="featured-dataset-comment" style="height: 8rem; overflow-y: hidden;">
+            {{featuredDataset.description}}
+          </p>
+          <ul class="button-group">
+            <li>
+              <a ui-sref="dataset({userUid: userUid, datasetUUID: stripFrontFilter(featuredDataset.uri, 'http://trials.drugis.org/datasets/')})"
+                class="button">View Dataset</a>
+            </li>
+            <li>
+              <button type="button" ng-click="createProjectDialog({dataset: featuredDataset})"
+                class="button">Create project</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <hr />
+  </div>
+</div>
+
+<div ng-show="!isVisible" class="row">
+  <div class="columns large-12">
+    <a class="right">
+      <span ng-click="toggleVisibility()">show featured datasets</span>
+    </a>
+  </div>
+</div>
