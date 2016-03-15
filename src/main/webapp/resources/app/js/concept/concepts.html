@@ -3,7 +3,7 @@
 <ul class="breadcrumbs">
   <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
   <li><a ui-sref="datasets({userUid: user.id})">Datasets</a></li>
-  <li><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">{{dataset.label}}</a></li>
+  <li><a ui-sref="versionedDataset({userUid: userUid, datasetUUID: datasetUUID, versionUuid: versionUuid})">{{dataset.title}}</a></li>
   <li><a class="current active">Concepts</a></li>
 </ul>
 <div class="row nav-bar-spacer">
@@ -24,7 +24,7 @@
   <div class="columns large-10 medium-9">
     <h1>Concepts</h1>
     <version-info></version-info>
-    <button ng-show="isEditingAllowed" class="small" ng-click="openAddConceptDialog()"><i class="fa fa-plus"> Add Concept</i></button>
+    <button ng-show="isEditingAllowed" class="small" ng-click="openAddConceptDialog()"><i class="fa fa-plus"></i>  Add Concept</button>
     <h3>Drugs</h3>
     <ul id="drugs">
       <li ng-repeat="concept in concepts | filter:'ontology:Drug' | orderBy:'label'">{{concept.label}}</li>

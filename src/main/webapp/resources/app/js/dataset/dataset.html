@@ -4,19 +4,20 @@
   <ul class="breadcrumbs">
     <li><a ui-sref="datasets({userUid: user.id})">{{::user.firstName}} {{::user.lastName}}</a></li>
     <li><a ui-sref="datasets({userUid: user.id})">Datasets</a></li>
-    <li class="current active">{{::dataset.label}}</li>
+    <li class="current active">{{::dataset.title}}</li>
   </ul>
   <div class="row nav-bar-spacer">
-    <div class="column large-10">
-      <h1>{{::dataset.label}}</h1>
+    <div class="column large-12">
+      <button ng-show="isEditingAllowed" class="right" type="button" ng-click="createProjectDialog()">Create project</button>
+      <h1>{{::dataset.title}}</h1>
       <p>{{::dataset.comment}}</p>
-      <version-info></version-info>
-      <div class="row application-link">
-        <div class="column large-10">
-          <a ng-if="versionUuid" ui-sref="versionedDataset.concepts({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'), versionUuid: versionUuid})">Concepts</a>
-          <a ng-if="!versionUuid" ui-sref="dataset.concepts({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Concepts</a>
+      <div class="row nav-bar-spacer">
+        <div class="column large-9">
+          <version-info></version-info>
         </div>
       </div>
+        <a ng-if="versionUuid" ui-sref="versionedDataset.concepts({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/'), versionUuid: versionUuid})">Go to concepts</a>
+        <a ng-if="!versionUuid" ui-sref="dataset.concepts({userUid: user.id, datasetUUID: stripFrontFilter(dataset.datasetUri, 'http://trials.drugis.org/datasets/')})">Go to concepts</a>
       <hr>
     </div>
   </div>
@@ -39,17 +40,17 @@
             <th class="sortable" ng-click="tableOptions.orderByField = 'label'; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
               Name
               <i ng-if="tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'"
-              class="fa fa-caret-up"></i>
+                class="fa fa-caret-up"></i>
               <i ng-if="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === 'label'"
-              class="fa fa-caret-down"></i>
+                class="fa fa-caret-down"></i>
             </th>
             <th class="sortable" ng-if="column.visible" ng-repeat="column in tableOptions.columns"
-            ng-click="tableOptions.orderByField = column.id; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
+              ng-click="tableOptions.orderByField = column.id; tableOptions.reverseSortOrder=!tableOptions.reverseSortOrder">
               {{::column.label}}
               <i ng-if="tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id"
-              class="fa fa-caret-up"></i>
+                class="fa fa-caret-up"></i>
               <i ng-if="!tableOptions.reverseSortOrder &&  tableOptions.orderByField === column.id"
-              class="fa fa-caret-down"></i>
+                class="fa fa-caret-down"></i>
             </th>
           </tr>
         </thead>
