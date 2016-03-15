@@ -11,11 +11,15 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,6 +27,11 @@ import java.util.List;
  */
 @Repository
 public class VersionMappingRepositoryImpl implements VersionMappingRepository {
+
+
+  @Qualifier("emAddisCore")
+  @PersistenceContext(unitName = "addisCore")
+  EntityManager em;
 
   private final static Logger logger = LoggerFactory.getLogger(DatasetWriteRepositoryImpl.class);
 
@@ -55,6 +64,19 @@ public class VersionMappingRepositoryImpl implements VersionMappingRepository {
       queryResult = new ArrayList<VersionMapping>();
     }
     return queryResult;
+  }
+
+  @Override
+  public List<VersionMapping> findMappingsByTrialverseDatasetUrls(List<String> datasetUrls) {
+    if(datasetUrls.isEmpty()) {
+      return Collections.emptyList();
+    }
+    TypedQuery<VersionMapping> query = em.createQuery(
+            "FROM VersionMapping WHERE trialverseDatasetUrl IN (:datasetUrls)"
+            , VersionMapping.class
+    );
+    query.setParameter("datasetUrls", datasetUrls);
+    return query.getResultList();
   }
 
   @Override

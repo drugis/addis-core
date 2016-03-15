@@ -20,6 +20,7 @@ define(function (require) {
     //directives
     .directive('historyItem', require('dataset/historyItemDirective'))
     .directive('versionInfo', require('dataset/versionInfoDirective'))
+    .directive('featuredDatasets', require('dataset/featuredDatasetsDirective'))
 
     //filters
     .filter('splitOnTokenFilter', require('dataset/splitOnTokenFilter'))

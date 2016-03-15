@@ -14,6 +14,7 @@ import org.drugis.trialverse.dataset.model.Dataset;
 import org.drugis.trialverse.dataset.model.VersionNode;
 import org.drugis.trialverse.dataset.repository.DatasetReadRepository;
 import org.drugis.trialverse.dataset.repository.DatasetWriteRepository;
+import org.drugis.trialverse.dataset.repository.FeaturedDatasetRepository;
 import org.drugis.trialverse.dataset.repository.VersionMappingRepository;
 import org.drugis.trialverse.dataset.service.DatasetService;
 import org.drugis.trialverse.dataset.service.HistoryService;
@@ -64,6 +65,9 @@ public class DatasetController extends AbstractTrialverseController {
 
   @Inject
   private DatasetService datasetService;
+
+  @Inject
+  private FeaturedDatasetRepository featuredDatasetRepository;
 
   @Inject
   private HttpClient httpClient;
@@ -126,6 +130,13 @@ public class DatasetController extends AbstractTrialverseController {
   public void getDatasetAsJson(HttpServletResponse httpServletResponse, @PathVariable String datasetUUID) throws IOException, URISyntaxException {
     logger.trace("retrieving head dataset");
     getVersionedDatasetAsJson(httpServletResponse, datasetUUID, null);
+  }
+
+  @RequestMapping(value = "/featured", method = RequestMethod.GET, headers = WebConstants.ACCEPT_JSON_HEADER)
+  @ResponseBody
+  public List<Dataset> queryFeaturedDatasetsAsJson(HttpServletResponse httpServletResponse) throws IOException, URISyntaxException {
+    logger.trace("retrieving featured datasets");
+    return datasetService.findFeatured();
   }
 
   @RequestMapping(value = "/{datasetUuid}/query", method = RequestMethod.GET)

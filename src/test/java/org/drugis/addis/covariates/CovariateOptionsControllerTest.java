@@ -22,6 +22,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -85,7 +86,7 @@ public class CovariateOptionsControllerTest {
     Outcome popChar = new Outcome(projectId, "name1", "", semPopChar);
     Outcome otherTypeOutcome = new Outcome(projectId, "name2", "", semNonPopCharVar);
 
-    List<SemanticVariable> semanticOutcomes = Arrays.asList(semPopChar);
+    List<SemanticVariable> semanticOutcomes = Collections.singletonList(semPopChar);
     Collection<Outcome> outcomes = Arrays.asList(popChar, otherTypeOutcome);
 
     when(projectRepository.get(projectId)).thenReturn(project);
@@ -98,6 +99,6 @@ public class CovariateOptionsControllerTest {
     result.andExpect(status().isOk());
     result.andExpect(content().contentType(ContentType.APPLICATION_JSON.toString()));
     result.andExpect(jsonPath("$", hasSize(6))); // 1 = number of popchar outcomes in project
-    result.andExpect(jsonPath("$[5].label", is(popChar.getName())));
+    result.andExpect(jsonPath("$[5].label", is(semPopChar.getLabel())));
   }
 }
