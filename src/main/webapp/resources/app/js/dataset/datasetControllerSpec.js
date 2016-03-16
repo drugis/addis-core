@@ -21,6 +21,7 @@ define(['angular-mocks'], function(angularMocks) {
       userUid = 'userUid',
       datasetUUID = 'uuid-1',
       versionUuid = 'version-1',
+      state = jasmine.createSpyObj('state', ['go']),
       stateParams = {
         userUid: userUid,
         datasetUUID: datasetUUID,
@@ -68,6 +69,7 @@ define(['angular-mocks'], function(angularMocks) {
         $scope: scope,
         $window: windowMock,
         $stateParams: stateParams,
+        $state: state,
         $modal: mockModal,
         DatasetVersionedResource: datasetVersionedResource,
         DatasetResource: datasetResource,
@@ -94,7 +96,7 @@ define(['angular-mocks'], function(angularMocks) {
         expect(datasetVersionedResource.getForJson).toHaveBeenCalled();
         expect(scope.dataset).toEqual({
           datasetUri: 'uuid-1',
-          label: 'title',
+          title: 'title',
           comment: 'description',
           creator: 'creator'
         });
@@ -140,6 +142,7 @@ define(['angular-mocks'], function(angularMocks) {
           $scope: scope,
           $window: {},
           $stateParams: {},
+          $state: state,
           $modal: mockModal,
           DatasetVersionedResource: datasetVersionedResource,
           DatasetResource: datasetResource,
@@ -165,6 +168,13 @@ define(['angular-mocks'], function(angularMocks) {
     describe('showStudyDialog', function() {
       it('should open a modal', function() {
         scope.showStudyDialog();
+        expect(mockModal.open).toHaveBeenCalled();
+      });
+    });
+
+    describe('showCreateProjectDialog', function() {
+      it('should open a modal', function() {
+        scope.createProjectDialog();
         expect(mockModal.open).toHaveBeenCalled();
       });
     });

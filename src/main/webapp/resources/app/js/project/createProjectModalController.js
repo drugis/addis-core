@@ -7,7 +7,10 @@ define([], function() {
 
     $scope.createProject = function(newProject) {
       this.model = {}; // clear modal form by resetting model in current scope
-      newProject.namespaceUid = dataset.uri.split('/datasets/')[1];
+
+      // datasetsController and datasetController both use this model but a different property to store the namespaceUid
+      newProject.namespaceUid = dataset.datasetUri || dataset.uri.split('/datasets/')[1];
+
       newProject.datasetVersion = dataset.headVersion;
       ProjectResource.save(newProject, function(savedProject) {
         $modalInstance.close();
