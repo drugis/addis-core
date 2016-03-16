@@ -6,20 +6,18 @@ PREFIX graph: <http://trials.drugis.org/graphs/>
 
 PREFIX entity: <http://trials.drugis.org/entities/> 
 
-SELECT DISTINCT ?outcome ?label ?type WHERE {
+SELECT DISTINCT ?populationCharacteristic ?label WHERE {
   GRAPH graph:concepts {
-    ?outcome
+    ?populationCharacteristic
       a ontology:Variable ;
       rdfs:label ?label .
   } .
   GRAPH ?graph {
     ?studyUri ontology:has_outcome ?studyOutcome .
-    ?studyOutcome ontology:of_variable [
-      a ?type ;
-      owl:sameAs ?outcome
-    ] .
-    { ?studyOutcome a ontology:Endpoint }
-    UNION
-    { ?studyOutcome a ontology:AdverseEvent }
+    ?studyOutcome
+      a ontology:PopulationCharacteristic ;
+      ontology:of_variable [
+        owl:sameAs ?populationCharacteristic
+      ] .
   }
 }

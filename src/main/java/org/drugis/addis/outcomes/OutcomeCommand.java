@@ -1,7 +1,7 @@
 package org.drugis.addis.outcomes;
 
 import org.apache.commons.lang.StringUtils;
-import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.SemanticVariable;
 
 /**
  * Created by daan on 3/5/14.
@@ -11,12 +11,12 @@ public class OutcomeCommand {
   private Integer projectId;
   private String name;
   private String motivation;
-  private SemanticOutcome semanticOutcome;
+  private SemanticVariable semanticOutcome;
 
   public OutcomeCommand() {
   }
 
-  public OutcomeCommand(Integer projectId, String name, String motivation, SemanticOutcome semanticOutcome) {
+  public OutcomeCommand(Integer projectId, String name, String motivation, SemanticVariable semanticOutcome) {
     this.projectId = projectId;
     this.name = name;
     this.motivation = motivation;
@@ -35,7 +35,7 @@ public class OutcomeCommand {
     return motivation == null ? StringUtils.EMPTY : motivation;
   }
 
-  public SemanticOutcome getSemanticOutcome() {
+  public SemanticVariable getSemanticOutcome() {
     return semanticOutcome;
   }
 

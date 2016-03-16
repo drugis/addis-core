@@ -27,7 +27,7 @@ import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
-import org.drugis.addis.trialverse.model.SemanticOutcome;
+import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
@@ -199,7 +199,7 @@ public class ProblemServiceTest {
     List<TrialDataStudy> trialDataStudies = createMockTrialData();
 
     String outcomeUri = "outcomeUri";
-    Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
+    Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticVariable(outcomeUri, "label3"));
     List<ArmExclusion> armExclusions = new ArrayList<>();
     List<InterventionInclusion> interventionInclusions = new ArrayList<>();
     List<CovariateInclusion> covariateInclusions = new ArrayList<>();
@@ -265,7 +265,7 @@ public class ProblemServiceTest {
     Integer analysisId = 3;
 
     String outcomeUri = "outcomeUri";
-    Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
+    Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticVariable(outcomeUri, "label3"));
     List<ArmExclusion> armExclusions = new ArrayList<>();
     List<InterventionInclusion> interventionInclusions = new ArrayList<>();
     List<CovariateInclusion> covariateInclusions = new ArrayList<>();
@@ -330,7 +330,7 @@ public class ProblemServiceTest {
     Integer analysisId = 3;
 
     String outcomeUri = "outcomeUri";
-    Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticOutcome(outcomeUri, "label3"));
+    Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticVariable(outcomeUri, "label3"));
     List<ArmExclusion> armExclusions = new ArrayList<>();
     List<InterventionInclusion> interventionInclusions = new ArrayList<>();
     List<CovariateInclusion> covariateInclusions = new ArrayList<>();
@@ -436,8 +436,8 @@ public class ProblemServiceTest {
             .build();
     List<Model> models = Arrays.asList(model1, model2);
 
-    Outcome outcome1 = new Outcome(21, projectId, "ham", "", new SemanticOutcome("outUri1", "hamS"));
-    Outcome outcome2 = new Outcome(22, projectId, "headache", "", new SemanticOutcome("outUri2", "headacheS"));
+    Outcome outcome1 = new Outcome(21, projectId, "ham", "", new SemanticVariable("outUri1", "hamS"));
+    Outcome outcome2 = new Outcome(22, projectId, "headache", "", new SemanticVariable("outUri2", "headacheS"));
     List<Outcome> outcomes = Arrays.asList(outcome1, outcome2);
 
 

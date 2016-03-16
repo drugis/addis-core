@@ -369,6 +369,7 @@ ALTER TABLE scenario DROP CONSTRAINT ssbr_scenario_workspace_fkey;
 --rollback DROP TABLE MetaBenefitRiskAnalysis;
 --rollback ALTER TABLE scenario ADD CONSTRAINT ssbr_scenario_workspace_fkey FOREIGN KEY (workspace) REFERENCES SingleStudyBenefitRiskAnalysis(id);
 
+
 --changeset stroombergc:39
 CREATE TABLE FeaturedDataset (
    datasetUrl VARCHAR NOT NULL,
@@ -376,3 +377,7 @@ CREATE TABLE FeaturedDataset (
 );
 --rollback DROP TABLE FeaturedDataset;
 
+--changeset reidd:40
+ALTER TABLE covariate ADD COLUMN populationCharacteristicId INT;
+ALTER TABLE covariate ADD FOREIGN KEY (populationCharacteristicId) REFERENCES outcome(id);
+--rollback ALTER TABLE covariate DROP CONSTRAINT "covariate_populationcharacteristicid_fkey";

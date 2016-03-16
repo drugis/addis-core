@@ -10,8 +10,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Map;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by connor on 4-3-16.
@@ -146,7 +146,7 @@ public class UtilTest {
     Map<Integer, MultiVariateDistribution> distributionByInterventionId = objectMapper.readValue(jsonMultivariateSummary,  new TypeReference<Map<Integer, MultiVariateDistribution>>() {});
     assertNotNull(distributionByInterventionId);
 
-    assertEquals(74.346, distributionByInterventionId.get(2).getSigma().get("d.2.3").get("d.2.3") );
+    assertEquals((Double)74.346, distributionByInterventionId.get(2).getSigma().get("d.2.3").get("d.2.3") );
   }
 
   @Test
@@ -159,8 +159,8 @@ public class UtilTest {
             "\t    }";
     Baseline baseline = objectMapper.readValue(baselineJsonString, Baseline.class);
     assertEquals("log odds", baseline.getScale());
-    assertEquals(4.0, baseline.getMu());
-    assertEquals(6.0, baseline.getSigma());
+    assertEquals((Double)4.0, baseline.getMu());
+    assertEquals((Double)6.0, baseline.getSigma());
     assertEquals("Fluoxetine", baseline.getName());
   }
 }

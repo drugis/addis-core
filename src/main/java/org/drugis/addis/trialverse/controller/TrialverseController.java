@@ -61,7 +61,7 @@ public class TrialverseController {
 
   @RequestMapping(value = "/{namespaceUid}/outcomes", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<SemanticOutcome> queryOutcomes(@PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException, URISyntaxException {
+  public Collection<SemanticVariable> queryOutcomes(@PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException, URISyntaxException {
     return triplestoreService.getOutcomes(mappingService.getVersionedUuid(namespaceUid), version);
   }
 

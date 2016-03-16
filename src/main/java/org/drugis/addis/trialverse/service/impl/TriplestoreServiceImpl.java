@@ -48,6 +48,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public final static String SINGLE_STUDY_MEASUREMENTS = TriplestoreService.loadResource("sparql/singleStudyMeasurements.sparql");
   public final static String TRIAL_DATA = TriplestoreService.loadResource("sparql/trialData.sparql");
   public final static String OUTCOME_QUERY = TriplestoreService.loadResource("sparql/outcomes.sparql");
+  public final static String POPCHAR_QUERY = TriplestoreService.loadResource("sparql/populationCharacteristics.sparql");
   public final static String INTERVENTION_QUERY = TriplestoreService.loadResource("sparql/interventions.sparql");
   public static final String QUERY_ENDPOINT = "/query";
   public static final String QUERY_PARAM_QUERY = "query";
@@ -124,18 +125,26 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
 
   @Override
-  public List<SemanticOutcome> getOutcomes(String namespaceUid, String versionUri) {
-    List<SemanticOutcome> outcomes = new ArrayList<>();
-
+  public List<SemanticVariable> getOutcomes(String namespaceUid, String versionUri) {
     String query = StringUtils.replace(OUTCOME_QUERY, "$namespaceUid", namespaceUid);
+    return getSemanticVariables(namespaceUid, versionUri, query, "outcome");
+  }
 
+  @Override
+  public List<SemanticVariable> getPopulationCharacteristics(String namespaceUid, String versionUri) {
+    String query = StringUtils.replace(POPCHAR_QUERY, "$namespaceUid", namespaceUid);
+    return getSemanticVariables(namespaceUid, versionUri, query, "populationCharacteristic");
+  }
+
+  private List<SemanticVariable> getSemanticVariables(String namespaceUid, String versionUri, String query, String variableType) {
+    List<SemanticVariable> outcomes = new ArrayList<>();
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, versionUri);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
     for (Object binding : bindings) {
-      String uid = JsonPath.read(binding, "$.outcome.value");
+      String uid = JsonPath.read(binding, "$."+ variableType +".value");
       uid = subStringAfterLastSymbol(uid, '/');
       String label = JsonPath.read(binding, "$.label.value");
-      outcomes.add(new SemanticOutcome(uid, label));
+      outcomes.add(new SemanticVariable(uid, label));
     }
     return outcomes;
   }

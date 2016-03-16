@@ -3,14 +3,14 @@ package org.drugis.addis.trialverse.model;
 /**
  * Created by connor on 2/28/14.
  */
-public class SemanticOutcome {
+public class SemanticVariable {
   private String uri;
   private String label;
 
-  protected SemanticOutcome() {
+  protected SemanticVariable() {
   }
 
-  public SemanticOutcome(String uri, String label) {
+  public SemanticVariable(String uri, String label) {
     this.uri = uri;
     this.label = label;
   }
@@ -36,7 +36,7 @@ public class SemanticOutcome {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    SemanticOutcome that = (SemanticOutcome) o;
+    SemanticVariable that = (SemanticVariable) o;
 
     if (!label.equals(that.label)) return false;
     if (!uri.equals(that.uri)) return false;

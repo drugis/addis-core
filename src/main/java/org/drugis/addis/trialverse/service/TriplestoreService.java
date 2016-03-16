@@ -39,7 +39,9 @@ public interface TriplestoreService {
 
   Namespace getNamespaceVersioned(VersionedUuidAndOwner datasetUri, String versionUri);
 
-  List<SemanticOutcome> getOutcomes(String namespaceUid, String version);
+  List<SemanticVariable> getOutcomes(String namespaceUid, String version);
+
+  List<SemanticVariable> getPopulationCharacteristics(String versionedUuid, String version);
 
   List<SemanticIntervention> getInterventions(String namespaceUid, String version);
 
