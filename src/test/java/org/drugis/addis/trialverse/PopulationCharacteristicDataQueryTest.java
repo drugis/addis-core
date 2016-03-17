@@ -4,8 +4,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.drugis.addis.covariates.Covariate;
-import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
@@ -19,13 +17,12 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by daan on 16-3-16.
  */
-public class covariateQueryTest {
+public class PopulationCharacteristicDataQueryTest {
 
   @Test
   public void meanValueTest() throws IOException {
-    Covariate age = new Covariate(1, "age", "", "ageEntity", CovariateOptionType.POPULATION_CHARACTERISTIC);
-
-    ResultSet results = doQueryForResult("/trialverseModel/studyWithAgeData.ttl", age);
+    String ageEntity = "ageEntity";
+    ResultSet results = doQueryForResult("/trialverseModel/studyWithAgeData.ttl", ageEntity);
     QuerySolution querySolution = results.nextSolution();
     double value = querySolution.getLiteral("value").getDouble();
     assertEquals(39.6, value, 0.0000001);
@@ -33,9 +30,8 @@ public class covariateQueryTest {
 
   @Test
   public void rationalValueTest() throws IOException {
-    Covariate age = new Covariate(1, "age", "", "anxietyEntity", CovariateOptionType.POPULATION_CHARACTERISTIC);
-
-    ResultSet results = doQueryForResult("/trialverseModel/studyWithInitialAnxietyData.ttl", age);
+    String anxietyEntity = "anxietyEntity";
+    ResultSet results = doQueryForResult("/trialverseModel/studyWithInitialAnxietyData.ttl", anxietyEntity);
     QuerySolution querySolution = results.nextSolution();
     double value = querySolution.getLiteral("value").getDouble();
     assertEquals(0.1, value, 0.0000001);
@@ -43,38 +39,33 @@ public class covariateQueryTest {
 
   @Test
   public void testBigStudy() throws IOException {
-    Covariate age = new Covariate(1, "age", "", "efdec39b-8e43-42dc-a927-4259ff51cdaf", CovariateOptionType.POPULATION_CHARACTERISTIC);
-
-    ResultSet results = doQueryForResult("/trialverseModel/realstudyAberg.ttl", age);
-  List<QuerySolution> solutions = new ArrayList<>();
-    while (results.hasNext()){
-    solutions.add(results.nextSolution());
-  }
-    System.out.println("solution lenghth = "  + solutions.size());
-
-    double value = solutions.get(0).getLiteral("value").getDouble();
+    String populationCharacteristicUuid = "efdec39b-8e43-42dc-a927-4259ff51cdaf";
+    ResultSet results = doQueryForResult("/trialverseModel/abergCompleteStudy.ttl", populationCharacteristicUuid);
+    List<QuerySolution> studyResults = resultsToList(results);
+    assertEquals(1, studyResults.size());
+    double value = studyResults.get(0).getLiteral("value").getDouble();
     assertEquals(43, value, 0.0000001);
-
   }
 
   @Test
-  public void testNoPop() throws IOException {
-    Covariate age = new Covariate(1, "age", "", "efdec39b-8e43-42dc-a927-4259ff51cdaf", CovariateOptionType.POPULATION_CHARACTERISTIC);
-
-    ResultSet results = doQueryForResult("/trialverseModel/no_population_group.ttl", age);
-    List<QuerySolution> solutions = new ArrayList<>();
-    while (results.hasNext()){
-      solutions.add(results.nextSolution());
-    }
-    System.out.println("solution lenghth = "  + solutions.size());
-
-    Object value = solutions.get(0).getLiteral("value");
+  public void testStudyWithNoOverallPopulationGetsNullValue() throws IOException {
+    String populationCharacteristicUuid = "efdec39b-8e43-42dc-a927-4259ff51cdaf";
+    ResultSet results = doQueryForResult("/trialverseModel/studyWithoutOverallPopulation.ttl", populationCharacteristicUuid);
+    List<QuerySolution> studyResults = resultsToList(results);
+    assertEquals(1, studyResults.size());
+    Object value = studyResults.get(0).getLiteral("value");
     assertEquals(null, value);
-    //assertEquals(43, value, 0.0000001);
-
   }
 
-  private ResultSet doQueryForResult(String pathToMockStudy, Covariate covariate) throws IOException {
+  private List<QuerySolution> resultsToList(ResultSet results) {
+    List<QuerySolution> solutions = new ArrayList<>();
+    while (results.hasNext()) {
+      solutions.add(results.nextSolution());
+    }
+    return solutions;
+  }
+
+  private ResultSet doQueryForResult(String pathToMockStudy, String populationCharacteristicUuid) throws IOException {
     InputStream datasetsModelStream = new ClassPathResource(pathToMockStudy).getInputStream();
     Model model = ModelFactory.createDefaultModel();
     model.read(datasetsModelStream, null, "TTL");
@@ -83,7 +74,7 @@ public class covariateQueryTest {
 
     InputStream inputStream = new ClassPathResource("/sparql/populationCharacteristicCovariateData.sparql").getInputStream();
     String query = IOUtils.toString(inputStream, "UTF-8");
-    query = query.replace("$populationCharacteristicUuid", covariate.getDefinitionKey());
+    query = query.replace("$populationCharacteristicUuid", populationCharacteristicUuid);
     QueryExecution queryExecution = QueryExecutionFactory.create(query, dataset);
     return queryExecution.execSelect();
   }

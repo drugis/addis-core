@@ -2,16 +2,25 @@
 define(['angular-mocks'], function(angularMocks) {
   describe('the SingleProjectController', function() {
     var $q, controllerArguments,
-      covariateOptionsResource = jasmine.createSpyObj('CovariateOptionsResource', ['query']),
+      covariateOptionsResource = jasmine.createSpyObj('CovariateOptionsResource', ['query', 'getProjectCovariates']),
       covariateResource = jasmine.createSpyObj('CovariateResource', ['query']),
       covariateOptions = [{
         key: 'COV_OPTION_KEY',
         label: 'covariate option label'
       }],
+      covariateOptionsWithPopchars = [{
+        key: 'COV_OPTION_KEY',
+        label: 'covariate option label'
+      }, {
+        key: 'popchar-key',
+        label: 'covariate from popchar label'
+      }],
       covariates = [{
         definitionKey: 'COV_OPTION_KEY'
+      }, {
+        definitionKey: 'popchar-key'
       }],
-      covariateOptionsDeferred, covariatesDeferred,
+      covariateOptionsDeferred, covariateOptionsWithPopcharsDeferred, covariatesDeferred,
       analysisTypes = [{
         label: 'type1',
         stateName: 'stateName1'
@@ -32,8 +41,11 @@ define(['angular-mocks'], function(angularMocks) {
       covariateOptionsDeferred = $q.defer();
       covariateOptions.$promise = covariateOptionsDeferred.promise;
       covariateOptionsDeferred.resolve(covariateOptions);
+      covariateOptionsWithPopcharsDeferred = $q.defer();
+      covariateOptionsWithPopchars.$promise = covariateOptionsWithPopcharsDeferred.promise;
+      covariateOptionsWithPopcharsDeferred.resolve(covariateOptionsWithPopchars);
       covariateOptionsResource.query.and.returnValue(covariateOptions);
-
+      covariateOptionsResource.getProjectCovariates.and.returnValue(covariateOptionsWithPopchars);
       covariatesDeferred = $q.defer();
       covariatesDeferred.resolve(covariates);
       covariates.$promise = covariatesDeferred.promise;
@@ -115,7 +127,7 @@ define(['angular-mocks'], function(angularMocks) {
           name: 'projectName',
           description: 'testDescription',
           namespace: 'testNamespace',
-          namespaceUid: "aa2a-20a9g-205968",
+          namespaceUid: 'aa2a-20a9g-205968',
           $save: function() {}
         },
         mockTrialverse = {
@@ -146,8 +158,8 @@ define(['angular-mocks'], function(angularMocks) {
           projectId: mockProject.id
         };
 
-        mockSemanticOutcomes = ["a", "b", 'c'];
-        mockSemanticInterventions = ["e", "f", 'g'];
+        mockSemanticOutcomes = ['a', 'b', 'c'];
+        mockSemanticInterventions = ['e', 'f', 'g'];
         projectResource = jasmine.createSpyObj('projectResource', ['get', 'save']);
         projectResource.get.and.returnValue(mockProject);
         trialverseResource = jasmine.createSpyObj('trialverseResource', ['get']);
@@ -236,7 +248,7 @@ define(['angular-mocks'], function(angularMocks) {
         expect(scope.loading.loaded).toBeTruthy();
       });
 
-      it("should place the associated trialverse information on the scope", function() {
+      it('should place the associated trialverse information on the scope', function() {
         projectDeferred.resolve();
         scope.$apply();
         expect(trialverseResource.get).toHaveBeenCalledWith({
@@ -246,7 +258,7 @@ define(['angular-mocks'], function(angularMocks) {
         expect(scope.trialverse).toEqual(mockTrialverse);
       });
 
-      it("should place the possible semanticOutcomes on the scope on resolution", function() {
+      it('should place the possible semanticOutcomes on the scope on resolution', function() {
         projectDeferred.resolve();
         scope.$apply();
         expect(semanticOutcomeResource.query).toHaveBeenCalledWith({
@@ -256,20 +268,20 @@ define(['angular-mocks'], function(angularMocks) {
         expect(scope.semanticOutcomes).toEqual(mockSemanticOutcomes);
       });
 
-      it("isOwnProject should be true if the project is owned by the logged-in user", function() {
+      it('isOwnProject should be true if the project is owned by the logged-in user', function() {
         projectDeferred.resolve();
         scope.$apply();
         expect(scope.editMode.allowEditing).toBeTruthy();
       });
 
-      it("isOwnProject should be false if the project is not owned by the logged-in user", function() {
+      it('isOwnProject should be false if the project is not owned by the logged-in user', function() {
         window.config.user.id = 2;
         projectDeferred.resolve();
         scope.$apply();
         expect(scope.editMode.allowEditing).toBeFalsy();
       });
 
-      it("should place the possible semanticInterventions on the scope on resolution", function() {
+      it('should place the possible semanticInterventions on the scope on resolution', function() {
         projectDeferred.resolve();
         scope.$apply();
         expect(semanticInterventionResource.query).toHaveBeenCalledWith({
@@ -279,7 +291,7 @@ define(['angular-mocks'], function(angularMocks) {
         expect(scope.semanticInterventions).toEqual(mockSemanticInterventions);
       });
 
-      it("should add the covariate options label to the covariates and place them on the scope", function() {
+      it('should add the covariate options label to the covariates and place them on the scope', function() {
         projectDeferred.resolve();
         scope.$apply();
         expect(scope.covariates[0]).toEqual({
