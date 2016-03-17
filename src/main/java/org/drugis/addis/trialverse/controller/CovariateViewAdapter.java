@@ -1,6 +1,5 @@
 package org.drugis.addis.trialverse.controller;
 
-import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.CovariateOptionType;

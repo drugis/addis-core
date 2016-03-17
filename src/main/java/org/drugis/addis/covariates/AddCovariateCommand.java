@@ -1,5 +1,7 @@
 package org.drugis.addis.covariates;
 
+import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
+
 /**
  * Created by connor on 12/1/15.
  */
@@ -7,19 +9,18 @@ public class AddCovariateCommand {
 
   private String covariateDefinitionKey;
   private String name;
+  private CovariateOptionType type;
   private String motivation;
+
 
   public AddCovariateCommand() {
   }
 
-  public AddCovariateCommand(String covariateDefinitionKey, String name) {
-    this(covariateDefinitionKey, name, null);
-  }
-
-  public AddCovariateCommand(String covariateDefinitionKey, String name, String motivation) {
+  public AddCovariateCommand(String covariateDefinitionKey, String name, String motivation, CovariateOptionType type) {
     this.covariateDefinitionKey = covariateDefinitionKey;
     this.name = name;
     this.motivation = motivation;
+    this.type = type;
   }
 
   public String getCovariateDefinitionKey() {
@@ -34,6 +35,10 @@ public class AddCovariateCommand {
     return motivation;
   }
 
+  public CovariateOptionType getType() {
+    return type;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -43,7 +48,8 @@ public class AddCovariateCommand {
 
     if (!covariateDefinitionKey.equals(that.covariateDefinitionKey)) return false;
     if (!name.equals(that.name)) return false;
-    return !(motivation != null ? !motivation.equals(that.motivation) : that.motivation != null);
+    if (type != that.type) return false;
+    return motivation != null ? motivation.equals(that.motivation) : that.motivation == null;
 
   }
 
@@ -51,6 +57,7 @@ public class AddCovariateCommand {
   public int hashCode() {
     int result = covariateDefinitionKey.hashCode();
     result = 31 * result + name.hashCode();
+    result = 31 * result + type.hashCode();
     result = 31 * result + (motivation != null ? motivation.hashCode() : 0);
     return result;
   }

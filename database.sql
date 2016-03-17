@@ -429,6 +429,5 @@ CREATE TABLE FeaturedDataset (
 --rollback DROP TABLE FeaturedDataset;
 
 --changeset reidd:40
-ALTER TABLE covariate ADD COLUMN populationCharacteristicId INT;
-ALTER TABLE covariate ADD FOREIGN KEY (populationCharacteristicId) REFERENCES outcome(id);
---rollback ALTER TABLE covariate DROP CONSTRAINT "covariate_populationcharacteristicid_fkey";
+ALTER TABLE covariate ADD COLUMN type VARCHAR NOT NULL DEFAULT 'STUDY_CHARACTERISTIC';
+--rollback ALTER TABLE covariate DROP COLUMN type;

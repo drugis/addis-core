@@ -7,6 +7,7 @@ import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.*;
@@ -29,6 +30,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +41,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   public final static String STUDY_DATE_FORMAT = "yyyy-MM-dd";
   public final static String NAMESPACE = TriplestoreService.loadResource("sparql/namespace.sparql");
+  public final static String POPCHAR_DATA_QUERY = TriplestoreService.loadResource("sparql/populationCharacteristicCovariateData.sparql");
   public final static String STUDY_QUERY = TriplestoreService.loadResource("sparql/studyQuery.sparql");
   public final static String STUDY_DETAILS_QUERY = TriplestoreService.loadResource("sparql/studyDetails.sparql");
   public final static String STUDY_GROUPS_QUERY = TriplestoreService.loadResource("sparql/studyGroups.sparql");
@@ -65,6 +68,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Inject
   RestTemplate restTemplate;
+
+  @Inject
+  CovariateRepository covariateRepository;
 
   private static HttpHeaders createGetJsonHeader() {
     HttpHeaders headers = new HttpHeaders();
@@ -524,13 +530,34 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     }
 
+
+    List<CovariateOption> covariateOptions = Arrays.asList(CovariateOption.values());
     // transform covariate keys to object
-    List<CovariateOption> covariates = covariateKeys.stream().map(CovariateOption::fromKey).collect(Collectors.toList());
+    List<CovariateOption> studyLevelCovariates = covariateKeys.stream()
+            .filter(isStudyLevelCovariate(covariateOptions))
+            .map(CovariateOption::fromKey).collect(Collectors.toList());
+    List<String> populationCharacteristicCovariateKeys = covariateKeys.stream()
+            .filter(isStudyLevelCovariate(covariateOptions).negate())
+            .collect(Collectors.toList());
 
-    // fetch the values for each study
-    List<CovariateStudyValue> covariateValues = getCovariateValues(namespaceUid, version, covariates);
+    // fetch the study-level values for each study
+    List<CovariateStudyValue> covariateValues = getStudyLevelCovariateValues(namespaceUid, version, studyLevelCovariates);
 
-    // add te values to the studyData object
+    // fetch the population characteristics values for each study
+    for(String popcharUuid: populationCharacteristicCovariateKeys) {
+      String popcharQuery = POPCHAR_DATA_QUERY.replace("$populationCharacteristicUuid", popcharUuid);
+      ResponseEntity<String> dataResponse = queryTripleStoreVersion(namespaceUid, popcharQuery, version);
+      JSONArray covariateBindings = JsonPath.read(dataResponse.getBody(), "$.results.bindings");
+      for (Object binding : covariateBindings) {
+        JSONObject row = (JSONObject) binding;
+        String studyUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.graph.value"), '/');
+        Double value = extractValueFromRow(row);
+        CovariateStudyValue covariateStudyValue = new CovariateStudyValue(studyUid, popcharUuid, value);
+        covariateValues.add(covariateStudyValue);
+      }
+    }
+
+    // add the values to the studyData object
     for (CovariateStudyValue covariateStudyValue : covariateValues) {
       TrialDataStudy studyData = trialDataStudies.get(covariateStudyValue.getStudyUri());
       if (studyData != null) {
@@ -541,14 +568,19 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return new ArrayList<>(trialDataStudies.values());
   }
 
+  private Predicate<String> isStudyLevelCovariate(List<CovariateOption> covariateOptions) {
+    return key -> covariateOptions.stream().filter(option -> key.equals(option.toString())).findFirst().isPresent();
+  }
+
   @Override
-  public List<CovariateStudyValue> getCovariateValues(String namespaceUid, String version, List<CovariateOption> covariates) {
+  public List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, String version,
+                                                                List<CovariateOption> covariates) {
     List<CovariateStudyValue> covariateStudyValues = new ArrayList<>();
     for (CovariateOption covariate : covariates) {
       ResponseEntity<String> covariateResponse = queryTripleStoreVersion(namespaceUid, covariate.getQuery(), version);
       JSONArray covariateBindings = JsonPath.read(covariateResponse.getBody(), "$.results.bindings");
       for (Object binding : covariateBindings) {
-        JSONObject row = (net.minidev.json.JSONObject) binding;
+        JSONObject row = (JSONObject) binding;
         String studyUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.graph.value"), '/');
         Double value = extractValueFromRow(row);
         CovariateStudyValue covariateStudyValue = new CovariateStudyValue(studyUid, covariate.toString(), value);

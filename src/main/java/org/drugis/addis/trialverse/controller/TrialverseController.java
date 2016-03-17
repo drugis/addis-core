@@ -121,7 +121,7 @@ public class TrialverseController {
 
   @RequestMapping(value = "/{namespaceUid}/trialData", method = RequestMethod.GET)
   @ResponseBody
-  public TrialData getTrialData(@PathVariable String namespaceUid,@RequestParam String version, @RequestParam String outcomeUri,
+  public TrialData getTrialData(@PathVariable String namespaceUid, @RequestParam String version, @RequestParam String outcomeUri,
                                 @RequestParam(required = false) List<String> interventionUris, @RequestParam(required = false) List<String> covariateKeys) throws URISyntaxException {
     if (interventionUris == null) {
       interventionUris = Collections.emptyList();

@@ -47,7 +47,8 @@ public class CovariateController extends AbstractAddisCoreController {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       projectService.checkProjectExistsAndModifiable(user, projectId);
-      Covariate covariate = covariateRepository.createForProject(projectId, command.getCovariateDefinitionKey(), command.getName(), command.getMotivation());
+      Covariate covariate = covariateRepository.createForProject(projectId,
+              command.getCovariateDefinitionKey(), command.getName(), command.getMotivation(), command.getType());
       response.setStatus(HttpServletResponse.SC_CREATED);
       response.setContentType(WebConstants.getApplicationJsonUtf8Value().toString());
       response.setHeader("Location", request.getRequestURL() + "/");

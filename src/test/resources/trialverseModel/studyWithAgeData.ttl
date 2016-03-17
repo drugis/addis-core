@@ -1,0 +1,51 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix study: <http://trials.drugis.org/studies/> .
+@prefix instance: <http://trials.drugis.org/instances/> .
+@prefix entity: <http://trials.drugis.org/entities/> .
+@prefix ontology: <http://trials.drugis.org/ontology#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix concept: <http://trials.drugis.org/concepts/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+study:studyUuid
+  ontology:has_included_population instance:populationInstance ;
+  ontology:has_outcome instance:ageInstance ;
+  ontology:has_epochs (
+    instance:primaryEpoch
+  ) ;
+  ontology:has_primary_epoch instance:primaryEpoch .
+
+  instance:populationInstance a ontology:StudyPopulation .
+
+  instance:ageInstance
+    rdf:type ontology:PopulationCharacteristic ;
+    rdfs:label "Age" ;
+    rdfs:comment "" ;
+    ontology:of_variable [
+      owl:sameAs concept:ageEntity ;
+      rdf:type ontology:Variable ;
+      rdfs:label "Age" ;
+      rdfs:comment "" ;
+      ontology:measurementType ontology:continuous ;
+      rdfs:comment "years"
+    ] ;
+    ontology:has_result_property ontology:mean ;
+    ontology:has_result_property ontology:standard_deviation ;
+    ontology:has_result_property ontology:sample_size ;
+    ontology:is_measured_at instance:moment .
+
+  instance:moment
+    rdf:type ontology:MeasurementMoment ;
+    rdfs:label "P0D FROM_EPOCH_START Main phase" ;
+    ontology:relative_to_epoch instance:primaryEpoch ;
+    ontology:relative_to_anchor ontology:anchorEpochStart ;
+    ontology:time_offset "PT0S"^^xsd:duration .
+
+  instance:measurement
+    ontology:of_outcome instance:ageInstance ;
+    ontology:of_group instance:populationInstance ;
+    ontology:of_moment instance:moment ;
+    ontology:mean 3.960000e+01 ;
+    ontology:standard_deviation 0.000000e+00 ;
+    ontology:sample_size 45 .

@@ -214,7 +214,7 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/covariateDataExample.json");
     createMockTrialverseService(mockResult);
 
-    List<CovariateStudyValue> result = triplestoreService.getCovariateValues(namespaceUid, version, Arrays.asList(CovariateOption.ALLOCATION_RANDOMIZED));
+    List<CovariateStudyValue> result = triplestoreService.getStudyLevelCovariateValues(namespaceUid, version, Arrays.asList(CovariateOption.ALLOCATION_RANDOMIZED));
     assertEquals(4, result.size());
 
   }

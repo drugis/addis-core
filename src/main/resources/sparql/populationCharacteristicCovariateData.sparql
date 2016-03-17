@@ -6,43 +6,45 @@ PREFIX graph: <http://trials.drugis.org/graphs/>
 
 PREFIX entity: <http://trials.drugis.org/entities/>
 PREFIX instance: <http://trials.drugis.org/instances/>
+PREFIX concept: <http://trials.drugis.org/concepts/>
 PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?graph ?value WHERE {
   GRAPH ?graph {
-    ?study
-      ontology:has_included_population ?overallGroup ;
-      ontology:has_outcome ?popcharInstance ;
-      ontology:has_primary_epoch ?epoch .
-
-    ?popcharInstance
-      a ontology:PopulationCharacteristic ;
-      ontology:of_variable [
-        owl:sameAs entity:$populationCharacteristicUuid
-      ] .
-
-    ?zeroMoment
-      ontology:relative_to_epoch ?epoch ;
-      ontology:relative_to_anchor ontology:anchorEpochStart ;
-      ontology:time_offset "PT0S"^^xsd:duration .
-
     OPTIONAL {
-      ?measurementInstance
-        ontology:of_outcome ?popcharInstance ;
-        ontology:of_group ?overallGroup ;
-        ontology:of_moment ?zeroMoment ;
-        ontology:mean ?value .
-    }
+      ?study
+        ontology:has_included_population ?overallGroup ;
+        ontology:has_outcome ?popcharInstance ;
+        ontology:has_primary_epoch ?epoch .
 
-    OPTIONAL {
-      ?measurementInstance
-        ontology:of_outcome ?popcharInstance ;
-        ontology:of_group ?overallGroup ;
-        ontology:of_moment ?zeroMoment ;
-        ontology:count ?count ;
-        ontology:sample_size ?sampleSize .
-        BIND (?count / ?sampleSize AS ?value)
+      ?popcharInstance
+        a ontology:PopulationCharacteristic ;
+        ontology:of_variable [
+          owl:sameAs concept:$populationCharacteristicUuid
+        ] .
+
+      ?zeroMoment
+        ontology:relative_to_epoch ?epoch ;
+        ontology:relative_to_anchor ontology:anchorEpochStart ;
+        ontology:time_offset "PT0S"^^xsd:duration .
+
+       {
+        ?measurementInstance
+          ontology:of_outcome ?popcharInstance ;
+          ontology:of_group ?overallGroup ;
+          ontology:of_moment ?zeroMoment ;
+          ontology:mean ?value .
+      }
+      UNION {
+        ?measurementInstance
+          ontology:of_outcome ?popcharInstance ;
+          ontology:of_group ?overallGroup ;
+          ontology:of_moment ?zeroMoment ;
+          ontology:count ?count ;
+          ontology:sample_size ?sampleSize .
+          BIND (?count / ?sampleSize AS ?value)
+      }
     }
   }
 }
