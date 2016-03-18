@@ -10064,51 +10064,63 @@ inline-help {
 /* line 279, ../../drugis-css/_drugis.scss */
 body .joyride-tip-guide {
   z-index: 1006;
+  margin-top: -32px;
+  margin-left: -1.45rem !important;
 }
 
-/* line 283, ../../drugis-css/_drugis.scss */
+/* line 285, ../../drugis-css/_drugis.scss */
 inline-help a {
   color: grey;
 }
 
-/* line 287, ../../drugis-css/_drugis.scss */
+/* line 289, ../../drugis-css/_drugis.scss */
 inline-help a:hover {
   color: #676767;
 }
 
 /* -------- end inline help directive---------*/
-/* line 293, ../../drugis-css/_drugis.scss */
+/* line 295, ../../drugis-css/_drugis.scss */
 .reveal-modal {
   overflow-x: auto;
   min-width: 540px;
 }
 
 /* line 1, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+.f-topbar-fixed {
+  margin-top: 32px;
+}
+
+/* line 5, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+.alert-box.alert {
+  margin-top: 1.25rem;
+}
+
+/* line 10, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 .export-button {
   margin-left: 1rem;
 }
 
-/* line 5, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 14, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 .inline {
   display: inline;
 }
 
-/* line 9, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 18, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 .image-selector {
   margin-top: 2rem;
 }
-/* line 11, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 20, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 .image-selector div.columns, .image-selector div.column {
   padding: 0;
 }
 
-/* line 16, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 25, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 label.form-item-header {
   font-size: 1.2rem;
   margin-top: 1rem;
 }
 
-/* line 21, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 30, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 a.next {
   display: block;
   position: absolute;
@@ -10116,7 +10128,7 @@ a.next {
   left: 494pt;
 }
 
-/* line 28, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 37, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 a.previous {
   display: block;
   position: absolute;
@@ -10124,29 +10136,29 @@ a.previous {
   left: 10pt;
 }
 
-/* line 35, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 44, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 img.paged-png {
   position: relative;
   left: 60pt;
 }
 
-/* line 40, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 49, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 table.layout-table {
   border: none;
 }
-/* line 42, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 51, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 table.layout-table td {
   border: none;
   background-color: #F3F0FA;
 }
 
-/* line 48, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 57, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 .main-category-header {
   color: #008CBA;
   font-weight: bold;
 }
 
-/* line 53, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
+/* line 62, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
 .breadcrumbs.fixed {
   margin-top: 52px;
   -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
@@ -10154,11 +10166,6 @@ table.layout-table td {
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.14), 0 2px 4px rgba(0, 0, 0, 0.28);
   border-bottom: 1px solod rgba(0, 0, 0, 0.14);
   z-index: 50;
-}
-
-/* line 62, ../js/bower_components/gemtc-web/app/sass/_gemtc-drugis-base.scss */
-.f-topbar-fixed {
-  margin-top: 32px;
 }
 
 /* line 1, ../../sass/_addis-base.scss */
