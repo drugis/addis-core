@@ -11,6 +11,7 @@ define([], function() {
     $scope.addCovariate = function(covariate) {
       $scope.isAddingCovariate = true;
       covariate.covariateDefinitionKey = covariate.definition.key;
+      covariate.type = covariate.definition.typeKey;
       delete covariate.definition;
       covariate.projectId = $scope.project.id
       CovariateResource.save(covariate, function(result, headers) {

@@ -210,8 +210,8 @@ public class ProblemServiceTest {
     Project project = mock(Project.class);
     when(project.getDatasetVersion()).thenReturn(version);
 
-    Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString()));
-    Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString()));
+    Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString(), null));
+    Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString(), null));
     when(covariate1.getId()).thenReturn(1);
     when(covariate2.getId()).thenReturn(2);
     Collection<Covariate> covariates = Arrays.asList(covariate1, covariate2);
@@ -289,8 +289,8 @@ public class ProblemServiceTest {
     InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention3.getId());
     analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2));
 
-    Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString()));
-    Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString()));
+    Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString(), null));
+    Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString(), null));
     when(covariate1.getId()).thenReturn(1);
     when(covariate2.getId()).thenReturn(2);
     Collection<Covariate> covariates = Arrays.asList(covariate1, covariate2);
@@ -345,8 +345,8 @@ public class ProblemServiceTest {
     Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
     List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
 
-    Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString()));
-    Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString()));
+    Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString(), null));
+    Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString(), null));
     when(covariate1.getId()).thenReturn(1);
     when(covariate2.getId()).thenReturn(2);
     Collection<Covariate> covariates = Arrays.asList(covariate1, covariate2);

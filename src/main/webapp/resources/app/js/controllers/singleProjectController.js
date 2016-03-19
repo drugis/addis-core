@@ -83,7 +83,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function loadCovariates() {
       // we need to get the options in order to display the definition label, as only the definition key is stored on the covariate
-      $q.all([CovariateOptionsResource.query().$promise,
+      $q.all([CovariateOptionsResource.getProjectCovariates($stateParams).$promise,
         CovariateResource.query({
           projectId: $scope.project.id
         }).$promise

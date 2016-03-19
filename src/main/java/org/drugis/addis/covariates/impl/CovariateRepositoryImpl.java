@@ -2,6 +2,8 @@ package org.drugis.addis.covariates.impl;
 
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
+import org.drugis.addis.trialverse.model.emun.CovariateOption;
+import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
@@ -9,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by connor on 12/2/15.
@@ -28,9 +31,14 @@ public class CovariateRepositoryImpl implements CovariateRepository {
   }
 
   @Override
-  public Covariate createForProject(Integer projectId, String covariateDefinitionKey, String name, String motivation) {
-    Covariate newCovariate = new Covariate(projectId, name, motivation, covariateDefinitionKey);
+  public Covariate createForProject(Integer projectId, String covariateDefinitionKey, String name, String motivation, CovariateOptionType type) {
+    Covariate newCovariate = new Covariate(projectId, name, motivation, covariateDefinitionKey, type);
     em.persist(newCovariate);
     return newCovariate;
+  }
+
+  @Override
+  public List<Covariate> get(List<String> covariateKeys) {
+    return null;
   }
 }

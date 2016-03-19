@@ -61,5 +61,5 @@ public interface TriplestoreService {
 
   List<StudyData> getStudyData(String namespaceUid, String studyUid, StudyDataSection studyDataSection);
 
-  List<CovariateStudyValue> getCovariateValues(String namespaceUid, String version, List<CovariateOption> covariates);
+  List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, String version, List<CovariateOption> covariates);
 }
