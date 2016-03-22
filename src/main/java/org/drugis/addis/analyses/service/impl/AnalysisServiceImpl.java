@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
@@ -139,8 +136,12 @@ public class AnalysisServiceImpl implements AnalysisService {
 
   private Integer selectModelId(NetworkMetaAnalysis networkMetaAnalysis, List<Model> consistencyModels) {
 
-    List<Model> analysisModels = consistencyModels.stream().filter(m -> m.getAnalysisId() == networkMetaAnalysis.getId()).collect(Collectors.toList());
-
+    List<Model> analysisModels = new ArrayList<>();
+    for(Model model  : consistencyModels) {
+      if(model.getAnalysisId().equals(networkMetaAnalysis.getId())) {
+        analysisModels.add(model);
+      }
+    }
     if (networkMetaAnalysis.getPrimaryModel() != null) {
       Optional<Model> primaryModel = analysisModels.stream()
               .filter(m -> m.getId().equals(networkMetaAnalysis.getPrimaryModel()))
