@@ -279,6 +279,7 @@ define(['lodash', 'angular'], function(_, angular) {
         }
       } else {
         analysis.excludedArms.push({
+          analysisId: analysis.id,
           trialverseUid: dataRow.trialverseUid
         });
       }
