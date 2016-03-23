@@ -96,15 +96,11 @@ public class NetworkMetaAnalysisRepositoryTest {
 
     ArmExclusion newArmExclusion1 = new ArmExclusion(analysis, "-601L");
     ArmExclusion newArmExclusion2 = new ArmExclusion(analysis, "-602L");
-    analysis.getExcludedArms().clear();
-    analysis.getExcludedArms().add(newArmExclusion1);
-    analysis.getExcludedArms().add(newArmExclusion2);
-
+    analysis.setExcludedArms(new HashSet<>(Arrays.asList(newArmExclusion1, newArmExclusion2)));
     int interventionId = 2;
-    InterventionInclusion newInterventionInclusion = new InterventionInclusion(analysis, interventionId);
+    InterventionInclusion newInterventionInclusion = new InterventionInclusion(analysis.getId(), interventionId);
 
-    analysis.getIncludedInterventions().clear();
-    analysis.getIncludedInterventions().add(newInterventionInclusion);
+    analysis.setIncludedInterventions(new HashSet<>(Arrays.asList(newInterventionInclusion)));
 
     NetworkMetaAnalysis updatedAnalysis = networkMetaAnalysisRepository.update(analysis);
     assertEquals(2, updatedAnalysis.getExcludedArms().size());
@@ -113,7 +109,7 @@ public class NetworkMetaAnalysisRepositoryTest {
     query.setParameter("analysisId", analysisId);
     List<ArmExclusion> resultList = query.getResultList();
 
-    TypedQuery<InterventionInclusion> query2 = em.createQuery("from InterventionInclusion ii where ii.analysis.id = :analysisId", InterventionInclusion.class);
+    TypedQuery<InterventionInclusion> query2 = em.createQuery("from InterventionInclusion ii where ii.analysisId = :analysisId", InterventionInclusion.class);
     query2.setParameter("analysisId", analysisId);
 
     assertEquals(2, resultList.size());

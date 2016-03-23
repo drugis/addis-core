@@ -384,7 +384,7 @@ public class AnalysisControllerTest {
     Integer outcomeId = 444;
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable("uir", "label"));
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "adsf");
-    List<InterventionInclusion> includedInterventions = Arrays.asList(new InterventionInclusion(analysis, -1), new InterventionInclusion(analysis, -2));
+    List<InterventionInclusion> includedInterventions = Arrays.asList(new InterventionInclusion(analysis.getId(), -1), new InterventionInclusion(analysis.getId(), -2));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.emptyList(), includedInterventions, Collections.emptyList(), outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
