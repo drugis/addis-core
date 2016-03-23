@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash', 'angular'], function(_) {
+define(['lodash', 'angular'], function(_, angular) {
   var dependencies = ['AnalysisService'];
 
   var NetworkMetaAnalysisService = function(AnalysisService) {
@@ -94,9 +94,9 @@ define(['lodash', 'angular'], function(_) {
           row.studyRowSpan = study.trialDataArms.length;
           angular.forEach(covariates, function(covariate) {
             if (covariate.isIncluded) {
-              var covariateValue = _.find(study.covariateValues, function(covariateValue){
-                  return covariateValue.covariateKey === covariate.definitionKey;
-                }).value;
+              var covariateValue = _.find(study.covariateValues, function(covariateValue) {
+                return covariateValue.covariateKey === covariate.definitionKey;
+              }).value;
               var covariateColumn = {
                 headerTitle: covariate.name,
                 data: covariateValue === null ? 'NA' : covariateValue
@@ -296,6 +296,18 @@ define(['lodash', 'angular'], function(_) {
       }, []);
     }
 
+    function isArmIncluded(analysis, trialDataArm) {
+      return !_.find(analysis.excludedArms, function(exclusion) {
+        return exclusion.trialverseUid === trialDataArm.uid;
+      });
+    }
+
+    function findMatchedArmsForIntervention(analysis, trialDataArms, includedInterventionUri) {
+      return _.filter(trialDataArms, function(trialDataArm) {
+        return trialDataArm.drugConceptUid === includedInterventionUri && isArmIncluded(analysis, trialDataArm);
+      });
+    }
+
     function doesModelHaveAmbiguousArms(trialverseData, interventions, analysis) {
       var includedInterventionUris = _.reduce(interventions, function(mem, intervention) {
         if (intervention.isIncluded) {
@@ -306,20 +318,8 @@ define(['lodash', 'angular'], function(_) {
 
       function doesStudyHaveAmbiguousArms(trialDataStudy, includedInterventionUris) {
         return _.find(includedInterventionUris, function(includedInterventionUri) {
-          var matchedInterventionsForInclusion = findMatchedArmsForIntervention(trialDataStudy.trialDataArms, includedInterventionUri);
+          var matchedInterventionsForInclusion = findMatchedArmsForIntervention(analysis, trialDataStudy.trialDataArms, includedInterventionUri);
           return matchedInterventionsForInclusion.length > 1;
-        });
-      }
-
-      function findMatchedArmsForIntervention(trialDataArms, includedInterventionUri) {
-        return _.filter(trialDataArms, function(trialDataArm) {
-          return trialDataArm.drugConceptUid === includedInterventionUri && isArmIncluded(trialDataArm);
-        });
-      }
-
-      function isArmIncluded(trialDataArm) {
-        return !_.find(analysis.excludedArms, function(exclusion) {
-          return exclusion.trialverseUid === trialDataArm.uid;
         });
       }
 
@@ -409,6 +409,74 @@ define(['lodash', 'angular'], function(_) {
       return updatedList;
     }
 
+    function findOverlappingTreatments(thisIntervention, interventions) {
+      return interventions.reduce(function(overlaping, otherIntervention) {
+        if (thisIntervention.id !== otherIntervention.id &&
+          thisIntervention.semanticInterventionUri === otherIntervention.semanticInterventionUri) {
+          overlaping.push(otherIntervention);
+        }
+        return overlaping;
+      }, []);
+    }
+
+    function getIncludedInterventions(interventions) {
+      return _.filter(interventions, function(intervention) {
+        return intervention.isIncluded;
+      });
+    }
+
+    function hasMoreThanOneIncludedIntervention(study, includedInterventions) {
+      var numberOfIncludedInterventions = study.trialDataArms.reduce(function(count, arm) {
+        var intervention = findInterventionOptionForDrug(arm.drugConceptUid, includedInterventions);
+        if (intervention && intervention.isIncluded) {
+          ++count;
+        }
+        return count;
+      }, 0);
+
+      return numberOfIncludedInterventions > 1;
+    }
+
+    function buildOverlappingTreatmentMap(analysis, interventions, trialData) {
+      var includedInterventions = getIncludedInterventions(interventions);
+      var overlapingTreatmentsMap = includedInterventions.reduce(function(accum, intervention) {
+        var overlapping = findOverlappingTreatments(intervention, includedInterventions);
+        if (overlapping.length > 0) {
+          accum[intervention.id] = overlapping;
+        }
+        return accum;
+      }, {});
+
+      return _.reduce(overlapingTreatmentsMap, function(accum, overlapEntry, key) {
+        var intervention = includedInterventions.find(function(intervention) {
+          return intervention.id === parseInt(key);
+        });
+
+
+        var hasOverlap = _.find(trialData.trialDataStudies, function(study) {
+
+          var includedArms = _.filter(study.trialDataArms, function(arm) {
+            return !_.find(analysis.excludedArms, function(exclusion) {
+              return exclusion.trialverseUid === arm.uid;
+            });
+          });
+
+          var hasIncludedArmWithOverlap = _.find(includedArms, function(arm) {
+            return intervention.semanticInterventionUri === arm.drugConceptUid;
+          });
+
+          var moreThanOneIncludedIntervention = hasMoreThanOneIncludedIntervention(study, includedInterventions);
+
+          return moreThanOneIncludedIntervention && hasIncludedArmWithOverlap;
+        });
+        if (hasOverlap) {
+          accum[intervention.id] = overlapEntry;
+        }
+        return accum;
+      }, {});
+    }
+
+
     return {
       transformTrialDataToNetwork: transformTrialDataToNetwork,
       transformTrialDataToTableRows: transformTrialDataToTableRows,
@@ -420,7 +488,8 @@ define(['lodash', 'angular'], function(_) {
       doesInterventionHaveAmbiguousArms: doesInterventionHaveAmbiguousArms,
       doesModelHaveAmbiguousArms: doesModelHaveAmbiguousArms,
       cleanUpExcludedArms: cleanUpExcludedArms,
-      changeCovariateInclusion: changeCovariateInclusion
+      changeCovariateInclusion: changeCovariateInclusion,
+      buildOverlappingTreatmentMap: buildOverlappingTreatmentMap
     };
   };
   return dependencies.concat(NetworkMetaAnalysisService);
