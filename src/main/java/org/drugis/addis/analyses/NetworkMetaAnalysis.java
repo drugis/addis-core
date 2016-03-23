@@ -5,8 +5,7 @@ import org.drugis.addis.outcomes.Outcome;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by connor on 6-5-14.
@@ -22,14 +21,14 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
   private String title;
   private Integer primaryModel;
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis", orphanRemoval = true)
-  private List<ArmExclusion> excludedArms = new ArrayList<>();
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis")
+  private Set<ArmExclusion> excludedArms = new HashSet<>();
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis", orphanRemoval = true)
-  private List<InterventionInclusion> includedInterventions = new ArrayList<>();
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysisId")
+  private Set<InterventionInclusion> includedInterventions =new HashSet<>();
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis", orphanRemoval = true)
-  private List<CovariateInclusion> includedCovariates = new ArrayList<>();
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysis")
+  private Set<CovariateInclusion> includedCovariates = new HashSet<>();
 
   @ManyToOne(targetEntity = Outcome.class)
   @JoinColumn(name = "outcomeId")
@@ -59,9 +58,9 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
     this.id = id;
     this.projectId = projectId;
     this.title = title;
-    this.excludedArms = excludedArms == null ? new ArrayList<>() : excludedArms;
-    this.includedInterventions = includedInterventions == null ? new ArrayList<>() : includedInterventions;
-    this.includedCovariates = includedCovariates == null ? new ArrayList<>() : includedCovariates;
+    this.excludedArms = excludedArms == null ? new HashSet<>() : new HashSet<>(excludedArms);
+    this.includedInterventions = includedInterventions == null ? new HashSet<>() : new HashSet<>(includedInterventions);
+    this.includedCovariates = includedCovariates == null ? new HashSet<>() : new HashSet<>(includedCovariates);
     this.outcome = outcome;
   }
 
@@ -80,15 +79,15 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
   }
 
   public List<ArmExclusion> getExcludedArms() {
-    return excludedArms;
+    return Collections.unmodifiableList(new ArrayList<>(excludedArms));
   }
 
   public List<InterventionInclusion> getIncludedInterventions() {
-    return includedInterventions;
+    return Collections.unmodifiableList(new ArrayList<>(includedInterventions));
   }
 
   public List<CovariateInclusion> getCovariateInclusions() {
-    return includedCovariates;
+    return Collections.unmodifiableList(new ArrayList<>(includedCovariates));
   }
 
   public Outcome getOutcome() {
@@ -101,6 +100,22 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
 
   public void setPrimaryModel(Integer primaryModel) {
     this.primaryModel = primaryModel;
+  }
+
+  public void setExcludedArms(Set<ArmExclusion> excludedArms) {
+    this.excludedArms = excludedArms;
+  }
+
+  public void setIncludedInterventions(Set<InterventionInclusion> includedInterventions) {
+    this.includedInterventions = includedInterventions;
+  }
+
+  public Set<CovariateInclusion> getIncludedCovariates() {
+    return includedCovariates;
+  }
+
+  public void setIncludedCovariates(Set<CovariateInclusion> includedCovariates) {
+    this.includedCovariates = includedCovariates;
   }
 
   @Override

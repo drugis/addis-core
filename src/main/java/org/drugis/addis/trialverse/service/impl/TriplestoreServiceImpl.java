@@ -474,6 +474,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     for (String interventionUid : interventionUids) {
       result += " { ?interventionInstance owl:sameAs concept:" + interventionUid + " } UNION \n";
     }
+
     return result.substring(0, result.lastIndexOf("UNION"));
   }
 
