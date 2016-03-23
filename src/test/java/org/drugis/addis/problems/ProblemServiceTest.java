@@ -205,7 +205,9 @@ public class ProblemServiceTest {
     List<CovariateInclusion> covariateInclusions = new ArrayList<>();
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, interventionInclusions, covariateInclusions, outcome);
 
-    analysis.getExcludedArms().add(new ArmExclusion(analysis, "888L")); // trialDataArm with armId4
+    Set<ArmExclusion> exclusions = new HashSet<>();
+    exclusions.add(new ArmExclusion(analysis, "888L"));
+    analysis.setExcludedArms(exclusions);
 
     Project project = mock(Project.class);
     when(project.getDatasetVersion()).thenReturn(version);
@@ -225,10 +227,10 @@ public class ProblemServiceTest {
     Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
     List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
 
-    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis, intervention1.getId());
-    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention2.getId());
-    InterventionInclusion interventionInclusion3 = new InterventionInclusion(analysis, intervention3.getId());
-    analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2, interventionInclusion3));
+    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis.getId(), intervention1.getId());
+    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis.getId(), intervention2.getId());
+    InterventionInclusion interventionInclusion3 = new InterventionInclusion(analysis.getId(), intervention3.getId());
+    analysis.setIncludedInterventions(new HashSet<>(Arrays.asList(interventionInclusion1, interventionInclusion2, interventionInclusion3)));
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -285,9 +287,9 @@ public class ProblemServiceTest {
     when(project.getNamespaceUid()).thenReturn(namespaceUid);
     when(project.getDatasetVersion()).thenReturn(version);
 
-    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis, intervention1.getId());
-    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention3.getId());
-    analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2));
+    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis.getId(), intervention1.getId());
+    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis.getId(), intervention3.getId());
+    analysis.setIncludedInterventions(new HashSet<>(Arrays.asList(interventionInclusion1, interventionInclusion2)));
 
     Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString(), null));
     Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString(), null));
@@ -360,10 +362,10 @@ public class ProblemServiceTest {
     CovariateInclusion covariateInclusion2 = Mockito.spy(new CovariateInclusion(analysis, covariate2.getId()));
     when(covariateInclusion1.getId()).thenReturn(101);
     when(covariateInclusion2.getId()).thenReturn(202);
-    analysis.getCovariateInclusions().addAll(Arrays.asList(covariateInclusion1, covariateInclusion2));
+    analysis.setIncludedCovariates(new HashSet<>(Arrays.asList(covariateInclusion1, covariateInclusion2)));
 
-    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis, intervention1.getId());
-    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis, intervention3.getId());
+    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis.getId(), intervention1.getId());
+    InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis.getId(), intervention3.getId());
     analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2));
 
     List<TrialDataStudy> trialDataStudies = createMockTrialData();
