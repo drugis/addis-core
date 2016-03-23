@@ -15,9 +15,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by connor on 6-5-14.
@@ -36,11 +34,12 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisCommand.getProjectId(), analysisCommand.getTitle());
     em.persist(networkMetaAnalysis);
 
-    List<Intervention> interventions = interventionRepository.query(networkMetaAnalysis.getProjectId());
+    List<Intervention> interventions = interventionRepository.query(analysisCommand.getProjectId());
+    Set<InterventionInclusion> interventionInclusions = new HashSet<>(interventions.size());
     for (Intervention intervention : interventions) {
-      InterventionInclusion newInterventionInclusion = new InterventionInclusion(networkMetaAnalysis, intervention.getId());
-      networkMetaAnalysis.getIncludedInterventions().add(newInterventionInclusion);
+      interventionInclusions.add(new InterventionInclusion(networkMetaAnalysis.getId(), intervention.getId()));
     }
+    networkMetaAnalysis.setIncludedInterventions(interventionInclusions);
     return update(networkMetaAnalysis);
   }
 

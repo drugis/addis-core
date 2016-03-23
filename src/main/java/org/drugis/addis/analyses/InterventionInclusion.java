@@ -14,18 +14,15 @@ public class InterventionInclusion {
   @JsonIgnore
   private Integer id;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "analysisId")
-  @JsonIgnore
-  private NetworkMetaAnalysis analysis;
+  private Integer analysisId;
 
   private Integer interventionId;
 
   public InterventionInclusion() {
   }
 
-  public InterventionInclusion(NetworkMetaAnalysis analysis, Integer interventionId) {
-    this.analysis = analysis;
+  public InterventionInclusion(Integer analysisId, Integer interventionId) {
+    this.analysisId = analysisId;
     this.interventionId = interventionId;
   }
 
@@ -33,8 +30,8 @@ public class InterventionInclusion {
     return id;
   }
 
-  public NetworkMetaAnalysis getAnalysis() {
-    return analysis;
+  public Integer getAnalysisId() {
+    return analysisId;
   }
 
   public Integer getInterventionId() {
@@ -44,26 +41,21 @@ public class InterventionInclusion {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof InterventionInclusion)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     InterventionInclusion that = (InterventionInclusion) o;
 
-    if (!analysis.equals(that.analysis)) return false;
     if (id != null ? !id.equals(that.id) : that.id != null) return false;
-    if (!interventionId.equals(that.interventionId)) return false;
+    if (!analysisId.equals(that.analysisId)) return false;
+    return interventionId.equals(that.interventionId);
 
-    return true;
   }
 
   @Override
   public int hashCode() {
     int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + analysis.hashCode();
+    result = 31 * result + analysisId.hashCode();
     result = 31 * result + interventionId.hashCode();
     return result;
-  }
-
-  public void setAnalysis(NetworkMetaAnalysis analysis) {
-    this.analysis = analysis;
   }
 }

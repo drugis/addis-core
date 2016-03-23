@@ -74,10 +74,6 @@ public class AnalysisServiceImpl implements AnalysisService {
       armExclusion.setAnalysis(analysis);
     }
 
-    for (InterventionInclusion interventionInclusion : analysis.getIncludedInterventions()) {
-      interventionInclusion.setAnalysis(analysis);
-    }
-
     for (CovariateInclusion covariateInclusion : analysis.getCovariateInclusions()) {
       covariateInclusion.setAnalysis(analysis);
     }
