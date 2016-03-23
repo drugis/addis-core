@@ -94,27 +94,24 @@ public class NetworkMetaAnalysisRepositoryTest {
     Integer analysisId = -6;
     NetworkMetaAnalysis analysis = em.find(NetworkMetaAnalysis.class, analysisId);
 
-    ArmExclusion newArmExclusion1 = new ArmExclusion(analysis, "-601L");
-    ArmExclusion newArmExclusion2 = new ArmExclusion(analysis, "-602L");
-    analysis.setExcludedArms(new HashSet<>(Arrays.asList(newArmExclusion1, newArmExclusion2)));
+    ArmExclusion newArmExclusion1 = new ArmExclusion(analysis.getId(), "-601L");
+    ArmExclusion newArmExclusion2 = new ArmExclusion(analysis.getId(), "-602L");
+    analysis.updateArmExclusions(new HashSet<>(Arrays.asList(newArmExclusion1, newArmExclusion2)));
     int interventionId = 2;
     InterventionInclusion newInterventionInclusion = new InterventionInclusion(analysis.getId(), interventionId);
 
-    analysis.setIncludedInterventions(new HashSet<>(Arrays.asList(newInterventionInclusion)));
+    analysis.updateIncludedInterventions(new HashSet<>(Arrays.asList(newInterventionInclusion)));
 
     NetworkMetaAnalysis updatedAnalysis = networkMetaAnalysisRepository.update(analysis);
     assertEquals(2, updatedAnalysis.getExcludedArms().size());
 
-    TypedQuery<ArmExclusion> query = em.createQuery("from ArmExclusion ae where ae.analysis.id = :analysisId", ArmExclusion.class);
+    TypedQuery<ArmExclusion> query = em.createQuery("from ArmExclusion ae where ae.analysisId = :analysisId", ArmExclusion.class);
     query.setParameter("analysisId", analysisId);
     List<ArmExclusion> resultList = query.getResultList();
 
-    TypedQuery<InterventionInclusion> query2 = em.createQuery("from InterventionInclusion ii where ii.analysisId = :analysisId", InterventionInclusion.class);
-    query2.setParameter("analysisId", analysisId);
-
     assertEquals(2, resultList.size());
-    assertEquals(new Integer(1), updatedAnalysis.getExcludedArms().get(0).getId());
-    assertEquals(new Integer(2), updatedAnalysis.getExcludedArms().get(1).getId());
+    assertEquals(new Integer(1), updatedAnalysis.getExcludedArms().get(1).getId());
+    assertEquals(new Integer(2), updatedAnalysis.getExcludedArms().get(0).getId());
     assertEquals(new Integer(1), updatedAnalysis.getIncludedInterventions().get(0).getId());
     assertEquals(new Integer(interventionId), updatedAnalysis.getIncludedInterventions().get(0).getInterventionId());
   }

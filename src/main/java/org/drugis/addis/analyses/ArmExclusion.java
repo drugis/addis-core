@@ -16,18 +16,15 @@ public class ArmExclusion implements Serializable {
   @JsonIgnore
   private Integer id;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "analysisId")
-  @JsonIgnore
-  private NetworkMetaAnalysis analysis;
+  private Integer analysisId;
 
   private String trialverseUid;
 
   public ArmExclusion() {
   }
 
-  public ArmExclusion(NetworkMetaAnalysis analysis, String trialverseUid) {
-    this.analysis = analysis;
+  public ArmExclusion(Integer analysisId, String trialverseUid) {
+    this.analysisId = analysisId;
     this.trialverseUid = trialverseUid;
   }
 
@@ -35,36 +32,31 @@ public class ArmExclusion implements Serializable {
     return id;
   }
 
-  public NetworkMetaAnalysis getAnalysis() {
-    return analysis;
+  public Integer getAnalysisId() {
+    return analysisId;
   }
 
   public String getTrialverseUid() {
     return trialverseUid;
   }
 
-  public void setAnalysis(NetworkMetaAnalysis analysis) {
-    this.analysis = analysis;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (!(o instanceof ArmExclusion)) return false;
 
     ArmExclusion that = (ArmExclusion) o;
 
-    if (analysis != null ? !analysis.equals(that.analysis) : that.analysis != null) return false;
     if (id != null ? !id.equals(that.id) : that.id != null) return false;
-    if (!trialverseUid.equals(that.trialverseUid)) return false;
+    if (!analysisId.equals(that.analysisId)) return false;
+    return trialverseUid.equals(that.trialverseUid);
 
-    return true;
   }
 
   @Override
   public int hashCode() {
     int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + (analysis != null ? analysis.getId().hashCode() : 0);
+    result = 31 * result + analysisId.hashCode();
     result = 31 * result + trialverseUid.hashCode();
     return result;
   }

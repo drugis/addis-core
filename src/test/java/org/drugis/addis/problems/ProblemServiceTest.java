@@ -206,8 +206,8 @@ public class ProblemServiceTest {
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, interventionInclusions, covariateInclusions, outcome);
 
     Set<ArmExclusion> exclusions = new HashSet<>();
-    exclusions.add(new ArmExclusion(analysis, "888L"));
-    analysis.setExcludedArms(exclusions);
+    exclusions.add(new ArmExclusion(analysis.getId(), "888L"));
+    analysis.updateArmExclusions(exclusions);
 
     Project project = mock(Project.class);
     when(project.getDatasetVersion()).thenReturn(version);
@@ -230,7 +230,7 @@ public class ProblemServiceTest {
     InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis.getId(), intervention1.getId());
     InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis.getId(), intervention2.getId());
     InterventionInclusion interventionInclusion3 = new InterventionInclusion(analysis.getId(), intervention3.getId());
-    analysis.setIncludedInterventions(new HashSet<>(Arrays.asList(interventionInclusion1, interventionInclusion2, interventionInclusion3)));
+    analysis.updateIncludedInterventions(new HashSet<>(Arrays.asList(interventionInclusion1, interventionInclusion2, interventionInclusion3)));
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -289,7 +289,7 @@ public class ProblemServiceTest {
 
     InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis.getId(), intervention1.getId());
     InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis.getId(), intervention3.getId());
-    analysis.setIncludedInterventions(new HashSet<>(Arrays.asList(interventionInclusion1, interventionInclusion2)));
+    analysis.updateIncludedInterventions(new HashSet<>(Arrays.asList(interventionInclusion1, interventionInclusion2)));
 
     Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString(), null));
     Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString(), null));
@@ -358,15 +358,15 @@ public class ProblemServiceTest {
     when(project.getNamespaceUid()).thenReturn(namespaceUid);
     when(project.getDatasetVersion()).thenReturn(version);
 
-    CovariateInclusion covariateInclusion1 = Mockito.spy(new CovariateInclusion(analysis, covariate1.getId()));
-    CovariateInclusion covariateInclusion2 = Mockito.spy(new CovariateInclusion(analysis, covariate2.getId()));
+    CovariateInclusion covariateInclusion1 = Mockito.spy(new CovariateInclusion(analysis.getId(), covariate1.getId()));
+    CovariateInclusion covariateInclusion2 = Mockito.spy(new CovariateInclusion(analysis.getId(), covariate2.getId()));
     when(covariateInclusion1.getId()).thenReturn(101);
     when(covariateInclusion2.getId()).thenReturn(202);
-    analysis.setIncludedCovariates(new HashSet<>(Arrays.asList(covariateInclusion1, covariateInclusion2)));
+    analysis.updateIncludedCovariates(new HashSet<>(Arrays.asList(covariateInclusion1, covariateInclusion2)));
 
     InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis.getId(), intervention1.getId());
     InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis.getId(), intervention3.getId());
-    analysis.getIncludedInterventions().addAll(Arrays.asList(interventionInclusion1, interventionInclusion2));
+    analysis.updateIncludedInterventions(new HashSet<>(Arrays.asList(interventionInclusion1, interventionInclusion2)));
 
     List<TrialDataStudy> trialDataStudies = createMockTrialData();
     TrialDataStudy firstTrialDataStudy = trialDataStudies.get(0);
@@ -391,6 +391,7 @@ public class ProblemServiceTest {
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
+
     verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), includedCovariateKeys);
     verify(mappingService).getVersionedUuid(namespaceUid);
 

@@ -364,7 +364,7 @@ public class AnalysisControllerTest {
     Integer projectId = 101;
     Integer outcomeId = 444;
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable("uir", "label"));
-    List<ArmExclusion> excludedArms = Arrays.asList(new ArmExclusion(null, "-1L"), new ArmExclusion(null, "-2L"));
+    List<ArmExclusion> excludedArms = Arrays.asList(new ArmExclusion(analysisId, "-1L"), new ArmExclusion(analysisId, "-2L"));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", excludedArms, Collections.emptyList(), Collections.emptyList(), outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
@@ -403,8 +403,7 @@ public class AnalysisControllerTest {
     Integer projectId = 101;
     Integer outcomeId = 444;
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable("uir", "label"));
-    NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "adsf");
-    List<CovariateInclusion> covariateInclusions = Arrays.asList(new CovariateInclusion(analysis, -1), new CovariateInclusion(analysis, -2));
+    List<CovariateInclusion> covariateInclusions = Arrays.asList(new CovariateInclusion(analysisId, -1), new CovariateInclusion(analysisId, -2));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.emptyList(), Collections.emptyList(), covariateInclusions, outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);

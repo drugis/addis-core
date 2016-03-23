@@ -256,7 +256,7 @@ public class ProblemServiceImpl implements ProblemService {
             .stream()
             .collect(Collectors.toMap(Covariate::getId, Function.identity()));
     List<String> includedCovariateKeys = analysis.getCovariateInclusions().stream()
-            .map(ic -> definedMap.get(ic.getCovariateId()).getDefinitionKey())
+            .map(ic -> definedMap.get(ic.getCovariateId()).getDefinitionKey()).sorted()
             .collect(Collectors.toList());
 
     String namespaceUid = mappingService.getVersionedUuid(project.getNamespaceUid());

@@ -39,7 +39,7 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
     for (Intervention intervention : interventions) {
       interventionInclusions.add(new InterventionInclusion(networkMetaAnalysis.getId(), intervention.getId()));
     }
-    networkMetaAnalysis.setIncludedInterventions(interventionInclusions);
+    networkMetaAnalysis.updateIncludedInterventions(interventionInclusions);
     return update(networkMetaAnalysis);
   }
 

@@ -14,18 +14,16 @@ public class CovariateInclusion {
   @JsonIgnore
   private Integer id;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "analysisId")
-  @JsonIgnore
-  private NetworkMetaAnalysis analysis;
+
+  private Integer analysisId;
 
   private Integer covariateId;
 
   public CovariateInclusion() {
   }
 
-  public CovariateInclusion(NetworkMetaAnalysis analysis, Integer covariateId) {
-    this.analysis = analysis;
+  public CovariateInclusion(Integer analysisId, Integer covariateId) {
+    this.analysisId = analysisId;
     this.covariateId = covariateId;
   }
 
@@ -33,12 +31,8 @@ public class CovariateInclusion {
     return id;
   }
 
-  public NetworkMetaAnalysis getAnalysis() {
-    return analysis;
-  }
-
-  public void setAnalysis(NetworkMetaAnalysis analysis) {
-    this.analysis = analysis;
+  public Integer getAnalysisId() {
+    return analysisId;
   }
 
   public Integer getCovariateId() {
@@ -52,8 +46,8 @@ public class CovariateInclusion {
 
     CovariateInclusion that = (CovariateInclusion) o;
 
-    if (!analysis.equals(that.analysis)) return false;
     if (id != null ? !id.equals(that.id) : that.id != null) return false;
+    if (!analysisId.equals(that.analysisId)) return false;
     return covariateId.equals(that.covariateId);
 
   }
@@ -61,7 +55,7 @@ public class CovariateInclusion {
   @Override
   public int hashCode() {
     int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + analysis.hashCode();
+    result = 31 * result + analysisId.hashCode();
     result = 31 * result + covariateId.hashCode();
     return result;
   }

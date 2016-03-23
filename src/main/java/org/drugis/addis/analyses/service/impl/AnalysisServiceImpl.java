@@ -70,14 +70,6 @@ public class AnalysisServiceImpl implements AnalysisService {
       throw new ResourceDoesNotExistException();
     }
 
-    for (ArmExclusion armExclusion : analysis.getExcludedArms()) {
-      armExclusion.setAnalysis(analysis);
-    }
-
-    for (CovariateInclusion covariateInclusion : analysis.getCovariateInclusions()) {
-      covariateInclusion.setAnalysis(analysis);
-    }
-
     return networkMetaAnalysisRepository.update(analysis);
   }
 
