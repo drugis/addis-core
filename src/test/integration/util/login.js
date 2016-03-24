@@ -13,7 +13,7 @@ module.exports = function(browser, url){
       .pause(1000)
       .setValue('input[type=password]', 'speciaalvoordejenkins')
       .click('#signIn');
-      if (testUrl.startsWith('http://localhost')) {
+      if (testUrl.substr(0, 16) === 'http://localhost') {
           browser.pause(3000) // wait for submit button to become active (thanks for keeping us safe google)
               .click('#submit_approve_access');
       }
