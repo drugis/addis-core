@@ -45,6 +45,11 @@
                          class="alert-message">
                         Ambiguous arms, please choose a single arm for inclusion
                     </div>
+                    <div ng-show="!lessThanTwoInterventionArms(dataRow) && dataRow.overlappingInterventionWarning"
+                         class="alert-message">
+                        Ambiguous: {{dataRow.overlappingInterventionWarning}}
+                    </div>
+                    
                 </td>
                 <td>
                     <label><input type="checkbox"

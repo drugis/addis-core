@@ -13,16 +13,24 @@
                 <label>Included interventions</label>
                 <div class="checkbox-group">
                     <div ng-repeat="intervention in interventions">
-                        <label><input type="checkbox" ng-model="intervention.isIncluded"
+                        <label>
+                          <input type="checkbox" ng-model="intervention.isIncluded"
                             ng-disabled="editMode.disableEditing || hasModel"
                             ng-change="changeInterventionInclusion(intervention)">
-                        {{intervention.name}}</label>
+                        {{intervention.name}}
+                        </label>
+                        <div class="alert animate-show" ng-if="loading.loaded && isOverlappingIntervention(intervention)">
+                          <em>Overlaps: 
+                            <span ng-repeat="overlap in treatmentOverlapMap[intervention.id]">
+                            {{overlap.name}} {{$last ? '' : ', '}}
+                            </span></em>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="columns large-6">
                 <label>Included covariates</label>
-                <em ng-if="loading.loaded && covariates.length === 0">No covariates have been defined</em>
+                <em ng-if="loading.loaded && covariates.length === 0">No covariates have been defined.</em>
 
                 <div ng-if="loading.loaded && covariates.length > 0" class="checkbox-group">
                     <div ng-repeat="covariate in covariates">
@@ -43,8 +51,8 @@
                 <span class="alert animate-show"
                       ng-show="loading.loaded && tableHasAmbiguousArm && interventions.length > 1 && !hasLessThanTwoInterventions">Ambiguous arms: more than one arm selected for single intervention.
                 </span>
-                <span class="alert animate-show" ng-show="loading.loaded && hasLessThanTwoInterventions">A least two interventions are needed to perform the analysis</span>
-                <span class="alert animate-show" ng-show="loading.loaded && hasTreatmentOverlap">Overlapping interventions detected: please exclude interventions to fix this</span>
+                <span class="alert animate-show" ng-show="loading.loaded && hasLessThanTwoInterventions">A least two interventions are needed to perform the analysis.</span>
+                <span class="alert animate-show" ng-show="loading.loaded && hasTreatmentOverlap">Overlapping interventions detected: please exclude interventions to fix this.</span>
             </div>
         </div>
     </div>
