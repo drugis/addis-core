@@ -5,8 +5,12 @@ module.exports = {
     browser
       .url(testUrl)
       .waitForElementVisible('body', 1000)
-      .pause(1000)
-      .assert.containsText('h1', 'addis.drugis.org')
-      .end();
+      .pause(1000);
+    if(testUrl === 'https://addis-test.drugis.org'){
+      browser.assert.containsText('h1', 'test-addis.drugis.org')
+    } else {
+      browser.assert.containsText('h1', 'addis.drugis.org')
+    }
+    browser.end();
   }
 };
