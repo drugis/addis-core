@@ -121,6 +121,13 @@
         </em>
           </p>
         </div>
+        <div ng-if="studyModel.selectedStudy.overlappingInterventions.length > 0">
+          <p>
+            <em>
+          <i class="fa fa-exclamation-triangle"></i> The following interventions overlap: {{overlappingInterventionsList}}; please exclude interventions to fix this.
+        </em>
+          </p>
+        </div>
       </div>
     </div>
   </div>

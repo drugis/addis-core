@@ -1,6 +1,6 @@
 'use strict';
-define(['angular', 'angular-mocks', 'controllers'], function() {
-  describe("The Single Study Benefit-Risk AnalysisController", function() {
+define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
+  describe('The Single Study Benefit-Risk AnalysisController', function() {
     var scope;
     var userId = 54;
     var mockStateParams = {
@@ -19,7 +19,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
     var problemResource = jasmine.createSpyObj('problemResource', ['get']);
     var singleStudyBenefitRiskAnalysisService = jasmine.createSpyObj('singleStudyBenefitRiskAnalysisService', ['getProblem', 'getDefaultScenario', 'validateProblem',
       'concatWithNoDuplicates', 'addMissingOutcomesToStudies', 'addMissingInterventionsToStudies',
-      'addHasMatchedMixedTreatmentArm', 'recalculateGroup'
+      'addHasMatchedMixedTreatmentArm', 'recalculateGroup', 'addOverlappingInterventionsToStudies'
     ]);
     var outcomesDeferred;
     var interventionDeferred;
@@ -44,7 +44,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       owner: 'user'
     };
     var mockAnalysis = {
-      selectedOutcomes : {},
+      selectedOutcomes: {},
       selectedInterventions: {},
       studyGraphUid: 'uid'
     };
@@ -120,7 +120,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
 
     describe('on load', function() {
 
-      it("isValidAnalysis should reject analyses that contain fewer than two selectedInterventions and two selectedOutcomes",
+      it('isValidAnalysis should reject analyses that contain fewer than two selectedInterventions and two selectedOutcomes',
         function() {
           var invalidAnalysis = {
             selectedInterventions: [],
@@ -280,6 +280,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         scope.$apply();
         scope.dirty = true;
 
+        expect(singleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies).toHaveBeenCalled();
         expect(analysisResource.save).toHaveBeenCalled();
       });
     });
@@ -342,7 +343,6 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         expect(singleStudyBenefitRiskAnalysisService.getDefaultScenario).toHaveBeenCalled();
       });
     });
-
 
 
   });

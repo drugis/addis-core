@@ -78,6 +78,7 @@ define(['lodash'], function(_) {
     function interventionsChanged() {
       SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.selectedInterventions);
       SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.selectedInterventions);
+      SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.selectedInterventions);
       SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
 
       // necessary because angular-select uses $watchcollection instead of $watch
@@ -122,6 +123,7 @@ define(['lodash'], function(_) {
       SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
       SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.selectedInterventions);
       SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.selectedInterventions);
+      SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.selectedInterventions);
       SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
     });
 
@@ -147,6 +149,10 @@ define(['lodash'], function(_) {
       saveAnalysis();
     };
 
+    $scope.$watch('studyModel.selectedStudy.overlappingInterventions', function(newValue) {
+      $scope.overlappingInterventionsList = _.uniq(_.map(newValue, 'name')).join(', ');
+    });
+
     $scope.goToDefaultScenarioView = function() {
       SingleStudyBenefitRiskAnalysisService
         .getDefaultScenario()
@@ -155,7 +161,7 @@ define(['lodash'], function(_) {
             id: scenario.id
           }));
         });
-    }
+    };
 
     $scope.createProblem = function() {
       if (deregisterOutcomeWatch) {
