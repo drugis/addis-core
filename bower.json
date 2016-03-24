@@ -1,6 +1,6 @@
 {
   "name": "addis-core",
-  "version": "0.4.1.1",
+  "version": "0.4.1.2",
   "homepage": "https://github.com/drugis/addis-core",
   "authors": [],
   "license": "GPL3",
@@ -20,8 +20,7 @@
     "angular-md5": "~0.1.7",
     "angular-resource": "~1.5.0",
     "angular-ui-router": "~0.2.11",
-    "angular-ui-select": "~0.8.0",
-    "angular-ui-select2": "~0.0.5",
+    "angular-ui-select": "~0.16.1",
     "bowser": "~0.7.3",
     "d3": "3.5.6",
     "fastclick": "~0.6.11",
