@@ -470,9 +470,6 @@ define(['lodash', 'angular'], function(_, angular) {
             return !_.find(analysis.excludedArms, function(exclusion) {
               return exclusion.trialverseUid === arm.uid;
             });
-            return !_.find(analysis.excludedArms, function(exclusion) {
-              return exclusion.trialverseUid === trialDataArm.uid;
-            });
           });
 
           var hasIncludedArmWithOverlap = _.find(includedArms, function(arm) {
