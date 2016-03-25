@@ -24,11 +24,15 @@ DatasetsPage.prototype = {
         console.log('open create model btn clicked');
       })
       .pause(5000)
+      .source(function(result) {
+        console.log('source: ');
+        console.log(result.value);
+      })
       .clearValue(LOCATORS.projectNameInput)
       .setValue(LOCATORS.projectNameInput, name)
       .clearValue(LOCATORS.projectDescriptionTxtFld)
       .setValue(LOCATORS.projectDescriptionTxtFld, desc)
-      .pause(5000)
+      .pause(1000)
       .click(LOCATORS.createProjectModelCreateBtn).pause(3000);
   }
 };
