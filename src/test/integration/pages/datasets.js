@@ -4,7 +4,8 @@ function DatasetsPage(browser) {
 
 var LOCATORS = {
   body: 'body',
-  featuredDatasetCreateBtn: '.featured-dataset-col:nth-of-type(1) button', // just select the first featured dataset
+  featuredDatasetCreateBtn: '.featured-dataset-col button:nth-of-type(1)', // just select the first featured dataset
+  xPathFeaturedDatasetCreateBtn: '//button[@type="button" and contains(., "Create project")]',
   projectNameInput: 'form[ng-submit="createProject(project)"] input[ng-model="project.name"]',
   projectDescriptionTxtFld: 'form[ng-submit="createProject(project)"] textarea[ng-model="project.description"]',
   createProjectModelCreateBtn: 'form[ng-submit="createProject(project)"] button[type="submit"]'
@@ -19,15 +20,11 @@ DatasetsPage.prototype = {
   },
   createFeaturedDatasetProject: function(name, desc) {
     this.browser
-      .pause(5000)
-      .click(LOCATORS.featuredDatasetCreateBtn, function(){
-        console.log('open create model btn clicked');
-      })
-      .pause(5000)
-      .source(function(result) {
-        console.log('source: ');
-        console.log(result.value);
-      })
+      .pause(3000)
+      .useXpath() // every selector now must be xpath
+      .click(LOCATORS.xPathFeaturedDatasetCreateBtn)
+      .useCss() // we're back to CSS now
+      .pause(3000)
       .clearValue(LOCATORS.projectNameInput)
       .setValue(LOCATORS.projectNameInput, name)
       .clearValue(LOCATORS.projectDescriptionTxtFld)
