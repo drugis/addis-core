@@ -20,6 +20,11 @@ DatasetsPage.prototype = {
   createFeaturedDatasetProject: function(name, desc) {
     this.browser
       .waitForElementVisible(LOCATORS.featuredDatasetCreateBtn, 50000)
+      .source(function(result) {
+        console.log('source: ');
+        console.log(result.value);
+      })
+      .pause(5000)
       .pause(3000)
       .click(LOCATORS.featuredDatasetCreateBtn)
       .pause(1000)

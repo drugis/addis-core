@@ -5,12 +5,6 @@ module.exports = {
     browser
       .url(testUrl)
       .waitForElementVisible('body', 1000)
-      .source(function (result){
-              // Source will be stored in result.value
-              console.log('source: ');
-              console.log(result.value);
-          })
-      .pause(5000)
       .assert.containsText('h1', 'addis.drugis.org')
       .end();
   }
