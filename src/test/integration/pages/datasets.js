@@ -22,7 +22,10 @@ DatasetsPage.prototype = {
     this.browser
       .pause(3000)
       .useXpath() // every selector now must be xpath
-      .click(LOCATORS.xPathFeaturedDatasetCreateBtn)
+      .click(LOCATORS.xPathFeaturedDatasetCreateBtn, function(res){
+        console.log('bt clicked ');
+        console.log(res);
+      })
       .useCss() // we're back to CSS now
       .pause(3000)
       .clearValue(LOCATORS.projectNameInput)
