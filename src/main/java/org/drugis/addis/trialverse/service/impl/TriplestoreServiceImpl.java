@@ -489,6 +489,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Override
   public List<TrialDataStudy> getTrialData(String namespaceUid, String version, String outcomeUid,
                                            List<String> interventionUids, List<String> covariateKeys) {
+    if(interventionUids.isEmpty()) {
+      return Collections.emptyList();
+    }
     String interventionUnion = buildInterventionUnionString(interventionUids);
     String query = TRIAL_DATA
             .replace("$outcomeUid", outcomeUid)
@@ -629,6 +632,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   @Override
   public List<SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String namespaceUid, String studyUid, String version, List<String> outcomeUids, List<String> interventionUids) {
 
+    if(interventionUids.isEmpty()) {
+      return Collections.emptyList();
+    }
     String query = StringUtils.replace(SINGLE_STUDY_MEASUREMENTS, "$studyUid", studyUid);
     query = StringUtils.replace(query, "$outcomeUnionString", buildOutcomeUnionString(outcomeUids));
     String interventionUn = buildInterventionUnionString(interventionUids);
