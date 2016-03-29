@@ -23,22 +23,22 @@ DatasetsPage.prototype = {
   },
   createFeaturedDatasetProject: function(name, desc) {
     this.browser
-      .useXpath() // every selector now must be xpath
-    .waitForElementVisible(LOCATORS.xPathFeaturedDatasetCreateBtn, 15000)
+      .useXpath()
+      .waitForElementVisible(LOCATORS.xPathFeaturedDatasetCreateBtn, 15000)
       .click(LOCATORS.xPathFeaturedDatasetCreateBtn, function(res) {
         console.log('create project btn clicked ');
         if (res && CLICK_RESULT_STATUS_FAULURE === res.status) {
           console.error(res);
         }
       })
-      .useCss() // we're back to CSS now
-    .pause(3000)
+      .useCss()
+      .pause(300)
       .clearValue(LOCATORS.projectNameInput)
       .setValue(LOCATORS.projectNameInput, name)
       .clearValue(LOCATORS.projectDescriptionTxtFld)
       .setValue(LOCATORS.projectDescriptionTxtFld, desc)
-      .pause(1000)
-      .click(LOCATORS.createProjectModelCreateBtn).pause(3000);
+      .pause(600)
+      .click(LOCATORS.createProjectModelCreateBtn).pause(300);
   }
 };
 

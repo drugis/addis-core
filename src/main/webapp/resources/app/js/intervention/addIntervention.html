@@ -3,7 +3,7 @@
   <div class="row">
     <div class="large-10 columns">
       <label>Semantic intervention
-        <select ng-model="newIntervention.semanticIntervention" ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"
+        <select id="intervention-select" ng-model="newIntervention.semanticIntervention" ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"
         ng-change="newIntervention.name = newIntervention.semanticIntervention.label; checkForDuplicateInterventionName(newIntervention.name)"></select>
       </label>
     </div>
@@ -11,19 +11,19 @@
   <div class="row">
     <div class="large-10 columns">
       <label>Name
-        <input type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention.name)">
+        <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention.name)">
       </label>
     </div>
   </div>
   <div class="row">
     <div class="large-10 columns">
       <label>Motivation
-        <textarea rows="4" ng-model="newIntervention.motivation"></textarea>
+        <textarea id="intervention-desc-txt" rows="4" ng-model="newIntervention.motivation"></textarea>
       </label>
     </div>
   </div>
   <div class="row">
-    <button class="button small success" ng-disabled="!newIntervention.name || !newIntervention.semanticIntervention || duplicateInterventionName.isDuplicate"
+    <button id="add-intervention-sumbit-btn" class="button small success" ng-disabled="!newIntervention.name || !newIntervention.semanticIntervention || duplicateInterventionName.isDuplicate"
     type="submit">Add intervention
     </button>
     <div class="alert" ng-show="duplicateInterventionName.isDuplicate">Duplicate name.</div>

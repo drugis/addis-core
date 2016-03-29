@@ -4,7 +4,7 @@
   <div class="row">
     <div class="large-10 columns">
       <label>Title
-        <input type="text" ng-model="newAnalysis.title" ng-change="checkForDuplicateAnalysisName(newAnalysis.title)">
+        <input id="analysis-title-input" type="text" ng-model="newAnalysis.title" ng-change="checkForDuplicateAnalysisName(newAnalysis.title)">
         <div class="alert" ng-show="duplicateAnalysisName.isDuplicate">Duplicate name.</div>
       </label>
     </div>
@@ -12,7 +12,7 @@
   <div class="row">
     <div class="large-10 columns">
       <label>Type
-        <select ng-init="newAnalysis.type=analysisTypes[0].label" ng-model="newAnalysis.type"
+        <select id="analysis-type-select" ng-init="newAnalysis.type=analysisTypes[0].label" ng-model="newAnalysis.type"
           ng-options="type.label as type.label for type in analysisTypes"></select>
       </label>
     </div>
@@ -23,7 +23,7 @@
         <button class="button small secondary" type="button" ng-click="cancel()">Cancel</button>
       </li>
       <li>
-        <button class="button small success" ng-disabled="!newAnalysis.title || !newAnalysis.type || duplicateAnalysisName.isDuplicate" type="submit">Add analysis
+        <button id="add-analysis-btn" class="button small success" ng-disabled="!newAnalysis.title || !newAnalysis.type || duplicateAnalysisName.isDuplicate" type="submit">Add analysis
         </button>
 
       </li>
