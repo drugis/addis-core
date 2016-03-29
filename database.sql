@@ -443,3 +443,7 @@ ALTER TABLE metabenefitriskanalysis_alternative ADD CONSTRAINT metabenefitriskan
 --changeset reidd:43
 ALTER TABLE mbroutcomeinclusion DROP CONSTRAINT mbroutcomeinclusion_outcomeid_fkey;
 ALTER TABLE mbroutcomeinclusion ADD CONSTRAINT mbroutcomeinclusion_outcomeid_fkey FOREIGN KEY (outcomeid) REFERENCES outcome(id) ON DELETE CASCADE;
+
+--changeset reidd:44
+ALTER TABLE interventioninclusion DROP CONSTRAINT interventioninclusion_analysisid_fkey ;
+ALTER TABLE interventioninclusion ADD CONSTRAINT interventioninclusion_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES networkmetaanalysis(id) ON DELETE CASCADE ;
