@@ -44,7 +44,7 @@ ProjectPage.prototype = {
       .click(LOCATORS.addOutcomeSubmitBtn)
       .pause(300);
   },
-  addIntervention: function(shortName, desc) {
+  addIntervention: function(shortName, desc, name) {
     this.browser
       .waitForElementVisible(LOCATORS.createInterventionModal, 15000)
       .click(LOCATORS.createInterventionModal)
@@ -56,8 +56,13 @@ ProjectPage.prototype = {
       .pause(1300)
       .clearValue(LOCATORS.interventionMotivationTextArea)
       .setValue(LOCATORS.interventionMotivationTextArea, desc)
-      .pause(300)
-      .click(LOCATORS.addInterventionSubmitBtn)
+      .pause(300);
+    if (name) {
+      this.browser
+        .clearValue(LOCATORS.interventionNameInput)
+        .setValue(LOCATORS.interventionNameInput, name);
+    }
+    this.browser.click(LOCATORS.addInterventionSubmitBtn)
       .pause(300);
   },
   addAnalysis: function(type, name) {

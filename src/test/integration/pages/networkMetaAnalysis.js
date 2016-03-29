@@ -4,8 +4,12 @@ function DatasetsPage(browser) {
 
 var LOCATORS = {
   body: 'body',
-  selectedOutcome: 'select option[selected="selected"]'
+  createModelBtn: '#add-model-btn',
+  selectedOutcome: 'select option[selected="selected"]',
+  overlapWarning: '#intervention-overlap-warning'
 };
+
+var expextedOverlapText = 'Overlapping interventions detected: please exclude interventions to fix this.';
 
 DatasetsPage.prototype = {
   waitForPageToLoad: function() {
@@ -16,9 +20,14 @@ DatasetsPage.prototype = {
   },
   checkSelectedOutcome: function(name) {
     this.browser
-      .useXpath()
       .waitForElementVisible(LOCATORS.selectedOutcome, 15000)
       .assert.containsText(LOCATORS.selectedOutcome, name);
+  },
+  checkInterventionOverlap: function() {
+    this.browser
+      .assert.containsText(LOCATORS.overlapWarning, expextedOverlapText)
+      .assert.attributeEquals(LOCATORS.createModelBtn, 'disabled', 'true');
+
   }
 };
 
