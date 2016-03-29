@@ -21,7 +21,9 @@ module.exports = {
     projectPage.addOutcome('nau', 'a second test outcome');
     projectPage.addIntervention('parox', 'a test intervention');
     projectPage.addIntervention('fluox', 'a second test intervention');
-    projectPage.addAnalysis('network', 'test network analysis title');
+    // projectPage.addAnalysis('network', 'test network analysis title');
+    // projectPage.addAnalysis('single', 'test single-study title');
+    // projectPage.addAnalysis('benefit', 'test meta-benefit-risk title');
 
     browser.pause(600);
     datasetsPage.end();

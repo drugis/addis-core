@@ -11,7 +11,8 @@ var LOCATORS = {
   xPathFeaturedDatasetCreateBtn: '//button[@type="button" and contains(., "Create project")]',
   projectNameInput: 'form[ng-submit="createProject(project)"] input[ng-model="project.name"]',
   projectDescriptionTxtFld: 'form[ng-submit="createProject(project)"] textarea[ng-model="project.description"]',
-  createProjectModelCreateBtn: 'form[ng-submit="createProject(project)"] button[type="submit"]'
+  createProjectModelCreateBtn: 'form[ng-submit="createProject(project)"] button[type="submit"]',
+  projectTab: 'dd[heading="Projects"]'
 };
 
 DatasetsPage.prototype = {
@@ -20,6 +21,11 @@ DatasetsPage.prototype = {
   },
   end: function() {
     this.browser.end();
+  },
+  selectProjectsTab: function() {
+    this.browser
+      .waitForElementVisible(LOCATORS.projectTab, 15000)
+      .click(LOCATORS.projectTab);
   },
   createFeaturedDatasetProject: function(name, desc) {
     this.browser

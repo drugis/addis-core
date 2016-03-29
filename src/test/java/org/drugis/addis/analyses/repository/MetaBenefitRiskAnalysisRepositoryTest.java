@@ -106,4 +106,18 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
     assertEquals(baseline, updated.getMbrOutcomeInclusions().get(0).getBaseline());
   }
 
+  @Test
+  public void testRemoveAnalysis (){
+    int analysisId = -10;
+
+    MetaBenefitRiskAnalysis analysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);
+
+    em.remove(analysis);
+    em.flush();
+
+    Intervention intervention = em.find(Intervention.class, 1);
+    em.flush();
+    assertNotNull(intervention);
+  }
+
 }

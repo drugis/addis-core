@@ -28,12 +28,12 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
   @JsonRawValue
   private String problem;
 
-  @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
   @JoinTable(name = "MetaBenefitRiskAnalysis_Alternative",
           joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
           inverseJoinColumns = {@JoinColumn(name = "alternativeId", referencedColumnName = "id")})
   private Set<Intervention> includedAlternatives = new HashSet<>();
-  @OneToMany(fetch = FetchType.EAGER, mappedBy = "metaBenefitRiskAnalysisId", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "metaBenefitRiskAnalysisId", cascade = CascadeType.ALL)
   private Set<MbrOutcomeInclusion> mbrOutcomeInclusions = new HashSet<>();
 
   public MetaBenefitRiskAnalysis() {

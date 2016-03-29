@@ -3,12 +3,13 @@ package org.drugis.addis.interventions;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by daan on 3/6/14.
  */
 @Entity
-public class Intervention {
+public class Intervention implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;

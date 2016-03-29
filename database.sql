@@ -431,3 +431,15 @@ CREATE TABLE FeaturedDataset (
 --changeset reidd:40
 ALTER TABLE covariate ADD COLUMN type VARCHAR NOT NULL DEFAULT 'STUDY_CHARACTERISTIC';
 --rollback ALTER TABLE covariate DROP COLUMN type;
+
+--changeset reidd:41
+ALTER TABLE MetaBenefitRiskAnalysis DROP CONSTRAINT metabenefitriskanalysis_projectid_fkey ;
+ALTER TABLE MetaBenefitRiskAnalysis ADD CONSTRAINT metabenefitriskanalysis_projectid_fkey FOREIGN KEY (projectid) REFERENCES project(id) ON DELETE CASCADE ;
+
+--changeset reidd:42
+ALTER TABLE metabenefitriskanalysis_alternative DROP CONSTRAINT metabenefitriskanalysis_alternative_alternativeid_fkey ;
+ALTER TABLE metabenefitriskanalysis_alternative ADD CONSTRAINT metabenefitriskanalysis_alternative_alternativeid_fkey FOREIGN KEY (alternativeid) REFERENCES intervention(id) ON DELETE CASCADE ;
+
+--changeset reidd:43
+ALTER TABLE mbroutcomeinclusion DROP CONSTRAINT mbroutcomeinclusion_outcomeid_fkey;
+ALTER TABLE mbroutcomeinclusion ADD CONSTRAINT mbroutcomeinclusion_outcomeid_fkey FOREIGN KEY (outcomeid) REFERENCES outcome(id) ON DELETE CASCADE;
