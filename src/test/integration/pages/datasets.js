@@ -2,6 +2,9 @@ function DatasetsPage(browser) {
   this.browser = browser;
 }
 
+var CLICK_RESULT_STATUS_FAULURE = -1;
+
+
 var LOCATORS = {
   body: 'body',
   featuredDatasetCreateBtn: '.featured-dataset-col button:nth-of-type(1)', // just select the first featured dataset
@@ -20,14 +23,16 @@ DatasetsPage.prototype = {
   },
   createFeaturedDatasetProject: function(name, desc) {
     this.browser
-      .pause(3000)
       .useXpath() // every selector now must be xpath
-      .click(LOCATORS.xPathFeaturedDatasetCreateBtn, function(res){
-        console.log('bt clicked ');
-        console.log(res);
+    .waitForElementVisible(LOCATORS.xPathFeaturedDatasetCreateBtn, 15000)
+      .click(LOCATORS.xPathFeaturedDatasetCreateBtn, function(res) {
+        console.log('create project btn clicked ');
+        if (res && CLICK_RESULT_STATUS_FAULURE === res.status) {
+          console.error(res);
+        }
       })
       .useCss() // we're back to CSS now
-      .pause(3000)
+    .pause(3000)
       .clearValue(LOCATORS.projectNameInput)
       .setValue(LOCATORS.projectNameInput, name)
       .clearValue(LOCATORS.projectDescriptionTxtFld)

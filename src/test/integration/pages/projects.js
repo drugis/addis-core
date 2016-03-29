@@ -8,7 +8,7 @@ var LOCATORS = {
 
 ProjectsPage.prototype = {
   waitForPageToLoad: function() {
-    this.browser.waitForElementVisible(LOCATORS['body'], 50000);
+    this.browser.waitForElementVisible(LOCATORS.body, 50000);
   },
   end: function() {
     this.browser.end();
@@ -18,7 +18,7 @@ ProjectsPage.prototype = {
       .click('#create-project-btn')
       .assert.elementPresent('table')
       .useXpath() // every selector now must be xpath
-      .click("//tr[td='EDARBI']/td/button")
+    .click('//tr[td="EDARBI"]/td/button')
       .useCss(); // we're back to CSS now
   }
 };
