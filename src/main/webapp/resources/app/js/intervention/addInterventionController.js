@@ -5,12 +5,23 @@ define(['lodash'], function(_) {
     $scope.checkForDuplicateInterventionName = checkForDuplicateInterventionName;
     $scope.cancel = cancel;
     $scope.addIntervention = addIntervention;
+    $scope.selectTab = selectTab;
     $scope.newIntervention = {};
     $scope.duplicateInterventionName = {
       isDuplicate: false
     };
     $scope.isAddingIntervention = false;
     $scope.activeTab = 'simple';
+    $scope.LOWER_BOUND_OPTIONS = [{
+      value: 'atLeast',
+      label: 'At least (>=)'
+    }, {
+      value: 'moreThan',
+      label: 'More than (>)'
+    }, {
+      value: 'exactly',
+      label: 'Exactly (=)'
+    }];
 
     function addIntervention(newIntervention) {
       $scope.isAddingIntervention = true;
@@ -31,6 +42,11 @@ define(['lodash'], function(_) {
 
     function cancel() {
       $modalInstance.dismiss('cancel');
+    }
+
+    function selectTab(selectedTab) {
+      $scope.newIntervention = {};
+      $scope.activeTab = selectedTab;
     }
 
   };
