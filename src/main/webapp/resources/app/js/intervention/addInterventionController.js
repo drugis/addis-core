@@ -5,12 +5,12 @@ define(['lodash'], function(_) {
     $scope.checkForDuplicateInterventionName = checkForDuplicateInterventionName;
     $scope.cancel = cancel;
     $scope.addIntervention = addIntervention;
-
     $scope.newIntervention = {};
     $scope.duplicateInterventionName = {
       isDuplicate: false
     };
     $scope.isAddingIntervention = false;
+    $scope.activeTab = 'simple';
 
     function addIntervention(newIntervention) {
       $scope.isAddingIntervention = true;

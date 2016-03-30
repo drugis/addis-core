@@ -1,32 +1,61 @@
 <form id="add-analysis-form" novalidate ng-submit="addIntervention(newIntervention)">
   <h3>Add a new intervention</h3>
-  <div class="row">
-    <div class="large-10 columns">
-      <label>Semantic intervention
-        <select id="intervention-select" ng-model="newIntervention.semanticIntervention" ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"
-        ng-change="newIntervention.name = newIntervention.semanticIntervention.label; checkForDuplicateInterventionName(newIntervention.name)"></select>
-      </label>
-    </div>
-  </div>
-  <div class="row">
-    <div class="large-10 columns">
-      <label>Name
-        <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention.name)">
-      </label>
-    </div>
-  </div>
-  <div class="row">
-    <div class="large-10 columns">
-      <label>Motivation
-        <textarea id="intervention-desc-txt" rows="4" ng-model="newIntervention.motivation"></textarea>
-      </label>
-    </div>
-  </div>
-  <div class="row">
-    <button id="add-intervention-sumbit-btn" class="button small success" ng-disabled="!newIntervention.name || !newIntervention.semanticIntervention || duplicateInterventionName.isDuplicate"
-    type="submit">Add intervention
-    </button>
-    <div class="alert" ng-show="duplicateInterventionName.isDuplicate">Duplicate name.</div>
-  </div>
+  <tabset>
+    <tab heading="Simple intervention" ng-click="activeTab = 'simple'" active="activeTab === 'simple'">
+      <div class="row">
+        <div class="large-10 columns">
+          <label>Semantic intervention
+            <select id="intervention-select" ng-model="newIntervention.semanticIntervention"
+              ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"
+              ng-change="newIntervention.name = newIntervention.semanticIntervention.label; checkForDuplicateInterventionName(newIntervention.name)"></select>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-10 columns">
+          <label>Name
+            <input id="intervention-name-input" type="text" ng-model="newIntervention.name" ng-change="checkForDuplicateInterventionName(newIntervention.name)">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-10 columns">
+          <label>Motivation
+            <textarea id="intervention-desc-txt" rows="4" ng-model="newIntervention.motivation"></textarea>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <button id="add-intervention-sumbit-btn" class="button small success" ng-disabled="!newIntervention.name || !newIntervention.semanticIntervention || duplicateInterventionName.isDuplicate"
+          type="submit">Add intervention
+        </button>
+        <div class="alert" ng-show="duplicateInterventionName.isDuplicate">Duplicate name.</div>
+      </div>
+    </tab>
+    <tab heading="Dose-restricted drug" ng-click="activeTab = 'dose-restricted'" active="activeTab === 'dose-restricted'">
+      <div class="row">
+        <div class="large-10 columns">
+          <label class="form-item-header">Dose type
+            <div class="stacked-radio">
+              <input type="radio" value="fixed" ng-model="newIntervention.doseType"
+                id="fixed-dose-type-radio">
+              <label for="fixed-dose-type-radio">Fixed only</label>
+            </div>
+            <div class="stacked-radio">
+              <input type="radio" value="titrated" ng-model="newIntervention.doseType"
+                id="titrated-dose-type-radio">
+              <label for="titrated-dose-type-radio">Titrated only</label>
+            </div>
+            <div class="stacked-radio">
+              <input type="radio" value="both" ng-model="newIntervention.doseType"
+                id="both-dose-type-radio">
+              <label for="both-dose-type-radio">Both</label>
+            </div>
+          </label>
+        </div>
+      </div>
+    </tab>
+  </tabset>
+
   <a class="close-reveal-modal" ng-click="cancel()">&#215;</a>
 </form>
