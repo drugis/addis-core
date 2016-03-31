@@ -18,18 +18,44 @@ define(['angular'], function() {
       }, {
         value: 'atMost',
         label: 'At most (<=)'
-      }];
+      }],
+      scope;
 
-    function switchBound() {}
+    function toggleLowerBound(newState) {
+      if (!newState) {
+        delete scope.model.fixedLowerBound;
+      } else {
+        scope.model.fixedLowerBound = {
+          type: LOWER_BOUND_OPTIONS[0],
+          unit: scope.units[0]
+        };
+      }
+    }
+
+    function toggleUpperBound(newState) {
+      if (!newState) {
+        delete scope.model.fixedUpperBound;
+      } else {
+        scope.model.fixedUpperBound = {
+          type: UPPER_BOUND_OPTIONS[0],
+          unit: scope.units[0]
+        };
+      }
+    }
+
     return {
       scope: {
         model: '=',
         datasetUuid: '@'
       },
-      link: function(scope) {
+      link: function($scope) {
+        scope = $scope;
+        scope.model = {};
         scope.LOWER_BOUND_OPTIONS = LOWER_BOUND_OPTIONS;
         scope.UPPER_BOUND_OPTIONS = UPPER_BOUND_OPTIONS;
-        scope.switchBound = switchBound;
+        scope.toggleLowerBound = toggleLowerBound;
+        scope.toggleUpperBound = toggleUpperBound;
+
 
         UnitNamesService.get($stateParams.userUid, scope.datasetUuid).then(function(units) {
           scope.units = units;

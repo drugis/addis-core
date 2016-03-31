@@ -34,9 +34,25 @@ define(['lodash'], function(_) {
       $modalInstance.dismiss('cancel');
     }
 
+    function checkConstraints() {
+      if(!newIntervention.fixedDoseConstraint &&
+         !newIntervention.titratedDoseMinConstraint &&
+         !newIntervention.titratedDoseMaxConstraint) {
+        $scope.correctConstraints = false;
+      } else {
+        $scope.correctConstraints = true;
+      }
+    }
+
     function selectTab(selectedTab) {
       $scope.newIntervention = {};
       $scope.activeTab = selectedTab;
+      if(selectedTab === 'dose-restricted') {
+        $scope.correctConstraints = false;
+        $scope.$watch(newIntervention, checkConstraints, true);
+      } else {
+        delete $scope.correctConstraints;
+      }
     }
 
   };
