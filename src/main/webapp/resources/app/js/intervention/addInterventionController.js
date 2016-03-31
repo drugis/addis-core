@@ -12,16 +12,6 @@ define(['lodash'], function(_) {
     };
     $scope.isAddingIntervention = false;
     $scope.activeTab = 'simple';
-    $scope.LOWER_BOUND_OPTIONS = [{
-      value: 'atLeast',
-      label: 'At least (>=)'
-    }, {
-      value: 'moreThan',
-      label: 'More than (>)'
-    }, {
-      value: 'exactly',
-      label: 'Exactly (=)'
-    }];
 
     function addIntervention(newIntervention) {
       $scope.isAddingIntervention = true;

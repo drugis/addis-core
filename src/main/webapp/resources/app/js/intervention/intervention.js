@@ -10,8 +10,10 @@ define(function (require) {
     .controller('AddInterventionController', require('intervention/addInterventionController'))
 
     //services
+    .factory('UnitNamesService', require('intervention/unitNamesService'))
 
-    //filter
+    //directives
+    .directive('constraint', require('intervention/constraintDirective'))
 
     ;
 });

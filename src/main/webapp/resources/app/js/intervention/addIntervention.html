@@ -1,5 +1,7 @@
 <form id="add-analysis-form" novalidate ng-submit="addIntervention(newIntervention)">
   <h3>Add a new intervention</h3>
+
+  <!-- Simple -->
   <tabset>
     <tab heading="Simple intervention" ng-click="selectTab('simple')" active="activeTab === 'simple'">
       <div class="row">
@@ -32,6 +34,9 @@
         <div class="alert" ng-show="duplicateInterventionName.isDuplicate">Duplicate name.</div>
       </div>
     </tab>
+
+
+    <!-- Dose-restricted -->
     <tab heading="Dose-restricted drug" ng-click="selectTab('dose-restricted')" active="activeTab === 'dose-restricted'">
       <div class="row">
         <div class="large-10 columns">
@@ -62,11 +67,9 @@
             <div class="stacked-radio">
               <input type="radio" value="fixed" ng-model="newIntervention.doseType" id="fixed-dose-type-radio">
               <label for="fixed-dose-type-radio">Fixed only</label>
-              <label ng-if="newIntervention.doseType === 'fixed'">Lower bound
-                <input type="checkbox" ng-model="newIntervention.fixedLowerBoundEnabled" />
-                <select ng-disabled="!newIntervention.fixedLowerBoundEnabled" ng-model="newIntervention.fixedLowerBound" ng-options="lowerBoundOption.label for lowerBoundOption in LOWER_BOUND_OPTIONS"></select>
-                <input type="number" step="0.001" ng-model="newIntervention.fixedLowerBound.value">
-              </label>
+              <constraint ng-if="newIntervention.doseType === 'fixed'"
+                model="newIntervention.fixedDoseConstraint"
+                dataset-uuid="{{project.namespaceUid}}"/>
             </div>
             <div class="stacked-radio">
               <input type="radio" value="titrated" ng-model="newIntervention.doseType" id="titrated-dose-type-radio">
