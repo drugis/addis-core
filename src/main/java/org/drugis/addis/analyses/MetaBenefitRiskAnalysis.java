@@ -2,7 +2,7 @@ package org.drugis.addis.analyses;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonRawValue;
-import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.model.Intervention;
 
 import javax.persistence.*;
 import java.io.Serializable;

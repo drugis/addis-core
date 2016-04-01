@@ -2,6 +2,9 @@ package org.drugis.addis.interventions;
 
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.interventions.model.ConstraintCommand;
+import org.drugis.addis.interventions.model.Intervention;
+import org.drugis.addis.interventions.model.InterventionCommand;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -79,10 +82,10 @@ public class InterventionControllerTest {
     when(interventionRepository.query(projectId)).thenReturn(interventions);
 
     mockMvc.perform(get("/projects/1/interventions").principal(user))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-      .andExpect(jsonPath("$", hasSize(1)))
-      .andExpect(jsonPath("$[0].id", is(intervention.getId())));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].id", is(intervention.getId())));
 
     verify(interventionRepository).query(projectId);
     verify(accountRepository).findAccountByUsername("gert");
@@ -102,9 +105,9 @@ public class InterventionControllerTest {
     Integer projectId = 1;
     when(interventionRepository.get(projectId, intervention.getId())).thenReturn(intervention);
     mockMvc.perform(get("/projects/1/interventions/1").principal(user))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-      .andExpect(jsonPath("$.id", is(intervention.getId())));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$.id", is(intervention.getId())));
     verify(accountRepository).findAccountByUsername("gert");
     verify(interventionRepository).get(projectId, intervention.getId());
   }
@@ -116,11 +119,61 @@ public class InterventionControllerTest {
     when(interventionRepository.create(gert, interventionCommand)).thenReturn(intervention);
     String body = TestUtils.createJson(interventionCommand);
     mockMvc.perform(post("/projects/1/interventions").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
-      .andExpect(status().isCreated())
-      .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-      .andExpect(jsonPath("$.id", notNullValue()));
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$.id", notNullValue()));
     verify(accountRepository).findAccountByUsername("gert");
     verify(interventionRepository).create(gert, interventionCommand);
+  }
+
+
+  @Test
+  public void testCreateFixedBoundIntervention() throws Exception {
+    Intervention intervention = new Intervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+    ConstraintCommand fixedDoseConstraintCommand = null;
+    InterventionCommand interventionCommand = new InterventionCommand(1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"), fixedDoseConstraintCommand, null, null, null, null);
+    when(interventionRepository.create(gert, interventionCommand)).thenReturn(intervention);
+    String body = TestUtils.createJson(interventionCommand);
+    mockMvc.perform(post("/projects/1/interventions").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$.id", notNullValue()));
+  }
+
+  @Test
+  public void testCreateTitratedDoseIntervention() throws Exception {
+    String body = "{\n" +
+            "  \"doseType\": \"titrated\",\n" +
+            "  \"titratedDoseMinConstraint\": {\n" +
+            "    \"lowerBound\": {\n" +
+            "      \"type\": \"atLeast\",\n" +
+            "      \"unit\": \"milligram\",\n" +
+            "      \"value\": 30\n" +
+            "    }\n" +
+            "  },\n" +
+            "  \"titratedDoseMaxConstraint\": {\n" +
+            "    \"upperBound\": {\n" +
+            "      \"type\": \"lessThan\",\n" +
+            "      \"unit\": \"milligram\",\n" +
+            "      \"value\": 50\n" +
+            "    }\n" +
+            "  },\n" +
+            "  \"semanticIntervention\": {\n" +
+            "    \"uri\": \"6ed4cd55-3ebc-497c-b720-388456cca75e\",\n" +
+            "    \"label\": \"Bupropion\"\n" +
+            "  },\n" +
+            "  \"name\": \"Bupropion\",\n" +
+            "  \"projectId\": 13,\n" +
+            "  \"semanticInterventionLabel\": \"Bupropion\"\n" +
+            "}\n";
+    Intervention intervention = new Intervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+    ConstraintCommand fixedDoseConstraintCommand = null;
+    InterventionCommand interventionCommand = new InterventionCommand(1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"), fixedDoseConstraintCommand, null, null, null, null);
+    when(interventionRepository.create(gert, interventionCommand)).thenReturn(intervention);
+    mockMvc.perform(post("/projects/1/interventions").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$.id", notNullValue()));
   }
 
 }

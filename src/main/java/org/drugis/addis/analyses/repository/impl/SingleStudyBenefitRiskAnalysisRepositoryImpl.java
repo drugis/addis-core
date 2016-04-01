@@ -4,7 +4,7 @@ import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.model.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.security.Account;

@@ -3,6 +3,8 @@ package org.drugis.addis.interventions;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.model.Intervention;
+import org.drugis.addis.interventions.model.InterventionCommand;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.model.SemanticIntervention;

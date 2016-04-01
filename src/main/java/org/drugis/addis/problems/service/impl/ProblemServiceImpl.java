@@ -13,7 +13,7 @@ import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisReposi
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.model.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.repository.ModelRepository;

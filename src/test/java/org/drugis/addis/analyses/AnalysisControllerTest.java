@@ -5,7 +5,7 @@ import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.repository.*;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.TestConfig;
-import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.model.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.Scenario;

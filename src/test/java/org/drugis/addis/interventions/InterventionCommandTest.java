@@ -3,7 +3,7 @@
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.drugis.addis.interventions.InterventionCommand;
+import org.drugis.addis.interventions.model.InterventionCommand;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.junit.Test;
 

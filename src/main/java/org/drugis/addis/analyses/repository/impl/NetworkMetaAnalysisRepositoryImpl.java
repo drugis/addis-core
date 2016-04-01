@@ -6,7 +6,7 @@ import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.model.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;

@@ -5,7 +5,7 @@ import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisReposi
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.model.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.security.Account;
 import org.junit.Test;

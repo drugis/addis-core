@@ -7,7 +7,7 @@ import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.Intervention;
+import org.drugis.addis.interventions.model.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
