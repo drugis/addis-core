@@ -1,7 +1,9 @@
 package org.drugis.addis.interventions;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drugis.addis.TestUtils;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.interventions.model.BoundCommand;
 import org.drugis.addis.interventions.model.ConstraintCommand;
 import org.drugis.addis.interventions.model.Intervention;
 import org.drugis.addis.interventions.model.InterventionCommand;
@@ -138,6 +140,8 @@ public class InterventionControllerTest {
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", notNullValue()));
+    verify(accountRepository).findAccountByUsername(gert.getUsername());
+    verify(interventionRepository).create(gert, interventionCommand);
   }
 
   @Test
@@ -167,13 +171,15 @@ public class InterventionControllerTest {
             "  \"semanticInterventionLabel\": \"Bupropion\"\n" +
             "}\n";
     Intervention intervention = new Intervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
-    ConstraintCommand fixedDoseConstraintCommand = null;
-    InterventionCommand interventionCommand = new InterventionCommand(1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"), fixedDoseConstraintCommand, null, null, null, null);
+    ObjectMapper mapper = new ObjectMapper();
+    InterventionCommand interventionCommand = mapper.readValue(body, InterventionCommand.class);
     when(interventionRepository.create(gert, interventionCommand)).thenReturn(intervention);
     mockMvc.perform(post("/projects/1/interventions").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(status().isCreated())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.id", notNullValue()));
+    verify(accountRepository).findAccountByUsername(gert.getUsername());
+    verify(interventionRepository).create(gert, interventionCommand);
   }
 
 }

@@ -1,11 +1,13 @@
 package org.drugis.addis.interventions.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang.StringUtils;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 
 /**
  * Created by connor on 3/6/14.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class InterventionCommand {
   private Integer projectId;
   private String name;
