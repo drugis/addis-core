@@ -15,6 +15,10 @@ INSERT INTO public.intervention (id, project, name, motivation, semanticInterven
 INSERT INTO public.intervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri) VALUES (2, 1, 'intervention 2', 'intervention description 2', 'intervention2', 'http://trials.drugis.org/namespaces/1/interventions/2');
 INSERT INTO public.intervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri) VALUES (3, 2, 'intervention 3', 'intervention description 3', 'intervention3', 'http://trials.drugis.org/namespaces/1/interventions/3');
 
+INSERT INTO public.fixedDoseIntervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri, testValue) VALUES (4, 2, 'intervention 4', 'intervention description 4', 'intervention4', 'http://trials.drugis.org/namespaces/1/interventions/4', 1.0);
+INSERT INTO public.fixedDoseIntervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri, testValue) VALUES (5, 2, 'intervention 5', 'intervention description 5', 'intervention5', 'http://trials.drugis.org/namespaces/1/interventions/5', 2.0);
+
+
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title) VALUES (-1, 1, 'analysis 1');
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title) VALUES (-2, 1, 'analysis 2');
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title) VALUES (-3 ,2, 'analysis 3');

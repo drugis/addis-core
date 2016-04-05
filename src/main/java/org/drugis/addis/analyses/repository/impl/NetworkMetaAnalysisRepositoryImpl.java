@@ -6,7 +6,7 @@ import org.drugis.addis.analyses.NetworkMetaAnalysis;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.model.Intervention;
+import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -34,9 +34,9 @@ public class NetworkMetaAnalysisRepositoryImpl implements NetworkMetaAnalysisRep
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisCommand.getProjectId(), analysisCommand.getTitle());
     em.persist(networkMetaAnalysis);
 
-    List<Intervention> interventions = interventionRepository.query(analysisCommand.getProjectId());
+    Collection<AbstractIntervention> interventions = interventionRepository.query(analysisCommand.getProjectId());
     Set<InterventionInclusion> interventionInclusions = new HashSet<>(interventions.size());
-    for (Intervention intervention : interventions) {
+    for (AbstractIntervention intervention : interventions) {
       interventionInclusions.add(new InterventionInclusion(networkMetaAnalysis.getId(), intervention.getId()));
     }
     networkMetaAnalysis.updateIncludedInterventions(interventionInclusions);

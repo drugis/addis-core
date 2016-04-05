@@ -1,7 +1,7 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['$http', 'SparqlResource'];
-  var UnitService = function($http, SparqlResource) {
+  var UnitNameService = function($http, SparqlResource) {
 
     var queryUnits = SparqlResource.get('queryUnits.sparql');
 
@@ -45,5 +45,5 @@ define(['lodash'], function(_) {
       get: get
     };
   };
-  return dependencies.concat(UnitService);
+  return dependencies.concat(UnitNameService);
 });

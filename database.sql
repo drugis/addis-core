@@ -447,3 +447,7 @@ ALTER TABLE mbroutcomeinclusion ADD CONSTRAINT mbroutcomeinclusion_outcomeid_fke
 --changeset reidd:44
 ALTER TABLE interventioninclusion DROP CONSTRAINT interventioninclusion_analysisid_fkey ;
 ALTER TABLE interventioninclusion ADD CONSTRAINT interventioninclusion_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES networkmetaanalysis(id) ON DELETE CASCADE ;
+
+--changeset reidd:45
+ALTER TABLE intervention ALTER COLUMN motivation DROP NOT NULL;
+ALTER TABLE outcome ALTER COLUMN motivation DROP NOT NULL;

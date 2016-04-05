@@ -2,7 +2,7 @@ package org.drugis.addis.analyses;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonRawValue;
-import org.drugis.addis.interventions.model.Intervention;
+import org.drugis.addis.interventions.model.AbstractIntervention;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -32,7 +32,7 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
   @JoinTable(name = "MetaBenefitRiskAnalysis_Alternative",
           joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
           inverseJoinColumns = {@JoinColumn(name = "alternativeId", referencedColumnName = "id")})
-  private Set<Intervention> includedAlternatives = new HashSet<>();
+  private Set<AbstractIntervention> includedAlternatives = new HashSet<>();
   @OneToMany(fetch = FetchType.EAGER, mappedBy = "metaBenefitRiskAnalysisId", cascade = CascadeType.ALL)
   private Set<MbrOutcomeInclusion> mbrOutcomeInclusions = new HashSet<>();
 
@@ -50,7 +50,7 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
     this.title = title;
   }
 
-  public MetaBenefitRiskAnalysis(Integer id, Integer projectId, String title, Set<Intervention> includedAlternatives) {
+  public MetaBenefitRiskAnalysis(Integer id, Integer projectId, String title, Set<AbstractIntervention> includedAlternatives) {
     this.id = id;
     this.projectId = projectId;
     this.title = title;
@@ -67,7 +67,7 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
     return id;
   }
 
-  public List<Intervention> getIncludedAlternatives() {
+  public List<AbstractIntervention> getIncludedAlternatives() {
     return Collections.unmodifiableList(new ArrayList<>(includedAlternatives));
   }
 
@@ -95,7 +95,7 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
     this.problem = problem;
   }
 
-  public void setIncludedAlternatives(List<Intervention> interventions) {
+  public void setIncludedAlternatives(Collection<AbstractIntervention> interventions) {
     this.includedAlternatives = new HashSet<>(interventions);
   }
 

@@ -8,11 +8,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(using = BoundTypeDeserializer.class)
 public enum BoundType {
-  AT_LEAST("atLeast"),
-  MORE_THAN("moreThan"),
-  EXACTLY("exactly"),
-  LESS_THAN("lessThan"),
-  AT_MOST("atMost");
+  AT_LEAST("AT_LEAST"),
+  MORE_THAN("MORE_THAN"),
+  EXACTLY("EXACTLY"),
+  LESS_THAN("LESS_THAN"),
+  AT_MOST("AT_MOST");
 
   private String value;
 
@@ -32,17 +32,17 @@ public enum BoundType {
   public static BoundType fromString(String inputString) {
     if (inputString == null || inputString.isEmpty()) {
       throw new IllegalArgumentException("Can not create BoundType enum from empty String");
-    } else if (inputString.equalsIgnoreCase("atLeast")) {
+    } else if (inputString.equalsIgnoreCase("AT_LEAST")) {
       return AT_LEAST;
-    } else if (inputString.equalsIgnoreCase("moreThan")) {
+    } else if (inputString.equalsIgnoreCase("MORE_THAN")) {
       return MORE_THAN;
-    } else if (inputString.equalsIgnoreCase("exactly")) {
+    } else if (inputString.equalsIgnoreCase("EXACTLY")) {
       return EXACTLY;
-    } else if (inputString.equalsIgnoreCase("lessThan")) {
+    } else if (inputString.equalsIgnoreCase("LESS_THAN")) {
       return LESS_THAN;
-    } else if (inputString.equalsIgnoreCase("atMost")) {
+    } else if (inputString.equalsIgnoreCase("AT_MOST")) {
       return AT_MOST;
     }
-    throw new IllegalArgumentException("Can not create BoundType enum from empty String");
+    throw new IllegalArgumentException("Can not create BoundType enum from " + inputString);
   }
 }

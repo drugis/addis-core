@@ -11,7 +11,9 @@ define(['lodash'], function(_) {
     $scope.selectTab = selectTab;
     $scope.cleanUpBounds = cleanUpBounds;
 
-    $scope.newIntervention = {};
+    $scope.newIntervention = {
+      doseType: 'simple'
+    };
     $scope.duplicateInterventionName = {
       isDuplicate: false
     };
@@ -44,6 +46,8 @@ define(['lodash'], function(_) {
       $scope.isAddingIntervention = true;
       newIntervention.projectId = $scope.project.id;
       newIntervention.semanticInterventionLabel = newIntervention.semanticIntervention.label;
+      newIntervention.semanticInterventionUuid = newIntervention.semanticIntervention.uri;
+      delete newIntervention.semanticIntervention;
       newIntervention = flattenTypes(newIntervention); // go from object with label to value only
       InterventionResource.save(newIntervention, function() {
         $modalInstance.close();
@@ -117,6 +121,7 @@ define(['lodash'], function(_) {
       if (selectedTab === 'dose-restricted') {
         deregisterConstraintWatch = $scope.$watch('newIntervention', checkConstraints, true);
       } else {
+        $scope.newIntervention.doseType = 'simple';
         delete $scope.correctConstraints;
         deregisterConstraintWatch();
       }

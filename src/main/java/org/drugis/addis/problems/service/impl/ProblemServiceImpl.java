@@ -13,7 +13,7 @@ import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisReposi
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.model.Intervention;
+import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.repository.ModelRepository;
@@ -114,7 +114,7 @@ public class ProblemServiceImpl implements ProblemService {
     final Map<Integer, JsonNode> resultsByTaskId = pataviTaskRepository.getResults(taskIds);
     List<MbrOutcomeInclusion> inclusionsWithBaseline = analysis.getMbrOutcomeInclusions().stream().filter(moi -> moi.getBaseline() != null).collect(Collectors.toList());
 
-    List<Intervention> includedAlternatives = analysis.getIncludedAlternatives();
+    List<AbstractIntervention> includedAlternatives = analysis.getIncludedAlternatives();
 
     Map<String, CriterionEntry> criteriaWithBaseline = outcomesByName.values()
             .stream()
@@ -122,10 +122,10 @@ public class ProblemServiceImpl implements ProblemService {
             .collect(Collectors.toMap(Outcome::getName, o -> new CriterionEntry(o.getSemanticOutcomeUri(), o.getName())));
     Map<String, AlternativeEntry> alternatives = includedAlternatives
             .stream()
-            .collect(Collectors.toMap(Intervention::getName, i -> new AlternativeEntry(i.getSemanticInterventionUri(), i.getName())));
-    final Map<Integer, Intervention> interventions = interventionRepository.query(project.getId()).stream().collect(Collectors.toMap(Intervention::getId, Function.identity()));
+            .collect(Collectors.toMap(AbstractIntervention::getName, i -> new AlternativeEntry(i.getSemanticInterventionUri(), i.getName())));
+    final Map<Integer, AbstractIntervention> interventions = interventionRepository.query(project.getId()).stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
     ;
-    final Map<String, Intervention> includedInterventionsByName = includedAlternatives.stream().collect(Collectors.toMap(Intervention::getName, Function.identity()));
+    final Map<String, AbstractIntervention> includedInterventionsByName = includedAlternatives.stream().collect(Collectors.toMap(AbstractIntervention::getName, Function.identity()));
 
     List<MetaBenefitRiskProblem.PerformanceTableEntry> performanceTable = new ArrayList<>(outcomesByName.size());
     for (MbrOutcomeInclusion outcomeInclusion : inclusionsWithBaseline) {
@@ -138,7 +138,7 @@ public class ProblemServiceImpl implements ProblemService {
               .readValue(taskResults.get("multivariateSummary").toString(), new TypeReference<Map<Integer, MultiVariateDistribution>>() {
               });
 
-      Intervention baselineIntervention = includedInterventionsByName.get(baseline.getName());
+      AbstractIntervention baselineIntervention = includedInterventionsByName.get(baseline.getName());
       MultiVariateDistribution distr = distributionByInterventionId.get(baselineIntervention.getId());
       //
       Map<String, Double> mu = distr.getMu().entrySet().stream()
@@ -227,7 +227,7 @@ public class ProblemServiceImpl implements ProblemService {
     return new MetaBenefitRiskProblem(criteriaWithBaseline, alternatives, performanceTable);
   }
 
-  private String getD(Map<String, Intervention> includedInterventionsByName, String base, String otherIntervention) {
+  private String getD(Map<String, AbstractIntervention> includedInterventionsByName, String base, String otherIntervention) {
     return "d." + includedInterventionsByName.get(base).getId() + '.' + includedInterventionsByName.get(otherIntervention).getId();
   }
 
@@ -239,13 +239,13 @@ public class ProblemServiceImpl implements ProblemService {
 
   private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws URISyntaxException {
     List<String> alternativeUris = new ArrayList<>();
-    List<Intervention> interventions = interventionRepository.query(project.getId());
+    List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
     Map<String, Integer> interventionIdsByUrisMap = new HashMap<>();
 
     interventions = filterExcludedInterventions(interventions, analysis.getIncludedInterventions());
 
     List<TreatmentEntry> treatments = new ArrayList<>();
-    for (Intervention intervention : interventions) {
+    for (AbstractIntervention intervention : interventions) {
       alternativeUris.add(intervention.getSemanticInterventionUri());
       interventionIdsByUrisMap.put(intervention.getSemanticInterventionUri(), intervention.getId());
       treatments.add(new TreatmentEntry(intervention.getId(), intervention.getName()));
@@ -344,15 +344,15 @@ public class ProblemServiceImpl implements ProblemService {
     return interventionByDrugIdMap;
   }
 
-  private List<Intervention> filterExcludedInterventions(List<Intervention> interventions, List<InterventionInclusion> inclusions) {
-    List<Intervention> filteredInterventions = new ArrayList<>();
+  private List<AbstractIntervention> filterExcludedInterventions(List<AbstractIntervention> interventions, List<InterventionInclusion> inclusions) {
+    List<AbstractIntervention> filteredInterventions = new ArrayList<>();
 
     Map<Integer, InterventionInclusion> inclusionMap = new HashMap<>(inclusions.size());
     for (InterventionInclusion interventionInclusion : inclusions) {
       inclusionMap.put(interventionInclusion.getInterventionId(), interventionInclusion);
     }
 
-    for (Intervention intervention : interventions) {
+    for (AbstractIntervention intervention : interventions) {
       if (inclusionMap.get(intervention.getId()) != null) {
         filteredInterventions.add(intervention);
       }
@@ -383,7 +383,7 @@ public class ProblemServiceImpl implements ProblemService {
       outcomeUids.add(outcome.getSemanticOutcomeUri());
     }
     List<String> alternativeUids = new ArrayList<>();
-    for (Intervention intervention : analysis.getSelectedInterventions()) {
+    for (AbstractIntervention intervention : analysis.getSelectedInterventions()) {
       alternativeUids.add(intervention.getSemanticInterventionUri());
     }
     String versionedUuid = mappingService.getVersionedUuid(project.getNamespaceUid());

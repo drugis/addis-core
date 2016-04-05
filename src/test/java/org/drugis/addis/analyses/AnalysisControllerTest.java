@@ -5,6 +5,7 @@ import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.repository.*;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.Intervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.service.ProjectService;
@@ -256,7 +257,7 @@ public class AnalysisControllerTest {
             new Outcome(2, projectId, "name", "motivation", new SemanticVariable("uri", "label")),
             new Outcome(3, projectId, "name", "motivation", new SemanticVariable("uri", "label"))
     );
-    List<Intervention> selectedInterventions = Arrays.asList(
+    List<AbstractIntervention> selectedInterventions = Arrays.asList(
             new Intervention(1, projectId, "name", "motivation", new SemanticIntervention("uri", "label")),
             new Intervention(2, projectId, "name", "motivation", new SemanticIntervention("uri", "label"))
     );

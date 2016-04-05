@@ -381,3 +381,29 @@ CREATE TABLE FeaturedDataset (
 ALTER TABLE covariate ADD COLUMN populationCharacteristicId INT;
 ALTER TABLE covariate ADD FOREIGN KEY (populationCharacteristicId) REFERENCES outcome(id);
 --rollback ALTER TABLE covariate DROP CONSTRAINT "covariate_populationcharacteristicid_fkey";
+
+--changeset reidd:41
+-- constraint changeset, ignore
+
+--changeset reidd:42
+-- constraint changeset, ignore
+
+--changeset reidd:43
+-- constraint changeset, ignore
+
+--changeset reidd:44
+-- constraint changeset, ignore
+
+--changeset reidd:45
+-- constraint changeset, ignore
+
+--changeset reidd:46
+CREATE TABLE FixedDoseIntervention (id SERIAL NOT NULL,
+                           project INT,
+                           name VARCHAR NOT NULL,
+                           motivation TEXT NOT NULL,
+                           semanticInterventionLabel VARCHAR NOT NULL,
+                           semanticInterventionUri VARCHAR NOT NULL,
+                           testValue DOUBLE PRECISION,
+  PRIMARY KEY (id),
+  FOREIGN KEY(project) REFERENCES Project(id));

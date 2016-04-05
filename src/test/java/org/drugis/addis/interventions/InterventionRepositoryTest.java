@@ -3,11 +3,12 @@ package org.drugis.addis.interventions;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.AbstractInterventionCommand;
 import org.drugis.addis.interventions.model.Intervention;
-import org.drugis.addis.interventions.model.InterventionCommand;
+import org.drugis.addis.interventions.model.SimpleInterventionCommand;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.security.Account;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -38,7 +39,7 @@ public class InterventionRepositoryTest {
 
   @Test
   public void testQuery() {
-    Collection<Intervention> interventions = interventionRepository.query(1);
+    Collection<AbstractIntervention> interventions = interventionRepository.query(1);
     assertEquals(2, interventions.size());
     interventions = interventionRepository.query(2);
     assertEquals(1, interventions.size());
@@ -57,7 +58,7 @@ public class InterventionRepositoryTest {
 
   @Test
   public void testCreateIntervention() throws Exception {
-    InterventionCommand interventionCommand = new InterventionCommand(1, "newName", "newMotivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+    AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(1, "newName", "newMotivation", "http://semantic.com", "labelnew");
     Account user = em.find(Account.class, 1);
     Intervention result = interventionRepository.create(user, interventionCommand);
     assertTrue(interventionRepository.query(1).contains(result));
@@ -67,7 +68,7 @@ public class InterventionRepositoryTest {
   @Test(expected = MethodNotAllowedException.class)
   public void testCannotCreateInterventionInNotOwnedProject() throws Exception {
     Account account = em.find(Account.class, 2);
-    InterventionCommand interventionCommand = new InterventionCommand(1, "newName", "newMotivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+    AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(1, "newName", "newMotivation", "http://semantic.com", "labelnew");
     interventionRepository.create(account, interventionCommand);
   }
 
@@ -75,14 +76,14 @@ public class InterventionRepositoryTest {
   @Test(expected = ResourceDoesNotExistException.class)
   public void testCannotCreateInterventionInNonexistentProject() throws Exception {
     Account account = em.find(Account.class, 2);
-    InterventionCommand interventionCommand = new InterventionCommand(13221, "newName", "newMotivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+    AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(13221, "newName", "newMotivation", "http://semantic.com", "labelnew");
     interventionRepository.create(account, interventionCommand);
   }
 
   @Test(expected = InvalidDataAccessApiUsageException.class)
   public void testCreateWithDuplicateNameFails() throws Exception {
     Account user = em.find(Account.class, 1);
-    InterventionCommand interventionCommand = new InterventionCommand(1, "intervention 1", "newMotivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+    AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(1, "intervention 1", "newMotivation", "http://semantic.com", "labelnew");
     Intervention result = interventionRepository.create(user, interventionCommand);
   }
 

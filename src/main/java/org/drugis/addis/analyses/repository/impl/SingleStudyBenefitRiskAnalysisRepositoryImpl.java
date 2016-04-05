@@ -4,7 +4,7 @@ import org.drugis.addis.analyses.AnalysisCommand;
 import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.model.Intervention;
+import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.security.Account;
@@ -72,7 +72,7 @@ public class SingleStudyBenefitRiskAnalysisRepositoryImpl implements org.drugis.
 
     if (isNotEmpty(analysis.getSelectedInterventions())) {
       // do not allow selection of interventions that are not in the project
-      for (Intervention intervention : analysis.getSelectedInterventions()) {
+      for (AbstractIntervention intervention : analysis.getSelectedInterventions()) {
         if (!intervention.getProject().equals(analysisProjectId)) {
           throw new ResourceDoesNotExistException();
         }

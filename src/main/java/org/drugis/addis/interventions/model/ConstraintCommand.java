@@ -12,6 +12,7 @@ public class ConstraintCommand {
 
   public ConstraintCommand(BoundCommand lowerBound, BoundCommand upperBound) {
     this.lowerBound = lowerBound;
+    this.upperBound = upperBound;
   }
 
   public BoundCommand getLowerBound() {

@@ -9,6 +9,7 @@ import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisReposi
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.models.Model;
@@ -145,7 +146,7 @@ public class ProblemServiceTest {
     Intervention intervention2 = mock(Intervention.class);
     when(intervention1.getSemanticInterventionUri()).thenReturn(alternativeUri1);
     when(intervention2.getSemanticInterventionUri()).thenReturn(alternativeUri2);
-    List<Intervention> interventions = Arrays.asList(intervention1, intervention2);
+    List<AbstractIntervention> interventions = Arrays.asList(intervention1, intervention2);
     when(analysis.getSelectedInterventions()).thenReturn(interventions);
 
     when(analysis.getStudyGraphUid()).thenReturn(studyUid);
@@ -225,7 +226,7 @@ public class ProblemServiceTest {
     Intervention intervention1 = new Intervention(interventionId1, projectId, "int1", "moti", semanticIntervention1);
     Intervention intervention2 = new Intervention(2, projectId, "int2", "moti", semanticIntervention2);
     Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
-    List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
+    List<AbstractIntervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
 
     InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysis.getId(), intervention1.getId());
     InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis.getId(), intervention2.getId());
@@ -280,7 +281,7 @@ public class ProblemServiceTest {
     Intervention intervention1 = new Intervention(1, projectId, "int1", "moti", semanticIntervention1);
     Intervention intervention2 = new Intervention(2, projectId, "int2", "moti", semanticIntervention2);
     Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
-    List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
+    List<AbstractIntervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
 
     Project project = mock(Project.class);
     when(project.getId()).thenReturn(projectId);
@@ -345,7 +346,7 @@ public class ProblemServiceTest {
     Intervention intervention1 = new Intervention(1, projectId, "int1", "moti", semanticIntervention1);
     Intervention intervention2 = new Intervention(2, projectId, "int2", "moti", semanticIntervention2);
     Intervention intervention3 = new Intervention(3, projectId, "int3", "moti", semanticIntervention3);
-    List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
+    List<AbstractIntervention> interventions = Arrays.asList(intervention1, intervention2, intervention3);
 
     Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString(), null));
     Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString(), null));
@@ -413,13 +414,13 @@ public class ProblemServiceTest {
     when(project.getNamespaceUid()).thenReturn(namespaceUid);
     when(project.getDatasetVersion()).thenReturn(version);
 
-    Set<Intervention> includedAlternatives = new HashSet<>(3);
+    Set<AbstractIntervention> includedAlternatives = new HashSet<>(3);
     Intervention intervention1 = new Intervention(11, projectId, "fluox", "", new SemanticIntervention("uri1", "fluoxS"));
     Intervention intervention2 = new Intervention(12, projectId, "parox", "", new SemanticIntervention("uri2", "paroxS"));
     Intervention intervention3 = new Intervention(13, projectId, "sertr", "", new SemanticIntervention("uri3", "sertrS"));
     includedAlternatives.addAll(Arrays.asList(intervention1, intervention2, intervention3));
     Intervention intervention4 = new Intervention(14, projectId, "foo", "", new SemanticIntervention("uri4", "fooS"));
-    List<Intervention> interventions = Arrays.asList(intervention1, intervention2, intervention3, intervention4);
+    List<AbstractIntervention> interventions = Arrays.asList(intervention1, intervention2, intervention3, intervention4);
 
     PataviTask pataviTask1 = new PataviTask(41, "gemtc", "problem");
     PataviTask pataviTask2 = new PataviTask(42, "gemtc", "problem");

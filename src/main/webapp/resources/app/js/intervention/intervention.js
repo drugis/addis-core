@@ -2,7 +2,7 @@
 
 define(function (require) {
   var angular = require('angular');
-  var dependencies = ['ngResource'];
+  var dependencies = ['ngResource', 'trialverse.util'];
 
   return angular.module('addis.interventions',
     dependencies)

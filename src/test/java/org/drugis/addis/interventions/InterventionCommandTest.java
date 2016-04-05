@@ -3,8 +3,8 @@
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.drugis.addis.interventions.model.InterventionCommand;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
+import org.drugis.addis.interventions.model.AbstractInterventionCommand;
+import org.drugis.addis.interventions.model.SimpleInterventionCommand;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
@@ -13,10 +13,10 @@ import static junit.framework.TestCase.assertEquals;
 public class InterventionCommandTest {
   @Test
   public void testGetMotivation() {
-    InterventionCommand interventionCmdWithNoMotivation = new InterventionCommand(1, "name", null, new SemanticIntervention("uri", "label"));
+    AbstractInterventionCommand interventionCmdWithNoMotivation = new SimpleInterventionCommand(1, "name", null, "uri", "label");
     assertEquals(StringUtils.EMPTY, interventionCmdWithNoMotivation.getMotivation());
     String motivation = "motivation";
-    InterventionCommand filledCommand = new InterventionCommand(1, "name", motivation, new SemanticIntervention("uri", "label"));
+    AbstractInterventionCommand filledCommand = new SimpleInterventionCommand(1, "name", motivation, "uri", "label");
     assertEquals(motivation, filledCommand.getMotivation());
   }
 }

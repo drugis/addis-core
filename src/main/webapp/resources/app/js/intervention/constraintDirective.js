@@ -3,20 +3,20 @@ define(['angular'], function() {
   var dependencies = ['$stateParams', 'UnitNamesService'];
   var constraintDirective = function($stateParams, UnitNamesService) {
     var LOWER_BOUND_OPTIONS = [{
-        value: 'atLeast',
+        value: 'AT_LEAST',
         label: 'At least (>=)'
       }, {
-        value: 'moreThan',
+        value: 'MORE_THAN',
         label: 'More than (>)'
       }, {
-        value: 'exactly',
+        value: 'EXACTLY',
         label: 'Exactly (=)'
       }],
       UPPER_BOUND_OPTIONS = [{
-        value: 'lessThan',
+        value: 'LESS_THAN',
         label: 'Less than (<)'
       }, {
-        value: 'atMost',
+        value: 'AT_MOST',
         label: 'At most (<=)'
       }];
 

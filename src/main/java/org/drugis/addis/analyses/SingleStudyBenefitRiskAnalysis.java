@@ -2,7 +2,7 @@ package org.drugis.addis.analyses;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.drugis.addis.interventions.model.Intervention;
+import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.util.ObjectToStringDeserializer;
 
@@ -37,12 +37,12 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
   @JoinTable(name = "singleStudyBenefitRiskAnalysis_Intervention",
           joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
           inverseJoinColumns = {@JoinColumn(name = "interventionId", referencedColumnName = "id")})
-  private Set<Intervention> selectedInterventions;
+  private Set<AbstractIntervention> selectedInterventions;
 
   public SingleStudyBenefitRiskAnalysis() {
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions, String problem) {
+  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<AbstractIntervention> selectedInterventions, String problem) {
     this.id = id;
     this.projectId = projectId;
     this.title = title;
@@ -51,15 +51,15 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     this.problem = problem;
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
+  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<AbstractIntervention> selectedInterventions) {
     this(id, projectId, title, selectedOutcomes, selectedInterventions, null);
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions) {
+  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<AbstractIntervention> selectedInterventions) {
     this(null, projectId, title, selectedOutcomes, selectedInterventions, null);
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<Intervention> selectedInterventions, String problem) {
+  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<AbstractIntervention> selectedInterventions, String problem) {
     this(null, projectId, title, selectedOutcomes, selectedInterventions, problem);
   }
 
@@ -89,7 +89,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     return selectedOutcomes == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(new ArrayList<>(selectedOutcomes));
   }
 
-  public List<Intervention> getSelectedInterventions() {
+  public List<AbstractIntervention> getSelectedInterventions() {
     return selectedInterventions == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(new ArrayList<>(selectedInterventions));
   }
 
