@@ -9,6 +9,14 @@ public class FixedInterventionCommand extends AbstractInterventionCommand {
   public FixedInterventionCommand() {
   }
 
+  @Override
+  public FixedDoseIntervention toIntervention() {
+    return new FixedDoseIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(),
+            this.getSemanticInterventionUuid(),
+            this.getSemanticInterventionLabel(),
+            new DoseConstraint(this.fixedDoseConstraint.getLowerBound(), this.fixedDoseConstraint.getUpperBound()));
+  }
+
   public FixedInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUuid, ConstraintCommand fixedDoseConstraint) {
     super(projectId, name, motivation, semanticInterventionLabel, semanticInterventionUuid);
     this.fixedDoseConstraint = fixedDoseConstraint;

@@ -129,11 +129,12 @@ public class InterventionControllerTest {
   @Test
   public void testCreateFixedBoundIntervention() throws Exception {
     Intervention intervention = new Intervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
-    BoundType type = BoundType.AT_LEAST;
+    LowerBoundType lowerType = LowerBoundType.AT_LEAST;
+    UpperBoundType upperType = UpperBoundType.AT_MOST;
     String unit = "mili";
     Double val = 1.1;
-    BoundCommand lower = new BoundCommand(type, unit, val);
-    BoundCommand upper = new BoundCommand(type, unit, val);
+    LowerBoundCommand lower = new LowerBoundCommand(lowerType, unit, val);
+    UpperBoundCommand upper = new UpperBoundCommand(upperType, unit, val);
     ConstraintCommand fixedDoseConstraintCommand = new ConstraintCommand(lower, upper);
     AbstractInterventionCommand doseRestrictedInterventionCommand = new FixedInterventionCommand(1, "name", "motivation", "http://semantic.com", "labelnew", fixedDoseConstraintCommand);
     when(interventionRepository.create(gert, doseRestrictedInterventionCommand)).thenReturn(intervention);

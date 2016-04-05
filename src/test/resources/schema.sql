@@ -404,6 +404,12 @@ CREATE TABLE FixedDoseIntervention (id SERIAL NOT NULL,
                            motivation TEXT NOT NULL,
                            semanticInterventionLabel VARCHAR NOT NULL,
                            semanticInterventionUri VARCHAR NOT NULL,
-                           testValue DOUBLE PRECISION,
+                           lowerBoundType varchar NOT NULL,
+                           lowerBoundValue double NOT NULL,
+                           lowerBoundUnit varchar NOT NULL,
+                           upperBoundType varchar NOT NULL,
+                           upperBoundValue double NOT NULL,
+                           upperBoundUnit varchar NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY(project) REFERENCES Project(id));
+--rollback DROP TABLE FixedDoseIntervention;

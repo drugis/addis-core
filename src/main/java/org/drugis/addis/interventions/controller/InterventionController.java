@@ -5,7 +5,6 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.AbstractInterventionCommand;
-import org.drugis.addis.interventions.model.Intervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -45,7 +44,7 @@ public class InterventionController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/interventions/{interventionId}", method = RequestMethod.GET)
   @ResponseBody
-  public Intervention get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer interventionId) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public AbstractIntervention get(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer interventionId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       return interventionRepository.get(projectId, interventionId);
@@ -56,11 +55,11 @@ public class InterventionController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.POST)
   @ResponseBody
-  public Intervention create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId,
-                             @RequestBody AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  public AbstractIntervention create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId,
+                                     @RequestBody AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
-      Intervention intervention = interventionRepository.create(user, interventionCommand);
+      AbstractIntervention intervention = interventionRepository.create(user, interventionCommand);
       response.setStatus(HttpServletResponse.SC_CREATED);
       response.setHeader("Location", request.getRequestURL() + "/");
       return intervention;

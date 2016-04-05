@@ -10,6 +10,15 @@ public class TitratedInterventionCommand extends AbstractInterventionCommand {
   public TitratedInterventionCommand() {
   }
 
+  @Override
+  public TitratedDoseIntervention toIntervention() {
+    return new TitratedDoseIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(),
+            this.getSemanticInterventionUuid(),
+            this.getSemanticInterventionLabel(),
+            new DoseConstraint(this.titratedDoseMinConstraint.getLowerBound(), this.titratedDoseMinConstraint.getUpperBound()),
+            new DoseConstraint(this.titratedDoseMaxConstraint.getLowerBound(), this.getTitratedDoseMaxConstraint().getUpperBound()));
+  }
+
   public TitratedInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUuid, ConstraintCommand titratedDoseMinConstraint, ConstraintCommand titratedDoseMaxConstraint) {
     super(projectId, name, motivation, semanticInterventionLabel, semanticInterventionUuid);
     this.titratedDoseMinConstraint = titratedDoseMinConstraint;

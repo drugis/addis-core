@@ -1,23 +1,23 @@
 package org.drugis.addis.interventions.model;
 
 /**
- * Created by daan on 1-4-16.
+ * Created by daan on 5-4-16.
  */
-public class BoundCommand {
-  private BoundType type;
+public class UpperBoundCommand {
+  private UpperBoundType type;
   private String unit;
   private Double value;
 
-  public BoundCommand() {
+  public UpperBoundCommand() {
   }
 
-  public BoundCommand(BoundType type, String unit, Double value) {
+  public UpperBoundCommand(UpperBoundType type, String unit, Double value) {
     this.type = type;
     this.unit = unit;
     this.value = value;
   }
 
-  public BoundType getType() {
+  public UpperBoundType getType() {
     return type;
   }
 
@@ -34,7 +34,7 @@ public class BoundCommand {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    BoundCommand that = (BoundCommand) o;
+    UpperBoundCommand that = (UpperBoundCommand) o;
 
     if (type != that.type) return false;
     if (!unit.equals(that.unit)) return false;

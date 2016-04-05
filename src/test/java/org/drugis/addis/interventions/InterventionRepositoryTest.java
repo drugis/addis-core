@@ -5,7 +5,6 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.AbstractInterventionCommand;
-import org.drugis.addis.interventions.model.Intervention;
 import org.drugis.addis.interventions.model.SimpleInterventionCommand;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.security.Account;
@@ -42,25 +41,26 @@ public class InterventionRepositoryTest {
     Collection<AbstractIntervention> interventions = interventionRepository.query(1);
     assertEquals(2, interventions.size());
     interventions = interventionRepository.query(2);
-    assertEquals(1, interventions.size());
+    assertEquals(2, interventions.size());
   }
 
   @Test
   public void testGet() throws ResourceDoesNotExistException {
-    Intervention intervention = interventionRepository.get(1, 1);
-    assertEquals(em.find(Intervention.class, 1), intervention);
+    int interventionId = -1;
+    AbstractIntervention intervention = interventionRepository.get(1, interventionId);
+    assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
   }
 
   @Test(expected = ResourceDoesNotExistException.class)
   public void testGetFromWrongProjectFails() throws ResourceDoesNotExistException {
-    interventionRepository.get(2, 1);
+    interventionRepository.get(2, -1);
   }
 
   @Test
   public void testCreateIntervention() throws Exception {
     AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(1, "newName", "newMotivation", "http://semantic.com", "labelnew");
     Account user = em.find(Account.class, 1);
-    Intervention result = interventionRepository.create(user, interventionCommand);
+    AbstractIntervention result = interventionRepository.create(user, interventionCommand);
     assertTrue(interventionRepository.query(1).contains(result));
   }
 
@@ -84,7 +84,7 @@ public class InterventionRepositoryTest {
   public void testCreateWithDuplicateNameFails() throws Exception {
     Account user = em.find(Account.class, 1);
     AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(1, "intervention 1", "newMotivation", "http://semantic.com", "labelnew");
-    Intervention result = interventionRepository.create(user, interventionCommand);
+    interventionRepository.create(user, interventionCommand);
   }
 
 

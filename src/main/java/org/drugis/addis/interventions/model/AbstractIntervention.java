@@ -1,10 +1,16 @@
 package org.drugis.addis.interventions.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import javax.persistence.*;
 
 /**
  * Created by daan on 5-4-16.
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({@JsonSubTypes.Type(value = Intervention.class, name = "simple"),
+        @JsonSubTypes.Type(value = FixedDoseIntervention.class, name = "fixed")})
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class AbstractIntervention {

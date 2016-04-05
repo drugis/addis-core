@@ -116,6 +116,7 @@
     "semanticOutcomeUri": "http://trials.drugis.org/namespace/2/adverseEvent/5f771b78f6308e4f100a6d6e239d28e2"
   }],
   "selectedInterventions": [{
+    "type": "simple",
     "id": 8,
     "project": 1,
     "name": "Edarbi",
@@ -123,6 +124,7 @@
     "semanticInterventionLabel": "Azilsartan",
     "semanticInterventionUri": "http://trials.drugis.org/namespace/2/drug/87fec8a8071915a2e17eddeb1faf8daa"
   }, {
+    "type": "simple",
     "id": 9,
     "project": 1,
     "name": "Placebo",

@@ -77,7 +77,7 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
     Account user = em.find(Account.class, 1);
     Integer projectId = 1;
     Integer outcomeId = 1;
-    Integer interventionId = 1;
+    Integer interventionId = -1;
     List<Outcome> selectedOutcomes = Arrays.asList(em.find(Outcome.class, outcomeId));
     List<AbstractIntervention> selectedInterventions = Arrays.asList(em.find(Intervention.class, interventionId));
     SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", selectedOutcomes, selectedInterventions);
@@ -94,7 +94,7 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
     Integer analysisId = -1;
     Account user = em.find(Account.class, 1);
     Integer projectId = 1;
-    Integer interventionId = 1;
+    Integer interventionId = -1;
     List<AbstractIntervention> selectedInterventions = Arrays.asList(em.find(Intervention.class, interventionId));
     SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", Collections.EMPTY_LIST, selectedInterventions);
     SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
@@ -147,7 +147,7 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
   public void testUpdateAnalysisWithNonProjectIntervention() throws ResourceDoesNotExistException, MethodNotAllowedException {
     Account user = em.find(Account.class, 2);
     int projectId = 2;
-    Intervention intervention2 = em.find(Intervention.class, 2);
+    Intervention intervention2 = em.find(Intervention.class, -2);
     SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(-3, projectId, "new name", Collections.EMPTY_LIST, Arrays.asList(intervention2));
     singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
   }

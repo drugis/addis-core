@@ -4,10 +4,8 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.AbstractInterventionCommand;
-import org.drugis.addis.interventions.model.Intervention;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.security.Account;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
@@ -29,15 +27,15 @@ public class InterventionRepositoryImpl implements org.drugis.addis.intervention
 
   @Override
   public List<AbstractIntervention> query(Integer projectId) {
-    TypedQuery<AbstractIntervention> query = em.createQuery("FROM Intervention i, FixedDoseIntervention f where i.project = :projectId OR f.project = :projectId", AbstractIntervention.class);
+    TypedQuery<AbstractIntervention> query = em.createQuery("FROM AbstractIntervention where project = :projectId", AbstractIntervention.class);
     query.setParameter("projectId", projectId);
     return query.getResultList();
 
   }
 
   @Override
-  public Intervention get(Integer projectId, Integer interventionId) throws ResourceDoesNotExistException {
-    TypedQuery<Intervention> query = em.createQuery("FROM Intervention i WHERE i.id = :interventionId AND i.project = :projectId", Intervention.class);
+  public AbstractIntervention get(Integer projectId, Integer interventionId) throws ResourceDoesNotExistException {
+    TypedQuery<AbstractIntervention> query = em.createQuery("FROM AbstractIntervention WHERE id = :interventionId AND project = :projectId", AbstractIntervention.class);
     query.setParameter("interventionId", interventionId);
     query.setParameter("projectId", projectId);
     try {
@@ -48,9 +46,8 @@ public class InterventionRepositoryImpl implements org.drugis.addis.intervention
   }
 
   @Override
-  public Intervention create(Account user, AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
-    SemanticIntervention semanticIntervention = new SemanticIntervention(interventionCommand.getSemanticInterventionUuid(), interventionCommand.getSemanticInterventionLabel());
-    Intervention newIntervention = new Intervention(interventionCommand.getProjectId(), interventionCommand.getName(), interventionCommand.getMotivation(), semanticIntervention);
+  public AbstractIntervention create(Account user, AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
+    AbstractIntervention newIntervention = interventionCommand.toIntervention();
     Project project = em.find(Project.class, newIntervention.getProject());
     if (project == null) {
       throw new ResourceDoesNotExistException();
@@ -58,7 +55,7 @@ public class InterventionRepositoryImpl implements org.drugis.addis.intervention
     if (project.getOwner().getId() != user.getId()) {
       throw new MethodNotAllowedException();
     }
-    TypedQuery<AbstractIntervention> query = em.createQuery("FROM Intervention i WHERE i.name = :interventionName AND i.project = :projectId", AbstractIntervention.class);
+    TypedQuery<AbstractIntervention> query = em.createQuery("FROM AbstractIntervention i WHERE i.name = :interventionName AND i.project = :projectId", AbstractIntervention.class);
     query.setParameter("interventionName", interventionCommand.getName());
     query.setParameter("projectId", interventionCommand.getProjectId());
     List<AbstractIntervention> results = query.getResultList();

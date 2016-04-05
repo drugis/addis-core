@@ -97,7 +97,7 @@ public class NetworkMetaAnalysisRepositoryTest {
     ArmExclusion newArmExclusion1 = new ArmExclusion(analysis.getId(), "-601L");
     ArmExclusion newArmExclusion2 = new ArmExclusion(analysis.getId(), "-602L");
     analysis.updateArmExclusions(new HashSet<>(Arrays.asList(newArmExclusion1, newArmExclusion2)));
-    int interventionId = 2;
+    int interventionId = -2;
     InterventionInclusion newInterventionInclusion = new InterventionInclusion(analysis.getId(), interventionId);
 
     analysis.updateIncludedInterventions(new HashSet<>(Arrays.asList(newInterventionInclusion)));

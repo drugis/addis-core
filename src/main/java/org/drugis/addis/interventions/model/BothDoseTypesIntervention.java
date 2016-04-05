@@ -1,0 +1,20 @@
+package org.drugis.addis.interventions.model;
+
+/**
+ * Created by daan on 5-4-16.
+ */
+public class BothDoseTypesIntervention extends AbstractIntervention {
+  private DoseConstraint minConstraint;
+  private DoseConstraint maxConstraint;
+
+  public BothDoseTypesIntervention(DoseConstraint minConstraint, DoseConstraint maxConstraint) {
+    this.minConstraint = minConstraint;
+    this.maxConstraint = maxConstraint;
+  }
+
+  public BothDoseTypesIntervention(Integer id, Integer project, String name, String motivation, String semanticInterventionUri, String semanticInterventionLabel, DoseConstraint minConstraint, DoseConstraint maxConstraint) {
+    super(id, project, name, motivation, semanticInterventionUri, semanticInterventionLabel);
+    this.minConstraint = minConstraint;
+    this.maxConstraint = maxConstraint;
+  }
+}

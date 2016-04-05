@@ -72,7 +72,7 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
   public void testUpdate() throws ResourceDoesNotExistException, MethodNotAllowedException {
     int accountId = 1;
     int analysisId = -10;
-    int interventionId = 2;
+    int interventionId = -2;
     int outcomeId = 2;
     int modelId  = 1;
 
@@ -116,7 +116,7 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
     em.remove(analysis);
     em.flush();
 
-    Intervention intervention = em.find(Intervention.class, 1);
+    Intervention intervention = em.find(Intervention.class, -1);
     em.flush();
     assertNotNull(intervention);
   }

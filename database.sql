@@ -451,3 +451,18 @@ ALTER TABLE interventioninclusion ADD CONSTRAINT interventioninclusion_analysisi
 --changeset reidd:45
 ALTER TABLE intervention ALTER COLUMN motivation DROP NOT NULL;
 ALTER TABLE outcome ALTER COLUMN motivation DROP NOT NULL;
+
+--changeset reidd:46
+CREATE TABLE FixedDoseIntervention (id SERIAL NOT NULL,
+                           project INT,
+                           name VARCHAR NOT NULL,
+                           motivation TEXT NOT NULL,
+                           semanticInterventionLabel VARCHAR NOT NULL,
+                           semanticInterventionUri VARCHAR NOT NULL,
+                           testValue DOUBLE PRECISION,
+  PRIMARY KEY (id),
+  FOREIGN KEY(project) REFERENCES Project(id));
+  CREATE SEQUENCE shared_intervention_id_seq;
+  select setval('shared_intervention_id_seq', (select max(id) from intervention));
+--rollback DROP TABLE FixedDoseIntervention;
+--rollback DROP SEQUENCE shared_intervention_id_seq;

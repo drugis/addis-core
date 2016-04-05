@@ -32,6 +32,8 @@ public abstract class AbstractInterventionCommand {
     }
   }
 
+  public abstract AbstractIntervention toIntervention();
+
   public Integer getProjectId() {
     return projectId;
   }

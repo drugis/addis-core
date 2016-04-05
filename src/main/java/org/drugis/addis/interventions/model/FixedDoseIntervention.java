@@ -1,5 +1,6 @@
 package org.drugis.addis.interventions.model;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import java.io.Serializable;
 
@@ -8,17 +9,20 @@ import java.io.Serializable;
  */
 @Entity
 public class FixedDoseIntervention extends AbstractIntervention implements Serializable {
-  Double testValue;
+  @Embedded
+  DoseConstraint constraint;
 
   public FixedDoseIntervention() {
   }
 
-  public FixedDoseIntervention(Double testValue) {
-    this.testValue = testValue;
+  public FixedDoseIntervention(Integer id, Integer project, String name, String motivation, String semanticInterventionLabel,
+                               String semanticInterventionUri, DoseConstraint constraint) {
+    super(id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri);
+    this.constraint = constraint;
   }
 
-  public FixedDoseIntervention(Integer id, Integer project, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUri, Double testValue) {
-    super(id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri);
-    this.testValue = testValue;
+  public FixedDoseIntervention(Integer project, String name, String motivation, String semanticInterventionLabel,
+                               String semanticInterventionUri, DoseConstraint constraint) {
+    this(null, project, name, motivation, semanticInterventionLabel, semanticInterventionUri, constraint);
   }
 }

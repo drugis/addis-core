@@ -59,7 +59,8 @@ public class AnalysisRepositoryTest {
     MetaBenefitRiskAnalysis metaBenefitRiskAnalysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);
     metaBenefitRiskAnalysis = em.find(MetaBenefitRiskAnalysis.class, metaBenefitRiskAnalysis.getId());
     assertEquals(1, metaBenefitRiskAnalysis.getIncludedAlternatives().size());
-    assertEquals((Integer) 1, metaBenefitRiskAnalysis.getIncludedAlternatives().get(0).getId());
+    Integer expected = -1;
+    assertEquals(expected, metaBenefitRiskAnalysis.getIncludedAlternatives().get(0).getId());
     assertEquals(metaBenefitRiskAnalysis, castAnalysis);
   }
 

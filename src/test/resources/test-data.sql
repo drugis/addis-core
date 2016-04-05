@@ -11,13 +11,14 @@ INSERT INTO public.outcome (id, project, name, motivation, semanticOutcomeLabel,
 INSERT INTO public.outcome (id, project, name, motivation, semanticOutcomeLabel, semanticOutcomeUri) VALUES (2, 1, 'outcome 2', 'outcome description 2', 'outcome2', 'org.drugis.addis.outcome://outcome2');
 INSERT INTO public.outcome (id, project, name, motivation, semanticOutcomeLabel, semanticOutcomeUri) VALUES (3, 2, 'outcome 3', 'outcome description 3', 'outcome3', 'org.drugis.addis.outcome://outcome3');
 
-INSERT INTO public.intervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri) VALUES (1, 1, 'intervention 1', 'intervention description 1', 'intervention1', 'http://trials.drugis.org/namespaces/1/interventions/1');
-INSERT INTO public.intervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri) VALUES (2, 1, 'intervention 2', 'intervention description 2', 'intervention2', 'http://trials.drugis.org/namespaces/1/interventions/2');
-INSERT INTO public.intervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri) VALUES (3, 2, 'intervention 3', 'intervention description 3', 'intervention3', 'http://trials.drugis.org/namespaces/1/interventions/3');
+INSERT INTO public.intervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri) VALUES (-1, 1, 'intervention 1', 'intervention description 1', 'intervention1', 'http://trials.drugis.org/namespaces/1/interventions/1');
+INSERT INTO public.intervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri) VALUES (-2, 1, 'intervention 2', 'intervention description 2', 'intervention2', 'http://trials.drugis.org/namespaces/1/interventions/2');
+INSERT INTO public.intervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri) VALUES (-3, 2, 'intervention 3', 'intervention description 3', 'intervention3', 'http://trials.drugis.org/namespaces/1/interventions/3');
 
-INSERT INTO public.fixedDoseIntervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri, testValue) VALUES (4, 2, 'intervention 4', 'intervention description 4', 'intervention4', 'http://trials.drugis.org/namespaces/1/interventions/4', 1.0);
-INSERT INTO public.fixedDoseIntervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri, testValue) VALUES (5, 2, 'intervention 5', 'intervention description 5', 'intervention5', 'http://trials.drugis.org/namespaces/1/interventions/5', 2.0);
-
+INSERT INTO public.fixedDoseIntervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri,
+lowerBoundType, lowerBoundValue, lowerBoundUnit, upperBoundType, upperBoundValue, upperBoundUnit)
+VALUES (-4, 2, 'intervention 4', 'intervention description 4', 'intervention4',
+'http://trials.drugis.org/namespaces/1/interventions/4', 'AT_LEAST', 3.0, 'mg', 'AT_MOST', 2.5, 'mg');
 
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title) VALUES (-1, 1, 'analysis 1');
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title) VALUES (-2, 1, 'analysis 2');
@@ -30,11 +31,11 @@ INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId
 INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId) VALUES (-4, 1);
 INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId) VALUES (-4, 2);
 
-INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-3, 1);
-INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-3, 2);
+INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-3, -1);
+INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-3, -2);
 
-INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-4, 1);
-INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-4, 2);
+INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-4, -1);
+INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-4, -2);
 
 INSERT INTO public.NetworkMetaAnalysis(id, projectId, title, outcomeId) VALUES (-5, 1, 'nma', 1);
 INSERT INTO public.NetworkMetaAnalysis(id, projectId, title, outcomeId) VALUES (-6, 1, 'nma 2', 1);
@@ -49,7 +50,7 @@ INSERT INTO public.model(id, analysisId, taskId, title, linearModel, modelType, 
 UPDATE public.NetworkMetaAnalysis SET primaryModel = 1 WHERE id = -7;
 
 INSERT INTO public.MetaBenefitRiskAnalysis(id, projectId, title, finalized) VALUES (-10, 1, 'metabr 1', FALSE);
-INSERT INTO public.MetaBenefitRiskAnalysis_Alternative(analysisId, alternativeId) VALUES (-10, 1);
+INSERT INTO public.MetaBenefitRiskAnalysis_Alternative(analysisId, alternativeId) VALUES (-10, -1);
 INSERT INTO public.MbrOutcomeInclusion(metaBenefitRiskAnalysisId, outcomeId, networkMetaAnalysisId, modelId) VALUES (-10, 1, -5, 1);
 
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (1, -1, 'Default', 'problem state');
@@ -61,7 +62,7 @@ INSERT INTO public.scenario (id, workspace, title, state) VALUES (4, -10, 'Defau
 INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-1, '-101', -6);
 INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-2, '-102', -6);
 
-INSERT INTO public.interventionInclusion (id, interventionId, analysisId) VALUES (-1, 2, -6);
+INSERT INTO public.interventionInclusion (id, interventionId, analysisId) VALUES (-1, -2, -6);
 
 INSERT INTO public.remarks(analysisId, remarks) VALUES(-1, 'yo yo yo !');
 

@@ -4,22 +4,22 @@ package org.drugis.addis.interventions.model;
  * Created by daan on 1-4-16.
  */
 public class ConstraintCommand {
-  private BoundCommand lowerBound;
-  private BoundCommand upperBound;
+  private LowerBoundCommand lowerBound;
+  private UpperBoundCommand upperBound;
 
   public ConstraintCommand() {
   }
 
-  public ConstraintCommand(BoundCommand lowerBound, BoundCommand upperBound) {
+  public ConstraintCommand(LowerBoundCommand lowerBound, UpperBoundCommand upperBound) {
     this.lowerBound = lowerBound;
     this.upperBound = upperBound;
   }
 
-  public BoundCommand getLowerBound() {
+  public LowerBoundCommand getLowerBound() {
     return lowerBound;
   }
 
-  public BoundCommand getUpperBound() {
+  public UpperBoundCommand getUpperBound() {
     return upperBound;
   }
 
