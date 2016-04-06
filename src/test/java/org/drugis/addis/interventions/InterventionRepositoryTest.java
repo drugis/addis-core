@@ -39,7 +39,7 @@ public class InterventionRepositoryTest {
     Collection<AbstractIntervention> interventions = interventionRepository.query(1);
     assertEquals(2, interventions.size());
     interventions = interventionRepository.query(2);
-    assertEquals(2, interventions.size());
+    assertEquals(3, interventions.size());
   }
 
   @Test

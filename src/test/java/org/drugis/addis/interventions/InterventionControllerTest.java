@@ -75,7 +75,9 @@ public class InterventionControllerTest {
 
   @Test
   public void testQueryInterventions() throws Exception {
-    Intervention intervention = new Intervention(1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+
+    DoseConstraint constraint = new DoseConstraint(new LowerBoundCommand(LowerBoundType.AT_LEAST, "mili", 2d), null);
+    FixedDoseIntervention intervention = new FixedDoseIntervention(1, "name", "motivation", "http://semantic.com", "labelnew", constraint);
     Integer projectId = 1;
     List<AbstractIntervention> interventions = Arrays.asList(intervention);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
@@ -84,7 +86,8 @@ public class InterventionControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", hasSize(1)))
-            .andExpect(jsonPath("$[0].id", is(intervention.getId())));
+            .andExpect(jsonPath("$[0].id", is(intervention.getId())))
+            .andExpect(jsonPath("$[0].constraint.lowerBound.value", is(2d)));
 
     verify(interventionRepository).query(projectId);
     verify(accountRepository).findAccountByUsername("gert");

@@ -22,6 +22,10 @@ public class FixedDoseIntervention extends AbstractIntervention implements Seria
   public FixedDoseIntervention() {
   }
 
+  public DoseConstraint getConstraint() {
+    return constraint;
+  }
+
   public FixedDoseIntervention(Integer id, Integer project, String name, String motivation, String semanticInterventionLabel,
                                String semanticInterventionUri, DoseConstraint constraint) {
     super(id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri);
@@ -31,5 +35,24 @@ public class FixedDoseIntervention extends AbstractIntervention implements Seria
   public FixedDoseIntervention(Integer project, String name, String motivation, String semanticInterventionLabel,
                                String semanticInterventionUri, DoseConstraint constraint) {
     this(null, project, name, motivation, semanticInterventionLabel, semanticInterventionUri, constraint);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+
+    FixedDoseIntervention that = (FixedDoseIntervention) o;
+
+    return constraint.equals(that.constraint);
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + constraint.hashCode();
+    return result;
   }
 }
