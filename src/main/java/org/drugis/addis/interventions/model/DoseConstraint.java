@@ -16,6 +16,14 @@ public class DoseConstraint {
   public DoseConstraint() {
   }
 
+  public LowerDoseBound getLowerBound() {
+    return lowerBound;
+  }
+
+  public UpperDoseBound getUpperBound() {
+    return upperBound;
+  }
+
   public DoseConstraint(LowerBoundCommand lowerBound, UpperBoundCommand upperBound) {
     if(lowerBound != null) {
       this.lowerBound = new LowerDoseBound(lowerBound.getType(), lowerBound.getValue(), lowerBound.getUnitName(), lowerBound.getUnitPeriod());
@@ -25,4 +33,22 @@ public class DoseConstraint {
     }
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    DoseConstraint that = (DoseConstraint) o;
+
+    if (lowerBound != null ? !lowerBound.equals(that.lowerBound) : that.lowerBound != null) return false;
+    return upperBound != null ? upperBound.equals(that.upperBound) : that.upperBound == null;
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = lowerBound != null ? lowerBound.hashCode() : 0;
+    result = 31 * result + (upperBound != null ? upperBound.hashCode() : 0);
+    return result;
+  }
 }

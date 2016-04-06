@@ -33,6 +33,9 @@ public class BothDoseTypesIntervention extends AbstractIntervention {
   } )
   private DoseConstraint maxConstraint;
 
+  public BothDoseTypesIntervention() {
+  }
+
   public BothDoseTypesIntervention(DoseConstraint minConstraint, DoseConstraint maxConstraint) {
     this.minConstraint = minConstraint;
     this.maxConstraint = maxConstraint;
