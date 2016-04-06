@@ -35,17 +35,20 @@ define(['lodash'], function(_) {
       }
       if (constraint.lowerBound) {
         constraint.lowerBound.type = constraint.lowerBound.type.value;
+        constraint.lowerBound.unitName = constraint.lowerBound.unit.unitName;
+        constraint.lowerBound.unitPeriod = constraint.lowerBound.unit.unitPeriod;
+        delete constraint.lowerBound.unit;
       }
       if (constraint.upperBound) {
         constraint.upperBound.type = constraint.upperBound.type.value;
+        constraint.upperBound.unitName = constraint.upperBound.unit.unitName;
+        constraint.upperBound.unitPeriod = constraint.upperBound.unit.unitPeriod;
+        delete constraint.upperBound.unit;
       }
       return constraint;
     }
 
     function addIntervention(newIntervention) {
-      var unitCache = newIntervention.unit;
-      newIntervention.unitName = unitCache.unitName;
-      newIntervention.unitPeriod = unitCache.unitPeriod;
       $scope.isAddingIntervention = true;
       newIntervention.projectId = $scope.project.id;
       newIntervention.semanticInterventionLabel = newIntervention.semanticIntervention.label;

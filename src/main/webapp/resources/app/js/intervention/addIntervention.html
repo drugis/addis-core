@@ -28,10 +28,12 @@
         </div>
       </div>
       <div class="row">
-        <button id="add-intervention-sumbit-btn" class="button small success" ng-disabled="!newIntervention.name || !newIntervention.semanticIntervention || duplicateInterventionName.isDuplicate"
-          type="submit">Add intervention
-        </button>
-        <div class="alert" ng-show="duplicateInterventionName.isDuplicate">Duplicate name.</div>
+      <div class="large-12 columns">
+          <button id="add-intervention-sumbit-btn" class="button small success" ng-disabled="!newIntervention.name || !newIntervention.semanticIntervention || duplicateInterventionName.isDuplicate"
+            type="submit">Add intervention
+          </button>
+          <div class="alert" ng-show="duplicateInterventionName.isDuplicate">Duplicate name.</div>
+        </div>
       </div>
     </tab>
 
@@ -62,57 +64,52 @@
         </div>
       </div>
       <div class="row">
-        <div class="large-10 columns">
+        <div class="large-12 columns">
           <label class="form-item-header">Dose type</label>
-          <div class="stacked-radio">
             <input type="radio" value="fixed" ng-model="newIntervention.doseType" id="fixed-dose-type-radio"
                    ng-change="cleanUpBounds()">
             <label for="fixed-dose-type-radio">Fixed only</label>
-            <div class="indent-one">
-              <constraint ng-if="newIntervention.doseType === 'fixed'" model="newIntervention.fixedDoseConstraint"
+            <input type="radio" value="titrated" ng-model="newIntervention.doseType" id="titrated-dose-type-radio"
+                   ng-change="cleanUpBounds()">
+            <label for="titrated-dose-type-radio">Titrated only</label>
+            <input type="radio" value="both" ng-model="newIntervention.doseType" id="both-dose-type-radio"
+                   ng-change="cleanUpBounds()">
+            <label for="both-dose-type-radio">Both</label>
+            <div class="indent-one" ng-if="newIntervention.doseType === 'fixed'">
+              <constraint model="newIntervention.fixedDoseConstraint"
                 dataset-uuid="{{project.namespaceUid}}" />
-            </div </div>
-            <div class="stacked-radio">
-              <input type="radio" value="titrated" ng-model="newIntervention.doseType" id="titrated-dose-type-radio"
-                     ng-change="cleanUpBounds()">
-              <label for="titrated-dose-type-radio">Titrated only</label>
-              <div class="indent-one" ng-if="newIntervention.doseType === 'titrated'">
-                <span>Min dose
-                  <constraint ng-if="newIntervention.doseType === 'titrated'" model="newIntervention.titratedDoseMinConstraint"
-                    dataset-uuid="{{project.namespaceUid}}" />
-                </span>
-                <span>Max dose
-                  <constraint ng-if="newIntervention.doseType === 'titrated'"
-                              model="newIntervention.titratedDoseMaxConstraint" dataset-uuid="{{project.namespaceUid}}"
-                  />
-                </span>
-              </div>
             </div>
-            <div class="stacked-radio">
-              <input type="radio" value="both" ng-model="newIntervention.doseType" id="both-dose-type-radio"
-                     ng-change="cleanUpBounds()">
-              <label for="both-dose-type-radio">Both</label>
-              <div class="indent-one" ng-if="newIntervention.doseType === 'both'">
-                Min dose
-                <constraint ng-if="newIntervention.doseType === 'both'"
-                            model="newIntervention.bothDoseTypesMinConstraint" dataset-uuid="{{project.namespaceUid}}"/>
-                Max dose
-                <constraint ng-if="newIntervention.doseType === 'both'"
-                            model="newIntervention.bothDoseTypesMaxConstraint" dataset-uuid="{{project.namespaceUid}}"
-                />
-
-              </div>
+            <div class="indent-one" ng-if="newIntervention.doseType === 'titrated'">
+              <span>Min dose
+                <constraint ng-if="newIntervention.doseType === 'titrated'" model="newIntervention.titratedDoseMinConstraint"
+                  dataset-uuid="{{project.namespaceUid}}" />
+              </span>
+              <span>Max dose
+                <constraint ng-if="newIntervention.doseType === 'titrated'"
+                            model="newIntervention.titratedDoseMaxConstraint" dataset-uuid="{{project.namespaceUid}}" />
+              </span>
             </div>
+            <div class="indent-one" ng-if="newIntervention.doseType === 'both'">
+              Min dose
+              <constraint ng-if="newIntervention.doseType === 'both'"
+                          model="newIntervention.bothDoseTypesMinConstraint" dataset-uuid="{{project.namespaceUid}}"/>
+              Max dose
+              <constraint ng-if="newIntervention.doseType === 'both'"
+                          model="newIntervention.bothDoseTypesMaxConstraint" dataset-uuid="{{project.namespaceUid}}"/>
+            </div>
+         
           </div>
         </div>
       </div>
       <div class="row">
-        <button id="add-intervention-sumbit-btn" class="button small success"
-                ng-disabled="!newIntervention.name || !newIntervention.semanticIntervention || duplicateInterventionName.isDuplicate || hasIncorrectConstraints"
-                type="submit">Add intervention
-        </button>
-        <div class="alert" ng-show="duplicateInterventionName.isDuplicate">Duplicate name.</div>
-        <div class="alert" ng-show="hasIncorrectConstraints">Missing constraint or constraint value.</div>
+        <div class="large-12 columns">
+          <button id="add-intervention-sumbit-btn" class="button small success"
+                  ng-disabled="!newIntervention.name || !newIntervention.semanticIntervention || duplicateInterventionName.isDuplicate || hasIncorrectConstraints"
+                  type="submit">Add intervention
+          </button>
+          <div class="alert" ng-show="duplicateInterventionName.isDuplicate">Duplicate name.</div>
+          <div class="alert" ng-show="hasIncorrectConstraints">Missing constraint or constraint value.</div>
+        </div>
       </div>
     </tab>
   </tabset>

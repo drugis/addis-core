@@ -7,7 +7,6 @@
   <div class="columns large-3">
     <select ng-disabled="!lowerBoundEnabled" ng-model="model.lowerBound.type"
             ng-options="lowerBoundOption.label for lowerBoundOption in LOWER_BOUND_OPTIONS"></select>
-    </label>
   </div>
   <div class="columns large-3">
     <input ng-disabled="!lowerBoundEnabled" type="number" step="0.001" ng-model="model.lowerBound.value">
