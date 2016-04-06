@@ -181,5 +181,31 @@ public class InterventionControllerTest {
     verify(accountRepository).findAccountByUsername(gert.getUsername());
     verify(interventionRepository).create(gert, doseRestrictedInterventionCommand);
   }
-
+  @Test
+  public void testCreateBothDoseIntervention() throws Exception {
+    String body = "{\n" +
+            "  \"doseType\": \"both\",\n" +
+            "  \"bothDoseTypesMinConstraint\": {\n" +
+            "    \"lowerBound\": {\n" +
+            "      \"type\": \"AT_LEAST\",\n" +
+            "      \"unit\": \"milligram\",\n" +
+            "      \"value\": 30\n" +
+            "    }\n" +
+            "  },\n" +
+            "  \"name\": \"Bupropion\",\n" +
+            "  \"projectId\": 13,\n" +
+            "  \"semanticInterventionLabel\": \"Bupropion\",\n" +
+            "  \"semanticInterventionUuid\": \"234-aga-34\"\n" +
+            "}\n";
+    Intervention intervention = new Intervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+    ObjectMapper mapper = new ObjectMapper();
+    AbstractInterventionCommand doseRestrictedInterventionCommand = mapper.readValue(body, AbstractInterventionCommand.class);
+    when(interventionRepository.create(gert, doseRestrictedInterventionCommand)).thenReturn(intervention);
+    mockMvc.perform(post("/projects/1/interventions").content(body).principal(user).contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
+            .andExpect(jsonPath("$.id", notNullValue()));
+    verify(accountRepository).findAccountByUsername(gert.getUsername());
+    verify(interventionRepository).create(gert, doseRestrictedInterventionCommand);
+  }
 }

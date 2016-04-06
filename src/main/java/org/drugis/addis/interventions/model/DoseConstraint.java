@@ -17,8 +17,12 @@ public class DoseConstraint {
   }
 
   public DoseConstraint(LowerBoundCommand lowerBound, UpperBoundCommand upperBound) {
-    this.lowerBound = new LowerDoseBound(lowerBound.getType(), lowerBound.getValue(), lowerBound.getUnit());
-    this.upperBound = new UpperDoseBound(upperBound.getType(), upperBound.getValue(), upperBound.getUnit());
+    if(lowerBound != null) {
+      this.lowerBound = new LowerDoseBound(lowerBound.getType(), lowerBound.getValue(), lowerBound.getUnit());
+    }
+    if(upperBound != null) {
+      this.upperBound = new UpperDoseBound(upperBound.getType(), upperBound.getValue(), upperBound.getUnit());
+    }
   }
 
 }

@@ -1,7 +1,6 @@
 package org.drugis.addis.interventions.model;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -10,6 +9,14 @@ import java.io.Serializable;
 @Entity
 public class FixedDoseIntervention extends AbstractIntervention implements Serializable {
   @Embedded
+  @AttributeOverrides( {
+          @AttributeOverride(name="lowerBound.type" , column = @Column(name="lowerBoundType") ),
+          @AttributeOverride(name="lowerBound.unit" , column = @Column(name="lowerBoundUnit") ),
+          @AttributeOverride(name="lowerBound.value", column = @Column(name="lowerBoundValue") ),
+          @AttributeOverride(name="upperBound.type" , column = @Column(name="upperBoundType") ),
+          @AttributeOverride(name="upperBound.unit" , column = @Column(name="upperBoundUnit") ),
+          @AttributeOverride(name="upperBound.value", column = @Column(name="upperBoundValue") )
+  } )
   DoseConstraint constraint;
 
   public FixedDoseIntervention() {

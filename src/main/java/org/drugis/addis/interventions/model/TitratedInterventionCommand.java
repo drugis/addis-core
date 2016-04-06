@@ -4,19 +4,27 @@ package org.drugis.addis.interventions.model;
  * Created by daan on 5-4-16.
  */
 public class TitratedInterventionCommand extends AbstractInterventionCommand {
-  ConstraintCommand titratedDoseMinConstraint;
-  ConstraintCommand titratedDoseMaxConstraint;
+  private ConstraintCommand titratedDoseMinConstraint;
+  private ConstraintCommand titratedDoseMaxConstraint;
 
   public TitratedInterventionCommand() {
   }
 
   @Override
   public TitratedDoseIntervention toIntervention() {
+    DoseConstraint minConstraint = null;
+    if (this.titratedDoseMinConstraint != null) {
+      minConstraint = new DoseConstraint(this.titratedDoseMinConstraint.getLowerBound(), this.titratedDoseMinConstraint.getUpperBound());
+    }
+    DoseConstraint maxConstraint = null;
+    if(this.titratedDoseMaxConstraint != null) {
+      maxConstraint = new DoseConstraint(this.titratedDoseMaxConstraint.getLowerBound(), this.getTitratedDoseMaxConstraint().getUpperBound());
+    }
     return new TitratedDoseIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(),
             this.getSemanticInterventionUuid(),
             this.getSemanticInterventionLabel(),
-            new DoseConstraint(this.titratedDoseMinConstraint.getLowerBound(), this.titratedDoseMinConstraint.getUpperBound()),
-            new DoseConstraint(this.titratedDoseMaxConstraint.getLowerBound(), this.getTitratedDoseMaxConstraint().getUpperBound()));
+            minConstraint,
+            maxConstraint);
   }
 
   public TitratedInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUuid, ConstraintCommand titratedDoseMinConstraint, ConstraintCommand titratedDoseMaxConstraint) {

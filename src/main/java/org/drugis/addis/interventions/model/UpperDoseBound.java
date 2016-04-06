@@ -11,12 +11,9 @@ import javax.persistence.Enumerated;
 @Embeddable
 public class UpperDoseBound {
   @Enumerated(EnumType.STRING)
-  @Column(name = "upperBoundType")
   UpperBoundType type;
 
-  @Column(name = "upperBoundValue")
   Double value;
-  @Column(name = "upperBoundUnit")
   String unit;
 
   public UpperDoseBound() {

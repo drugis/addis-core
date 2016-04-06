@@ -20,6 +20,19 @@ lowerBoundType, lowerBoundValue, lowerBoundUnit, upperBoundType, upperBoundValue
 VALUES (-4, 2, 'intervention 4', 'intervention description 4', 'intervention4',
 'http://trials.drugis.org/namespaces/1/interventions/4', 'AT_LEAST', 3.0, 'mg', 'AT_MOST', 2.5, 'mg');
 
+INSERT INTO public.titratedDoseIntervention (id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri,
+minLowerBoundType, minLowerBoundUnit, minLowerBoundValue,
+minUpperBoundType, minUpperBoundUnit, minUpperBoundValue,
+maxLowerBoundType, maxLowerBoundUnit, maxLowerBoundValue,
+maxUpperBoundType, maxUpperBoundUnit, maxUpperBoundValue)
+VALUES (-5, 2, 'intervention 4', 'intervention description 4', 'intervention4',
+'http://trials.drugis.org/namespaces/1/interventions/4',
+'AT_LEAST', 'mg', 3.0,
+'AT_MOST', 'mg', 2.5,
+'AT_LEAST', 'mg', 4.0,
+'AT_MOST', 'mg', 3.5);
+
+
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title) VALUES (-1, 1, 'analysis 1');
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title) VALUES (-2, 1, 'analysis 2');
 INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title) VALUES (-3 ,2, 'analysis 3');

@@ -1,6 +1,5 @@
 package org.drugis.addis.interventions.model;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -11,13 +10,10 @@ import javax.persistence.Enumerated;
 @Embeddable
 public class LowerDoseBound {
   @Enumerated(EnumType.STRING)
-  @Column(name = "lowerBoundType")
   private LowerBoundType type;
 
-  @Column(name = "lowerBoundValue")
   private Double value;
 
-  @Column(name = "lowerBoundUnit")
   private String unit;
 
   public LowerDoseBound() {
