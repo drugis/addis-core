@@ -30,13 +30,13 @@ define(['lodash'], function(_) {
     }
 
     function flattenType(constraint) {
-      if(!constraint) {
+      if (!constraint) {
         return undefined;
       }
-      if(constraint.lowerBound) {
+      if (constraint.lowerBound) {
         constraint.lowerBound.type = constraint.lowerBound.type.value;
       }
-      if(constraint.upperBound) {
+      if (constraint.upperBound) {
         constraint.upperBound.type = constraint.upperBound.type.value;
       }
       return constraint;
@@ -49,9 +49,9 @@ define(['lodash'], function(_) {
       newIntervention.semanticInterventionUuid = newIntervention.semanticIntervention.uri;
       delete newIntervention.semanticIntervention;
       newIntervention = flattenTypes(newIntervention); // go from object with label to value only
-      InterventionResource.save(newIntervention, function() {
+      InterventionResource.save(newIntervention, function(intervention) {
         $modalInstance.close();
-        callback(newIntervention);
+        callback(intervention);
         $scope.isAddingIntervention = false;
       });
     }

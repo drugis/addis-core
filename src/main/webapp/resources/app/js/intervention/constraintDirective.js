@@ -1,24 +1,7 @@
 'use strict';
 define(['angular'], function() {
-  var dependencies = ['$stateParams', 'UnitNamesService'];
-  var constraintDirective = function($stateParams, UnitNamesService) {
-    var LOWER_BOUND_OPTIONS = [{
-        value: 'AT_LEAST',
-        label: 'At least (>=)'
-      }, {
-        value: 'MORE_THAN',
-        label: 'More than (>)'
-      }, {
-        value: 'EXACTLY',
-        label: 'Exactly (=)'
-      }],
-      UPPER_BOUND_OPTIONS = [{
-        value: 'LESS_THAN',
-        label: 'Less than (<)'
-      }, {
-        value: 'AT_MOST',
-        label: 'At most (<=)'
-      }];
+  var dependencies = ['$stateParams', 'UnitNamesService', 'InterventionService'];
+  var constraintDirective = function($stateParams, UnitNamesService, InterventionService) {
 
     return {
       scope: {
@@ -27,8 +10,8 @@ define(['angular'], function() {
       },
       link: function(scope) {
         scope.model = {};
-        scope.LOWER_BOUND_OPTIONS = LOWER_BOUND_OPTIONS;
-        scope.UPPER_BOUND_OPTIONS = UPPER_BOUND_OPTIONS;
+        scope.LOWER_BOUND_OPTIONS = InterventionService.LOWER_BOUND_OPTIONS;
+        scope.UPPER_BOUND_OPTIONS = InterventionService.UPPER_BOUND_OPTIONS;
         scope.toggleLowerBound = toggleLowerBound;
         scope.toggleUpperBound = toggleUpperBound;
 
@@ -37,7 +20,7 @@ define(['angular'], function() {
             delete scope.model.lowerBound;
           } else {
             scope.model.lowerBound = {
-              type: LOWER_BOUND_OPTIONS[0],
+              type: InterventionService.LOWER_BOUND_OPTIONS[0],
               unit: scope.units[0]
             };
           }
@@ -48,7 +31,7 @@ define(['angular'], function() {
             delete scope.model.upperBound;
           } else {
             scope.model.upperBound = {
-              type: UPPER_BOUND_OPTIONS[0],
+              type: InterventionService.UPPER_BOUND_OPTIONS[0],
               unit: scope.units[0]
             };
           }
