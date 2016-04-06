@@ -1,7 +1,7 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
   describe('unit service', function() {
-    var unitNamesService,
+    var dosageService,
       sparqlResourceMock = jasmine.createSpyObj('SparqlResource', ['get']),
       sparqlDefer,
       response;
@@ -10,11 +10,11 @@ define(['angular', 'angular-mocks'], function() {
       $provide.value('SparqlResource', sparqlResourceMock);
     }));
 
-    beforeEach(inject(function($rootScope, $q, $httpBackend, UnitNamesService) {
+    beforeEach(inject(function($rootScope, $q, $httpBackend, DosageService) {
       sparqlDefer = $q.defer();
       sparqlDefer.resolve('');
       sparqlResourceMock.get.and.returnValue(sparqlDefer.promise);
-      unitNamesService = UnitNamesService;
+      dosageService = DosageService;
       $httpBackend.expect('GET', '/users/user/datasets/data-s3t/versions/vers-i0n').respond(response);
       $rootScope.$digest();
     }));
@@ -31,7 +31,7 @@ define(['angular', 'angular-mocks'], function() {
             }]
           }
         });
-        unitNamesService.get(userUid, datasetUuid, datasetVersionUuid).then(function(result) {
+        dosageService.get(userUid, datasetUuid, datasetVersionUuid).then(function(result) {
           expect(result).toEqual([{
             unitName: 'milligram'
           }, {

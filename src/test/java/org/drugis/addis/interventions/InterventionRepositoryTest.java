@@ -63,8 +63,8 @@ public class InterventionRepositoryTest {
   @Test
   public void fixedDoseIntervention(){
     DoseConstraint constraint = new DoseConstraint(
-            new LowerBoundCommand(LowerBoundType.AT_LEAST, "unit", 1d),
-            new UpperBoundCommand(UpperBoundType.AT_MOST, "unit", 2d));
+            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit" , "P1d"),
+            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit" , "P1d"));
 
     FixedDoseIntervention t = new FixedDoseIntervention(null, 1, "tit", "moti", "semuri", "semlabel",
             constraint);
@@ -77,11 +77,11 @@ public class InterventionRepositoryTest {
   @Test
   public void titratedDoseIntervention(){
     DoseConstraint minConstraint = new DoseConstraint(
-            new LowerBoundCommand(LowerBoundType.AT_LEAST, "unit", 1d),
-            new UpperBoundCommand(UpperBoundType.AT_MOST, "unit", 2d));
+            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D"),
+            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D"));
     DoseConstraint maxContraint = new DoseConstraint(
-            new LowerBoundCommand(LowerBoundType.AT_LEAST, "unit", 1d),
-            new UpperBoundCommand(UpperBoundType.AT_MOST, "unit", 2d));
+            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D"),
+            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D"));
     TitratedDoseIntervention t = new TitratedDoseIntervention(null, 1, "tit", "moti", "semuri", "semlabel",
             minConstraint, maxContraint);
     em.persist(t);
@@ -93,11 +93,11 @@ public class InterventionRepositoryTest {
   @Test
   public void bothDoseIntervention(){
     DoseConstraint minConstraint = new DoseConstraint(
-            new LowerBoundCommand(LowerBoundType.AT_LEAST, "unit", 1d),
-            new UpperBoundCommand(UpperBoundType.AT_MOST, "unit", 2d));
+            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D"),
+            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D"));
     DoseConstraint maxContraint = new DoseConstraint(
-            new LowerBoundCommand(LowerBoundType.AT_LEAST, "unit", 1d),
-            new UpperBoundCommand(UpperBoundType.AT_MOST, "unit", 2d));
+            new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D"),
+            new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D"));
     BothDoseTypesIntervention t = new BothDoseTypesIntervention(null, 1, "tit", "moti", "semuri", "semlabel",
             minConstraint, maxContraint);
     em.persist(t);
@@ -121,8 +121,8 @@ public class InterventionRepositoryTest {
 
   @Test
   public void testCreateTitratedIntervention() throws Exception {
-    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, "mg", 3.0);
-    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, "mg", 4.5);
+    LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, 3.0, "mg", "P1D");
+    UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, 4.5, "mg", "P1D");
     ConstraintCommand minConstraintCommand = new ConstraintCommand(lowerBound, upperBound);
     AbstractInterventionCommand interventionCommand = new TitratedInterventionCommand(1, "newName", "newMotivation",
             "http://semantic.com", "labelnew", minConstraintCommand, null);

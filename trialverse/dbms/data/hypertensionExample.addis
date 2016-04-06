@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addis-data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://drugis.org/files/addis-6.xsd">
     <units>
-        <unit name="gram" symbol="g"/>
-        <unit name="liter" symbol="l"/>
+        <unitName name="gram" symbol="g"/>
+        <unitName name="liter" symbol="l"/>
     </units>
     <indications>
         <indication code="38341003" name="Hypertensive disorder"/>
@@ -18,9 +18,9 @@
     </drugs>
     <treatmentCategorizations>
         <treatmentCategorization drug="Azilsartan" name="20/40/80">
-            <unit scaleModifier="MILLI" perTime="P1D">
-                <unit name="gram"/>
-            </unit>
+            <unitName scaleModifier="MILLI" perTime="P1D">
+                <unitName name="gram"/>
+            </unitName>
             <category name="20"/>
             <category name="40"/>
             <category name="80"/>
@@ -2790,7 +2790,7 @@ Intervention Description: Azilsartan medoxomil 20 mg placebo-matching tablets, a
                             <drugTreatment>
 <fixedDose quantity="20.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </fixedDose>
 <drug name="Azilsartan"/>
@@ -2806,7 +2806,7 @@ Intervention Description: Azilsartan medoxomil 20 mg placebo-matching tablets, a
                             <drugTreatment>
 <fixedDose quantity="40.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </fixedDose>
 <drug name="Azilsartan"/>
@@ -2822,7 +2822,7 @@ Intervention Description: Azilsartan medoxomil 20 mg placebo-matching tablets, a
                             <drugTreatment>
 <fixedDose quantity="80.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </fixedDose>
 <drug name="Azilsartan"/>
@@ -2838,7 +2838,7 @@ Intervention Description: Azilsartan medoxomil 20 mg placebo-matching tablets, a
                             <drugTreatment>
 <fixedDose quantity="40.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </fixedDose>
 <drug name="Olmesartan"/>
@@ -2854,7 +2854,7 @@ Intervention Description: Azilsartan medoxomil 20 mg placebo-matching tablets, a
                             <drugTreatment>
 <fixedDose quantity="0.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </fixedDose>
 <drug name="Placebo"/>
@@ -4113,7 +4113,7 @@ Intervention Description: Azilsartan medoxomil placebo-matching tablets, orally,
                             <drugTreatment>
 <fixedDose quantity="40.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </fixedDose>
 <drug name="Azilsartan"/>
@@ -4129,7 +4129,7 @@ Intervention Description: Azilsartan medoxomil placebo-matching tablets, orally,
                             <drugTreatment>
 <fixedDose quantity="80.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </fixedDose>
 <drug name="Azilsartan"/>
@@ -4145,7 +4145,7 @@ Intervention Description: Azilsartan medoxomil placebo-matching tablets, orally,
                             <drugTreatment>
 <fixedDose quantity="0.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </fixedDose>
 <drug name="Placebo"/>
@@ -6503,7 +6503,7 @@ Intervention Description: Matching placebo, orally, once daily for up to six wee
                             <drugTreatment>
 <flexibleDose minDose="20.0" maxDose="40.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </flexibleDose>
 <drug name="Azilsartan"/>
@@ -6519,7 +6519,7 @@ Intervention Description: Matching placebo, orally, once daily for up to six wee
                             <drugTreatment>
 <flexibleDose minDose="40.0" maxDose="80.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </flexibleDose>
 <drug name="Azilsartan"/>
@@ -6535,7 +6535,7 @@ Intervention Description: Matching placebo, orally, once daily for up to six wee
                             <drugTreatment>
 <flexibleDose minDose="160.0" maxDose="320.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </flexibleDose>
 <drug name="Valsartan"/>
@@ -6551,7 +6551,7 @@ Intervention Description: Matching placebo, orally, once daily for up to six wee
                             <drugTreatment>
 <flexibleDose minDose="20.0" maxDose="40.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </flexibleDose>
 <drug name="Olmesartan"/>
@@ -6567,7 +6567,7 @@ Intervention Description: Matching placebo, orally, once daily for up to six wee
                             <drugTreatment>
 <fixedDose quantity="0.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </fixedDose>
 <drug name="Placebo"/>
@@ -8380,7 +8380,7 @@ Intervention Description: Ramipril 2.5 mg, tablets, orally, once daily for two w
                             <drugTreatment>
 <flexibleDose minDose="20.0" maxDose="40.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </flexibleDose>
 <drug name="Azilsartan"/>
@@ -8396,7 +8396,7 @@ Intervention Description: Ramipril 2.5 mg, tablets, orally, once daily for two w
                             <drugTreatment>
 <flexibleDose minDose="20.0" maxDose="80.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </flexibleDose>
 <drug name="Azilsartan"/>
@@ -8412,7 +8412,7 @@ Intervention Description: Ramipril 2.5 mg, tablets, orally, once daily for two w
                             <drugTreatment>
 <flexibleDose minDose="2.5" maxDose="10.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </flexibleDose>
 <drug name="Ramipril"/>
@@ -11581,7 +11581,7 @@ If participant does not achieve target blood pressure at Week 4, then the dosage
                             <drugTreatment>
 <flexibleDose minDose="20.0" maxDose="40.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </flexibleDose>
 <drug name="Azilsartan"/>
@@ -11589,7 +11589,7 @@ If participant does not achieve target blood pressure at Week 4, then the dosage
                             <drugTreatment>
 <flexibleDose minDose="12.5" maxDose="25.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </flexibleDose>
 <drug name="Chlortalidone"/>
@@ -11605,7 +11605,7 @@ If participant does not achieve target blood pressure at Week 4, then the dosage
                             <drugTreatment>
 <flexibleDose minDose="40.0" maxDose="80.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </flexibleDose>
 <drug name="Azilsartan"/>
@@ -11613,7 +11613,7 @@ If participant does not achieve target blood pressure at Week 4, then the dosage
                             <drugTreatment>
 <flexibleDose minDose="12.5" maxDose="25.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </flexibleDose>
 <drug name="Chlortalidone"/>
@@ -11629,7 +11629,7 @@ If participant does not achieve target blood pressure at Week 4, then the dosage
                             <drugTreatment>
 <flexibleDose minDose="20.0" maxDose="40.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </flexibleDose>
 <drug name="Olmesartan"/>
@@ -11637,7 +11637,7 @@ If participant does not achieve target blood pressure at Week 4, then the dosage
                             <drugTreatment>
 <flexibleDose minDose="12.5" maxDose="25.0">
     <doseUnit scaleModifier="MILLI" perTime="P1D">
-        <unit name="gram"/>
+        <unitName name="gram"/>
     </doseUnit>
 </flexibleDose>
 <drug name="Hydrochlorothiazide"/>

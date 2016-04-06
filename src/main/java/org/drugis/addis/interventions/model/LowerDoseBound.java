@@ -14,15 +14,18 @@ public class LowerDoseBound {
 
   private Double value;
 
-  private String unit;
+  private String unitName;
+
+  private String unitPeriod;
 
   public LowerDoseBound() {
   }
 
-  public LowerDoseBound(LowerBoundType type, Double value, String unit) {
+  public LowerDoseBound(LowerBoundType type, Double value, String unitName, String unitPeriod) {
     this.type = type;
     this.value = value;
-    this.unit = unit;
+    this.unitName = unitName;
+    this.unitPeriod = unitPeriod;
   }
 
   public LowerBoundType getType() {
@@ -33,8 +36,12 @@ public class LowerDoseBound {
     return value;
   }
 
-  public String getUnit() {
-    return unit;
+  public String getUnitName() {
+    return unitName;
+  }
+
+  public String getUnitPeriod() {
+    return unitPeriod;
   }
 
   @Override
@@ -45,16 +52,18 @@ public class LowerDoseBound {
     LowerDoseBound that = (LowerDoseBound) o;
 
     if (type != that.type) return false;
-    if (value != null ? !value.equals(that.value) : that.value != null) return false;
-    return unit != null ? unit.equals(that.unit) : that.unit == null;
+    if (!value.equals(that.value)) return false;
+    if (!unitName.equals(that.unitName)) return false;
+    return unitPeriod.equals(that.unitPeriod);
 
   }
 
   @Override
   public int hashCode() {
-    int result = type != null ? type.hashCode() : 0;
-    result = 31 * result + (value != null ? value.hashCode() : 0);
-    result = 31 * result + (unit != null ? unit.hashCode() : 0);
+    int result = type.hashCode();
+    result = 31 * result + value.hashCode();
+    result = 31 * result + unitName.hashCode();
+    result = 31 * result + unitPeriod.hashCode();
     return result;
   }
 }

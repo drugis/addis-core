@@ -411,9 +411,9 @@ The range is the set of data properties under &quot;statistic&quot;.</rdfs:comme
     
 
 
-    <!-- http://trials.drugis.org/ontology#unit -->
+    <!-- http://trials.drugis.org/ontology#unitName -->
 
-    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#unit">
+    <owl:ObjectProperty rdf:about="http://trials.drugis.org/ontology#unitName">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
         <rdfs:range rdf:resource="http://trials.drugis.org/ontology#Unit"/>
     </owl:ObjectProperty>
@@ -842,7 +842,7 @@ The range is the set of data properties under &quot;statistic&quot;.</rdfs:comme
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#unit"/>
+                        <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#unitName"/>
                         <owl:onClass rdf:resource="http://trials.drugis.org/ontology#Unit"/>
                         <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                     </owl:Restriction>
@@ -1079,7 +1079,7 @@ The range is the set of data properties under &quot;statistic&quot;.</rdfs:comme
     <owl:Class rdf:about="http://trials.drugis.org/ontology#StatisticalAnalysis">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#unit"/>
+                <owl:onProperty rdf:resource="http://trials.drugis.org/ontology#unitName"/>
                 <owl:someValuesFrom rdf:resource="http://trials.drugis.org/ontology#Unit"/>
             </owl:Restriction>
         </rdfs:subClassOf>

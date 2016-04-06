@@ -43,10 +43,14 @@ define(['lodash'], function(_) {
     }
 
     function addIntervention(newIntervention) {
+      var unitCache = newIntervention.unit;
+      newIntervention.unitName = unitCache.unitName;
+      newIntervention.unitPeriod = unitCache.unitPeriod;
       $scope.isAddingIntervention = true;
       newIntervention.projectId = $scope.project.id;
       newIntervention.semanticInterventionLabel = newIntervention.semanticIntervention.label;
       newIntervention.semanticInterventionUuid = newIntervention.semanticIntervention.uri;
+
       delete newIntervention.semanticIntervention;
       newIntervention = flattenTypes(newIntervention); // go from object with label to value only
       InterventionResource.save(newIntervention, function() {

@@ -5,15 +5,17 @@ package org.drugis.addis.interventions.model;
  */
 public class UpperBoundCommand {
   private UpperBoundType type;
-  private String unit;
+  private String unitName;
+  private String unitPeriod;
   private Double value;
 
   public UpperBoundCommand() {
   }
 
-  public UpperBoundCommand(UpperBoundType type, String unit, Double value) {
+  public UpperBoundCommand(UpperBoundType type, Double value, String unitName, String unitPeriod) {
     this.type = type;
-    this.unit = unit;
+    this.unitName = unitName;
+    this.unitPeriod = unitPeriod;
     this.value = value;
   }
 
@@ -21,12 +23,16 @@ public class UpperBoundCommand {
     return type;
   }
 
-  public String getUnit() {
-    return unit;
+  public String getUnitName() {
+    return unitName;
   }
 
   public Double getValue() {
     return value;
+  }
+
+  public String getUnitPeriod() {
+    return unitPeriod;
   }
 
   @Override
@@ -37,7 +43,8 @@ public class UpperBoundCommand {
     UpperBoundCommand that = (UpperBoundCommand) o;
 
     if (type != that.type) return false;
-    if (!unit.equals(that.unit)) return false;
+    if (!unitName.equals(that.unitName)) return false;
+    if (!unitPeriod.equals(that.unitPeriod)) return false;
     return value.equals(that.value);
 
   }
@@ -45,7 +52,8 @@ public class UpperBoundCommand {
   @Override
   public int hashCode() {
     int result = type.hashCode();
-    result = 31 * result + unit.hashCode();
+    result = 31 * result + unitName.hashCode();
+    result = 31 * result + unitPeriod.hashCode();
     result = 31 * result + value.hashCode();
     return result;
   }

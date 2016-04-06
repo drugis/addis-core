@@ -18,6 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -76,13 +77,14 @@ public class InterventionControllerTest {
   @Test
   public void testQueryInterventions() throws Exception {
 
-    DoseConstraint constraint = new DoseConstraint(new LowerBoundCommand(LowerBoundType.AT_LEAST, "mili", 2d), null);
+    DoseConstraint constraint = new DoseConstraint(new LowerBoundCommand(LowerBoundType.AT_LEAST, 2d, "mili", "P1D"), null);
     FixedDoseIntervention intervention = new FixedDoseIntervention(1, "name", "motivation", "http://semantic.com", "labelnew", constraint);
     Integer projectId = 1;
     List<AbstractIntervention> interventions = Arrays.asList(intervention);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
 
-    mockMvc.perform(get("/projects/1/interventions").principal(user))
+    ResultActions result = mockMvc.perform(get("/projects/1/interventions").principal(user));
+    result
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$", hasSize(1)))
@@ -136,8 +138,9 @@ public class InterventionControllerTest {
     UpperBoundType upperType = UpperBoundType.AT_MOST;
     String unit = "mili";
     Double val = 1.1;
-    LowerBoundCommand lower = new LowerBoundCommand(lowerType, unit, val);
-    UpperBoundCommand upper = new UpperBoundCommand(upperType, unit, val);
+    String period = "P2D";
+    LowerBoundCommand lower = new LowerBoundCommand(lowerType, val, unit, period);
+    UpperBoundCommand upper = new UpperBoundCommand(upperType, val, unit, period);
     ConstraintCommand fixedDoseConstraintCommand = new ConstraintCommand(lower, upper);
     AbstractInterventionCommand doseRestrictedInterventionCommand = new FixedInterventionCommand(1, "name", "motivation", "http://semantic.com", "labelnew", fixedDoseConstraintCommand);
     when(interventionRepository.create(gert, doseRestrictedInterventionCommand)).thenReturn(intervention);

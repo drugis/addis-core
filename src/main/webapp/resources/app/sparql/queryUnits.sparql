@@ -5,19 +5,31 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
-SELECT
-  ?unitName
+SELECT DISTINCT
+  ?unitName ?unitPeriod
 WHERE {
   GRAPH ?graphUri {
     ?study ontology:has_activity ?treatmentActivity .
 
-    ?treatmentActivity
+    {
+      ?treatmentActivity
+      a ontology:TreatmentActivity ;
+      ontology:has_drug_treatment [
+        ontology:treatment_min_dose [
+          ontology:unit ?unit ;
+          ontology:dosingPeriodicity ?unitPeriod
+        ]
+      ] .
+    } UNION {
+      ?treatmentActivity
       a ontology:TreatmentActivity ;
       ontology:has_drug_treatment [
         ontology:treatment_dose [
-          ontology:unit ?unit
+          ontology:unit ?unit ;
+          ontology:dosingPeriodicity ?unitPeriod
         ]
       ] .
+    } .
     ?unit rdfs:label ?unitName .
   }
 }

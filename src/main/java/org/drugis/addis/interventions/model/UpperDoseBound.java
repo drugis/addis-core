@@ -1,6 +1,5 @@
 package org.drugis.addis.interventions.model;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -14,15 +13,17 @@ public class UpperDoseBound {
   UpperBoundType type;
 
   Double value;
-  String unit;
+  String unitName;
+  String unitPeriod;
 
   public UpperDoseBound() {
   }
 
-  public UpperDoseBound(UpperBoundType type, Double value, String unit) {
+  public UpperDoseBound(UpperBoundType type, Double value, String unitName, String unitPeriod) {
     this.type = type;
     this.value = value;
-    this.unit = unit;
+    this.unitName = unitName;
+    this.unitPeriod = unitPeriod;
   }
 
   public UpperBoundType getType() {
@@ -33,8 +34,8 @@ public class UpperDoseBound {
     return value;
   }
 
-  public String getUnit() {
-    return unit;
+  public String getUnitName() {
+    return unitName;
   }
 
   @Override
@@ -46,7 +47,7 @@ public class UpperDoseBound {
 
     if (type != that.type) return false;
     if (!value.equals(that.value)) return false;
-    return unit.equals(that.unit);
+    return unitName.equals(that.unitName);
 
   }
 
@@ -54,7 +55,7 @@ public class UpperDoseBound {
   public int hashCode() {
     int result = type.hashCode();
     result = 31 * result + value.hashCode();
-    result = 31 * result + unit.hashCode();
+    result = 31 * result + unitName.hashCode();
     return result;
   }
 }

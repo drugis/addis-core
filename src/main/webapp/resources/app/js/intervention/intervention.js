@@ -10,7 +10,7 @@ define(function (require) {
     .controller('AddInterventionController', require('intervention/addInterventionController'))
 
     //services
-    .factory('UnitNamesService', require('intervention/unitNamesService'))
+    .factory('DosageService', require('intervention/dosageService'))
 
     //directives
     .directive('constraint', require('intervention/constraintDirective'))

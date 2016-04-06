@@ -1,7 +1,7 @@
 'use strict';
-define(['lodash'], function(_) {
+define(['lodash', 'moment'], function(_, moment) {
   var dependencies = ['$http', 'SparqlResource'];
-  var UnitNameService = function($http, SparqlResource) {
+  var DosageService = function($http, SparqlResource) {
 
     var queryUnits = SparqlResource.get('queryUnits.sparql');
 
@@ -34,10 +34,18 @@ define(['lodash'], function(_) {
             }
           });
       }).then(function(response) {
-        return _.keys(response.data.reduce(function(accum, row) {
-          accum[row.unitName] = true;
-          return accum;
-        }, {}));
+        var uniqueCombinations = _.uniqBy(response.data, function(row) {
+          return row.unitName + row.unitPeriod;
+        });
+        return uniqueCombinations.map(function(unit) {
+          var periodLabel = moment.duration(unit.unitPeriod).humanize();
+          periodLabel = periodLabel === 'a day' ? 'day' : periodLabel;
+          return {
+            unitName: unit.unitName,
+            label: unit.unitName + '/' + periodLabel,
+            unitPeriod: unit.unitPeriod
+          };
+        });
       });
     }
 
@@ -45,5 +53,5 @@ define(['lodash'], function(_) {
       get: get
     };
   };
-  return dependencies.concat(UnitNameService);
+  return dependencies.concat(DosageService);
 });

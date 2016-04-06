@@ -1,7 +1,7 @@
 'use strict';
 define(['angular'], function() {
-  var dependencies = ['$stateParams', 'UnitNamesService'];
-  var constraintDirective = function($stateParams, UnitNamesService) {
+  var dependencies = ['$stateParams', 'DosageService'];
+  var constraintDirective = function($stateParams, DosageService) {
     var LOWER_BOUND_OPTIONS = [{
         value: 'AT_LEAST',
         label: 'At least (>=)'
@@ -54,7 +54,7 @@ define(['angular'], function() {
           }
         }
 
-        UnitNamesService.get($stateParams.userUid, scope.datasetUuid).then(function(units) {
+        DosageService.get($stateParams.userUid, scope.datasetUuid).then(function(units) {
           scope.units = units;
         });
       },
