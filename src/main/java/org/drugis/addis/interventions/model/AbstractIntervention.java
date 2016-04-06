@@ -10,7 +10,9 @@ import javax.persistence.*;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({@JsonSubTypes.Type(value = Intervention.class, name = "simple"),
-        @JsonSubTypes.Type(value = FixedDoseIntervention.class, name = "fixed")})
+        @JsonSubTypes.Type(value = FixedDoseIntervention.class, name = "fixed"),
+        @JsonSubTypes.Type(value = TitratedDoseIntervention.class, name = "titrated"),
+        @JsonSubTypes.Type(value = BothDoseTypesIntervention.class, name = "both")})
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class AbstractIntervention {
