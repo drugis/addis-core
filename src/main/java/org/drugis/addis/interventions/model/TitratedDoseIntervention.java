@@ -10,8 +10,8 @@ public class TitratedDoseIntervention extends AbstractIntervention {
   @Embedded
   @AttributeOverrides( {
           @AttributeOverride(name="lowerBound.type" , column = @Column(name="minLowerBoundType") ),
-          @AttributeOverride(name="lowerBound.unitName" , column = @Column(name="minLowerBoundUnit") ),
-          @AttributeOverride(name="lowerBound.unitPeriod" , column = @Column(name="minLowerBoundPeriod") ),
+          @AttributeOverride(name="lowerBound.unitName" , column = @Column(name="minLowerBoundUnitName") ),
+          @AttributeOverride(name="lowerBound.unitPeriod" , column = @Column(name="minLowerBoundUnitPeriod") ),
           @AttributeOverride(name="lowerBound.value", column = @Column(name="minLowerBoundValue") ),
           @AttributeOverride(name="upperBound.type" , column = @Column(name="minUpperBoundType") ),
           @AttributeOverride(name="upperBound.unitName" , column = @Column(name="minUpperBoundUnitName") ),
@@ -23,11 +23,11 @@ public class TitratedDoseIntervention extends AbstractIntervention {
   @Embedded
   @AttributeOverrides( {
           @AttributeOverride(name="lowerBound.type" , column = @Column(name="maxLowerBoundType") ),
-          @AttributeOverride(name="lowerBound.unitName" , column = @Column(name="maxLowerBoundUnit") ),
-          @AttributeOverride(name="lowerBound.unitPeriod" , column = @Column(name="maxLowerBoundPeriod") ),
+          @AttributeOverride(name="lowerBound.unitName" , column = @Column(name="maxLowerBoundUnitName") ),
+          @AttributeOverride(name="lowerBound.unitPeriod" , column = @Column(name="maxLowerBoundUnitPeriod") ),
           @AttributeOverride(name="lowerBound.value", column = @Column(name="maxLowerBoundValue") ),
           @AttributeOverride(name="upperBound.type" , column = @Column(name="maxUpperBoundType") ),
-          @AttributeOverride(name="upperBound.unitName" , column = @Column(name="maxUpperBoundUnit") ),
+          @AttributeOverride(name="upperBound.unitName" , column = @Column(name="maxUpperBoundUnitName") ),
           @AttributeOverride(name="upperBound.unitPeriod" , column = @Column(name="maxUpperBoundUnitPeriod") ),
           @AttributeOverride(name="upperBound.value", column = @Column(name="maxUpperBoundValue") )
   } )

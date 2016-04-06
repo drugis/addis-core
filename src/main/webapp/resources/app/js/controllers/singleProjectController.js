@@ -11,11 +11,12 @@ define(['lodash', 'angular'], function(_, angular) {
     'CovariateOptionsResource',
     'CovariateResource',
     'AnalysisResource',
-    'ANALYSIS_TYPES'
+    'ANALYSIS_TYPES',
+    'InterventionService'
   ];
   var SingleProjectController = function($scope, $q, $state, $stateParams, $window, $modal, ProjectResource, TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
-    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES) {
+    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService) {
 
     $scope.analysesLoaded = false;
     $scope.covariatesLoaded = true;
@@ -61,8 +62,13 @@ define(['lodash', 'angular'], function(_, angular) {
         projectId: $scope.project.id
       });
 
-      $scope.interventions = InterventionResource.query({
+      InterventionResource.query({
         projectId: $scope.project.id
+      }).$promise.then(function(interventions) {
+        $scope.interventions = interventions.map(function(intervention) {
+          intervention.definitionLabel = InterventionService.generateDescriptionLabel(intervention);
+          return intervention;
+        });
       });
 
       loadCovariates();
@@ -102,7 +108,7 @@ define(['lodash', 'angular'], function(_, angular) {
       }));
 
       //todo if analysis is gemtc type and has a problem go to models view
-      if(analysisType.label === 'Benefit-risk analysis based on meta-analyses' && analysis.finalized) {
+      if (analysisType.label === 'Benefit-risk analysis based on meta-analyses' && analysis.finalized) {
         analysisType.stateName = 'metaBenefitRisk';
       }
 
@@ -144,6 +150,7 @@ define(['lodash', 'angular'], function(_, angular) {
         resolve: {
           callback: function() {
             return function(newIntervention) {
+              newIntervention.definitionLabel = InterventionService.generateDescriptionLabel(newIntervention);
               $scope.interventions.push(newIntervention);
             };
           }

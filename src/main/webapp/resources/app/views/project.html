@@ -1,9 +1,9 @@
 <div ui-view>
   <navbar-directive></navbar-directive>
   <ul ng-show="loading.loaded" class="breadcrumbs">
-    <li><a ui-sref="datasets({userUid: user.id})">{{user.firstName}} {{user.lastName}}</a></li>
+    <li><a ui-sref="datasets({userUid: user.id})">{{::user.firstName}} {{::user.lastName}}</a></li>
     <li><a ui-sref="projects({userUid: userId})">Projects</a></li>
-    <li class="current active">{{project.name}}</li>
+    <li class="current active">{{::project.name}}</li>
   </ul>
 
   <div ng-if="error" class="row" ng-cloak>
@@ -15,18 +15,18 @@
   <div class="project-header row">
     <div class="columns large-12">
       <div>
-        <h1 class="inline-header" title="Project title">{{project.name}}</h1>
+        <h1 class="inline-header" title="Project title">{{::project.name}}</h1>
       </div>
       <div>
         <!-- /users/:userUid/datasets/:datasetUUID/versions/:versionUuid -->
         <h3>Source dataset:</h3>
         <a ui-sref="versionedDataset({userUid: trialverse.ownerId, datasetUUID: project.namespaceUid, version: project.datasetVersion.split('/versions/')[1]
       })">
-        {{trialverse.name}}</a>
+        {{::trialverse.name}}</a>
       </div>
       <div class="row" ng-show="project.description">
         <div class="columns large-12 small-12">
-          <p class="project-description" title="Project description">{{project.description}}</p>
+          <p class="project-description" title="Project description">{{::project.description}}</p>
         </div>
       </div>
     </div>
@@ -89,9 +89,9 @@
         </thead>
         <tbody>
           <tr ng-repeat="outcome in outcomes">
-            <td>{{outcome.name}}</td>
-            <td>{{outcome.semanticOutcomeLabel}}</td>
-            <td>{{outcome.motivation}}</td>
+            <td>{{::outcome.name}}</td>
+            <td>{{::outcome.semanticOutcomeLabel}}</td>
+            <td>{{::outcome.motivation}}</td>
           </tr>
         </tbody>
       </table>
@@ -108,16 +108,16 @@
       <table>
         <thead>
           <tr>
-            <th class="large-3">Name</th>
-            <th class="large-3">Definition</th>
-            <th class="large-6 end">Motivation</th>
+            <th class="large-2">Name</th>
+             <th class="large-5">Motivation</th>
+            <th class="large-5">Definition</th>
           </tr>
         </thead>
         <tbody>
           <tr ng-repeat="intervention in interventions">
-            <td>{{intervention.name}}</td>
-            <td>{{intervention.semanticInterventionLabel}}</td>
-            <td>{{intervention.motivation}}</td>
+            <td>{{::intervention.name}}</td>
+            <td>{{::intervention.motivation}}</td>
+            <td>{{::intervention.semanticInterventionLabel}}{{::intervention.definitionLabel}}</td>
           </tr>
         </tbody>
       </table>
@@ -150,9 +150,9 @@
         </thead>
         <tbody>
           <tr ng-repeat="covariate in covariates">
-            <td>{{covariate.name}}</td>
-            <td>{{covariate.definitionLabel}}</td>
-            <td>{{covariate.motivation}}</td>
+            <td>{{::covariate.name}}</td>
+            <td>{{::covariate.definitionLabel}}</td>
+            <td>{{::covariate.motivation}}</td>
           </tr>
         </tbody>
       </table>

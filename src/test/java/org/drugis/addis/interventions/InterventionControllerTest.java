@@ -25,6 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.inject.Inject;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -80,7 +81,7 @@ public class InterventionControllerTest {
     DoseConstraint constraint = new DoseConstraint(new LowerBoundCommand(LowerBoundType.AT_LEAST, 2d, "mili", "P1D"), null);
     FixedDoseIntervention intervention = new FixedDoseIntervention(1, "name", "motivation", "http://semantic.com", "labelnew", constraint);
     Integer projectId = 1;
-    List<AbstractIntervention> interventions = Arrays.asList(intervention);
+    List<AbstractIntervention> interventions = Collections.singletonList(intervention);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
 
     ResultActions result = mockMvc.perform(get("/projects/1/interventions").principal(user));
@@ -160,14 +161,16 @@ public class InterventionControllerTest {
             "  \"titratedDoseMinConstraint\": {\n" +
             "    \"lowerBound\": {\n" +
             "      \"type\": \"AT_LEAST\",\n" +
-            "      \"unit\": \"milligram\",\n" +
+            "      \"unitName\": \"milligram\",\n" +
+            "      \"unitPeriod\": \"P1D\",\n" +
             "      \"value\": 30\n" +
             "    }\n" +
             "  },\n" +
             "  \"titratedDoseMaxConstraint\": {\n" +
             "    \"upperBound\": {\n" +
             "      \"type\": \"LESS_THAN\",\n" +
-            "      \"unit\": \"milligram\",\n" +
+            "      \"unitName\": \"milligram\",\n" +
+            "      \"unitPeriod\": \"P1D\",\n" +
             "      \"value\": 50\n" +
             "    }\n" +
             "  },\n" +
@@ -194,7 +197,8 @@ public class InterventionControllerTest {
             "  \"bothDoseTypesMinConstraint\": {\n" +
             "    \"lowerBound\": {\n" +
             "      \"type\": \"AT_LEAST\",\n" +
-            "      \"unit\": \"milligram\",\n" +
+            "      \"unitName\": \"milligram\",\n" +
+            "      \"unitPeriod\": \"P1D\",\n" +
             "      \"value\": 30\n" +
             "    }\n" +
             "  },\n" +
