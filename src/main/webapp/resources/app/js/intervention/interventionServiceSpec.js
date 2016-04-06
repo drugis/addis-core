@@ -5,7 +5,8 @@ define(['angular', 'angular-mocks'], function() {
     var interventionService;
     var bound = {
       type: 'AT_LEAST',
-      unit: 'unit',
+      unitName: 'unit',
+      unitPeriod: 'P1D',
       value: '1.2'
     };
     var simpleIntervention = {
@@ -57,9 +58,9 @@ define(['angular', 'angular-mocks'], function() {
     describe('generateDescriptionLabel', function() {
       it('should generate a label based on the constaints', function() {
         expect(interventionService.generateDescriptionLabel(simpleIntervention)).toEqual('');
-        expect(interventionService.generateDescriptionLabel(fixedIntervention)).toEqual(': fixed dose; dose >= 1.2 unit AND >= 1.2 unit');
-        expect(interventionService.generateDescriptionLabel(titratedIntervention)).toEqual(': titrated dose; min dose >= 1.2 unit AND >= 1.2 unit; max dose >= 1.2 unit AND >= 1.2 unit');
-        expect(interventionService.generateDescriptionLabel(bothIntervention)).toEqual(': min dose >= 1.2 unit AND >= 1.2 unit; max dose >= 1.2 unit AND >= 1.2 unit');
+        expect(interventionService.generateDescriptionLabel(fixedIntervention)).toEqual(': fixed dose; dose >= 1.2 unit/day AND >= 1.2 unit/day');
+        expect(interventionService.generateDescriptionLabel(titratedIntervention)).toEqual(': titrated dose; min dose >= 1.2 unit/day AND >= 1.2 unit/day; max dose >= 1.2 unit/day AND >= 1.2 unit/day');
+        expect(interventionService.generateDescriptionLabel(bothIntervention)).toEqual(': min dose >= 1.2 unit/day AND >= 1.2 unit/day; max dose >= 1.2 unit/day AND >= 1.2 unit/day');
       });
     });
   });

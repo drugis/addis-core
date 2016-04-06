@@ -1,25 +1,23 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
   describe('unit service', function() {
-    var dosageService,
-      sparqlResourceMock = jasmine.createSpyObj('SparqlResource', ['get']),
-      sparqlDefer,
+    var
+      scope,
+      httpBackend,
+      dosageService,
       response;
+    beforeEach(module('addis.interventions'));
 
-    beforeEach(module('addis.interventions', function($provide) {
-      $provide.value('SparqlResource', sparqlResourceMock);
-    }));
-
-    beforeEach(inject(function($rootScope, $q, $httpBackend, DosageService) {
-      sparqlDefer = $q.defer();
-      sparqlDefer.resolve('');
-      sparqlResourceMock.get.and.returnValue(sparqlDefer.promise);
+    beforeEach(inject(function($rootScope, $httpBackend, DosageService) {
+      scope = $rootScope;
+      httpBackend = $httpBackend;
       dosageService = DosageService;
-      $httpBackend.expect('GET', '/users/user/datasets/data-s3t/versions/vers-i0n').respond(response);
-      $rootScope.$digest();
+      $httpBackend.expect('GET', 'app/sparql/queryUnits.sparql').respond('its sparql mom');
+      $httpBackend.flush();
+      scope.$apply();
     }));
 
-    describe('get', function() {
+    fdescribe('get', function() {
       it('should query and transform the response', function(done) {
         var userUid = 'user',
           datasetUuid = 'data-s3t',
@@ -40,6 +38,9 @@ define(['angular', 'angular-mocks'], function() {
           done();
         });
       });
+      httpBackend.expect('GET', '/users/user/datasets/data-s3t/versions/vers-i0n').respond(response);
+      httpBackend.flush();
+      scope.$apply();
     });
 
   });

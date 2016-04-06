@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks', 'jQuery', 'app'], function () {
-  describe("App config", function () {
+  describe('App config', function () {
     var $rootScope, $state, $injector, $location, $httpBackend;
     beforeEach(module('addis'));
     beforeEach(inject(function (_$rootScope_, _$state_, _$injector_, _$location_, _$httpBackend_, $templateCache) {

@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash'], function(_) {
+define(['lodash', 'moment'], function(_, moment) {
   var dependencies = [];
   var InterventionService = function() {
 
@@ -33,16 +33,22 @@ define(['lodash'], function(_) {
       });
     }
 
+    function createUnitLabel(unitName, unitPeriod) {
+      var periodLabel = moment.duration(unitPeriod).humanize();
+      periodLabel = periodLabel === 'a day' ? 'day' : periodLabel;
+      return unitName + '/' + periodLabel;
+    }
+
     function addBoundsToLabel(lowerBound, upperBound) {
       var label = '';
       if (lowerBound) {
-        label += typeValueToObject(lowerBound.type).shortLabel + ' ' + lowerBound.value + ' ' + lowerBound.unit;
+        label += typeValueToObject(lowerBound.type).shortLabel + ' ' + lowerBound.value + ' ' + createUnitLabel(lowerBound.unitName, lowerBound.unitPeriod);
       }
       if (lowerBound && upperBound) {
         label += ' AND ';
       }
       if (upperBound) {
-        label += typeValueToObject(upperBound.type).shortLabel + ' ' + upperBound.value + ' ' + upperBound.unit;
+        label += typeValueToObject(upperBound.type).shortLabel + ' ' + upperBound.value + ' ' + createUnitLabel(upperBound.unitName, upperBound.unitPeriod);
       }
       return label;
     }
