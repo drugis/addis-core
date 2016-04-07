@@ -9,7 +9,7 @@ import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
-import org.drugis.addis.interventions.model.Intervention;
+import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.security.Account;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,7 +78,7 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
 
     Account user = em.find(Account.class, accountId);
     MetaBenefitRiskAnalysis analysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);
-    Intervention interventionToInclude = em.find(Intervention.class, interventionId);
+    SimpleIntervention interventionToInclude = em.find(SimpleIntervention.class, interventionId);
     List<AbstractIntervention> interventions = new ArrayList<>(analysis.getIncludedAlternatives());
     interventions.add(interventionToInclude);
     analysis.setIncludedAlternatives(interventions);
@@ -116,7 +116,7 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
     em.remove(analysis);
     em.flush();
 
-    Intervention intervention = em.find(Intervention.class, -1);
+    SimpleIntervention intervention = em.find(SimpleIntervention.class, -1);
     em.flush();
     assertNotNull(intervention);
   }

@@ -9,7 +9,7 @@ import javax.persistence.*;
  * Created by daan on 5-4-16.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({@JsonSubTypes.Type(value = Intervention.class, name = "simple"),
+@JsonSubTypes({@JsonSubTypes.Type(value = SimpleIntervention.class, name = "simple"),
         @JsonSubTypes.Type(value = FixedDoseIntervention.class, name = "fixed"),
         @JsonSubTypes.Type(value = TitratedDoseIntervention.class, name = "titrated"),
         @JsonSubTypes.Type(value = BothDoseTypesIntervention.class, name = "both")})

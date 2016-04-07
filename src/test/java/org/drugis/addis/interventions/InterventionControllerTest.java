@@ -24,7 +24,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -106,7 +105,7 @@ public class InterventionControllerTest {
 
   @Test
   public void testGetIntervention() throws Exception {
-    Intervention intervention = new Intervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+    SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
     Integer projectId = 1;
     when(interventionRepository.get(projectId, intervention.getId())).thenReturn(intervention);
     mockMvc.perform(get("/projects/1/interventions/1").principal(user))
@@ -119,7 +118,7 @@ public class InterventionControllerTest {
 
   @Test
   public void testCreateIntervention() throws Exception {
-    Intervention intervention = new Intervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+    SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
     AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(1, "name", "motivation", "http://semantic.com", "labelnew");
     when(interventionRepository.create(gert, interventionCommand)).thenReturn(intervention);
     String body = TestUtils.createJson(interventionCommand);
@@ -134,7 +133,7 @@ public class InterventionControllerTest {
 
   @Test
   public void testCreateFixedBoundIntervention() throws Exception {
-    Intervention intervention = new Intervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+    SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
     LowerBoundType lowerType = LowerBoundType.AT_LEAST;
     UpperBoundType upperType = UpperBoundType.AT_MOST;
     String unit = "mili";
@@ -179,7 +178,7 @@ public class InterventionControllerTest {
             "  \"semanticInterventionLabel\": \"Bupropion\",\n" +
             "  \"semanticInterventionUuid\": \"234-aga-34\"\n" +
             "}\n";
-    Intervention intervention = new Intervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+    SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
     ObjectMapper mapper = new ObjectMapper();
     AbstractInterventionCommand doseRestrictedInterventionCommand = mapper.readValue(body, AbstractInterventionCommand.class);
     when(interventionRepository.create(gert, doseRestrictedInterventionCommand)).thenReturn(intervention);
@@ -207,7 +206,7 @@ public class InterventionControllerTest {
             "  \"semanticInterventionLabel\": \"Bupropion\",\n" +
             "  \"semanticInterventionUuid\": \"234-aga-34\"\n" +
             "}\n";
-    Intervention intervention = new Intervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
+    SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticIntervention("http://semantic.com", "labelnew"));
     ObjectMapper mapper = new ObjectMapper();
     AbstractInterventionCommand doseRestrictedInterventionCommand = mapper.readValue(body, AbstractInterventionCommand.class);
     when(interventionRepository.create(gert, doseRestrictedInterventionCommand)).thenReturn(intervention);

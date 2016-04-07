@@ -10,7 +10,7 @@ import org.junit.Test;
 import static junit.framework.TestCase.assertEquals;
 
 
-public class InterventionCommandTest {
+public class SimpleInterventionCommandTest {
   @Test
   public void testGetMotivation() {
     AbstractInterventionCommand interventionCmdWithNoMotivation = new SimpleInterventionCommand(1, "name", null, "uri", "label");

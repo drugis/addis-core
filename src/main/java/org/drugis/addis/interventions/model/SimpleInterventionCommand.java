@@ -14,8 +14,8 @@ public class SimpleInterventionCommand extends AbstractInterventionCommand {
   }
 
   @Override
-  public Intervention toIntervention() {
-    return new Intervention(
+  public SimpleIntervention toIntervention() {
+    return new SimpleIntervention(
             super.getProjectId(),
             super.getName(),
             super.getMotivation(),

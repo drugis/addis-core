@@ -47,7 +47,7 @@ public class InterventionRepositoryTest {
     int interventionId = -1;
     AbstractIntervention intervention = interventionRepository.get(1, interventionId);
     assertEquals(em.find(AbstractIntervention.class, interventionId), intervention);
-    assert(intervention instanceof Intervention);
+    assert(intervention instanceof SimpleIntervention);
 
     interventionId = -4;
     intervention = interventionRepository.get(2, interventionId);

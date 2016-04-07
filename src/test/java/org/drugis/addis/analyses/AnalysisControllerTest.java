@@ -6,7 +6,7 @@ import org.drugis.addis.analyses.repository.*;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.interventions.model.AbstractIntervention;
-import org.drugis.addis.interventions.model.Intervention;
+import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.Scenario;
@@ -258,8 +258,8 @@ public class AnalysisControllerTest {
             new Outcome(3, projectId, "name", "motivation", new SemanticVariable("uri", "label"))
     );
     List<AbstractIntervention> selectedInterventions = Arrays.asList(
-            new Intervention(1, projectId, "name", "motivation", new SemanticIntervention("uri", "label")),
-            new Intervention(2, projectId, "name", "motivation", new SemanticIntervention("uri", "label"))
+            new SimpleIntervention(1, projectId, "name", "motivation", new SemanticIntervention("uri", "label")),
+            new SimpleIntervention(2, projectId, "name", "motivation", new SemanticIntervention("uri", "label"))
     );
     SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", selectedOutcomes, selectedInterventions);
     ObjectMapper objectMapper = new ObjectMapper();

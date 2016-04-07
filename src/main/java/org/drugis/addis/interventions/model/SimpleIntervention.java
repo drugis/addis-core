@@ -11,20 +11,20 @@ import java.io.Serializable;
  */
 @Entity
 @PrimaryKeyJoinColumn(name = "simpleInterventionId", referencedColumnName = "id")
-public class Intervention extends AbstractIntervention implements Serializable {
+public class SimpleIntervention extends AbstractIntervention implements Serializable {
 
-  public Intervention() {
+  public SimpleIntervention() {
   }
 
-  public Intervention(Integer id, Integer project, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUri) {
+  public SimpleIntervention(Integer id, Integer project, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUri) {
     super(id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri);
   }
 
-  public Intervention(Integer projectId, String name, String motivation, SemanticIntervention semanticIntervention) {
+  public SimpleIntervention(Integer projectId, String name, String motivation, SemanticIntervention semanticIntervention) {
     this(null, projectId, name, motivation, semanticIntervention.getUri(), semanticIntervention.getLabel());
   }
 
-  public Intervention(Integer id, Integer projectId, String name, String motivation, SemanticIntervention semanticIntervention) {
+  public SimpleIntervention(Integer id, Integer projectId, String name, String motivation, SemanticIntervention semanticIntervention) {
     this(id, projectId, name, motivation, semanticIntervention.getUri(), semanticIntervention.getLabel());
   }
 }
