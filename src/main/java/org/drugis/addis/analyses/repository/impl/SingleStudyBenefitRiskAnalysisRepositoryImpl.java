@@ -1,21 +1,28 @@
 package org.drugis.addis.analyses.repository.impl;
 
 import org.drugis.addis.analyses.AnalysisCommand;
+import org.drugis.addis.analyses.InterventionInclusion;
 import org.drugis.addis.analyses.SingleStudyBenefitRiskAnalysis;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.security.Account;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
@@ -27,6 +34,9 @@ public class SingleStudyBenefitRiskAnalysisRepositoryImpl implements org.drugis.
   @Qualifier("emAddisCore")
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;
+
+  @Inject
+  InterventionRepository interventionRepository;
 
   @Override
   public Collection<SingleStudyBenefitRiskAnalysis> query(Integer projectId) {
@@ -70,10 +80,13 @@ public class SingleStudyBenefitRiskAnalysisRepositoryImpl implements org.drugis.
       }
     }
 
+    List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
+    Map<Integer, AbstractIntervention> interventionMap = interventions
+            .stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
     if (isNotEmpty(analysis.getSelectedInterventions())) {
       // do not allow selection of interventions that are not in the project
-      for (AbstractIntervention intervention : analysis.getSelectedInterventions()) {
-        if (!intervention.getProject().equals(analysisProjectId)) {
+      for (InterventionInclusion intervention : analysis.getSelectedInterventions()) {
+        if (!interventionMap.get(intervention.getInterventionId()).getProject().equals(analysisProjectId)) {
           throw new ResourceDoesNotExistException();
         }
       }

@@ -1,6 +1,7 @@
 package org.drugis.addis.analyses.repository.impl;
 
 import org.drugis.addis.analyses.AnalysisCommand;
+import org.drugis.addis.analyses.InterventionInclusion;
 import org.drugis.addis.analyses.MbrOutcomeInclusion;
 import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
@@ -20,8 +21,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by daan on 25-2-16.
@@ -58,10 +61,18 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
     projectService.checkProjectExistsAndModifiable(user, analysisCommand.getProjectId());
     MetaBenefitRiskAnalysis metaBenefitRiskAnalysis = new MetaBenefitRiskAnalysis(analysisCommand.getProjectId(), analysisCommand.getTitle());
 
-    Collection<AbstractIntervention> interventions = interventionRepository.query(metaBenefitRiskAnalysis.getProjectId());
-    metaBenefitRiskAnalysis.setIncludedAlternatives(interventions);
-
     em.persist(metaBenefitRiskAnalysis);
+    em.flush();
+
+    final Integer metaKey = metaBenefitRiskAnalysis.getId();
+    assert(metaKey != null);
+
+    Collection<AbstractIntervention> interventions = interventionRepository.query(metaBenefitRiskAnalysis.getProjectId());
+    List<InterventionInclusion> interventionInclusions = interventions.stream().map(i -> new InterventionInclusion(metaKey, i.getId())).collect(Collectors.toList());
+    interventionInclusions.stream().forEach(ii -> em.persist(ii));
+    metaBenefitRiskAnalysis.setIncludedAlternatives(interventionInclusions);
+
+    em.flush();
 
     List<MbrOutcomeInclusion> outcomeInclusions = analysisService.buildInitialOutcomeInclusions(analysisCommand.getProjectId(), metaBenefitRiskAnalysis.getId());
     metaBenefitRiskAnalysis.setMbrOutcomeInclusions(outcomeInclusions);

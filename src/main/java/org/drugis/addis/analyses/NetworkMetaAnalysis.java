@@ -14,13 +14,8 @@ import java.util.*;
  */
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
+@PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
 public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializable {
-  @Id
-  @SequenceGenerator(name = "analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")
-  private Integer id;
-  private Integer projectId;
-  private String title;
   private Integer primaryModel;
 
   @JsonProperty("excludedArms")

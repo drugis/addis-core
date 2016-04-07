@@ -97,10 +97,10 @@ public class NetworkMetaAnalysisRepositoryTest {
     ArmExclusion newArmExclusion1 = new ArmExclusion(analysis.getId(), "-601L");
     ArmExclusion newArmExclusion2 = new ArmExclusion(analysis.getId(), "-602L");
     analysis.updateArmExclusions(new HashSet<>(Arrays.asList(newArmExclusion1, newArmExclusion2)));
-    int interventionId = -2;
+    int interventionId = -5;
     InterventionInclusion newInterventionInclusion = new InterventionInclusion(analysis.getId(), interventionId);
 
-    analysis.updateIncludedInterventions(new HashSet<>(Arrays.asList(newInterventionInclusion)));
+    analysis.updateIncludedInterventions(new HashSet<>(Collections.singletonList(newInterventionInclusion)));
 
     NetworkMetaAnalysis updatedAnalysis = networkMetaAnalysisRepository.update(analysis);
     assertEquals(2, updatedAnalysis.getExcludedArms().size());
@@ -112,7 +112,7 @@ public class NetworkMetaAnalysisRepositoryTest {
     assertEquals(2, resultList.size());
     assertEquals(new Integer(1), updatedAnalysis.getExcludedArms().get(1).getId());
     assertEquals(new Integer(2), updatedAnalysis.getExcludedArms().get(0).getId());
-    assertEquals(new Integer(1), updatedAnalysis.getIncludedInterventions().get(0).getId());
+    assertEquals(new Integer(-5), updatedAnalysis.getIncludedInterventions().get(0).getInterventionId());
     assertEquals(new Integer(interventionId), updatedAnalysis.getIncludedInterventions().get(0).getInterventionId());
   }
 

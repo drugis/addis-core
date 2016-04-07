@@ -56,7 +56,8 @@ CREATE TABLE Intervention (id SERIAL NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY(project) REFERENCES Project(id));
 
-CREATE TABLE Analysis (id SERIAL NOT NULL,
+CREATE TABLE Analysis (
+  id SERIAL NOT NULL,
         projectId INT,
         name VARCHAR NOT NULL,
         analysisType VARCHAR NOT NULL,
@@ -96,7 +97,8 @@ ALTER TABLE Analysis ADD problem VARCHAR NULL;
 -- changeset stroombergc:4
 CREATE SEQUENCE shared_analysis_id_seq;
 
-CREATE TABLE SingleStudyBenefitRiskAnalysis (id INT DEFAULT nextval('shared_analysis_id_seq') NOT NULL,
+CREATE TABLE SingleStudyBenefitRiskAnalysis (
+id INT DEFAULT nextval('shared_analysis_id_seq') NOT NULL,
         projectId INT,
         name VARCHAR NOT NULL,
         studyId INT,
@@ -104,15 +106,17 @@ CREATE TABLE SingleStudyBenefitRiskAnalysis (id INT DEFAULT nextval('shared_anal
   PRIMARY KEY (id),
   FOREIGN KEY(projectId) REFERENCES Project(id));
 
-CREATE TABLE NetworkMetaAnalysis (id INT DEFAULT nextval('shared_analysis_id_seq') NOT NULL,
-          projectId INT,
-          name VARCHAR NOT NULL,
-          studyId INT,
-          outcomeId INT,
-          problem VARCHAR NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY(projectId) REFERENCES Project(id),
-    FOREIGN KEY(outcomeId) REFERENCES Outcome(id));
+CREATE TABLE NetworkMetaAnalysis (
+  id INT DEFAULT nextval('shared_analysis_id_seq') NOT NULL,
+  projectId INT,
+  name VARCHAR NOT NULL,
+  studyId INT,
+  outcomeId INT,
+  problem VARCHAR NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(projectId) REFERENCES Project(id),
+  FOREIGN KEY(outcomeId) REFERENCES Outcome(id)
+);
 
 
 DROP TABLE Analysis CASCADE;
@@ -166,15 +170,6 @@ CREATE TABLE PataviTask (
 
 -- changeset reidd:9
 DROP TABLE InterventionExclusion CASCADE;
-
-CREATE TABLE InterventionInclusion (
-  id SERIAL NOT NULL,
-  interventionId INT NOT NULL,
-  analysisId INT NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY(analysisId) REFERENCES NetworkMetaAnalysis(id),
-  FOREIGN KEY(interventionId) REFERENCES Intervention(id)
-);
 
 --changeset reidd:10
 ALTER TABLE Project DROP COLUMN trialverseId;
@@ -271,6 +266,7 @@ CREATE TABLE covariate (
   name varchar NOT NULL,
   motivation TEXT,
   definitionkey varchar NOT NULL,
+  type varchar not null,
   PRIMARY KEY (id),
   FOREIGN KEY(project) REFERENCES Project(id)
 );
@@ -338,7 +334,7 @@ CREATE TABLE MetaBenefitRiskAnalysis (
   finalized BOOLEAN NOT NULL,
   problem VARCHAR,
   PRIMARY KEY (id),
-  FOREIGN KEY(projectId) REFERENCES Project(id)
+  CONSTRAINT metaBenefitRiskAnalysis_project_fkey FOREIGN KEY(projectId) REFERENCES Project(id)
 );
 
 CREATE TABLE MetaBenefitRiskAnalysis_Alternative (
@@ -365,7 +361,6 @@ CREATE TABLE MbrOutcomeInclusion (
 ALTER TABLE scenario DROP CONSTRAINT ssbr_scenario_workspace_fkey;
 
 --rollback DROP TABLE MbrOutcomeInclusion;
---rollback DROP TABLE MetaBenefitRiskAnalysis_Alternative;
 --rollback DROP TABLE MetaBenefitRiskAnalysis;
 --rollback ALTER TABLE scenario ADD CONSTRAINT ssbr_scenario_workspace_fkey FOREIGN KEY (workspace) REFERENCES SingleStudyBenefitRiskAnalysis(id);
 
@@ -401,13 +396,13 @@ ALTER TABLE covariate ADD FOREIGN KEY (populationCharacteristicId) REFERENCES ou
 ALTER TABLE intervention RENAME TO AbstractIntervention;
 
 CREATE TABLE SimpleIntervention(
-  simpleInterventionId BIGINT NOT NULL,
+  simpleInterventionId int NOT NULL,
   PRIMARY KEY(simpleInterventionId),
   FOREIGN KEY(simpleInterventionId) REFERENCES AbstractIntervention(id)
 );
 
 CREATE TABLE FixedDoseIntervention (
-  fixedInterventionId BIGINT NOT NULL,
+  fixedInterventionId int NOT NULL,
   lowerBoundType varchar,
   lowerBoundValue DOUBLE PRECISION,
   lowerBoundUnitName varchar,
@@ -421,7 +416,7 @@ CREATE TABLE FixedDoseIntervention (
  );
 
 CREATE TABLE TitratedDoseIntervention (
-  titratedInterventionId BIGINT NOT NULL,
+  titratedInterventionId int NOT NULL,
   minLowerBoundType varchar,
   minLowerBoundUnitName varchar,
   minLowerBoundUnitPeriod varchar,
@@ -443,7 +438,7 @@ CREATE TABLE TitratedDoseIntervention (
 );
 
 CREATE TABLE BothDoseTypesIntervention (
-  bothTypesInterventionId BIGINT NOT NULL,
+  bothTypesInterventionId int NOT NULL,
   minLowerBoundType varchar,
   minLowerBoundUnitName varchar,
   minLowerBoundUnitPeriod varchar,
@@ -464,6 +459,39 @@ CREATE TABLE BothDoseTypesIntervention (
   FOREIGN KEY(bothTypesInterventionId) REFERENCES AbstractIntervention(id)
 );
 
+CREATE SEQUENCE shared_intervention_id_seq;
+
+
 --rollback DROP TABLE FixedDoseIntervention;
 --rollback DROP TABLE TitratedDoseIntervention;
 --rollback DROP TABLE BothDoseTypesIntervention;
+
+--changeset reidd:47
+CREATE TABLE AbstractAnalysis(
+  id INT NOT NULL,
+  projectId INT NOT NULL,
+  title VARCHAR NOT NULL,
+  PRIMARY KEY(id),
+  FOREIGN KEY (projectId) REFERENCES project(id)
+);
+INSERT INTO AbstractAnalysis (id, projectId, title)
+SELECT id, projectId, title FROM SingleStudyBenefitRiskAnalysis;
+INSERT INTO AbstractAnalysis (id, projectId, title)
+SELECT id, projectId, title FROM NetworkMetaAnalysis;
+INSERT INTO AbstractAnalysis (id, projectId, title)
+SELECT id, projectId, title FROM MetaBenefitRiskAnalysis;
+ALTER TABLE SingleStudyBenefitRiskAnalysis DROP CONSTRAINT PUBLIC.SYS_FK_10205;
+ALTER TABLE SingleStudyBenefitRiskAnalysis DROP projectId;
+ALTER TABLE SingleStudyBenefitRiskAnalysis DROP title;
+ALTER TABLE NetworkMetaAnalysis DROP CONSTRAINT PUBLIC.SYS_FK_10214;
+ALTER TABLE NetworkMetaAnalysis DROP COLUMN projectId;
+ALTER TABLE NetworkMetaAnalysis DROP COLUMN title;
+ALTER TABLE MetaBenefitRiskAnalysis DROP CONSTRAINT metaBenefitRiskAnalysis_project_fkey;
+ALTER TABLE MetaBenefitRiskAnalysis DROP COLUMN projectId;
+ALTER TABLE MetaBenefitRiskAnalysis DROP COLUMN title;
+
+CREATE TABLE InterventionInclusion (
+  interventionId INT,
+  analysisId INT
+ );
+DROP TABLE MetaBenefitRiskAnalysis_Alternative;

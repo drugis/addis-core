@@ -257,11 +257,14 @@ public class AnalysisControllerTest {
             new Outcome(2, projectId, "name", "motivation", new SemanticVariable("uri", "label")),
             new Outcome(3, projectId, "name", "motivation", new SemanticVariable("uri", "label"))
     );
-    List<AbstractIntervention> selectedInterventions = Arrays.asList(
-            new SimpleIntervention(1, projectId, "name", "motivation", new SemanticIntervention("uri", "label")),
-            new SimpleIntervention(2, projectId, "name", "motivation", new SemanticIntervention("uri", "label"))
+    SimpleIntervention intervention1 = new SimpleIntervention(1, projectId, "name", "motivation", new SemanticIntervention("uri", "label"));
+    SimpleIntervention intervention2 = new SimpleIntervention(2, projectId, "name", "motivation", new SemanticIntervention("uri", "label"));
+    List<AbstractIntervention> selectedInterventions = Arrays.asList(intervention1, intervention2);
+    List<InterventionInclusion> interventionInclusions = Arrays.asList(
+            new InterventionInclusion(analysisId, intervention1.getId()),
+            new InterventionInclusion(analysisId, intervention2.getId())
     );
-    SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", selectedOutcomes, selectedInterventions);
+    SingleStudyBenefitRiskAnalysis oldAnalysis = new SingleStudyBenefitRiskAnalysis(1, projectId, "name", selectedOutcomes, interventionInclusions);
     ObjectMapper objectMapper = new ObjectMapper();
     SingleStudyBenefitRiskAnalysis newAnalysis = objectMapper.convertValue(objectMapper.readTree(exampleUpdateSingleStudyBenefitRiskRequestWithoutProblem()), SingleStudyBenefitRiskAnalysis.class);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);

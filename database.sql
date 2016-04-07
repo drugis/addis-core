@@ -453,75 +453,110 @@ ALTER TABLE intervention ALTER COLUMN motivation DROP NOT NULL;
 ALTER TABLE outcome ALTER COLUMN motivation DROP NOT NULL;
 
 --changeset reidd:46
-CREATE TABLE FixedDoseIntervention (id SERIAL NOT NULL,
-                           project INT,
-                           name VARCHAR NOT NULL,
-                           motivation TEXT,
-                           semanticInterventionLabel VARCHAR NOT NULL,
-                           semanticInterventionUri VARCHAR NOT NULL,
-                           lowerBoundType varchar,
-                           lowerBoundValue DOUBLE PRECISION,
-                           lowerBoundUnitName varchar,
-                           lowerBoundUnitPeriod varchar,
-                           upperBoundType varchar,
-                           upperBoundValue DOUBLE PRECISION,
-                           upperBoundUnitName varchar,
-                           upperBoundUnitPeriod varchar,
-  PRIMARY KEY (id),
-  FOREIGN KEY(project) REFERENCES Project(id));
+ALTER TABLE intervention RENAME TO AbstractIntervention;
 
-CREATE TABLE TitratedDoseIntervention (id SERIAL NOT NULL,
-                           project INT,
-                           name VARCHAR NOT NULL,
-                           motivation TEXT,
-                           semanticInterventionLabel VARCHAR NOT NULL,
-                           semanticInterventionUri VARCHAR NOT NULL,
-                           minLowerBoundType varchar,
-                           minLowerBoundUnitName varchar,
-                           minLowerBoundUnitPeriod varchar,
-                           minLowerBoundValue DOUBLE PRECISION,
-                           minUpperBoundType varchar,
-                           minUpperBoundUnitName varchar,
-                           minUpperBoundUnitPeriod varchar,
-                           minUpperBoundValue DOUBLE PRECISION,
-                           maxLowerBoundType varchar,
-                           maxLowerBoundUnitName varchar,
-                           maxLowerBoundUnitPeriod varchar,
-                           maxLowerBoundValue DOUBLE PRECISION,
-                           maxUpperBoundType varchar,
-                           maxUpperBoundUnitName varchar,
-                           maxUpperBoundUnitPeriod varchar,
-                           maxUpperBoundValue DOUBLE PRECISION,
-  PRIMARY KEY (id),
-  FOREIGN KEY(project) REFERENCES Project(id));
+CREATE TABLE SimpleIntervention(
+  simpleInterventionId INT NOT NULL,
+  PRIMARY KEY(simpleInterventionId),
+  FOREIGN KEY(simpleInterventionId) REFERENCES AbstractIntervention(id)
+);
 
-CREATE TABLE BothDoseTypesIntervention (id SERIAL NOT NULL,
-                           project INT,
-                           name VARCHAR NOT NULL,
-                           motivation TEXT,
-                           semanticInterventionLabel VARCHAR NOT NULL,
-                           semanticInterventionUri VARCHAR NOT NULL,
-                           minLowerBoundType varchar,
-                           minLowerBoundUnitName varchar,
-                           minLowerBoundUnitPeriod varchar,
-                           minLowerBoundValue DOUBLE PRECISION,
-                           minUpperBoundType varchar,
-                           minUpperBoundUnitName varchar,
-                           minUpperBoundUnitPeriod varchar,
-                           minUpperBoundValue DOUBLE PRECISION,
-                           maxLowerBoundType varchar,
-                           maxLowerBoundUnitName varchar,
-                           maxLowerBoundUnitPeriod varchar,
-                           maxLowerBoundValue DOUBLE PRECISION,
-                           maxUpperBoundType varchar,
-                           maxUpperBoundUnitName varchar,
-                           maxUpperBoundUnitPeriod varchar,
-                           maxUpperBoundValue DOUBLE PRECISION,
-  PRIMARY KEY (id),
-  FOREIGN KEY(project) REFERENCES Project(id));
-  CREATE SEQUENCE shared_intervention_id_seq;
-  select setval('shared_intervention_id_seq', (select max(id) from intervention));
+insert into SimpleIntervention (simpleInterventionId) SELECT id from AbstractIntervention;
+
+CREATE TABLE FixedDoseIntervention (
+  fixedInterventionId INT NOT NULL,
+  lowerBoundType varchar,
+  lowerBoundValue DOUBLE PRECISION,
+  lowerBoundUnitName varchar,
+  lowerBoundUnitPeriod varchar,
+  upperBoundType varchar,
+  upperBoundValue DOUBLE PRECISION,
+  upperBoundUnitName varchar,
+  upperBoundUnitPeriod varchar,
+  PRIMARY KEY (fixedInterventionId),
+  FOREIGN KEY(fixedInterventionId) REFERENCES AbstractIntervention(id)
+ );
+
+CREATE TABLE TitratedDoseIntervention (
+  titratedInterventionId INT NOT NULL,
+  minLowerBoundType varchar,
+  minLowerBoundUnitName varchar,
+  minLowerBoundUnitPeriod varchar,
+  minLowerBoundValue DOUBLE PRECISION,
+  minUpperBoundType varchar,
+  minUpperBoundUnitName varchar,
+  minUpperBoundUnitPeriod varchar,
+  minUpperBoundValue DOUBLE PRECISION,
+  maxLowerBoundType varchar,
+  maxLowerBoundUnitName varchar,
+  maxLowerBoundUnitPeriod varchar,
+  maxLowerBoundValue DOUBLE PRECISION,
+  maxUpperBoundType varchar,
+  maxUpperBoundUnitName varchar,
+  maxUpperBoundUnitPeriod varchar,
+  maxUpperBoundValue DOUBLE PRECISION,
+  PRIMARY KEY (titratedInterventionId),
+  FOREIGN KEY(titratedInterventionId) REFERENCES AbstractIntervention(id)
+);
+
+CREATE TABLE BothDoseTypesIntervention (
+  bothTypesInterventionId INT NOT NULL,
+  minLowerBoundType varchar,
+  minLowerBoundUnitName varchar,
+  minLowerBoundUnitPeriod varchar,
+  minLowerBoundValue DOUBLE PRECISION,
+  minUpperBoundType varchar,
+  minUpperBoundUnitName varchar,
+  minUpperBoundUnitPeriod varchar,
+  minUpperBoundValue DOUBLE PRECISION,
+  maxLowerBoundType varchar,
+  maxLowerBoundUnitName varchar,
+  maxLowerBoundUnitPeriod varchar,
+  maxLowerBoundValue DOUBLE PRECISION,
+  maxUpperBoundType varchar,
+  maxUpperBoundUnitName varchar,
+  maxUpperBoundUnitPeriod varchar,
+  maxUpperBoundValue DOUBLE PRECISION,
+  PRIMARY KEY (bothTypesInterventionId),
+  FOREIGN KEY(bothTypesInterventionId) REFERENCES AbstractIntervention(id)
+);
+CREATE SEQUENCE shared_intervention_id_seq;
+select setval('shared_intervention_id_seq', (select max(id) from AbstractIntervention));
 --rollback DROP TABLE FixedDoseIntervention;
 --rollback DROP TABLE TitratedDoseIntervention;
 --rollback DROP TABLE BothDoseTypesIntervention;
 --rollback DROP SEQUENCE shared_intervention_id_seq;
+--rollback DROP TABLE SimpleIntervention;
+--rollback ALTER TABLE AbstractIntervention RENAME TO Intervention;
+
+--changeset reidd:47
+CREATE TABLE AbstractAnalysis(
+  id INT NOT NULL,
+  projectId INT NOT NULL,
+  title VARCHAR NOT NULL,
+  PRIMARY KEY(id),
+  FOREIGN KEY (projectId) REFERENCES project(id)
+);
+INSERT INTO AbstractAnalysis (id, projectId, title)
+SELECT id, projectId, title FROM SingleStudyBenefitRiskAnalysis;
+INSERT INTO AbstractAnalysis (id, projectId, title)
+SELECT id, projectId, title FROM NetworkMetaAnalysis;
+INSERT INTO AbstractAnalysis (id, projectId, title)
+SELECT id, projectId, title FROM MetaBenefitRiskAnalysis;
+
+DROP TABLE MetaBenefitRiskAnalysis_Alternative;
+
+ALTER TABLE SingleStudyBenefitRiskAnalysis DROP CONSTRAINT singlestudybenefitriskanalysis_projectid_fkey;
+ALTER TABLE SingleStudyBenefitRiskAnalysis DROP projectId;
+ALTER TABLE SingleStudyBenefitRiskAnalysis DROP title;
+ALTER TABLE NetworkMetaAnalysis DROP CONSTRAINT NetworkMetaAnalysis_projectid_fkey;
+ALTER TABLE NetworkMetaAnalysis DROP COLUMN projectId;
+ALTER TABLE NetworkMetaAnalysis DROP COLUMN title;
+ALTER TABLE MetaBenefitRiskAnalysis DROP CONSTRAINT metabenefitriskanalysis_projectid_fkey;
+ALTER TABLE MetaBenefitRiskAnalysis DROP COLUMN projectId;
+ALTER TABLE MetaBenefitRiskAnalysis DROP COLUMN title;
+
+ALTER TABLE interventioninclusion DROP CONSTRAINT interventioninclusion_analysisid_fkey;
+ALTER TABLE interventioninclusion ADD CONSTRAINT interventioninclusion_analysisid_fkey FOREIGN KEY (analysisId) REFERENCES AbstractAnalysis(id);
+
+select setval('shared_analysis_id_seq', (select max(id) from AbstractAnalysis));

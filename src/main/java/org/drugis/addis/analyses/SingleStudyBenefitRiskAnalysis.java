@@ -13,14 +13,8 @@ import java.util.*;
  * Created by connor on 3/11/14.
  */
 @Entity
+@PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
 public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
-
-  @Id
-  @SequenceGenerator(name = "analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")
-  private Integer id;
-  private Integer projectId;
-  private String title;
 
   @JsonRawValue
   private String problem;
@@ -33,16 +27,13 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
           inverseJoinColumns = {@JoinColumn(name = "outcomeId", referencedColumnName = "id")})
   private Set<Outcome> selectedOutcomes;
 
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JoinTable(name = "singleStudyBenefitRiskAnalysis_Intervention",
-          joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
-          inverseJoinColumns = {@JoinColumn(name = "interventionId", referencedColumnName = "id")})
-  private Set<AbstractIntervention> selectedInterventions;
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, mappedBy = "analysisId", orphanRemoval = true)
+  private Set<InterventionInclusion> selectedInterventions;
 
   public SingleStudyBenefitRiskAnalysis() {
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<AbstractIntervention> selectedInterventions, String problem) {
+  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> selectedInterventions, String problem) {
     this.id = id;
     this.projectId = projectId;
     this.title = title;
@@ -51,15 +42,15 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     this.problem = problem;
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<AbstractIntervention> selectedInterventions) {
+  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> selectedInterventions) {
     this(id, projectId, title, selectedOutcomes, selectedInterventions, null);
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<AbstractIntervention> selectedInterventions) {
+  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> selectedInterventions) {
     this(null, projectId, title, selectedOutcomes, selectedInterventions, null);
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<AbstractIntervention> selectedInterventions, String problem) {
+  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> selectedInterventions, String problem) {
     this(null, projectId, title, selectedOutcomes, selectedInterventions, problem);
   }
 
@@ -89,7 +80,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     return selectedOutcomes == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(new ArrayList<>(selectedOutcomes));
   }
 
-  public List<AbstractIntervention> getSelectedInterventions() {
+  public List<InterventionInclusion> getSelectedInterventions() {
     return selectedInterventions == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(new ArrayList<>(selectedInterventions));
   }
 

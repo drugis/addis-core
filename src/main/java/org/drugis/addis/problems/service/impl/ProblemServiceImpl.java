@@ -112,9 +112,15 @@ public class ProblemServiceImpl implements ProblemService {
     final Map<Integer, PataviTask> tasksByModelId = models.stream().collect(Collectors.toMap(Model::getId, m -> pataviTaskMap.get(m.getTaskId())));
     ArrayList<Integer> taskIds = new ArrayList<>(pataviTaskMap.keySet());
     final Map<Integer, JsonNode> resultsByTaskId = pataviTaskRepository.getResults(taskIds);
-    List<MbrOutcomeInclusion> inclusionsWithBaseline = analysis.getMbrOutcomeInclusions().stream().filter(moi -> moi.getBaseline() != null).collect(Collectors.toList());
-
-    List<AbstractIntervention> includedAlternatives = analysis.getIncludedAlternatives();
+    final List<MbrOutcomeInclusion> inclusionsWithBaseline = analysis.getMbrOutcomeInclusions().stream().filter(moi -> moi.getBaseline() != null).collect(Collectors.toList());
+    final List<InterventionInclusion> inclusions = analysis.getIncludedAlternatives();
+    final List<AbstractIntervention> interventions = interventionRepository.query(analysis.getProjectId());
+    final Map<Integer, AbstractIntervention> interventionMap = interventions.stream()
+            .collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
+    final List<AbstractIntervention> includedAlternatives = inclusions
+            .stream()
+            .map(i -> interventionMap.get(i.getInterventionId()))
+            .collect(Collectors.toList());
 
     Map<String, CriterionEntry> criteriaWithBaseline = outcomesByName.values()
             .stream()
@@ -123,8 +129,7 @@ public class ProblemServiceImpl implements ProblemService {
     Map<String, AlternativeEntry> alternatives = includedAlternatives
             .stream()
             .collect(Collectors.toMap(AbstractIntervention::getName, i -> new AlternativeEntry(i.getSemanticInterventionUri(), i.getName())));
-    final Map<Integer, AbstractIntervention> interventions = interventionRepository.query(project.getId()).stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
-    ;
+
     final Map<String, AbstractIntervention> includedInterventionsByName = includedAlternatives.stream().collect(Collectors.toMap(AbstractIntervention::getName, Function.identity()));
 
     List<MetaBenefitRiskProblem.PerformanceTableEntry> performanceTable = new ArrayList<>(outcomesByName.size());
@@ -146,7 +151,7 @@ public class ProblemServiceImpl implements ProblemService {
                       e -> {
                         String key = e.getKey();
                         int interventionId = Integer.parseInt(key.substring(key.lastIndexOf('.') + 1));
-                        return interventions.get(interventionId).getName();
+                        return interventionMap.get(interventionId).getName();
                       },
                       Map.Entry::getValue));
 
@@ -378,14 +383,13 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, URISyntaxException {
-    List<String> outcomeUids = new ArrayList<>();
-    for (Outcome outcome : analysis.getSelectedOutcomes()) {
-      outcomeUids.add(outcome.getSemanticOutcomeUri());
-    }
-    List<String> alternativeUids = new ArrayList<>();
-    for (AbstractIntervention intervention : analysis.getSelectedInterventions()) {
-      alternativeUids.add(intervention.getSemanticInterventionUri());
-    }
+    List<String> outcomeUids = analysis.getSelectedOutcomes().stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toList());
+    List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
+    Map<Integer, AbstractIntervention> interventionMap = interventions
+            .stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
+    List<String> alternativeUids = analysis.getSelectedInterventions()
+            .stream().map(intervention -> interventionMap.get(intervention.getInterventionId()).getSemanticInterventionUri())
+            .collect(Collectors.toList());
     String versionedUuid = mappingService.getVersionedUuid(project.getNamespaceUid());
     List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementNodes =
             triplestoreService.getSingleStudyMeasurements(versionedUuid, analysis.getStudyGraphUid(), project.getDatasetVersion(), outcomeUids, alternativeUids);

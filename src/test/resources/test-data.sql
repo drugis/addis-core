@@ -39,10 +39,19 @@ VALUES (-5,
 'AT_LEAST', 'mg', 'P1D', 4.0,
 'AT_MOST',  'mg', 'P1D', 3.5);
 
-INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title) VALUES (-1, 1, 'analysis 1');
-INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title) VALUES (-2, 1, 'analysis 2');
-INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title) VALUES (-3 ,2, 'analysis 3');
-INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, projectId, title, problem) VALUES (-4, 1, 'analysis 3', 'singlestudy problem');
+INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-1, 1, 'analysis 1');
+INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-2, 1, 'analysis 3');
+INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-3, 1, 'analysis 2');
+INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-4, 2, 'analysis 4');
+INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-5, 1, 'nma');
+INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-6, 1, 'nma 2');
+INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-7, 2, 'nma task test');
+INSERT INTO public.AbstractAnalysis(id, projectId, title) VALUES (-10, 1, 'metabr 1');
+
+INSERT INTO public.SingleStudyBenefitRiskAnalysis (id) VALUES (-1);
+INSERT INTO public.SingleStudyBenefitRiskAnalysis (id) VALUES (-2);
+INSERT INTO public.SingleStudyBenefitRiskAnalysis (id) VALUES (-3);
+INSERT INTO public.SingleStudyBenefitRiskAnalysis (id, problem) VALUES (-4, 'singlestudy problem');
 
 INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId) VALUES (-3, 1);
 INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId) VALUES (-3, 2);
@@ -56,9 +65,9 @@ INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, inte
 INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-4, -1);
 INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-4, -2);
 
-INSERT INTO public.NetworkMetaAnalysis(id, projectId, title, outcomeId) VALUES (-5, 1, 'nma', 1);
-INSERT INTO public.NetworkMetaAnalysis(id, projectId, title, outcomeId) VALUES (-6, 1, 'nma 2', 1);
-INSERT INTO public.NetworkMetaAnalysis(id, projectId, title) VALUES (-7, 2, 'nma task test');
+INSERT INTO public.NetworkMetaAnalysis(id, outcomeId) VALUES (-5, 1);
+INSERT INTO public.NetworkMetaAnalysis(id, outcomeId) VALUES (-6, 1);
+INSERT INTO public.NetworkMetaAnalysis(id) VALUES (-7);
 
 INSERT INTO public.model(id, analysisId, title, linearModel, modelType, heterogeneityPrior, burnInIterations, inferenceIterations, thinningFactor, likelihood, link) VALUES (1, -5, 'model title', 'fixed', '{"type": "network"}', '{"type": "automatic"}', 5000, 20000, 10, 'binom', 'logit');
 INSERT INTO public.model(id, analysisId, title, linearModel, modelType, heterogeneityPrior, burnInIterations, inferenceIterations, thinningFactor, likelihood, link, outcomeScale) VALUES (2, -5, 'model title', 'fixed', '{"type": "pairwise", "details": {"to": {id: -1, "name" : "study1"}, "from": {"id": -2, "name": "study2"}}}', '{"type": "variance", "values": {"mean": 2.3, "stdDev": 0.3} }', 5000, 20000, 10,  'binom', 'logit', 2.2);
@@ -68,8 +77,8 @@ INSERT INTO public.model(id, analysisId, taskId, title, linearModel, modelType, 
 
 UPDATE public.NetworkMetaAnalysis SET primaryModel = 1 WHERE id = -7;
 
-INSERT INTO public.MetaBenefitRiskAnalysis(id, projectId, title, finalized) VALUES (-10, 1, 'metabr 1', FALSE);
-INSERT INTO public.MetaBenefitRiskAnalysis_Alternative(analysisId, alternativeId) VALUES (-10, -1);
+INSERT INTO public.MetaBenefitRiskAnalysis(id, finalized) VALUES (-10, FALSE);
+INSERT INTO public.interventionInclusion(analysisId, interventionId) VALUES (-10, -1);
 INSERT INTO public.MbrOutcomeInclusion(metaBenefitRiskAnalysisId, outcomeId, networkMetaAnalysisId, modelId) VALUES (-10, 1, -5, 1);
 
 INSERT INTO public.scenario (id, workspace, title, state) VALUES (1, -1, 'Default', 'problem state');
@@ -81,13 +90,13 @@ INSERT INTO public.scenario (id, workspace, title, state) VALUES (4, -10, 'Defau
 INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-1, '-101', -6);
 INSERT INTO public.armExclusion (id, trialverseUid, analysisId) VALUES (-2, '-102', -6);
 
-INSERT INTO public.interventionInclusion (id, interventionId, analysisId) VALUES (-1, -2, -6);
+INSERT INTO public.interventionInclusion (interventionId, analysisId) VALUES (-2, -6);
 
 INSERT INTO public.remarks(analysisId, remarks) VALUES(-1, 'yo yo yo !');
 
-INSERT INTO public.covariate(id, project, name, motivation, definitionkey) VALUES (1, 1, 'covariate 1 name', 'my motivation', 'ALLOCATION_RANDOMIZED');
-INSERT INTO public.covariate(id, project, name, motivation, definitionkey) VALUES (2, 1, 'covariate 2 name', 'my motivation', 'BLINDING_AT_LEAST_SINGLE_BLIND');
-INSERT INTO public.covariate(id, project, name, motivation, definitionkey) VALUES (3, 2, 'covariate 3 name', 'my motivation', 'ALLOCATION_RANDOMIZED');
+INSERT INTO public.covariate(id, project, name, motivation, definitionkey, type) VALUES (1, 1, 'covariate 1 name', 'my motivation', 'ALLOCATION_RANDOMIZED', 'STUDY_CHARACTERISTIC');
+INSERT INTO public.covariate(id, project, name, motivation, definitionkey, type) VALUES (2, 1, 'covariate 2 name', 'my motivation', 'BLINDING_AT_LEAST_SINGLE_BLIND', 'STUDY_CHARACTERISTIC');
+INSERT INTO public.covariate(id, project, name, motivation, definitionkey, type) VALUES (3, 2, 'covariate 3 name', 'my motivation', 'ALLOCATION_RANDOMIZED', 'STUDY_CHARACTERISTIC');
 
 INSERT INTO public.VersionMapping (id, versionedDatasetUrl, ownerUuid, trialverseDatasetUrl) VALUES(1, 'http://datastoreserver/aaa-111', 'connor@test.com', 'http://trials.drugis.org/datasets/e2ab9670-d3c7-402c-81ad-60abbb46ca4c');
 INSERT INTO public.VersionMapping (id, versionedDatasetUrl, ownerUuid, trialverseDatasetUrl) VALUES(2, 'http://datastoreserver/bbb-222', 'connor@test.com', 'http://trials.drugis.org/datasets/dbdf84e9-8bdb-4233-9bf6-c553cd023638');

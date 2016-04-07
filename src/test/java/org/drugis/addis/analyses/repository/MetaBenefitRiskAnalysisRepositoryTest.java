@@ -1,9 +1,6 @@
 package org.drugis.addis.analyses.repository;
 
-import org.drugis.addis.analyses.AnalysisCommand;
-import org.drugis.addis.analyses.AnalysisType;
-import org.drugis.addis.analyses.MbrOutcomeInclusion;
-import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
+import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
@@ -44,7 +41,6 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
   @PersistenceContext(unitName = "addisCore")
   EntityManager em;
 
-
   @Test
   public void testQuery() {
     int projectId = 1;
@@ -74,13 +70,14 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
     int analysisId = -10;
     int interventionId = -2;
     int outcomeId = 2;
-    int modelId  = 1;
+    int modelId = 1;
 
     Account user = em.find(Account.class, accountId);
     MetaBenefitRiskAnalysis analysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);
     SimpleIntervention interventionToInclude = em.find(SimpleIntervention.class, interventionId);
-    List<AbstractIntervention> interventions = new ArrayList<>(analysis.getIncludedAlternatives());
-    interventions.add(interventionToInclude);
+    InterventionInclusion interventionInclusion = new InterventionInclusion(analysisId, interventionToInclude.getId());
+    List<InterventionInclusion> interventions = new ArrayList<>(analysis.getIncludedAlternatives());
+    interventions.add(interventionInclusion);
     analysis.setIncludedAlternatives(interventions);
     List<MbrOutcomeInclusion> mbrOutcomeInclusions = new ArrayList<>(analysis.getMbrOutcomeInclusions());
     mbrOutcomeInclusions.add(new MbrOutcomeInclusion(analysis.getId(), outcomeId, 1, modelId));
@@ -108,7 +105,7 @@ public class MetaBenefitRiskAnalysisRepositoryTest {
   }
 
   @Test
-  public void testRemoveAnalysis (){
+  public void testRemoveAnalysis() {
     int analysisId = -10;
 
     MetaBenefitRiskAnalysis analysis = em.find(MetaBenefitRiskAnalysis.class, analysisId);

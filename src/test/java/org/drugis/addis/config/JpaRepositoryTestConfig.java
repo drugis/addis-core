@@ -168,9 +168,10 @@ public class JpaRepositoryTestConfig {
   Properties additionalProperties() {
     return new Properties() {
       {
-        setProperty("hibernate.hbm2ddl.auto", "update");
+        setProperty("hibernate.hbm2ddl.auto", "validate");
         setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
         setProperty("hibernate.current_session_context_class", "thread");
+        setProperty("hibernate.validator.apply_to_ddl", "false");
       }
     };
   }

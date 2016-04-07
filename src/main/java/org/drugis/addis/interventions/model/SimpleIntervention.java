@@ -16,8 +16,8 @@ public class SimpleIntervention extends AbstractIntervention implements Serializ
   public SimpleIntervention() {
   }
 
-  public SimpleIntervention(Integer id, Integer project, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUri) {
-    super(id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri);
+  public SimpleIntervention(Integer id, Integer project, String name, String motivation, String semanticInterventionUri, String semanticInterventionLabel) {
+    super(id, project, name, motivation, semanticInterventionUri, semanticInterventionLabel);
   }
 
   public SimpleIntervention(Integer projectId, String name, String motivation, SemanticIntervention semanticIntervention) {

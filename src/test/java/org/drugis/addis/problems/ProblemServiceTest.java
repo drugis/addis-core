@@ -27,6 +27,7 @@ import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
@@ -114,10 +115,8 @@ public class ProblemServiceTest {
   public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
     int projectId = 1;
     String projectVersion = "projectVersion";
-    Project project = mock(Project.class);
-    when(project.getNamespaceUid()).thenReturn(namespaceUid);
-    when(project.getDatasetVersion()).thenReturn(projectVersion);
-    when(projectRepository.get(projectId)).thenReturn(project);
+    Project project = new Project(projectId, new Account("username", "first", "lasr", "email"), "name", "desc", namespaceUid, projectVersion);
+
 
     int analysisId = 2;
     String studyUid = "3g0yg-g945gh";
@@ -142,12 +141,18 @@ public class ProblemServiceTest {
     List<Outcome> outcomes = Arrays.asList(outcome1, outcome2);
     when(analysis.getSelectedOutcomes()).thenReturn(outcomes);
 
-    SimpleIntervention intervention1 = mock(SimpleIntervention.class);
-    SimpleIntervention intervention2 = mock(SimpleIntervention.class);
-    when(intervention1.getSemanticInterventionUri()).thenReturn(alternativeUri1);
-    when(intervention2.getSemanticInterventionUri()).thenReturn(alternativeUri2);
+    SimpleIntervention intervention1 = new SimpleIntervention(-1, projectId, "name,", "moti", alternativeUri1, "slabel1");
+    SimpleIntervention intervention2 = new SimpleIntervention(-2, projectId, "name,", "moti", alternativeUri2, "slabel2");
+
     List<AbstractIntervention> interventions = Arrays.asList(intervention1, intervention2);
-    when(analysis.getSelectedInterventions()).thenReturn(interventions);
+    List<InterventionInclusion> interventionInclusions = Arrays.asList(
+            new InterventionInclusion(analysisId, -1),
+            new InterventionInclusion(analysisId, -2)
+    );
+    when(analysis.getSelectedInterventions()).thenReturn(interventionInclusions);
+    when(interventionRepository.query(projectId)).thenReturn(interventions);
+    when(projectRepository.get(projectId)).thenReturn(project);
+    when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
 
     when(analysis.getStudyGraphUid()).thenReturn(studyUid);
     List<String> outcomeUids = Arrays.asList(criterionUri1, criterionUri2);
@@ -180,6 +185,7 @@ public class ProblemServiceTest {
     verify(triplestoreService).getSingleStudyMeasurements(versionedUuid, studyUid, projectVersion, outcomeUids, interventionUids);
     verify(performanceTablebuilder).build(measurementRows);
     verify(mappingService).getVersionedUuid(namespaceUid);
+    verify(interventionRepository).query(project.getId());
 
     assertNotNull(actualProblem);
     assertNotNull(actualProblem.getTitle());
@@ -414,11 +420,12 @@ public class ProblemServiceTest {
     when(project.getNamespaceUid()).thenReturn(namespaceUid);
     when(project.getDatasetVersion()).thenReturn(version);
 
-    Set<AbstractIntervention> includedAlternatives = new HashSet<>(3);
+    Set<InterventionInclusion> includedAlternatives = new HashSet<>(3);
     SimpleIntervention intervention1 = new SimpleIntervention(11, projectId, "fluox", "", new SemanticIntervention("uri1", "fluoxS"));
     SimpleIntervention intervention2 = new SimpleIntervention(12, projectId, "parox", "", new SemanticIntervention("uri2", "paroxS"));
     SimpleIntervention intervention3 = new SimpleIntervention(13, projectId, "sertr", "", new SemanticIntervention("uri3", "sertrS"));
-    includedAlternatives.addAll(Arrays.asList(intervention1, intervention2, intervention3));
+    includedAlternatives.addAll(Arrays.asList(new InterventionInclusion(analysisId, 11), new InterventionInclusion(analysisId, 12), new InterventionInclusion(analysisId, 13)));
+
     SimpleIntervention intervention4 = new SimpleIntervention(14, projectId, "foo", "", new SemanticIntervention("uri4", "fooS"));
     List<AbstractIntervention> interventions = Arrays.asList(intervention1, intervention2, intervention3, intervention4);
 

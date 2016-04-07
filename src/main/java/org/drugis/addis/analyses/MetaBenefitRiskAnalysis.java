@@ -13,26 +13,16 @@ import java.util.*;
  */
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
+@PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
 public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Serializable {
-  @Id
-  @SequenceGenerator(name = "analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")
-  private Integer id;
-
-  private Integer projectId;
-
-  private String title;
-
   private boolean finalized = false;
 
   @JsonRawValue
   private String problem;
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-  @JoinTable(name = "MetaBenefitRiskAnalysis_Alternative",
-          joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
-          inverseJoinColumns = {@JoinColumn(name = "alternativeId", referencedColumnName = "id")})
-  private Set<AbstractIntervention> includedAlternatives = new HashSet<>();
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, mappedBy = "analysisId", orphanRemoval = true)
+  private Set<InterventionInclusion> includedAlternatives = new HashSet<>();
+
   @OneToMany(fetch = FetchType.EAGER, mappedBy = "metaBenefitRiskAnalysisId", cascade = CascadeType.ALL)
   private Set<MbrOutcomeInclusion> mbrOutcomeInclusions = new HashSet<>();
 
@@ -50,7 +40,7 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
     this.title = title;
   }
 
-  public MetaBenefitRiskAnalysis(Integer id, Integer projectId, String title, Set<AbstractIntervention> includedAlternatives) {
+  public MetaBenefitRiskAnalysis(Integer id, Integer projectId, String title, Set<InterventionInclusion> includedAlternatives) {
     this.id = id;
     this.projectId = projectId;
     this.title = title;
@@ -67,7 +57,7 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
     return id;
   }
 
-  public List<AbstractIntervention> getIncludedAlternatives() {
+  public List<InterventionInclusion> getIncludedAlternatives() {
     return Collections.unmodifiableList(new ArrayList<>(includedAlternatives));
   }
 
@@ -95,8 +85,9 @@ public class MetaBenefitRiskAnalysis extends AbstractAnalysis implements Seriali
     this.problem = problem;
   }
 
-  public void setIncludedAlternatives(Collection<AbstractIntervention> interventions) {
-    this.includedAlternatives = new HashSet<>(interventions);
+  public void setIncludedAlternatives(Collection<InterventionInclusion> interventions) {
+    this.includedAlternatives.clear();
+    this.includedAlternatives.addAll(interventions);
   }
 
   public void setMbrOutcomeInclusions(List<MbrOutcomeInclusion> mbrOutcomeInclusions) {

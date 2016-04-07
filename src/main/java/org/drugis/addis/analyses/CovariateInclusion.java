@@ -14,7 +14,6 @@ public class CovariateInclusion {
   @JsonIgnore
   private Integer id;
 
-
   private Integer analysisId;
 
   private Integer covariateId;
