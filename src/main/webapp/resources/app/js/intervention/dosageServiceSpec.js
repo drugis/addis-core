@@ -4,8 +4,7 @@ define(['angular', 'angular-mocks'], function() {
     var
       scope,
       httpBackend,
-      dosageService,
-      response;
+      dosageService;
     beforeEach(module('addis.interventions'));
 
     beforeEach(inject(function($rootScope, $httpBackend, DosageService) {
@@ -17,30 +16,55 @@ define(['angular', 'angular-mocks'], function() {
       scope.$apply();
     }));
 
-    fdescribe('get', function() {
+    describe('get', function() {
       it('should query and transform the response', function(done) {
         var userUid = 'user',
           datasetUuid = 'data-s3t',
-          datasetVersionUuid = 'vers-i0n';
-        response = JSON.stringify({
-          results: {
-            bindings: [{
-              'test': 'value'
-            }]
-          }
-        });
+          datasetVersionUuid = 'vers-i0n',
+          response = JSON.stringify({
+            'head': {
+              'vars': ['unitName', 'unitPeriod']
+            },
+            'results': {
+              'bindings': [{
+                'unitName': {
+                  'type': 'literal',
+                  'value': 'milligram'
+                },
+                'unitPeriod': {
+                  'datatype': 'http://www.w3.org/2001/XMLSchema#duration',
+                  'type': 'typed-literal',
+                  'value': 'P1D'
+                }
+              }, {
+                'unitName': {
+                  'type': 'literal',
+                  'value': 'milligram'
+                },
+                'unitPeriod': {
+                  'datatype': 'http://www.w3.org/2001/XMLSchema#duration',
+                  'type': 'typed-literal',
+                  'value': 'PT1H'
+                }
+              }]
+            }
+          });
+        httpBackend.expect('GET', '/users/user/datasets/data-s3t/versions/vers-i0n/query?query=its+sparql+mom').respond(response);
         dosageService.get(userUid, datasetUuid, datasetVersionUuid).then(function(result) {
           expect(result).toEqual([{
-            unitName: 'milligram'
+            unitName: 'milligram',
+            unitPeriod: 'P1D',
+            label: 'milligram/day'
           }, {
-            unitName: 'milliliter'
+            unitName: 'milligram',
+            unitPeriod: 'PT1H',
+            label: 'milligram/hour'
           }]);
           done();
         });
+        httpBackend.flush();
+        scope.$apply();
       });
-      httpBackend.expect('GET', '/users/user/datasets/data-s3t/versions/vers-i0n').respond(response);
-      httpBackend.flush();
-      scope.$apply();
     });
 
   });
