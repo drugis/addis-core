@@ -6,6 +6,7 @@ import javax.persistence.*;
  * Created by daan on 5-4-16.
  */
 @Entity
+@PrimaryKeyJoinColumn(name = "bothTypesInterventionId", referencedColumnName = "id")
 public class BothDoseTypesIntervention extends AbstractIntervention {
   @Embedded
   @AttributeOverrides( {

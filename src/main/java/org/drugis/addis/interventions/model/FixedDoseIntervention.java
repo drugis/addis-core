@@ -7,6 +7,7 @@ import java.io.Serializable;
  * Created by daan on 5-4-16.
  */
 @Entity
+@PrimaryKeyJoinColumn(name = "fixedInterventionId", referencedColumnName = "id")
 public class FixedDoseIntervention extends AbstractIntervention implements Serializable {
   @Embedded
   @AttributeOverrides( {

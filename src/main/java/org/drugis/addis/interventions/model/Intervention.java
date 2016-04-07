@@ -3,12 +3,14 @@ package org.drugis.addis.interventions.model;
 import org.drugis.addis.trialverse.model.SemanticIntervention;
 
 import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
 import java.io.Serializable;
 
 /**
  * Created by daan on 3/6/14.
  */
 @Entity
+@PrimaryKeyJoinColumn(name = "simpleInterventionId", referencedColumnName = "id")
 public class Intervention extends AbstractIntervention implements Serializable {
 
   public Intervention() {

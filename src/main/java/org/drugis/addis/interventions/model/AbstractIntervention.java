@@ -14,7 +14,7 @@ import javax.persistence.*;
         @JsonSubTypes.Type(value = TitratedDoseIntervention.class, name = "titrated"),
         @JsonSubTypes.Type(value = BothDoseTypesIntervention.class, name = "both")})
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class AbstractIntervention {
   @Id
   @SequenceGenerator(name = "intervention_sequence", sequenceName = "shared_intervention_id_seq", allocationSize = 1)

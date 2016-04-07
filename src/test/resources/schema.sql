@@ -398,72 +398,72 @@ ALTER TABLE covariate ADD FOREIGN KEY (populationCharacteristicId) REFERENCES ou
 -- constraint changeset, ignore
 
 --changeset reidd:46
-CREATE TABLE FixedDoseIntervention (id SERIAL NOT NULL,
-                           project INT,
-                           name VARCHAR NOT NULL,
-                           motivation TEXT,
-                           semanticInterventionLabel VARCHAR NOT NULL,
-                           semanticInterventionUri VARCHAR NOT NULL,
-                           lowerBoundType varchar,
-                           lowerBoundValue DOUBLE PRECISION,
-                           lowerBoundUnitName varchar,
-                           lowerBoundUnitPeriod varchar,
-                           upperBoundType varchar,
-                           upperBoundValue DOUBLE PRECISION,
-                           upperBoundUnitName varchar,
-                           upperBoundUnitPeriod varchar,
-  PRIMARY KEY (id),
-  FOREIGN KEY(project) REFERENCES Project(id));
+ALTER TABLE intervention RENAME TO AbstractIntervention;
 
-CREATE TABLE TitratedDoseIntervention (id SERIAL NOT NULL,
-                           project INT,
-                           name VARCHAR NOT NULL,
-                           motivation TEXT,
-                           semanticInterventionLabel VARCHAR NOT NULL,
-                           semanticInterventionUri VARCHAR NOT NULL,
-                           minLowerBoundType varchar,
-                           minLowerBoundUnitName varchar,
-                           minLowerBoundUnitPeriod varchar,
-                           minLowerBoundValue DOUBLE PRECISION,
-                           minUpperBoundType varchar,
-                           minUpperBoundUnitName varchar,
-                           minUpperBoundUnitPeriod varchar,
-                           minUpperBoundValue DOUBLE PRECISION,
-                           maxLowerBoundType varchar,
-                           maxLowerBoundUnitName varchar,
-                           maxLowerBoundUnitPeriod varchar,
-                           maxLowerBoundValue DOUBLE PRECISION,
-                           maxUpperBoundType varchar,
-                           maxUpperBoundUnitName varchar,
-                           maxUpperBoundUnitPeriod varchar,
-                           maxUpperBoundValue DOUBLE PRECISION,
-  PRIMARY KEY (id),
-  FOREIGN KEY(project) REFERENCES Project(id));
+CREATE TABLE SimpleIntervention(
+  simpleInterventionId BIGINT NOT NULL,
+  PRIMARY KEY(simpleInterventionId),
+  FOREIGN KEY(simpleInterventionId) REFERENCES AbstractIntervention(id)
+);
 
-CREATE TABLE BothDoseTypesIntervention (id SERIAL NOT NULL,
-                           project INT,
-                           name VARCHAR NOT NULL,
-                           motivation TEXT,
-                           semanticInterventionLabel VARCHAR NOT NULL,
-                           semanticInterventionUri VARCHAR NOT NULL,
-                           minLowerBoundType varchar,
-                           minLowerBoundUnitName varchar,
-                           minLowerBoundUnitPeriod varchar,
-                           minLowerBoundValue DOUBLE PRECISION,
-                           minUpperBoundType varchar,
-                           minUpperBoundUnitName varchar,
-                           minUpperBoundUnitPeriod varchar,
-                           minUpperBoundValue DOUBLE PRECISION,
-                           maxLowerBoundType varchar,
-                           maxLowerBoundUnitName varchar,
-                           maxLowerBoundUnitPeriod varchar,
-                           maxLowerBoundValue DOUBLE PRECISION,
-                           maxUpperBoundType varchar,
-                           maxUpperBoundUnitName varchar,
-                           maxUpperBoundUnitPeriod varchar,
-                           maxUpperBoundValue DOUBLE PRECISION,
-  PRIMARY KEY (id),
-  FOREIGN KEY(project) REFERENCES Project(id));
+CREATE TABLE FixedDoseIntervention (
+  fixedInterventionId BIGINT NOT NULL,
+  lowerBoundType varchar,
+  lowerBoundValue DOUBLE PRECISION,
+  lowerBoundUnitName varchar,
+  lowerBoundUnitPeriod varchar,
+  upperBoundType varchar,
+  upperBoundValue DOUBLE PRECISION,
+  upperBoundUnitName varchar,
+  upperBoundUnitPeriod varchar,
+  PRIMARY KEY (fixedInterventionId),
+  FOREIGN KEY(fixedInterventionId) REFERENCES AbstractIntervention(id)
+ );
+
+CREATE TABLE TitratedDoseIntervention (
+  titratedInterventionId BIGINT NOT NULL,
+  minLowerBoundType varchar,
+  minLowerBoundUnitName varchar,
+  minLowerBoundUnitPeriod varchar,
+  minLowerBoundValue DOUBLE PRECISION,
+  minUpperBoundType varchar,
+  minUpperBoundUnitName varchar,
+  minUpperBoundUnitPeriod varchar,
+  minUpperBoundValue DOUBLE PRECISION,
+  maxLowerBoundType varchar,
+  maxLowerBoundUnitName varchar,
+  maxLowerBoundUnitPeriod varchar,
+  maxLowerBoundValue DOUBLE PRECISION,
+  maxUpperBoundType varchar,
+  maxUpperBoundUnitName varchar,
+  maxUpperBoundUnitPeriod varchar,
+  maxUpperBoundValue DOUBLE PRECISION,
+  PRIMARY KEY (titratedInterventionId),
+  FOREIGN KEY(titratedInterventionId) REFERENCES AbstractIntervention(id)
+);
+
+CREATE TABLE BothDoseTypesIntervention (
+  bothTypesInterventionId BIGINT NOT NULL,
+  minLowerBoundType varchar,
+  minLowerBoundUnitName varchar,
+  minLowerBoundUnitPeriod varchar,
+  minLowerBoundValue DOUBLE PRECISION,
+  minUpperBoundType varchar,
+  minUpperBoundUnitName varchar,
+  minUpperBoundUnitPeriod varchar,
+  minUpperBoundValue DOUBLE PRECISION,
+  maxLowerBoundType varchar,
+  maxLowerBoundUnitName varchar,
+  maxLowerBoundUnitPeriod varchar,
+  maxLowerBoundValue DOUBLE PRECISION,
+  maxUpperBoundType varchar,
+  maxUpperBoundUnitName varchar,
+  maxUpperBoundUnitPeriod varchar,
+  maxUpperBoundValue DOUBLE PRECISION,
+  PRIMARY KEY (bothTypesInterventionId),
+  FOREIGN KEY(bothTypesInterventionId) REFERENCES AbstractIntervention(id)
+);
+
 --rollback DROP TABLE FixedDoseIntervention;
 --rollback DROP TABLE TitratedDoseIntervention;
 --rollback DROP TABLE BothDoseTypesIntervention;
