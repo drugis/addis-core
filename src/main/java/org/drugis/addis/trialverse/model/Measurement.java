@@ -1,10 +1,12 @@
 package org.drugis.addis.trialverse.model;
 
+import java.net.URI;
+
 public class Measurement {
 
-  private String studyUid;
-  private String variableUid;
-  private String armUid;
+  private URI studyUid;
+  private URI variableUri;
+  private URI armUid;
   private Integer sampleSize;
   private Long rate;
   private Double stdDev;
@@ -13,9 +15,9 @@ public class Measurement {
   public Measurement() {
   }
 
-  public Measurement(String studyUid, String variableUid, String armUid, Integer sampleSize, Long rate, Double stdDev, Double mean) {
+  public Measurement(URI studyUid, URI variableUri, URI armUid, Integer sampleSize, Long rate, Double stdDev, Double mean) {
     this.studyUid = studyUid;
-    this.variableUid = variableUid;
+    this.variableUri = variableUri;
     this.armUid = armUid;
     this.sampleSize = sampleSize;
     this.rate = rate;
@@ -23,15 +25,15 @@ public class Measurement {
     this.mean = mean;
   }
 
-  public String getStudyUid() {
+  public URI getStudyUid() {
     return studyUid;
   }
 
-  public String getVariableUid() {
-    return variableUid;
+  public URI getVariableUri() {
+    return variableUri;
   }
 
-  public String getArmUid() {
+  public URI getArmUid() {
     return armUid;
   }
 
@@ -64,7 +66,7 @@ public class Measurement {
     if (!sampleSize.equals(that.sampleSize)) return false;
     if (stdDev != null ? !stdDev.equals(that.stdDev) : that.stdDev != null) return false;
     if (!studyUid.equals(that.studyUid)) return false;
-    if (!variableUid.equals(that.variableUid)) return false;
+    if (!variableUri.equals(that.variableUri)) return false;
 
     return true;
   }
@@ -72,7 +74,7 @@ public class Measurement {
   @Override
   public int hashCode() {
     int result = studyUid.hashCode();
-    result = 31 * result + variableUid.hashCode();
+    result = 31 * result + variableUri.hashCode();
     result = 31 * result + armUid.hashCode();
     result = 31 * result + sampleSize.hashCode();
     result = 31 * result + (rate != null ? rate.hashCode() : 0);

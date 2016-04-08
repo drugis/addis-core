@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.Arrays;
@@ -179,7 +180,7 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Throwable {
-    List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy("abc", "study name", Collections.emptyList(), Collections.emptyList()));
+    List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy(new URI("abc"), "study name", Collections.emptyList(), Collections.emptyList()));
     List<String> interventionUris = Arrays.asList("uri1", "uri2");
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     String versionUid = "current";
@@ -196,7 +197,7 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetTrialDataWithOutcomeAndNoInterventionsInQuery() throws Throwable {
-    List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy("abc", "study name", Collections.emptyList(), Collections.emptyList()));
+    List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy(new URI("abc"), "study name", Collections.emptyList(), Collections.emptyList()));
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     String versionUid = "current";
     when(triplestoreService.getTrialData(versionedUuid, versionUid, outcomeUri, Collections.emptyList(), Collections.emptyList())).thenReturn(trialDataStudies);

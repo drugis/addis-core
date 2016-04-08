@@ -1,46 +1,48 @@
 package org.drugis.addis.trialverse.model;
 
+import java.net.URI;
+
 /**
  * Created by connor on 9-5-14.
  */
 public class TrialDataArm {
-  private String uid;
+  private URI uri;
   private String name;
-  private String studyUid;
-  private String drugInstanceUid;
-  private String drugConceptUid;
+  private URI studyUri;
+  private URI drugInstance;
+  private URI drugConcept;
   private Measurement measurement;
 
   public TrialDataArm() {
   }
 
-  public TrialDataArm(String uid, String name, String studyUid, String drugInstanceUid, String drugConceptUid, Measurement measurement) {
-    this.uid = uid;
+  public TrialDataArm(URI uri, String name, URI studyUri, URI drugInstanceUid, URI drugConceptUid, Measurement measurement) {
+    this.uri = uri;
     this.name = name;
-    this.studyUid = studyUid;
-    this.drugInstanceUid = drugInstanceUid;
-    this.drugConceptUid = drugConceptUid;
+    this.studyUri = studyUri;
+    this.drugInstance = drugInstanceUid;
+    this.drugConcept = drugConceptUid;
     this.measurement = measurement;
   }
 
-  public String getUid() {
-    return uid;
+  public URI getUri() {
+    return uri;
   }
 
   public String getName() {
     return name;
   }
 
-  public String getStudyUid() {
-    return studyUid;
+  public URI getStudyUri() {
+    return studyUri;
   }
 
-  public String getDrugInstanceUid() {
-    return drugInstanceUid;
+  public URI getDrugInstanceUid() {
+    return drugInstance;
   }
 
-  public String getDrugConceptUid() {
-    return drugConceptUid;
+  public URI getDrugConceptUid() {
+    return drugConcept;
   }
 
   public Measurement getMeasurement() {
@@ -50,28 +52,27 @@ public class TrialDataArm {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof TrialDataArm)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     TrialDataArm that = (TrialDataArm) o;
 
-    if (!drugInstanceUid.equals(that.drugInstanceUid)) return false;
-    if (!drugConceptUid.equals(that.drugConceptUid)) return false;
-    if (!measurement.equals(that.measurement)) return false;
+    if (!uri.equals(that.uri)) return false;
     if (!name.equals(that.name)) return false;
-    if (!studyUid.equals(that.studyUid)) return false;
-    if (!uid.equals(that.uid)) return false;
+    if (studyUri != null ? !studyUri.equals(that.studyUri) : that.studyUri != null) return false;
+    if (!drugInstance.equals(that.drugInstance)) return false;
+    if (!drugConcept.equals(that.drugConcept)) return false;
+    return measurement != null ? measurement.equals(that.measurement) : that.measurement == null;
 
-    return true;
   }
 
   @Override
   public int hashCode() {
-    int result = uid.hashCode();
+    int result = uri.hashCode();
     result = 31 * result + name.hashCode();
-    result = 31 * result + studyUid.hashCode();
-    result = 31 * result + drugInstanceUid.hashCode();
-    result = 31 * result + drugConceptUid.hashCode();
-    result = 31 * result + measurement.hashCode();
+    result = 31 * result + (studyUri != null ? studyUri.hashCode() : 0);
+    result = 31 * result + drugInstance.hashCode();
+    result = 31 * result + drugConcept.hashCode();
+    result = 31 * result + (measurement != null ? measurement.hashCode() : 0);
     return result;
   }
 }

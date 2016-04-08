@@ -32,12 +32,15 @@ SELECT DISTINCT
 ?fixedDoseUnitMultiplier
 ?maxDoseValue
 ?maxDoseDosingPeriodicity
+?maxDoseUnitConcept
 ?maxDoseUnitLabel
 ?maxDoseUnitMultiplier
 ?minDoseValue
 ?minDoseDosingPeriodicity
+?minDoseUnitConcept
 ?minDoseUnitLabel
 ?minDoseUnitMultiplier
+(COALESCE(?treatmentTypeOptional, "http://trials.drugis.org/ontology#SimpleDrugTreatment") AS ?treatmentType)
 WHERE {
   GRAPH ?graph {
     ?study rdfs:label ?studyName .
@@ -90,6 +93,7 @@ WHERE {
     OPTIONAL {
         ?treatmentNode
           a ontology:FixedDoseDrugTreatment ;
+          a ?treatmentTypeOptional ;
           ontology:treatment_dose [
             rdf:value ?fixedDoseValue ;
             ontology:dosingPeriodicity ?fixedDoseDosingPeriodicity ;
@@ -103,6 +107,7 @@ WHERE {
     OPTIONAL {
         ?treatmentNode
           a ontology:TitratedDoseDrugTreatment ;
+          a ?treatmentTypeOptional ;
           ontology:treatment_max_dose [
             rdf:value ?maxDoseValue ;
             ontology:dosingPeriodicity ?maxDoseDosingPeriodicity ;

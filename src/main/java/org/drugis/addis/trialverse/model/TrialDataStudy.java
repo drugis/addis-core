@@ -1,5 +1,6 @@
 package org.drugis.addis.trialverse.model;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,21 +8,21 @@ import java.util.List;
  * Created by connor on 15-5-14.
  */
 public class TrialDataStudy {
-  private String studyUid;
+  private URI studyUri;
   private String name;
-  private List<TrialDataIntervention> trialDataInterventions = new ArrayList<>();
+  private List<AbstractSemanticIntervention> semanticInterventions = new ArrayList<>();
   private List<TrialDataArm> trialDataArms = new ArrayList<>();
   private List<CovariateStudyValue> covariateValues = new ArrayList<>();
 
   public TrialDataStudy() {
   }
 
-  public TrialDataStudy(String studyUid, String name, List<TrialDataIntervention> trialDataInterventions, List<TrialDataArm> trialDataArms) {
-    this.studyUid = studyUid;
+  public TrialDataStudy(URI studyUri, String name, List<AbstractSemanticIntervention> semanticInterventions, List<TrialDataArm> trialDataArms) {
+    this.studyUri = studyUri;
     this.name = name;
 
-    if (trialDataInterventions != null) {
-      this.trialDataInterventions = trialDataInterventions;
+    if (semanticInterventions != null) {
+      this.semanticInterventions = semanticInterventions;
     }
 
     if (trialDataArms != null) {
@@ -29,16 +30,16 @@ public class TrialDataStudy {
     }
   }
 
-  public String getStudyUid() {
-    return studyUid;
+  public URI getStudyUri() {
+    return studyUri;
   }
 
   public String getName() {
     return name;
   }
 
-  public List<TrialDataIntervention> getTrialDataInterventions() {
-    return trialDataInterventions;
+  public List<AbstractSemanticIntervention> getSemanticInterventions() {
+    return semanticInterventions;
   }
 
   public List<TrialDataArm> getTrialDataArms() {
@@ -60,9 +61,9 @@ public class TrialDataStudy {
 
     TrialDataStudy that = (TrialDataStudy) o;
 
-    if (!studyUid.equals(that.studyUid)) return false;
+    if (!studyUri.equals(that.studyUri)) return false;
     if (!name.equals(that.name)) return false;
-    if (!trialDataInterventions.equals(that.trialDataInterventions)) return false;
+    if (!semanticInterventions.equals(that.semanticInterventions)) return false;
     if (!trialDataArms.equals(that.trialDataArms)) return false;
     return covariateValues.equals(that.covariateValues);
 
@@ -70,9 +71,9 @@ public class TrialDataStudy {
 
   @Override
   public int hashCode() {
-    int result = studyUid.hashCode();
+    int result = studyUri.hashCode();
     result = 31 * result + name.hashCode();
-    result = 31 * result + trialDataInterventions.hashCode();
+    result = 31 * result + semanticInterventions.hashCode();
     result = 31 * result + trialDataArms.hashCode();
     result = 31 * result + covariateValues.hashCode();
     return result;

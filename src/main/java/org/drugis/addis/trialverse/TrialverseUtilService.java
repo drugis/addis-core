@@ -4,6 +4,8 @@ import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONObject;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 
+import java.net.URISyntaxException;
+
 /**
  * Created by connor on 8-4-16.
  */
@@ -13,6 +15,7 @@ public class TrialverseUtilService {
   public static final String TYPED_LITERAL = "typed-literal";
   private static final String DOUBLE_TYPE = "http://www.w3.org/2001/XMLSchema#double";
   private static final String INTEGER_TYPE = "http://www.w3.org/2001/XMLSchema#integer";
+  private static final String DURATION_TYPE = "http://www.w3.org/2001/XMLSchema#duration";
 
   public static String subStringAfterLastSymbol(String inStr, char symbol) {
     return inStr.substring(inStr.lastIndexOf(symbol) + 1);
@@ -24,7 +27,11 @@ public class TrialverseUtilService {
       return JsonPath.read(row, "$." + name + ".value");
     }
     else if(URI.equals(type)){
-      return JsonPath.read(row, "$."+ name + ".value");
+      try {
+        return (T) new java.net.URI(JsonPath.read(row, "$."+ name + ".value"));
+      } catch (URISyntaxException e) {
+        throw new ReadValueException("can not read uri with name:" + name + " from row" + (row != null ?row.toJSONString():""));
+      }
     }
     else if(TYPED_LITERAL.equals(type)){
       String dataType  = JsonPath.read(row, "$." + name + ".datatype");
@@ -33,6 +40,9 @@ public class TrialverseUtilService {
       }
       if(dataType.equals(INTEGER_TYPE)){
         return (T) new Integer(Integer.parseInt(JsonPath.read(row, "$."+ name +".value")));
+      }
+      if(dataType.equals(DURATION_TYPE)){
+        return (T) JsonPath.read(row, "$."+ name +".value");
       }
     }
     throw new ReadValueException("can not read value with name:" + name + " from row" + (row != null ?row.toJSONString():""));
