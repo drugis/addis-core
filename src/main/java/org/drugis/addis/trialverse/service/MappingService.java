@@ -8,7 +8,7 @@ import java.net.URISyntaxException;
  * Created by daan on 9-2-16.
  */
 public interface MappingService {
-  public String getVersionedUuid(String namespaceUid) throws URISyntaxException;
+  String getVersionedUuid(String namespaceUid) throws URISyntaxException;
 
   VersionedUuidAndOwner getVersionedUuidAndOwner(String namespaceUuid) throws URISyntaxException;
 

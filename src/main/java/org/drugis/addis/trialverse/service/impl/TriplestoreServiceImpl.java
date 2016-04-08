@@ -11,6 +11,7 @@ import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.*;
+import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
 import org.joda.time.DateTime;
@@ -32,6 +33,10 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static org.drugis.addis.trialverse.TrialverseUtilService.subStringAfterLastSymbol;
+
+
 
 /**
  * Created by connor on 2/28/14.
@@ -71,6 +76,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Inject
   CovariateRepository covariateRepository;
+
+  @Inject
+  QueryResultMappingService queryResultMappingService;
 
   private static HttpHeaders createGetJsonHeader() {
     HttpHeaders headers = new HttpHeaders();
@@ -499,41 +507,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
-    Map<String, TrialDataStudy> trialDataStudies = new HashMap<>();
-    for (Object binding : bindings) {
-      String studyUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.graph.value"), '/');
-      TrialDataStudy trialDataStudy = trialDataStudies.get(studyUid);
-      if (trialDataStudy == null) {
-        String studyName = JsonPath.read(binding, "$.studyName.value");
-        trialDataStudy = new TrialDataStudy(studyUid, studyName, new ArrayList<>(), new ArrayList<>());
-        trialDataStudies.put(studyUid, trialDataStudy);
-      }
-      String drugInstanceUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.drugInstance.value"), '/');
-      String drugUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.drug.value"), '/');
-      TrialDataIntervention trialDataIntervention = new TrialDataIntervention(drugInstanceUid, drugUid, studyUid);
-      trialDataStudy.getTrialDataInterventions().add(trialDataIntervention);
-
-      Double mean = null;
-      Double stdDev = null;
-      Long rate = null;
-      JSONObject bindingObject = (JSONObject) binding;
-      Boolean isContinuous = bindingObject.containsKey("mean");
-      if (isContinuous) {
-        mean = Double.parseDouble(JsonPath.<String>read(binding, "$.mean.value"));
-        stdDev = Double.parseDouble(JsonPath.<String>read(binding, "$.stdDev.value"));
-      } else {
-        rate = Long.parseLong(JsonPath.<String>read(binding, "$.count.value"));
-      }
-      Long sampleSize = Long.parseLong(JsonPath.<String>read(binding, "$.sampleSize.value"));
-      String armUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.arm.value"), '/');
-      String armLabel = JsonPath.read(binding, "$.armLabel.value");
-      String variableUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.outcomeInstance.value"), '/');
-      Measurement measurement = new Measurement(studyUid, variableUid, armUid, sampleSize, rate, stdDev, mean);
-      TrialDataArm trialDataArm = new TrialDataArm(armUid, armLabel, studyUid, drugInstanceUid, drugUid, measurement);
-      trialDataStudy.getTrialDataArms().add(trialDataArm);
-
-    }
-
+    Map<String, TrialDataStudy> trialDataStudies = queryResultMappingService.mapResultRowToTrialDataStudy(bindings);
 
     List<CovariateOption> covariateOptions = Arrays.asList(CovariateOption.values());
     // transform covariate keys to object
@@ -554,7 +528,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       JSONArray covariateBindings = JsonPath.read(dataResponse.getBody(), "$.results.bindings");
       for (Object binding : covariateBindings) {
         JSONObject row = (JSONObject) binding;
-        String studyUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.graph.value"), '/');
+        String studyUid = subStringAfterLastSymbol(JsonPath.read(binding, "$.graph.value"), '/');
         Double value = extractValueFromRow(row);
         CovariateStudyValue covariateStudyValue = new CovariateStudyValue(studyUid, popcharUuid, value);
         covariateValues.add(covariateStudyValue);
@@ -701,9 +675,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, new HttpEntity<>(headers), String.class);
   }
 
-  private String subStringAfterLastSymbol(String inStr, char symbol) {
-    return inStr.substring(inStr.lastIndexOf(symbol) + 1);
-  }
+
+
 
   public static class SingleStudyBenefitRiskMeasurementRow {
     private String outcomeUid;
