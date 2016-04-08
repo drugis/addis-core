@@ -1,6 +1,8 @@
 PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX dataset: <http://trials.drugis.org/datasets/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX qudt: <http://qudt.org/schema/qudt#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> 
 PREFIX entity: <http://trials.drugis.org/entities/>
@@ -23,6 +25,19 @@ SELECT DISTINCT
 ?stdDev
 ?count
 ?sampleSize
+?fixedDoseValue
+?fixedDoseDosingPeriodicity
+?fixedDoseUnitConcept
+?fixedDoseUnitLabel
+?fixedDoseUnitMultiplier
+?maxDoseValue
+?maxDoseDosingPeriodicity
+?maxDoseUnitLabel
+?maxDoseUnitMultiplier
+?minDoseValue
+?minDoseDosingPeriodicity
+?minDoseUnitLabel
+?minDoseUnitMultiplier
 WHERE {
   GRAPH ?graph {
     ?study rdfs:label ?studyName .
@@ -44,9 +59,8 @@ WHERE {
         ontology:applied_to_arm ?arm ;
         ontology:applied_in_epoch ?epoch
       ] ;
-      ontology:has_drug_treatment [
-        ontology:treatment_has_drug ?drugInstance
-      ] .
+      ontology:has_drug_treatment ?treatmentNode .
+    ?treatmentNode ontology:treatment_has_drug ?drugInstance .
 
     ?epoch rdfs:label ?epochLabel .
     ?arm rdfs:label ?armLabel .
@@ -73,19 +87,54 @@ WHERE {
         ontology:count ?count ;
         ontology:sample_size ?sampleSize .
     } .
-    {
-      SELECT ?study ?arm
-      WHERE {
-       ?activity a ontology:TreatmentActivity ;
-             ontology:has_activity_application [
-               ontology:applied_to_arm ?arm ;
-               ontology:applied_in_epoch ?epoch
-             ] ;
-             ontology:has_drug_treatment [
-               ontology:treatment_has_drug ?drugInstance
-             ] .
-      } GROUP BY ?study ?arm
-          HAVING (COUNT(?drugInstance) < 2)
-    }
+    OPTIONAL {
+        ?treatmentNode
+          a ontology:FixedDoseDrugTreatment ;
+          ontology:treatment_dose [
+            rdf:value ?fixedDoseValue ;
+            ontology:dosingPeriodicity ?fixedDoseDosingPeriodicity ;
+            ontology:unit ?fixedDoseUnit
+          ] .
+          ?fixedDoseUnit
+            a ?fixedDoseUnitConcept ;
+            rdfs:label ?fixedDoseUnitLabel ;
+            qudt:conversionMultiplier ?fixedDoseUnitMultiplier .
+    } .
+    OPTIONAL {
+        ?treatmentNode
+          a ontology:TitratedDoseDrugTreatment ;
+          ontology:treatment_max_dose [
+            rdf:value ?maxDoseValue ;
+            ontology:dosingPeriodicity ?maxDoseDosingPeriodicity ;
+            ontology:unit ?maxDoseUnit
+          ] ;
+          ontology:treatment_min_dose [
+                      rdf:value ?minDoseValue ;
+                      ontology:dosingPeriodicity ?minDoseDosingPeriodicity ;
+                      ontology:unit ?minDoseUnit
+           ] .
+          ?maxDoseUnit
+            a ?maxDoseUnitConcept ;
+            rdfs:label ?maxDoseUnitLabel ;
+            qudt:conversionMultiplier ?maxDoseUnitMultiplier .
+          ?minDoseUnit
+            a ?minDoseUnitConcept ;
+            rdfs:label ?minDoseUnitLabel ;
+            qudt:conversionMultiplier ?minDoseUnitMultiplier .
+    } .
+#    {
+#      SELECT ?study ?arm
+#      WHERE {
+#       ?activity a ontology:TreatmentActivity ;
+#             ontology:has_activity_application [
+#               ontology:applied_to_arm ?arm ;
+#               ontology:applied_in_epoch ?epoch
+#             ] ;
+#             ontology:has_drug_treatment [
+#               ontology:treatment_has_drug ?drugInstance
+#             ] .
+#      } GROUP BY ?study ?arm
+#          HAVING (COUNT(?drugInstance) < 2)
+#    }
   }
 }
