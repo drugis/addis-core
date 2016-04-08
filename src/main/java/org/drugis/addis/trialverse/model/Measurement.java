@@ -5,7 +5,7 @@ public class Measurement {
   private String studyUid;
   private String variableUid;
   private String armUid;
-  private Long sampleSize;
+  private Integer sampleSize;
   private Long rate;
   private Double stdDev;
   private Double mean;
@@ -13,7 +13,7 @@ public class Measurement {
   public Measurement() {
   }
 
-  public Measurement(String studyUid, String variableUid, String armUid, Long sampleSize, Long rate, Double stdDev, Double mean) {
+  public Measurement(String studyUid, String variableUid, String armUid, Integer sampleSize, Long rate, Double stdDev, Double mean) {
     this.studyUid = studyUid;
     this.variableUid = variableUid;
     this.armUid = armUid;
@@ -35,7 +35,7 @@ public class Measurement {
     return armUid;
   }
 
-  public Long getSampleSize() {
+  public Integer getSampleSize() {
     return sampleSize;
   }
 

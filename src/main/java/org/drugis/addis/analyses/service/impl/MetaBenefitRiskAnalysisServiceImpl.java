@@ -11,6 +11,7 @@ import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -34,7 +35,7 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
-  public MetaBenefitRiskAnalysis update(Account user, Integer projectId, MetaBenefitRiskAnalysis analysis) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException {
+  public MetaBenefitRiskAnalysis update(Account user, Integer projectId, MetaBenefitRiskAnalysis analysis) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException {
     MetaBenefitRiskAnalysis storedAnalysis = metaBenefitRiskAnalysisRepository.find(analysis.getId());
     if(storedAnalysis.isFinalized()) {
       throw new MethodNotAllowedException();

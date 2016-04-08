@@ -9,6 +9,7 @@ import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -122,7 +123,7 @@ public class TrialverseController {
   @RequestMapping(value = "/{namespaceUid}/trialData", method = RequestMethod.GET)
   @ResponseBody
   public TrialData getTrialData(@PathVariable String namespaceUid, @RequestParam String version, @RequestParam String outcomeUri,
-                                @RequestParam(required = false) List<String> interventionUris, @RequestParam(required = false) List<String> covariateKeys) throws URISyntaxException {
+                                @RequestParam(required = false) List<String> interventionUris, @RequestParam(required = false) List<String> covariateKeys) throws URISyntaxException, ReadValueException {
     if (interventionUris == null) {
       interventionUris = Collections.emptyList();
     }

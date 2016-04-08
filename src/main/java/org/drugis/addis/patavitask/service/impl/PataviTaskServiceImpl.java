@@ -11,6 +11,7 @@ import org.drugis.addis.patavitask.service.PataviTaskService;
 import org.drugis.addis.problems.model.NetworkMetaAnalysisProblem;
 import org.drugis.addis.problems.model.PairwiseNetworkProblem;
 import org.drugis.addis.problems.service.ProblemService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class PataviTaskServiceImpl implements PataviTaskService {
   ProblemService problemService;
 
   @Override
-  public PataviTaskUriHolder getPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException {
+  public PataviTaskUriHolder getPataviTaskUriHolder(Integer projectId, Integer analysisId, Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException {
     logger.trace("PataviTaskServiceImpl.getPataviTaskUriHolder, projectId = " + projectId + " analysisId = " + analysisId + "modelId = " + modelId);
     Model model = modelRepository.find(modelId);
     if(model == null) {

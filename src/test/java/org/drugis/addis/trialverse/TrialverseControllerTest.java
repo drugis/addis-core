@@ -178,7 +178,7 @@ public class TrialverseControllerTest {
   }
 
   @Test
-  public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Exception {
+  public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Throwable {
     List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy("abc", "study name", Collections.emptyList(), Collections.emptyList()));
     List<String> interventionUris = Arrays.asList("uri1", "uri2");
     String outcomeUri = "http://someoutcomethisis/12345/abc";
@@ -195,7 +195,7 @@ public class TrialverseControllerTest {
   }
 
   @Test
-  public void testGetTrialDataWithOutcomeAndNoInterventionsInQuery() throws Exception {
+  public void testGetTrialDataWithOutcomeAndNoInterventionsInQuery() throws Throwable {
     List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy("abc", "study name", Collections.emptyList(), Collections.emptyList()));
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     String versionUid = "current";

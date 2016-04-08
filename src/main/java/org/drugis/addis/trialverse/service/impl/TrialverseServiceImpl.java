@@ -25,7 +25,7 @@ public class TrialverseServiceImpl implements TrialverseService {
   TriplestoreService triplestoreService;
 
   @Override
-  public List<ObjectNode> getTrialData(String namespaceUId, String version, String semanticOutcomeUri, List<String> alternativeUris, List<String> covariateKeys) {
+  public List<ObjectNode> getTrialData(String namespaceUId, String version, String semanticOutcomeUri, List<String> alternativeUris, List<String> covariateKeys) throws ReadValueException {
     List<TrialDataStudy> trialData = triplestoreService.getTrialData(namespaceUId, version, semanticOutcomeUri, alternativeUris, covariateKeys);
     return objectsToNodes(trialData);
   

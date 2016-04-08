@@ -29,6 +29,7 @@ import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -86,7 +87,7 @@ public class ProblemServiceImpl implements ProblemService {
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
-  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
+  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
     if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
@@ -242,7 +243,7 @@ public class ProblemServiceImpl implements ProblemService {
             .mapToInt(idSelector).boxed().collect(Collectors.toList());
   }
 
-  private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws URISyntaxException {
+  private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws URISyntaxException, ReadValueException {
     List<String> alternativeUris = new ArrayList<>();
     List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
     Map<String, Integer> interventionIdsByUrisMap = new HashMap<>();

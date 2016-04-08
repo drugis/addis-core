@@ -4,6 +4,7 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.patavitask.PataviTaskUriHolder;
 import org.drugis.addis.patavitask.service.PataviTaskService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,7 @@ public class PataviTaskController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/task", method = RequestMethod.GET)
   @ResponseBody
-  public PataviTaskUriHolder get(@PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException {
+  public PataviTaskUriHolder get(@PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException {
     return pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId);
   }
 

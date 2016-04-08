@@ -7,6 +7,7 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -53,7 +54,7 @@ public interface TriplestoreService {
 
   JSONArray getStudyEpochs(String namespaceUid, String studyUid);
 
-  List<TrialDataStudy> getTrialData(String namespaceUid, String version, String outcomeUri, List<String> interventionUris, List<String> covariateKeys);
+  List<TrialDataStudy> getTrialData(String namespaceUid, String version, String outcomeUri, List<String> interventionUris, List<String> covariateKeys) throws ReadValueException;
 
   List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String namespaceUid, String studyUid, String version, List<String> outcomeUids, List<String> interventionUids);
 

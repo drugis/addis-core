@@ -34,6 +34,7 @@ import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.junit.After;
 import org.junit.Before;
@@ -112,7 +113,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
+  public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException {
     int projectId = 1;
     String projectVersion = "projectVersion";
     Project project = new Project(projectId, new Account("username", "first", "lasr", "email"), "name", "desc", namespaceUid, projectVersion);
@@ -198,7 +199,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
+  public void testGetNetworkMetaAnalysisProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException {
     String version = "version 1";
     Integer projectId = 2;
     Integer analysisId = 3;
@@ -268,7 +269,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNetworkAnalysisProblemWithInterventionInclusions() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
+  public void testGetNetworkAnalysisProblemWithInterventionInclusions() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException {
     String version = "version 1";
     Integer projectId = 2;
     Integer analysisId = 3;
@@ -333,7 +334,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetNetworkAnalysisProblemWithCovaraites() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException {
+  public void testGetNetworkAnalysisProblemWithCovaraites() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException {
     String version = "version 1";
     Integer projectId = 2;
     Integer analysisId = 3;
@@ -408,7 +409,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetMetaBRProblem() throws ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, InvalidModelException {
+  public void testGetMetaBRProblem() throws ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, InvalidModelException, ReadValueException {
 
     String version = "version 1";
     Integer projectId = 1;

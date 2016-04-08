@@ -496,7 +496,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Override
   public List<TrialDataStudy> getTrialData(String namespaceUid, String version, String outcomeUid,
-                                           List<String> interventionUids, List<String> covariateKeys) {
+                                           List<String> interventionUids, List<String> covariateKeys) throws ReadValueException {
     if(interventionUids.isEmpty()) {
       return Collections.emptyList();
     }

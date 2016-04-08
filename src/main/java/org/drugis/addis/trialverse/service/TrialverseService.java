@@ -1,6 +1,7 @@
 package org.drugis.addis.trialverse.service;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 
 import java.util.List;
 
@@ -9,5 +10,5 @@ import java.util.List;
  */
 public interface TrialverseService {
 
-  List<ObjectNode> getTrialData(String namespaceUId, String version, String semanticOutcomeUri, List<String> alternativeUris, List<String> covariateKeys);
+  List<ObjectNode> getTrialData(String namespaceUId, String version, String semanticOutcomeUri, List<String> alternativeUris, List<String> covariateKeys) throws ReadValueException;
 }

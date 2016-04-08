@@ -5,6 +5,7 @@ import org.drugis.addis.config.TestConfig;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.*;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.util.WebConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +52,7 @@ public class ProblemControllerTest {
   }
 
   @Test
-  public void testGetSingleStudybenefitRiskProblem() throws Exception {
+  public void testGetSingleStudybenefitRiskProblem() throws Exception, ReadValueException {
     RatePerformance ratePerformance = new RatePerformance(new RatePerformanceParameters(10L, 50L));
     String alternativeUri1 = "Alt uri 1";
     String alternativeUri2 = "Alt uri 2";
@@ -77,7 +78,7 @@ public class ProblemControllerTest {
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisProblem() throws Exception {
+  public void testGetNetworkMetaAnalysisProblem() throws Exception, ReadValueException {
     int treatmentId1 = 1;
     int treatmentId2 = 2;
     AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10L, 5L);
@@ -102,7 +103,7 @@ public class ProblemControllerTest {
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisNoCovariates() throws Exception {
+  public void testGetNetworkMetaAnalysisNoCovariates() throws Exception, ReadValueException {
     int treatmentId1 = 1;
     int treatmentId2 = 2;
     AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10L, 5L);

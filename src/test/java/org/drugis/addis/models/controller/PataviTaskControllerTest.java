@@ -5,6 +5,7 @@ import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.patavitask.PataviTaskUriHolder;
 import org.drugis.addis.patavitask.controller.PataviTaskController;
 import org.drugis.addis.patavitask.service.PataviTaskService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class PataviTaskControllerTest {
   }
 
   @Test
-  public void testGet() throws Exception, InvalidModelException {
+  public void testGet() throws Exception, InvalidModelException, ReadValueException {
     String uri = "www.nogonahappen.com";
     PataviTaskUriHolder pataviTaskUriHolder = new PataviTaskUriHolder(uri);
     int projectId = 45;

@@ -1,6 +1,5 @@
 package org.drugis.addis.trialverse.service.impl;
 
-import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.drugis.addis.trialverse.model.Measurement;
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.drugis.addis.trialverse.TrialverseUtilService.readValue;
 import static org.drugis.addis.trialverse.TrialverseUtilService.subStringAfterLastSymbol;
 
 /**
@@ -21,40 +21,42 @@ import static org.drugis.addis.trialverse.TrialverseUtilService.subStringAfterLa
  */
 @Service
 public class QueryResultMappingServiceImpl implements QueryResultMappingService {
+
   @Override
-  public Map<String, TrialDataStudy> mapResultRowToTrialDataStudy(JSONArray bindings) {
+  public Map<String, TrialDataStudy> mapResultRowToTrialDataStudy(JSONArray bindings) throws ReadValueException {
     Map<String, TrialDataStudy> trialDataStudies = new HashMap<>();
     for (Object binding : bindings) {
-      String studyUid = subStringAfterLastSymbol(JsonPath.read(binding, "$.graph.value"), '/');
+      JSONObject row = (JSONObject) binding;
+      String studyUid = subStringAfterLastSymbol(readValue(row, "graph"), '/');
       TrialDataStudy trialDataStudy = trialDataStudies.get(studyUid);
       if (trialDataStudy == null) {
-        String studyName = JsonPath.read(binding, "$.studyName.value");
+        String studyName = readValue(row, "studyName");
         trialDataStudy = new TrialDataStudy(studyUid, studyName, new ArrayList<>(), new ArrayList<>());
         trialDataStudies.put(studyUid, trialDataStudy);
       }
-      String drugInstanceUid = subStringAfterLastSymbol(JsonPath.read(binding, "$.drugInstance.value"), '/');
-      String drugUid = subStringAfterLastSymbol(JsonPath.read(binding, "$.drug.value"), '/');
+      String drugInstanceUid = subStringAfterLastSymbol(readValue(row, "drugInstance"), '/');
+      String drugUid = subStringAfterLastSymbol(readValue(row, "drug"), '/');
       TrialDataIntervention trialDataIntervention = new TrialDataIntervention(drugInstanceUid, drugUid, studyUid);
       trialDataStudy.getTrialDataInterventions().add(trialDataIntervention);
 
       Double mean = null;
       Double stdDev = null;
       Long rate = null;
-      JSONObject bindingObject = (JSONObject) binding;
-      Boolean isContinuous = bindingObject.containsKey("mean");
+      Boolean isContinuous = row.containsKey("mean");
       if (isContinuous) {
-        mean = Double.parseDouble(JsonPath.read(binding, "$.mean.value"));
-        stdDev = Double.parseDouble(JsonPath.read(binding, "$.stdDev.value"));
+        mean =readValue(row, "mean");
+        stdDev = readValue(row, "stdDev");
       } else {
-        rate = Long.parseLong(JsonPath.read(binding, "$.count.value"));
+        rate = readValue(row, "count");
       }
-      Long sampleSize = Long.parseLong(JsonPath.read(binding, "$.sampleSize.value"));
-      String armUid = subStringAfterLastSymbol(JsonPath.read(binding, "$.arm.value"), '/');
-      String armLabel = JsonPath.read(binding, "$.armLabel.value");
-      String variableUid = subStringAfterLastSymbol(JsonPath.read(binding, "$.outcomeInstance.value"), '/');
+      Integer sampleSize = readValue(row, "sampleSize");
+      String armUid = subStringAfterLastSymbol(readValue(row, "arm"), '/');
+      String armLabel = readValue(row, "armLabel");
+      String variableUid = subStringAfterLastSymbol(readValue(row, "outcomeInstance"), '/');
       Measurement measurement = new Measurement(studyUid, variableUid, armUid, sampleSize, rate, stdDev, mean);
       TrialDataArm trialDataArm = new TrialDataArm(armUid, armLabel, studyUid, drugInstanceUid, drugUid, measurement);
       trialDataStudy.getTrialDataArms().add(trialDataArm);
+
     }
     return trialDataStudies;
   }
