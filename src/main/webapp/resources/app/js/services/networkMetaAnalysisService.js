@@ -180,6 +180,33 @@ define(['lodash', 'angular'], function(_, angular) {
       return interventionSum;
     }
 
+    /*  Dose-machting rules 
+     **
+     **  For example, in this study, in arm 1 a fixed dose of placebo is combined with a titrated dose of fluoxetine,
+     **  meaning it includes the dataset drugs "Placebo" and "Fluoxetine":
+     **
+     **  study   arm   drug        fixedDose minDose maxDose count sampleSize
+     **  StudyA  Arm1  Placebo     0.0       NA      NA      15    32
+     **  StudyA  Arm1  Fluoxetine  NA        5.0     20.0    15    32
+     **
+     **  Dose units (columns not shown above) must match exactly, no normalization / unit conversion is done for now.
+     **
+     **  A combination intervention matches an arm if its members match all of the rows, has no members that do not match a row,
+     **  and do not overlap in the rows they match.
+     
+     **  Therefore: - the simple intervention "Placebo" would not match this arm.
+     **  - The complex intervention "Placebo + Fluoxetine", would match.
+     **  - The complex intervention "Paroxetine + Fluoxetine + Fluoxetine" would not match.
+     **
+     **  The complex intervention "(Placebo + Fluoxetine) OR Fluoxetine" matches Arm1 of StudyA because one of its members,
+     **  "Placebo + Fluoxetine" matches. An OR intervention matches all the rows that the most inclusive of its members matches.
+     **
+     **  A dose-restricted intervention matches a row as if it were a simple intervention, but in addition it checks dose constraints.
+     **
+     **  In the following chain, later interventions can be composed of any of the intervention types that precede it,
+     **  but not any of the same type or types that follow it:
+     **   (Simple interventions, Dose restricted interventions) < Combination interventions < OR interventions.
+     */
 
 
     function findArmForIntervention(trialdataArms, trialDataIntervention) {
