@@ -7,7 +7,6 @@ import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisReposi
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.repository.ModelRepository;
@@ -20,10 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 /**
  * Created by daan on 22-5-14.
@@ -76,35 +72,6 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
     return networkMetaAnalysisRepository.update(analysis);
-  }
-
-  @Override
-  public void checkMetaBenefitRiskAnalysis(Account user, MetaBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
-    projectService.checkProjectExistsAndModifiable(user, analysis.getProjectId());
-    checkProjectIdChange(analysis);
-
-    List<AbstractIntervention> interventions = interventionRepository.query(analysis.getProjectId());
-    Map<Integer, AbstractIntervention> interventionMap = interventions.stream()
-            .collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
-
-    if (isNotEmpty(analysis.getIncludedAlternatives())) {
-      // do not allow selection of interventions that are not in the project
-      for (InterventionInclusion interventionInclusion : analysis.getIncludedAlternatives()) {
-        if (!interventionMap.get(interventionInclusion.getInterventionId()).getProject().equals(analysis.getProjectId())) {
-          throw new ResourceDoesNotExistException();
-        }
-      }
-    }
-    if (isNotEmpty(analysis.getMbrOutcomeInclusions())) {
-      // do not allow selection of outcomes that are not in the project
-      for (MbrOutcomeInclusion mbrOutcomeInclusion : analysis.getMbrOutcomeInclusions()) {
-        Integer outcomeId = mbrOutcomeInclusion.getOutcomeId();
-        Outcome outcome = outcomeRepository.get(outcomeId);
-        if (!outcome.getProject().equals(analysis.getProjectId())) {
-          throw new ResourceDoesNotExistException();
-        }
-      }
-    }
   }
 
   @Override
@@ -172,7 +139,8 @@ public class AnalysisServiceImpl implements AnalysisService {
     return singleStudyBenefitRiskAnalysisRepository.create(analysisCommand);
   }
 
-  private void checkProjectIdChange(AbstractAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
+  @Override
+  public void checkProjectIdChange(AbstractAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
     // do not allow changing of project ID
     AbstractAnalysis oldAnalysis = analysisRepository.get(analysis.getId());
     if (!oldAnalysis.getProjectId().equals(analysis.getProjectId())) {

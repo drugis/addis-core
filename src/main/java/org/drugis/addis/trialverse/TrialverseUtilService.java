@@ -10,9 +10,9 @@ import java.net.URISyntaxException;
  * Created by connor on 8-4-16.
  */
 public class TrialverseUtilService {
-  public static final String URI = "uri";
-  public static final String LITERAL = "literal";
-  public static final String TYPED_LITERAL = "typed-literal";
+  private static final String URI = "uri";
+  private static final String LITERAL = "literal";
+  private static final String TYPED_LITERAL = "typed-literal";
   private static final String DOUBLE_TYPE = "http://www.w3.org/2001/XMLSchema#double";
   private static final String INTEGER_TYPE = "http://www.w3.org/2001/XMLSchema#integer";
   private static final String DURATION_TYPE = "http://www.w3.org/2001/XMLSchema#duration";

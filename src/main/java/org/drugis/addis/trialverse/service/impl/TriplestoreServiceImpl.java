@@ -509,6 +509,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
     Map<URI, TrialDataStudy> trialDataStudies = queryResultMappingService.mapResultRowToTrialDataStudy(bindings);
+  //  Map<URI, TrialDataStudy> trialDataStudies = queryResultMappingService.matchInterventions(trialDataStudies, interventionUids);
 
     List<CovariateOption> covariateOptions = Arrays.asList(CovariateOption.values());
     // transform covariate keys to object

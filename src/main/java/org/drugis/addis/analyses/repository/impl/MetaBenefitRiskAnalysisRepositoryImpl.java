@@ -6,6 +6,7 @@ import org.drugis.addis.analyses.MbrOutcomeInclusion;
 import org.drugis.addis.analyses.MetaBenefitRiskAnalysis;
 import org.drugis.addis.analyses.repository.MetaBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
+import org.drugis.addis.analyses.service.MetaBenefitRiskAnalysisService;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
@@ -21,7 +22,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,6 +46,9 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
 
   @Inject
   ScenarioRepository scenarioRepository;
+
+  @Inject
+  MetaBenefitRiskAnalysisService metaBenefitRiskAnalysisService;
 
 
   @Override
@@ -82,7 +85,7 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
 
   @Override
   public MetaBenefitRiskAnalysis update(Account user, MetaBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException {
-    analysisService.checkMetaBenefitRiskAnalysis(user, analysis);
+    metaBenefitRiskAnalysisService.checkMetaBenefitRiskAnalysis(user, analysis);
     return em.merge(analysis);
   }
 

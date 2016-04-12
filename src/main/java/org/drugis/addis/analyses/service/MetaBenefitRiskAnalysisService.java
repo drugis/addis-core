@@ -15,4 +15,7 @@ import java.sql.SQLException;
  */
 public interface MetaBenefitRiskAnalysisService {
   MetaBenefitRiskAnalysis update(Account user, Integer projectId, MetaBenefitRiskAnalysis analysis) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException;
+
+  void checkMetaBenefitRiskAnalysis(Account user, MetaBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, MethodNotAllowedException;
+
 }
