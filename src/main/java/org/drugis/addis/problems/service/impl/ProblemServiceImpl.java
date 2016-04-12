@@ -26,6 +26,10 @@ import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
+import org.drugis.addis.trialverse.model.CovariateStudyValue;
+import org.drugis.addis.trialverse.model.Measurement;
+import org.drugis.addis.trialverse.model.TrialDataArm;
+import org.drugis.addis.trialverse.model.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -35,6 +39,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
@@ -244,9 +249,9 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws URISyntaxException, ReadValueException {
-    List<String> alternativeUris = new ArrayList<>();
+    List<URI> alternativeUris = new ArrayList<>();
     List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
-    Map<String, Integer> interventionIdsByUrisMap = new HashMap<>();
+    Map<URI, Integer> interventionIdsByUrisMap = new HashMap<>();
 
     interventions = filterExcludedInterventions(interventions, analysis.getIncludedInterventions());
 
@@ -282,7 +287,7 @@ public class ProblemServiceImpl implements ProblemService {
       // do not include studies with fewer than two included and matched arms
       if (filteredArms.size() >= 2) {
         for (TrialDataArm trialDataArm : filteredArms) {
-          Integer treatmentId = interventionIdsByUrisMap.get(trialDataArm.getDrugConceptUid());
+          Integer treatmentId = interventionIdsByUrisMap.get(trialDataArm.getSemanticIntervention().getDrugConcept());
           entries.add(buildEntry(trialDataStudy.getName(), treatmentId, trialDataArm.getMeasurement()));
         }
       }
@@ -318,7 +323,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     for (TrialDataArm trialDataArm : trialDataArms) {
-      if (!armExclusionTrialverseIds.contains(trialDataArm.getUid())) {
+      if (!armExclusionTrialverseIds.contains(trialDataArm.getUri())) {
         filteredTrialDataArms.add(trialDataArm);
       }
     }
@@ -327,27 +332,16 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private AbstractNetworkMetaAnalysisProblemEntry buildEntry(String studyName, Integer treatmentId, Measurement measurement) {
-    Long sampleSize = measurement.getSampleSize();
+    Integer sampleSize = measurement.getSampleSize();
     if (measurement.getMean() != null) {
       Double mu = measurement.getMean();
       Double sigma = measurement.getStdDev();
       return new ContinuousNetworkMetaAnalysisProblemEntry(studyName, treatmentId, sampleSize, mu, sigma);
     } else if (measurement.getRate() != null) {
-      Long rate = measurement.getRate();
+      Integer rate = measurement.getRate();
       return new RateNetworkMetaAnalysisProblemEntry(studyName, treatmentId, sampleSize, rate);
     }
     throw new RuntimeException("unknown measurement type");
-  }
-
-  private Map<String, TrialDataIntervention> createInterventionByDrugIdMap(List<TrialDataStudy> trialDataStudies) {
-    Map<String, TrialDataIntervention> interventionByDrugIdMap = new HashMap<>();
-    for (TrialDataStudy study : trialDataStudies) {
-
-      for (TrialDataIntervention intervention : study.getTrialDataInterventions()) {
-        interventionByDrugIdMap.put(intervention.getDrugInstanceUid(), intervention);
-      }
-    }
-    return interventionByDrugIdMap;
   }
 
   private List<AbstractIntervention> filterExcludedInterventions(List<AbstractIntervention> interventions, List<InterventionInclusion> inclusions) {
@@ -367,7 +361,7 @@ public class ProblemServiceImpl implements ProblemService {
     return filteredInterventions;
   }
 
-  private List<TrialDataArm> filterUnmatchedArms(TrialDataStudy study, Map<String, Integer> interventionByIdMap) {
+  private List<TrialDataArm> filterUnmatchedArms(TrialDataStudy study, Map<URI, Integer> interventionByIdMap) {
     List<TrialDataArm> filteredArms = new ArrayList<>();
 
     for (TrialDataArm arm : study.getTrialDataArms()) {
@@ -379,26 +373,26 @@ public class ProblemServiceImpl implements ProblemService {
     return filteredArms;
   }
 
-  private boolean isMatched(TrialDataArm arm, Map<String, Integer> interventionByIdMap) {
-    return interventionByIdMap.get(arm.getDrugConceptUid()) != null;
+  private boolean isMatched(TrialDataArm arm, Map<URI, Integer> interventionByIdMap) {
+    return interventionByIdMap.get(arm.getSemanticIntervention().getDrugConcept()) != null;
   }
 
-  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, URISyntaxException {
+  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, URISyntaxException, ReadValueException {
     List<String> outcomeUids = analysis.getSelectedOutcomes().stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toList());
     List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
     Map<Integer, AbstractIntervention> interventionMap = interventions
             .stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
-    List<String> alternativeUids = analysis.getSelectedInterventions()
+    List<URI> alternativeUris = analysis.getSelectedInterventions()
             .stream().map(intervention -> interventionMap.get(intervention.getInterventionId()).getSemanticInterventionUri())
             .collect(Collectors.toList());
     String versionedUuid = mappingService.getVersionedUuid(project.getNamespaceUid());
     List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementNodes =
-            triplestoreService.getSingleStudyMeasurements(versionedUuid, analysis.getStudyGraphUid(), project.getDatasetVersion(), outcomeUids, alternativeUids);
+            triplestoreService.getSingleStudyMeasurements(versionedUuid, analysis.getStudyGraphUid(), project.getDatasetVersion(), outcomeUids, alternativeUris);
 
-    Map<String, AlternativeEntry> alternatives = new HashMap<>();
+    Map<URI, AlternativeEntry> alternatives = new HashMap<>();
     Map<String, CriterionEntry> criteria = new HashMap<>();
     for (TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow measurementRow : measurementNodes) {
-      alternatives.put(measurementRow.getAlternativeUid(), new AlternativeEntry(measurementRow.getAlternativeUid(), measurementRow.getAlternativeLabel()));
+      alternatives.put(measurementRow.getAlternativeUri(), new AlternativeEntry(measurementRow.getAlternativeUri(), measurementRow.getAlternativeLabel()));
       CriterionEntry criterionEntry = createCriterionEntry(measurementRow);
       criteria.put(measurementRow.getOutcomeUid(), criterionEntry);
     }

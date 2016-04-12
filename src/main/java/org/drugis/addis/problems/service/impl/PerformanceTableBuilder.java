@@ -4,6 +4,7 @@ import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,27 +18,27 @@ public class PerformanceTableBuilder {
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
     for (TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow measurementRow : measurementNodes) {
       if (measurementRow.getRate() != null) {
-        performanceTable.add(createBetaDistributionEntry(measurementRow.getAlternativeUid(), measurementRow.getOutcomeUid(), measurementRow.getRate(), measurementRow.getSampleSize()));
+        performanceTable.add(createBetaDistributionEntry(measurementRow.getAlternativeUri(), measurementRow.getOutcomeUid(), measurementRow.getRate(), measurementRow.getSampleSize()));
       } else if (measurementRow.getMean() != null) {
-        performanceTable.add(createNormalDistributionEntry(measurementRow.getAlternativeUid(), measurementRow.getOutcomeUid(), measurementRow.getMean(), measurementRow.getStdDev(), measurementRow.getSampleSize()));
+        performanceTable.add(createNormalDistributionEntry(measurementRow.getAlternativeUri(), measurementRow.getOutcomeUid(), measurementRow.getMean(), measurementRow.getStdDev(), measurementRow.getSampleSize()));
       }
     }
     return performanceTable;
   }
 
-  private ContinuousMeasurementEntry createNormalDistributionEntry(String alternativeUid, String criterionUid, Double mean, Double standardDeviation, Long sampleSize) {
+  private ContinuousMeasurementEntry createNormalDistributionEntry(URI alternativeUri, String criterionUid, Double mean, Double standardDeviation, Long sampleSize) {
     Double sigma = standardDeviation / Math.sqrt(sampleSize);
 
     ContinuousPerformance performance = new ContinuousPerformance(new ContinuousPerformanceParameters(mean, sigma));
-    return new ContinuousMeasurementEntry(alternativeUid, criterionUid, performance);
+    return new ContinuousMeasurementEntry(alternativeUri, criterionUid, performance);
   }
 
-  private RateMeasurementEntry createBetaDistributionEntry(String alternativeUid, String criterionUid, Long rate, Long sampleSize) {
+  private RateMeasurementEntry createBetaDistributionEntry(URI alternativeUri, String criterionUid, Long rate, Long sampleSize) {
     Long alpha = rate + 1;
     Long beta = sampleSize - rate + 1;
 
     RatePerformance performance = new RatePerformance(new RatePerformanceParameters(alpha, beta));
-    return new RateMeasurementEntry(alternativeUid, criterionUid, performance);
+    return new RateMeasurementEntry(alternativeUri, criterionUid, performance);
   }
 
 }

@@ -1,5 +1,9 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.trialverse.util.Namespaces;
+
+import java.net.URI;
+
 /**
  * Created by daan on 5-4-16.
  */
@@ -28,7 +32,7 @@ public class BothDoseTypesInterventionCommand extends AbstractInterventionComman
       maxConstraint = new DoseConstraint(this.bothDoseTypesMaxConstraint.getLowerBound(), this.bothDoseTypesMaxConstraint.getUpperBound());
     }
     return new BothDoseTypesIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(),
-            this.getSemanticInterventionUuid(), this.getSemanticInterventionLabel(),
+            URI.create(Namespaces.CONCEPT_NAMESPACE + this.getSemanticInterventionUuid()), this.getSemanticInterventionLabel(),
             minConstraint,
             maxConstraint);
   }

@@ -8,21 +8,22 @@ import java.net.URI;
 public class TrialDataArm {
   private URI uri;
   private String name;
-  private URI studyUri;
   private URI drugInstance;
-  private URI drugConcept;
   private Measurement measurement;
+  private AbstractSemanticIntervention semanticIntervention;
+
+  private Integer matchedProjectInterventionId;
+
 
   public TrialDataArm() {
   }
 
-  public TrialDataArm(URI uri, String name, URI studyUri, URI drugInstanceUid, URI drugConceptUid, Measurement measurement) {
+  public TrialDataArm(URI uri, String name, URI drugInstance, Measurement measurement, AbstractSemanticIntervention semanticIntervention) {
     this.uri = uri;
     this.name = name;
-    this.studyUri = studyUri;
-    this.drugInstance = drugInstanceUid;
-    this.drugConcept = drugConceptUid;
+    this.drugInstance = drugInstance;
     this.measurement = measurement;
+    this.semanticIntervention = semanticIntervention;
   }
 
   public URI getUri() {
@@ -33,20 +34,24 @@ public class TrialDataArm {
     return name;
   }
 
-  public URI getStudyUri() {
-    return studyUri;
-  }
-
   public URI getDrugInstanceUid() {
     return drugInstance;
   }
 
-  public URI getDrugConceptUid() {
-    return drugConcept;
-  }
-
   public Measurement getMeasurement() {
     return measurement;
+  }
+
+  public AbstractSemanticIntervention getSemanticIntervention() {
+    return semanticIntervention;
+  }
+
+  public Integer getMatchedProjectInterventionId() {
+    return matchedProjectInterventionId;
+  }
+
+  public void setMatchedProjectInterventionId(Integer matchedProjectInterventionId) {
+    this.matchedProjectInterventionId = matchedProjectInterventionId;
   }
 
   @Override
@@ -58,10 +63,10 @@ public class TrialDataArm {
 
     if (!uri.equals(that.uri)) return false;
     if (!name.equals(that.name)) return false;
-    if (studyUri != null ? !studyUri.equals(that.studyUri) : that.studyUri != null) return false;
     if (!drugInstance.equals(that.drugInstance)) return false;
-    if (!drugConcept.equals(that.drugConcept)) return false;
-    return measurement != null ? measurement.equals(that.measurement) : that.measurement == null;
+    if (!measurement.equals(that.measurement)) return false;
+    if (!semanticIntervention.equals(that.semanticIntervention)) return false;
+    return matchedProjectInterventionId != null ? matchedProjectInterventionId.equals(that.matchedProjectInterventionId) : that.matchedProjectInterventionId == null;
 
   }
 
@@ -69,10 +74,10 @@ public class TrialDataArm {
   public int hashCode() {
     int result = uri.hashCode();
     result = 31 * result + name.hashCode();
-    result = 31 * result + (studyUri != null ? studyUri.hashCode() : 0);
     result = 31 * result + drugInstance.hashCode();
-    result = 31 * result + drugConcept.hashCode();
-    result = 31 * result + (measurement != null ? measurement.hashCode() : 0);
+    result = 31 * result + measurement.hashCode();
+    result = 31 * result + semanticIntervention.hashCode();
+    result = 31 * result + (matchedProjectInterventionId != null ? matchedProjectInterventionId.hashCode() : 0);
     return result;
   }
 }

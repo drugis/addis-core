@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.Collection;
@@ -123,7 +124,7 @@ public class TrialverseController {
   @RequestMapping(value = "/{namespaceUid}/trialData", method = RequestMethod.GET)
   @ResponseBody
   public TrialData getTrialData(@PathVariable String namespaceUid, @RequestParam String version, @RequestParam String outcomeUri,
-                                @RequestParam(required = false) List<String> interventionUris, @RequestParam(required = false) List<String> covariateKeys) throws URISyntaxException, ReadValueException {
+                                @RequestParam(required = false) List<URI> interventionUris, @RequestParam(required = false) List<String> covariateKeys) throws URISyntaxException, ReadValueException {
     if (interventionUris == null) {
       interventionUris = Collections.emptyList();
     }

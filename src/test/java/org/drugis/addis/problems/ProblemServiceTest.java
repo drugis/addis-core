@@ -28,8 +28,7 @@ import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
-import org.drugis.addis.trialverse.model.SemanticVariable;
+import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
@@ -45,6 +44,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
@@ -123,12 +123,12 @@ public class ProblemServiceTest {
     String studyUid = "3g0yg-g945gh";
     String criterionUri1 = "c1";
     String variableName1 = "vn1";
-    String alternativeUri1 = "a1";
+    URI alternativeUri1 = URI.create("a1");
     String armName1 = "an1";
 
     String criterionUri2 = "c2";
     String variableName2 = "vn2";
-    String alternativeUri2 = "a2";
+    URI alternativeUri2 = URI.create("a2");
     String armName2 = "an2";
 
     SingleStudyBenefitRiskAnalysis analysis = mock(SingleStudyBenefitRiskAnalysis.class);
@@ -157,7 +157,7 @@ public class ProblemServiceTest {
 
     when(analysis.getStudyGraphUid()).thenReturn(studyUid);
     List<String> outcomeUids = Arrays.asList(criterionUri1, criterionUri2);
-    List<String> interventionUids = Arrays.asList(alternativeUri1, alternativeUri2);
+    List<URI> interventionUids = Arrays.asList(alternativeUri1, alternativeUri2);
 
     Long rate = 42L;
     Long sampleSize1 = 111L;
@@ -226,9 +226,9 @@ public class ProblemServiceTest {
     when(covariate2.getId()).thenReturn(2);
     Collection<Covariate> covariates = Arrays.asList(covariate1, covariate2);
 
-    SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
-    SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
-    SemanticIntervention semanticIntervention3 = new SemanticIntervention("uri3", "label3");
+    SemanticIntervention semanticIntervention1 = new SemanticIntervention(URI.create("uri1"), "label");
+    SemanticIntervention semanticIntervention2 = new SemanticIntervention(URI.create("uri2"), "label2");
+    SemanticIntervention semanticIntervention3 = new SemanticIntervention(URI.create("uri3"), "label3");
     int interventionId1 = 1;
     SimpleIntervention intervention1 = new SimpleIntervention(interventionId1, projectId, "int1", "moti", semanticIntervention1);
     SimpleIntervention intervention2 = new SimpleIntervention(2, projectId, "int2", "moti", semanticIntervention2);
@@ -252,19 +252,19 @@ public class ProblemServiceTest {
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
-    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
+    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList(URI.create("uri1"), URI.create("uri2"), URI.create("uri3")), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri2", "uri3"), Collections.EMPTY_LIST);
+    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList(URI.create("uri1"), URI.create("uri2"), URI.create("uri3")), Collections.EMPTY_LIST);
     verify(mappingService).getVersionedUuid(namespaceUid);
 
     assertNotNull(problem);
     assertEquals(3, problem.getEntries().size());
-    ContinuousNetworkMetaAnalysisProblemEntry entry = new ContinuousNetworkMetaAnalysisProblemEntry("study1", interventionId1, 768784L, Math.PI, Math.E);
+    ContinuousNetworkMetaAnalysisProblemEntry entry = new ContinuousNetworkMetaAnalysisProblemEntry("study1", interventionId1, 768784, Math.PI, Math.E);
     assertTrue(problem.getEntries().contains(entry));
   }
 
@@ -282,9 +282,9 @@ public class ProblemServiceTest {
 
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, interventionInclusions, covariateInclusions, outcome);
 
-    SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
-    SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
-    SemanticIntervention semanticIntervention3 = new SemanticIntervention("uri3", "label3");
+    SemanticIntervention semanticIntervention1 = new SemanticIntervention(URI.create("uri1"), "label");
+    SemanticIntervention semanticIntervention2 = new SemanticIntervention(URI.create("uri2"), "label2");
+    SemanticIntervention semanticIntervention3 = new SemanticIntervention(URI.create("uri3"), "label3");
     SimpleIntervention intervention1 = new SimpleIntervention(1, projectId, "int1", "moti", semanticIntervention1);
     SimpleIntervention intervention2 = new SimpleIntervention(2, projectId, "int2", "moti", semanticIntervention2);
     SimpleIntervention intervention3 = new SimpleIntervention(3, projectId, "int3", "moti", semanticIntervention3);
@@ -307,9 +307,6 @@ public class ProblemServiceTest {
 
     List<TrialDataStudy> trialDataStudies = createMockTrialData();
     TrialDataStudy firstTrialDataStudy = trialDataStudies.get(0);
-    List<TrialDataIntervention> trialDataInterventions = firstTrialDataStudy.getTrialDataInterventions();
-    // remove excluded intervention from trialdata as well (HACKY)
-    trialDataInterventions.set(1, new TrialDataIntervention("-666L", "iamnothere", "-666L"));
 
     ObjectMapper mapper = new ObjectMapper();
     List<ObjectNode> trialDataNode = new ArrayList<>();
@@ -320,14 +317,14 @@ public class ProblemServiceTest {
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
-    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
+    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList(URI.create("uri1"), URI.create("uri3")), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), Collections.EMPTY_LIST);
+    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList(URI.create("uri1"), URI.create("uri3")), Collections.EMPTY_LIST);
     verify(mappingService).getVersionedUuid(namespaceUid);
 
     assertEquals(2, problem.getEntries().size());
@@ -347,9 +344,9 @@ public class ProblemServiceTest {
 
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis", armExclusions, interventionInclusions, covariateInclusions, outcome);
 
-    SemanticIntervention semanticIntervention1 = new SemanticIntervention("uri1", "label");
-    SemanticIntervention semanticIntervention2 = new SemanticIntervention("uri2", "label2");
-    SemanticIntervention semanticIntervention3 = new SemanticIntervention("uri3", "label3");
+    SemanticIntervention semanticIntervention1 = new SemanticIntervention(URI.create("uri1"), "label");
+    SemanticIntervention semanticIntervention2 = new SemanticIntervention(URI.create("uri2"), "label2");
+    SemanticIntervention semanticIntervention3 = new SemanticIntervention(URI.create("uri3"), "label3");
     SimpleIntervention intervention1 = new SimpleIntervention(1, projectId, "int1", "moti", semanticIntervention1);
     SimpleIntervention intervention2 = new SimpleIntervention(2, projectId, "int2", "moti", semanticIntervention2);
     SimpleIntervention intervention3 = new SimpleIntervention(3, projectId, "int3", "moti", semanticIntervention3);
@@ -378,9 +375,7 @@ public class ProblemServiceTest {
 
     List<TrialDataStudy> trialDataStudies = createMockTrialData();
     TrialDataStudy firstTrialDataStudy = trialDataStudies.get(0);
-    List<TrialDataIntervention> trialDataInterventions = firstTrialDataStudy.getTrialDataInterventions();
-    // remove excluded intervention from trialdata as well (HACKY)
-    trialDataInterventions.set(1, new TrialDataIntervention("-666L", "iamnothere", "-666L"));
+
 
     ObjectMapper mapper = new ObjectMapper();
     List<ObjectNode> trialDataNode = new ArrayList<>();
@@ -392,7 +387,7 @@ public class ProblemServiceTest {
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     List<String> includedCovariateKeys = Arrays.asList(covariate1.getDefinitionKey(), covariate2.getDefinitionKey());
-    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), includedCovariateKeys)).thenReturn(trialDataNode);
+    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList(URI.create("uri1"), URI.create("uri3")), includedCovariateKeys)).thenReturn(trialDataNode);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
@@ -400,7 +395,7 @@ public class ProblemServiceTest {
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
 
-    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList("uri1", "uri3"), includedCovariateKeys);
+    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList(URI.create("uri1"), URI.create("uri3")), includedCovariateKeys);
     verify(mappingService).getVersionedUuid(namespaceUid);
 
     assertEquals(2, problem.getEntries().size());
@@ -422,12 +417,12 @@ public class ProblemServiceTest {
     when(project.getDatasetVersion()).thenReturn(version);
 
     Set<InterventionInclusion> includedAlternatives = new HashSet<>(3);
-    SimpleIntervention intervention1 = new SimpleIntervention(11, projectId, "fluox", "", new SemanticIntervention("uri1", "fluoxS"));
-    SimpleIntervention intervention2 = new SimpleIntervention(12, projectId, "parox", "", new SemanticIntervention("uri2", "paroxS"));
-    SimpleIntervention intervention3 = new SimpleIntervention(13, projectId, "sertr", "", new SemanticIntervention("uri3", "sertrS"));
+    SimpleIntervention intervention1 = new SimpleIntervention(11, projectId, "fluox", "", new SemanticIntervention(URI.create("uri1"), "fluoxS"));
+    SimpleIntervention intervention2 = new SimpleIntervention(12, projectId, "parox", "", new SemanticIntervention(URI.create("uri2"), "paroxS"));
+    SimpleIntervention intervention3 = new SimpleIntervention(13, projectId, "sertr", "", new SemanticIntervention(URI.create("uri3"), "sertrS"));
     includedAlternatives.addAll(Arrays.asList(new InterventionInclusion(analysisId, 11), new InterventionInclusion(analysisId, 12), new InterventionInclusion(analysisId, 13)));
 
-    SimpleIntervention intervention4 = new SimpleIntervention(14, projectId, "foo", "", new SemanticIntervention("uri4", "fooS"));
+    SimpleIntervention intervention4 = new SimpleIntervention(14, projectId, "foo", "", new SemanticIntervention(URI.create("uri4"), "fooS"));
     List<AbstractIntervention> interventions = Arrays.asList(intervention1, intervention2, intervention3, intervention4);
 
     PataviTask pataviTask1 = new PataviTask(41, "gemtc", "problem");
@@ -538,53 +533,55 @@ public class ProblemServiceTest {
 
 
   private List<TrialDataStudy> createMockTrialData() {
-    String studyId1 = "101L";
-    String studyId2 = "202L";
-    String drugId1 = "420L";
-    String drugId2 = "430L";
-    String drugId3 = "440L";
-    String drugId4 = "550L";
-    String armId1 = "555L";
-    String armId2 = "666L";
-    String armId3 = "777L";
-    String armId4 = "888L";
-    String armId5 = "999L";
+    URI studyId1 = URI.create("101L");
+    URI studyId2 = URI.create("202L");
+    URI drugId1 = URI.create("420L");
+    URI drugId2 = URI.create("430L");
+    URI drugId3 = URI.create("440L");
+    URI drugId4 = URI.create("550L");
+    URI armId1 = URI.create("555L");
+    URI armId2 = URI.create("666L");
+    URI armId3 = URI.create("777L");
+    URI armId4 = URI.create("888L");
+    URI armId5 = URI.create("999L");
 
-    String drugUid1 = "uri1";
-    String drugUid2 = "uri2";
-    String drugUid3 = "uri3";
-    TrialDataIntervention trialDataIntervention1 = new TrialDataIntervention(drugId1, drugUid1, studyId1);
-    TrialDataIntervention trialDataIntervention2 = new TrialDataIntervention(drugId2, drugUid2, studyId1);
-    TrialDataIntervention trialDataIntervention3 = new TrialDataIntervention(drugId3, drugUid3, studyId1);
+    URI drugUid1 = URI.create("uri1");
+    URI drugUid2 = URI.create("uri2");
+    URI drugUid3 = URI.create("uri3");
 
-    TrialDataIntervention trialDataIntervention4 = new TrialDataIntervention(drugId4, "uri3", studyId2);
+    AbstractSemanticIntervention trialDataIntervention1 = new SimpleSemanticIntervention(drugId1, drugUid1);
+    AbstractSemanticIntervention trialDataIntervention2 = new SimpleSemanticIntervention(drugId2, drugUid2 );
+    AbstractSemanticIntervention trialDataIntervention3 = new SimpleSemanticIntervention(drugId3, drugUid3);
 
-    List<TrialDataIntervention> trialdataInterventions1 = Arrays.asList(trialDataIntervention1, trialDataIntervention2, trialDataIntervention3);
-    List<TrialDataIntervention> trialdataInterventions2 = Arrays.asList(trialDataIntervention4);
+    AbstractSemanticIntervention trialDataIntervention4 = new SimpleSemanticIntervention(drugId4, URI.create("uri3"));
 
-    Measurement measurement1 = new Measurement(studyId1, "333L", armId1, 768784L, null, Math.E, Math.PI);
+    List<AbstractSemanticIntervention> trialdataInterventions1 = Arrays.asList(trialDataIntervention1, trialDataIntervention2, trialDataIntervention3);
+    List<AbstractSemanticIntervention> trialdataInterventions2 = Arrays.asList(trialDataIntervention4);
 
-    Measurement measurement2 = new Measurement(studyId1, "333L", armId3, -1L, -1L, null, null);
-    Measurement measurement3 = new Measurement(studyId1, "333L", armId4, -1L, -1L, null, null);
-    Measurement measurement4 = new Measurement(studyId1, "333L", armId5, -1L, -1L, null, null);
-    Measurement measurement5 = new Measurement(studyId1, "333L", armId2, -1L, -1L, null, null);
+    URI variableUri = URI.create("333L");
+    Measurement measurement1 = new Measurement(studyId1, variableUri, armId1, 768784, null, Math.E, Math.PI);
 
-    TrialDataArm trialDataArm1 = new TrialDataArm(armId1, "name1", studyId1, drugId1, drugUid1, measurement1);
-    TrialDataArm trialDataArm2 = new TrialDataArm(armId2, "arm aa", studyId1, drugId2, drugUid2, measurement2);
-    TrialDataArm trialDataArm3 = new TrialDataArm(armId3, "aaa", studyId1, drugId2, drugUid2, measurement3);
-    TrialDataArm trialDataArm4 = new TrialDataArm(armId4, "qqqq", studyId1, drugId3, drugUid3, measurement4);
-    TrialDataArm trialDataArm5 = new TrialDataArm(armId5, "yyyy", studyId2, drugId4, drugUid2, measurement5);
+    Measurement measurement2 = new Measurement(studyId1, variableUri, armId3, -1, -1, null, null);
+    Measurement measurement3 = new Measurement(studyId1, variableUri, armId4, -1, -1, null, null);
+    Measurement measurement4 = new Measurement(studyId1, variableUri, armId5, -1, -1, null, null);
+    Measurement measurement5 = new Measurement(studyId1, variableUri, armId2, -1, -1, null, null);
+
+    TrialDataArm trialDataArm1 = new TrialDataArm(armId1, "name1", studyId1, measurement1, trialDataIntervention1);
+    TrialDataArm trialDataArm2 = new TrialDataArm(armId2, "arm aa", studyId1, measurement2, trialDataIntervention2);
+    TrialDataArm trialDataArm3 = new TrialDataArm(armId3, "aaa", studyId1, measurement3, trialDataIntervention2);
+    TrialDataArm trialDataArm4 = new TrialDataArm(armId4, "qqqq", studyId1, measurement4, trialDataIntervention3);
+    TrialDataArm trialDataArm5 = new TrialDataArm(armId5, "yyyy", studyId2, measurement5, trialDataIntervention2);
 
     List<TrialDataArm> trialDataArms1 = Arrays.asList(trialDataArm1, trialDataArm2, trialDataArm3, trialDataArm4);
     List<TrialDataArm> trialDataArms2 = Arrays.asList(trialDataArm5);
-    TrialDataStudy trialDataStudy1 = new TrialDataStudy("1L", "study1", trialdataInterventions1, trialDataArms1);
-    TrialDataStudy trialDataStudy2 = new TrialDataStudy("2L", "study2", trialdataInterventions2, trialDataArms2);
+    TrialDataStudy trialDataStudy1 = new TrialDataStudy(URI.create("1L"), "study1", trialDataArms1);
+    TrialDataStudy trialDataStudy2 = new TrialDataStudy(URI.create("2L"), "study2", trialDataArms2);
 
-    trialDataStudy1.addCovariateValue(new CovariateStudyValue(studyId1, CovariateOption.ALLOCATION_RANDOMIZED.toString().toString(), 1D));
-    trialDataStudy1.addCovariateValue(new CovariateStudyValue(studyId1, CovariateOption.MULTI_CENTER_STUDY.toString().toString(), 2D));
+    trialDataStudy1.addCovariateValue(new CovariateStudyValue(CovariateOption.ALLOCATION_RANDOMIZED.toString(), 1D));
+    trialDataStudy1.addCovariateValue(new CovariateStudyValue(CovariateOption.MULTI_CENTER_STUDY.toString(), 2D));
 
-    trialDataStudy2.addCovariateValue(new CovariateStudyValue(studyId2, CovariateOption.ALLOCATION_RANDOMIZED.toString().toString(), null));
-    trialDataStudy2.addCovariateValue(new CovariateStudyValue(studyId2, CovariateOption.MULTI_CENTER_STUDY.toString().toString(), null));
+    trialDataStudy2.addCovariateValue(new CovariateStudyValue(CovariateOption.ALLOCATION_RANDOMIZED.toString(), null));
+    trialDataStudy2.addCovariateValue(new CovariateStudyValue(CovariateOption.MULTI_CENTER_STUDY.toString(), null));
 
     return Arrays.asList(trialDataStudy1, trialDataStudy2);
   }

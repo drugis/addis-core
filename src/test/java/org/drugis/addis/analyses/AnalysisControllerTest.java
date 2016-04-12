@@ -31,6 +31,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.NestedServletException;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -257,8 +258,8 @@ public class AnalysisControllerTest {
             new Outcome(2, projectId, "name", "motivation", new SemanticVariable("uri", "label")),
             new Outcome(3, projectId, "name", "motivation", new SemanticVariable("uri", "label"))
     );
-    SimpleIntervention intervention1 = new SimpleIntervention(1, projectId, "name", "motivation", new SemanticIntervention("uri", "label"));
-    SimpleIntervention intervention2 = new SimpleIntervention(2, projectId, "name", "motivation", new SemanticIntervention("uri", "label"));
+    SimpleIntervention intervention1 = new SimpleIntervention(1, projectId, "name", "motivation", new SemanticIntervention(URI.create("uri"), "label"));
+    SimpleIntervention intervention2 = new SimpleIntervention(2, projectId, "name", "motivation", new SemanticIntervention(URI.create("uri"), "label"));
     List<AbstractIntervention> selectedInterventions = Arrays.asList(intervention1, intervention2);
     List<InterventionInclusion> interventionInclusions = Arrays.asList(
             new InterventionInclusion(analysisId, intervention1.getId()),

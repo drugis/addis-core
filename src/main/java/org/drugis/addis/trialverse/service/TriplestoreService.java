@@ -14,6 +14,7 @@ import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
@@ -54,13 +55,13 @@ public interface TriplestoreService {
 
   JSONArray getStudyEpochs(String namespaceUid, String studyUid);
 
-  List<TrialDataStudy> getTrialData(String namespaceUid, String version, String outcomeUri, List<String> interventionUris, List<String> covariateKeys) throws ReadValueException;
+  List<TrialDataStudy> getTrialData(String namespaceUid, String version, String outcomeUri, List<URI> interventionUris, List<String> covariateKeys) throws ReadValueException;
 
-  List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String namespaceUid, String studyUid, String version, List<String> outcomeUids, List<String> interventionUids);
+  List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String namespaceUid, String studyUid, String version, List<String> outcomeUids, List<URI> interventionUids) throws ReadValueException;
 
   List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid);
 
   List<StudyData> getStudyData(String namespaceUid, String studyUid, StudyDataSection studyDataSection);
 
-  List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, String version, List<CovariateOption> covariates);
+  List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, String version, List<CovariateOption> covariates) throws ReadValueException;
 }

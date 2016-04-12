@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import javax.persistence.*;
+import java.net.URI;
 
 /**
  * Created by daan on 5-4-16.
@@ -29,12 +30,12 @@ public abstract class AbstractIntervention {
   public AbstractIntervention() {
   }
 
-  public AbstractIntervention(Integer id, Integer project, String name, String motivation, String semanticInterventionUri, String semanticInterventionLabel) {
+  public AbstractIntervention(Integer id, Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel) {
     this.id = id;
     this.project = project;
     this.name = name;
     this.motivation = motivation;
-    this.semanticInterventionUri = semanticInterventionUri;
+    this.semanticInterventionUri = semanticInterventionUri.toString();
     this.semanticInterventionLabel = semanticInterventionLabel;
   }
 
@@ -58,8 +59,9 @@ public abstract class AbstractIntervention {
     return semanticInterventionLabel;
   }
 
-  public String getSemanticInterventionUri() {
-    return semanticInterventionUri;
+
+  public URI getSemanticInterventionUri() {
+    return URI.create(semanticInterventionUri);
   }
 
   @Override

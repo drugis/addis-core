@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -54,15 +55,15 @@ public class ProblemControllerTest {
   @Test
   public void testGetSingleStudybenefitRiskProblem() throws Exception, ReadValueException {
     RatePerformance ratePerformance = new RatePerformance(new RatePerformanceParameters(10L, 50L));
-    String alternativeUri1 = "Alt uri 1";
-    String alternativeUri2 = "Alt uri 2";
+    URI alternativeUri1 = URI.create("Alturi1");
+    URI alternativeUri2 = URI.create("Alturi2");
     String criterionUri1 = "Crit uri 1";
     String criterionUri2 = "Crit uri 2";
     AbstractMeasurementEntry rateMeasurementEntry = new RateMeasurementEntry(alternativeUri1, criterionUri1, ratePerformance);
     ContinuousPerformance continuousPerformance = new ContinuousPerformance(new ContinuousPerformanceParameters(7.5, 2.1));
     AbstractMeasurementEntry continuousMeasurementEntry = new ContinuousMeasurementEntry(alternativeUri2, criterionUri2, continuousPerformance);
     List<AbstractMeasurementEntry> performanceTable = Arrays.asList(rateMeasurementEntry, continuousMeasurementEntry);
-    SingleStudyBenefitRiskProblem problem = new SingleStudyBenefitRiskProblem("testProblem", new HashMap<String, AlternativeEntry>(), new HashMap<String, CriterionEntry>(), performanceTable);
+    SingleStudyBenefitRiskProblem problem = new SingleStudyBenefitRiskProblem("testProblem", new HashMap<>(), new HashMap<>(), performanceTable);
     Integer projectId = 1;
     Integer analysisId = 1;
     when(problemService.getProblem(projectId, analysisId)).thenReturn(problem);

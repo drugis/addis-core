@@ -16,6 +16,7 @@ import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
+import org.drugis.addis.trialverse.model.TrialDataStudy;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,7 +157,13 @@ public class AnalysisController extends AbstractAddisCoreController {
     }
   }
 
-  public SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user, SingleStudyBenefitRiskAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
+  @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/evidenceTable", method = RequestMethod.GET)
+  @ResponseBody
+  public List<TrialDataStudy> getEvidenceTable(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer analysisId) throws ResourceDoesNotExistException, ReadValueException {
+    return analysisService.buildEvidenceTable(projectId, analysisId);
+  }
+
+  private SingleStudyBenefitRiskAnalysis updateSingleStudyBenefitRiskAnalysis(Account user, SingleStudyBenefitRiskAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException {
     SingleStudyBenefitRiskAnalysis oldAnalysis = (SingleStudyBenefitRiskAnalysis) analysisRepository.get(analysis.getId());
     if (oldAnalysis.getProblem() != null) {
       throw new MethodNotAllowedException();

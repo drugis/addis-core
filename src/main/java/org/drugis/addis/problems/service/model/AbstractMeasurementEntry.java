@@ -1,18 +1,20 @@
 package org.drugis.addis.problems.service.model;
 
+import java.net.URI;
+
 /**
  * Created by daan on 3/26/14.
  */
 public abstract class AbstractMeasurementEntry {
-  private String alternativeUri;
+  private URI alternativeUri;
   private String criterionUri;
 
-  protected AbstractMeasurementEntry(String alternativeUri, String criterionUri) {
+  protected AbstractMeasurementEntry(URI alternativeUri, String criterionUri) {
     this.alternativeUri = alternativeUri;
     this.criterionUri = criterionUri;
   }
 
-  public String getAlternativeUri() {
+  public URI getAlternativeUri() {
     return this.alternativeUri;
   }
 

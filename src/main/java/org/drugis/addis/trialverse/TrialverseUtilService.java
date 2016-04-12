@@ -17,6 +17,11 @@ public class TrialverseUtilService {
   private static final String INTEGER_TYPE = "http://www.w3.org/2001/XMLSchema#integer";
   private static final String DURATION_TYPE = "http://www.w3.org/2001/XMLSchema#duration";
 
+  public static String uritoUid(java.net.URI uri) {
+    String str = uri.toString();
+    return str.substring(str.lastIndexOf('/') + 1);
+  }
+
   public static String subStringAfterLastSymbol(String inStr, char symbol) {
     return inStr.substring(inStr.lastIndexOf(symbol) + 1);
   }

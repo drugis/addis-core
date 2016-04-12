@@ -5,6 +5,7 @@ import org.drugis.addis.trialverse.model.SemanticIntervention;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import java.io.Serializable;
+import java.net.URI;
 
 /**
  * Created by daan on 3/6/14.
@@ -16,7 +17,7 @@ public class SimpleIntervention extends AbstractIntervention implements Serializ
   public SimpleIntervention() {
   }
 
-  public SimpleIntervention(Integer id, Integer project, String name, String motivation, String semanticInterventionUri, String semanticInterventionLabel) {
+  public SimpleIntervention(Integer id, Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel) {
     super(id, project, name, motivation, semanticInterventionUri, semanticInterventionLabel);
   }
 

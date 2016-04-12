@@ -3,6 +3,7 @@ package org.drugis.addis.config;
 import org.drugis.addis.analyses.repository.*;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.patavitask.repository.PataviTaskRepository;
@@ -128,6 +129,11 @@ public class TestConfig {
   @Bean
   public MappingService mockMappingService() {
     return mock(MappingService.class);
+  }
+
+  @Bean
+  public InterventionService mockInterventionService() {
+    return mock(InterventionService.class);
   }
 
 }

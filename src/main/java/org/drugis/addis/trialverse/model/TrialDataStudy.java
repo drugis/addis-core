@@ -10,20 +10,17 @@ import java.util.List;
 public class TrialDataStudy {
   private URI studyUri;
   private String name;
-  private List<AbstractSemanticIntervention> semanticInterventions = new ArrayList<>();
+
   private List<TrialDataArm> trialDataArms = new ArrayList<>();
   private List<CovariateStudyValue> covariateValues = new ArrayList<>();
 
   public TrialDataStudy() {
   }
 
-  public TrialDataStudy(URI studyUri, String name, List<AbstractSemanticIntervention> semanticInterventions, List<TrialDataArm> trialDataArms) {
+  public TrialDataStudy(URI studyUri, String name, List<TrialDataArm> trialDataArms) {
     this.studyUri = studyUri;
     this.name = name;
 
-    if (semanticInterventions != null) {
-      this.semanticInterventions = semanticInterventions;
-    }
 
     if (trialDataArms != null) {
       this.trialDataArms = trialDataArms;
@@ -36,10 +33,6 @@ public class TrialDataStudy {
 
   public String getName() {
     return name;
-  }
-
-  public List<AbstractSemanticIntervention> getSemanticInterventions() {
-    return semanticInterventions;
   }
 
   public List<TrialDataArm> getTrialDataArms() {
@@ -63,7 +56,6 @@ public class TrialDataStudy {
 
     if (!studyUri.equals(that.studyUri)) return false;
     if (!name.equals(that.name)) return false;
-    if (!semanticInterventions.equals(that.semanticInterventions)) return false;
     if (!trialDataArms.equals(that.trialDataArms)) return false;
     return covariateValues.equals(that.covariateValues);
 
@@ -73,7 +65,6 @@ public class TrialDataStudy {
   public int hashCode() {
     int result = studyUri.hashCode();
     result = 31 * result + name.hashCode();
-    result = 31 * result + semanticInterventions.hashCode();
     result = 31 * result + trialDataArms.hashCode();
     result = 31 * result + covariateValues.hashCode();
     return result;

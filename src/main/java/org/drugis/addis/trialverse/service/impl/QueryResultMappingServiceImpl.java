@@ -32,7 +32,7 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
       TrialDataStudy trialDataStudy = trialDataStudies.get(studyUri);
       if (trialDataStudy == null) {
         String studyName = readValue(row, "studyName");
-        trialDataStudy = new TrialDataStudy(studyUri, studyName, new ArrayList<>(), new ArrayList<>());
+        trialDataStudy = new TrialDataStudy(studyUri, studyName, new ArrayList<>());
         trialDataStudies.put(studyUri, trialDataStudy);
       }
 
@@ -67,11 +67,10 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
         default:
           abstractSemanticIntervention = new SimpleSemanticIntervention(drugInstance, drugConcept);
       }
-      trialDataStudy.getSemanticInterventions().add(abstractSemanticIntervention);
 
       Double mean = null;
       Double stdDev = null;
-      Long rate = null;
+      Integer rate = null;
       Boolean isContinuous = row.containsKey("mean");
       if (isContinuous) {
         mean =readValue(row, "mean");
@@ -84,7 +83,7 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
       String armLabel = readValue(row, "armLabel");
       URI variableUri = readValue(row, "outcomeInstance");
       Measurement measurement = new Measurement(studyUri, variableUri, armUri, sampleSize, rate, stdDev, mean);
-      TrialDataArm trialDataArm = new TrialDataArm(armUri, armLabel, studyUri, drugInstance, drugConcept, measurement);
+      TrialDataArm trialDataArm = new TrialDataArm(armUri, armLabel, drugInstance, measurement, abstractSemanticIntervention);
       trialDataStudy.getTrialDataArms().add(trialDataArm);
 
     }

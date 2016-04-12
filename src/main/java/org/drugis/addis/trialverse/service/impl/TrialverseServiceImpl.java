@@ -10,6 +10,7 @@ import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +26,7 @@ public class TrialverseServiceImpl implements TrialverseService {
   TriplestoreService triplestoreService;
 
   @Override
-  public List<ObjectNode> getTrialData(String namespaceUId, String version, String semanticOutcomeUri, List<String> alternativeUris, List<String> covariateKeys) throws ReadValueException {
+  public List<ObjectNode> getTrialData(String namespaceUId, String version, String semanticOutcomeUri, List<URI> alternativeUris, List<String> covariateKeys) throws ReadValueException {
     List<TrialDataStudy> trialData = triplestoreService.getTrialData(namespaceUId, version, semanticOutcomeUri, alternativeUris, covariateKeys);
     return objectsToNodes(trialData);
   

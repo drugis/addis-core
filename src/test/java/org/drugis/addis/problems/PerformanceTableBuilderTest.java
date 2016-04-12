@@ -3,12 +3,14 @@ package org.drugis.addis.problems;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
 import org.drugis.addis.problems.service.model.*;
+import org.drugis.addis.trialverse.model.Measurement;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -29,8 +31,8 @@ public class PerformanceTableBuilderTest {
   Arm arm1 = new Arm("1L", "10L", armName1);
   Arm arm2 = new Arm("2L", "11L", armName2);
 
-  String alternativeUri1 = "altUri1";
-  String alternativeUri2 = "altUri2";
+  URI alternativeUri1 = URI.create("altUri1");
+  URI alternativeUri2 = URI.create("altUri2");
   private String criterionUri1 = "critUri1";
   private String criterionUri2 = "critUri2";
 
@@ -42,8 +44,8 @@ public class PerformanceTableBuilderTest {
   Map<String, CriterionEntry> criterionEntryMap;
   Map<String, AlternativeEntry> alternativeEntryMap;
 
-  Measurement measurement1 = new Measurement("1L", variable1.getUid(), arm1.getUid(), 111L, 42L, null, null);
-  Measurement measurement2 = new Measurement("1L", variable2.getUid(), arm1.getUid(), 222L, null, 0.2, 7.56);
+  Measurement measurement1 = new Measurement(URI.create("1L"), variable1.getUid(), arm1.getUid(), 111, 42, null, null);
+  Measurement measurement2 = new Measurement(URI.create("1L"), variable2.getUid(), arm1.getUid(), 222, null, 0.2, 7.56);
 
   CriterionEntry criterionEntry1 = new CriterionEntry(criterionUri1, variable1.getName(), null, null);
   CriterionEntry criterionEntry2 = new CriterionEntry(criterionUri2, variable2.getName(), null, null);

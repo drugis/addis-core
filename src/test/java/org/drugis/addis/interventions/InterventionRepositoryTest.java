@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
@@ -66,7 +67,7 @@ public class InterventionRepositoryTest {
             new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit" , "P1d"),
             new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit" , "P1d"));
 
-    FixedDoseIntervention t = new FixedDoseIntervention(null, 1, "tit", "moti", "semuri", "semlabel",
+    FixedDoseIntervention t = new FixedDoseIntervention(null, 1, "tit", "moti", URI.create("semuri"), "semlabel",
             constraint);
     em.persist(t);
 
@@ -82,7 +83,7 @@ public class InterventionRepositoryTest {
     DoseConstraint maxContraint = new DoseConstraint(
             new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D"),
             new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D"));
-    TitratedDoseIntervention t = new TitratedDoseIntervention(null, 1, "tit", "moti", "semuri", "semlabel",
+    TitratedDoseIntervention t = new TitratedDoseIntervention(null, 1, "tit", "moti", URI.create("semuri"), "semlabel",
             minConstraint, maxContraint);
     em.persist(t);
 
@@ -98,7 +99,7 @@ public class InterventionRepositoryTest {
     DoseConstraint maxContraint = new DoseConstraint(
             new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D"),
             new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D"));
-    BothDoseTypesIntervention t = new BothDoseTypesIntervention(null, 1, "tit", "moti", "semuri", "semlabel",
+    BothDoseTypesIntervention t = new BothDoseTypesIntervention(null, 1, "tit", "moti", URI.create("semuri"), "semlabel",
             minConstraint, maxContraint);
     em.persist(t);
 

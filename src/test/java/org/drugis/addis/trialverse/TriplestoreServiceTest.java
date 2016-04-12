@@ -4,10 +4,13 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
 import org.drugis.addis.TestUtils;
+import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
+import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.junit.Before;
@@ -40,6 +43,15 @@ public class TriplestoreServiceTest {
 
   @Mock
   RestTemplate restTemplate;
+
+  @Mock
+  CovariateRepository covariateRepository;
+
+  @Mock
+  InterventionRepository interventionRepository;
+
+  @Mock
+  QueryResultMappingService queryResultMappingService;
 
   @InjectMocks
   TriplestoreService triplestoreService;
@@ -105,7 +117,7 @@ public class TriplestoreServiceTest {
 
     List<SemanticIntervention> result = triplestoreService.getInterventions("abc", "version");
     SemanticIntervention intervention = result.get(0);
-    SemanticIntervention expectedSemanticIntervention = new SemanticIntervention("fdhdfgh-saddsgfsdf-123-a", "Azilsartan");
+    SemanticIntervention expectedSemanticIntervention = new SemanticIntervention(URI.create("fdhdfgh-saddsgfsdf-123-a"), "Azilsartan");
     assertEquals(expectedSemanticIntervention, intervention);
   }
 

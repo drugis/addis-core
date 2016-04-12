@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.util.ObjectToStringDeserializer;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -14,11 +15,11 @@ import java.util.Map;
 @JsonDeserialize(using = ObjectToStringDeserializer.class)
 public class SingleStudyBenefitRiskProblem extends AbstractProblem {
   private String title;
-  private Map<String, AlternativeEntry> alternatives;
+  private Map<URI, AlternativeEntry> alternatives;
   private Map<String, CriterionEntry> criteria;
   private List<AbstractMeasurementEntry> performanceTable;
 
-  public SingleStudyBenefitRiskProblem(String title, Map<String, AlternativeEntry> alternatives, Map<String, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
+  public SingleStudyBenefitRiskProblem(String title, Map<URI, AlternativeEntry> alternatives, Map<String, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
     this.title = title;
     this.alternatives = alternatives;
     this.criteria = criteria;
@@ -29,7 +30,7 @@ public class SingleStudyBenefitRiskProblem extends AbstractProblem {
     return title;
   }
 
-  public Map<String, AlternativeEntry> getAlternatives() {
+  public Map<URI, AlternativeEntry> getAlternatives() {
     return alternatives;
   }
 

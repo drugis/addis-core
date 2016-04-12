@@ -1,21 +1,23 @@
 package org.drugis.addis.trialverse.model;
 
+import java.net.URI;
+
 /**
  * Created by connor on 3/6/14.
  */
 public class SemanticIntervention {
-  private String uri;
+  private URI uri;
   private String label;
 
   public SemanticIntervention() {
   }
 
-  public SemanticIntervention(String uri, String label) {
+  public SemanticIntervention(URI uri, String label) {
     this.uri = uri;
     this.label = label;
   }
 
-  public String getUri() {
+  public URI getUri() {
     return uri;
   }
 

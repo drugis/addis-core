@@ -4,30 +4,40 @@ import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.analyses.service.impl.AnalysisServiceImpl;
+import org.drugis.addis.covariates.Covariate;
+import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.model.AbstractIntervention;
+import org.drugis.addis.interventions.model.SimpleIntervention;
+import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
+import org.drugis.addis.projects.Project;
+import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
-import org.drugis.addis.trialverse.model.SemanticVariable;
+import org.drugis.addis.trialverse.model.*;
+import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.*;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-
-;
 
 public class AnalysisServiceTest {
 
@@ -38,6 +48,9 @@ public class AnalysisServiceTest {
   ProjectService projectService;
 
   @Mock
+  ProjectRepository projectRepository;
+
+  @Mock
   ModelRepository modelRepository;
 
   @Mock
@@ -45,6 +58,18 @@ public class AnalysisServiceTest {
 
   @Mock
   private NetworkMetaAnalysisRepository networkMetaAnalysisRepository;
+
+  @Mock
+  private InterventionRepository interventionRepository;
+
+  @Mock
+  private CovariateRepository covariateRepository;
+
+  @Mock
+  private TriplestoreService triplestoreService;
+
+  @Mock
+  private InterventionService interventionService;
 
   @InjectMocks
   private AnalysisService analysisService;
@@ -214,5 +239,57 @@ public class AnalysisServiceTest {
     assertEquals(Arrays.asList(new MbrOutcomeInclusion(metabenefitRiskAnalysisId, 1, analysisId, modelId1)), result);
   }
 
+  @Test
+  public void buildEvidenceTable() throws ResourceDoesNotExistException, ReadValueException {
+
+    List<ArmExclusion> excludedArms = Collections.emptyList();
+    int includedInterventionId = 101;
+    int sirNotAppearingInThisFilmId = 102;
+    InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysisId, includedInterventionId);
+    List<InterventionInclusion> includedInterventions = Collections.singletonList(interventionInclusion1);
+    List<CovariateInclusion> includedCovariates = Collections.emptyList();
+    Outcome outcome = new Outcome(1, projectId, "outcome", null, new SemanticVariable("http://test/uri", "semantic outcome label"));
+    AbstractAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(1, projectId, "title", excludedArms, includedInterventions, includedCovariates, outcome);
+    String version = "version";
+    Account owner = mock(Account.class);
+    String namespaceUid = "namespaceUid";
+    Project project = new Project(projectId, owner, "proj", "desc", namespaceUid, version);
+    when(projectRepository.get(projectId)).thenReturn(project);
+    when(analysisRepository.get(analysisId)).thenReturn(networkMetaAnalysis);
+    AbstractIntervention intervention1 = new SimpleIntervention(includedInterventionId, projectId, "intervention1", "", new SemanticIntervention(URI.create("semUri1"), "intervention 1"));
+    AbstractIntervention intervention2 = new SimpleIntervention(sirNotAppearingInThisFilmId, projectId, "intervention2", "", new SemanticIntervention(URI.create("semUri2"), "intervention 2"));
+    List<AbstractIntervention> interventions = Arrays.asList(intervention1, intervention2);
+    List<Covariate> covariates = Collections.emptyList();
+    when(interventionRepository.query(projectId)).thenReturn(interventions);
+    when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
+    List<URI> includedInterventionUids = Collections.singletonList(intervention1.getSemanticInterventionUri());
+    List<String> includedCovariateUids = Collections.emptyList();
+    Measurement arm1Measurement = null;
+    Measurement arm2Measurement = null;
+    URI drugInstance1 = URI.create("foo/druginstance1");
+    URI drugConcept1 = intervention1.getSemanticInterventionUri();
+    URI drugInstance2 = URI.create("foo/druginstance2");
+    URI drugConcept2 = intervention2.getSemanticInterventionUri();
+    Dose minDose1 = new Dose(0.5, "P1D", URI.create("unitConceptUri"), "milligram", 0.001);
+    Dose maxDose1 = new Dose(1.0, "P1D", URI.create("unitConceptUri"), "milligram", 0.001);
+    AbstractSemanticIntervention arm1Intervention = new TitratedSemanticIntervention(drugInstance1, drugConcept1, minDose1, maxDose1);
+    AbstractSemanticIntervention arm2Intervention = new SimpleSemanticIntervention(drugInstance2, drugConcept2);
+    TrialDataArm arm1 = new TrialDataArm(URI.create("foo/armuri1"), "armname1", drugInstance1, arm1Measurement, arm1Intervention);
+    TrialDataArm arm2 = new TrialDataArm(URI.create("foo/armuri2"), "armname2", drugInstance2, arm2Measurement, arm2Intervention);
+    List<TrialDataArm> study1Arms = Arrays.asList(arm1, arm2);
+    TrialDataStudy study1 = new TrialDataStudy(URI.create("studyUri"), "name", study1Arms);
+    List<TrialDataStudy> trialData = Arrays.asList(study1);
+    when(interventionService.isMatched(intervention1, arm1)).thenReturn(true);
+    when(triplestoreService.getTrialData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids))
+            .thenReturn(trialData);
+
+    List<TrialDataStudy> trialDataStudies = analysisService.buildEvidenceTable(projectId, analysisId);
+
+    verify(triplestoreService).getTrialData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids);
+
+    assertNotNull(trialDataStudies);
+    assertEquals(1, trialDataStudies.size());
+    assertEquals((Integer) includedInterventionId, trialDataStudies.get(0).getTrialDataArms().get(0).getMatchedProjectInterventionId());
+  }
 
 }

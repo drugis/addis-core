@@ -1,13 +1,15 @@
 package org.drugis.addis.problems.model;
 
+import java.net.URI;
+
 /**
  * Created by daan on 3/21/14.
  */
 public class AlternativeEntry {
-  private String interventionUri;
+  private URI interventionUri;
   private String title;
 
-  public AlternativeEntry(String interventionUri, String title) {
+  public AlternativeEntry(URI interventionUri, String title) {
     this.interventionUri = interventionUri;
     this.title = title;
   }
@@ -16,7 +18,7 @@ public class AlternativeEntry {
     return title;
   }
 
-  public String getAlternativeUri() {
+  public URI getAlternativeUri() {
     return interventionUri;
   }
 

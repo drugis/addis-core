@@ -150,13 +150,13 @@ public class TrialverseControllerTest {
   @Test
   public void testQuerySemanticInterventions() throws Exception {
     String versionUid = "current";
-    SemanticIntervention testIntervention = new SemanticIntervention("http://test/com", "test label");
+    SemanticIntervention testIntervention = new SemanticIntervention(URI.create("http://test/com"), "test label");
     when(triplestoreService.getInterventions(versionedUuid, versionUid)).thenReturn(Collections.singletonList(testIntervention));
 
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/interventions").param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$[0].uri", is(testIntervention.getUri())));
+            .andExpect(jsonPath("$[0].uri", is(testIntervention.getUri().toString())));
     verify(triplestoreService).getInterventions(versionedUuid, versionUid);
     verify(mappingService).getVersionedUuid(namespaceUid);
   }
@@ -180,8 +180,8 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Throwable {
-    List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy(new URI("abc"), "study name", Collections.emptyList(), Collections.emptyList()));
-    List<String> interventionUris = Arrays.asList("uri1", "uri2");
+    List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy(new URI("abc"), "study name", Collections.emptyList()));
+    List<URI> interventionUris = Arrays.asList(URI.create("uri1"), URI.create("uri2"));
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     String versionUid = "current";
     when(triplestoreService.getTrialData(versionedUuid, versionUid, outcomeUri, interventionUris, Collections.emptyList())).thenReturn(trialDataStudies);
@@ -197,7 +197,7 @@ public class TrialverseControllerTest {
 
   @Test
   public void testGetTrialDataWithOutcomeAndNoInterventionsInQuery() throws Throwable {
-    List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy(new URI("abc"), "study name", Collections.emptyList(), Collections.emptyList()));
+    List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy(new URI("abc"), "study name", Collections.emptyList()));
     String outcomeUri = "http://someoutcomethisis/12345/abc";
     String versionUid = "current";
     when(triplestoreService.getTrialData(versionedUuid, versionUid, outcomeUri, Collections.emptyList(), Collections.emptyList())).thenReturn(trialDataStudies);

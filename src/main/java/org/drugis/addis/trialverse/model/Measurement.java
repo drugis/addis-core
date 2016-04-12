@@ -6,19 +6,19 @@ public class Measurement {
 
   private URI studyUid;
   private URI variableUri;
-  private URI armUid;
+  private URI armUri;
   private Integer sampleSize;
-  private Long rate;
+  private Integer rate;
   private Double stdDev;
   private Double mean;
 
   public Measurement() {
   }
 
-  public Measurement(URI studyUid, URI variableUri, URI armUid, Integer sampleSize, Long rate, Double stdDev, Double mean) {
+  public Measurement(URI studyUid, URI variableUri, URI armUri, Integer sampleSize, Integer rate, Double stdDev, Double mean) {
     this.studyUid = studyUid;
     this.variableUri = variableUri;
-    this.armUid = armUid;
+    this.armUri = armUri;
     this.sampleSize = sampleSize;
     this.rate = rate;
     this.stdDev = stdDev;
@@ -33,15 +33,15 @@ public class Measurement {
     return variableUri;
   }
 
-  public URI getArmUid() {
-    return armUid;
+  public URI getArmUri() {
+    return armUri;
   }
 
   public Integer getSampleSize() {
     return sampleSize;
   }
 
-  public Long getRate() {
+  public Integer getRate() {
     return rate;
   }
 
@@ -60,7 +60,7 @@ public class Measurement {
 
     Measurement that = (Measurement) o;
 
-    if (!armUid.equals(that.armUid)) return false;
+    if (!armUri.equals(that.armUri)) return false;
     if (mean != null ? !mean.equals(that.mean) : that.mean != null) return false;
     if (rate != null ? !rate.equals(that.rate) : that.rate != null) return false;
     if (!sampleSize.equals(that.sampleSize)) return false;
@@ -75,7 +75,7 @@ public class Measurement {
   public int hashCode() {
     int result = studyUid.hashCode();
     result = 31 * result + variableUri.hashCode();
-    result = 31 * result + armUid.hashCode();
+    result = 31 * result + armUri.hashCode();
     result = 31 * result + sampleSize.hashCode();
     result = 31 * result + (rate != null ? rate.hashCode() : 0);
     result = 31 * result + (stdDev != null ? stdDev.hashCode() : 0);

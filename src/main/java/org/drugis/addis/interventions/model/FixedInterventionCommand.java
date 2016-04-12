@@ -1,5 +1,9 @@
 package org.drugis.addis.interventions.model;
 
+import org.drugis.trialverse.util.Namespaces;
+
+import java.net.URI;
+
 /**
  * Created by daan on 5-4-16.
  */
@@ -12,7 +16,7 @@ public class FixedInterventionCommand extends AbstractInterventionCommand {
   @Override
   public FixedDoseIntervention toIntervention() {
     return new FixedDoseIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(),
-            this.getSemanticInterventionUuid(),
+            URI.create(Namespaces.CONCEPT_NAMESPACE + this.getSemanticInterventionUuid()),
             this.getSemanticInterventionLabel(),
             new DoseConstraint(this.fixedDoseConstraint.getLowerBound(), this.fixedDoseConstraint.getUpperBound()));
   }

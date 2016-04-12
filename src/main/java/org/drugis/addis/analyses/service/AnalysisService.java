@@ -4,9 +4,14 @@ import org.drugis.addis.analyses.*;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.security.Account;
+import org.drugis.addis.trialverse.model.AbstractSemanticIntervention;
+import org.drugis.addis.trialverse.model.TrialDataStudy;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by daan on 22-5-14.
@@ -23,4 +28,8 @@ public interface AnalysisService {
   SingleStudyBenefitRiskAnalysis createSingleStudyBenefitRiskAnalysis(Account user, AnalysisCommand analysisCommand) throws ResourceDoesNotExistException, MethodNotAllowedException;
 
   List<MbrOutcomeInclusion> buildInitialOutcomeInclusions(Integer projectId, Integer metabenefitRiskAnalysisId) throws SQLException;
+
+  Map<URI, TrialDataStudy> matchInterventions(Map<URI, TrialDataStudy> studyData, List<AbstractSemanticIntervention> interventions);
+
+  List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException;
 }

@@ -2,6 +2,7 @@ package org.drugis.addis.interventions.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.net.URI;
 
 /**
  * Created by daan on 5-4-16.
@@ -29,15 +30,15 @@ public class FixedDoseIntervention extends AbstractIntervention implements Seria
     return constraint;
   }
 
-  public FixedDoseIntervention(Integer id, Integer project, String name, String motivation, String semanticInterventionLabel,
-                               String semanticInterventionUri, DoseConstraint constraint) {
-    super(id, project, name, motivation, semanticInterventionLabel, semanticInterventionUri);
+  public FixedDoseIntervention(Integer id, Integer project, String name, String motivation,URI semanticInterventionUri, String semanticInterventionLabel
+                               , DoseConstraint constraint) {
+    super(id, project, name, motivation, semanticInterventionUri, semanticInterventionLabel);
     this.constraint = constraint;
   }
 
-  public FixedDoseIntervention(Integer project, String name, String motivation, String semanticInterventionLabel,
-                               String semanticInterventionUri, DoseConstraint constraint) {
-    this(null, project, name, motivation, semanticInterventionLabel, semanticInterventionUri, constraint);
+  public FixedDoseIntervention(Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel,
+                               DoseConstraint constraint) {
+    this(null, project, name, motivation, semanticInterventionUri, semanticInterventionLabel, constraint);
   }
 
   @Override

@@ -1,6 +1,7 @@
 package org.drugis.addis.interventions.model;
 
 import javax.persistence.*;
+import java.net.URI;
 
 /**
  * Created by daan on 5-4-16.
@@ -42,7 +43,7 @@ public class BothDoseTypesIntervention extends AbstractIntervention {
     this.maxConstraint = maxConstraint;
   }
 
-  public BothDoseTypesIntervention(Integer id, Integer project, String name, String motivation, String semanticInterventionUri, String semanticInterventionLabel, DoseConstraint minConstraint, DoseConstraint maxConstraint) {
+  public BothDoseTypesIntervention(Integer id, Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel, DoseConstraint minConstraint, DoseConstraint maxConstraint) {
     super(id, project, name, motivation, semanticInterventionUri, semanticInterventionLabel);
     this.minConstraint = minConstraint;
     this.maxConstraint = maxConstraint;
