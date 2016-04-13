@@ -5,6 +5,7 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.AbstractInterventionCommand;
+import org.drugis.addis.interventions.model.InvalidConstraintException;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
@@ -56,7 +57,7 @@ public class InterventionController extends AbstractAddisCoreController {
   @RequestMapping(value = "/projects/{projectId}/interventions", method = RequestMethod.POST)
   @ResponseBody
   public AbstractIntervention create(HttpServletRequest request, HttpServletResponse response, Principal currentUser, @PathVariable Integer projectId,
-                                     @RequestBody AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException {
+                                     @RequestBody AbstractInterventionCommand interventionCommand) throws MethodNotAllowedException, ResourceDoesNotExistException, InvalidConstraintException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       AbstractIntervention intervention = interventionRepository.create(user, interventionCommand);

@@ -1,6 +1,6 @@
 'use strict';
 define(['angular', 'angular-mocks'], function() {
-  describe('unit service', function() {
+  describe('unit dosage service', function() {
     var
       scope,
       httpBackend,
@@ -35,7 +35,11 @@ define(['angular', 'angular-mocks'], function() {
                   'datatype': 'http://www.w3.org/2001/XMLSchema#duration',
                   'type': 'typed-literal',
                   'value': 'P1D'
-                }
+                },
+                'unitConcept': {
+                  type: 'uri',
+                  value: 'conceptUri'
+                },
               }, {
                 'unitName': {
                   'type': 'literal',
@@ -45,7 +49,11 @@ define(['angular', 'angular-mocks'], function() {
                   'datatype': 'http://www.w3.org/2001/XMLSchema#duration',
                   'type': 'typed-literal',
                   'value': 'PT1H'
-                }
+                },
+                'unitConcept': {
+                  type: 'uri',
+                  value: 'conceptUri'
+                },
               }]
             }
           });
@@ -54,11 +62,13 @@ define(['angular', 'angular-mocks'], function() {
           expect(result).toEqual([{
             unitName: 'milligram',
             unitPeriod: 'P1D',
-            label: 'milligram/day'
+            label: 'milligram/day',
+            unitConcept: 'conceptUri'
           }, {
             unitName: 'milligram',
             unitPeriod: 'PT1H',
-            label: 'milligram/hour'
+            label: 'milligram/hour',
+            unitConcept: 'conceptUri'
           }]);
           done();
         });

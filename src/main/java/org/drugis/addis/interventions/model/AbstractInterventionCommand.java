@@ -32,7 +32,7 @@ public abstract class AbstractInterventionCommand {
     }
   }
 
-  public abstract AbstractIntervention toIntervention();
+  public abstract AbstractIntervention toIntervention() throws InvalidConstraintException;
 
   public Integer getProjectId() {
     return projectId;

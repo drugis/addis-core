@@ -485,7 +485,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   private String buildInterventionUnionString(List<URI> interventionUris) {
     String result = "";
     for (URI interventionUri : interventionUris) {
-      result += " { ?interventionInstance owl:sameAs " + interventionUri + " } UNION \n";
+      result += " { ?interventionInstance owl:sameAs <" + interventionUri + "> } UNION \n";
     }
 
     return result.substring(0, result.lastIndexOf("UNION"));

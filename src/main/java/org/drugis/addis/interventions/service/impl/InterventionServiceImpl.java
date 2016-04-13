@@ -1,11 +1,8 @@
 package org.drugis.addis.interventions.service.impl;
 
-import org.drugis.addis.interventions.model.AbstractIntervention;
-import org.drugis.addis.interventions.model.FixedDoseIntervention;
-import org.drugis.addis.interventions.model.SimpleIntervention;
-import org.drugis.addis.interventions.model.TitratedDoseIntervention;
+import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.service.InterventionService;
-import org.drugis.addis.trialverse.model.TrialDataArm;
+import org.drugis.addis.trialverse.model.*;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,16 +11,133 @@ import org.springframework.stereotype.Service;
 @Service
 public class InterventionServiceImpl implements InterventionService {
   @Override
-  public boolean isMatched(AbstractIntervention intervention, TrialDataArm arm) {
+  public boolean isMatched(AbstractIntervention intervention, TrialDataArm arm) throws InvalidTypeForDoseCheckException {
+
     if(intervention instanceof SimpleIntervention) {
-      return intervention.getSemanticInterventionUri().equals(arm.getSemanticIntervention().getDrugConcept());
+      return checkSimple(intervention, arm);
     }
+
     if(intervention instanceof FixedDoseIntervention) {
-      return intervention.getSemanticInterventionUri().equals(arm.getSemanticIntervention().getDrugConcept());
+
+      return !(!checkType(intervention, arm) || !checkSimple(intervention, arm) || !doseCheck(intervention, arm));
     }
-    if(intervention instanceof TitratedDoseIntervention) {
-      return intervention.getSemanticInterventionUri().equals(arm.getSemanticIntervention().getDrugConcept());
+
+    if(intervention instanceof TitratedDoseIntervention || intervention instanceof BothDoseTypesIntervention) {
+      return !(!checkType(intervention, arm) || !checkSimple(intervention, arm) || !doseCheck(intervention, arm));
     }
     return false;
   }
+
+  private boolean checkSimple(AbstractIntervention intervention, TrialDataArm arm) {
+    return intervention.getSemanticInterventionUri().equals(arm.getSemanticIntervention().getDrugConcept());
+  }
+
+  private boolean checkType(AbstractIntervention intervention, TrialDataArm arm) {
+    AbstractSemanticIntervention semanticIntervention = arm.getSemanticIntervention();
+    return (intervention instanceof FixedDoseIntervention && semanticIntervention instanceof FixedSemanticIntervention ||
+            intervention instanceof TitratedDoseIntervention && semanticIntervention instanceof TitratedSemanticIntervention ||
+            intervention instanceof BothDoseTypesIntervention && semanticIntervention instanceof FixedSemanticIntervention ||
+            intervention instanceof BothDoseTypesIntervention && semanticIntervention instanceof TitratedSemanticIntervention);
+  }
+
+  private boolean doseCheck(AbstractIntervention intervention, TrialDataArm arm) throws InvalidTypeForDoseCheckException {
+    AbstractSemanticIntervention semanticIntervention = arm.getSemanticIntervention();
+
+    if(intervention instanceof FixedDoseIntervention) {
+      DoseConstraint constraint = ((FixedDoseIntervention) intervention).getConstraint();
+      Dose dose = ((FixedSemanticIntervention) semanticIntervention).getDose();
+      return isValid(constraint, dose);
+    }
+
+    if(intervention instanceof TitratedDoseIntervention) {
+
+      DoseConstraint minConstraint = ((TitratedDoseIntervention) intervention).getMinConstraint();
+      Dose minDose = ((TitratedSemanticIntervention) semanticIntervention).getMinDose();
+      boolean isValidMinConstraint = minConstraint == null || isValid(minConstraint, minDose);
+
+      DoseConstraint maxConstraint = ((TitratedDoseIntervention) intervention).getMaxConstraint();
+      Dose maxDose = ((TitratedSemanticIntervention) semanticIntervention).getMaxDose();
+      boolean isValidMaxConstraint = maxConstraint == null || isValid(maxConstraint, maxDose);
+
+      return isValidMinConstraint && isValidMaxConstraint;
+
+    }
+
+    if(intervention instanceof BothDoseTypesIntervention) {
+
+      DoseConstraint minConstraint = ((BothDoseTypesIntervention) intervention).getMinConstraint();
+      DoseConstraint maxConstraint = ((BothDoseTypesIntervention) intervention).getMaxConstraint();
+
+      if(semanticIntervention instanceof FixedSemanticIntervention){
+        Dose dose = ((FixedSemanticIntervention) semanticIntervention).getDose();
+        return (minConstraint == null || isValid(minConstraint, dose) && maxConstraint == null || isValid(maxConstraint, dose) );
+      }
+
+      if(semanticIntervention instanceof TitratedSemanticIntervention){
+
+        Dose minDose = ((TitratedSemanticIntervention) semanticIntervention).getMinDose();
+        boolean isValidMinConstraint = minConstraint == null || isValid(minConstraint, minDose);
+
+        Dose maxDose = ((TitratedSemanticIntervention) semanticIntervention).getMaxDose();
+        boolean isValidMaxConstraint = maxConstraint == null || isValid(maxConstraint, maxDose);
+
+        return isValidMinConstraint && isValidMaxConstraint;
+      }
+    }
+
+
+    throw new InvalidTypeForDoseCheckException();
+
+  }
+
+  private boolean isValid(DoseConstraint constraint, Dose dose) {
+    LowerDoseBound lowerBound = constraint.getLowerBound();
+    UpperDoseBound upperBound = constraint.getUpperBound();
+
+    // check unit
+    if(lowerBound != null && !dose.getUnitConceptUri().equals(lowerBound.getUnitConcept())){
+      return false;
+    }
+
+    if(upperBound != null && !dose.getUnitConceptUri().equals(upperBound.getUnitConcept())){
+      return false;
+    }
+
+    //check period
+    if(lowerBound != null && !dose.getPeriodicity().equals(lowerBound.getUnitPeriod())){
+      return false;
+    }
+    if(upperBound != null && !dose.getPeriodicity().equals(upperBound.getUnitPeriod())){
+      return false;
+    }
+
+    //value
+    if(lowerBound != null && !isWithinConstraint(dose.getValue(), constraint)) {
+      return false;
+    }
+    if(upperBound != null && !isWithinConstraint(dose.getValue(), constraint)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private boolean isWithinConstraint(Double value, DoseConstraint constraint) {
+    LowerDoseBound lowerBound = constraint.getLowerBound();
+    UpperDoseBound upperBound = constraint.getUpperBound();
+    boolean validUpperBound = true;
+    boolean validLowerBound = true;
+
+    if(lowerBound != null) {
+      validLowerBound = lowerBound.getType().isValidForBound(value, lowerBound.getValue());
+    }
+
+    if(upperBound != null) {
+      validUpperBound = upperBound.getType().isValidForBound(value, upperBound.getValue());
+    }
+
+    return validLowerBound && validUpperBound;
+  }
+
+
 }

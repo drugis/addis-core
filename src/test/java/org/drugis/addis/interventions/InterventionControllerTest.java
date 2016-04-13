@@ -76,7 +76,7 @@ public class InterventionControllerTest {
   }
 
   @Test
-  public void testQueryInterventions() throws Exception {
+  public void testQueryInterventions() throws Exception, InvalidConstraintException {
 
     DoseConstraint constraint = new DoseConstraint(new LowerBoundCommand(LowerBoundType.AT_LEAST, 2d, "mili", "P1D", URI.create("unitConcept")), null);
     FixedDoseIntervention intervention = new FixedDoseIntervention(1, "name", "motivation", URI.create("http://semantic.com"), "labelnew", constraint);
@@ -118,7 +118,7 @@ public class InterventionControllerTest {
   }
 
   @Test
-  public void testCreateIntervention() throws Exception {
+  public void testCreateIntervention() throws Exception, InvalidConstraintException {
     SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticIntervention(URI.create("http://semantic.com"), "labelnew"));
     AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(1, "name", "motivation", "http://semantic.com", "labelnew");
     when(interventionRepository.create(gert, interventionCommand)).thenReturn(intervention);
@@ -133,7 +133,7 @@ public class InterventionControllerTest {
 
 
   @Test
-  public void testCreateFixedBoundIntervention() throws Exception {
+  public void testCreateFixedBoundIntervention() throws Exception, InvalidConstraintException {
     SimpleIntervention intervention = new SimpleIntervention(1, 1, "name", "motivation", new SemanticIntervention(URI.create("http://semantic.com"), "labelnew"));
     LowerBoundType lowerType = LowerBoundType.AT_LEAST;
     UpperBoundType upperType = UpperBoundType.AT_MOST;
@@ -155,7 +155,7 @@ public class InterventionControllerTest {
   }
 
   @Test
-  public void testCreateTitratedDoseIntervention() throws Exception {
+  public void testCreateTitratedDoseIntervention() throws Exception, InvalidConstraintException {
     String body = "{\n" +
             "  \"doseType\": \"titrated\",\n" +
             "  \"titratedDoseMinConstraint\": {\n" +
@@ -193,7 +193,7 @@ public class InterventionControllerTest {
     verify(interventionRepository).create(gert, doseRestrictedInterventionCommand);
   }
   @Test
-  public void testCreateBothDoseIntervention() throws Exception {
+  public void testCreateBothDoseIntervention() throws Exception, InvalidConstraintException {
     String body = "{\n" +
             "  \"doseType\": \"both\",\n" +
             "  \"bothDoseTypesMinConstraint\": {\n" +

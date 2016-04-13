@@ -22,7 +22,7 @@ public class BothDoseTypesInterventionCommand extends AbstractInterventionComman
   }
 
   @Override
-  public AbstractIntervention toIntervention() {
+  public AbstractIntervention toIntervention() throws InvalidConstraintException {
     DoseConstraint minConstraint = null;
     if (this.bothDoseTypesMinConstraint != null) {
       minConstraint = new DoseConstraint(this.bothDoseTypesMinConstraint.getLowerBound(), this.bothDoseTypesMinConstraint.getUpperBound());

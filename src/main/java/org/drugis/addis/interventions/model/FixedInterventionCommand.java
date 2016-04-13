@@ -8,26 +8,26 @@ import java.net.URI;
  * Created by daan on 5-4-16.
  */
 public class FixedInterventionCommand extends AbstractInterventionCommand {
-  ConstraintCommand fixedDoseConstraintCommand;
+  ConstraintCommand fixedDoseConstraint;
 
   public FixedInterventionCommand() {
   }
 
   @Override
-  public FixedDoseIntervention toIntervention() {
+  public FixedDoseIntervention toIntervention() throws InvalidConstraintException {
     return new FixedDoseIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(),
             URI.create(Namespaces.CONCEPT_NAMESPACE + this.getSemanticInterventionUuid()),
             this.getSemanticInterventionLabel(),
-            new DoseConstraint(this.fixedDoseConstraintCommand.getLowerBound(), this.fixedDoseConstraintCommand.getUpperBound()));
+            new DoseConstraint(this.fixedDoseConstraint.getLowerBound(), this.fixedDoseConstraint.getUpperBound()));
   }
 
-  public FixedInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUuid, ConstraintCommand fixedDoseConstraintCommand) {
+  public FixedInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUuid, ConstraintCommand fixedDoseConstraint) {
     super(projectId, name, motivation, semanticInterventionLabel, semanticInterventionUuid);
-    this.fixedDoseConstraintCommand = fixedDoseConstraintCommand;
+    this.fixedDoseConstraint = fixedDoseConstraint;
   }
 
-  public ConstraintCommand getFixedDoseConstraintCommand() {
-    return fixedDoseConstraintCommand;
+  public ConstraintCommand getFixedDoseConstraint() {
+    return fixedDoseConstraint;
   }
 
   @Override
@@ -38,14 +38,14 @@ public class FixedInterventionCommand extends AbstractInterventionCommand {
 
     FixedInterventionCommand that = (FixedInterventionCommand) o;
 
-    return fixedDoseConstraintCommand.equals(that.fixedDoseConstraintCommand);
+    return fixedDoseConstraint.equals(that.fixedDoseConstraint);
 
   }
 
   @Override
   public int hashCode() {
     int result = super.hashCode();
-    result = 31 * result + fixedDoseConstraintCommand.hashCode();
+    result = 31 * result + fixedDoseConstraint.hashCode();
     return result;
   }
 }

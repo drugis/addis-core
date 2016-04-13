@@ -596,3 +596,7 @@ ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxUpperBoundUnitConcept varcha
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN minUpperBoundUnitConcept ;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxLowerBoundUnitConcept ;
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxUpperBoundUnitConcept ;
+
+--changeset stroombergc:49
+UPDATE abstractintervention SET semanticinterventionuri = CONCAT('http://trials.drugis.org/', semanticinterventionuri) WHERE LEFT(semanticinterventionuri, 4) <> 'http';
+--rollback UPDATE abstractintervention SET semanticinterventionuri = RIGHT(semanticinterventionuri, 36) WHERE LEFT(semanticinterventionuri, 4) = 'http';

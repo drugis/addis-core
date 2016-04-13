@@ -62,7 +62,7 @@ public class InterventionRepositoryTest {
   }
 
   @Test
-  public void fixedDoseIntervention(){
+  public void fixedDoseIntervention() throws InvalidConstraintException {
     DoseConstraint constraint = new DoseConstraint(
             new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit" , "P1d", URI.create("uriConcept")),
             new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit" , "P1d", URI.create("uriConcept")));
@@ -76,7 +76,7 @@ public class InterventionRepositoryTest {
   }
 
   @Test
-  public void titratedDoseIntervention(){
+  public void titratedDoseIntervention() throws InvalidConstraintException {
     DoseConstraint minConstraint = new DoseConstraint(
             new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D", URI.create("uriConcept")),
             new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D", URI.create("uriConcept")));
@@ -92,7 +92,7 @@ public class InterventionRepositoryTest {
   }
 
   @Test
-  public void bothDoseIntervention(){
+  public void bothDoseIntervention() throws InvalidConstraintException {
     DoseConstraint minConstraint = new DoseConstraint(
             new LowerBoundCommand(LowerBoundType.AT_LEAST, 1d, "unit", "P1D", URI.create("uriConcept")),
             new UpperBoundCommand(UpperBoundType.AT_MOST, 2d, "unit", "P1D", URI.create("uriConcept")));
@@ -113,7 +113,7 @@ public class InterventionRepositoryTest {
   }
 
   @Test
-  public void testCreateSimpleIntervention() throws Exception {
+  public void testCreateSimpleIntervention() throws Exception, InvalidConstraintException {
     AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(1, "newName", "newMotivation", "http://semantic.com", "labelnew");
     Account user = em.find(Account.class, 1);
     AbstractIntervention result = interventionRepository.create(user, interventionCommand);
@@ -121,7 +121,7 @@ public class InterventionRepositoryTest {
   }
 
   @Test
-  public void testCreateTitratedIntervention() throws Exception {
+  public void testCreateTitratedIntervention() throws Exception, InvalidConstraintException {
     LowerBoundCommand lowerBound = new LowerBoundCommand(LowerBoundType.AT_LEAST, 3.0, "mg", "P1D", URI.create("uriConcept"));
     UpperBoundCommand upperBound = new UpperBoundCommand(UpperBoundType.AT_MOST, 4.5, "mg", "P1D", URI.create("uriConcept"));
     ConstraintCommand minConstraintCommand = new ConstraintCommand(lowerBound, upperBound);
@@ -134,7 +134,7 @@ public class InterventionRepositoryTest {
 
 
   @Test(expected = MethodNotAllowedException.class)
-  public void testCannotCreateInterventionInNotOwnedProject() throws Exception {
+  public void testCannotCreateInterventionInNotOwnedProject() throws Exception, InvalidConstraintException {
     Account account = em.find(Account.class, 2);
     AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(1, "newName", "newMotivation", "http://semantic.com", "labelnew");
     interventionRepository.create(account, interventionCommand);
@@ -142,14 +142,14 @@ public class InterventionRepositoryTest {
 
 
   @Test(expected = ResourceDoesNotExistException.class)
-  public void testCannotCreateInterventionInNonexistentProject() throws Exception {
+  public void testCannotCreateInterventionInNonexistentProject() throws Exception, InvalidConstraintException {
     Account account = em.find(Account.class, 2);
     AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(13221, "newName", "newMotivation", "http://semantic.com", "labelnew");
     interventionRepository.create(account, interventionCommand);
   }
 
   @Test(expected = InvalidDataAccessApiUsageException.class)
-  public void testCreateWithDuplicateNameFails() throws Exception {
+  public void testCreateWithDuplicateNameFails() throws Exception, InvalidConstraintException {
     Account user = em.find(Account.class, 1);
     AbstractInterventionCommand interventionCommand = new SimpleInterventionCommand(1, "intervention 1", "newMotivation", "http://semantic.com", "labelnew");
     interventionRepository.create(user, interventionCommand);

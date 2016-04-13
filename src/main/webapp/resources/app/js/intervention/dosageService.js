@@ -45,7 +45,8 @@ define(['lodash', 'moment'], function(_, moment) {
           return {
             unitName: unit.unitName,
             label: unit.unitName + '/' + periodLabel,
-            unitPeriod: unit.unitPeriod
+            unitPeriod: unit.unitPeriod,
+            unitConcept: unit.unitConcept
           };
         });
       });

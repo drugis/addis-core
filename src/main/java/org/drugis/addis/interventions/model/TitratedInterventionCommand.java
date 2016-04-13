@@ -15,7 +15,7 @@ public class TitratedInterventionCommand extends AbstractInterventionCommand {
   }
 
   @Override
-  public TitratedDoseIntervention toIntervention() {
+  public TitratedDoseIntervention toIntervention() throws InvalidConstraintException {
     DoseConstraint minConstraint = null;
     if (this.titratedDoseMinConstraint != null) {
       minConstraint = new DoseConstraint(this.titratedDoseMinConstraint.getLowerBound(), this.titratedDoseMinConstraint.getUpperBound());

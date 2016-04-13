@@ -13,6 +13,7 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
@@ -219,7 +220,14 @@ public class AnalysisServiceImpl implements AnalysisService {
 
       for(TrialDataStudy study: trialData) {
         for(TrialDataArm arm: study.getTrialDataArms()) {
-          Optional<AbstractIntervention> matchingIntervention = includedInterventions.stream().filter(i -> interventionService.isMatched(i, arm)).findFirst();
+          Optional<AbstractIntervention> matchingIntervention = includedInterventions.stream().filter(i -> {
+            try {
+              return interventionService.isMatched(i, arm);
+            } catch (InvalidTypeForDoseCheckException e) {
+              e.printStackTrace();
+            }
+            return false;
+          }).findFirst();
 
           if(matchingIntervention.isPresent()){
             arm.setMatchedProjectInterventionId(matchingIntervention.get().getId());

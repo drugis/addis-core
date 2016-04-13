@@ -24,7 +24,12 @@ public class DoseConstraint {
     return upperBound;
   }
 
-  public DoseConstraint(LowerBoundCommand lowerBound, UpperBoundCommand upperBound) {
+  public DoseConstraint(LowerBoundCommand lowerBound, UpperBoundCommand upperBound) throws InvalidConstraintException {
+
+    if(lowerBound == null && upperBound == null) {
+      throw new InvalidConstraintException("upper and lower bounds may not both be null");
+    }
+
     if(lowerBound != null) {
       this.lowerBound = new LowerDoseBound(lowerBound.getType(), lowerBound.getValue(), lowerBound.getUnitName(), lowerBound.getUnitPeriod(), lowerBound.getUnitConcept());
     }

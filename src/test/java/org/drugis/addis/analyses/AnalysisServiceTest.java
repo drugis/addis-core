@@ -12,6 +12,7 @@ import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
@@ -240,7 +241,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void buildEvidenceTable() throws ResourceDoesNotExistException, ReadValueException {
+  public void buildEvidenceTable() throws ResourceDoesNotExistException, ReadValueException, InvalidTypeForDoseCheckException {
 
     List<ArmExclusion> excludedArms = Collections.emptyList();
     int includedInterventionId = 101;

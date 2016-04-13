@@ -42,8 +42,13 @@ public class TitratedDoseIntervention extends AbstractIntervention {
   public TitratedDoseIntervention() {
   }
 
-  public TitratedDoseIntervention(Integer id, Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel, DoseConstraint minConstraint, DoseConstraint maxConstraint) {
+  public TitratedDoseIntervention(Integer id, Integer project, String name, String motivation, URI semanticInterventionUri, String semanticInterventionLabel, DoseConstraint minConstraint, DoseConstraint maxConstraint) throws InvalidConstraintException {
     super(id, project, name, motivation, semanticInterventionUri, semanticInterventionLabel);
+
+    if(minConstraint == null && maxConstraint == null) {
+      throw new InvalidConstraintException("invalid TitratedDoseIntervention both min- and maxConstraint are null");
+    }
+
     this.minConstraint = minConstraint;
     this.maxConstraint = maxConstraint;
   }
