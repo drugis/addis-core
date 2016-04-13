@@ -25,12 +25,14 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.model.AbstractSemanticIntervention;
 import org.drugis.addis.trialverse.model.TrialDataArm;
 import org.drugis.addis.trialverse.model.TrialDataStudy;
+import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,6 +69,9 @@ public class AnalysisServiceImpl implements AnalysisService {
 
   @Inject
   ProjectRepository projectRepository;
+
+  @Inject
+  MappingService mappingService;
 
   @Inject
   private CovariateRepository covariateRepository;
@@ -198,7 +203,7 @@ public class AnalysisServiceImpl implements AnalysisService {
   }
 
   @Override
-  public List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException {
+  public List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
 
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
@@ -215,7 +220,7 @@ public class AnalysisServiceImpl implements AnalysisService {
               .map(Covariate::getDefinitionKey)
               .collect(Collectors.toList());
 
-      List<TrialDataStudy> trialData = triplestoreService.getTrialData(project.getNamespaceUid(), project.getDatasetVersion(),
+      List<TrialDataStudy> trialData = triplestoreService.getTrialData(mappingService.getVersionedUuid(project.getNamespaceUid()), project.getDatasetVersion(),
               networkMetaAnalysis.getOutcome().getSemanticOutcomeUri(), includedInterventionUris, includedCovariates);
 
       for(TrialDataStudy study: trialData) {

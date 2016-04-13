@@ -4,9 +4,9 @@ define(['lodash', 'angular'], function(_, angular) {
 
   var NetworkMetaAnalysisService = function(AnalysisService) {
 
-    function findInterventionOptionForDrug(drugInstanceUid, interventionOptions) {
+    function findInterventionOptionForDrug(drugInstanceUri, interventionOptions) {
       return _.find(interventionOptions, function(intervention) {
-        return intervention.semanticInterventionUri === drugInstanceUid;
+        return intervention.semanticInterventionUri === drugInstanceUri;
       });
     }
 
@@ -76,20 +76,20 @@ define(['lodash', 'angular'], function(_, angular) {
       }, {});
     }
 
-    function buildTableFromTrialData(data, interventions, excludedArms, covariates, treatmentOverlapMap) {
+    function buildTableFromTrialData(trialDataStudies, interventions, excludedArms, covariates, treatmentOverlapMap) {
       var rows = [];
       if (interventions.length < 1) {
         return rows;
       }
       var exclusionMap = buildExcludedArmsMap(excludedArms);
-      angular.forEach(data.trialDataStudies, function(study) {
+      angular.forEach(trialDataStudies, function(study) {
         var studyRows = [];
         angular.forEach(study.trialDataArms, function(trialDataArm) {
           var row = {};
           row.covariatesColumns = [];
 
           row.study = study.name;
-          row.studyUid = study.studyUid;
+          row.studyUri = study.studyUri;
           row.studyRowSpan = study.trialDataArms.length;
           angular.forEach(covariates, function(covariate) {
             if (covariate.isIncluded) {
@@ -105,20 +105,19 @@ define(['lodash', 'angular'], function(_, angular) {
           });
           row.studyRows = studyRows;
           row.drugInstanceUid = trialDataArm.drugInstanceUid;
-          row.drugConceptUid = trialDataArm.drugConceptUid;
+          row.drugConceptUid = trialDataArm.semanticIntervention.drugConcept;
           row.arm = trialDataArm.name;
-          row.trialverseUid = trialDataArm.uid;
-          row.included = !exclusionMap[trialDataArm.uid] && row.intervention !== 'unmatched';
+          row.trialverseUid = trialDataArm.uri;
+          row.included = !exclusionMap[trialDataArm.uri] && row.intervention !== 'unmatched';
 
-          var matchedIntervention = findInterventionOptionForDrug(trialDataArm.drugConceptUid, interventions);
-          if (matchedIntervention) {
-            row.intervention = matchedIntervention.semanticInterventionLabel;
-            var overlappingTreatments = treatmentOverlapMap[matchedIntervention.id];
-            if (row.included && overlappingTreatments) {
-              overlappingTreatments = [matchedIntervention].concat(overlappingTreatments);
-              row.overlappingInterventionWarning = _.map(overlappingTreatments, 'name').join(', ');
-            }
-          } else {
+          if(trialDataArm.matchedProjectInterventionId !== null){
+            var intervention = _.find(interventions, function(intervention){
+              return trialDataArm.matchedProjectInterventionId === intervention.id;
+            });
+            row.intervention = intervention.name;
+            row.interventionId = intervention.id;
+          }
+          else {
             row.intervention = 'unmatched';
           }
 
@@ -134,16 +133,10 @@ define(['lodash', 'angular'], function(_, angular) {
       return rows;
     }
 
-    function isMatchedTrialDataIntervention(trialDataIntervention, study) {
-      return _.find(study.trialDataArms, function(trialDataArm) {
-        return trialDataIntervention.drugInstanceUid === trialDataArm.drugInstanceUid;
-      });
-    }
-
     function countMatchedInterventions(study) {
       var numberOfMatchedInterventions = 0;
-      angular.forEach(study.trialDataInterventions, function(trialDataIntervention) {
-        if (isMatchedTrialDataIntervention(trialDataIntervention, study)) {
+      angular.forEach(study.trialDataArms, function(trialDataArm) {
+        if (trialDataArm.matchedProjectInterventionId !== null) {
           ++numberOfMatchedInterventions;
         }
       });
@@ -171,7 +164,7 @@ define(['lodash', 'angular'], function(_, angular) {
       var interventionSum = _.reduce(trialData, function(sum, trialDataStudy) {
         angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
 
-          if (trialDataArm.drugConceptUid === intervention.semanticInterventionUri) {
+          if (trialDataArm.semanticIntervention.drugConcept === intervention.semanticInterventionUri) {
             sum += trialDataArm.measurement.sampleSize;
           }
         });
@@ -180,44 +173,15 @@ define(['lodash', 'angular'], function(_, angular) {
       return interventionSum;
     }
 
-    /*  Dose-machting rules 
-     **
-     **  For example, in this study, in arm 1 a fixed dose of placebo is combined with a titrated dose of fluoxetine,
-     **  meaning it includes the dataset drugs "Placebo" and "Fluoxetine":
-     **
-     **  study   arm   drug        fixedDose minDose maxDose count sampleSize
-     **  StudyA  Arm1  Placebo     0.0       NA      NA      15    32
-     **  StudyA  Arm1  Fluoxetine  NA        5.0     20.0    15    32
-     **
-     **  Dose units (columns not shown above) must match exactly, no normalization / unit conversion is done for now.
-     **
-     **  A combination intervention matches an arm if its members match all of the rows, has no members that do not match a row,
-     **  and do not overlap in the rows they match.
-     
-     **  Therefore: - the simple intervention "Placebo" would not match this arm.
-     **  - The complex intervention "Placebo + Fluoxetine", would match.
-     **  - The complex intervention "Paroxetine + Fluoxetine + Fluoxetine" would not match.
-     **
-     **  The complex intervention "(Placebo + Fluoxetine) OR Fluoxetine" matches Arm1 of StudyA because one of its members,
-     **  "Placebo + Fluoxetine" matches. An OR intervention matches all the rows that the most inclusive of its members matches.
-     **
-     **  A dose-restricted intervention matches a row as if it were a simple intervention, but in addition it checks dose constraints.
-     **
-     **  In the following chain, later interventions can be composed of any of the intervention types that precede it,
-     **  but not any of the same type or types that follow it:
-     **   (Simple interventions, Dose restricted interventions) < Combination interventions < OR interventions.
-     */
-
-
     function findArmForIntervention(trialdataArms, trialDataIntervention) {
       return _.find(trialdataArms, function(trialdataArm) {
-        return trialdataArm.drugInstanceUid === trialDataIntervention.drugInstanceUid;
+        return trialdataArm.drugInstance === trialDataIntervention.drugInstanceUid;
       });
     }
 
     function findTrialDataInterventionForIntervention(trialDataInterventions, intervention) {
       return _.find(trialDataInterventions, function(trialDataIntervention) {
-        return trialDataIntervention.drugConceptUid === intervention.semanticInterventionUri;
+        return trialDataIntervention.semanticIntervention.drugConcept === intervention.semanticInterventionUri;
       });
     }
 
@@ -335,17 +299,17 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function isArmIncluded(analysis, trialDataArm) {
       return !_.find(analysis.excludedArms, function(exclusion) {
-        return exclusion.trialverseUid === trialDataArm.uid;
+        return exclusion.trialverseUid === trialDataArm.uri;
       });
     }
 
     function findMatchedArmsForIntervention(analysis, trialDataArms, includedInterventionUri) {
       return _.filter(trialDataArms, function(trialDataArm) {
-        return trialDataArm.drugConceptUid === includedInterventionUri && isArmIncluded(analysis, trialDataArm);
+        return trialDataArm.semanticIntervention.drugConcept === includedInterventionUri && isArmIncluded(analysis, trialDataArm);
       });
     }
 
-    function doesModelHaveAmbiguousArms(trialverseData, interventions, analysis) {
+    function doesModelHaveAmbiguousArms(trialDataStudies, interventions, analysis) {
       var includedInterventionUris = _.reduce(interventions, function(mem, intervention) {
         if (intervention.isIncluded) {
           mem = mem.concat(intervention.semanticInterventionUri);
@@ -360,22 +324,25 @@ define(['lodash', 'angular'], function(_, angular) {
         });
       }
 
-      return _.find(trialverseData.trialDataStudies, function(trialDataStudy) {
+      return _.find(trialDataStudies, function(trialDataStudy) {
         return doesStudyHaveAmbiguousArms(trialDataStudy, includedInterventionUris);
       });
     }
 
-    function doesInterventionHaveAmbiguousArms(drugConceptUid, studyUid, trialverseData, analysis) {
+    function doesInterventionHaveAmbiguousArms(interventionId, studyUri, trialDataStudies, analysis) {
+      if (interventionId === null) {
+        return false;
+      }
       function isArmIncluded(trialDataArm) {
         return !_.find(analysis.excludedArms, function(exclusion) {
-          return exclusion.trialverseUid === trialDataArm.uid;
+          return exclusion.trialverseUid === trialDataArm.uri;
         });
       }
-      var containingStudy = _.find(trialverseData.trialDataStudies, function(trialDataStudy) {
-        return trialDataStudy.studyUid === studyUid;
+      var containingStudy = _.find(trialDataStudies, function(trialDataStudy) {
+        return trialDataStudy.studyUri === studyUri;
       });
       var includedArmsForDrugUid = _.filter(containingStudy.trialDataArms, function(trialDataArm) {
-        return trialDataArm.drugConceptUid === drugConceptUid && isArmIncluded(trialDataArm);
+        return trialDataArm.matchedProjectInterventionId === interventionId && isArmIncluded(trialDataArm);
       });
 
       return includedArmsForDrugUid.length > 1;
@@ -404,22 +371,22 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
 
-    function cleanUpExcludedArms(intervention, analysis, trialverseData) {
+    function cleanUpExcludedArms(intervention, analysis, trialDataStudies) {
 
       var armsMatchingIntervention = {};
 
-      angular.forEach(trialverseData.trialDataStudies, function(trialDataStudy) {
+      angular.forEach(trialDataStudies, function(trialDataStudy) {
         var drugUidForInterventionInStudy;
 
         angular.forEach(trialDataStudy.trialDataInterventions, function(trialDataIntervention) {
           if (trialDataIntervention.drugConceptUid === intervention.semanticInterventionUri) {
-            drugUidForInterventionInStudy = trialDataIntervention.drugConceptUid;
+            drugUidForInterventionInStudy = trialDataIntervention.semanticIntervention.drugConcept;
           }
         });
 
         if (drugUidForInterventionInStudy) {
           angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
-            if (trialDataArm.drugConceptUid === drugUidForInterventionInStudy) {
+            if (trialDataArm.semanticIntervention.drugConcept === drugUidForInterventionInStudy) {
               armsMatchingIntervention[trialDataArm.id] = true;
             }
           });
@@ -476,7 +443,7 @@ define(['lodash', 'angular'], function(_, angular) {
       return numberOfIncludedInterventions > 1;
     }
 
-    function buildOverlappingTreatmentMap(analysis, interventions, trialData) {
+    function buildOverlappingTreatmentMap(analysis, interventions, trialDataStudies) {
       var includedInterventions = getIncludedInterventions(interventions);
       var overlappingTreatmentsMap = includedInterventions.reduce(function(accum, intervention) {
         var overlapping = findOverlappingTreatments(intervention, includedInterventions);
@@ -491,7 +458,7 @@ define(['lodash', 'angular'], function(_, angular) {
           return intervention.id === parseInt(key);
         });
 
-        var hasOverlap = _.find(trialData.trialDataStudies, function(study) {
+        var hasOverlap = _.find(trialDataStudies, function(study) {
 
           var includedArms = _.filter(study.trialDataArms, function(arm) {
             return !_.find(analysis.excludedArms, function(exclusion) {

@@ -2,9 +2,7 @@
 define([], function () {
   var dependencies = ['$resource'];
   var TrialverseTrialDataResource = function ($resource) {
-    return $resource('/namespaces/:namespaceUid/trialData', {
-      namespaceUid: '@id'
-    });
+    return $resource('/projects/:projectId/analyses/:analysisId/evidenceTable');
   };
   return dependencies.concat(TrialverseTrialDataResource);
 });

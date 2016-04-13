@@ -9,6 +9,7 @@ import org.drugis.addis.trialverse.model.TrialDataStudy;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -31,5 +32,5 @@ public interface AnalysisService {
 
   Map<URI, TrialDataStudy> matchInterventions(Map<URI, TrialDataStudy> studyData, List<AbstractSemanticIntervention> interventions);
 
-  List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException;
+  List<TrialDataStudy> buildEvidenceTable(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException;
 }

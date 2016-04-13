@@ -159,7 +159,7 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/evidenceTable", method = RequestMethod.GET)
   @ResponseBody
-  public List<TrialDataStudy> getEvidenceTable(Principal currentUser, @PathVariable Integer projectId, @PathVariable Integer analysisId) throws ResourceDoesNotExistException, ReadValueException {
+  public List<TrialDataStudy> getEvidenceTable(@PathVariable Integer projectId, @PathVariable Integer analysisId) throws ResourceDoesNotExistException, ReadValueException, URISyntaxException {
     return analysisService.buildEvidenceTable(projectId, analysisId);
   }
 

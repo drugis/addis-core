@@ -2,7 +2,7 @@ package org.drugis.addis.interventions.model;
 
 import java.net.URI;
 
-import static org.drugis.trialverse.util.Namespaces.BASE_NAMESPACE;
+import static org.drugis.trialverse.util.Namespaces.CONCEPT_NAMESPACE;
 
 /**
  * Created by daan on 5-4-16.
@@ -25,7 +25,7 @@ public class TitratedInterventionCommand extends AbstractInterventionCommand {
       maxConstraint = new DoseConstraint(this.titratedDoseMaxConstraint.getLowerBound(), this.getTitratedDoseMaxConstraint().getUpperBound());
     }
     return new TitratedDoseIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(),
-            URI.create(BASE_NAMESPACE + this.getSemanticInterventionUuid()),
+            URI.create(CONCEPT_NAMESPACE + this.getSemanticInterventionUuid()),
             this.getSemanticInterventionLabel(),
             minConstraint,
             maxConstraint);

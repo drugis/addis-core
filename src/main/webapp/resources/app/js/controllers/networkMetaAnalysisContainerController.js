@@ -98,8 +98,9 @@ define(['lodash'], function(_) {
       }
       $scope.analysis.outcome = resolveOutcomeId($scope.analysis.outcome.id);
       TrialverseTrialDataResource
-        .get({
-          namespaceUid: $scope.project.namespaceUid,
+        .query({
+          projectId: $scope.project.id,
+          analysisId: $scope.analysis.id,
           outcomeUri: $scope.analysis.outcome.semanticOutcomeUri,
           interventionUris: _.reduce($scope.interventions, addIncludedInterventionUri, []),
           covariateKeys: _.reduce($scope.covariates, addIncludedCovariateDefinitionKey, []),

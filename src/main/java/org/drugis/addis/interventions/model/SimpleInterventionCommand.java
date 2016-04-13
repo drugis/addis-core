@@ -4,7 +4,7 @@ import org.drugis.addis.trialverse.model.SemanticIntervention;
 
 import java.net.URI;
 
-import static org.drugis.trialverse.util.Namespaces.BASE_NAMESPACE;
+import static org.drugis.trialverse.util.Namespaces.CONCEPT_NAMESPACE;
 
 /**
  * Created by daan on 5-4-16.
@@ -24,7 +24,7 @@ public class SimpleInterventionCommand extends AbstractInterventionCommand {
             super.getName(),
             super.getMotivation(),
             new SemanticIntervention(
-                    URI.create(BASE_NAMESPACE + super.getSemanticInterventionUuid()),
+                    URI.create(CONCEPT_NAMESPACE + super.getSemanticInterventionUuid()),
                     super.getSemanticInterventionLabel()
             )
     );
