@@ -37,12 +37,14 @@ define(['lodash'], function(_) {
         constraint.lowerBound.type = constraint.lowerBound.type.value;
         constraint.lowerBound.unitName = constraint.lowerBound.unit.unitName;
         constraint.lowerBound.unitPeriod = constraint.lowerBound.unit.unitPeriod;
+        constraint.lowerBound.unitConcept = constraint.lowerBound.unit.unitConcept;
         delete constraint.lowerBound.unit;
       }
       if (constraint.upperBound) {
         constraint.upperBound.type = constraint.upperBound.type.value;
         constraint.upperBound.unitName = constraint.upperBound.unit.unitName;
         constraint.upperBound.unitPeriod = constraint.upperBound.unit.unitPeriod;
+        constraint.upperBound.unitConcept = constraint.upperBound.unit.unitConcept;
         delete constraint.upperBound.unit;
       }
       return constraint;

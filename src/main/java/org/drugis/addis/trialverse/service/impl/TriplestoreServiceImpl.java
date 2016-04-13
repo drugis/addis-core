@@ -523,7 +523,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             .collect(Collectors.toList());
 
     // fetch the study-level values for each study
-    List<CovariateStudyValue> covariateValues = getStudyLevelCovariateValues(namespaceUid, version, studyLevelCovariates);
+    Map<URI, CovariateStudyValue> covariateValues = getStudyLevelCovariateValues(namespaceUid, version, studyLevelCovariates);
 
     // fetch the population characteristics values for each study
     for(String popcharUuid: populationCharacteristicCovariateKeys) {
@@ -532,15 +532,15 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       JSONArray covariateBindings = JsonPath.read(dataResponse.getBody(), "$.results.bindings");
       for (Object binding : covariateBindings) {
         JSONObject row = (JSONObject) binding;
-        String studyUid = subStringAfterLastSymbol(JsonPath.read(binding, "$.graph.value"), '/');
+        URI studyUri = readValue(row, "graphvalue");
         Double value = extractValueFromRow(row);
-        CovariateStudyValue covariateStudyValue = new CovariateStudyValue(popcharUuid, value);
-        covariateValues.add(covariateStudyValue);
+        CovariateStudyValue covariateStudyValue = new CovariateStudyValue(studyUri, popcharUuid, value);
+        covariateValues.put(studyUri, covariateStudyValue);
       }
     }
 
     // add the values to the studyData object
-    for (CovariateStudyValue covariateStudyValue : covariateValues) {
+    for (CovariateStudyValue covariateStudyValue : covariateValues.values()) {
       TrialDataStudy studyData = trialDataStudies.get(covariateStudyValue.getStudyUri());
       if (studyData != null) {
         studyData.addCovariateValue(covariateStudyValue);
@@ -555,9 +555,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public Map<String, CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, String version,
+  public Map<URI, CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, String version,
                                                                 List<CovariateOption> covariates) throws ReadValueException {
-    Map<URI, CovariateStudyValue> covariateStudyValues = new ArrayList<>();
+    Map<URI, CovariateStudyValue> covariateStudyValues = new HashMap();
     for (CovariateOption covariate : covariates) {
       ResponseEntity<String> covariateResponse = queryTripleStoreVersion(namespaceUid, covariate.getQuery(), version);
       JSONArray covariateBindings = JsonPath.read(covariateResponse.getBody(), "$.results.bindings");
@@ -624,21 +624,21 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     List<SingleStudyBenefitRiskMeasurementRow> measurementObjects = new ArrayList<>();
     for (Object binding : bindings) {
       JSONObject row = (JSONObject) binding;
-      String outcomeUid = subStringAfterLastSymbol(JsonPath.<String>read(binding, "$.outcomeTypeUid.value"), '/');
+      String outcomeUid = subStringAfterLastSymbol(JsonPath.read(binding, "$.outcomeTypeUid.value"), '/');
       String outcomeLabel = JsonPath.read(binding, "$.outcomeInstanceLabel.value");
       URI alternativeUri =  readValue(row, "interventionTypeUid");
       String alternativeLabel = JsonPath.read(binding, "$.interventionLabel.value");
       Double mean = null;
       Double stdDev = null;
-      Long rate = null;
+      Integer rate = null;
       Boolean isContinuous = row.containsKey("mean");
       if (isContinuous) {
-        mean = Double.parseDouble(JsonPath.<String>read(binding, "$.mean.value"));
-        stdDev = Double.parseDouble(JsonPath.<String>read(binding, "$.stdDev.value"));
+        mean = Double.parseDouble(JsonPath.read(binding, "$.mean.value"));
+        stdDev = readValue(row, "stdDev");
       } else {
-        rate = Long.parseLong(JsonPath.<String>read(binding, "$.count.value"));
+        rate = readValue(row, "count");
       }
-      Long sampleSize = Long.parseLong(JsonPath.<String>read(binding, "$.sampleSize.value"));
+      Integer sampleSize = readValue(row, "sampleSize");
       measurementObjects.add(new SingleStudyBenefitRiskMeasurementRow(outcomeUid, outcomeLabel, alternativeUri, alternativeLabel, mean, stdDev, rate, sampleSize));
     }
     return measurementObjects;
@@ -689,10 +689,10 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     private String alternativeLabel;
     private Double mean;
     private Double stdDev;
-    private Long rate;
-    private Long sampleSize;
+    private Integer rate;
+    private Integer sampleSize;
 
-    public SingleStudyBenefitRiskMeasurementRow(String outcomeUid, String outcomeLabel, URI alternativeUri, String alternativeLabel, Double mean, Double stdDev, Long rate, Long sampleSize) {
+    public SingleStudyBenefitRiskMeasurementRow(String outcomeUid, String outcomeLabel, URI alternativeUri, String alternativeLabel, Double mean, Double stdDev, Integer rate, Integer sampleSize) {
       this.outcomeUid = outcomeUid;
       this.outcomeLabel = outcomeLabel;
       this.alternativeUri = alternativeUri;
@@ -727,11 +727,11 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       return stdDev;
     }
 
-    public Long getRate() {
+    public Integer getRate() {
       return rate;
     }
 
-    public Long getSampleSize() {
+    public Integer getSampleSize() {
       return sampleSize;
     }
 

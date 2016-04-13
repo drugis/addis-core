@@ -57,8 +57,8 @@ public class PataviTaskRepositoryImplTest {
   public void testCreateNetwork() throws Exception {
     Integer analysisId = -5; // from test-data/sql
 
-    Long responders = 1L;
-    Long samplesize = 30L;
+    Integer responders = 1;
+    Integer samplesize = 30;
     Integer treatment = 123;
     String study = "study";
     String linearModel = "random";
@@ -102,8 +102,8 @@ public class PataviTaskRepositoryImplTest {
   public void testCreatePairwise() throws Exception {
     Integer analysisId = -5; // from test-data/sql
 
-    Long responders = 1L;
-    Long samplesize = 30L;
+    Integer responders = 1;
+    Integer samplesize = 30;
     Integer treatment = 123;
     String study = "study";
     String linearModel = "random";
@@ -150,8 +150,8 @@ public class PataviTaskRepositoryImplTest {
   public void testCreateWithFixedOutcomeScale() throws Exception {
     Integer analysisId = -5; // from test-data/sql
 
-    Long responders = 1L;
-    Long samplesize = 30L;
+    Integer responders = 1;
+    Integer samplesize = 30;
     Integer treatment = 123;
     String study = "study";
     String linearModel = "random";
@@ -189,8 +189,8 @@ public class PataviTaskRepositoryImplTest {
   public void testCreateWithoutFixedOutcomeScale() throws Exception {
     Integer analysisId = -5; // from test-data/sql
 
-    Long responders = 1L;
-    Long samplesize = 30L;
+    Integer responders = 1;
+    Integer samplesize = 30;
     Integer treatment = 123;
     String study = "study";
     String linearModel = "random";
@@ -227,8 +227,8 @@ public class PataviTaskRepositoryImplTest {
   public void testCreateMetaRegression() throws Exception {
     Integer analysisId = -5; // from test-data/sql
 
-    Long responders = 1L;
-    Long samplesize = 30L;
+    Integer responders = 1;
+    Integer samplesize = 30;
     Integer treatment = 123;
     String study = "study";
     String linearModel = "random";

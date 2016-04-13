@@ -12,6 +12,7 @@ import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -220,13 +222,13 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void getCovariateTestData() {
+  public void getCovariateTestData() throws ReadValueException {
     String namespaceUid = "namespaceUid";
     String version = "version";
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/covariateDataExample.json");
     createMockTrialverseService(mockResult);
 
-    List<CovariateStudyValue> result = triplestoreService.getStudyLevelCovariateValues(namespaceUid, version, Arrays.asList(CovariateOption.ALLOCATION_RANDOMIZED));
+    Map<URI,CovariateStudyValue> result = triplestoreService.getStudyLevelCovariateValues(namespaceUid, version, Arrays.asList(CovariateOption.ALLOCATION_RANDOMIZED));
     assertEquals(4, result.size());
 
   }

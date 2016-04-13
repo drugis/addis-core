@@ -28,8 +28,8 @@ public class PerformanceTableBuilderTest {
 
   String armName1 = "arm name 1";
   String armName2 = "arm name 2";
-  Arm arm1 = new Arm("1L", "10L", armName1);
-  Arm arm2 = new Arm("2L", "11L", armName2);
+  Arm arm1 = new Arm(URI.create("1L"), "10L", armName1);
+  Arm arm2 = new Arm(URI.create("2L"), "11L", armName2);
 
   URI alternativeUri1 = URI.create("altUri1");
   URI alternativeUri2 = URI.create("altUri2");
@@ -38,14 +38,14 @@ public class PerformanceTableBuilderTest {
 
   String variableName1 = "variable name 1";
   String variableName2 = "variable name 2";
-  Variable variable1 = new Variable("101L", "1L", variableName1, "desc", null, false, MeasurementType.RATE, "");
-  Variable variable2 = new Variable("102L", "1L", variableName2, "desc", null, false, MeasurementType.CONTINUOUS, "");
+  Variable variable1 = new Variable(URI.create("101L"), "1L", variableName1, "desc", null, false, MeasurementType.RATE, "");
+  Variable variable2 = new Variable(URI.create("102L"), "1L", variableName2, "desc", null, false, MeasurementType.CONTINUOUS, "");
 
-  Map<String, CriterionEntry> criterionEntryMap;
-  Map<String, AlternativeEntry> alternativeEntryMap;
+  Map<URI, CriterionEntry> criterionEntryMap;
+  Map<URI, AlternativeEntry> alternativeEntryMap;
 
-  Measurement measurement1 = new Measurement(URI.create("1L"), variable1.getUid(), arm1.getUid(), 111, 42, null, null);
-  Measurement measurement2 = new Measurement(URI.create("1L"), variable2.getUid(), arm1.getUid(), 222, null, 0.2, 7.56);
+  Measurement measurement1 = new Measurement(URI.create("1L"), variable1.getUri(), arm1.getUri(), 111, 42, null, null);
+  Measurement measurement2 = new Measurement(URI.create("1L"), variable2.getUri(), arm1.getUri(), 222, null, 0.2, 7.56);
 
   CriterionEntry criterionEntry1 = new CriterionEntry(criterionUri1, variable1.getName(), null, null);
   CriterionEntry criterionEntry2 = new CriterionEntry(criterionUri2, variable2.getName(), null, null);
@@ -55,11 +55,11 @@ public class PerformanceTableBuilderTest {
   @Before
   public void setUp() throws Exception {
     criterionEntryMap = new HashMap<>();
-    criterionEntryMap.put(variable1.getUid(), criterionEntry1);
-    criterionEntryMap.put(variable2.getUid(), criterionEntry2);
+    criterionEntryMap.put(variable1.getUri(), criterionEntry1);
+    criterionEntryMap.put(variable2.getUri(), criterionEntry2);
     alternativeEntryMap = new HashMap<>();
-    alternativeEntryMap.put(arm1.getUid(), alternativeEntry1);
-    alternativeEntryMap.put(arm2.getUid(), alternativeEntry2);
+    alternativeEntryMap.put(arm1.getUri(), alternativeEntry1);
+    alternativeEntryMap.put(arm2.getUri(), alternativeEntry2);
     builder = new PerformanceTableBuilder();
 
     MockitoAnnotations.initMocks(this);
@@ -68,12 +68,12 @@ public class PerformanceTableBuilderTest {
   @Test
   public void testBuild() throws Exception {
 
-    Long rate = measurement1.getRate();
-    Long sampleSize1 = measurement2.getSampleSize();
-    Long alpha = rate + 1L;
-    Long beta = sampleSize1 + 1L;
+    Integer rate = measurement1.getRate();
+    Integer sampleSize1 = measurement2.getSampleSize();
+    Integer alpha = rate + 1;
+    Integer beta = sampleSize1 + 1;
 
-    Long sampleSize2 = measurement1.getSampleSize();
+    Integer sampleSize2 = measurement1.getSampleSize();
     Double mu = measurement2.getMean();
     Double stdDev = measurement2.getStdDev();
 
@@ -99,14 +99,14 @@ public class PerformanceTableBuilderTest {
     assertEquals(criterionUri2, rateMeasurementEntry.getCriterionUri());
     assertEquals(RatePerformance.DBETA, rateMeasurementEntry.getPerformance().getType());
 
-    Long expectedAlpha = measurement1.getRate() + 1L;
-    Long expectedBeta = measurement1.getSampleSize() - measurement1.getRate() + 1L;
+    Integer expectedAlpha = measurement1.getRate() + 1;
+    Integer expectedBeta = measurement1.getSampleSize() - measurement1.getRate() + 1;
     assertEquals(expectedAlpha, rateMeasurementEntry.getPerformance().getParameters().getAlpha());
     assertEquals(expectedBeta, rateMeasurementEntry.getPerformance().getParameters().getBeta());
     assertEquals(RatePerformance.DBETA, rateMeasurementEntry.getPerformance().getType());
 
     Double expectedMu = measurement2.getMean();
-    Long expectedSampleSize = measurement2.getSampleSize();
+    Integer expectedSampleSize = measurement2.getSampleSize();
     Double expectedSigma = measurement2.getStdDev() / Math.sqrt(expectedSampleSize);
 
     ContinuousPerformanceParameters parameters = continuousMeasurementEntry.getPerformance().getParameters();

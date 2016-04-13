@@ -26,16 +26,16 @@ public class PerformanceTableBuilder {
     return performanceTable;
   }
 
-  private ContinuousMeasurementEntry createNormalDistributionEntry(URI alternativeUri, String criterionUid, Double mean, Double standardDeviation, Long sampleSize) {
+  private ContinuousMeasurementEntry createNormalDistributionEntry(URI alternativeUri, String criterionUid, Double mean, Double standardDeviation, Integer sampleSize) {
     Double sigma = standardDeviation / Math.sqrt(sampleSize);
 
     ContinuousPerformance performance = new ContinuousPerformance(new ContinuousPerformanceParameters(mean, sigma));
     return new ContinuousMeasurementEntry(alternativeUri, criterionUid, performance);
   }
 
-  private RateMeasurementEntry createBetaDistributionEntry(URI alternativeUri, String criterionUid, Long rate, Long sampleSize) {
-    Long alpha = rate + 1;
-    Long beta = sampleSize - rate + 1;
+  private RateMeasurementEntry createBetaDistributionEntry(URI alternativeUri, String criterionUid, Integer rate, Integer sampleSize) {
+    int alpha = rate + 1;
+    int beta = sampleSize - rate + 1;
 
     RatePerformance performance = new RatePerformance(new RatePerformanceParameters(alpha, beta));
     return new RateMeasurementEntry(alternativeUri, criterionUid, performance);

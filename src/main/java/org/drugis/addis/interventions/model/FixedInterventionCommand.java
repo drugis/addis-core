@@ -8,7 +8,7 @@ import java.net.URI;
  * Created by daan on 5-4-16.
  */
 public class FixedInterventionCommand extends AbstractInterventionCommand {
-  ConstraintCommand fixedDoseConstraint;
+  ConstraintCommand fixedDoseConstraintCommand;
 
   public FixedInterventionCommand() {
   }
@@ -18,16 +18,16 @@ public class FixedInterventionCommand extends AbstractInterventionCommand {
     return new FixedDoseIntervention(null, this.getProjectId(), this.getName(), this.getMotivation(),
             URI.create(Namespaces.CONCEPT_NAMESPACE + this.getSemanticInterventionUuid()),
             this.getSemanticInterventionLabel(),
-            new DoseConstraint(this.fixedDoseConstraint.getLowerBound(), this.fixedDoseConstraint.getUpperBound()));
+            new DoseConstraint(this.fixedDoseConstraintCommand.getLowerBound(), this.fixedDoseConstraintCommand.getUpperBound()));
   }
 
-  public FixedInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUuid, ConstraintCommand fixedDoseConstraint) {
+  public FixedInterventionCommand(Integer projectId, String name, String motivation, String semanticInterventionLabel, String semanticInterventionUuid, ConstraintCommand fixedDoseConstraintCommand) {
     super(projectId, name, motivation, semanticInterventionLabel, semanticInterventionUuid);
-    this.fixedDoseConstraint = fixedDoseConstraint;
+    this.fixedDoseConstraintCommand = fixedDoseConstraintCommand;
   }
 
-  public ConstraintCommand getFixedDoseConstraint() {
-    return fixedDoseConstraint;
+  public ConstraintCommand getFixedDoseConstraintCommand() {
+    return fixedDoseConstraintCommand;
   }
 
   @Override
@@ -38,14 +38,14 @@ public class FixedInterventionCommand extends AbstractInterventionCommand {
 
     FixedInterventionCommand that = (FixedInterventionCommand) o;
 
-    return fixedDoseConstraint.equals(that.fixedDoseConstraint);
+    return fixedDoseConstraintCommand.equals(that.fixedDoseConstraintCommand);
 
   }
 
   @Override
   public int hashCode() {
     int result = super.hashCode();
-    result = 31 * result + fixedDoseConstraint.hashCode();
+    result = 31 * result + fixedDoseConstraintCommand.hashCode();
     return result;
   }
 }

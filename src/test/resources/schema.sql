@@ -495,3 +495,15 @@ CREATE TABLE InterventionInclusion (
   analysisId INT
  );
 DROP TABLE MetaBenefitRiskAnalysis_Alternative;
+
+--changeset stroombergc:48
+ALTER TABLE FixedDoseIntervention ADD COLUMN lowerBoundUnitConcept varchar;
+ALTER TABLE FixedDoseIntervention ADD COLUMN upperBoundUnitConcept varchar;
+ALTER TABLE TitratedDoseIntervention ADD COLUMN minLowerBoundUnitConcept varchar;
+ALTER TABLE TitratedDoseIntervention ADD COLUMN minUpperBoundUnitConcept varchar;
+ALTER TABLE TitratedDoseIntervention ADD COLUMN maxLowerBoundUnitConcept varchar;
+ALTER TABLE TitratedDoseIntervention ADD COLUMN maxUpperBoundUnitConcept varchar;
+ALTER TABLE BothDoseTypesIntervention ADD COLUMN minLowerBoundUnitConcept varchar;
+ALTER TABLE BothDoseTypesIntervention ADD COLUMN minUpperBoundUnitConcept varchar;
+ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxLowerBoundUnitConcept varchar;
+ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxUpperBoundUnitConcept varchar;

@@ -54,7 +54,7 @@ public class ProblemControllerTest {
 
   @Test
   public void testGetSingleStudybenefitRiskProblem() throws Exception, ReadValueException {
-    RatePerformance ratePerformance = new RatePerformance(new RatePerformanceParameters(10L, 50L));
+    RatePerformance ratePerformance = new RatePerformance(new RatePerformanceParameters(10, 50));
     URI alternativeUri1 = URI.create("Alturi1");
     URI alternativeUri2 = URI.create("Alturi2");
     String criterionUri1 = "Crit uri 1";
@@ -82,8 +82,8 @@ public class ProblemControllerTest {
   public void testGetNetworkMetaAnalysisProblem() throws Exception, ReadValueException {
     int treatmentId1 = 1;
     int treatmentId2 = 2;
-    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10L, 5L);
-    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId2, 20L, 7L);
+    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10, 5);
+    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId2, 20, 7);
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(entry1, entry2);
     List<TreatmentEntry> treatments = Arrays.asList(new TreatmentEntry(treatmentId1, "treatment 1 name"), new TreatmentEntry(treatmentId2, "treatment 2 name"));
     Map<String, Map<String, Double>> studyCovariates = new HashMap<>();
@@ -107,8 +107,8 @@ public class ProblemControllerTest {
   public void testGetNetworkMetaAnalysisNoCovariates() throws Exception, ReadValueException {
     int treatmentId1 = 1;
     int treatmentId2 = 2;
-    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10L, 5L);
-    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId2, 20L, 7L);
+    AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10, 5);
+    AbstractNetworkMetaAnalysisProblemEntry entry2 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId2, 20, 7);
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = Arrays.asList(entry1, entry2);
     List<TreatmentEntry> treatments = Arrays.asList(new TreatmentEntry(treatmentId1, "treatment 1 name"), new TreatmentEntry(treatmentId2, "treatment 2 name"));
 

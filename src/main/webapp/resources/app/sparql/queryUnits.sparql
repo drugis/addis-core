@@ -6,11 +6,10 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
 SELECT DISTINCT
-  ?unitName ?unitPeriod
+  ?unitName ?unitPeriod ?unitConcept
 WHERE {
   GRAPH ?graphUri {
     ?study ontology:has_activity ?treatmentActivity .
-
     {
       ?treatmentActivity
       a ontology:TreatmentActivity ;
@@ -30,6 +29,8 @@ WHERE {
         ]
       ] .
     } .
-    ?unit rdfs:label ?unitName .
+    ?unit
+      rdfs:label ?unitName ;
+      a ?unitConcept .
   }
 }

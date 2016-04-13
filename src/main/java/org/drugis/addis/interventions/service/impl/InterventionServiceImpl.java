@@ -16,7 +16,7 @@ public class InterventionServiceImpl implements InterventionService {
   @Override
   public boolean isMatched(AbstractIntervention intervention, TrialDataArm arm) {
     if(intervention instanceof SimpleIntervention) {
-      return intervention.getSemanticInterventionUri().equals(arm.getSemanticIntervention().getDrugConcept().toString());
+      return intervention.getSemanticInterventionUri().equals(arm.getSemanticIntervention().getDrugConcept());
     }
     if(intervention instanceof FixedDoseIntervention) {
       return intervention.getSemanticInterventionUri().equals(arm.getSemanticIntervention().getDrugConcept());

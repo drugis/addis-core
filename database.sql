@@ -560,3 +560,39 @@ ALTER TABLE interventioninclusion DROP CONSTRAINT interventioninclusion_analysis
 ALTER TABLE interventioninclusion ADD CONSTRAINT interventioninclusion_analysisid_fkey FOREIGN KEY (analysisId) REFERENCES AbstractAnalysis(id);
 
 select setval('shared_analysis_id_seq', (select max(id) from AbstractAnalysis));
+-- rollback DROP TABLE AbstractAnalysis;
+-- rollback CREATE TABLE MetaBenefitRiskAnalysis_Alternative ( analysisId INT, alternativeId INT, PRIMARY KEY(analysisId, alternativeId), FOREIGN KEY(analysisId) REFERENCES MetaBenefitRiskAnalysis(id), FOREIGN KEY(alternativeId) REFERENCES Intervention(id));
+-- rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN projectId int;
+-- rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD CONSTRAINT FOREIGN KEY(projectId) REFERENCES project(id);
+-- rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN title VARCHAR;
+-- rollback ALTER TABLE NetworkMetaAnalysis ADD COLUMN projectId int;
+-- rollback ALTER TABLE NetworkMetaAnalysis ADD CONSTRAINT FOREIGN KEY(projectId) REFERENCES project(id);
+-- rollback ALTER TABLE NetworkMetaAnalysis ADD COLUMN title VARCHAR;
+-- rollback ALTER TABLE MetaBenefitRiskAnalysis ADD COLUMN projectId int;
+-- rollback ALTER TABLE MetaBenefitRiskAnalysis ADD CONSTRAINT FOREIGN KEY(projectId) REFERENCES project(id);
+-- rollback ALTER TABLE MetaBenefitRiskAnalysis ADD COLUMN title VARCHAR;
+-- rollback ALTER TABLE interventioninclusion DROP CONSTRAINT interventioninclusion_analysisid_fkey;
+-- rollback ALTER TABLE interventioninclusion ADD CONSTRAINT interventioninclusion_analysisid_fkey FOREIGN KEY (analysisId) REFERENCES NetworkMetaAnalysis(id);
+
+
+--changeset stroombergc:48
+ALTER TABLE FixedDoseIntervention ADD COLUMN lowerBoundUnitConcept varchar;
+ALTER TABLE FixedDoseIntervention ADD COLUMN upperBoundUnitConcept varchar;
+ALTER TABLE TitratedDoseIntervention ADD COLUMN minLowerBoundUnitConcept varchar;
+ALTER TABLE TitratedDoseIntervention ADD COLUMN minUpperBoundUnitConcept varchar;
+ALTER TABLE TitratedDoseIntervention ADD COLUMN maxLowerBoundUnitConcept varchar;
+ALTER TABLE TitratedDoseIntervention ADD COLUMN maxUpperBoundUnitConcept varchar;
+ALTER TABLE BothDoseTypesIntervention ADD COLUMN minLowerBoundUnitConcept varchar;
+ALTER TABLE BothDoseTypesIntervention ADD COLUMN minUpperBoundUnitConcept varchar;
+ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxLowerBoundUnitConcept varchar;
+ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxUpperBoundUnitConcept varchar;
+--rollback ALTER TABLE FixedDoseIntervention DROP COLUMN lowerBoundUnitConcept ;
+--rollback ALTER TABLE FixedDoseIntervention DROP COLUMN upperBoundUnitConcept ;
+--rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN minLowerBoundUnitConcept ;
+--rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN minUpperBoundUnitConcept ;
+--rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN maxLowerBoundUnitConcept ;
+--rollback ALTER TABLE TitratedDoseIntervention DROP COLUMN maxUpperBoundUnitConcept ;
+--rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN minLowerBoundUnitConcept ;
+--rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN minUpperBoundUnitConcept ;
+--rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxLowerBoundUnitConcept ;
+--rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxUpperBoundUnitConcept ;

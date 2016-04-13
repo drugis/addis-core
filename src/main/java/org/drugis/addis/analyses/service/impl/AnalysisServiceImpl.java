@@ -7,6 +7,7 @@ import org.drugis.addis.analyses.repository.NetworkMetaAnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
+import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
@@ -66,8 +67,8 @@ public class AnalysisServiceImpl implements AnalysisService {
   @Inject
   ProjectRepository projectRepository;
 
-//  @Inject
-//  private CovariateRepository covariateRepository;
+  @Inject
+  private CovariateRepository covariateRepository;
 
   @Inject
   private InterventionService interventionService;
@@ -190,10 +191,9 @@ public class AnalysisServiceImpl implements AnalysisService {
     List<Integer> includedCovariates = analysis.getCovariateInclusions().stream()
             .map(CovariateInclusion::getCovariateId)
             .collect(Collectors.toList());
-//    return covariateRepository.findByProject(analysis.getProjectId()).stream()
-//            .filter(i -> includedCovariates.contains(i.getId()))
-//            .collect(Collectors.toList());
-    return null;
+    return covariateRepository.findByProject(analysis.getProjectId()).stream()
+            .filter(i -> includedCovariates.contains(i.getId()))
+            .collect(Collectors.toList());
   }
 
   @Override

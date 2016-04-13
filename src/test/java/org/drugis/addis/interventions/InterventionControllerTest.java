@@ -78,7 +78,7 @@ public class InterventionControllerTest {
   @Test
   public void testQueryInterventions() throws Exception {
 
-    DoseConstraint constraint = new DoseConstraint(new LowerBoundCommand(LowerBoundType.AT_LEAST, 2d, "mili", "P1D"), null);
+    DoseConstraint constraint = new DoseConstraint(new LowerBoundCommand(LowerBoundType.AT_LEAST, 2d, "mili", "P1D", URI.create("unitConcept")), null);
     FixedDoseIntervention intervention = new FixedDoseIntervention(1, "name", "motivation", URI.create("http://semantic.com"), "labelnew", constraint);
     Integer projectId = 1;
     List<AbstractIntervention> interventions = Collections.singletonList(intervention);
@@ -140,8 +140,8 @@ public class InterventionControllerTest {
     String unit = "mili";
     Double val = 1.1;
     String period = "P2D";
-    LowerBoundCommand lower = new LowerBoundCommand(lowerType, val, unit, period);
-    UpperBoundCommand upper = new UpperBoundCommand(upperType, val, unit, period);
+    LowerBoundCommand lower = new LowerBoundCommand(lowerType, val, unit, period, URI.create("unitConcept"));
+    UpperBoundCommand upper = new UpperBoundCommand(upperType, val, unit, period, URI.create("unitConcept"));
     ConstraintCommand fixedDoseConstraintCommand = new ConstraintCommand(lower, upper);
     AbstractInterventionCommand doseRestrictedInterventionCommand = new FixedInterventionCommand(1, "name", "motivation", "http://semantic.com", "labelnew", fixedDoseConstraintCommand);
     when(interventionRepository.create(gert, doseRestrictedInterventionCommand)).thenReturn(intervention);
@@ -163,6 +163,7 @@ public class InterventionControllerTest {
             "      \"type\": \"AT_LEAST\",\n" +
             "      \"unitName\": \"milligram\",\n" +
             "      \"unitPeriod\": \"P1D\",\n" +
+            "      \"unitConcept\": \"unitConcept\",\n" +
             "      \"value\": 30\n" +
             "    }\n" +
             "  },\n" +
@@ -171,6 +172,7 @@ public class InterventionControllerTest {
             "      \"type\": \"LESS_THAN\",\n" +
             "      \"unitName\": \"milligram\",\n" +
             "      \"unitPeriod\": \"P1D\",\n" +
+            "      \"unitConcept\": \"unitConcept\",\n" +
             "      \"value\": 50\n" +
             "    }\n" +
             "  },\n" +
@@ -199,6 +201,7 @@ public class InterventionControllerTest {
             "      \"type\": \"AT_LEAST\",\n" +
             "      \"unitName\": \"milligram\",\n" +
             "      \"unitPeriod\": \"P1D\",\n" +
+            "      \"unitConcept\": \"unitConcept\",\n" +
             "      \"value\": 30\n" +
             "    }\n" +
             "  },\n" +

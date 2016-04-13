@@ -59,7 +59,6 @@ public abstract class AbstractIntervention {
     return semanticInterventionLabel;
   }
 
-
   public URI getSemanticInterventionUri() {
     return URI.create(semanticInterventionUri);
   }

@@ -1,60 +1,42 @@
 package org.drugis.addis.interventions.model;
 
+import java.net.URI;
+
 /**
  * Created by daan on 5-4-16.
  */
-public class UpperBoundCommand {
+public class UpperBoundCommand extends AbstractBoundCommand {
   private UpperBoundType type;
-  private String unitName;
-  private String unitPeriod;
-  private Double value;
 
   public UpperBoundCommand() {
+    super();
   }
 
-  public UpperBoundCommand(UpperBoundType type, Double value, String unitName, String unitPeriod) {
+  public UpperBoundCommand(UpperBoundType type, Double value, String unitName, String unitPeriod, URI unitConcept) {
+    super(value, unitName, unitPeriod, unitConcept);
     this.type = type;
-    this.unitName = unitName;
-    this.unitPeriod = unitPeriod;
-    this.value = value;
   }
 
   public UpperBoundType getType() {
     return type;
   }
 
-  public String getUnitName() {
-    return unitName;
-  }
-
-  public Double getValue() {
-    return value;
-  }
-
-  public String getUnitPeriod() {
-    return unitPeriod;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
 
     UpperBoundCommand that = (UpperBoundCommand) o;
 
-    if (type != that.type) return false;
-    if (!unitName.equals(that.unitName)) return false;
-    if (!unitPeriod.equals(that.unitPeriod)) return false;
-    return value.equals(that.value);
+    return type == that.type;
 
   }
 
   @Override
   public int hashCode() {
-    int result = type.hashCode();
-    result = 31 * result + unitName.hashCode();
-    result = 31 * result + unitPeriod.hashCode();
-    result = 31 * result + value.hashCode();
+    int result = super.hashCode();
+    result = 31 * result + type.hashCode();
     return result;
   }
 }

@@ -2,6 +2,7 @@ package org.drugis.addis.config;
 
 import org.drugis.addis.analyses.repository.*;
 import org.drugis.addis.analyses.service.AnalysisService;
+import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.models.repository.ModelRepository;
@@ -134,6 +135,11 @@ public class TestConfig {
   @Bean
   public InterventionService mockInterventionService() {
     return mock(InterventionService.class);
+  }
+
+  @Bean
+  public CovariateRepository mockCovariateRepository() {
+    return  mock(CovariateRepository.class);
   }
 
 }

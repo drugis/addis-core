@@ -15,10 +15,12 @@ public class FixedDoseIntervention extends AbstractIntervention implements Seria
           @AttributeOverride(name="lowerBound.type" , column = @Column(name="lowerBoundType") ),
           @AttributeOverride(name="lowerBound.unitName" , column = @Column(name="lowerBoundUnitName") ),
           @AttributeOverride(name="lowerBound.unitPeriod" , column = @Column(name="lowerBoundUnitPeriod") ),
+          @AttributeOverride(name="lowerBound.unitConcept" , column = @Column(name="lowerBoundUnitConcept") ),
           @AttributeOverride(name="lowerBound.value", column = @Column(name="lowerBoundValue") ),
           @AttributeOverride(name="upperBound.type" , column = @Column(name="upperBoundType") ),
           @AttributeOverride(name="upperBound.unitName" , column = @Column(name="upperBoundUnitName") ),
           @AttributeOverride(name="upperBound.unitPeriod" , column = @Column(name="upperBoundUnitPeriod") ),
+          @AttributeOverride(name="upperBound.unitConcept" , column = @Column(name="upperBoundUnitConcept") ),
           @AttributeOverride(name="upperBound.value", column = @Column(name="upperBoundValue") )
   } )
   DoseConstraint constraint;

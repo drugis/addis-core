@@ -3,6 +3,7 @@ package org.drugis.addis.interventions.model;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.net.URI;
 
 /**
  * Created by daan on 5-4-16.
@@ -15,15 +16,17 @@ public class UpperDoseBound {
   Double value;
   String unitName;
   String unitPeriod;
+  String unitConcept;
 
   public UpperDoseBound() {
   }
 
-  public UpperDoseBound(UpperBoundType type, Double value, String unitName, String unitPeriod) {
+  public UpperDoseBound(UpperBoundType type, Double value, String unitName, String unitPeriod, URI unitConcept) {
     this.type = type;
     this.value = value;
     this.unitName = unitName;
     this.unitPeriod = unitPeriod;
+    this.unitConcept = unitConcept.toString();
   }
 
   public UpperBoundType getType() {
@@ -36,6 +39,14 @@ public class UpperDoseBound {
 
   public String getUnitName() {
     return unitName;
+  }
+
+  public String getUnitPeriod() {
+    return unitPeriod;
+  }
+
+  public URI getUnitConcept() {
+    return URI.create(unitConcept);
   }
 
   @Override

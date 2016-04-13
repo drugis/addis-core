@@ -19,7 +19,7 @@ public class PairwiseNetworkProblemTest {
     @Test
     public void testCreatePairwiseNetworkProblem() {
 
-        Long sampleSize = 33L;
+        Integer sampleSize = 33;
         Double mean = 2.2;
         Double stdDev = 0.2;
 

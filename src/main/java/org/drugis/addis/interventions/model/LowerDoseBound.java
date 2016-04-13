@@ -3,6 +3,7 @@ package org.drugis.addis.interventions.model;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.net.URI;
 
 /**
  * Created by daan on 5-4-16.
@@ -18,14 +19,17 @@ public class LowerDoseBound {
 
   private String unitPeriod;
 
+  private String unitConcept;
+
   public LowerDoseBound() {
   }
 
-  public LowerDoseBound(LowerBoundType type, Double value, String unitName, String unitPeriod) {
+  public LowerDoseBound(LowerBoundType type, Double value, String unitName, String unitPeriod, URI unitConcept) {
     this.type = type;
     this.value = value;
     this.unitName = unitName;
     this.unitPeriod = unitPeriod;
+    this.unitConcept = unitConcept.toString();
   }
 
   public LowerBoundType getType() {
@@ -44,6 +48,10 @@ public class LowerDoseBound {
     return unitPeriod;
   }
 
+  public URI getUnitConcept() {
+    return URI.create(unitConcept);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -54,7 +62,8 @@ public class LowerDoseBound {
     if (type != that.type) return false;
     if (!value.equals(that.value)) return false;
     if (!unitName.equals(that.unitName)) return false;
-    return unitPeriod.equals(that.unitPeriod);
+    if (!unitPeriod.equals(that.unitPeriod)) return false;
+    return unitConcept.equals(that.unitConcept);
 
   }
 
@@ -64,6 +73,7 @@ public class LowerDoseBound {
     result = 31 * result + value.hashCode();
     result = 31 * result + unitName.hashCode();
     result = 31 * result + unitPeriod.hashCode();
+    result = 31 * result + unitConcept.hashCode();
     return result;
   }
 }

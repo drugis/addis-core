@@ -34,7 +34,7 @@ public class TrialDataArm {
     return name;
   }
 
-  public URI getDrugInstanceUid() {
+  public URI getDrugInstance() {
     return drugInstance;
   }
 

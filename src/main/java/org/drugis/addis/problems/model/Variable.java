@@ -1,11 +1,13 @@
 package org.drugis.addis.problems.model;
 
+import java.net.URI;
+
 /**
  * Created by connor on 25-3-14.
  */
 public class Variable {
 
-  private String uid;
+  private URI uri;
   private String study;
   private String name;
   private String description;
@@ -17,8 +19,8 @@ public class Variable {
   public Variable() {
   }
 
-  public Variable(String Uid, String studyUid, String name, String description, String unitDescription, Boolean isPrimary, MeasurementType measurementType, String variableType) {
-    this.uid = Uid;
+  public Variable(URI uri, String studyUid, String name, String description, String unitDescription, Boolean isPrimary, MeasurementType measurementType, String variableType) {
+    this.uri = uri;
     this.study = studyUid;
     this.name = name;
     this.description = description;
@@ -28,8 +30,8 @@ public class Variable {
     this.variableType = variableType;
   }
 
-  public String getUid() {
-    return uid;
+  public URI getUri() {
+    return uri;
   }
 
   public String getStudy() {
@@ -68,7 +70,7 @@ public class Variable {
     Variable variable = (Variable) o;
 
     if (description != null ? !description.equals(variable.description) : variable.description != null) return false;
-    if (!uid.equals(variable.uid)) return false;
+    if (!uri.equals(variable.uri)) return false;
     if (!isPrimary.equals(variable.isPrimary)) return false;
     if (measurementType != variable.measurementType) return false;
     if (!name.equals(variable.name)) return false;
@@ -82,7 +84,7 @@ public class Variable {
 
   @Override
   public int hashCode() {
-    int result = uid.hashCode();
+    int result = uri.hashCode();
     result = 31 * result + study.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + (description != null ? description.hashCode() : 0);
