@@ -532,7 +532,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       JSONArray covariateBindings = JsonPath.read(dataResponse.getBody(), "$.results.bindings");
       for (Object binding : covariateBindings) {
         JSONObject row = (JSONObject) binding;
-        URI studyUri = readValue(row, "graphvalue");
+        URI studyUri = readValue(row, "graph");
         Double value = extractValueFromRow(row);
         CovariateStudyValue covariateStudyValue = new CovariateStudyValue(studyUri, popcharUuid, value);
         covariateValues.put(studyUri, covariateStudyValue);
