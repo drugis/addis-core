@@ -134,7 +134,7 @@ public class AnalysisController extends AbstractAddisCoreController {
                               @PathVariable Integer analysisId,
                               @RequestParam(required=false) Integer modelId) throws MethodNotAllowedException, ResourceDoesNotExistException {
     projectService.checkOwnership(projectId, currentUser);
-    analysisRepository.setPrimaryModel(analysisId, modelId);
+    networkMetaAnalysisRepository.setPrimaryModel(analysisId, modelId);
     response.setStatus(HttpStatus.SC_OK);
   }
 

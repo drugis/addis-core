@@ -431,7 +431,7 @@ public class AnalysisControllerTest {
             .principal(user))
             .andExpect(status().isOk());
     verify(projectService).checkOwnership(projectId, user);
-    verify(analysisRepository).setPrimaryModel(analysisId, Integer.parseInt(modelId));
+    verify(networkMetaAnalysisRepository).setPrimaryModel(analysisId, Integer.parseInt(modelId));
   }
 
 
@@ -443,7 +443,7 @@ public class AnalysisControllerTest {
             .principal(user))
             .andExpect(status().isOk());
     verify(projectService).checkOwnership(projectId, user);
-    verify(analysisRepository).setPrimaryModel(analysisId, null);
+    verify(networkMetaAnalysisRepository).setPrimaryModel(analysisId, null);
   }
 
 
