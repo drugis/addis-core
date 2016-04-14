@@ -175,22 +175,14 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function findArmForIntervention(trialdataArms, trialDataIntervention) {
       return _.find(trialdataArms, function(trialdataArm) {
-        return trialdataArm.drugInstance === trialDataIntervention.drugInstanceUid;
+        return trialdataArm.matchedProjectInterventionId === trialDataIntervention.id;
       });
     }
 
-    function findTrialDataInterventionForIntervention(trialDataInterventions, intervention) {
-      return _.find(trialDataInterventions, function(trialDataIntervention) {
-        return trialDataIntervention.semanticIntervention.drugConcept === intervention.semanticInterventionUri;
-      });
-    }
-
-    function studyMeasuresBothInterventions(trialDataStudy, intervention1, intervention2) {
-      var trialDataIntervention1 = findTrialDataInterventionForIntervention(trialDataStudy.trialDataInterventions, intervention1);
-      var trialDataIntervention2 = findTrialDataInterventionForIntervention(trialDataStudy.trialDataInterventions, intervention2);
-      return trialDataIntervention1 && trialDataIntervention2 &&
-        findArmForIntervention(trialDataStudy.trialDataArms, trialDataIntervention1) &&
-        findArmForIntervention(trialDataStudy.trialDataArms, trialDataIntervention2);
+    function studyMeasuresBothInterventions(trialDataStudy, fromIntervention, toIntervention) {
+      return fromIntervention && toIntervention &&
+        findArmForIntervention(trialDataStudy.trialDataArms, fromIntervention) &&
+        findArmForIntervention(trialDataStudy.trialDataArms, toIntervention);
     }
 
     function attachStudiesForEdges(edges, trialData) {
@@ -203,12 +195,12 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
 
-    function transformTrialDataToNetwork(trialData, interventions, excludedArms) {
+    function transformTrialDataToNetwork(trialDataStudies, interventions, excludedArms) {
       var network = {
         interventions: [],
         edges: AnalysisService.generateEdges(interventions)
       };
-      var validTrialData = filterExcludedArms(trialData.trialDataStudies, excludedArms);
+      var validTrialData = filterExcludedArms(trialDataStudies, excludedArms);
       validTrialData = filterStudiesHavingLessThanTwoMatchedInterventions(validTrialData);
 
       network.interventions = _.map(interventions, function(intervention) {

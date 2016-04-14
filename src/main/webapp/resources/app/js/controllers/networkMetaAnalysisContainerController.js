@@ -113,7 +113,7 @@ define(['lodash'], function(_) {
           var includedInterventions = getIncludedInterventions($scope.interventions);
           $scope.treatmentOverlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap($scope.analysis, $scope.interventions, trialverseData);
           $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis.excludedArms, $scope.covariates, $scope.treatmentOverlapMap);
-          $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms($scope.trialverseData, $scope.interventions, $scope.analysis);
+          $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, $scope.interventions, $scope.analysis);
           $scope.hasLessThanTwoInterventions = includedInterventions.length < 2;
           $scope.hasTreatmentOverlap = hasTreatmentOverlap();
           $scope.isModelCreationBlocked = checkCanNotCreateModel();
