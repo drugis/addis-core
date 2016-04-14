@@ -41,13 +41,13 @@ define(['lodash'], function(_) {
     });
 
     $q.all([
-      $scope.analysis.$promise,
-      $scope.project.$promise,
-      $scope.models.$promise,
-      $scope.outcomes.$promise,
-      $scope.interventions.$promise,
-      $scope.covariates.$promise
-    ])
+        $scope.analysis.$promise,
+        $scope.project.$promise,
+        $scope.models.$promise,
+        $scope.outcomes.$promise,
+        $scope.interventions.$promise,
+        $scope.covariates.$promise
+      ])
       .then(function() {
         $scope.hasModel = $scope.models.length > 0;
         $scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.includedInterventions);
@@ -55,8 +55,12 @@ define(['lodash'], function(_) {
         if (!$scope.analysis.outcome && $scope.outcomes.length > 0) {
           // set first outcome as default outcome
           $scope.analysis.outcome = $scope.outcomes[0];
+          $scope.analysis.$save(function() {
+            $scope.reloadModel();
+          });
+        } else {
+          $scope.reloadModel();
         }
-        $scope.reloadModel();
       });
 
     $scope.gotoCreateModel = function() {

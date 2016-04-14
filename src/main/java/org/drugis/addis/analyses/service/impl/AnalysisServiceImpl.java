@@ -210,6 +210,10 @@ public class AnalysisServiceImpl implements AnalysisService {
 
     if(analysis instanceof NetworkMetaAnalysis) {
       NetworkMetaAnalysis networkMetaAnalysis = (NetworkMetaAnalysis) analysis;
+      if(networkMetaAnalysis.getOutcome() == null) {
+        // no outcome set, therefore no need to build a evidence table
+        return Collections.emptyList();
+      }
 
       List<AbstractIntervention> includedInterventions = getIncludedInterventions(networkMetaAnalysis);
       List<URI> includedInterventionUris = includedInterventions.stream()
@@ -223,6 +227,7 @@ public class AnalysisServiceImpl implements AnalysisService {
       List<TrialDataStudy> trialData = triplestoreService.getTrialData(mappingService.getVersionedUuid(project.getNamespaceUid()), project.getDatasetVersion(),
               networkMetaAnalysis.getOutcome().getSemanticOutcomeUri(), includedInterventionUris, includedCovariates);
 
+      // add matching data;
       for(TrialDataStudy study: trialData) {
         for(TrialDataArm arm: study.getTrialDataArms()) {
           Optional<AbstractIntervention> matchingIntervention = includedInterventions.stream().filter(i -> {
@@ -241,7 +246,6 @@ public class AnalysisServiceImpl implements AnalysisService {
         }
       }
 
-      // match interventions;
       return trialData;
     }
 
