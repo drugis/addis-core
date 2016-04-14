@@ -1,284 +1,307 @@
 define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
 
   var exampleStudies = [{
-    'studyUid': '27',
-    'name': 'Fava et al, 2002',
-    'covariateValues': [{
-      'covariateKey': 'COVARAITE_KEY',
-      value: 123
-    }, ],
-    'trialDataInterventions': [{
-      'drugInstanceUid': '58',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/1/drug/a4b119795fa42c624640a77ce024d9a2',
-      'studyUid': '27'
+    "studyUri": "http://trials.drugis.org/graphs/favaUri",
+    "name": "Fava et al, 2002",
+    "trialDataArms": [{
+      "uri": "http://trials.drugis.org/instances/fava-parox-arm",
+      "name": "Paroxetine",
+      "drugInstance": "http://trials.drugis.org/instances/parox-instance",
+      "measurement": {
+        "studyUid": "http://trials.drugis.org/graphs/favaUri",
+        "variableUri": "http://trials.drugis.org/instances/hamd-instance",
+        "armUri": "http://trials.drugis.org/instances/fava-parox-arm",
+        "sampleSize": 96,
+        "rate": 64,
+        "stdDev": null,
+        "mean": null
+      },
+      "semanticIntervention": {
+        "drugInstance": "http://trials.drugis.org/instances/parox-instance",
+        "drugConcept": "http://trials.drugis.org/concepts/parox-concept"
+      },
+      "matchedProjectInterventionId": 2
     }, {
-      'drugInstanceUid': '60',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/1/drug/a0f638328eeea353bf0ba7f111a167dd',
-      'studyUid': '27'
+      "uri": "http://trials.drugis.org/instances/fava-sertra-arm",
+      "name": "Sertraline",
+      "drugInstance": "http://trials.drugis.org/instances/sertra-instance",
+      "measurement": {
+        "studyUid": "http://trials.drugis.org/graphs/favaUri",
+        "variableUri": "http://trials.drugis.org/instances/hamd-instance",
+        "armUri": "http://trials.drugis.org/instances/fava-sertra-arm",
+        "sampleSize": 96,
+        "rate": 70,
+        "stdDev": null,
+        "mean": null
+      },
+      "semanticIntervention": {
+        "drugInstance": "http://trials.drugis.org/instances/sertra-instance",
+        "drugConcept": "http://trials.drugis.org/concepts/sertra-concept"
+      },
+      "matchedProjectInterventionId": 3
+    }, {
+      "uri": "http://trials.drugis.org/instances/fava-arm-1-uri",
+      "name": "Fluoxetine",
+      "drugInstance": "http://trials.drugis.org/instances/fluoxInstance",
+      "measurement": {
+        "studyUid": "http://trials.drugis.org/graphs/favaUri",
+        "variableUri": "http://trials.drugis.org/instances/hamd-instance",
+        "armUri": "http://trials.drugis.org/instances/fava-arm-1-uri",
+        "sampleSize": 92,
+        "rate": 57,
+        "stdDev": null,
+        "mean": null
+      },
+      "semanticIntervention": {
+        "drugInstance": "http://trials.drugis.org/instances/fluoxInstance",
+        "drugConcept": "http://trials.drugis.org/concepts/fluox-concept"
+      },
+      "matchedProjectInterventionId": 1
     }],
-    'trialDataArms': [{
-      'uid': '86',
-      'name': 'Paroxetine',
-      'studyUid': '27',
-      'drugInstanceUid': '58',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/1/drug/a4b119795fa42c624640a77ce024d9a2',
-      'measurement': {
-        'studyUid': '27',
-        'mean': null,
-        'rate': 5,
-        'sampleSize': 96,
-        'stdDev': null,
-        'armUid': '86',
-        'variableUid': '428'
-      }
-    }, {
-      'uid': '85',
-      'name': 'Sertraline',
-      'studyUid': '27',
-      'drugInstanceUid': '58',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/1/drug/a4b119795fa42c624640a77ce024d9a2',
-      'measurement': {
-        'studyUid': '27',
-        'mean': null,
-        'rate': 1,
-        'sampleSize': 96,
-        'stdDev': null,
-        'armUid': '86',
-        'variableUid': '428'
-      }
-    }, {
-      'uid': '87',
-      'name': 'Fluoxetine',
-      'studyUid': '27',
-      'drugInstanceUid': '60',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/1/drug/a0f638328eeea353bf0ba7f111a167dd',
-      'measurement': {
-        'rate': 1,
-        'mean': null,
-        'stdDev': null,
-        'studyUid': '27',
-        'armUid': '87',
-        'variableUid': '428',
-        'sampleSize': 92
-      }
+    "covariateValues": [{
+      'covariateKey': 'COVARIATE_KEY',
+      value: 123
     }]
   }];
 
   var exampleNetworkStudies = [{
-    'studyUid': '44',
+    'studyUri': '44',
     'name': 'TAK491-008 / NCT00696241',
     'covariateValues': [{
-      'covariateKey': 'COVARAITE_KEY',
+      'covariateKey': 'COVARIATE_KEY',
       value: 123
     }, ],
-    'trialDataInterventions': [{
-      'drugInstanceUid': '100',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6',
-      'studyUid': '44'
-    }, {
-      'drugInstanceUid': '99',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/2/drug/d7d7c477b89a5e4e5a57318743ccc87e',
-      'studyUid': '44'
-    }],
     'trialDataArms': [{
-      'uid': '144',
+      'uri': '144',
       'name': 'Azilsartan Medoxomil 40 mg QD',
-      'studyUid': '44',
-      'drugInstanceUid': '98',
+      'drugInstance': '98',
       'measurement': {
         'mean': -14.47,
-        'armUid': '144',
-        'variableUid': 698,
+        'armUri': '144',
+        'variableUri': 698,
         'measurementAttribute': 'mean',
-        'studyUid': 44,
         'sampleSize': 276,
         'stdDev': 15.815811834996014
-      }
+      },
+      semanticIntervention: {
+        drugInstance: '98',
+        drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
+      },
+      matchedProjectInterventionId: null
     }, {
-      'uid': '145',
+      'uri': '145',
       'name': 'Azilsartan Medoxomil 80 mg QD',
       'study': '44',
-      'drugInstanceUid': '98',
+      'drugInstance': '98',
       'measurement': {
         'mean': -17.58,
-        'armUid': '145',
-        'variableUid': '698',
-        'studyUid': '44',
+        'armUri': '145',
+        'variableUri': '698',
         'sampleSize': 279,
         'stdDev': 15.818018554800092
-      }
+      },
+      semanticIntervention: {
+        drugInstance: '98',
+        drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
+      },
+      matchedProjectInterventionId: null
     }, {
-      'uid': '146',
+      'uri': '146',
       'name': 'Olmesartan 40 mg QD',
-      'studyUid': '44',
-      'drugInstanceUid': '99',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/2/drug/d7d7c477b89a5e4e5a57318743ccc87e',
+      'drugInstance': '99',
       'measurement': {
         'mean': -14.87,
-        'armUid': '146',
-        'variableUid': '698',
-        'studyUid': 44,
+        'armUri': '146',
+        'variableUri': '698',
+
         'sampleSize': 280,
         'stdDev': 15.812874501494028
-      }
+      },
+      semanticIntervention: {
+        drugInstance: '98',
+        drugConcept: 'http://trials.drugis.org/concepts/olme-concept'
+      },
+
+      matchedProjectInterventionId: 44
+
     }, {
-      'uid': '147',
+      'uri': '147',
       'name': 'Placebo QD',
-      'studyUid': '44',
-      'drugInstanceUid': '100',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6',
+      'drugInstance': '100',
       'measurement': {
         'mean': -2.06,
-        'armUid': '147',
-        'variableUid': '698',
-        'studyUid': '44',
+        'armUri': '147',
+        'variableUri': '698',
         'sampleSize': 140,
         'stdDev': 15.819597340008373
-      }
+      },
+      semanticIntervention: {
+        drugInstance: '98',
+        drugConcept: 'http://trials.drugis.org/concepts/placebo-concept'
+      },
+      matchedProjectInterventionId: 43
     }, {
-      'uid': 143,
+      'uri': 143,
       'name': 'Azilsartan Medoxomil 20 mg QD',
-      'studyUid': '44',
-      'drugInstanceUid': '98',
+      'drugInstance': '98',
       'measurement': {
         'mean': -14.28,
-        'armUid': '143',
-        'variableUid': 698,
-        'studyUid': '44',
+        'armUri': '143',
+        'variableUri': 698,
+
         'sampleSize': 274,
         'stdDev': 15.824615761527987
-      }
+      },
+      semanticIntervention: {
+        drugInstance: '98',
+        drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
+      },
+      matchedProjectInterventionId: null
     }]
   }, {
-    'studyUid': '45',
+    'studyUri': '45',
     'name': 'TAK491-011 / NCT00591253',
-    'trialDataInterventions': [{
-      'drugInstanceUid': '102',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6',
-      'studyUid': '45'
-    }],
     'trialDataArms': [{
-      'uid': '149',
+      'uri': '149',
       'name': 'Azilsartan Medoxomil 40 mg QD',
-      'studyUid': '45',
-      'drugInstanceUid': '101',
+      'drugInstance': '101',
       'measurement': {
         'mean': -9.51,
-        'armUid': '149',
-        'variableUid': '731',
+        'armUri': '149',
+        'variableUri': '731',
         'measurementAttribute': 'mean',
-        'studyUid': '45',
+
         'sampleSize': 134,
         'stdDev': 15.395863080711
-      }
+      },
+      semanticIntervention: {
+        drugInstance: '98',
+        drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
+      },
+      matchedProjectInterventionId: null
     }, {
-      'uid': '150',
+      'uri': '150',
       'name': 'Azilsartan Medoxomil 80 mg QD',
-      'studyUid': '45',
-      'drugInstanceUid': '101',
+      'drugInstance': '101',
       'measurement': {
         'mean': -9.58,
-        'armUid': '150',
-        'variableUid': '731',
+        'armUri': '150',
+        'variableUri': '731',
         'measurementAttribute': 'mean',
-        'studyUid': '45',
+
         'sampleSize': 130,
         'stdDev': 15.403769993089353
-      }
+      },
+      semanticIntervention: {
+        drugInstance: '98',
+        drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
+      },
+      matchedProjectInterventionId: null
     }, {
-      'uid': '151',
+      'uri': '151',
       'name': 'Placebo QD',
-      'studyUid': '45',
-      'drugInstanceUid': '102',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6',
+      'drugInstance': '102',
       'measurement': {
         'mean': -3.04,
-        'armUid': 151,
-        'variableUid': 731,
-        'studyUid': '45',
+        'armUri': 151,
+        'variableUri': 731,
+
         'sampleSize': 271,
         'stdDev': 15.37290593869617
-      }
+      },
+      semanticIntervention: {
+        drugInstance: '98',
+        drugConcept: 'http://trials.drugis.org/concepts/placebo-concept'
+      },
+      matchedProjectInterventionId: 43
     }]
   }, {
-    'studyUid': '46',
+    'studyUri': '46',
     'name': 'TAK491-019 / NCT00696436',
-    'trialDataInterventions': [{
-      'drugInstanceUid': '106',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6',
-      'studyUid': '46'
-    }, {
-      'drugInstanceUid': '105',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/2/drug/d7d7c477b89a5e4e5a57318743ccc87e',
-      'studyUid': '46'
-    }],
     'trialDataArms': [{
-      'uid': '156',
+      'uri': '156',
       'name': 'Olmesartan 40 mg QD',
-      'studyUid': '46',
-      'drugInstanceUid': '105',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/2/drug/d7d7c477b89a5e4e5a57318743ccc87e',
+      'drugInstance': '105',
       'measurement': {
         'mean': -13.2,
-        'armUid': '156',
-        'variableUid': '758',
-        'studyUid': '46',
+        'armUri': '156',
+        'variableUri': '758',
+
         'sampleSize': 283,
         'stdDev': 15.729134591578775
-      }
+      },
+      semanticIntervention: {
+        drugInstance: '98',
+        drugConcept: 'http://trials.drugis.org/concepts/olme-concept'
+      },
+      matchedProjectInterventionId: 44
     }, {
-      'uid': 155,
+      'uri': 155,
       'name': 'Valsartan 320 mg QD',
-      'studyUid': '46',
-      'drugInstanceUid': '104',
+      'drugInstance': '104',
       'measurement': {
         'mean': -11.31,
-        'armUid': '155',
-        'variableUid': '758',
-        'studyUid': '46',
+        'armUri': '155',
+        'variableUri': '758',
+
         'sampleSize': 271,
         'stdDev': 15.721284139662384
-      }
+      },
+      semanticIntervention: {
+        drugInstance: '98',
+        drugConcept: 'http://trials.drugis.org/concepts/valsa-concept'
+      },
+      matchedProjectInterventionId: null
     }, {
-      'uid': 157,
+      'uri': 157,
       'name': 'Placebo QD',
-      'studyUid': '46',
-      'drugInstanceUid': '106',
-      'drugConceptUid': 'http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6',
+      'drugInstance': '106',
       'measurement': {
         'mean': -1.83,
-        'armUid': '157',
-        'variableUid': '758',
-        'studyUid': '46',
+        'armUri': '157',
+        'variableUri': '758',
+
         'sampleSize': 148,
         'stdDev': 15.730023903351194
-      }
+      },
+      semanticIntervention: {
+        drugInstance: '98',
+        drugConcept: 'http://trials.drugis.org/concepts/placebo-concept'
+      },
+      matchedProjectInterventionId: 43
     }, {
-      'uid': 154,
+      'uri': 154,
       'name': 'Azilsartan Medoxomil 80 mg QD',
-      'studyUid': '46',
-      'drugInstanceUid': '103',
+      'drugInstance': '103',
       'measurement': {
         'realValue': -16.74,
-        'armUid': 154,
-        'variableUid': 758,
-        'studyUid': '46',
+        'armUri': 154,
+        'variableUri': 758,
+
         'sampleSize': 270,
         'stdDev': 15.725114625973317
-      }
+      },
+      semanticIntervention: {
+        drugInstance: '98',
+        drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
+      },
+      matchedProjectInterventionId: null
     }, {
-      'uid': '153',
+      'uri': '153',
       'name': 'Azilsartan Medoxomil 40 mg QD',
-      'studyUid': '46',
-      'drugInstanceUid': '103',
+      'drugInstance': '103',
       'measurement': {
         'mean': -16.38,
-        'armUid': '153',
-        'variableUid': '758',
-        'studyUid': '46',
+        'armUri': '153',
+        'variableUri': '758',
         'sampleSize': 269,
         'stdDev': 15.728769468715601
-      }
+      },
+      semanticIntervention: {
+        drugInstance: '98',
+        drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
+      },
+      matchedProjectInterventionId: null
     }]
   }];
 
@@ -300,7 +323,7 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
         'name': 'placebo',
         'motivation': '',
         'semanticInterventionLabel': 'Placebo',
-        'semanticInterventionUri': 'http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6'
+        'semanticInterventionUri': 'http://trials.drugis.org/concepts/placebo-concept'
       },
       'to': {
         'id': 44,
@@ -308,7 +331,7 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
         'name': 'Olmes',
         'motivation': '',
         'semanticInterventionLabel': 'Olmesartan',
-        'semanticInterventionUri': 'http://trials.drugis.org/namespaces/2/drug/d7d7c477b89a5e4e5a57318743ccc87e'
+        'semanticInterventionUri': 'http://trials.drugis.org/concepts/olme-concept'
       },
       'studies': [exampleNetworkStudies[0], exampleNetworkStudies[2]]
     }]
@@ -317,16 +340,16 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
   function exampleInterventions() {
     return [{
       id: 1,
-      semanticInterventionLabel: 'intervention 1',
+      name: 'intervention 1',
       semanticInterventionUri: 'http://trials.drugis.org/namespaces/1/drug/a4b119795fa42c624640a77ce024d9a2'
     }, {
       id: 2,
-      semanticInterventionLabel: 'intervention 2',
+      name: 'intervention 2',
       semanticInterventionUri: 'http://trials.drugis.org/namespaces/1/drug/a0f638328eeea353bf0ba7f111a167dd'
     }, {
       id: 3,
-      semanticInterventionLabel: 'intervention 3',
-      semanticInterventionUri: 'http://trials.drugis.org/namespaces/2/drug/87fec8a8071915a2e17eddeb1faf8daa'
+      name: 'intervention 3',
+      semanticInterventionUri: 'http://trials.drugis.org/concepts/87fec8a8071915a2e17eddeb1faf8daa'
     }];
   }
 
@@ -336,21 +359,21 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
     'name': 'placebo',
     'motivation': '',
     'semanticInterventionLabel': 'Placebo',
-    'semanticInterventionUri': 'http://trials.drugis.org/namespaces/2/drug/6f8ce038bc50a5372fcaf86e4b300bb6'
+    'semanticInterventionUri': 'http://trials.drugis.org/concepts/placebo-concept'
   }, {
     'id': 44,
     'project': 13,
     'name': 'Olmes',
     'motivation': '',
     'semanticInterventionLabel': 'Olmesartan',
-    'semanticInterventionUri': 'http://trials.drugis.org/namespaces/2/drug/d7d7c477b89a5e4e5a57318743ccc87e'
+    'semanticInterventionUri': 'http://trials.drugis.org/concepts/olme-concept'
   }, {
     'id': 45,
     'project': 13,
     'name': 'Chlora',
     'motivation': '',
     'semanticInterventionLabel': 'Chlortalidone',
-    'semanticInterventionUri': 'http://trials.drugis.org/namespaces/2/drug/a977e3a6fa4dc0a34fcf9fb351bc0a0e'
+    'semanticInterventionUri': 'http://trials.drugis.org/concepts/a977e3a6fa4dc0a34fcf9fb351bc0a0e'
   }];
 
   describe('The networkMetaAnalysisService', function() {
@@ -359,9 +382,7 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       beforeEach(module('addis.services'));
 
       it('should construct the evidence network from the list of trialDataStudies', inject(function(NetworkMetaAnalysisService) {
-        var trialVerseStudyData = {
-          trialDataStudies: exampleNetworkStudies
-        };
+        var trialVerseStudyData = exampleNetworkStudies;
 
         var network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialVerseStudyData, networkInterventions);
 
@@ -374,12 +395,11 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
 
       beforeEach(module('addis.services'));
 
-      it('should construct table rows from the list of trialDataStudies',
+      fit('should construct table rows from the list of trialDataStudies',
         inject(function(NetworkMetaAnalysisService) {
 
-          var trialVersStudyData = {};
+          var trialVerseStudyData = exampleStudies;
           var treatmentOverlapMap = {};
-          trialVersStudyData.trialDataStudies = exampleStudies;
           var interventions = exampleInterventions();
           var excludedArms = [];
           var covariates = [{
@@ -387,80 +407,81 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
           }, {
             isIncluded: true,
             name: 'covariate name',
-            definitionKey: 'COVARAITE_KEY'
+            definitionKey: 'COVARIATE_KEY'
           }, {
             isIncluded: false
           }];
 
           // Execute
-          var resultRows = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialVersStudyData, interventions, excludedArms, covariates, treatmentOverlapMap);
-
-          expect(resultRows[0]).toEqual({
-            study: 'Fava et al, 2002',
-            studyUid: '27',
-            studyRowSpan: 3,
-            covariatesColumns: [{
-              headerTitle: 'covariate name',
-              data: 123
-            }],
-            studyRows: resultRows,
-            intervention: 'intervention 1',
-            arm: 'Paroxetine',
-            rate: 5,
-            mu: null,
-            sigma: null,
-            sampleSize: 96,
-            firstInterventionRow: true,
-            firstStudyRow: true,
-            interventionRowSpan: 2,
-            included: true,
-            drugInstanceUid: '58',
-            trialverseUid: '86',
-            drugConceptUid: 'http://trials.drugis.org/namespaces/1/drug/a4b119795fa42c624640a77ce024d9a2'
-          });
+          var resultRows = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialVerseStudyData, interventions, excludedArms, covariates, treatmentOverlapMap);
 
           expect(resultRows[1]).toEqual({
-            arm: 'Sertraline',
-            intervention: 'intervention 1',
-            mu: null,
-            rate: 1,
-            sampleSize: 96,
-            sigma: null,
-            study: 'Fava et al, 2002',
-            studyUid: '27',
-            studyRowSpan: 3,
             covariatesColumns: [{
               headerTitle: 'covariate name',
               data: 123
             }],
-            studyRows: resultRows,
+            study: 'Fava et al, 2002',
+            studyUri: 'http://trials.drugis.org/graphs/favaUri',
+            studyRowSpan: 3,
+            drugConceptUid: 'http://trials.drugis.org/concepts/parox-concept',
+            arm: 'Paroxetine',
+            trialverseUid: 'http://trials.drugis.org/instances/fava-parox-arm',
             included: true,
-            drugInstanceUid: '58',
-            trialverseUid: '85',
-            drugConceptUid: 'http://trials.drugis.org/namespaces/1/drug/a4b119795fa42c624640a77ce024d9a2'
+            intervention: 'intervention 2',
+            interventionId: 2,
+            rate: 64,
+            mu: null,
+            sigma: null,
+            sampleSize: 96,
+            firstInterventionRow: true,
+            interventionRowSpan: 1
           });
 
+
           expect(resultRows[2]).toEqual({
-            arm: 'Fluoxetine',
-            firstInterventionRow: true,
-            intervention: 'intervention 2',
-            interventionRowSpan: 1,
-            mu: null,
-            rate: 1,
-            sampleSize: 92,
-            sigma: null,
-            study: 'Fava et al, 2002',
-            studyUid: '27',
-            studyRowSpan: 3,
             covariatesColumns: [{
               headerTitle: 'covariate name',
               data: 123
             }],
-            studyRows: resultRows,
+            study: 'Fava et al, 2002',
+            studyUri: 'http://trials.drugis.org/graphs/favaUri',
+            studyRowSpan: 3,
+            drugConceptUid: 'http://trials.drugis.org/concepts/sertra-concept',
+            arm: 'Sertraline',
+            trialverseUid: 'http://trials.drugis.org/instances/fava-sertra-arm',
             included: true,
-            drugInstanceUid: '60',
-            trialverseUid: '87',
-            drugConceptUid: 'http://trials.drugis.org/namespaces/1/drug/a0f638328eeea353bf0ba7f111a167dd'
+            intervention: 'intervention 3',
+            interventionId: 3,
+            rate: 70,
+            mu: null,
+            sigma: null,
+            sampleSize: 96,
+            firstInterventionRow: true,
+            interventionRowSpan: 1
+          });
+
+          expect(resultRows[0]).toEqual({
+            covariatesColumns: [{
+              headerTitle: 'covariate name',
+              data: 123
+            }],
+            study: 'Fava et al, 2002',
+            studyUri: 'http://trials.drugis.org/graphs/favaUri',
+            studyRowSpan: 3,
+            drugConceptUid: 'http://trials.drugis.org/concepts/fluox-concept',
+            arm: 'Fluoxetine',
+            trialverseUid: 'http://trials.drugis.org/instances/fava-arm-1-uri',
+            included: true,
+            intervention: 'intervention 1',
+            interventionId: 1,
+            interventionRowSpan: 1,
+            rate: 57,
+            mu: null,
+            sigma: null,
+            sampleSize: 92,
+            firstInterventionRow: true,
+            firstStudyRow: true,
+            interventionRowSpan: 1
           });
         })
       );
@@ -593,10 +614,7 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
               drugConceptUid: '1'
             }, {
               drugConceptUid: '1'
-            }],
-            trialDataInterventions: [{
-              drugConceptUid: '1'
-            }],
+            }]
           }]
         };
         var analysis = {
@@ -660,16 +678,12 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
         var trialverseData = {
           trialDataStudies: [{
             trialDataArms: [{
-              drugInstanceUid: 1,
+              drugInstance: 1,
               drugConceptUid: 'uri1'
             }, {
-              drugInstanceUid: 1,
+              drugInstance: 1,
               drugConceptUid: 'uri1'
-            }],
-            trialDataInterventions: [{
-              drugInstanceUid: 1,
-              drugConceptUid: 'uri1'
-            }],
+            }]
           }]
         };
         var analysis = {
@@ -727,41 +741,27 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
 
       it('should remove armExclusions that match the intervention', inject(function(NetworkMetaAnalysisService) {
         var study1 = {
-          trialDataInterventions: [{
-            drugInstanceUid: 1,
-            drugConceptUid: 'uri1'
-          }, {
-            drugInstanceUid: 2,
-            drugConceptUid: 'uri2'
-          }, ],
           trialDataArms: [{
-            drugInstanceUid: 1,
+            drugInstance: 1,
             drugConceptUid: 'uri1',
             id: 10
           }, {
-            drugInstanceUid: 2,
+            drugInstance: 2,
             drugConceptUid: 'uri2',
             id: 11
           }, {
-            drugInstanceUid: 2,
+            drugInstance: 2,
             drugConceptUid: 'uri2',
             id: 12
           }]
         };
         var study2 = {
-          trialDataInterventions: [{
-            drugInstanceUid: 3,
-            drugConceptUid: 'uri1'
-          }, {
-            drugInstanceUid: 4,
-            drugConceptUid: 'uri3'
-          }],
           trialDataArms: [{
-            drugInstanceUid: 7,
+            drugInstance: 7,
             drugConceptUid: 'uri1',
             id: 20
           }, {
-            drugInstanceUid: 3,
+            drugInstance: 3,
             drugConceptUid: 'uri3',
             id: 21
           }]
@@ -803,16 +803,14 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
           semanticInterventionUri: 'drugUri1',
           isIncluded: true
         }];
-        var trialData = {
-          trialDataStudies: [{
-            studyUid: 'studyUid',
-            trialDataArms: [{
-              drugConceptUid: 'drugUri1'
-            }, {
-              drugConceptUid: 'druguri2'
-            }]
+        var trialData = [{
+          studyUid: 'studyUid',
+          trialDataArms: [{
+            drugConceptUid: 'drugUri1'
+          }, {
+            drugConceptUid: 'druguri2'
           }]
-        };
+        }];
 
         var overlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap(analysis, interventions, trialData);
         expect(overlapMap).toEqual({});

@@ -224,8 +224,11 @@ public class AnalysisServiceImpl implements AnalysisService {
               .map(Covariate::getDefinitionKey)
               .collect(Collectors.toList());
 
-      List<TrialDataStudy> trialData = triplestoreService.getTrialData(mappingService.getVersionedUuid(project.getNamespaceUid()), project.getDatasetVersion(),
-              networkMetaAnalysis.getOutcome().getSemanticOutcomeUri(), includedInterventionUris, includedCovariates);
+      List<TrialDataStudy> trialData = triplestoreService.getTrialData(
+              mappingService.getVersionedUuid(project.getNamespaceUid()),
+              project.getDatasetVersion(),
+              networkMetaAnalysis.getOutcome().getSemanticOutcomeUri(),
+              includedInterventionUris, includedCovariates);
 
       // add matching data;
       for(TrialDataStudy study: trialData) {

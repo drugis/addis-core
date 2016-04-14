@@ -103,8 +103,6 @@ define(['lodash', 'angular'], function(_, angular) {
               row.covariatesColumns.push(covariateColumn);
             }
           });
-          row.studyRows = studyRows;
-          row.drugInstanceUid = trialDataArm.drugInstanceUid;
           row.drugConceptUid = trialDataArm.semanticIntervention.drugConcept;
           row.arm = trialDataArm.name;
           row.trialverseUid = trialDataArm.uri;
@@ -163,8 +161,7 @@ define(['lodash', 'angular'], function(_, angular) {
     function sumInterventionSampleSizes(trialData, intervention) {
       var interventionSum = _.reduce(trialData, function(sum, trialDataStudy) {
         angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
-
-          if (trialDataArm.semanticIntervention.drugConcept === intervention.semanticInterventionUri) {
+          if (trialDataArm.matchedProjectInterventionId == intervention.id) {
             sum += trialDataArm.measurement.sampleSize;
           }
         });
