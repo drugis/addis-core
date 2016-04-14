@@ -2,10 +2,10 @@ package org.drugis.addis.problems;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
@@ -91,6 +91,10 @@ public class ProblemServiceTest {
 
   @Mock
   TrialverseService trialverseService;
+
+  @Mock
+  AnalysisService analysisService;
+
   @InjectMocks
   ProblemService problemService;
   @Mock
@@ -204,7 +208,7 @@ public class ProblemServiceTest {
     Integer projectId = 2;
     Integer analysisId = 3;
 
-    List<TrialDataStudy> trialDataStudies = createMockTrialData();
+    List<TrialDataStudy> trialDataStudies = createMockEvidenceTable();
 
     String outcomeUri = "outcomeUri";
     Outcome outcome = new Outcome(1213, projectId, "outcome", "moti", new SemanticVariable(outcomeUri, "label3"));
@@ -237,27 +241,20 @@ public class ProblemServiceTest {
     InterventionInclusion interventionInclusion3 = new InterventionInclusion(analysis.getId(), intervention3.getId());
     analysis.updateIncludedInterventions(new HashSet<>(Arrays.asList( interventionInclusion2, interventionInclusion3)));
 
-    ObjectMapper mapper = new ObjectMapper();
-
-    List<ObjectNode> trialDataNode = new ArrayList<>();
-    for (TrialDataStudy trialDataStudy : trialDataStudies) {
-      trialDataNode.add(mapper.convertValue(trialDataStudy, ObjectNode.class));
-    }
     when(project.getId()).thenReturn(projectId);
     when(project.getNamespaceUid()).thenReturn(namespaceUid);
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
-    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList( URI.create("uri2"), URI.create("uri3")), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
+    when(analysisService.buildEvidenceTable(project.getId(), analysis.getId())).thenReturn(trialDataStudies);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList(URI.create("uri2"), URI.create("uri3")), Collections.EMPTY_LIST);
-    verify(mappingService).getVersionedUuid(namespaceUid);
+    verify(analysisService).buildEvidenceTable(project.getId(), analysis.getId());
 
     assertNotNull(problem);
     assertEquals(3, problem.getEntries().size());
@@ -296,33 +293,21 @@ public class ProblemServiceTest {
     InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis.getId(), intervention3.getId());
     analysis.updateIncludedInterventions(new HashSet<>(Arrays.asList(interventionInclusion1, interventionInclusion2)));
 
-    Covariate covariate1 = Mockito.spy(new Covariate(projectId, "cov1", "covmov1", CovariateOption.ALLOCATION_RANDOMIZED.toString(), null));
-    Covariate covariate2 = Mockito.spy(new Covariate(projectId, "cov2", "covmov2", CovariateOption.MULTI_CENTER_STUDY.toString(), null));
-    when(covariate1.getId()).thenReturn(1);
-    when(covariate2.getId()).thenReturn(2);
-    Collection<Covariate> covariates = Arrays.asList(covariate1, covariate2);
+    List<TrialDataStudy> trialDataStudies = createMockEvidenceTable();
 
-    List<TrialDataStudy> trialDataStudies = createMockTrialData();
-    TrialDataStudy firstTrialDataStudy = trialDataStudies.get(0);
-
-    ObjectMapper mapper = new ObjectMapper();
-    List<ObjectNode> trialDataNode = new ArrayList<>();
-    for (TrialDataStudy trialDataStudy : trialDataStudies) {
-      trialDataNode.add(mapper.convertValue(trialDataStudy, ObjectNode.class));
-    }
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
-    when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
-    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList(URI.create("uri1"), URI.create("uri3")), Collections.EMPTY_LIST)).thenReturn(trialDataNode);
+    when(covariateRepository.findByProject(projectId)).thenReturn(Collections.emptyList());
+    when(analysisService.buildEvidenceTable(project.getId(), analysis.getId())).thenReturn(trialDataStudies);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
-    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList(URI.create("uri1"), URI.create("uri3")), Collections.EMPTY_LIST);
-    verify(mappingService).getVersionedUuid(namespaceUid);
+    verify(analysisService).buildEvidenceTable(project.getId(), analysis.getId());
+
 
     assertEquals(2, problem.getEntries().size());
   }
@@ -370,21 +355,14 @@ public class ProblemServiceTest {
     InterventionInclusion interventionInclusion2 = new InterventionInclusion(analysis.getId(), intervention3.getId());
     analysis.updateIncludedInterventions(new HashSet<>(Arrays.asList(interventionInclusion1, interventionInclusion2)));
 
-    List<TrialDataStudy> trialDataStudies = createMockTrialData();
-    TrialDataStudy firstTrialDataStudy = trialDataStudies.get(0);
+    List<TrialDataStudy> trialDataStudies = createMockEvidenceTable();
 
-
-    ObjectMapper mapper = new ObjectMapper();
-    List<ObjectNode> trialDataNode = new ArrayList<>();
-    for (TrialDataStudy trialDataStudy : trialDataStudies) {
-      trialDataNode.add(mapper.convertValue(trialDataStudy, ObjectNode.class));
-    }
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(analysis);
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
-    List<String> includedCovariateKeys = Arrays.asList(covariate1.getDefinitionKey(), covariate2.getDefinitionKey());
-    when(trialverseService.getTrialData(versionedUuid, version, outcomeUri, Arrays.asList(URI.create("uri1"), URI.create("uri3")), includedCovariateKeys)).thenReturn(trialDataNode);
+
+    when(analysisService.buildEvidenceTable(project.getId(), analysis.getId())).thenReturn(trialDataStudies);
 
     NetworkMetaAnalysisProblem problem = (NetworkMetaAnalysisProblem) problemService.getProblem(projectId, analysisId);
 
@@ -392,8 +370,7 @@ public class ProblemServiceTest {
     verify(analysisRepository).get(analysisId);
     verify(interventionRepository).query(projectId);
 
-    verify(trialverseService).getTrialData(versionedUuid, version, outcomeUri, Arrays.asList(URI.create("uri1"), URI.create("uri3")), includedCovariateKeys);
-    verify(mappingService).getVersionedUuid(namespaceUid);
+    verify(analysisService).buildEvidenceTable(project.getId(), analysis.getId());
 
     assertEquals(2, problem.getEntries().size());
     assertEquals(2, problem.getStudyLevelCovariates().size());
@@ -529,7 +506,7 @@ public class ProblemServiceTest {
   }
 
 
-  private List<TrialDataStudy> createMockTrialData() {
+  private List<TrialDataStudy> createMockEvidenceTable() {
     URI studyId1 = URI.create("101L");
     URI studyId2 = URI.create("202L");
     URI drugId1 = URI.create("420L");
@@ -565,6 +542,12 @@ public class ProblemServiceTest {
     TrialDataArm trialDataArm3 = new TrialDataArm(armId3, "aaa", studyId1, measurement3, trialDataIntervention2);
     TrialDataArm trialDataArm4 = new TrialDataArm(armId4, "qqqq", studyId1, measurement4, trialDataIntervention3);
     TrialDataArm trialDataArm5 = new TrialDataArm(armId5, "yyyy", studyId2, measurement5, trialDataIntervention2);
+
+    //trialDataArm1.setMatchedProjectInterventionId(1);
+    trialDataArm2.setMatchedProjectInterventionId(2);
+    trialDataArm3.setMatchedProjectInterventionId(2);
+    trialDataArm4.setMatchedProjectInterventionId(3);
+    trialDataArm5.setMatchedProjectInterventionId(2);
 
     List<TrialDataArm> trialDataArms1 = Arrays.asList(trialDataArm1, trialDataArm2, trialDataArm3, trialDataArm4);
     List<TrialDataArm> trialDataArms2 = Arrays.asList(trialDataArm5);
