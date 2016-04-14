@@ -7,7 +7,7 @@ var ProjectPage = require('./pages/project');
 
 
 module.exports = {
-  'create project from featured dataset': function(browser) {
+  'create project from featured dataset with overlap': function(browser) {
     var datasetsPage = new DatasetsPage(browser);
     var projectPage = new ProjectPage(browser);
 

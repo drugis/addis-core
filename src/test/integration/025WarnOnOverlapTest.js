@@ -9,7 +9,7 @@ var ProjectPage = require('./pages/project');
 var NmaPage = require('./pages/networkMetaAnalysis');
 
 module.exports = {
-  'create network meta anlysis': function(browser) {
+  'Warn on overlap test': function(browser) {
     var datasetsPage = new DatasetsPage(browser);
     var projectsPage = new ProjectsPage(browser);
     var projectPage = new ProjectPage(browser);
