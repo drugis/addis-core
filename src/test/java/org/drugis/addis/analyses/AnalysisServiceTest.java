@@ -23,6 +23,7 @@ import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.model.*;
+import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.junit.Before;
@@ -31,6 +32,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -71,6 +73,9 @@ public class AnalysisServiceTest {
 
   @Mock
   private InterventionService interventionService;
+
+  @Mock
+  private MappingService mappingService;
 
   @InjectMocks
   private AnalysisService analysisService;
@@ -241,7 +246,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void buildEvidenceTable() throws ResourceDoesNotExistException, ReadValueException, InvalidTypeForDoseCheckException {
+  public void buildEvidenceTable() throws ResourceDoesNotExistException, ReadValueException, InvalidTypeForDoseCheckException, URISyntaxException {
 
     List<ArmExclusion> excludedArms = Collections.emptyList();
     int includedInterventionId = 101;
@@ -283,6 +288,7 @@ public class AnalysisServiceTest {
     when(interventionService.isMatched(intervention1, arm1)).thenReturn(true);
     when(triplestoreService.getTrialData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids))
             .thenReturn(trialData);
+    when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(project.getNamespaceUid());
 
     List<TrialDataStudy> trialDataStudies = analysisService.buildEvidenceTable(projectId, analysisId);
 
