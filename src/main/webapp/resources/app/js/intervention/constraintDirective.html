@@ -12,7 +12,7 @@
     <input ng-disabled="!lowerBoundEnabled" type="number" step="0.001" ng-model="model.lowerBound.value">
   </div>
   <div class="columns large-3 end">
-    <select ng-disabled="!lowerBoundEnabled" ng-model="model.lowerBound.unitName"
+    <select ng-disabled="!lowerBoundEnabled" ng-model="model.lowerBound.unit"
             ng-options="unitName.label for unitName in units"></select>
   </div>
 </div>
@@ -30,7 +30,7 @@
     <input ng-disabled="!upperBoundEnabled" type="number" step="0.001" ng-model="model.upperBound.value">
   </div>
   <div class="columns large-3 end">
-    <select ng-disabled="!upperBoundEnabled" ng-model="model.upperBound.unitName"
+    <select ng-disabled="!upperBoundEnabled" ng-model="model.upperBound.unit"
             ng-options="unitName.label for unitName in units"></select>
   </div>
 </div>
