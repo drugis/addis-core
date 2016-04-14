@@ -19,9 +19,9 @@ module.exports = {
     projectPage.waitForPageToLoad();
     projectPage.addOutcome('ham', 'a test outcome');
     projectPage.addOutcome('nau', 'a second test outcome');
-    projectPage.addIntervention('parox', 'a test intervention');
-    projectPage.addIntervention('fluox', 'a second test intervention');
-    projectPage.addIntervention('fluox', 'a overlapping intervention', 'fluox 2');
+    projectPage.addSimpleIntervention('parox', 'a test intervention');
+    projectPage.addSimpleIntervention('fluox', 'a second test intervention');
+    projectPage.addSimpleIntervention('fluox', 'a overlapping intervention', 'fluox 2');
 
     browser.pause(600);
     datasetsPage.end();

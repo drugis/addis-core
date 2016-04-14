@@ -10,14 +10,22 @@ var LOCATORS = {
   outcomeMotivationTextArea: '#outcome-desc-txt',
   addOutcomeSubmitBtn: '#add-outcome-sumbit-btn',
   createInterventionModal: '#show-create-intervention-modal-btn',
-  interventionSelect: '#intervention-select',
+  simpleInterventionSelect: '#simple-intervention-select',
+  doseRestrictedInterventionSelect: '#dose-restricted-intervention-select',
   interventionNameInput: '#intervention-name-input',
   interventionMotivationTextArea: '#intervention-desc-txt',
   addInterventionSubmitBtn: '#add-intervention-sumbit-btn',
   createAnalysisModal: '#show-create-analysis-modal-btn',
   analysisTitleInput: '#analysis-title-input',
   analysisTypeSelect: '#analysis-type-select',
-  addAnalysisButton: '#add-analysis-btn'
+  addAnalysisButton: '#add-analysis-btn',
+  addSimpleInterventionTab: '#add-simple-intervention-tab',
+  addDoseRestrictedInterventionTab: '#add-dose-restricted-intervention-tab',
+  addInterventionFixedDoseTypeRadio: '#add-intervention-fixed-dose-type-radio',
+  addInterventionFixedConstraintLowerBoundCheckbox: '#fixed-constraint .lower-bound-checkbox',
+  addInterventionFixedConstraintUpperBoundCheckbox: '#fixed-constraint .upper-bound-checkbox',
+  addInterventionFixedConstraintLowerBoundValue: '#fixed-constraint .lower-bound-value',
+  addInterventionFixedConstraintUpperBoundValue: '#fixed-constraint .upper-bound-value'
 };
 
 ProjectPage.prototype = {
@@ -44,15 +52,13 @@ ProjectPage.prototype = {
       .click(LOCATORS.addOutcomeSubmitBtn)
       .pause(300);
   },
-  addIntervention: function(shortName, desc, name) {
+  addSimpleIntervention: function(shortName, desc, name) {
     this.browser
       .waitForElementVisible(LOCATORS.createInterventionModal, 15000)
       .click(LOCATORS.createInterventionModal)
-      .waitForElementVisible(LOCATORS.interventionSelect, 15000)
+      .waitForElementVisible(LOCATORS.simpleInterventionSelect, 15000)
       .pause(1000)
-      .click(LOCATORS.interventionSelect)
-      .pause(300)
-      .setValue(LOCATORS.interventionSelect, shortName)
+      .setValue(LOCATORS.simpleInterventionSelect, shortName)
       .pause(1300)
       .clearValue(LOCATORS.interventionMotivationTextArea)
       .setValue(LOCATORS.interventionMotivationTextArea, desc)
@@ -63,6 +69,30 @@ ProjectPage.prototype = {
         .setValue(LOCATORS.interventionNameInput, name);
     }
     this.browser.click(LOCATORS.addInterventionSubmitBtn)
+      .pause(300);
+  },
+  addFixedIntervention: function(shortName, desc, lowerValue, upperValue) {
+    this.browser
+      .waitForElementVisible(LOCATORS.createInterventionModal, 15000)
+      .click(LOCATORS.createInterventionModal)
+      .waitForElementVisible(LOCATORS.addSimpleInterventionTab, 15000)
+      .click(LOCATORS.addDoseRestrictedInterventionTab)
+      .pause(300)
+      .setValue(LOCATORS.doseRestrictedInterventionSelect, shortName)
+      .pause(300)
+      .clearValue(LOCATORS.interventionMotivationTextArea)
+      .setValue(LOCATORS.interventionMotivationTextArea, desc)
+      .pause(300);
+    this.browser
+      .click(LOCATORS.addInterventionFixedDoseTypeRadio)
+      .pause(300)
+      .click(LOCATORS.addInterventionFixedConstraintLowerBoundCheckbox)
+      .click(LOCATORS.addInterventionFixedConstraintUpperBoundCheckbox)
+      .setValue(LOCATORS.addInterventionFixedConstraintLowerBoundValue, lowerValue)
+      .setValue(LOCATORS.addInterventionFixedConstraintUpperBoundValue, upperValue)
+      .pause(300);
+    this.browser
+      .click(LOCATORS.addInterventionSubmitBtn)
       .pause(300);
   },
   addAnalysis: function(type, name) {

@@ -3,11 +3,11 @@
 
   <!-- Simple -->
   <tabset>
-    <tab heading="Simple intervention" ng-click="selectTab('simple')" active="activeTab === 'simple'">
+    <tab id="add-simple-intervention-tab" heading="Simple intervention" ng-click="selectTab('simple')" active="activeTab === 'simple'">
       <div class="row">
         <div class="large-10 columns">
           <label>Semantic intervention
-            <select id="intervention-select" ng-model="newIntervention.semanticIntervention"
+            <select id="simple-intervention-select" ng-model="newIntervention.semanticIntervention"
               ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"
               ng-change="newIntervention.name = newIntervention.semanticIntervention.label; checkForDuplicateInterventionName(newIntervention.name)"></select>
           </label>
@@ -39,11 +39,11 @@
 
 
     <!-- Dose-restricted -->
-    <tab heading="Dose-restricted drug" ng-click="selectTab('dose-restricted')" active="activeTab === 'dose-restricted'">
+    <tab id="add-dose-restricted-intervention-tab" heading="Dose-restricted drug" ng-click="selectTab('dose-restricted')" active="activeTab === 'dose-restricted'">
       <div class="row">
         <div class="large-10 columns">
           <label>Semantic intervention
-            <select id="intervention-select" ng-model="newIntervention.semanticIntervention"
+            <select id="dose-restricted-intervention-select" ng-model="newIntervention.semanticIntervention"
               ng-options="semanticIntervention as semanticIntervention.label for semanticIntervention in semanticInterventions | orderBy:'label'"
               ng-change="newIntervention.name = newIntervention.semanticIntervention.label; checkForDuplicateInterventionName(newIntervention.name)"></select>
           </label>
@@ -66,7 +66,7 @@
       <div class="row">
         <div class="large-12 columns">
           <label class="form-item-header">Dose type</label>
-            <input type="radio" value="fixed" ng-model="newIntervention.doseType" id="fixed-dose-type-radio"
+            <input id="add-intervention-fixed-dose-type-radio" type="radio" value="fixed" ng-model="newIntervention.doseType" id="fixed-dose-type-radio"
                    ng-change="cleanUpBounds()">
             <label for="fixed-dose-type-radio">Fixed only</label>
             <input type="radio" value="titrated" ng-model="newIntervention.doseType" id="titrated-dose-type-radio"
@@ -76,7 +76,7 @@
                    ng-change="cleanUpBounds()">
             <label for="both-dose-type-radio">Both</label>
             <div class="indent-one" ng-if="newIntervention.doseType === 'fixed'">
-              <constraint model="newIntervention.fixedDoseConstraint"
+              <constraint id="fixed-constraint" model="newIntervention.fixedDoseConstraint"
                 dataset-uuid="{{project.namespaceUid}}" />
             </div>
             <div class="indent-one" ng-if="newIntervention.doseType === 'titrated'">
@@ -97,7 +97,7 @@
               <constraint ng-if="newIntervention.doseType === 'both'"
                           model="newIntervention.bothDoseTypesMaxConstraint" dataset-uuid="{{project.namespaceUid}}"/>
             </div>
-         
+
           </div>
         </div>
       </div>

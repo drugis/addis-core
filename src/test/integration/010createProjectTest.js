@@ -19,8 +19,11 @@ module.exports = {
     projectPage.waitForPageToLoad();
     projectPage.addOutcome('ham', 'a test outcome');
     projectPage.addOutcome('nau', 'a second test outcome');
-    projectPage.addIntervention('parox', 'a test intervention');
-    projectPage.addIntervention('fluox', 'a second test intervention');
+    projectPage.addSimpleIntervention('parox', 'a test intervention');
+    projectPage.addSimpleIntervention('fluox', 'a second test intervention');
+    var lowerBound = 10;
+    var upperBound = 80;
+    projectPage.addFixedIntervention('sertr', 'a complex test intervention', lowerBound, upperBound);
     // projectPage.addAnalysis('network', 'test network analysis title');
     // projectPage.addAnalysis('single', 'test single-study title');
     // projectPage.addAnalysis('benefit', 'test meta-benefit-risk title');

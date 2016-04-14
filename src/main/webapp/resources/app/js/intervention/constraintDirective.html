@@ -1,7 +1,7 @@
 <div class="row">
   <div class="columns large-2">
     <label>Lower bound
-      <input type="checkbox" ng-model="lowerBoundEnabled" ng-change="toggleLowerBound(lowerBoundEnabled)"/>
+      <input class="lower-bound-checkbox" type="checkbox" ng-model="lowerBoundEnabled" ng-change="toggleLowerBound(lowerBoundEnabled)"/>
     </label>
   </div>
   <div class="columns large-3">
@@ -9,7 +9,7 @@
             ng-options="lowerBoundOption.label for lowerBoundOption in LOWER_BOUND_OPTIONS"></select>
   </div>
   <div class="columns large-2">
-    <input ng-disabled="!lowerBoundEnabled" type="number" step="0.001" ng-model="model.lowerBound.value">
+    <input class="lower-bound-value" ng-disabled="!lowerBoundEnabled" type="number" step="0.001" ng-model="model.lowerBound.value">
   </div>
   <div class="columns large-3 end">
     <select ng-disabled="!lowerBoundEnabled" ng-model="model.lowerBound.unit"
@@ -19,7 +19,7 @@
 <div class="row">
   <div class="columns large-2">
     <label>Upper bound
-      <input type="checkbox" ng-model="upperBoundEnabled" ng-change="toggleUpperBound(upperBoundEnabled)"/>
+      <input class="upper-bound-checkbox" type="checkbox" ng-model="upperBoundEnabled" ng-change="toggleUpperBound(upperBoundEnabled)"/>
     </label>
   </div>
   <div class="columns large-3">
@@ -27,7 +27,7 @@
             ng-options="upperBoundOption.label for upperBoundOption in UPPER_BOUND_OPTIONS"></select>
   </div>
   <div class="columns large-2">
-    <input ng-disabled="!upperBoundEnabled" type="number" step="0.001" ng-model="model.upperBound.value">
+    <input class="upper-bound-value" ng-disabled="!upperBoundEnabled" type="number" step="0.001" ng-model="model.upperBound.value">
   </div>
   <div class="columns large-3 end">
     <select ng-disabled="!upperBoundEnabled" ng-model="model.upperBound.unit"
