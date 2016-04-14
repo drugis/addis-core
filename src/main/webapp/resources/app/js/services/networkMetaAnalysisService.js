@@ -295,29 +295,25 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     }
 
-    function findMatchedArmsForIntervention(analysis, trialDataArms, includedInterventionUri) {
-      return _.filter(trialDataArms, function(trialDataArm) {
-        return trialDataArm.semanticIntervention.drugConcept === includedInterventionUri && isArmIncluded(analysis, trialDataArm);
-      });
-    }
-
-    function doesModelHaveAmbiguousArms(trialDataStudies, interventions, analysis) {
-      var includedInterventionUris = _.reduce(interventions, function(mem, intervention) {
-        if (intervention.isIncluded) {
-          mem = mem.concat(intervention.semanticInterventionUri);
-        }
-        return mem;
-      }, []);
-
-      function doesStudyHaveAmbiguousArms(trialDataStudy, includedInterventionUris) {
-        return _.find(includedInterventionUris, function(includedInterventionUri) {
-          var matchedInterventionsForInclusion = findMatchedArmsForIntervention(analysis, trialDataStudy.trialDataArms, includedInterventionUri);
-          return matchedInterventionsForInclusion.length > 1;
+    function doesModelHaveAmbiguousArms(trialDataStudies, analysis) {
+      function doesStudyHaveAmbiguousArms(trialDataStudy) {
+        var interventionCounts = trialDataStudy.trialDataArms.reduce(function(acc, arm) {
+          if(arm.matchedProjectInterventionId !== null && isArmIncluded(analysis, arm)) {
+            if(acc[arm.matchedProjectInterventionId]) {
+              ++acc[arm.matchedProjectInterventionId];
+            } else {
+              acc[arm.matchedProjectInterventionId] = 1;
+            }
+          }
+          return acc;
+        }, {});
+        return _.find(interventionCounts, function(count) {
+          return count > 1 ;
         });
       }
 
       return _.find(trialDataStudies, function(trialDataStudy) {
-        return doesStudyHaveAmbiguousArms(trialDataStudy, includedInterventionUris);
+        return doesStudyHaveAmbiguousArms(trialDataStudy);
       });
     }
 
