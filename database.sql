@@ -600,3 +600,25 @@ ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxUpperBoundUnitConcept varcha
 --changeset stroombergc:49
 UPDATE abstractintervention SET semanticinterventionuri = CONCAT('http://trials.drugis.org/', semanticinterventionuri) WHERE LEFT(semanticinterventionuri, 4) <> 'http';
 --rollback UPDATE abstractintervention SET semanticinterventionuri = RIGHT(semanticinterventionuri, 36) WHERE LEFT(semanticinterventionuri, 4) = 'http';
+
+--changeset stroombergc:50
+ALTER TABLE abstractanalysis DROP CONSTRAINT IF EXISTS abstractanalysis_projectid_fkey ;
+ALTER TABLE abstractanalysis ADD CONSTRAINT abstractanalysis_projectid_fkey FOREIGN KEY (projectId) REFERENCES project(id) ON DELETE CASCADE;
+
+ALTER TABLE SimpleIntervention DROP CONSTRAINT IF EXISTS simpleintervention_simpleinterventionid_fkey ;
+ALTER TABLE SimpleIntervention ADD CONSTRAINT simpleintervention_simpleinterventionid_fkey FOREIGN KEY (simpleInterventionId) REFERENCES AbstractIntervention(id) ON DELETE CASCADE;
+
+ALTER TABLE FixedDoseIntervention DROP CONSTRAINT IF EXISTS fixedintervention_fixedinterventionid_fkey ;
+ALTER TABLE FixedDoseIntervention ADD CONSTRAINT fixedintervention_fixedinterventionid_fkey FOREIGN KEY (fixedInterventionId) REFERENCES AbstractIntervention(id) ON DELETE CASCADE;
+
+ALTER TABLE TitratedDoseIntervention DROP CONSTRAINT IF EXISTS titratedintervention_titratedinterventionid_fkey ;
+ALTER TABLE TitratedDoseIntervention ADD CONSTRAINT titratedintervention_titratedinterventionid_fkey FOREIGN KEY (titratedInterventionId) REFERENCES AbstractIntervention(id) ON DELETE CASCADE;
+
+ALTER TABLE BothDoseTypesIntervention DROP CONSTRAINT IF EXISTS bothtypesintervention_bothtypesinterventionid_fkey ;
+ALTER TABLE BothDoseTypesIntervention ADD CONSTRAINT bothtypesintervention_bothtypesinterventionid_fkey FOREIGN KEY (bothTypesInterventionId) REFERENCES AbstractIntervention(id) ON DELETE CASCADE;
+
+--rollback ALTER TABLE BothDoseTypesIntervention DROP CONSTRAINT IF EXISTS bothtypesintervention_bothtypesinterventionid_fkey ;
+--rollback ALTER TABLE TitratedDoseIntervention DROP CONSTRAINT IF EXISTS titratedintervention_titratedinterventionid_fkey ;
+--rollback ALTER TABLE FixedDoseIntervention DROP CONSTRAINT IF EXISTS fixedintervention_fixedinterventionid_fkey ;
+--rollback ALTER TABLE SimpleIntervention DROP CONSTRAINT IF EXISTS simpleintervention_simpleinterventionid_fkey ;
+--rollback ALTER TABLE abstractanalysis DROP CONSTRAINT IF EXISTS abstractanalysis_projectid_fkey ;
