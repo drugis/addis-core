@@ -512,7 +512,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
+
     Map<URI, TrialDataStudy> trialDataStudies = queryResultMappingService.mapResultRowToTrialDataStudy(bindings);
+
     List<CovariateOption> covariateOptions = Arrays.asList(CovariateOption.values());
     // transform covariate keys to object
     List<CovariateOption> studyLevelCovariates = covariateKeys.stream()
@@ -522,8 +524,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             .filter(isStudyLevelCovariate(covariateOptions).negate())
             .collect(Collectors.toList());
 
+
     // fetch the study-level values for each study
-    Map<URI, CovariateStudyValue> covariateValues = getStudyLevelCovariateValues(namespaceUid, version, studyLevelCovariates);
+    List<CovariateStudyValue> covariateValues = getStudyLevelCovariateValues(namespaceUid, version, studyLevelCovariates);
 
     // fetch the population characteristics values for each study
     for(String popcharUuid: populationCharacteristicCovariateKeys) {
@@ -534,13 +537,12 @@ public class TriplestoreServiceImpl implements TriplestoreService {
         JSONObject row = (JSONObject) binding;
         URI studyUri = readValue(row, "graph");
         Double value = extractValueFromRow(row);
-        CovariateStudyValue covariateStudyValue = new CovariateStudyValue(studyUri, popcharUuid, value);
-        covariateValues.put(studyUri, covariateStudyValue);
+        covariateValues.add(new CovariateStudyValue(studyUri, popcharUuid, value));
       }
     }
 
     // add the values to the studyData object
-    for (CovariateStudyValue covariateStudyValue : covariateValues.values()) {
+    for (CovariateStudyValue covariateStudyValue : covariateValues) {
       TrialDataStudy studyData = trialDataStudies.get(covariateStudyValue.getStudyUri());
       if (studyData != null) {
         studyData.addCovariateValue(covariateStudyValue);
@@ -555,9 +557,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public Map<URI, CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, String version,
+  public List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, String version,
                                                                 List<CovariateOption> covariates) throws ReadValueException {
-    Map<URI, CovariateStudyValue> covariateStudyValues = new HashMap();
+    List<CovariateStudyValue> covariateStudyValues = new ArrayList<>();
     for (CovariateOption covariate : covariates) {
       ResponseEntity<String> covariateResponse = queryTripleStoreVersion(namespaceUid, covariate.getQuery(), version);
       JSONArray covariateBindings = JsonPath.read(covariateResponse.getBody(), "$.results.bindings");
@@ -566,7 +568,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
         URI studyUri = readValue(row, "graph");
         Double value = extractValueFromRow(row);
         CovariateStudyValue covariateStudyValue = new CovariateStudyValue(studyUri, covariate.toString(), value);
-        covariateStudyValues.put(studyUri, covariateStudyValue);
+        covariateStudyValues.add(covariateStudyValue);
       }
     }
     return covariateStudyValues;

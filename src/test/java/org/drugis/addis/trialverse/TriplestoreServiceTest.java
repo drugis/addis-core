@@ -29,7 +29,6 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -228,7 +227,7 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/covariateDataExample.json");
     createMockTrialverseService(mockResult);
 
-    Map<URI,CovariateStudyValue> result = triplestoreService.getStudyLevelCovariateValues(namespaceUid, version, Arrays.asList(CovariateOption.ALLOCATION_RANDOMIZED));
+    List<CovariateStudyValue> result = triplestoreService.getStudyLevelCovariateValues(namespaceUid, version, Arrays.asList(CovariateOption.ALLOCATION_RANDOMIZED));
     assertEquals(4, result.size());
 
   }
