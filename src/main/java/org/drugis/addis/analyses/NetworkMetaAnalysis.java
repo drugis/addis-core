@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.drugis.addis.outcomes.Outcome;
+import org.drugis.trialverse.util.Utils;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -108,26 +109,15 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
   }
 
   public void updateArmExclusions(Set<ArmExclusion> excludedArms){
-    updateSet(this.excludedArms, excludedArms);
+    Utils.updateSet(this.excludedArms, excludedArms);
   }
 
   public void updateIncludedInterventions(Set<InterventionInclusion> includedInterventions){
-    updateSet(this.includedInterventions, includedInterventions);
+    Utils.updateSet(this.includedInterventions, includedInterventions);
   }
 
   public void updateIncludedCovariates(Set<CovariateInclusion> includedCovariates){
-    updateSet(this.includedCovariates, includedCovariates);
-  }
-
-  private <T> void updateSet(Set<T> oldSet, Set<T> newSet){
-    Set<T> removeSet = new HashSet<>();
-    for(T oldItem : oldSet) {
-      if(!newSet.contains(oldItem)){
-        removeSet.add(oldItem);
-      }
-    }
-    oldSet.removeAll(removeSet);
-    oldSet.addAll(newSet);
+    Utils.updateSet(this.includedCovariates, includedCovariates);
   }
 
   @Override

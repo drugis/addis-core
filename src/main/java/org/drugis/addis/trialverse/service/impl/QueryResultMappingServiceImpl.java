@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.drugis.addis.trialverse.TrialverseUtilService.readValue;
+import static org.drugis.addis.trialverse.TrialverseUtilService.uritoUid;
 
 /**
  * Created by connor on 8-4-16.
@@ -96,5 +97,25 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
     String populationCharacteristicCovariateKey = readValue(row, "populationCharacteristicCovariateKey");
     Double value = readValue(row, "value");
     return new CovariateStudyValue(studyUri, populationCharacteristicCovariateKey, value);
+  }
+
+  @Override
+  public TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow mapSingleStudyDataRow(JSONObject row) throws ReadValueException {
+    String outcomeUid = uritoUid(readValue(row, "outcomeTypeUri"));
+    String outcomeLabel = readValue(row, "outcomeInstanceLabel");
+    URI alternativeUri =  readValue(row, "interventionTypeUri");
+    String alternativeLabel = readValue(row, "interventionLabel");
+    Double mean = null;
+    Double stdDev = null;
+    Integer rate = null;
+    Boolean isContinuous = row.containsKey("mean");
+    if (isContinuous) {
+      mean = Double.parseDouble(readValue(row, "$.mean.value"));
+      stdDev = readValue(row, "stdDev");
+    } else {
+      rate = readValue(row, "count");
+    }
+    Integer sampleSize = readValue(row, "sampleSize");
+    return new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(outcomeUid, outcomeLabel, alternativeUri, alternativeLabel, mean, stdDev, rate, sampleSize);
   }
 }

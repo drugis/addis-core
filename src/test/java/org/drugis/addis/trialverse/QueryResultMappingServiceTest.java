@@ -9,6 +9,7 @@ import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.addis.trialverse.service.impl.QueryResultMappingServiceImpl;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
+import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -30,6 +31,7 @@ public class QueryResultMappingServiceTest {
 
   String resultRows = TestUtils.loadResource(this.getClass(), "/triplestoreService/trialDataEdarbiReultRowsExample.json");
   String covariateRow = TestUtils.loadResource(this.getClass(), "/triplestoreService/covariatePopCharValueRow.json");
+  String singleStudyRow = TestUtils.loadResource(this.getClass(), "/triplestoreService/singleStudyResultRow.json");
 
   @Before
   public void setUp() {
@@ -85,4 +87,11 @@ public class QueryResultMappingServiceTest {
     assertEquals(URI.create("http://its/a/uri"), covariateStudyValue.getStudyUri());
     assertEquals(40d, covariateStudyValue.getValue(), 0.000000001);
   }
-}
+
+  @Test
+  public void testSingleStudyResultMapper() throws ReadValueException, ParseException {
+    JSONObject row  = (JSONObject) JSONValue.parseWithException(singleStudyRow);
+    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow singleStudyBenefitRiskMeasurementRow = queryResultMappingService.mapSingleStudyDataRow(row);
+    assertEquals(20, singleStudyBenefitRiskMeasurementRow.getMean(), 0.00001);
+  }
+ }

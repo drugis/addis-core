@@ -2,7 +2,10 @@ package org.drugis.addis.interventions.service.impl;
 
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.service.InterventionService;
-import org.drugis.addis.trialverse.model.*;
+import org.drugis.addis.trialverse.model.AbstractSemanticIntervention;
+import org.drugis.addis.trialverse.model.Dose;
+import org.drugis.addis.trialverse.model.FixedSemanticIntervention;
+import org.drugis.addis.trialverse.model.TitratedSemanticIntervention;
 import org.springframework.stereotype.Service;
 
 /**
@@ -11,37 +14,35 @@ import org.springframework.stereotype.Service;
 @Service
 public class InterventionServiceImpl implements InterventionService {
   @Override
-  public boolean isMatched(AbstractIntervention intervention, TrialDataArm arm) throws InvalidTypeForDoseCheckException {
+  public boolean isMatched(AbstractIntervention intervention, AbstractSemanticIntervention semanticIntervention) throws InvalidTypeForDoseCheckException {
 
     if(intervention instanceof SimpleIntervention) {
-      return checkSimple(intervention, arm);
+      return checkSimple(intervention, semanticIntervention);
     }
 
     if(intervention instanceof FixedDoseIntervention) {
 
-      return !(!checkType(intervention, arm) || !checkSimple(intervention, arm) || !doseCheck(intervention, arm));
+      return !(!checkType(intervention, semanticIntervention) || !checkSimple(intervention, semanticIntervention) || !doseCheck(intervention, semanticIntervention));
     }
 
     if(intervention instanceof TitratedDoseIntervention || intervention instanceof BothDoseTypesIntervention) {
-      return !(!checkType(intervention, arm) || !checkSimple(intervention, arm) || !doseCheck(intervention, arm));
+      return !(!checkType(intervention, semanticIntervention) || !checkSimple(intervention, semanticIntervention) || !doseCheck(intervention, semanticIntervention));
     }
     return false;
   }
 
-  private boolean checkSimple(AbstractIntervention intervention, TrialDataArm arm) {
-    return intervention.getSemanticInterventionUri().equals(arm.getSemanticIntervention().getDrugConcept());
+  private boolean checkSimple(AbstractIntervention intervention, AbstractSemanticIntervention semanticIntervention) {
+    return intervention.getSemanticInterventionUri().equals(semanticIntervention.getDrugConcept());
   }
 
-  private boolean checkType(AbstractIntervention intervention, TrialDataArm arm) {
-    AbstractSemanticIntervention semanticIntervention = arm.getSemanticIntervention();
+  private boolean checkType(AbstractIntervention intervention, AbstractSemanticIntervention semanticIntervention) {
     return (intervention instanceof FixedDoseIntervention && semanticIntervention instanceof FixedSemanticIntervention ||
             intervention instanceof TitratedDoseIntervention && semanticIntervention instanceof TitratedSemanticIntervention ||
             intervention instanceof BothDoseTypesIntervention && semanticIntervention instanceof FixedSemanticIntervention ||
             intervention instanceof BothDoseTypesIntervention && semanticIntervention instanceof TitratedSemanticIntervention);
   }
 
-  private boolean doseCheck(AbstractIntervention intervention, TrialDataArm arm) throws InvalidTypeForDoseCheckException {
-    AbstractSemanticIntervention semanticIntervention = arm.getSemanticIntervention();
+  private boolean doseCheck(AbstractIntervention intervention, AbstractSemanticIntervention semanticIntervention) throws InvalidTypeForDoseCheckException {
 
     if(intervention instanceof FixedDoseIntervention) {
       DoseConstraint constraint = ((FixedDoseIntervention) intervention).getConstraint();

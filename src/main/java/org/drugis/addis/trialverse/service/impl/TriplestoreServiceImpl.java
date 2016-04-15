@@ -564,12 +564,27 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       for (Object binding : covariateBindings) {
         JSONObject row = (JSONObject) binding;
         URI studyUri = readValue(row, "graph");
-        Double value = readValue(row, "value");
+        Double value = extractValueFromRow(row);
         CovariateStudyValue covariateStudyValue = new CovariateStudyValue(studyUri, covariate.toString(), value);
         covariateStudyValues.add(covariateStudyValue);
       }
     }
     return covariateStudyValues;
+  }
+
+  private Double extractValueFromRow(JSONObject row) {
+    Double value = null;
+    if (row.containsKey("value")) {
+      String valueAsString = JsonPath.<String>read(row, "$.value.value");
+      if (JsonPath.<String>read(row, "$.value.datatype").equals(DATATYPE_DURATION)) {
+        Period period = Period.parse(valueAsString);
+        Integer periodAsDays = period.toStandardDays().getDays();
+        value = periodAsDays.doubleValue();
+      } else {
+        value = Double.parseDouble(valueAsString);
+      }
+    }
+    return value;
   }
 
   private Double numberOfDaysInPeriod(Period period) {
@@ -609,23 +624,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
     List<SingleStudyBenefitRiskMeasurementRow> measurementObjects = new ArrayList<>();
     for (Object binding : bindings) {
-      JSONObject row = (JSONObject) binding;
-      String outcomeUid = subStringAfterLastSymbol(JsonPath.read(binding, "$.outcomeTypeUid.value"), '/');
-      String outcomeLabel = JsonPath.read(binding, "$.outcomeInstanceLabel.value");
-      URI alternativeUri =  readValue(row, "interventionTypeUid");
-      String alternativeLabel = JsonPath.read(binding, "$.interventionLabel.value");
-      Double mean = null;
-      Double stdDev = null;
-      Integer rate = null;
-      Boolean isContinuous = row.containsKey("mean");
-      if (isContinuous) {
-        mean = Double.parseDouble(JsonPath.read(binding, "$.mean.value"));
-        stdDev = readValue(row, "stdDev");
-      } else {
-        rate = readValue(row, "count");
-      }
-      Integer sampleSize = readValue(row, "sampleSize");
-      measurementObjects.add(new SingleStudyBenefitRiskMeasurementRow(outcomeUid, outcomeLabel, alternativeUri, alternativeLabel, mean, stdDev, rate, sampleSize));
+      measurementObjects.add(queryResultMappingService.mapSingleStudyDataRow((JSONObject) binding));
     }
     return measurementObjects;
   }

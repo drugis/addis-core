@@ -5,8 +5,6 @@ import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisReposi
 import org.drugis.addis.config.JpaRepositoryTestConfig;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
-import org.drugis.addis.interventions.model.AbstractIntervention;
-import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.security.Account;
 import org.junit.Test;
@@ -64,7 +62,7 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
     Integer analysisId = -1;
     Account user = em.find(Account.class, 1);
     Integer projectId = 1;
-    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "analysis 1", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
     assertEquals(analysis.getProjectId(), updatedAnalysis.getProjectId());
     assertEquals(analysis.getTitle(), updatedAnalysis.getTitle());
@@ -82,7 +80,7 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
     InterventionInclusion interventionInclusion = new InterventionInclusion(analysisId, interventionId);
     em.persist(interventionInclusion);
     List<InterventionInclusion> selectedInterventions = Arrays.asList(interventionInclusion);
-    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", selectedOutcomes, selectedInterventions);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "analysis 1", selectedOutcomes, selectedInterventions);
     SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
     SingleStudyBenefitRiskAnalysis result = em.find(SingleStudyBenefitRiskAnalysis.class, analysisId);
     assertEquals(analysis.getProjectId(), updatedAnalysis.getProjectId());

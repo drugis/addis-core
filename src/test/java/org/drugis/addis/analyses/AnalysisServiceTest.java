@@ -285,7 +285,7 @@ public class AnalysisServiceTest {
     List<TrialDataArm> study1Arms = Arrays.asList(arm1, arm2);
     TrialDataStudy study1 = new TrialDataStudy(URI.create("studyUri"), "name", study1Arms);
     List<TrialDataStudy> trialData = Arrays.asList(study1);
-    when(interventionService.isMatched(intervention1, arm1)).thenReturn(true);
+    when(interventionService.isMatched(intervention1, arm1.getSemanticIntervention())).thenReturn(true);
     when(triplestoreService.getTrialData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids))
             .thenReturn(trialData);
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(project.getNamespaceUid());

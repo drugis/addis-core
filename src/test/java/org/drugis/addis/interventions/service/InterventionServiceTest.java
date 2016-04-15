@@ -39,7 +39,7 @@ public class InterventionServiceTest {
     AbstractSemanticIntervention semanticIntervention = new SimpleSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri);
     TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
 
-    assertTrue(interventionService.isMatched(intervention, trialdataArm));
+    assertTrue(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }
 
   @Test
@@ -50,7 +50,7 @@ public class InterventionServiceTest {
     URI otherdrugConceptUri = URI.create("otherDrugConceptUri");
     AbstractIntervention intervention = new SimpleIntervention(interventionId, projectId, "intervention name", "moti", otherdrugConceptUri, "sem label");
 
-    assertFalse(interventionService.isMatched(intervention, trialdataArm));
+    assertFalse(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }
 
   @Test
@@ -67,7 +67,7 @@ public class InterventionServiceTest {
     AbstractSemanticIntervention semanticIntervention = new FixedSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri, fixedMatchingDose);
     TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
 
-    assertTrue(interventionService.isMatched(intervention, trialdataArm));
+    assertTrue(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }
 
   @Test
@@ -84,7 +84,7 @@ public class InterventionServiceTest {
     AbstractSemanticIntervention semanticIntervention = new FixedSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri, fixedMatchingDose);
     TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
 
-    assertFalse(interventionService.isMatched(intervention, trialdataArm));
+    assertFalse(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }
 
   @Test
@@ -103,7 +103,7 @@ public class InterventionServiceTest {
     AbstractSemanticIntervention semanticIntervention = new TitratedSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri, minDose, maxDose);
     TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
 
-    assertTrue(interventionService.isMatched(intervention, trialdataArm));
+    assertTrue(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }
 
   @Test
@@ -122,7 +122,7 @@ public class InterventionServiceTest {
     AbstractSemanticIntervention semanticIntervention = new TitratedSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri, minDose, maxDose);
     TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
 
-    assertFalse(interventionService.isMatched(intervention, trialdataArm));
+    assertFalse(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }
 
   @Test
@@ -141,7 +141,7 @@ public class InterventionServiceTest {
     AbstractSemanticIntervention semanticIntervention = new TitratedSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri, minDose, maxDose);
     TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
 
-    assertTrue(interventionService.isMatched(intervention, trialdataArm));
+    assertTrue(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }
 
   @Test
@@ -160,7 +160,7 @@ public class InterventionServiceTest {
     AbstractSemanticIntervention semanticIntervention = new TitratedSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri, minDose, maxDose);
     TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
 
-    assertFalse(interventionService.isMatched(intervention, trialdataArm));
+    assertFalse(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }
 
 

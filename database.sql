@@ -622,3 +622,8 @@ ALTER TABLE BothDoseTypesIntervention ADD CONSTRAINT bothtypesintervention_botht
 --rollback ALTER TABLE FixedDoseIntervention DROP CONSTRAINT IF EXISTS fixedintervention_fixedinterventionid_fkey ;
 --rollback ALTER TABLE SimpleIntervention DROP CONSTRAINT IF EXISTS simpleintervention_simpleinterventionid_fkey ;
 --rollback ALTER TABLE abstractanalysis DROP CONSTRAINT IF EXISTS abstractanalysis_projectid_fkey ;
+
+--changeset stroombergc:51
+DROP TABLE SingleStudyBenefitRiskAnalysis_Intervention;
+--rollback CREATE TABLE SingleStudyBenefitRiskAnalysis_Intervention (AnalysisId INT,InterventionId INT,PRIMARY KEY(AnalysisId, InterventionId),FOREIGN KEY(AnalysisId) REFERENCES SingleStudyBenefitRiskAnalysis(id),FOREIGN KEY(InterventionId) REFERENCES Intervention(id));
+

@@ -15,6 +15,7 @@ import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.interventions.service.InterventionService;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
@@ -91,6 +92,9 @@ public class ProblemServiceImpl implements ProblemService {
 
   @Inject
   private AnalysisService analysisService;
+
+  @Inject
+  private InterventionService interventionService;
 
   private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -362,9 +366,14 @@ public class ProblemServiceImpl implements ProblemService {
     List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
     Map<Integer, AbstractIntervention> interventionMap = interventions
             .stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
+
     List<URI> alternativeUris = analysis.getSelectedInterventions()
             .stream().map(intervention -> interventionMap.get(intervention.getInterventionId()).getSemanticInterventionUri())
             .collect(Collectors.toList());
+
+    Map<URI, AbstractIntervention> alternativeToINterventionMap = interventions.stream()
+        .collect(Collectors.toMap(AbstractIntervention::getSemanticInterventionUri, Function.identity()));
+
     String versionedUuid = mappingService.getVersionedUuid(project.getNamespaceUid());
     List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementNodes =
             triplestoreService.getSingleStudyMeasurements(versionedUuid, analysis.getStudyGraphUid(), project.getDatasetVersion(), outcomeUids, alternativeUris);
@@ -372,6 +381,10 @@ public class ProblemServiceImpl implements ProblemService {
     Map<URI, AlternativeEntry> alternatives = new HashMap<>();
     Map<String, CriterionEntry> criteria = new HashMap<>();
     for (TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow measurementRow : measurementNodes) {
+
+      // check if match is valid
+//      interventionService.isMatched(alternativeToINterventionMap.get(measurementRow.getAlternativeUri()), )
+
       alternatives.put(measurementRow.getAlternativeUri(), new AlternativeEntry(measurementRow.getAlternativeUri(), measurementRow.getAlternativeLabel()));
       CriterionEntry criterionEntry = createCriterionEntry(measurementRow);
       criteria.put(measurementRow.getOutcomeUid(), criterionEntry);

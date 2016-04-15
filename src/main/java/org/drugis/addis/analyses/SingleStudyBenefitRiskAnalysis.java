@@ -2,9 +2,9 @@ package org.drugis.addis.analyses;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.util.ObjectToStringDeserializer;
+import org.drugis.trialverse.util.Utils;
 
 import javax.persistence.*;
 import java.util.*;
@@ -25,10 +25,10 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
   @JoinTable(name = "singleStudyBenefitRiskAnalysis_Outcome",
           joinColumns = {@JoinColumn(name = "analysisId", referencedColumnName = "id")},
           inverseJoinColumns = {@JoinColumn(name = "outcomeId", referencedColumnName = "id")})
-  private Set<Outcome> selectedOutcomes;
+  private Set<Outcome> selectedOutcomes = new HashSet<>();
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, mappedBy = "analysisId", orphanRemoval = true)
-  private Set<InterventionInclusion> selectedInterventions;
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysisId", orphanRemoval = true)
+  private Set<InterventionInclusion> selectedInterventions = new HashSet<>();
 
   public SingleStudyBenefitRiskAnalysis() {
   }
@@ -83,6 +83,15 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
   public List<InterventionInclusion> getSelectedInterventions() {
     return selectedInterventions == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(new ArrayList<>(selectedInterventions));
   }
+
+  public void updateSelectedOutcomes(List<Outcome> newOutcomes){
+    Utils.updateSet(this.selectedOutcomes, new HashSet<>(newOutcomes));
+  }
+
+  public void updateSelectedInterventions(List<InterventionInclusion> newInterventionInclusions) {
+    Utils.updateSet(this.selectedInterventions, new HashSet<>(newInterventionInclusions));
+  }
+
 
   @JsonRawValue
   public String getProblem() {

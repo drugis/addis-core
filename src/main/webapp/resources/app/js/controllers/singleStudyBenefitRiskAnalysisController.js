@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash'], function(_) {
+define(['angular', 'lodash'], function(angular, _) {
   var dependencies = ['$scope', '$stateParams', '$state', '$window',
     'currentAnalysis', 'currentProject',
     'OutcomeResource', 'InterventionResource', 'TrialverseStudyResource',
@@ -138,7 +138,14 @@ define(['lodash'], function(_) {
     }
 
     function saveAnalysis() {
-      AnalysisResource.save($scope.analysis, function() {
+      var saveCommand = angular.copy($scope.analysis);
+      saveCommand.selectedInterventions = saveCommand.selectedInterventions.map(function(intervention) {
+        return {
+          interventionId: intervention.id,
+          analysisId: saveCommand.id
+        };
+      });
+      AnalysisResource.save(saveCommand, function() {
         // necessary because angular-select uses $watchcollection instead of $watch
         $scope.studies = $scope.studies.splice(0, $scope.studyArrayLength);
       });

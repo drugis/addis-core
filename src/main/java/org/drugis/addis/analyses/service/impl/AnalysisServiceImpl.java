@@ -232,7 +232,7 @@ public class AnalysisServiceImpl implements AnalysisService {
         for(TrialDataArm arm: study.getTrialDataArms()) {
           Optional<AbstractIntervention> matchingIntervention = includedInterventions.stream().filter(i -> {
             try {
-              return interventionService.isMatched(i, arm);
+              return interventionService.isMatched(i, arm.getSemanticIntervention());
             } catch (InvalidTypeForDoseCheckException e) {
               e.printStackTrace();
             }

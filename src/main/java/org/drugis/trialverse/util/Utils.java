@@ -7,7 +7,9 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -36,5 +38,17 @@ public class Utils {
     return result;
 //    return result.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> Double.parseDouble(e.getValue())));
   }
+
+ public static <T> void updateSet(Set<T> oldSet, Set<T> newSet){
+    Set<T> removeSet = new HashSet<>();
+    for(T oldItem : oldSet) {
+      if(!newSet.contains(oldItem)){
+        removeSet.add(oldItem);
+      }
+    }
+    oldSet.removeAll(removeSet);
+    oldSet.addAll(newSet);
+  }
+
 
 }

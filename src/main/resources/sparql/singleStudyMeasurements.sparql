@@ -9,6 +9,9 @@ PREFIX entity: <http://trials.drugis.org/entities/>
 PREFIX concept: <http://trials.drugis.org/concepts/>
 PREFIX instance: <http://trials.drugis.org/instances/>
 PREFIX graph: <http://trials.drugis.org/graphs/>
+PREFIX qudt: <http://qudt.org/schema/qudt#>
+
+
 
 SELECT DISTINCT * WHERE {
   GRAPH graph:$studyUid {
@@ -18,11 +21,11 @@ SELECT DISTINCT * WHERE {
     ?outcomeInstance
       rdfs:label ?outcomeInstanceLabel ;
       ontology:of_variable [
-        owl:sameAs ?outcomeTypeUid
+        owl:sameAs ?outcomeTypeUri
       ] .
     $interventionUnionString .
     ?interventionInstance
-      owl:sameAs ?interventionTypeUid ;
+      owl:sameAs ?interventionTypeUri ;
       rdfs:label ?interventionLabel .
     ?study a ontology:Study .
     ?study ontology:has_arm ?arm .
@@ -32,11 +35,48 @@ SELECT DISTINCT * WHERE {
         ontology:applied_to_arm ?arm ;
         ontology:applied_in_epoch ?epoch
       ] ;
-      ontology:has_drug_treatment [
-        ontology:treatment_has_drug ?interventionInstance
-      ] .
+      ontology:has_drug_treatment ?treatmentNode .
+   ?treatmentNode ontology:treatment_has_drug ?drugInstance .
+
 #    #?epoch rdfs:label ?epochLabel .  # debug info
 #    #?arm rdfs:label ?armLabel .  # debug info
+    OPTIONAL {
+        ?treatmentNode
+          a ontology:FixedDoseDrugTreatment ;
+          a ?treatmentTypeOptional ;
+          ontology:treatment_dose [
+            rdf:value ?fixedDoseValue ;
+            ontology:dosingPeriodicity ?fixedDoseDosingPeriodicity ;
+            ontology:unit ?fixedDoseUnit
+          ] .
+          ?fixedDoseUnit
+            a ?fixedDoseUnitConcept ;
+            rdfs:label ?fixedDoseUnitLabel ;
+            qudt:conversionMultiplier ?fixedDoseUnitMultiplier .
+    } .
+    OPTIONAL {
+        ?treatmentNode
+          a ontology:TitratedDoseDrugTreatment ;
+          a ?treatmentTypeOptional ;
+          ontology:treatment_max_dose [
+            rdf:value ?maxDoseValue ;
+            ontology:dosingPeriodicity ?maxDoseDosingPeriodicity ;
+            ontology:unit ?maxDoseUnit
+          ] ;
+          ontology:treatment_min_dose [
+                      rdf:value ?minDoseValue ;
+                      ontology:dosingPeriodicity ?minDoseDosingPeriodicity ;
+                      ontology:unit ?minDoseUnit
+           ] .
+          ?maxDoseUnit
+            a ?maxDoseUnitConcept ;
+            rdfs:label ?maxDoseUnitLabel ;
+            qudt:conversionMultiplier ?maxDoseUnitMultiplier .
+          ?minDoseUnit
+            a ?minDoseUnitConcept ;
+            rdfs:label ?minDoseUnitLabel ;
+            qudt:conversionMultiplier ?minDoseUnitMultiplier .
+    } .
 #    # also get the measurement while we're here
 
     ?measurementMoment
