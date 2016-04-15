@@ -531,13 +531,11 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     // fetch the population characteristics values for each study
     for(String popcharUuid: populationCharacteristicCovariateKeys) {
       String popcharQuery = POPCHAR_DATA_QUERY.replace("$populationCharacteristicUuid", popcharUuid);
-      ResponseEntity<String> dataResponse = queryTripleStoreVersion(namespaceUid, popcharQuery, version);
+        ResponseEntity<String> dataResponse = queryTripleStoreVersion(namespaceUid, popcharQuery, version);
       JSONArray covariateBindings = JsonPath.read(dataResponse.getBody(), "$.results.bindings");
       for (Object binding : covariateBindings) {
-        JSONObject row = (JSONObject) binding;
-        URI studyUri = readValue(row, "graph");
-        Double value = extractValueFromRow(row);
-        covariateValues.add(new CovariateStudyValue(studyUri, popcharUuid, value));
+        CovariateStudyValue covariateStudyValue = queryResultMappingService.mapResultToCovariateStudyValue((JSONObject) binding);
+        covariateValues.add(covariateStudyValue);
       }
     }
 
@@ -566,26 +564,12 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       for (Object binding : covariateBindings) {
         JSONObject row = (JSONObject) binding;
         URI studyUri = readValue(row, "graph");
-        Double value = extractValueFromRow(row);
+        Double value = readValue(row, "value");
         CovariateStudyValue covariateStudyValue = new CovariateStudyValue(studyUri, covariate.toString(), value);
         covariateStudyValues.add(covariateStudyValue);
       }
     }
     return covariateStudyValues;
-  }
-
-  private Double extractValueFromRow(JSONObject row) {
-    Double value = null;
-    if (row.containsKey("value")) {
-      String valueAsString = JsonPath.<String>read(row, "$.value.value");
-      if (JsonPath.<String>read(row, "$.value.datatype").equals(DATATYPE_DURATION)) {
-        Period period = Period.parse(valueAsString);
-        value = numberOfDaysInPeriod(period);
-      } else {
-        value = Double.parseDouble(valueAsString);
-      }
-    }
-    return value;
   }
 
   private Double numberOfDaysInPeriod(Period period) {

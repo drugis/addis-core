@@ -10,8 +10,11 @@ PREFIX concept: <http://trials.drugis.org/concepts/>
 PREFIX ontology: <http://trials.drugis.org/ontology#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT DISTINCT ?graph ?value WHERE {
+SELECT DISTINCT ?graph ?value ?populationCharacteristicCovariateKey WHERE {
   GRAPH ?graph {
+
+    BIND ('$populationCharacteristicUuid' AS ?populationCharacteristicCovariateKey) .
+
     OPTIONAL {
       ?study
         ontology:has_included_population ?overallGroup ;

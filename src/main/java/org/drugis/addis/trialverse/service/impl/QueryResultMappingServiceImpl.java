@@ -89,4 +89,12 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
     }
     return trialDataStudies;
   }
+
+  @Override
+  public CovariateStudyValue mapResultToCovariateStudyValue(JSONObject row) throws ReadValueException {
+    URI studyUri = readValue(row, "graph");
+    String populationCharacteristicCovariateKey = readValue(row, "populationCharacteristicCovariateKey");
+    Double value = readValue(row, "value");
+    return new CovariateStudyValue(studyUri, populationCharacteristicCovariateKey, value);
+  }
 }

@@ -1,6 +1,7 @@
 package org.drugis.addis.trialverse;
 
 import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import net.minidev.json.parser.ParseException;
 import org.drugis.addis.TestUtils;
@@ -18,8 +19,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by connor on 8-4-16.
@@ -29,6 +29,7 @@ public class QueryResultMappingServiceTest {
   QueryResultMappingService queryResultMappingService;
 
   String resultRows = TestUtils.loadResource(this.getClass(), "/triplestoreService/trialDataEdarbiReultRowsExample.json");
+  String covariateRow = TestUtils.loadResource(this.getClass(), "/triplestoreService/covariatePopCharValueRow.json");
 
   @Before
   public void setUp() {
@@ -73,5 +74,15 @@ public class QueryResultMappingServiceTest {
     assertEquals("milligram", maxDose.getUnitLabel());
     assertEquals((Double) 0.001d, maxDose.getUnitMultiplier());
     assertEquals((Double) 40.0d, maxDose.getValue());
+  }
+
+  @Test
+  public void testMapResultToCovariateStudyValue() throws ParseException, ReadValueException {
+    JSONObject row  = (JSONObject) JSONValue.parseWithException(covariateRow);
+    CovariateStudyValue covariateStudyValue = queryResultMappingService.mapResultToCovariateStudyValue(row);
+    assertNotNull(covariateStudyValue);
+    assertEquals("uuid", covariateStudyValue.getCovariateKey());
+    assertEquals(URI.create("http://its/a/uri"), covariateStudyValue.getStudyUri());
+    assertEquals(40d, covariateStudyValue.getValue(), 0.000000001);
   }
 }
