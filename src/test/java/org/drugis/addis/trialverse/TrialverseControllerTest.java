@@ -150,7 +150,7 @@ public class TrialverseControllerTest {
   @Test
   public void testQuerySemanticInterventions() throws Exception {
     String versionUid = "current";
-    SemanticIntervention testIntervention = new SemanticIntervention(URI.create("http://test/com"), "test label");
+    SemanticInterventionUriAndName testIntervention = new SemanticInterventionUriAndName(URI.create("http://test/com"), "test label");
     when(triplestoreService.getInterventions(versionedUuid, versionUid)).thenReturn(Collections.singletonList(testIntervention));
 
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/interventions").param("version", versionUid))

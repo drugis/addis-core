@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -94,8 +95,8 @@ public class NetworkMetaAnalysisRepositoryTest {
     Integer analysisId = -6;
     NetworkMetaAnalysis analysis = em.find(NetworkMetaAnalysis.class, analysisId);
 
-    ArmExclusion newArmExclusion1 = new ArmExclusion(analysis.getId(), "-601L");
-    ArmExclusion newArmExclusion2 = new ArmExclusion(analysis.getId(), "-602L");
+    ArmExclusion newArmExclusion1 = new ArmExclusion(analysis.getId(), URI.create("-601L"));
+    ArmExclusion newArmExclusion2 = new ArmExclusion(analysis.getId(), URI.create("-602L"));
     analysis.updateArmExclusions(new HashSet<>(Arrays.asList(newArmExclusion1, newArmExclusion2)));
     int interventionId = -5;
     InterventionInclusion newInterventionInclusion = new InterventionInclusion(analysis.getId(), interventionId);

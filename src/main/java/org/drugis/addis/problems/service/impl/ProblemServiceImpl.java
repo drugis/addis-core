@@ -314,7 +314,7 @@ public class ProblemServiceImpl implements ProblemService {
   private List<TrialDataArm> filterExcludedArms(List<TrialDataArm> trialDataArms, NetworkMetaAnalysis analysis) {
     List<TrialDataArm> filteredTrialDataArms = new ArrayList<>();
     List<ArmExclusion> armExclusions = analysis.getExcludedArms();
-    List<String> armExclusionTrialverseIds = new ArrayList<>(armExclusions.size());
+    List<URI> armExclusionTrialverseIds = new ArrayList<>(armExclusions.size());
 
     for (ArmExclusion armExclusion : armExclusions) {
       armExclusionTrialverseIds.add(armExclusion.getTrialverseUid());
@@ -350,11 +350,9 @@ public class ProblemServiceImpl implements ProblemService {
       inclusionMap.put(interventionInclusion.getInterventionId(), interventionInclusion);
     }
 
-    for (AbstractIntervention intervention : interventions) {
-      if (inclusionMap.get(intervention.getId()) != null) {
-        filteredInterventions.add(intervention);
-      }
-    }
+    filteredInterventions.addAll(interventions.stream().
+            filter(intervention -> inclusionMap.get(intervention.getId()) != null)
+            .collect(Collectors.toList()));
 
     return filteredInterventions;
   }

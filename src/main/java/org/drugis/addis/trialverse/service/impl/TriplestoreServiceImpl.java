@@ -169,8 +169,8 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<SemanticIntervention> getInterventions(String namespaceUid, String version) {
-    List<SemanticIntervention> interventions = new ArrayList<>();
+  public List<SemanticInterventionUriAndName> getInterventions(String namespaceUid, String version) {
+    List<SemanticInterventionUriAndName> interventions = new ArrayList<>();
     String query = StringUtils.replace(INTERVENTION_QUERY, "$namespaceUid", namespaceUid);
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
@@ -178,7 +178,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
       String uid = JsonPath.read(binding, "$.intervention.value");
       uid = subStringAfterLastSymbol(uid, '/');
       String label = JsonPath.read(binding, "$.label.value");
-      interventions.add(new SemanticIntervention(URI.create(uid), label));
+      interventions.add(new SemanticInterventionUriAndName(URI.create(uid), label));
     }
     return interventions;
   }

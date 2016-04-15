@@ -262,8 +262,8 @@ public class AnalysisServiceTest {
     Project project = new Project(projectId, owner, "proj", "desc", namespaceUid, version);
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(networkMetaAnalysis);
-    AbstractIntervention intervention1 = new SimpleIntervention(includedInterventionId, projectId, "intervention1", "", new SemanticIntervention(URI.create("semUri1"), "intervention 1"));
-    AbstractIntervention intervention2 = new SimpleIntervention(sirNotAppearingInThisFilmId, projectId, "intervention2", "", new SemanticIntervention(URI.create("semUri2"), "intervention 2"));
+    AbstractIntervention intervention1 = new SimpleIntervention(includedInterventionId, projectId, "intervention1", "", new SemanticInterventionUriAndName(URI.create("semUri1"), "intervention 1"));
+    AbstractIntervention intervention2 = new SimpleIntervention(sirNotAppearingInThisFilmId, projectId, "intervention2", "", new SemanticInterventionUriAndName(URI.create("semUri2"), "intervention 2"));
     List<AbstractIntervention> interventions = Arrays.asList(intervention1, intervention2);
     List<Covariate> covariates = Collections.emptyList();
     when(interventionRepository.query(projectId)).thenReturn(interventions);

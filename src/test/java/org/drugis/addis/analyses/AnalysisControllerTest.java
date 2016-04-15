@@ -13,7 +13,7 @@ import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
+import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.util.WebConstants;
 import org.hamcrest.Matchers;
@@ -258,8 +258,8 @@ public class AnalysisControllerTest {
             new Outcome(2, projectId, "name", "motivation", new SemanticVariable("uri", "label")),
             new Outcome(3, projectId, "name", "motivation", new SemanticVariable("uri", "label"))
     );
-    SimpleIntervention intervention1 = new SimpleIntervention(1, projectId, "name", "motivation", new SemanticIntervention(URI.create("uri"), "label"));
-    SimpleIntervention intervention2 = new SimpleIntervention(2, projectId, "name", "motivation", new SemanticIntervention(URI.create("uri"), "label"));
+    SimpleIntervention intervention1 = new SimpleIntervention(1, projectId, "name", "motivation", new SemanticInterventionUriAndName(URI.create("uri"), "label"));
+    SimpleIntervention intervention2 = new SimpleIntervention(2, projectId, "name", "motivation", new SemanticInterventionUriAndName(URI.create("uri"), "label"));
     List<AbstractIntervention> selectedInterventions = Arrays.asList(intervention1, intervention2);
     List<InterventionInclusion> interventionInclusions = Arrays.asList(
             new InterventionInclusion(analysisId, intervention1.getId()),
@@ -369,7 +369,7 @@ public class AnalysisControllerTest {
     Integer projectId = 101;
     Integer outcomeId = 444;
     Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable("uir", "label"));
-    List<ArmExclusion> excludedArms = Arrays.asList(new ArmExclusion(analysisId, "-1L"), new ArmExclusion(analysisId, "-2L"));
+    List<ArmExclusion> excludedArms = Arrays.asList(new ArmExclusion(analysisId, URI.create("-1L")), new ArmExclusion(analysisId, URI.create("-2L")));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", excludedArms, Collections.emptyList(), Collections.emptyList(), outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);

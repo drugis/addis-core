@@ -5,14 +5,14 @@ import java.net.URI;
 /**
  * Created by connor on 3/6/14.
  */
-public class SemanticIntervention {
+public class SemanticInterventionUriAndName {
   private URI uri;
   private String label;
 
-  public SemanticIntervention() {
+  public SemanticInterventionUriAndName() {
   }
 
-  public SemanticIntervention(URI uri, String label) {
+  public SemanticInterventionUriAndName(URI uri, String label) {
     this.uri = uri;
     this.label = label;
   }
@@ -30,7 +30,7 @@ public class SemanticIntervention {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    SemanticIntervention that = (SemanticIntervention) o;
+    SemanticInterventionUriAndName that = (SemanticInterventionUriAndName) o;
 
     if (!label.equals(that.label)) return false;
     if (!uri.equals(that.uri)) return false;

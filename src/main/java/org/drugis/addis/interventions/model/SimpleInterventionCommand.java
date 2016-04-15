@@ -1,6 +1,6 @@
 package org.drugis.addis.interventions.model;
 
-import org.drugis.addis.trialverse.model.SemanticIntervention;
+import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 
 import java.net.URI;
 
@@ -23,7 +23,7 @@ public class SimpleInterventionCommand extends AbstractInterventionCommand {
             super.getProjectId(),
             super.getName(),
             super.getMotivation(),
-            new SemanticIntervention(
+            new SemanticInterventionUriAndName(
                     URI.create(CONCEPT_NAMESPACE + super.getSemanticInterventionUuid()),
                     super.getSemanticInterventionLabel()
             )

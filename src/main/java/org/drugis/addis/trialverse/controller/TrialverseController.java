@@ -69,7 +69,7 @@ public class TrialverseController {
 
   @RequestMapping(value = "/{namespaceUid}/interventions", method = RequestMethod.GET)
   @ResponseBody
-  public Collection<SemanticIntervention> queryInterventions(Principal currentUser, @PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException, URISyntaxException {
+  public Collection<SemanticInterventionUriAndName> queryInterventions(Principal currentUser, @PathVariable String namespaceUid, @RequestParam String version) throws ResourceDoesNotExistException, URISyntaxException {
     return triplestoreService.getInterventions(mappingService.getVersionedUuid(namespaceUid), version);
   }
 

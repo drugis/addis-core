@@ -2,8 +2,12 @@ package org.drugis.addis.analyses;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.io.Serializable;
+import java.net.URI;
 
 /**
  * Created by daan on 10-6-14.
@@ -17,15 +21,14 @@ public class ArmExclusion implements Serializable {
   private Integer id;
 
   private Integer analysisId;
-
   private String trialverseUid;
 
   public ArmExclusion() {
   }
 
-  public ArmExclusion(Integer analysisId, String trialverseUid) {
+  public ArmExclusion(Integer analysisId, URI trialverseUid) {
     this.analysisId = analysisId;
-    this.trialverseUid = trialverseUid;
+    this.trialverseUid = trialverseUid.toString();
   }
 
   public Integer getId() {
@@ -36,8 +39,8 @@ public class ArmExclusion implements Serializable {
     return analysisId;
   }
 
-  public String getTrialverseUid() {
-    return trialverseUid;
+  public URI getTrialverseUid() {
+    return URI.create(trialverseUid);
   }
 
   @Override

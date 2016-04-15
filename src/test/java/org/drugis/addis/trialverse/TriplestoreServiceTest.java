@@ -117,10 +117,10 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleInterventionResult.json");
     createMockTrialverseService(mockResult);
 
-    List<SemanticIntervention> result = triplestoreService.getInterventions("abc", "version");
-    SemanticIntervention intervention = result.get(0);
-    SemanticIntervention expectedSemanticIntervention = new SemanticIntervention(URI.create("fdhdfgh-saddsgfsdf-123-a"), "Azilsartan");
-    assertEquals(expectedSemanticIntervention, intervention);
+    List<SemanticInterventionUriAndName> result = triplestoreService.getInterventions("abc", "version");
+    SemanticInterventionUriAndName intervention = result.get(0);
+    SemanticInterventionUriAndName expectedSemanticInterventionUriAndName = new SemanticInterventionUriAndName(URI.create("fdhdfgh-saddsgfsdf-123-a"), "Azilsartan");
+    assertEquals(expectedSemanticInterventionUriAndName, intervention);
   }
 
   @Test

@@ -46,7 +46,7 @@ public interface TriplestoreService {
 
   List<SemanticVariable> getPopulationCharacteristics(String versionedUuid, String version);
 
-  List<SemanticIntervention> getInterventions(String namespaceUid, String version);
+  List<SemanticInterventionUriAndName> getInterventions(String namespaceUid, String version);
 
   List<Study> queryStudies(String namespaceUid, String version);
 
