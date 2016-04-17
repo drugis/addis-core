@@ -29,9 +29,9 @@ public class QueryResultMappingServiceTest {
   @InjectMocks
   QueryResultMappingService queryResultMappingService;
 
-  String resultRows = TestUtils.loadResource(this.getClass(), "/triplestoreService/trialDataEdarbiReultRowsExample.json");
-  String covariateRow = TestUtils.loadResource(this.getClass(), "/triplestoreService/covariatePopCharValueRow.json");
-  String singleStudyRow = TestUtils.loadResource(this.getClass(), "/triplestoreService/singleStudyResultRow.json");
+  private String resultRows = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/trialDataEdarbiReultRowsExample.json");
+  private String covariateRow = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/covariatePopCharValueRow.json");
+  private String singleStudyRow = TestUtils.loadResource(this.getClass(), "/queryResultMappingService/singleStudyResultRow.json");
 
   @Before
   public void setUp() {
