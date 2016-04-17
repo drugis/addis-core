@@ -99,8 +99,14 @@ define(['angular', 'lodash'], function(angular, _) {
     });
 
     InterventionResource.query(projectIdParam).$promise.then(function(interventions) {
+      // add intervention details to selectedInterventions
+      $scope.analysis.selectedInterventions = $scope.analysis.selectedInterventions.map(function(selectedIntervention){
+        return _.find(interventions, function(intervention){
+          return selectedIntervention.interventionId === intervention.id;
+        });
+      });
       // use same object in options list as in selected option list, as ui-select uses object equality internaly
-      $scope.interventions = SingleStudyBenefitRiskAnalysisService.concatWithNoDuplicates(interventions, $scope.interventions, isIdEqual);
+      $scope.interventions = SingleStudyBenefitRiskAnalysisService.concatWithNoDuplicates(interventions, $scope.analysis.selectedInterventions, isIdEqual);
       deregisterInterventionWatch = $scope.$watchCollection('analysis.selectedInterventions', function(oldValue, newValue) {
         if (newValue.length !== oldValue.length) {
           interventionsChanged();
