@@ -3,33 +3,35 @@ define(['angular', 'lodash'], function(angular, _) {
   var dependencies = ['$scope', '$stateParams', '$state', '$window',
     'currentAnalysis', 'currentProject',
     'OutcomeResource', 'InterventionResource', 'TrialverseStudyResource',
-    'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW', 'AnalysisResource'
+    'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW', 'AnalysisResource',
+    'TrialverseTrialDataResource'
   ];
-  var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams, $state, $window,
-    currentAnalysis, currentProject, OutcomeResource, InterventionResource, TrialverseStudyResource, SingleStudyBenefitRiskAnalysisService, DEFAULT_VIEW, AnalysisResource) {
+  var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams,
+    $state, $window, currentAnalysis, currentProject, OutcomeResource,
+    InterventionResource, TrialverseStudyResource, SingleStudyBenefitRiskAnalysisService,
+    DEFAULT_VIEW, AnalysisResource, TrialverseTrialDataResource) {
 
     var deregisterOutcomeWatch, deregisterInterventionWatch;
     $scope.$parent.loading = {
       loaded: true
     };
+    $scope.studyModel = {
+      selectedStudy: {}
+    };
+    $scope.editMode = {
+      isUserOwner: $window.config.user.id === currentProject.owner.id,
+    };
+    $scope.userId = $stateParams.userUid;
+    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined;
+    $scope.studies = [];
+    $scope.isProblemDefined = !!currentAnalysis.problem;
     $scope.$parent.analysis = currentAnalysis;
     $scope.$parent.project = currentProject;
     // for mcda use
     $scope.workspace = $scope.analysis;
     $scope.project = currentProject;
-
-    $scope.studies = [];
     $scope.outcomes = $scope.analysis.selectedOutcomes;
     $scope.interventions = $scope.analysis.selectedInterventions;
-    $scope.studyModel = {
-      selectedStudy: {}
-    };
-    $scope.isProblemDefined = !!currentAnalysis.problem;
-    $scope.editMode = {
-      isUserOwner: $window.config.user.id === currentProject.owner.id,
-    };
-    $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined;
-    $scope.userId = $stateParams.userUid;
 
     var projectIdParam = {
       projectId: $stateParams.projectId
@@ -39,6 +41,11 @@ define(['angular', 'lodash'], function(angular, _) {
       namespaceUid: $scope.project.namespaceUid,
       version: $scope.project.datasetVersion
     };
+
+    $scope.evidenceTable = TrialverseTrialDataResource.query({
+      projectId: currentProject.id,
+      analysisId: currentAnalysis.id
+    });
 
     var isIdEqual = function(left, right) {
       return left.id === right.id;
@@ -100,8 +107,8 @@ define(['angular', 'lodash'], function(angular, _) {
 
     InterventionResource.query(projectIdParam).$promise.then(function(interventions) {
       // add intervention details to selectedInterventions
-      $scope.analysis.selectedInterventions = $scope.analysis.selectedInterventions.map(function(selectedIntervention){
-        return _.find(interventions, function(intervention){
+      $scope.analysis.selectedInterventions = $scope.analysis.selectedInterventions.map(function(selectedIntervention) {
+        return _.find(interventions, function(intervention) {
           return selectedIntervention.interventionId === intervention.id;
         });
       });
