@@ -27,31 +27,28 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
           inverseJoinColumns = {@JoinColumn(name = "outcomeId", referencedColumnName = "id")})
   private Set<Outcome> selectedOutcomes = new HashSet<>();
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysisId", orphanRemoval = true)
-  private Set<InterventionInclusion> selectedInterventions = new HashSet<>();
-
   public SingleStudyBenefitRiskAnalysis() {
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> selectedInterventions, String problem) {
+  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> interventionInclusions, String problem) {
     this.id = id;
     this.projectId = projectId;
     this.title = title;
     this.selectedOutcomes = selectedOutcomes == null ? this.selectedOutcomes : new HashSet<>(selectedOutcomes);
-    this.selectedInterventions = selectedInterventions == null ? this.selectedInterventions : new HashSet<>(selectedInterventions);
+    this.interventionInclusions = interventionInclusions == null ? this.interventionInclusions : new HashSet<>(interventionInclusions);
     this.problem = problem;
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> selectedInterventions) {
-    this(id, projectId, title, selectedOutcomes, selectedInterventions, null);
+  public SingleStudyBenefitRiskAnalysis(Integer id, Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> interventionInclusions) {
+    this(id, projectId, title, selectedOutcomes, interventionInclusions, null);
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> selectedInterventions) {
-    this(null, projectId, title, selectedOutcomes, selectedInterventions, null);
+  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> interventionInclusions) {
+    this(null, projectId, title, selectedOutcomes, interventionInclusions, null);
   }
 
-  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> selectedInterventions, String problem) {
-    this(null, projectId, title, selectedOutcomes, selectedInterventions, problem);
+  public SingleStudyBenefitRiskAnalysis(Integer projectId, String title, List<Outcome> selectedOutcomes, List<InterventionInclusion> interventionInclusions, String problem) {
+    this(null, projectId, title, selectedOutcomes, interventionInclusions, problem);
   }
 
   @Override
@@ -80,16 +77,8 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     return selectedOutcomes == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(new ArrayList<>(selectedOutcomes));
   }
 
-  public List<InterventionInclusion> getSelectedInterventions() {
-    return selectedInterventions == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(new ArrayList<>(selectedInterventions));
-  }
-
   public void updateSelectedOutcomes(List<Outcome> newOutcomes){
     Utils.updateSet(this.selectedOutcomes, new HashSet<>(newOutcomes));
-  }
-
-  public void updateSelectedInterventions(List<InterventionInclusion> newInterventionInclusions) {
-    Utils.updateSet(this.selectedInterventions, new HashSet<>(newInterventionInclusions));
   }
 
 
@@ -114,7 +103,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     if (!title.equals(analysis.title)) return false;
     if (problem != null ? !problem.equals(analysis.problem) : analysis.problem != null) return false;
     if (!projectId.equals(analysis.projectId)) return false;
-    if (!selectedInterventions.equals(analysis.selectedInterventions)) return false;
+    if (!interventionInclusions.equals(analysis.interventionInclusions)) return false;
     if (!selectedOutcomes.equals(analysis.selectedOutcomes)) return false;
     if (studyGraphUid != null ? !studyGraphUid.equals(analysis.studyGraphUid) : analysis.studyGraphUid != null) return false;
 
@@ -129,7 +118,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     result = 31 * result + (problem != null ? problem.hashCode() : 0);
     result = 31 * result + (studyGraphUid != null ? studyGraphUid.hashCode() : 0);
     result = 31 * result + selectedOutcomes.hashCode();
-    result = 31 * result + selectedInterventions.hashCode();
+    result = 31 * result + interventionInclusions.hashCode();
     return result;
   }
 

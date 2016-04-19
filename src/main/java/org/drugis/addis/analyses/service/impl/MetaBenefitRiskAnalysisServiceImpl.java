@@ -11,6 +11,7 @@ import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.outcomes.repository.OutcomeRepository;
 import org.drugis.addis.problems.model.AbstractProblem;
@@ -66,7 +67,7 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
-  public MetaBenefitRiskAnalysis update(Account user, Integer projectId, MetaBenefitRiskAnalysis analysis) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException {
+  public MetaBenefitRiskAnalysis update(Account user, Integer projectId, MetaBenefitRiskAnalysis analysis) throws URISyntaxException, SQLException, IOException, ResourceDoesNotExistException, MethodNotAllowedException, ReadValueException, InvalidTypeForDoseCheckException {
     MetaBenefitRiskAnalysis storedAnalysis = metaBenefitRiskAnalysisRepository.find(analysis.getId());
     if(storedAnalysis.isFinalized()) {
       throw new MethodNotAllowedException();
@@ -90,9 +91,9 @@ public class MetaBenefitRiskAnalysisServiceImpl implements MetaBenefitRiskAnalys
     Map<Integer, AbstractIntervention> interventionMap = interventions.stream()
             .collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
 
-    if (isNotEmpty(analysis.getIncludedAlternatives())) {
+    if (isNotEmpty(analysis.getInterventionInclusions())) {
       // do not allow selection of interventions that are not in the project
-      for (InterventionInclusion interventionInclusion : analysis.getIncludedAlternatives()) {
+      for (InterventionInclusion interventionInclusion : analysis.getInterventionInclusions()) {
         if (!interventionMap.get(interventionInclusion.getInterventionId()).getProject().equals(analysis.getProjectId())) {
           throw new ResourceDoesNotExistException();
         }

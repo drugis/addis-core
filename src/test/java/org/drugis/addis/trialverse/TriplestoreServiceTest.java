@@ -10,6 +10,7 @@ import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
+import org.drugis.addis.trialverse.model.trialdata.CovariateStudyValue;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
@@ -94,20 +95,20 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testGetOutcomes() {
+  public void testGetOutcomes() throws ReadValueException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     createMockTrialverseService(mockResult);
     List<SemanticVariable> result = triplestoreService.getOutcomes("abc", "version");
-    SemanticVariable result1 = new SemanticVariable("fdszgs-adsfd-1", "DBP 24-hour mean");
+    SemanticVariable result1 = new SemanticVariable(URI.create("fdszgs-adsfd-1"), "DBP 24-hour mean");
     assertEquals(result.get(0), result1);
   }
 
   @Test
-  public void testGetPopulationCharacteristics() {
+  public void testGetPopulationCharacteristics() throws ReadValueException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     createMockTrialverseService(mockResult);
     List<SemanticVariable> result = triplestoreService.getOutcomes("abc", "version");
-    SemanticVariable result1 = new SemanticVariable("fdszgs-adsfd-1", "DBP 24-hour mean");
+    SemanticVariable result1 = new SemanticVariable(URI.create("fdszgs-adsfd-1"), "DBP 24-hour mean");
     assertEquals(result.get(0), result1);
   }
 

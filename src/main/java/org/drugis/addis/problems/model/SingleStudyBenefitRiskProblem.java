@@ -16,10 +16,10 @@ import java.util.Map;
 public class SingleStudyBenefitRiskProblem extends AbstractProblem {
   private String title;
   private Map<URI, AlternativeEntry> alternatives;
-  private Map<String, CriterionEntry> criteria;
+  private Map<URI, CriterionEntry> criteria;
   private List<AbstractMeasurementEntry> performanceTable;
 
-  public SingleStudyBenefitRiskProblem(String title, Map<URI, AlternativeEntry> alternatives, Map<String, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
+  public SingleStudyBenefitRiskProblem(String title, Map<URI, AlternativeEntry> alternatives, Map<URI, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
     this.title = title;
     this.alternatives = alternatives;
     this.criteria = criteria;
@@ -34,7 +34,7 @@ public class SingleStudyBenefitRiskProblem extends AbstractProblem {
     return alternatives;
   }
 
-  public Map<String, CriterionEntry> getCriteria() {
+  public Map<URI, CriterionEntry> getCriteria() {
     return criteria;
   }
 

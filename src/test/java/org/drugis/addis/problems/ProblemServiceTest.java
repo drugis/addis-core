@@ -12,6 +12,7 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.models.repository.ModelRepository;
@@ -28,14 +29,15 @@ import org.drugis.addis.problems.service.model.ContinuousMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.security.Account;
-import org.drugis.addis.trialverse.model.*;
+import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
+import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.CovariateOptionType;
+import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
-import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -117,7 +119,7 @@ public class ProblemServiceTest {
   }
 
   @Test
-  public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException {
+  public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException {
     int projectId = 1;
     String projectVersion = "projectVersion";
     Project project = new Project(projectId, new Account("username", "first", "lasr", "email"), "name", "desc", namespaceUid, projectVersion);
@@ -125,12 +127,12 @@ public class ProblemServiceTest {
 
     int analysisId = 2;
     String studyUid = "3g0yg-g945gh";
-    String criterionUri1 = "c1";
+    URI criterionUri1 = URI.create("c1");
     String variableName1 = "vn1";
     URI alternativeUri1 = URI.create("a1");
     String armName1 = "an1";
 
-    String criterionUri2 = "c2";
+    URI criterionUri2 = URI.create("c2");
     String variableName2 = "vn2";
     URI alternativeUri2 = URI.create("a2");
     String armName2 = "an2";
@@ -154,13 +156,13 @@ public class ProblemServiceTest {
             new InterventionInclusion(analysisId, -1),
             new InterventionInclusion(analysisId, -2)
     );
-    when(analysis.getSelectedInterventions()).thenReturn(interventionInclusions);
+    when(analysis.getInterventionInclusions()).thenReturn(interventionInclusions);
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(projectRepository.get(projectId)).thenReturn(project);
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
 
     when(analysis.getStudyGraphUid()).thenReturn(studyUid);
-    List<String> outcomeUids = Arrays.asList(criterionUri1, criterionUri2);
+    List<URI> outcomeUids = Arrays.asList(criterionUri1, criterionUri2);
     List<URI> interventionUids = Arrays.asList(alternativeUri1, alternativeUri2);
 
     Integer rate = 42;
@@ -169,18 +171,13 @@ public class ProblemServiceTest {
     Integer sampleSize2 = 222;
     Double mu = 7.56;
     Double stdDev = 0.2;
-    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row1 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri1, variableName1, alternativeUri1, armName1, mu, stdDev, null, sampleSize1);
-    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row2 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri2, variableName2, alternativeUri2, armName2, null, null, rate, sampleSize2);
-    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row3 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri1, variableName1, alternativeUri2, armName2, mu, stdDev, null, sampleSize1);
-    TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow row4 = new TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow(criterionUri2, variableName2, alternativeUri1, armName1, null, null, rate, sampleSize2);
 
-    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementRows = Arrays.asList(row1, row2, row3, row4);
-
+    List<TrialDataStudy> measurementRows = Collections.emptyList();
     when(triplestoreService.getSingleStudyMeasurements(anyString(), anyString(), anyString(), anyList(), anyList())).thenReturn(measurementRows);
 
     AbstractMeasurementEntry measurementEntry = mock(ContinuousMeasurementEntry.class);
     List<AbstractMeasurementEntry> performanceTable = Arrays.asList(measurementEntry);
-    when(performanceTablebuilder.build(measurementRows)).thenReturn(performanceTable);
+    when(performanceTablebuilder.build(any())).thenReturn(performanceTable);
 
     // execute
     SingleStudyBenefitRiskProblem actualProblem = (SingleStudyBenefitRiskProblem) problemService.getProblem(projectId, analysisId);
@@ -188,7 +185,7 @@ public class ProblemServiceTest {
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
     verify(triplestoreService).getSingleStudyMeasurements(versionedUuid, studyUid, projectVersion, outcomeUids, interventionUids);
-    verify(performanceTablebuilder).build(measurementRows);
+    verify(performanceTablebuilder).build(any());
     verify(mappingService).getVersionedUuid(namespaceUid);
     verify(interventionRepository).query(project.getId());
 
@@ -198,12 +195,12 @@ public class ProblemServiceTest {
     assertNotNull(actualProblem.getAlternatives());
     assertNotNull(actualProblem.getCriteria());
 
-    Map<String, CriterionEntry> actualCriteria = actualProblem.getCriteria();
+    Map<URI, CriterionEntry> actualCriteria = actualProblem.getCriteria();
     assertTrue(actualCriteria.keySet().contains(criterionUri1));
   }
 
   @Test
-  public void testGetNmaProblem() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException {
+  public void testGetNmaProblem() throws URISyntaxException, SQLException, IOException, ReadValueException, ResourceDoesNotExistException, InvalidTypeForDoseCheckException {
 
     // project
     Integer projectId = 101;
@@ -215,7 +212,7 @@ public class ProblemServiceTest {
 
     // analysis
     Integer analysisId = 202;
-    SemanticVariable semanticOutcome = new SemanticVariable("semanticOutcomeUri", "semanticOutcomeLabel");
+    SemanticVariable semanticOutcome = new SemanticVariable(URI.create("semanticOutcomeUri"), "semanticOutcomeLabel");
     Outcome outcome = new Outcome(303, project.getId(), "outcome name", "moti", semanticOutcome);
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(analysisId, project.getId(), "nma title", outcome);
     when(analysisRepository.get(networkMetaAnalysis.getId())).thenReturn(networkMetaAnalysis);
@@ -265,13 +262,13 @@ public class ProblemServiceTest {
     URI daanEtAlFluoxArmUri = URI.create("daanEtAlFluoxArm");
     int daanEtAlFluoxSampleSize = 20;
     int daanEtAlFluoxRate = 30;
-    URI variableUri = URI.create(outcome.getSemanticOutcomeUri());
+    URI variableUri = outcome.getSemanticOutcomeUri();
     Measurement daanEtAlFluoxMeasurement = new Measurement(daanEtAlUri, variableUri, daanEtAlFluoxArmUri,
             daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null);
     AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
 
     TrialDataArm daanEtAlFluoxArm = new TrialDataArm(daanEtAlFluoxArmUri, "daanEtAlFluoxArm", daanEtAlFluoxInstance,
-            daanEtAlFluoxMeasurement, simpleSemanticFluoxIntervention);
+            simpleSemanticFluoxIntervention);
 
     URI daanEtAlSertraInstance = URI.create("daanEtAlSertraInstance");
     URI daanEtAlSertraArmUri = URI.create("daanEtAlSertraArm");
@@ -282,13 +279,13 @@ public class ProblemServiceTest {
     AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
 
     TrialDataArm daanEtAlSertraArm = new TrialDataArm(daanEtAlSertraArmUri, "daanEtAlSertraArm", daanEtAlSertraInstance,
-            daanEtAlSertraMeasurement, simpleSemanticSertraIntervention);
+            simpleSemanticSertraIntervention);
 
     URI daanEtAlExcludedArmUri = URI.create("excludeme");
     Measurement daanEtAlExcludedMeasurement = new Measurement(daanEtAlUri, variableUri, daanEtAlExcludedArmUri,
             daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
     TrialDataArm excludedArm = new TrialDataArm(daanEtAlSertraArmUri, "excludedArm", daanEtAlSertraInstance,
-            daanEtAlExcludedMeasurement, simpleSemanticSertraIntervention);
+            simpleSemanticSertraIntervention);
 
     // exclude arms
     Set<ArmExclusion> excludedArms = new HashSet<>(Arrays.asList(new ArmExclusion(networkMetaAnalysis.getId(), daanEtAlExcludedArmUri)));
@@ -340,7 +337,7 @@ public class ProblemServiceTest {
 
 
   @Test
-  public void testGetMetaBRProblem() throws ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, InvalidModelException, ReadValueException {
+  public void testGetMetaBRProblem() throws ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, InvalidModelException, ReadValueException, InvalidTypeForDoseCheckException {
 
     String version = "version 1";
     Integer projectId = 1;
@@ -379,8 +376,8 @@ public class ProblemServiceTest {
             .build();
     List<Model> models = Arrays.asList(model1, model2);
 
-    Outcome outcome1 = new Outcome(21, projectId, "ham", "", new SemanticVariable("outUri1", "hamS"));
-    Outcome outcome2 = new Outcome(22, projectId, "headache", "", new SemanticVariable("outUri2", "headacheS"));
+    Outcome outcome1 = new Outcome(21, projectId, "ham", "", new SemanticVariable(URI.create("outUri1"), "hamS"));
+    Outcome outcome2 = new Outcome(22, projectId, "headache", "", new SemanticVariable(URI.create("outUri2"), "headacheS"));
     List<Outcome> outcomes = Arrays.asList(outcome1, outcome2);
 
 

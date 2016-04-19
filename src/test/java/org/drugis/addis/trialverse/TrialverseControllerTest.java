@@ -8,8 +8,11 @@ import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
+import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.drugis.addis.util.WebConstants;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -133,9 +136,9 @@ public class TrialverseControllerTest {
  }
 
   @Test
-  public void testQuerySemanticOutcomes() throws Exception {
+  public void testQuerySemanticOutcomes() throws Exception, ReadValueException {
     String versionUid = "current";
-    SemanticVariable testOutCome = new SemanticVariable("http://test/com", "test label");
+    SemanticVariable testOutCome = new SemanticVariable(URI.create("http://test/com"), "test label");
     when(triplestoreService.getOutcomes(versionedUuid, versionUid)).thenReturn(Collections.singletonList(testOutCome));
 
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/outcomes").param("version", versionUid))
@@ -182,7 +185,7 @@ public class TrialverseControllerTest {
   public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Throwable {
     List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy(new URI("abc"), "study name", Collections.emptyList()));
     List<URI> interventionUris = Arrays.asList(URI.create("uri1"), URI.create("uri2"));
-    String outcomeUri = "http://someoutcomethisis/12345/abc";
+    URI outcomeUri = URI.create("http://someoutcomethisis/12345/abc");
     String versionUid = "current";
     when(triplestoreService.getTrialData(versionedUuid, versionUid, outcomeUri, interventionUris, Collections.emptyList())).thenReturn(trialDataStudies);
 
@@ -198,7 +201,7 @@ public class TrialverseControllerTest {
   @Test
   public void testGetTrialDataWithOutcomeAndNoInterventionsInQuery() throws Throwable {
     List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy(new URI("abc"), "study name", Collections.emptyList()));
-    String outcomeUri = "http://someoutcomethisis/12345/abc";
+    URI outcomeUri = URI.create("http://someoutcomethisis/12345/abc");
     String versionUid = "current";
     when(triplestoreService.getTrialData(versionedUuid, versionUid, outcomeUri, Collections.emptyList(), Collections.emptyList())).thenReturn(trialDataStudies);
 

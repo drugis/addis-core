@@ -72,9 +72,9 @@ public class SingleStudyBenefitRiskAnalysisRepositoryImpl implements org.drugis.
     List<AbstractIntervention> interventions = interventionRepository.query(analysis.getProjectId());
     Map<Integer, AbstractIntervention> interventionMap = interventions
             .stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
-    if (isNotEmpty(analysis.getSelectedInterventions())) {
+    if (isNotEmpty(analysis.getInterventionInclusions())) {
       // do not allow selection of interventions that are not in the project
-      for (InterventionInclusion intervention : analysis.getSelectedInterventions()) {
+      for (InterventionInclusion intervention : analysis.getInterventionInclusions()) {
         if (interventionMap.get(intervention.getInterventionId()) == null) {
           throw new ResourceDoesNotExistException();
         }

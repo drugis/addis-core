@@ -3,7 +3,7 @@ package org.drugis.addis.interventions.service;
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.service.impl.InterventionServiceImpl;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
-import org.drugis.addis.trialverse.model.*;
+import org.drugis.addis.trialverse.model.trialdata.*;
 import org.junit.Test;
 
 import java.net.URI;
@@ -37,7 +37,7 @@ public class InterventionServiceTest {
     URI drugConceptUri = URI.create("drugConceptUri");
     AbstractIntervention intervention = new SimpleIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label");
     AbstractSemanticIntervention semanticIntervention = new SimpleSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
+    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), semanticIntervention);
 
     assertTrue(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }
@@ -46,7 +46,7 @@ public class InterventionServiceTest {
   public void isUNMatchedSimpleIntervention() throws Exception, InvalidTypeForDoseCheckException {
     AbstractSemanticIntervention semanticIntervention = new SimpleSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri);
     Measurement measurement = new Measurement(URI.create("studyUri"), URI.create("variableUri"), URI.create("armUri"), sampleSize, rate, std, mean);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
+    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), semanticIntervention);
     URI otherdrugConceptUri = URI.create("otherDrugConceptUri");
     AbstractIntervention intervention = new SimpleIntervention(interventionId, projectId, "intervention name", "moti", otherdrugConceptUri, "sem label");
 
@@ -65,7 +65,7 @@ public class InterventionServiceTest {
     AbstractIntervention intervention = new FixedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label", doseConstraint);
     Dose fixedMatchingDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     AbstractSemanticIntervention semanticIntervention = new FixedSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri, fixedMatchingDose);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
+    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), semanticIntervention);
 
     assertTrue(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }
@@ -82,7 +82,7 @@ public class InterventionServiceTest {
     AbstractIntervention intervention = new FixedDoseIntervention(interventionId, projectId, "intervention name", "moti", drugConceptUri, "sem label", doseConstraint);
     Dose fixedMatchingDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     AbstractSemanticIntervention semanticIntervention = new FixedSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri, fixedMatchingDose);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
+    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), semanticIntervention);
 
     assertFalse(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }
@@ -101,7 +101,7 @@ public class InterventionServiceTest {
     Dose minDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     Dose maxDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     AbstractSemanticIntervention semanticIntervention = new TitratedSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri, minDose, maxDose);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
+    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), semanticIntervention);
 
     assertTrue(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }
@@ -120,7 +120,7 @@ public class InterventionServiceTest {
     Dose minDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     Dose maxDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     AbstractSemanticIntervention semanticIntervention = new TitratedSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri, minDose, maxDose);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
+    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), semanticIntervention);
 
     assertFalse(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }
@@ -139,7 +139,7 @@ public class InterventionServiceTest {
     Dose minDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     Dose maxDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     AbstractSemanticIntervention semanticIntervention = new TitratedSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri, minDose, maxDose);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
+    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), semanticIntervention);
 
     assertTrue(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }
@@ -158,7 +158,7 @@ public class InterventionServiceTest {
     Dose minDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     Dose maxDose = new Dose(doseValue, dosePeriod, unitConcept, unitLabel, unitMultiplier);
     AbstractSemanticIntervention semanticIntervention = new TitratedSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri, minDose, maxDose);
-    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), measurement, semanticIntervention);
+    TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), semanticIntervention);
 
     assertFalse(interventionService.isMatched(intervention,trialdataArm.getSemanticIntervention()));
   }

@@ -23,6 +23,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,7 +74,7 @@ public class MetaBenefitRiskAnalysisRepositoryImpl implements MetaBenefitRiskAna
     Collection<AbstractIntervention> interventions = interventionRepository.query(metaBenefitRiskAnalysis.getProjectId());
     List<InterventionInclusion> interventionInclusions = interventions.stream().map(i -> new InterventionInclusion(metaKey, i.getId())).collect(Collectors.toList());
     interventionInclusions.stream().forEach(ii -> em.persist(ii));
-    metaBenefitRiskAnalysis.setIncludedAlternatives(interventionInclusions);
+    metaBenefitRiskAnalysis.updateIncludedInterventions(new HashSet<>(interventionInclusions));
 
     em.flush();
 

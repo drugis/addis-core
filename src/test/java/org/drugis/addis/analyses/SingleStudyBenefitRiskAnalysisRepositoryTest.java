@@ -79,8 +79,8 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
     List<Outcome> selectedOutcomes = Arrays.asList(em.find(Outcome.class, outcomeId));
     InterventionInclusion interventionInclusion = new InterventionInclusion(analysisId, interventionId);
     em.persist(interventionInclusion);
-    List<InterventionInclusion> selectedInterventions = Arrays.asList(interventionInclusion);
-    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "analysis 1", selectedOutcomes, selectedInterventions);
+    List<InterventionInclusion> interventionInclusions = Arrays.asList(interventionInclusion);
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "analysis 1", selectedOutcomes, interventionInclusions);
     SingleStudyBenefitRiskAnalysis updatedAnalysis = singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
     SingleStudyBenefitRiskAnalysis result = em.find(SingleStudyBenefitRiskAnalysis.class, analysisId);
     assertEquals(analysis.getProjectId(), updatedAnalysis.getProjectId());
@@ -97,12 +97,12 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
     Integer interventionId = -1;
     InterventionInclusion inc = new InterventionInclusion(analysisId, interventionId);
     em.persist(inc);
-    List<InterventionInclusion> selectedInterventions = Arrays.asList(inc);
+    List<InterventionInclusion> interventionInclusions = Arrays.asList(inc);
     SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", Collections.emptyList(),
-            selectedInterventions);
+            interventionInclusions);
     em.merge(analysis);
     SingleStudyBenefitRiskAnalysis result = em.find(SingleStudyBenefitRiskAnalysis.class, analysisId);
-    assertEquals(analysis.getSelectedInterventions(), analysis.getSelectedInterventions());
+    assertEquals(analysis.getInterventionInclusions(), analysis.getInterventionInclusions());
     assertEquals(analysis, result);
   }
 
@@ -152,8 +152,8 @@ public class SingleStudyBenefitRiskAnalysisRepositoryTest {
     int analysisId = -3;
     int projectId = 2;
     int interventionId = -2;
-    List<InterventionInclusion> selectedInterventions = Arrays.asList(new InterventionInclusion(analysisId, interventionId));
-    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", Collections.EMPTY_LIST, selectedInterventions);
+    List<InterventionInclusion> interventionInclusions = Arrays.asList(new InterventionInclusion(analysisId, interventionId));
+    SingleStudyBenefitRiskAnalysis analysis = new SingleStudyBenefitRiskAnalysis(analysisId, projectId, "new name", Collections.EMPTY_LIST, interventionInclusions);
     singleStudyBenefitRiskAnalysisRepository.update(user, analysis);
   }
 

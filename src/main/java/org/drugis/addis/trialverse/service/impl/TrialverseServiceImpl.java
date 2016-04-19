@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import org.drugis.addis.trialverse.model.TrialDataStudy;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class TrialverseServiceImpl implements TrialverseService {
   TriplestoreService triplestoreService;
 
   @Override
-  public List<ObjectNode> getTrialData(String namespaceUId, String version, String semanticOutcomeUri, List<URI> alternativeUris, List<String> covariateKeys) throws ReadValueException {
+  public List<ObjectNode> getTrialData(String namespaceUId, String version, URI semanticOutcomeUri, List<URI> alternativeUris, List<String> covariateKeys) throws ReadValueException {
     List<TrialDataStudy> trialData = triplestoreService.getTrialData(namespaceUId, version, semanticOutcomeUri, alternativeUris, covariateKeys);
     return objectsToNodes(trialData);
   

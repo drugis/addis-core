@@ -7,9 +7,9 @@ import java.net.URI;
  */
 public abstract class AbstractMeasurementEntry {
   private URI alternativeUri;
-  private String criterionUri;
+  private URI criterionUri;
 
-  protected AbstractMeasurementEntry(URI alternativeUri, String criterionUri) {
+  protected AbstractMeasurementEntry(URI alternativeUri, URI criterionUri) {
     this.alternativeUri = alternativeUri;
     this.criterionUri = criterionUri;
   }
@@ -18,7 +18,7 @@ public abstract class AbstractMeasurementEntry {
     return this.alternativeUri;
   }
 
-  public String getCriterionUri() {
+  public URI getCriterionUri() {
     return this.criterionUri;
   }
 

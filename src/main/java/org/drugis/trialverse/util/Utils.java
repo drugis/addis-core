@@ -36,7 +36,6 @@ public class Utils {
     ObjectMapper mapper = new ObjectMapper();
     Map<String, Double> result = mapper.convertValue(node, Map.class);
     return result;
-//    return result.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> Double.parseDouble(e.getValue())));
   }
 
  public static <T> void updateSet(Set<T> oldSet, Set<T> newSet){

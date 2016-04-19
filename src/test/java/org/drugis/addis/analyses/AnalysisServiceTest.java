@@ -22,7 +22,9 @@ import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
-import org.drugis.addis.trialverse.model.*;
+import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
+import org.drugis.addis.trialverse.model.SemanticVariable;
+import org.drugis.addis.trialverse.model.trialdata.*;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
@@ -181,7 +183,7 @@ public class AnalysisServiceTest {
     Integer projectId = 1;
     Integer metabenefitRiskAnalysisId = 1;
     Integer outcomeId = 1;
-    Collection<Outcome> outcomes = Arrays.asList(new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable("uri", "label")));
+    Collection<Outcome> outcomes = Arrays.asList(new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable(URI.create("uri"), "label")));
     List<NetworkMetaAnalysis> analyses = Arrays.asList(new NetworkMetaAnalysis(analysisId, "title"));
 
     when(outcomeRepository.query(projectId)).thenReturn(outcomes);
@@ -199,7 +201,7 @@ public class AnalysisServiceTest {
     Integer outcomeId = 1;
     Integer modelId1 = 1;
     Integer modelId2 = 2;
-    Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable("uri", "label"));
+    Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable(URI.create("uri"), "label"));
     Collection<Outcome> outcomes = Arrays.asList(outcome);
     String title1 = "bbbbb";
     String title2 = "aaaaa";
@@ -225,7 +227,7 @@ public class AnalysisServiceTest {
     Integer outcomeId = 1;
     Integer modelId1 = 1;
     Integer modelId2 = 2;
-    Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable("uri", "label"));
+    Outcome outcome = new Outcome(outcomeId, 1, "name", "moti", new SemanticVariable(URI.create("uri"), "label"));
     Collection<Outcome> outcomes = Arrays.asList(outcome);
     String title1 = "bbbbb";
     String title2 = "aaaaa";
@@ -254,7 +256,7 @@ public class AnalysisServiceTest {
     InterventionInclusion interventionInclusion1 = new InterventionInclusion(analysisId, includedInterventionId);
     List<InterventionInclusion> includedInterventions = Collections.singletonList(interventionInclusion1);
     List<CovariateInclusion> includedCovariates = Collections.emptyList();
-    Outcome outcome = new Outcome(1, projectId, "outcome", null, new SemanticVariable("http://test/uri", "semantic outcome label"));
+    Outcome outcome = new Outcome(1, projectId, "outcome", null, new SemanticVariable(URI.create("http://test/uri"), "semantic outcome label"));
     AbstractAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(1, projectId, "title", excludedArms, includedInterventions, includedCovariates, outcome);
     String version = "version";
     Account owner = mock(Account.class);
@@ -280,8 +282,8 @@ public class AnalysisServiceTest {
     Dose maxDose1 = new Dose(1.0, "P1D", URI.create("unitConceptUri"), "milligram", 0.001);
     AbstractSemanticIntervention arm1Intervention = new TitratedSemanticIntervention(drugInstance1, drugConcept1, minDose1, maxDose1);
     AbstractSemanticIntervention arm2Intervention = new SimpleSemanticIntervention(drugInstance2, drugConcept2);
-    TrialDataArm arm1 = new TrialDataArm(URI.create("foo/armuri1"), "armname1", drugInstance1, arm1Measurement, arm1Intervention);
-    TrialDataArm arm2 = new TrialDataArm(URI.create("foo/armuri2"), "armname2", drugInstance2, arm2Measurement, arm2Intervention);
+    TrialDataArm arm1 = new TrialDataArm(URI.create("foo/armuri1"), "armname1", drugInstance1, arm1Intervention);
+    TrialDataArm arm2 = new TrialDataArm(URI.create("foo/armuri2"), "armname2", drugInstance2, arm2Intervention);
     List<TrialDataArm> study1Arms = Arrays.asList(arm1, arm2);
     TrialDataStudy study1 = new TrialDataStudy(URI.create("studyUri"), "name", study1Arms);
     List<TrialDataStudy> trialData = Arrays.asList(study1);

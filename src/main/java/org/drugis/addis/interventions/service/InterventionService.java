@@ -2,7 +2,7 @@ package org.drugis.addis.interventions.service;
 
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
-import org.drugis.addis.trialverse.model.AbstractSemanticIntervention;
+import org.drugis.addis.trialverse.model.trialdata.AbstractSemanticIntervention;
 
 /**
  * Created by connor on 12-4-16.

@@ -51,7 +51,7 @@
               <div class="row" ng-show="outcomeWithAnalyses.selectedAnalysis.id === networkMetaAnalysis.id && networkMetaAnalysis.models.length">
                 <div class="indent-one columns large-4">
                   <select ng-model="outcomeWithAnalyses.selectedModel" class="model-select"
-                  ng-change="updateModelSelection(outcomeWithAnalyses, networkMetaAnalysis.includedInterventions)"
+                  ng-change="updateModelSelection(outcomeWithAnalyses, networkMetaAnalysis.interventionInclusions)"
                   ng-options="model.title  group by model.group for model in networkMetaAnalysis.models | orderBy:['-group','+title']">
                   </select>
                   <div class="alert" ng-show="outcomeWithAnalyses.selectedModel.missingAlternatives.length">

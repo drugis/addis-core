@@ -1,6 +1,8 @@
-package org.drugis.addis.trialverse.model;
+package org.drugis.addis.trialverse.model.trialdata;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by connor on 9-5-14.
@@ -9,20 +11,18 @@ public class TrialDataArm {
   private URI uri;
   private String name;
   private URI drugInstance;
-  private Measurement measurement;
+  private List<Measurement> measurements = new ArrayList<>();
   private AbstractSemanticIntervention semanticIntervention;
 
   private Integer matchedProjectInterventionId;
 
-
   public TrialDataArm() {
   }
 
-  public TrialDataArm(URI uri, String name, URI drugInstance, Measurement measurement, AbstractSemanticIntervention semanticIntervention) {
+  public TrialDataArm(URI uri, String name, URI drugInstance, AbstractSemanticIntervention semanticIntervention) {
     this.uri = uri;
     this.name = name;
     this.drugInstance = drugInstance;
-    this.measurement = measurement;
     this.semanticIntervention = semanticIntervention;
   }
 
@@ -38,8 +38,12 @@ public class TrialDataArm {
     return drugInstance;
   }
 
-  public Measurement getMeasurement() {
-    return measurement;
+  public List<Measurement> getMeasurements() {
+    return measurements;
+  }
+
+  public void addMeasurement(Measurement measurement) {
+    this.measurements.add(measurement);
   }
 
   public AbstractSemanticIntervention getSemanticIntervention() {
@@ -59,14 +63,14 @@ public class TrialDataArm {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    TrialDataArm that = (TrialDataArm) o;
+    TrialDataArm arm = (TrialDataArm) o;
 
-    if (!uri.equals(that.uri)) return false;
-    if (!name.equals(that.name)) return false;
-    if (!drugInstance.equals(that.drugInstance)) return false;
-    if (!measurement.equals(that.measurement)) return false;
-    if (!semanticIntervention.equals(that.semanticIntervention)) return false;
-    return matchedProjectInterventionId != null ? matchedProjectInterventionId.equals(that.matchedProjectInterventionId) : that.matchedProjectInterventionId == null;
+    if (!uri.equals(arm.uri)) return false;
+    if (!name.equals(arm.name)) return false;
+    if (!drugInstance.equals(arm.drugInstance)) return false;
+    if (!measurements.equals(arm.measurements)) return false;
+    if (!semanticIntervention.equals(arm.semanticIntervention)) return false;
+    return matchedProjectInterventionId.equals(arm.matchedProjectInterventionId);
 
   }
 
@@ -75,9 +79,9 @@ public class TrialDataArm {
     int result = uri.hashCode();
     result = 31 * result + name.hashCode();
     result = 31 * result + drugInstance.hashCode();
-    result = 31 * result + measurement.hashCode();
+    result = 31 * result + measurements.hashCode();
     result = 31 * result + semanticIntervention.hashCode();
-    result = 31 * result + (matchedProjectInterventionId != null ? matchedProjectInterventionId.hashCode() : 0);
+    result = 31 * result + matchedProjectInterventionId.hashCode();
     return result;
   }
 }

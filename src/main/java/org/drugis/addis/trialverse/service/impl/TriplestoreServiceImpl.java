@@ -12,6 +12,9 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.*;
+import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
+import org.drugis.addis.trialverse.model.trialdata.CovariateStudyValue;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.util.WebConstants;
@@ -144,26 +147,26 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
 
   @Override
-  public List<SemanticVariable> getOutcomes(String namespaceUid, String versionUri) {
+  public List<SemanticVariable> getOutcomes(String namespaceUid, String versionUri) throws ReadValueException {
     String query = StringUtils.replace(OUTCOME_QUERY, "$namespaceUid", namespaceUid);
     return getSemanticVariables(namespaceUid, versionUri, query, "outcome");
   }
 
   @Override
-  public List<SemanticVariable> getPopulationCharacteristics(String namespaceUid, String versionUri) {
+  public List<SemanticVariable> getPopulationCharacteristics(String namespaceUid, String versionUri) throws ReadValueException {
     String query = StringUtils.replace(POPCHAR_QUERY, "$namespaceUid", namespaceUid);
     return getSemanticVariables(namespaceUid, versionUri, query, "populationCharacteristic");
   }
 
-  private List<SemanticVariable> getSemanticVariables(String namespaceUid, String versionUri, String query, String variableType) {
+  private List<SemanticVariable> getSemanticVariables(String namespaceUid, String versionUri, String query, String variableType) throws ReadValueException {
     List<SemanticVariable> outcomes = new ArrayList<>();
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, versionUri);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
     for (Object binding : bindings) {
-      String uid = JsonPath.read(binding, "$."+ variableType +".value");
-      uid = subStringAfterLastSymbol(uid, '/');
-      String label = JsonPath.read(binding, "$.label.value");
-      outcomes.add(new SemanticVariable(uid, label));
+      JSONObject row = (JSONObject) binding;
+      URI uri = readValue(row, variableType);
+      String label = readValue(row, "label");
+      outcomes.add(new SemanticVariable(uri, label));
     }
     return outcomes;
   }
@@ -491,23 +494,23 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return result.substring(0, result.lastIndexOf("UNION"));
   }
 
-  private String buildOutcomeUnionString(List<String> outcomeUids) {
+  private String buildOutcomeUnionString(List<URI> uris) {
     String result = "";
-    for (String outcomeUid : outcomeUids) {
-      result += " { ?outcomeInstance ontology:of_variable [ owl:sameAs concept:" + outcomeUid + " ] } UNION \n";
+    for (URI outcomeUri : uris) {
+      result += " { ?outcomeInstance ontology:of_variable [ owl:sameAs <" + outcomeUri + "> ] } UNION \n";
     }
     return result.substring(0, result.lastIndexOf("UNION"));
   }
 
   @Override
-  public List<TrialDataStudy> getTrialData(String namespaceUid, String version, String outcomeUid,
+  public List<TrialDataStudy> getTrialData(String namespaceUid, String version, URI outcomeUri,
                                            List<URI> interventionUris, List<String> covariateKeys) throws ReadValueException {
     if(interventionUris.isEmpty()) {
       return Collections.emptyList();
     }
     String interventionUnion = buildInterventionUnionString(interventionUris);
     String query = TRIAL_DATA
-            .replace("$outcomeUid", outcomeUid)
+            .replace("$outcomeUri", outcomeUri.toString())
             .replace("$interventionUnion", interventionUnion);
 
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
@@ -609,24 +612,23 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
 
   @Override
-  public List<SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String namespaceUid, String studyUid, String version, List<String> outcomeUids, List<URI> interventionUids) throws ReadValueException {
+  public List<TrialDataStudy> getSingleStudyMeasurements(String namespaceUid, String studyUid, String version, List<URI> outcomeUris, List<URI> interventionUids) throws ReadValueException {
 
     if(interventionUids.isEmpty()) {
       return Collections.emptyList();
     }
     String query = StringUtils.replace(SINGLE_STUDY_MEASUREMENTS, "$studyUid", studyUid);
-    query = StringUtils.replace(query, "$outcomeUnionString", buildOutcomeUnionString(outcomeUids));
+    query = StringUtils.replace(query, "$outcomeUnionString", buildOutcomeUnionString(outcomeUris));
     String interventionUn = buildInterventionUnionString(interventionUids);
     query = StringUtils.replace(query, "$interventionUnionString", interventionUn);
     logger.debug(query);
 
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
-    List<SingleStudyBenefitRiskMeasurementRow> measurementObjects = new ArrayList<>();
-    for (Object binding : bindings) {
-      measurementObjects.add(queryResultMappingService.mapSingleStudyDataRow((JSONObject) binding));
-    }
-    return measurementObjects;
+
+    Map<URI, TrialDataStudy> trialDataStudyMap = queryResultMappingService.mapResultRowToTrialDataStudy(bindings);
+
+    return new ArrayList<>(trialDataStudyMap.values());
   }
 
   private ResponseEntity<String> queryTripleStoreHead(String datasetUri, String query) {
@@ -662,93 +664,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     headers.put(ACCEPT_HEADER, Collections.singletonList(APPLICATION_SPARQL_RESULTS_JSON));
 
     return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, new HttpEntity<>(headers), String.class);
-  }
-
-
-
-
-  public static class SingleStudyBenefitRiskMeasurementRow {
-    private String outcomeUid;
-    private String outcomeLabel;
-    private URI alternativeUri;
-    private String alternativeLabel;
-    private Double mean;
-    private Double stdDev;
-    private Integer rate;
-    private Integer sampleSize;
-
-    public SingleStudyBenefitRiskMeasurementRow(String outcomeUid, String outcomeLabel, URI alternativeUri, String alternativeLabel, Double mean, Double stdDev, Integer rate, Integer sampleSize) {
-      this.outcomeUid = outcomeUid;
-      this.outcomeLabel = outcomeLabel;
-      this.alternativeUri = alternativeUri;
-      this.alternativeLabel = alternativeLabel;
-      this.mean = mean;
-      this.stdDev = stdDev;
-      this.rate = rate;
-      this.sampleSize = sampleSize;
-    }
-
-    public String getOutcomeUid() {
-      return outcomeUid;
-    }
-
-    public String getOutcomeLabel() {
-      return outcomeLabel;
-    }
-
-    public URI getAlternativeUri() {
-      return alternativeUri;
-    }
-
-    public String getAlternativeLabel() {
-      return alternativeLabel;
-    }
-
-    public Double getMean() {
-      return mean;
-    }
-
-    public Double getStdDev() {
-      return stdDev;
-    }
-
-    public Integer getRate() {
-      return rate;
-    }
-
-    public Integer getSampleSize() {
-      return sampleSize;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof SingleStudyBenefitRiskMeasurementRow)) return false;
-
-      SingleStudyBenefitRiskMeasurementRow that = (SingleStudyBenefitRiskMeasurementRow) o;
-
-      if (!alternativeLabel.equals(that.alternativeLabel)) return false;
-      if (!alternativeUri.equals(that.alternativeUri)) return false;
-      if (mean != null ? !mean.equals(that.mean) : that.mean != null) return false;
-      if (!outcomeLabel.equals(that.outcomeLabel)) return false;
-      if (!outcomeUid.equals(that.outcomeUid)) return false;
-      if (rate != null ? !rate.equals(that.rate) : that.rate != null) return false;
-      return sampleSize.equals(that.sampleSize) && !(stdDev != null ? !stdDev.equals(that.stdDev) : that.stdDev != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-      int result = outcomeUid.hashCode();
-      result = 31 * result + outcomeLabel.hashCode();
-      result = 31 * result + alternativeUri.hashCode();
-      result = 31 * result + alternativeLabel.hashCode();
-      result = 31 * result + (mean != null ? mean.hashCode() : 0);
-      result = 31 * result + (stdDev != null ? stdDev.hashCode() : 0);
-      result = 31 * result + (rate != null ? rate.hashCode() : 0);
-      result = 31 * result + sampleSize.hashCode();
-      return result;
-    }
   }
 
 }

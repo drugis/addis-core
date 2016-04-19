@@ -2,6 +2,7 @@ package org.drugis.addis.problems;
 
 import net.minidev.json.JSONObject;
 import org.drugis.addis.config.TestConfig;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.problems.model.*;
 import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.*;
@@ -53,12 +54,12 @@ public class ProblemControllerTest {
   }
 
   @Test
-  public void testGetSingleStudybenefitRiskProblem() throws Exception, ReadValueException {
+  public void testGetSingleStudybenefitRiskProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
     RatePerformance ratePerformance = new RatePerformance(new RatePerformanceParameters(10, 50));
     URI alternativeUri1 = URI.create("Alturi1");
     URI alternativeUri2 = URI.create("Alturi2");
-    String criterionUri1 = "Crit uri 1";
-    String criterionUri2 = "Crit uri 2";
+    URI criterionUri1 = URI.create("Crit uri 1");
+    URI criterionUri2 = URI.create("Crit uri 2");
     AbstractMeasurementEntry rateMeasurementEntry = new RateMeasurementEntry(alternativeUri1, criterionUri1, ratePerformance);
     ContinuousPerformance continuousPerformance = new ContinuousPerformance(new ContinuousPerformanceParameters(7.5, 2.1));
     AbstractMeasurementEntry continuousMeasurementEntry = new ContinuousMeasurementEntry(alternativeUri2, criterionUri2, continuousPerformance);
@@ -79,7 +80,7 @@ public class ProblemControllerTest {
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisProblem() throws Exception, ReadValueException {
+  public void testGetNetworkMetaAnalysisProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
     int treatmentId1 = 1;
     int treatmentId2 = 2;
     AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10, 5);
@@ -104,7 +105,7 @@ public class ProblemControllerTest {
   }
 
   @Test
-  public void testGetNetworkMetaAnalysisNoCovariates() throws Exception, ReadValueException {
+  public void testGetNetworkMetaAnalysisNoCovariates() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
     int treatmentId1 = 1;
     int treatmentId2 = 2;
     AbstractNetworkMetaAnalysisProblemEntry entry1 = new RateNetworkMetaAnalysisProblemEntry("study", treatmentId1, 10, 5);

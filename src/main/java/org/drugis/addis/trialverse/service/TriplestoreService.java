@@ -7,8 +7,10 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
+import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
+import org.drugis.addis.trialverse.model.trialdata.CovariateStudyValue;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
-import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -41,9 +43,9 @@ public interface TriplestoreService {
 
   Namespace getNamespaceVersioned(VersionedUuidAndOwner datasetUri, String versionUri);
 
-  List<SemanticVariable> getOutcomes(String namespaceUid, String version);
+  List<SemanticVariable> getOutcomes(String namespaceUid, String version) throws ReadValueException;
 
-  List<SemanticVariable> getPopulationCharacteristics(String versionedUuid, String version);
+  List<SemanticVariable> getPopulationCharacteristics(String versionedUuid, String version) throws ReadValueException;
 
   List<SemanticInterventionUriAndName> getInterventions(String namespaceUid, String version);
 
@@ -55,9 +57,9 @@ public interface TriplestoreService {
 
   JSONArray getStudyEpochs(String namespaceUid, String studyUid);
 
-  List<TrialDataStudy> getTrialData(String namespaceUid, String version, String outcomeUri, List<URI> interventionUris, List<String> covariateKeys) throws ReadValueException;
+  List<TrialDataStudy> getTrialData(String namespaceUid, String version, URI outcomeUri, List<URI> interventionUris, List<String> covariateKeys) throws ReadValueException;
 
-  List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> getSingleStudyMeasurements(String namespaceUid, String studyUid, String version, List<String> outcomeUids, List<URI> interventionUids) throws ReadValueException;
+  List<TrialDataStudy> getSingleStudyMeasurements(String namespaceUid, String studyUid, String version, List<URI> outcomeUris, List<URI> interventionUids) throws ReadValueException;
 
   List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid);
 

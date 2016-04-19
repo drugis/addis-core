@@ -11,5 +11,5 @@ import java.util.List;
  */
 public interface TrialverseService {
 
-  List<ObjectNode> getTrialData(String namespaceUId, String version, String semanticOutcomeUri, List<URI> alternativeUris, List<String> covariateKeys) throws ReadValueException;
+  List<ObjectNode> getTrialData(String namespaceUId, String version, URI semanticOutcomeUri, List<URI> alternativeUris, List<String> covariateKeys) throws ReadValueException;
 }

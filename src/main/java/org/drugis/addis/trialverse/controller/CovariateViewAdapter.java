@@ -25,8 +25,8 @@ public class CovariateViewAdapter {
   }
 
   public CovariateViewAdapter(SemanticVariable populationCharacteristic) {
-    this.key=populationCharacteristic.getUri();
-    this.label=populationCharacteristic.getLabel();
+    this.key = populationCharacteristic.getUri().toString();
+    this.label = populationCharacteristic.getLabel();
     this.typeKey = CovariateOptionType.POPULATION_CHARACTERISTIC.toString();
     this.typeLabel = CovariateOptionType.POPULATION_CHARACTERISTIC.getLabel();
   }

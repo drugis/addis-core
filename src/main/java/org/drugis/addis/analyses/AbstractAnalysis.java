@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import org.drugis.trialverse.util.Utils;
 
 import javax.persistence.*;
+import java.util.*;
 
 /**
  * Created by connor on 6-5-14.
@@ -21,8 +23,13 @@ public abstract class AbstractAnalysis {
   @SequenceGenerator(name = "analysis_sequence", sequenceName = "shared_analysis_id_seq", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "analysis_sequence")
   protected Integer id;
+
   protected Integer projectId;
+
   protected String title;
+
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysisId", orphanRemoval = true)
+  protected Set<InterventionInclusion> interventionInclusions = new HashSet<>();
 
   public Integer getId() {
     return id;
@@ -34,5 +41,13 @@ public abstract class AbstractAnalysis {
 
   public String getTitle() {
     return title;
+  }
+
+  public List<InterventionInclusion> getInterventionInclusions() {
+    return interventionInclusions == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(new ArrayList<>(interventionInclusions));
+  }
+
+  public void updateIncludedInterventions(Set<InterventionInclusion> includedInterventions){
+    Utils.updateSet(this.interventionInclusions, includedInterventions);
   }
 }

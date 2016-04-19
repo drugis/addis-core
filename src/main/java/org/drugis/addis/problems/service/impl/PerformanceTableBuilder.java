@@ -1,7 +1,8 @@
 package org.drugis.addis.problems.service.impl;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.problems.service.model.*;
-import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
+import org.drugis.addis.trialverse.model.trialdata.Measurement;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -14,31 +15,34 @@ import java.util.List;
 @Service
 public class PerformanceTableBuilder {
 
-  public List<AbstractMeasurementEntry> build(List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementNodes) {
+  public List<AbstractMeasurementEntry> build(List<Pair<Measurement, URI>> measurementDrugInstancePair ) {
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
-    for (TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow measurementRow : measurementNodes) {
-      if (measurementRow.getRate() != null) {
-        performanceTable.add(createBetaDistributionEntry(measurementRow.getAlternativeUri(), measurementRow.getOutcomeUid(), measurementRow.getRate(), measurementRow.getSampleSize()));
-      } else if (measurementRow.getMean() != null) {
-        performanceTable.add(createNormalDistributionEntry(measurementRow.getAlternativeUri(), measurementRow.getOutcomeUid(), measurementRow.getMean(), measurementRow.getStdDev(), measurementRow.getSampleSize()));
+    for (Pair<Measurement, URI> pair: measurementDrugInstancePair) {
+      Measurement measurement = pair.getLeft();
+      URI drugInstanceUri = pair.getRight();
+      if (measurement.getRate() != null) {
+
+        performanceTable.add(createBetaDistributionEntry(drugInstanceUri, measurement.getVariableUri(), measurement.getRate(), measurement.getSampleSize()));
+      } else if (measurement.getMean() != null) {
+        performanceTable.add(createNormalDistributionEntry(drugInstanceUri, measurement.getVariableUri(), measurement.getMean(), measurement.getStdDev(), measurement.getSampleSize()));
       }
     }
     return performanceTable;
   }
 
-  private ContinuousMeasurementEntry createNormalDistributionEntry(URI alternativeUri, String criterionUid, Double mean, Double standardDeviation, Integer sampleSize) {
+  private ContinuousMeasurementEntry createNormalDistributionEntry(URI alternativeUri, URI criterionUid, Double mean, Double standardDeviation, Integer sampleSize) {
     Double sigma = standardDeviation / Math.sqrt(sampleSize);
 
     ContinuousPerformance performance = new ContinuousPerformance(new ContinuousPerformanceParameters(mean, sigma));
     return new ContinuousMeasurementEntry(alternativeUri, criterionUid, performance);
   }
 
-  private RateMeasurementEntry createBetaDistributionEntry(URI alternativeUri, String criterionUid, Integer rate, Integer sampleSize) {
+  private RateMeasurementEntry createBetaDistributionEntry(URI alternativeUri, URI criterionUri, Integer rate, Integer sampleSize) {
     int alpha = rate + 1;
     int beta = sampleSize - rate + 1;
 
     RatePerformance performance = new RatePerformance(new RatePerformanceParameters(alpha, beta));
-    return new RateMeasurementEntry(alternativeUri, criterionUid, performance);
+    return new RateMeasurementEntry(alternativeUri, criterionUri, performance);
   }
 
 }

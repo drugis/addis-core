@@ -2,10 +2,10 @@ package org.drugis.addis.interventions.service.impl;
 
 import org.drugis.addis.interventions.model.*;
 import org.drugis.addis.interventions.service.InterventionService;
-import org.drugis.addis.trialverse.model.AbstractSemanticIntervention;
-import org.drugis.addis.trialverse.model.Dose;
-import org.drugis.addis.trialverse.model.FixedSemanticIntervention;
-import org.drugis.addis.trialverse.model.TitratedSemanticIntervention;
+import org.drugis.addis.trialverse.model.trialdata.AbstractSemanticIntervention;
+import org.drugis.addis.trialverse.model.trialdata.Dose;
+import org.drugis.addis.trialverse.model.trialdata.FixedSemanticIntervention;
+import org.drugis.addis.trialverse.model.trialdata.TitratedSemanticIntervention;
 import org.springframework.stereotype.Service;
 
 /**
