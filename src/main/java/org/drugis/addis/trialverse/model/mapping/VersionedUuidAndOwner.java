@@ -1,4 +1,4 @@
-package org.drugis.addis.trialverse.model;
+package org.drugis.addis.trialverse.model.mapping;
 
 /**
  * Created by daan on 12-2-16.

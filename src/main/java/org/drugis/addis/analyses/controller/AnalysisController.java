@@ -11,12 +11,13 @@ import org.drugis.addis.analyses.service.MetaBenefitRiskAnalysisService;
 import org.drugis.addis.base.AbstractAddisCoreController;
 import org.drugis.addis.exception.MethodNotAllowedException;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.trialverse.model.TrialDataStudy;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +141,7 @@ public class AnalysisController extends AbstractAddisCoreController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}", method = RequestMethod.POST)
   @ResponseBody
-  public AbstractAnalysis update(Principal currentUser, @PathVariable Integer projectId, @RequestBody AbstractAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, ReadValueException {
+  public AbstractAnalysis update(Principal currentUser, @PathVariable Integer projectId, @RequestBody AbstractAnalysis analysis) throws MethodNotAllowedException, ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException {
     Account user = accountRepository.findAccountByUsername(currentUser.getName());
     if (user != null) {
       if (analysis instanceof SingleStudyBenefitRiskAnalysis) {

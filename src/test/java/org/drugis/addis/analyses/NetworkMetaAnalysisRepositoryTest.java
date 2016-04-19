@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -43,8 +44,8 @@ public class NetworkMetaAnalysisRepositoryTest {
     assertNotNull(analysis);
     NetworkMetaAnalysis expectedAnalysis = em.find(NetworkMetaAnalysis.class, analysis.getId());
     assertEquals(expectedAnalysis, analysis);
-    assertEquals(2, analysis.getIncludedInterventions().size());
-    assertEquals(2, expectedAnalysis.getIncludedInterventions().size());
+    assertEquals(2, analysis.getInterventionInclusions().size());
+    assertEquals(2, expectedAnalysis.getInterventionInclusions().size());
   }
 
   @Test
@@ -94,8 +95,8 @@ public class NetworkMetaAnalysisRepositoryTest {
     Integer analysisId = -6;
     NetworkMetaAnalysis analysis = em.find(NetworkMetaAnalysis.class, analysisId);
 
-    ArmExclusion newArmExclusion1 = new ArmExclusion(analysis.getId(), "-601L");
-    ArmExclusion newArmExclusion2 = new ArmExclusion(analysis.getId(), "-602L");
+    ArmExclusion newArmExclusion1 = new ArmExclusion(analysis.getId(), URI.create("-601L"));
+    ArmExclusion newArmExclusion2 = new ArmExclusion(analysis.getId(), URI.create("-602L"));
     analysis.updateArmExclusions(new HashSet<>(Arrays.asList(newArmExclusion1, newArmExclusion2)));
     int interventionId = -5;
     InterventionInclusion newInterventionInclusion = new InterventionInclusion(analysis.getId(), interventionId);
@@ -112,8 +113,8 @@ public class NetworkMetaAnalysisRepositoryTest {
     assertEquals(2, resultList.size());
     assertEquals(new Integer(1), updatedAnalysis.getExcludedArms().get(1).getId());
     assertEquals(new Integer(2), updatedAnalysis.getExcludedArms().get(0).getId());
-    assertEquals(new Integer(-5), updatedAnalysis.getIncludedInterventions().get(0).getInterventionId());
-    assertEquals(new Integer(interventionId), updatedAnalysis.getIncludedInterventions().get(0).getInterventionId());
+    assertEquals(new Integer(-5), updatedAnalysis.getInterventionInclusions().get(0).getInterventionId());
+    assertEquals(new Integer(interventionId), updatedAnalysis.getInterventionInclusions().get(0).getInterventionId());
   }
 
   @Test

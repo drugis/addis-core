@@ -10,6 +10,7 @@ import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
+import org.drugis.addis.trialverse.service.impl.ReadValueException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,13 +78,13 @@ public class CovariateOptionsControllerTest {
   }
 
   @Test
-  public void getCovariateOptionsForProject() throws Exception {
+  public void getCovariateOptionsForProject() throws Exception, ReadValueException {
     Integer projectId = 1;
     String tvUuid = "tvUuid";
     String version = "version";
     Project project = new Project(null, null, null, "uuid", version);
-    SemanticVariable semPopChar = new SemanticVariable("uri1", "label1");
-    SemanticVariable semNonPopCharVar = new SemanticVariable("uri2", "label2");
+    SemanticVariable semPopChar = new SemanticVariable(URI.create("uri1"), "label1");
+    SemanticVariable semNonPopCharVar = new SemanticVariable(URI.create("uri2"), "label2");
     Outcome popChar = new Outcome(projectId, "name1", "", semPopChar);
     Outcome otherTypeOutcome = new Outcome(projectId, "name2", "", semNonPopCharVar);
 

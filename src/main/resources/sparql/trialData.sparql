@@ -46,7 +46,7 @@ WHERE {
     ?study rdfs:label ?studyName .
     ?study ontology:has_outcome ?outcomeInstance .
     ?outcomeInstance ontology:of_variable [
-      owl:sameAs concept:$outcomeUid
+      owl:sameAs <$outcomeUri>
     ] .
     ?outcomeInstance a ?outcomeTypeUid .
     ?outcomeInstance rdfs:label ?outcomeInstanceLabel .

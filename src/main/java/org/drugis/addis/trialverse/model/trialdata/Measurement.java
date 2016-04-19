@@ -1,4 +1,4 @@
-package org.drugis.addis.trialverse.model;
+package org.drugis.addis.trialverse.model.trialdata;
 
 import java.net.URI;
 

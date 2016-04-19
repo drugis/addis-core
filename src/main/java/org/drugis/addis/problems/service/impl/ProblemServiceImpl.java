@@ -4,17 +4,19 @@ package org.drugis.addis.problems.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
+import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.covariates.Covariate;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.interventions.service.InterventionService;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
@@ -26,15 +28,14 @@ import org.drugis.addis.problems.service.ProblemService;
 import org.drugis.addis.problems.service.model.AbstractMeasurementEntry;
 import org.drugis.addis.projects.Project;
 import org.drugis.addis.projects.repository.ProjectRepository;
-import org.drugis.addis.trialverse.model.CovariateStudyValue;
-import org.drugis.addis.trialverse.model.Measurement;
-import org.drugis.addis.trialverse.model.TrialDataArm;
-import org.drugis.addis.trialverse.model.TrialDataStudy;
+import org.drugis.addis.trialverse.model.trialdata.CovariateStudyValue;
+import org.drugis.addis.trialverse.model.trialdata.Measurement;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TrialverseService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
-import org.drugis.addis.trialverse.service.impl.TriplestoreServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -89,10 +90,16 @@ public class ProblemServiceImpl implements ProblemService {
   @Inject
   private PataviTaskRepository pataviTaskRepository;
 
+  @Inject
+  private AnalysisService analysisService;
+
+  @Inject
+  private InterventionService interventionService;
+
   private ObjectMapper objectMapper = new ObjectMapper();
 
   @Override
-  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException {
+  public AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
     if (analysis instanceof SingleStudyBenefitRiskAnalysis) {
@@ -119,7 +126,7 @@ public class ProblemServiceImpl implements ProblemService {
     ArrayList<Integer> taskIds = new ArrayList<>(pataviTaskMap.keySet());
     final Map<Integer, JsonNode> resultsByTaskId = pataviTaskRepository.getResults(taskIds);
     final List<MbrOutcomeInclusion> inclusionsWithBaseline = analysis.getMbrOutcomeInclusions().stream().filter(moi -> moi.getBaseline() != null).collect(Collectors.toList());
-    final List<InterventionInclusion> inclusions = analysis.getIncludedAlternatives();
+    final List<InterventionInclusion> inclusions = analysis.getInterventionInclusions();
     final List<AbstractIntervention> interventions = interventionRepository.query(analysis.getProjectId());
     final Map<Integer, AbstractIntervention> interventionMap = interventions.stream()
             .collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
@@ -131,7 +138,7 @@ public class ProblemServiceImpl implements ProblemService {
     Map<String, CriterionEntry> criteriaWithBaseline = outcomesByName.values()
             .stream()
             .filter(o -> inclusionsWithBaseline.stream().filter(moi -> moi.getOutcomeId().equals(o.getId())).findFirst().isPresent())
-            .collect(Collectors.toMap(Outcome::getName, o -> new CriterionEntry(o.getSemanticOutcomeUri(), o.getName())));
+            .collect(Collectors.toMap(Outcome::getName, o -> new CriterionEntry(o.getSemanticOutcomeUri())));
     Map<String, AlternativeEntry> alternatives = includedAlternatives
             .stream()
             .collect(Collectors.toMap(AbstractIntervention::getName, i -> new AlternativeEntry(i.getSemanticInterventionUri(), i.getName())));
@@ -248,19 +255,15 @@ public class ProblemServiceImpl implements ProblemService {
             .mapToInt(idSelector).boxed().collect(Collectors.toList());
   }
 
-  private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws URISyntaxException, ReadValueException {
-    List<URI> alternativeUris = new ArrayList<>();
+  private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws URISyntaxException, ReadValueException, ResourceDoesNotExistException {
+
     List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
-    Map<URI, Integer> interventionIdsByUrisMap = new HashMap<>();
 
-    interventions = filterExcludedInterventions(interventions, analysis.getIncludedInterventions());
+    interventions = filterExcludedInterventions(interventions, analysis.getInterventionInclusions());
 
-    List<TreatmentEntry> treatments = new ArrayList<>();
-    for (AbstractIntervention intervention : interventions) {
-      alternativeUris.add(intervention.getSemanticInterventionUri());
-      interventionIdsByUrisMap.put(intervention.getSemanticInterventionUri(), intervention.getId());
-      treatments.add(new TreatmentEntry(intervention.getId(), intervention.getName()));
-    }
+    List<TreatmentEntry> treatments = interventions.stream()
+            .map(intervention -> new TreatmentEntry(intervention.getId(), intervention.getName()))
+            .collect(Collectors.toList());
 
     Collection<Covariate> projectCovariates = covariateRepository.findByProject(project.getId());
     Map<Integer, Covariate> definedMap = projectCovariates
@@ -270,37 +273,36 @@ public class ProblemServiceImpl implements ProblemService {
             .map(ic -> definedMap.get(ic.getCovariateId()).getDefinitionKey()).sorted()
             .collect(Collectors.toList());
 
-    String namespaceUid = mappingService.getVersionedUuid(project.getNamespaceUid());
-    List<ObjectNode> trialDataStudies = trialverseService.getTrialData(namespaceUid, project.getDatasetVersion(),
-            analysis.getOutcome().getSemanticOutcomeUri(), alternativeUris, includedCovariateKeys);
-    ObjectMapper mapper = new ObjectMapper();
-    List<TrialDataStudy> convertedTrialDataStudies = new ArrayList<>();
-    for (ObjectNode objectNode : trialDataStudies) {
-      convertedTrialDataStudies.add(mapper.convertValue(objectNode, TrialDataStudy.class));
-    }
+    List<TrialDataStudy> trialDataStudies = analysisService.buildEvidenceTable(project.getId(), analysis.getId());
 
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
 
-    for (TrialDataStudy trialDataStudy : convertedTrialDataStudies) {
-      List<TrialDataArm> filteredArms = filterUnmatchedArms(trialDataStudy, interventionIdsByUrisMap);
+    for (TrialDataStudy trialDataStudy : trialDataStudies) {
+      List<TrialDataArm> filteredArms =  trialDataStudy.getTrialDataArms()
+              .stream()
+              .filter(a -> a.getMatchedProjectInterventionId() != null)
+              .collect(Collectors.toList());
+
       filteredArms = filterExcludedArms(filteredArms, analysis);
+
       // do not include studies with fewer than two included and matched arms
       if (filteredArms.size() >= 2) {
-        for (TrialDataArm trialDataArm : filteredArms) {
-          Integer treatmentId = interventionIdsByUrisMap.get(trialDataArm.getSemanticIntervention().getDrugConcept());
-          entries.add(buildEntry(trialDataStudy.getName(), treatmentId, trialDataArm.getMeasurement()));
-        }
+        entries.addAll(filteredArms.stream()
+                .map(trialDataArm -> buildEntry(trialDataStudy.getName(),
+                        trialDataArm.getMatchedProjectInterventionId(),
+                        trialDataArm.getMeasurements().get(0)))  // nma has exactly one measurement
+                .collect(Collectors.toList()));
       }
     }
 
     // add covariate values to problem
     Map<String, Map<String, Double>> studyLevelCovariates = null;
     if (includedCovariateKeys.size() > 0) {
-      studyLevelCovariates = new HashMap<>(convertedTrialDataStudies.size());
+      studyLevelCovariates = new HashMap<>(trialDataStudies.size());
       Map<String, Covariate> covariatesByKey = projectCovariates
               .stream()
               .collect(Collectors.toMap(Covariate::getDefinitionKey, Function.identity()));
-      for (TrialDataStudy trialDataStudy : convertedTrialDataStudies) {
+      for (TrialDataStudy trialDataStudy : trialDataStudies) {
         Map<String, Double> covariateNodes = new HashMap<>();
         for (CovariateStudyValue covariateStudyValue : trialDataStudy.getCovariateValues()) {
           Covariate covariate = covariatesByKey.get(covariateStudyValue.getCovariateKey());
@@ -316,7 +318,7 @@ public class ProblemServiceImpl implements ProblemService {
   private List<TrialDataArm> filterExcludedArms(List<TrialDataArm> trialDataArms, NetworkMetaAnalysis analysis) {
     List<TrialDataArm> filteredTrialDataArms = new ArrayList<>();
     List<ArmExclusion> armExclusions = analysis.getExcludedArms();
-    List<String> armExclusionTrialverseIds = new ArrayList<>(armExclusions.size());
+    List<URI> armExclusionTrialverseIds = new ArrayList<>(armExclusions.size());
 
     for (ArmExclusion armExclusion : armExclusions) {
       armExclusionTrialverseIds.add(armExclusion.getTrialverseUid());
@@ -352,66 +354,67 @@ public class ProblemServiceImpl implements ProblemService {
       inclusionMap.put(interventionInclusion.getInterventionId(), interventionInclusion);
     }
 
-    for (AbstractIntervention intervention : interventions) {
-      if (inclusionMap.get(intervention.getId()) != null) {
-        filteredInterventions.add(intervention);
-      }
-    }
+    filteredInterventions.addAll(interventions.stream().
+            filter(intervention -> inclusionMap.get(intervention.getId()) != null)
+            .collect(Collectors.toList()));
 
     return filteredInterventions;
   }
 
-  private List<TrialDataArm> filterUnmatchedArms(TrialDataStudy study, Map<URI, Integer> interventionByIdMap) {
-    List<TrialDataArm> filteredArms = new ArrayList<>();
-
-    for (TrialDataArm arm : study.getTrialDataArms()) {
-      if (isMatched(arm, interventionByIdMap)) {
-        filteredArms.add(arm);
-      }
-    }
-
-    return filteredArms;
-  }
-
-  private boolean isMatched(TrialDataArm arm, Map<URI, Integer> interventionByIdMap) {
-    return interventionByIdMap.get(arm.getSemanticIntervention().getDrugConcept()) != null;
-  }
-
-  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, URISyntaxException, ReadValueException {
-    List<String> outcomeUids = analysis.getSelectedOutcomes().stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toList());
+  private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException {
+    List<URI> outcomeUris = analysis.getSelectedOutcomes().stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toList());
     List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
     Map<Integer, AbstractIntervention> interventionMap = interventions
             .stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
-    List<URI> alternativeUris = analysis.getSelectedInterventions()
+
+    List<URI> alternativeUris = analysis.getInterventionInclusions()
             .stream().map(intervention -> interventionMap.get(intervention.getInterventionId()).getSemanticInterventionUri())
             .collect(Collectors.toList());
+
+    Map<URI, AbstractIntervention> alternativeToInterventionMap = interventions.stream()
+            .collect(Collectors.toMap(AbstractIntervention::getSemanticInterventionUri, Function.identity()));
+
+    List<AbstractIntervention> includedInterventions = analysisService.getIncludedInterventions(analysis);
+
     String versionedUuid = mappingService.getVersionedUuid(project.getNamespaceUid());
-    List<TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow> measurementNodes =
-            triplestoreService.getSingleStudyMeasurements(versionedUuid, analysis.getStudyGraphUid(), project.getDatasetVersion(), outcomeUids, alternativeUris);
+    List<TrialDataStudy> singleStudyMeasurements = triplestoreService.getSingleStudyMeasurements(versionedUuid, analysis.getStudyGraphUid(), project.getDatasetVersion(), outcomeUris, alternativeUris);
+    TrialDataStudy trialDataStudy = singleStudyMeasurements.get(0);
 
     Map<URI, AlternativeEntry> alternatives = new HashMap<>();
-    Map<String, CriterionEntry> criteria = new HashMap<>();
-    for (TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow measurementRow : measurementNodes) {
-      alternatives.put(measurementRow.getAlternativeUri(), new AlternativeEntry(measurementRow.getAlternativeUri(), measurementRow.getAlternativeLabel()));
-      CriterionEntry criterionEntry = createCriterionEntry(measurementRow);
-      criteria.put(measurementRow.getOutcomeUid(), criterionEntry);
-    }
+    Map<URI, CriterionEntry> criteria = new HashMap<>();
+    List<Pair<Measurement, URI>> measurementDrugInstancePairs = new ArrayList<>();
+    for (TrialDataArm arm : trialDataStudy.getTrialDataArms()) {
+      List<Measurement> measurements = arm.getMeasurements();
+      URI drugInstanceUri = arm.getDrugInstance();
+      String alternativeName = alternativeToInterventionMap.get(drugInstanceUri).getName();
+      alternatives.put(drugInstanceUri, new AlternativeEntry(drugInstanceUri, alternativeName));
+      for (Measurement measurement : measurements) {
+        measurementDrugInstancePairs.add(Pair.of(measurement, drugInstanceUri));
+        CriterionEntry criterionEntry = createCriterionEntry(measurement);
+        criteria.put(measurement.getVariableUri(), criterionEntry);
+      }
 
-    List<AbstractMeasurementEntry> performanceTable = performanceTableBuilder.build(measurementNodes);
+      Optional<AbstractIntervention> matchingIncludedIntervention = analysisService.findMatchingIncludedIntervention(includedInterventions, arm);
+      if(matchingIncludedIntervention.isPresent()){
+        arm.setMatchedProjectInterventionId(matchingIncludedIntervention.get().getId());
+      }
+
+    }
+    List<AbstractMeasurementEntry> performanceTable = performanceTableBuilder.build(measurementDrugInstancePairs);
     return new SingleStudyBenefitRiskProblem(analysis.getTitle(), alternatives, criteria, performanceTable);
   }
 
-  private CriterionEntry createCriterionEntry(TriplestoreServiceImpl.SingleStudyBenefitRiskMeasurementRow measurementRow) throws EnumConstantNotPresentException {
+  private CriterionEntry createCriterionEntry(Measurement measurement) throws EnumConstantNotPresentException {
     List<Double> scale;
-    if (measurementRow.getRate() != null) { // rate measurement
+    if (measurement.getRate() != null) { // rate measurement
       scale = Arrays.asList(0.0, 1.0);
-    } else if (measurementRow.getMean() != null) { // continuous measurement
+    } else if (measurement.getMean() != null) { // continuous measurement
       scale = Arrays.asList(null, null);
     } else {
       throw new RuntimeException("Invalid measurement");
     }
     // NB: partialvaluefunctions to be filled in by MCDA component, left null here
-    return new CriterionEntry(measurementRow.getOutcomeUid(), measurementRow.getOutcomeLabel(), scale, null);
+    return new CriterionEntry(measurement.getVariableUri(), scale, null);
   }
 
 

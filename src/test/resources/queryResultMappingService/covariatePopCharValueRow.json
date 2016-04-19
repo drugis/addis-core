@@ -1,0 +1,15 @@
+{
+  "graph": {
+    "type": "uri",
+    "value": "http://its/a/uri"
+  },
+  "value": {
+    "datatype": "http:\/\/www.w3.org\/2001\/XMLSchema#double",
+    "type": "typed-literal",
+    "value": "4.000000e+01"
+  },
+  "populationCharacteristicCovariateKey": {
+    "type": "literal",
+    "value": "uuid"
+  }
+}

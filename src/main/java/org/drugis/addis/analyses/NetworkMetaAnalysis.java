@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.drugis.addis.outcomes.Outcome;
+import org.drugis.trialverse.util.Utils;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,10 +22,6 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
   @JsonProperty("excludedArms")
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysisId", orphanRemoval = true)
   private Set<ArmExclusion> excludedArms = new HashSet<>();
-
-  @JsonProperty("includedInterventions")
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysisId", orphanRemoval = true)
-  private Set<InterventionInclusion> includedInterventions = new HashSet<>();
 
   @JsonProperty("includedCovariates")
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "analysisId", orphanRemoval = true)
@@ -55,13 +52,13 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
 
   public NetworkMetaAnalysis(Integer id, Integer projectId, String title,
                              List<ArmExclusion> excludedArms,
-                             List<InterventionInclusion> includedInterventions,
+                             List<InterventionInclusion> interventionInclusions,
                              List<CovariateInclusion> includedCovariates, Outcome outcome) {
     this.id = id;
     this.projectId = projectId;
     this.title = title;
     this.excludedArms = excludedArms == null ? new HashSet<>() : new HashSet<>(excludedArms);
-    this.includedInterventions = includedInterventions == null ? new HashSet<>() : new HashSet<>(includedInterventions);
+    this.interventionInclusions = interventionInclusions == null ? new HashSet<>() : new HashSet<>(interventionInclusions);
     this.includedCovariates = includedCovariates == null ? new HashSet<>() : new HashSet<>(includedCovariates);
     this.outcome = outcome;
   }
@@ -86,11 +83,6 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
   }
 
   @JsonIgnore
-  public List<InterventionInclusion> getIncludedInterventions() {
-    return Collections.unmodifiableList(new ArrayList<>(includedInterventions));
-  }
-
-  @JsonIgnore
   public List<CovariateInclusion> getCovariateInclusions() {
     return Collections.unmodifiableList(new ArrayList<>(includedCovariates));
   }
@@ -108,26 +100,11 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
   }
 
   public void updateArmExclusions(Set<ArmExclusion> excludedArms){
-    updateSet(this.excludedArms, excludedArms);
-  }
-
-  public void updateIncludedInterventions(Set<InterventionInclusion> includedInterventions){
-    updateSet(this.includedInterventions, includedInterventions);
+    Utils.updateSet(this.excludedArms, excludedArms);
   }
 
   public void updateIncludedCovariates(Set<CovariateInclusion> includedCovariates){
-    updateSet(this.includedCovariates, includedCovariates);
-  }
-
-  private <T> void updateSet(Set<T> oldSet, Set<T> newSet){
-    Set<T> removeSet = new HashSet<>();
-    for(T oldItem : oldSet) {
-      if(!newSet.contains(oldItem)){
-        removeSet.add(oldItem);
-      }
-    }
-    oldSet.removeAll(removeSet);
-    oldSet.addAll(newSet);
+    Utils.updateSet(this.includedCovariates, includedCovariates);
   }
 
   @Override
@@ -142,7 +119,7 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
     if (!title.equals(that.title)) return false;
     if (primaryModel != null ? !primaryModel.equals(that.primaryModel) : that.primaryModel != null) return false;
     if (!excludedArms.equals(that.excludedArms)) return false;
-    if (!includedInterventions.equals(that.includedInterventions)) return false;
+    if (!interventionInclusions.equals(that.interventionInclusions)) return false;
     if (!includedCovariates.equals(that.includedCovariates)) return false;
     return outcome != null ? outcome.equals(that.outcome) : that.outcome == null;
 
@@ -155,7 +132,7 @@ public class NetworkMetaAnalysis extends AbstractAnalysis implements Serializabl
     result = 31 * result + title.hashCode();
     result = 31 * result + (primaryModel != null ? primaryModel.hashCode() : 0);
     result = 31 * result + excludedArms.hashCode();
-    result = 31 * result + includedInterventions.hashCode();
+    result = 31 * result + interventionInclusions.hashCode();
     result = 31 * result + includedCovariates.hashCode();
     result = 31 * result + (outcome != null ? outcome.hashCode() : 0);
     return result;

@@ -8,7 +8,7 @@ import java.net.URI;
 public class ContinuousMeasurementEntry extends AbstractMeasurementEntry {
   private ContinuousPerformance performance;
 
-  public ContinuousMeasurementEntry(URI alternativeUri, String criterionUri, ContinuousPerformance performance) {
+  public ContinuousMeasurementEntry(URI alternativeUri, URI criterionUri, ContinuousPerformance performance) {
     super(alternativeUri, criterionUri);
     this.performance = performance;
   }

@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.io.Serializable;
+import java.net.URI;
 
 /**
  * Created by daan on 2/20/14.
@@ -21,7 +22,7 @@ public class Outcome implements Serializable{
   private String name;
   private String motivation;
   private String semanticOutcomeLabel;
-  private String semanticOutcomeUri;
+  private URI semanticOutcomeUri;
 
   public Outcome() {
   }
@@ -60,7 +61,7 @@ public class Outcome implements Serializable{
     return semanticOutcomeLabel;
   }
 
-  public String getSemanticOutcomeUri() {
+  public URI getSemanticOutcomeUri() {
     return semanticOutcomeUri;
   }
 

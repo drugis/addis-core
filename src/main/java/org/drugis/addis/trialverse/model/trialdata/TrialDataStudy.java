@@ -1,4 +1,4 @@
-package org.drugis.addis.trialverse.model;
+package org.drugis.addis.trialverse.model.trialdata;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -20,7 +20,6 @@ public class TrialDataStudy {
   public TrialDataStudy(URI studyUri, String name, List<TrialDataArm> trialDataArms) {
     this.studyUri = studyUri;
     this.name = name;
-
 
     if (trialDataArms != null) {
       this.trialDataArms = trialDataArms;

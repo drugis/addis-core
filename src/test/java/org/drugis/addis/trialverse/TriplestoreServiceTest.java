@@ -10,6 +10,7 @@ import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.CovariateOption;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
+import org.drugis.addis.trialverse.model.trialdata.CovariateStudyValue;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
@@ -29,7 +30,6 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -95,20 +95,20 @@ public class TriplestoreServiceTest {
   }
 
   @Test
-  public void testGetOutcomes() {
+  public void testGetOutcomes() throws ReadValueException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     createMockTrialverseService(mockResult);
     List<SemanticVariable> result = triplestoreService.getOutcomes("abc", "version");
-    SemanticVariable result1 = new SemanticVariable("fdszgs-adsfd-1", "DBP 24-hour mean");
+    SemanticVariable result1 = new SemanticVariable(URI.create("fdszgs-adsfd-1"), "DBP 24-hour mean");
     assertEquals(result.get(0), result1);
   }
 
   @Test
-  public void testGetPopulationCharacteristics() {
+  public void testGetPopulationCharacteristics() throws ReadValueException {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     createMockTrialverseService(mockResult);
     List<SemanticVariable> result = triplestoreService.getOutcomes("abc", "version");
-    SemanticVariable result1 = new SemanticVariable("fdszgs-adsfd-1", "DBP 24-hour mean");
+    SemanticVariable result1 = new SemanticVariable(URI.create("fdszgs-adsfd-1"), "DBP 24-hour mean");
     assertEquals(result.get(0), result1);
   }
 
@@ -117,10 +117,10 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleInterventionResult.json");
     createMockTrialverseService(mockResult);
 
-    List<SemanticIntervention> result = triplestoreService.getInterventions("abc", "version");
-    SemanticIntervention intervention = result.get(0);
-    SemanticIntervention expectedSemanticIntervention = new SemanticIntervention(URI.create("fdhdfgh-saddsgfsdf-123-a"), "Azilsartan");
-    assertEquals(expectedSemanticIntervention, intervention);
+    List<SemanticInterventionUriAndName> result = triplestoreService.getInterventions("abc", "version");
+    SemanticInterventionUriAndName intervention = result.get(0);
+    SemanticInterventionUriAndName expectedSemanticInterventionUriAndName = new SemanticInterventionUriAndName(URI.create("fdhdfgh-saddsgfsdf-123-a"), "Azilsartan");
+    assertEquals(expectedSemanticInterventionUriAndName, intervention);
   }
 
   @Test
@@ -228,7 +228,7 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/covariateDataExample.json");
     createMockTrialverseService(mockResult);
 
-    Map<URI,CovariateStudyValue> result = triplestoreService.getStudyLevelCovariateValues(namespaceUid, version, Arrays.asList(CovariateOption.ALLOCATION_RANDOMIZED));
+    List<CovariateStudyValue> result = triplestoreService.getStudyLevelCovariateValues(namespaceUid, version, Arrays.asList(CovariateOption.ALLOCATION_RANDOMIZED));
     assertEquals(4, result.size());
 
   }

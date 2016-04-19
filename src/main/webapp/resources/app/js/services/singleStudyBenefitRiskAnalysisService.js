@@ -111,7 +111,7 @@ define(['lodash'], function(_) {
     };
 
     function findOverlappingIntervention(selectedInterventions, study) {
-      return study.treatmentArms.reduce(function(accum, arm) {
+      return _.reduce(study.treatmentArms, function(accum, arm) {
         var matching = findAllMatchingInterventions(selectedInterventions, arm);
         if (matching.length > 1) {
           accum = accum.concat(matching);

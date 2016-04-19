@@ -1,6 +1,7 @@
 package org.drugis.addis.problems.service;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.problems.model.AbstractProblem;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
 
@@ -13,5 +14,5 @@ import java.sql.SQLException;
  */
 
 public interface ProblemService {
-  AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException;
+  AbstractProblem getProblem(Integer projectId, Integer analysisId) throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException;
 }

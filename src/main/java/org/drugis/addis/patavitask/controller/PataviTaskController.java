@@ -1,6 +1,7 @@
 package org.drugis.addis.patavitask.controller;
 
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.exceptions.InvalidModelException;
 import org.drugis.addis.patavitask.PataviTaskUriHolder;
 import org.drugis.addis.patavitask.service.PataviTaskService;
@@ -29,7 +30,7 @@ public class PataviTaskController {
 
   @RequestMapping(value = "/projects/{projectId}/analyses/{analysisId}/models/{modelId}/task", method = RequestMethod.GET)
   @ResponseBody
-  public PataviTaskUriHolder get(@PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException {
+  public PataviTaskUriHolder get(@PathVariable Integer projectId, @PathVariable Integer analysisId, @PathVariable Integer modelId) throws ResourceDoesNotExistException, IOException, SQLException, InvalidModelException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException {
     return pataviTaskService.getPataviTaskUriHolder(projectId, analysisId, modelId);
   }
 

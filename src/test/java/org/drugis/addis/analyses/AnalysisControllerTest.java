@@ -5,7 +5,6 @@ import org.drugis.addis.TestUtils;
 import org.drugis.addis.analyses.repository.*;
 import org.drugis.addis.analyses.service.AnalysisService;
 import org.drugis.addis.config.TestConfig;
-import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.model.SimpleIntervention;
 import org.drugis.addis.outcomes.Outcome;
 import org.drugis.addis.projects.service.ProjectService;
@@ -13,7 +12,7 @@ import org.drugis.addis.scenarios.Scenario;
 import org.drugis.addis.scenarios.repository.ScenarioRepository;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.security.repository.AccountRepository;
-import org.drugis.addis.trialverse.model.SemanticIntervention;
+import org.drugis.addis.trialverse.model.SemanticInterventionUriAndName;
 import org.drugis.addis.trialverse.model.SemanticVariable;
 import org.drugis.addis.util.WebConstants;
 import org.hamcrest.Matchers;
@@ -81,6 +80,8 @@ public class AnalysisControllerTest {
           paul = new Account(2, "a", "paul", "mc cartney", null),
           gert = new Account(3, "gert", "Gert", "van Valkenhoef", "gert@test.com");
 
+  private URI uri = URI.create("uri");
+
 
   @Before
   public void setUp() {
@@ -119,7 +120,7 @@ public class AnalysisControllerTest {
 
   @Test
   public void testQueryNetworkMetaAnalysisByOutcomes() throws Exception {
-    Outcome outcome = new Outcome(1, 1, "name", "motivation", new SemanticVariable("uri", "label"));
+    Outcome outcome = new Outcome(1, 1, "name", "motivation", new SemanticVariable(uri, "label"));
     NetworkMetaAnalysis networkMetaAnalysis = new NetworkMetaAnalysis(1, 1, "name", outcome);
     Integer projectId = 1;
     List<Integer> outcomeIds = Arrays.asList(1);
@@ -254,13 +255,12 @@ public class AnalysisControllerTest {
     Integer projectId = 1;
     Integer analysisId = 1;
     List<Outcome> selectedOutcomes = Arrays.asList(
-            new Outcome(1, projectId, "name", "motivation", new SemanticVariable("uri", "label")),
-            new Outcome(2, projectId, "name", "motivation", new SemanticVariable("uri", "label")),
-            new Outcome(3, projectId, "name", "motivation", new SemanticVariable("uri", "label"))
+            new Outcome(1, projectId, "name", "motivation", new SemanticVariable(uri, "label")),
+            new Outcome(2, projectId, "name", "motivation", new SemanticVariable(uri, "label")),
+            new Outcome(3, projectId, "name", "motivation", new SemanticVariable(uri, "label"))
     );
-    SimpleIntervention intervention1 = new SimpleIntervention(1, projectId, "name", "motivation", new SemanticIntervention(URI.create("uri"), "label"));
-    SimpleIntervention intervention2 = new SimpleIntervention(2, projectId, "name", "motivation", new SemanticIntervention(URI.create("uri"), "label"));
-    List<AbstractIntervention> selectedInterventions = Arrays.asList(intervention1, intervention2);
+    SimpleIntervention intervention1 = new SimpleIntervention(1, projectId, "name", "motivation", new SemanticInterventionUriAndName(URI.create("uri"), "label"));
+    SimpleIntervention intervention2 = new SimpleIntervention(2, projectId, "name", "motivation", new SemanticInterventionUriAndName(URI.create("uri"), "label"));
     List<InterventionInclusion> interventionInclusions = Arrays.asList(
             new InterventionInclusion(analysisId, intervention1.getId()),
             new InterventionInclusion(analysisId, intervention2.getId())
@@ -277,7 +277,7 @@ public class AnalysisControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
             .andExpect(jsonPath("$.selectedOutcomes", hasSize(3)))
-            .andExpect(jsonPath("$.selectedInterventions", hasSize(2)));
+            .andExpect(jsonPath("$.interventionInclusions", hasSize(2)));
     verify(analysisRepository).get(analysisId);
     verify(accountRepository).findAccountByUsername("gert");
     verify(singleStudyBenefitRiskAnalysisRepository).update(gert, newAnalysis);
@@ -349,7 +349,7 @@ public class AnalysisControllerTest {
     Integer projectId = 101;
     Integer outcomeId = 444;
     NetworkMetaAnalysis oldAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "analysis name");
-    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable("uir", "label"));
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable(uri, "label"));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(oldAnalysis.getId(), oldAnalysis.getProjectId(), oldAnalysis.getTitle(), outcome);
     when(analysisRepository.get(analysisId)).thenReturn(oldAnalysis);
     when(analysisService.updateNetworkMetaAnalysis(gert, newAnalysis)).thenReturn(newAnalysis);
@@ -368,8 +368,8 @@ public class AnalysisControllerTest {
     Integer analysisId = 333;
     Integer projectId = 101;
     Integer outcomeId = 444;
-    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable("uir", "label"));
-    List<ArmExclusion> excludedArms = Arrays.asList(new ArmExclusion(analysisId, "-1L"), new ArmExclusion(analysisId, "-2L"));
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable(uri, "label"));
+    List<ArmExclusion> excludedArms = Arrays.asList(new ArmExclusion(analysisId, URI.create("-1L")), new ArmExclusion(analysisId, URI.create("-2L")));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", excludedArms, Collections.emptyList(), Collections.emptyList(), outcome);
 
     String jsonCommand = TestUtils.createJson(newAnalysis);
@@ -387,7 +387,7 @@ public class AnalysisControllerTest {
     Integer analysisId = 333;
     Integer projectId = 101;
     Integer outcomeId = 444;
-    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable("uir", "label"));
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable(uri, "label"));
     NetworkMetaAnalysis analysis = new NetworkMetaAnalysis(1, 1, "adsf");
     List<InterventionInclusion> includedInterventions = Arrays.asList(new InterventionInclusion(analysis.getId(), -1), new InterventionInclusion(analysis.getId(), -2));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.emptyList(), includedInterventions, Collections.emptyList(), outcome);
@@ -407,7 +407,7 @@ public class AnalysisControllerTest {
     Integer analysisId = 333;
     Integer projectId = 101;
     Integer outcomeId = 444;
-    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable("uir", "label"));
+    Outcome outcome = new Outcome(outcomeId, projectId, "outcome name", "motivation", new SemanticVariable(uri, "label"));
     List<CovariateInclusion> covariateInclusions = Arrays.asList(new CovariateInclusion(analysisId, -1), new CovariateInclusion(analysisId, -2));
     NetworkMetaAnalysis newAnalysis = new NetworkMetaAnalysis(analysisId, projectId, "name", Collections.emptyList(), Collections.emptyList(), covariateInclusions, outcome);
 

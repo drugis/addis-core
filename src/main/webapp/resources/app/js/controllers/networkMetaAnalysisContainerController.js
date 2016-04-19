@@ -104,11 +104,7 @@ define(['lodash'], function(_) {
       TrialverseTrialDataResource
         .query({
           projectId: $scope.project.id,
-          analysisId: $scope.analysis.id,
-          outcomeUri: $scope.analysis.outcome.semanticOutcomeUri,
-          interventionUris: _.reduce($scope.interventions, addIncludedInterventionUri, []),
-          covariateKeys: _.reduce($scope.covariates, addIncludedCovariateDefinitionKey, []),
-          version: $scope.project.datasetVersion
+          analysisId: $scope.analysis.id
         })
         .$promise
         .then(function(trialverseData) {
