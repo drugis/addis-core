@@ -612,12 +612,12 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
 
   @Override
-  public List<TrialDataStudy> getSingleStudyMeasurements(String namespaceUid, String studyUid, String version, List<URI> outcomeUris, List<URI> interventionUids) throws ReadValueException {
+  public List<TrialDataStudy> getSingleStudyMeasurements(String namespaceUid, URI studyUri, String version, List<URI> outcomeUris, List<URI> interventionUids) throws ReadValueException {
 
     if(interventionUids.isEmpty()) {
       return Collections.emptyList();
     }
-    String query = StringUtils.replace(SINGLE_STUDY_MEASUREMENTS, "$studyUid", studyUid);
+    String query = StringUtils.replace(SINGLE_STUDY_MEASUREMENTS, "$studyUri", studyUri.toString());
     query = StringUtils.replace(query, "$outcomeUnionString", buildOutcomeUnionString(outcomeUris));
     String interventionUn = buildInterventionUnionString(interventionUids);
     query = StringUtils.replace(query, "$interventionUnionString", interventionUn);

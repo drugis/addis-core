@@ -22,7 +22,7 @@ public class Outcome implements Serializable{
   private String name;
   private String motivation;
   private String semanticOutcomeLabel;
-  private URI semanticOutcomeUri;
+  private String semanticOutcomeUri;
 
   public Outcome() {
   }
@@ -33,7 +33,7 @@ public class Outcome implements Serializable{
     this.name = name;
     this.motivation = motivation;
     this.semanticOutcomeLabel = semanticOutcome.getLabel();
-    this.semanticOutcomeUri = semanticOutcome.getUri();
+    this.semanticOutcomeUri = semanticOutcome.getUri().toString();
   }
 
   public Outcome(Integer project, String name, String motivation, SemanticVariable semanticOutcome) {
@@ -62,7 +62,7 @@ public class Outcome implements Serializable{
   }
 
   public URI getSemanticOutcomeUri() {
-    return semanticOutcomeUri;
+    return URI.create(semanticOutcomeUri);
   }
 
   @Override

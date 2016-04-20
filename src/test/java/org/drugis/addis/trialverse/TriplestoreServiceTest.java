@@ -99,7 +99,7 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     createMockTrialverseService(mockResult);
     List<SemanticVariable> result = triplestoreService.getOutcomes("abc", "version");
-    SemanticVariable result1 = new SemanticVariable(URI.create("fdszgs-adsfd-1"), "DBP 24-hour mean");
+    SemanticVariable result1 = new SemanticVariable(URI.create("http://trials.drugis.org/namespace/1/endpoint/fdszgs-adsfd-1"), "DBP 24-hour mean");
     assertEquals(result.get(0), result1);
   }
 
@@ -108,7 +108,7 @@ public class TriplestoreServiceTest {
     String mockResult = TestUtils.loadResource(this.getClass(), "/triplestoreService/exampleOutcomeResult.json");
     createMockTrialverseService(mockResult);
     List<SemanticVariable> result = triplestoreService.getOutcomes("abc", "version");
-    SemanticVariable result1 = new SemanticVariable(URI.create("fdszgs-adsfd-1"), "DBP 24-hour mean");
+    SemanticVariable result1 = new SemanticVariable(URI.create("http://trials.drugis.org/namespace/1/endpoint/fdszgs-adsfd-1"), "DBP 24-hour mean");
     assertEquals(result.get(0), result1);
   }
 

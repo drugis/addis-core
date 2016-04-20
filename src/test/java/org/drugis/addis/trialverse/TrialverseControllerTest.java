@@ -9,7 +9,6 @@ import org.drugis.addis.security.repository.AccountRepository;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.StudyDataSection;
 import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
-import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
 import org.drugis.addis.trialverse.service.impl.ReadValueException;
@@ -144,7 +143,7 @@ public class TrialverseControllerTest {
     mockMvc.perform(get("/namespaces/" + namespaceUid + "/outcomes").param("version", versionUid))
             .andExpect(status().isOk())
             .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$[0].uri", is(testOutCome.getUri())));
+            .andExpect(jsonPath("$[0].uri", is(testOutCome.getUri().toString())));
 
     verify(triplestoreService).getOutcomes(versionedUuid, versionUid);
     verify(mappingService).getVersionedUuid(namespaceUid);
@@ -178,38 +177,6 @@ public class TrialverseControllerTest {
             .andExpect(jsonPath("$[0].title", is(study.getTitle())));
 
     verify(triplestoreService).queryStudies(versionedUuid, versionUid);
-    verify(mappingService).getVersionedUuid(namespaceUid);
-  }
-
-  @Test
-  public void testGetTrialDataWithOutcomeAndInterventionsInQuery() throws Throwable {
-    List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy(new URI("abc"), "study name", Collections.emptyList()));
-    List<URI> interventionUris = Arrays.asList(URI.create("uri1"), URI.create("uri2"));
-    URI outcomeUri = URI.create("http://someoutcomethisis/12345/abc");
-    String versionUid = "current";
-    when(triplestoreService.getTrialData(versionedUuid, versionUid, outcomeUri, interventionUris, Collections.emptyList())).thenReturn(trialDataStudies);
-
-    mockMvc.perform(get("/namespaces/" + namespaceUid + "/trialData?interventionUris=uri1&interventionUris=uri2&outcomeUri=" + outcomeUri).principal(user).param("version", versionUid))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$", notNullValue()));
-
-    verify(triplestoreService).getTrialData(versionedUuid, versionUid, outcomeUri, interventionUris, Collections.emptyList());
-    verify(mappingService).getVersionedUuid(namespaceUid);
-  }
-
-  @Test
-  public void testGetTrialDataWithOutcomeAndNoInterventionsInQuery() throws Throwable {
-    List<TrialDataStudy> trialDataStudies = Collections.singletonList(new TrialDataStudy(new URI("abc"), "study name", Collections.emptyList()));
-    URI outcomeUri = URI.create("http://someoutcomethisis/12345/abc");
-    String versionUid = "current";
-    when(triplestoreService.getTrialData(versionedUuid, versionUid, outcomeUri, Collections.emptyList(), Collections.emptyList())).thenReturn(trialDataStudies);
-
-    mockMvc.perform(get("/namespaces/"+namespaceUid+"/trialData?outcomeUri=" + outcomeUri).param("version", versionUid))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(WebConstants.getApplicationJsonUtf8Value()))
-            .andExpect(jsonPath("$", notNullValue()));
-    verify(triplestoreService).getTrialData(versionedUuid, versionUid, outcomeUri, Collections.emptyList(), Collections.emptyList());
     verify(mappingService).getVersionedUuid(namespaceUid);
   }
 

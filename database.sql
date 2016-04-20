@@ -560,20 +560,25 @@ ALTER TABLE interventioninclusion DROP CONSTRAINT interventioninclusion_analysis
 ALTER TABLE interventioninclusion ADD CONSTRAINT interventioninclusion_analysisid_fkey FOREIGN KEY (analysisId) REFERENCES AbstractAnalysis(id);
 
 select setval('shared_analysis_id_seq', (select max(id) from AbstractAnalysis));
--- rollback DROP TABLE AbstractAnalysis;
--- rollback CREATE TABLE MetaBenefitRiskAnalysis_Alternative ( analysisId INT, alternativeId INT, PRIMARY KEY(analysisId, alternativeId), FOREIGN KEY(analysisId) REFERENCES MetaBenefitRiskAnalysis(id), FOREIGN KEY(alternativeId) REFERENCES Intervention(id));
+-- rollback CREATE TABLE MetaBenefitRiskAnalysis_Alternative ( analysisId INT, alternativeId INT, PRIMARY KEY(analysisId, alternativeId), FOREIGN KEY(analysisId) REFERENCES MetaBenefitRiskAnalysis(id), FOREIGN KEY(alternativeId) REFERENCES abstractintervention(id));
 -- rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN projectId int;
--- rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD CONSTRAINT FOREIGN KEY(projectId) REFERENCES project(id);
+-- rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD CONSTRAINT singlestudybenefitriskanalysis_projectid_fkey FOREIGN KEY(projectId) REFERENCES project(id);
 -- rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN title VARCHAR;
 -- rollback ALTER TABLE NetworkMetaAnalysis ADD COLUMN projectId int;
--- rollback ALTER TABLE NetworkMetaAnalysis ADD CONSTRAINT FOREIGN KEY(projectId) REFERENCES project(id);
+-- rollback ALTER TABLE NetworkMetaAnalysis ADD CONSTRAINT NetworkMetaAnalysis_projectid_fkey FOREIGN KEY(projectId) REFERENCES project(id);
 -- rollback ALTER TABLE NetworkMetaAnalysis ADD COLUMN title VARCHAR;
 -- rollback ALTER TABLE MetaBenefitRiskAnalysis ADD COLUMN projectId int;
--- rollback ALTER TABLE MetaBenefitRiskAnalysis ADD CONSTRAINT FOREIGN KEY(projectId) REFERENCES project(id);
+-- rollback ALTER TABLE MetaBenefitRiskAnalysis ADD CONSTRAINT metabenefitriskanalysis_projectid_fkey FOREIGN KEY(projectId) REFERENCES project(id);
 -- rollback ALTER TABLE MetaBenefitRiskAnalysis ADD COLUMN title VARCHAR;
 -- rollback ALTER TABLE interventioninclusion DROP CONSTRAINT interventioninclusion_analysisid_fkey;
 -- rollback ALTER TABLE interventioninclusion ADD CONSTRAINT interventioninclusion_analysisid_fkey FOREIGN KEY (analysisId) REFERENCES NetworkMetaAnalysis(id);
-
+-- rollback UPDATE SingleStudyBenefitRiskAnalysis s SET projectId = (select projectId from abstractanalysis aa where s.id = aa.id);
+-- rollback UPDATE SingleStudyBenefitRiskAnalysis s SET title = (select title from abstractanalysis aa where s.id = aa.id);
+-- rollback UPDATE NetworkMetaAnalysis s SET projectId = (select projectId from abstractanalysis aa where s.id = aa.id);
+-- rollback UPDATE NetworkMetaAnalysis s SET title = (select title from abstractanalysis aa where s.id = aa.id);
+-- rollback UPDATE MetaBenefitRiskAnalysis s SET projectId = (select projectId from abstractanalysis aa where s.id = aa.id);
+-- rollback UPDATE MetaBenefitRiskAnalysis s SET title = (select title from abstractanalysis aa where s.id = aa.id);
+-- rollback DROP TABLE AbstractAnalysis;
 
 --changeset stroombergc:48
 ALTER TABLE FixedDoseIntervention ADD COLUMN lowerBoundUnitConcept varchar;
@@ -625,5 +630,8 @@ ALTER TABLE BothDoseTypesIntervention ADD CONSTRAINT bothtypesintervention_botht
 
 --changeset stroombergc:51
 DROP TABLE SingleStudyBenefitRiskAnalysis_Intervention;
---rollback CREATE TABLE SingleStudyBenefitRiskAnalysis_Intervention (AnalysisId INT,InterventionId INT,PRIMARY KEY(AnalysisId, InterventionId),FOREIGN KEY(AnalysisId) REFERENCES SingleStudyBenefitRiskAnalysis(id),FOREIGN KEY(InterventionId) REFERENCES Intervention(id));
+--rollback CREATE TABLE SingleStudyBenefitRiskAnalysis_Intervention (AnalysisId INT, InterventionId INT, PRIMARY KEY(AnalysisId, InterventionId), FOREIGN KEY(AnalysisId) REFERENCES SingleStudyBenefitRiskAnalysis(id),FOREIGN KEY(InterventionId) REFERENCES abstractintervention(id));
 
+--changeset reidd:52
+ALTER TABLE SingleStudyBenefitRiskAnalysis RENAME COLUMN studyGraphUid TO studyGraphUri;
+--rollback ALTER TABLE SingleStudyBenefitRiskAnalysis RENAME COLUMN studyGraphUri TO studyGraphUid;

@@ -507,3 +507,18 @@ ALTER TABLE BothDoseTypesIntervention ADD COLUMN minLowerBoundUnitConcept varcha
 ALTER TABLE BothDoseTypesIntervention ADD COLUMN minUpperBoundUnitConcept varchar;
 ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxLowerBoundUnitConcept varchar;
 ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxUpperBoundUnitConcept varchar;
+
+--changeset stroombergc:49
+UPDATE abstractintervention SET semanticinterventionuri = CONCAT('http://trials.drugis.org/', semanticinterventionuri) WHERE LEFT(semanticinterventionuri, 4) <> 'http';
+--rollback UPDATE abstractintervention SET semanticinterventionuri = RIGHT(semanticinterventionuri, 36) WHERE LEFT(semanticinterventionuri, 4) = 'http';
+
+--changeset stroombergc:50
+ -- constraints please ignore
+
+--changeset stroombergc:51
+DROP TABLE SingleStudyBenefitRiskAnalysis_Intervention;
+--rollback CREATE TABLE SingleStudyBenefitRiskAnalysis_Intervention (AnalysisId INT,InterventionId INT,PRIMARY KEY(AnalysisId, InterventionId),FOREIGN KEY(AnalysisId) REFERENCES SingleStudyBenefitRiskAnalysis(id),FOREIGN KEY(InterventionId) REFERENCES Intervention(id));
+
+--changeset reidd:52
+ALTER TABLE SingleStudyBenefitRiskAnalysis ALTER COLUMN studyGraphUid RENAME TO studyGraphUri;
+--rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ALTER COLUMN studyGraphUri RENAME TO studyGraphUid;

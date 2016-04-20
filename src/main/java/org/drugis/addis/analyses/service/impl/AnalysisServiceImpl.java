@@ -238,7 +238,7 @@ public class AnalysisServiceImpl implements AnalysisService {
       List<URI> outcomeUris = singleStudyBenefitRiskAnalysis.getSelectedOutcomes().stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toList());
 
       trialData = triplestoreService.getSingleStudyMeasurements(namespaceUid,
-              singleStudyBenefitRiskAnalysis.getStudyGraphUid(), datasetVersion, outcomeUris
+              singleStudyBenefitRiskAnalysis.getStudyGraphUri(), datasetVersion, outcomeUris
                , includedInterventionUris);
 
     } else {

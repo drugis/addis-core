@@ -34,11 +34,11 @@ public class TripleStoreServiceIntegrationTest {
     InputStream mockStudyGraph1 = new ClassPathResource("trialverseModel/abergCompleteStudy.ttl").getInputStream();
     model1.read(mockStudyGraph1, null, "TTL");
     Dataset dataset = DatasetFactory.createMem();
-    String studyUid = "study1";
-    dataset.addNamedModel("http://trials.drugis.org/graphs/" + studyUid, model1);
+    URI studyUri = URI.create("http://trials.drugis.org/graphs/studyUid");
+    dataset.addNamedModel(String.valueOf(studyUri), model1);
 
     String template = TriplestoreServiceImpl.SINGLE_STUDY_MEASUREMENTS;
-    String queryStr = StringUtils.replace(template, "$studyUid", studyUid);
+    String queryStr = StringUtils.replace(template, "$studyUri", studyUri.toString());
 
     String ageOutcome = "16a99c68-8e05-4625-ad59-1ce2acc5e574";
     List<String> outcomeUids = Arrays.asList(ageOutcome);

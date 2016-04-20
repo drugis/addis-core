@@ -1,7 +1,9 @@
 package org.drugis.addis.problems;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.drugis.addis.problems.model.*;
+import org.drugis.addis.problems.model.Arm;
+import org.drugis.addis.problems.model.MeasurementType;
+import org.drugis.addis.problems.model.Variable;
 import org.drugis.addis.problems.service.impl.PerformanceTableBuilder;
 import org.drugis.addis.problems.service.model.*;
 import org.drugis.addis.trialverse.model.trialdata.Measurement;
@@ -12,9 +14,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.net.URI;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -26,42 +26,27 @@ public class PerformanceTableBuilderTest {
   @InjectMocks
   private PerformanceTableBuilder builder;
 
-  String armName1 = "arm name 1";
-  String armName2 = "arm name 2";
-  Arm arm1 = new Arm(URI.create("1L"), "10L", armName1);
-  Arm arm2 = new Arm(URI.create("2L"), "11L", armName2);
+  private String armName1 = "arm name 1";
+  private String armName2 = "arm name 2";
+  private Arm arm1 = new Arm(URI.create("1L"), "10L", armName1);
+  private Arm arm2 = new Arm(URI.create("2L"), "11L", armName2);
 
-  URI alternativeUri1 = URI.create("altUri1");
-  URI alternativeUri2 = URI.create("altUri2");
+  private URI alternativeUri1 = URI.create("altUri1");
+  private URI alternativeUri2 = URI.create("altUri2");
   private URI criterionUri1 = URI.create("critUri1");
   private URI criterionUri2 = URI.create("critUri2");
 
-  String variableName1 = "variable name 1";
-  String variableName2 = "variable name 2";
-  Variable variable1 = new Variable(URI.create("101L"), "1L", variableName1, "desc", null, false, MeasurementType.RATE, "");
-  Variable variable2 = new Variable(URI.create("102L"), "1L", variableName2, "desc", null, false, MeasurementType.CONTINUOUS, "");
+  private String variableName1 = "variable name 1";
+  private String variableName2 = "variable name 2";
+  private Variable variable1 = new Variable(URI.create("101L"), "1L", variableName1, "desc", null, false, MeasurementType.RATE, "");
+  private Variable variable2 = new Variable(URI.create("102L"), "1L", variableName2, "desc", null, false, MeasurementType.CONTINUOUS, "");
 
-  Map<URI, CriterionEntry> criterionEntryMap;
-  Map<URI, AlternativeEntry> alternativeEntryMap;
-
-  Measurement measurement1 = new Measurement(URI.create("1L"), variable1.getUri(), arm1.getUri(), 111, 42, null, null);
-  Measurement measurement2 = new Measurement(URI.create("1L"), variable2.getUri(), arm1.getUri(), 222, null, 0.2, 7.56);
-
-  CriterionEntry criterionEntry1 = new CriterionEntry(criterionUri1, null, null);
-  CriterionEntry criterionEntry2 = new CriterionEntry(criterionUri2, null, null);
-  AlternativeEntry alternativeEntry1 = new AlternativeEntry(alternativeUri1, arm1.getName());
-  AlternativeEntry alternativeEntry2 = new AlternativeEntry(alternativeUri2, arm2.getName());
+  private Measurement measurement1 = new Measurement(URI.create("1L"), variable1.getUri(), arm1.getUri(), 111, 42, null, null);
+  private Measurement measurement2 = new Measurement(URI.create("1L"), variable2.getUri(), arm1.getUri(), 222, null, 0.2, 7.56);
 
   @Before
   public void setUp() throws Exception {
-    criterionEntryMap = new HashMap<>();
-    criterionEntryMap.put(variable1.getUri(), criterionEntry1);
-    criterionEntryMap.put(variable2.getUri(), criterionEntry2);
-    alternativeEntryMap = new HashMap<>();
-    alternativeEntryMap.put(arm1.getUri(), alternativeEntry1);
-    alternativeEntryMap.put(arm2.getUri(), alternativeEntry2);
     builder = new PerformanceTableBuilder();
-
     MockitoAnnotations.initMocks(this);
   }
 
@@ -78,15 +63,10 @@ public class PerformanceTableBuilderTest {
     Double stdDev = measurement2.getStdDev();
 
     URI studyUri = URI.create("itsastudio");
-    //criterionUri1, variableName1, alternativeUri1, armName1, mu, stdDev, null, sampleSize1);
     Pair<Measurement, URI> row1 = Pair.of(new Measurement(studyUri, criterionUri1, arm1.getUri(), sampleSize1, null, stdDev, mu), alternativeUri1);
-    Pair<Measurement, URI> row2 = Pair.of(new Measurement(studyUri, criterionUri2, arm2.getUri(), sampleSize2, rate, null, null), alternativeUri1);
-    Pair<Measurement, URI> row3 = Pair.of(new Measurement(studyUri, criterionUri1, arm2.getUri(), sampleSize2, null, stdDev, mu), alternativeUri1);
-    Pair<Measurement, URI> row4 = Pair.of(new Measurement(studyUri, criterionUri2, arm1.getUri(), sampleSize1, rate, null, null), alternativeUri1);
-
-//     row2 = new (criterionUri2, variableName2, alternativeUri2, armName2, null, null, rate, sampleSize2);
-//     row3 = new (criterionUri1, variableName1, alternativeUri2, armName2, mu, stdDev, null, sampleSize1);
-//     row4 = new (criterionUri2, variableName2, alternativeUri1, armName1, null, null, rate, sampleSize2);
+    Pair<Measurement, URI> row2 = Pair.of(new Measurement(studyUri, criterionUri2, arm2.getUri(), sampleSize2, rate, null, null), alternativeUri2);
+    Pair<Measurement, URI> row3 = Pair.of(new Measurement(studyUri, criterionUri1, arm2.getUri(), sampleSize1, null, stdDev, mu), alternativeUri2);
+    Pair<Measurement, URI> row4 = Pair.of(new Measurement(studyUri, criterionUri2, arm1.getUri(), sampleSize2, rate, null, null), alternativeUri1);
 
     // EXECUTE
     List<Pair<Measurement, URI>> measurementPairs =Arrays.asList(row1, row2, row3, row4);

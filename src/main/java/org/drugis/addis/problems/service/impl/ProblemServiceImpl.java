@@ -362,22 +362,22 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException {
-    List<URI> outcomeUris = analysis.getSelectedOutcomes().stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toList());
-    List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
-    Map<Integer, AbstractIntervention> interventionMap = interventions
+    final List<URI> outcomeUris = analysis.getSelectedOutcomes().stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toList());
+    final List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
+    final Map<Integer, AbstractIntervention> interventionMap = interventions
             .stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
 
-    List<URI> alternativeUris = analysis.getInterventionInclusions()
+    final List<URI> alternativeUris = analysis.getInterventionInclusions()
             .stream().map(intervention -> interventionMap.get(intervention.getInterventionId()).getSemanticInterventionUri())
             .collect(Collectors.toList());
 
-    Map<URI, AbstractIntervention> alternativeToInterventionMap = interventions.stream()
+    final Map<URI, AbstractIntervention> alternativeToInterventionMap = interventions.stream()
             .collect(Collectors.toMap(AbstractIntervention::getSemanticInterventionUri, Function.identity()));
 
-    List<AbstractIntervention> includedInterventions = analysisService.getIncludedInterventions(analysis);
+    final List<AbstractIntervention> includedInterventions = analysisService.getIncludedInterventions(analysis);
 
-    String versionedUuid = mappingService.getVersionedUuid(project.getNamespaceUid());
-    List<TrialDataStudy> singleStudyMeasurements = triplestoreService.getSingleStudyMeasurements(versionedUuid, analysis.getStudyGraphUid(), project.getDatasetVersion(), outcomeUris, alternativeUris);
+    final String versionedUuid = mappingService.getVersionedUuid(project.getNamespaceUid());
+    final List<TrialDataStudy> singleStudyMeasurements = triplestoreService.getSingleStudyMeasurements(versionedUuid, analysis.getStudyGraphUri(), project.getDatasetVersion(), outcomeUris, alternativeUris);
     TrialDataStudy trialDataStudy = singleStudyMeasurements.get(0);
 
     Map<URI, AlternativeEntry> alternatives = new HashMap<>();
@@ -386,7 +386,7 @@ public class ProblemServiceImpl implements ProblemService {
     for (TrialDataArm arm : trialDataStudy.getTrialDataArms()) {
       List<Measurement> measurements = arm.getMeasurements();
       URI drugInstanceUri = arm.getDrugInstance();
-      String alternativeName = alternativeToInterventionMap.get(drugInstanceUri).getName();
+      String alternativeName = alternativeToInterventionMap.get(arm.getSemanticIntervention().getDrugConcept()).getName();
       alternatives.put(drugInstanceUri, new AlternativeEntry(drugInstanceUri, alternativeName));
       for (Measurement measurement : measurements) {
         measurementDrugInstancePairs.add(Pair.of(measurement, drugInstanceUri));

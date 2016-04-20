@@ -7,6 +7,7 @@ import org.drugis.addis.util.ObjectToStringDeserializer;
 import org.drugis.trialverse.util.Utils;
 
 import javax.persistence.*;
+import java.net.URI;
 import java.util.*;
 
 /**
@@ -19,7 +20,7 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
   @JsonRawValue
   private String problem;
 
-  private String studyGraphUid;
+  private String studyGraphUri;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinTable(name = "singleStudyBenefitRiskAnalysis_Outcome",
@@ -65,12 +66,12 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     return title;
   }
 
-  public String getStudyGraphUid() {
-    return studyGraphUid;
+  public URI getStudyGraphUri() {
+    return studyGraphUri == null ? null : URI.create(studyGraphUri);
   }
 
-  public void setStudyGraphUid(String studyGraphUid) {
-    this.studyGraphUid = studyGraphUid;
+  public void setStudyGraphUri(URI studyGraphUri) {
+    this.studyGraphUri = studyGraphUri == null ? null : studyGraphUri.toString();
   }
 
   public List<Outcome> getSelectedOutcomes() {
@@ -80,7 +81,6 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
   public void updateSelectedOutcomes(List<Outcome> newOutcomes){
     Utils.updateSet(this.selectedOutcomes, new HashSet<>(newOutcomes));
   }
-
 
   @JsonRawValue
   public String getProblem() {
@@ -97,29 +97,19 @@ public class SingleStudyBenefitRiskAnalysis extends AbstractAnalysis {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    SingleStudyBenefitRiskAnalysis analysis = (SingleStudyBenefitRiskAnalysis) o;
+    SingleStudyBenefitRiskAnalysis that = (SingleStudyBenefitRiskAnalysis) o;
 
-    if (id != null ? !id.equals(analysis.id) : analysis.id != null) return false;
-    if (!title.equals(analysis.title)) return false;
-    if (problem != null ? !problem.equals(analysis.problem) : analysis.problem != null) return false;
-    if (!projectId.equals(analysis.projectId)) return false;
-    if (!interventionInclusions.equals(analysis.interventionInclusions)) return false;
-    if (!selectedOutcomes.equals(analysis.selectedOutcomes)) return false;
-    if (studyGraphUid != null ? !studyGraphUid.equals(analysis.studyGraphUid) : analysis.studyGraphUid != null) return false;
+    if (problem != null ? !problem.equals(that.problem) : that.problem != null) return false;
+    if (studyGraphUri != null ? !studyGraphUri.equals(that.studyGraphUri) : that.studyGraphUri != null) return false;
+    return selectedOutcomes.equals(that.selectedOutcomes);
 
-    return true;
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + projectId.hashCode();
-    result = 31 * result + title.hashCode();
-    result = 31 * result + (problem != null ? problem.hashCode() : 0);
-    result = 31 * result + (studyGraphUid != null ? studyGraphUid.hashCode() : 0);
+    int result = problem != null ? problem.hashCode() : 0;
+    result = 31 * result + (studyGraphUri != null ? studyGraphUri.hashCode() : 0);
     result = 31 * result + selectedOutcomes.hashCode();
-    result = 31 * result + interventionInclusions.hashCode();
     return result;
   }
-
 }

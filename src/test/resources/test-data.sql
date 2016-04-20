@@ -59,11 +59,11 @@ INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId
 INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId) VALUES (-4, 1);
 INSERT INTO public.SingleStudyBenefitRiskAnalysis_outcome (analysisId, outcomeId) VALUES (-4, 2);
 
-INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-3, -1);
-INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-3, -2);
+INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-3, -1);
+INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-3, -2);
 
-INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-4, -1);
-INSERT INTO public.SingleStudyBenefitRiskAnalysis_intervention (analysisId, interventionId) VALUES (-4, -2);
+INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-4, -1);
+INSERT INTO public.interventioninclusion (analysisId, interventionId) VALUES (-4, -2);
 
 INSERT INTO public.NetworkMetaAnalysis(id, outcomeId) VALUES (-5, 1);
 INSERT INTO public.NetworkMetaAnalysis(id, outcomeId) VALUES (-6, 1);

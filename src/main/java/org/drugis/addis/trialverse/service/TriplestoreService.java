@@ -59,7 +59,7 @@ public interface TriplestoreService {
 
   List<TrialDataStudy> getTrialData(String namespaceUid, String version, URI outcomeUri, List<URI> interventionUris, List<String> covariateKeys) throws ReadValueException;
 
-  List<TrialDataStudy> getSingleStudyMeasurements(String namespaceUid, String studyUid, String version, List<URI> outcomeUris, List<URI> interventionUids) throws ReadValueException;
+  List<TrialDataStudy> getSingleStudyMeasurements(String namespaceUid, URI studyUri, String version, List<URI> outcomeUris, List<URI> interventionUids) throws ReadValueException;
 
   List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid);
 

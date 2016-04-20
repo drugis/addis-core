@@ -92,7 +92,7 @@
     }]
   },
   "analysisType": "Single-study Benefit-Risk",
-  "studyGraphUid": "studyGraphUid",
+  "studyGraphUri": "studyGraphUri",
   "selectedOutcomes": [{
     "id": 6,
     "project": 1,

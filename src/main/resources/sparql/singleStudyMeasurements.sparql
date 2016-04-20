@@ -45,8 +45,8 @@ SELECT DISTINCT
 ?minDoseUnitMultiplier
 (COALESCE(?treatmentTypeOptional, "http://trials.drugis.org/ontology#SimpleDrugTreatment") AS ?treatmentType)
 WHERE {
-  BIND (graph:$studyUid AS ?graph) .
-  GRAPH graph:$studyUid {
+  BIND (<$studyUri> AS ?graph) .
+  GRAPH <$studyUri> {
     ?study rdfs:label ?studyName . # debug info
     ?study ontology:has_outcome ?outcomeInstance .
     $outcomeUnionString .
