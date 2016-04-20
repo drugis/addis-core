@@ -11,8 +11,6 @@ PREFIX instance: <http://trials.drugis.org/instances/>
 PREFIX graph: <http://trials.drugis.org/graphs/>
 PREFIX qudt: <http://qudt.org/schema/qudt#>
 
-
-
 SELECT DISTINCT
 ?graph
 ?studyName

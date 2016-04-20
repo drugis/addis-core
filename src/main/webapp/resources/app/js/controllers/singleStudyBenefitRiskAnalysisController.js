@@ -4,12 +4,12 @@ define(['angular', 'lodash'], function(angular, _) {
     'currentAnalysis', 'currentProject',
     'OutcomeResource', 'InterventionResource', 'TrialverseStudyResource',
     'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW', 'AnalysisResource',
-    'TrialverseTrialDataResource'
+    'ProjectStudiesResource'
   ];
   var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams,
     $state, $window, currentAnalysis, currentProject, OutcomeResource,
     InterventionResource, TrialverseStudyResource, SingleStudyBenefitRiskAnalysisService,
-    DEFAULT_VIEW, AnalysisResource, TrialverseTrialDataResource) {
+    DEFAULT_VIEW, AnalysisResource, ProjectStudiesResource) {
 
     var deregisterOutcomeWatch, deregisterInterventionWatch;
     $scope.$parent.loading = {
@@ -31,7 +31,7 @@ define(['angular', 'lodash'], function(angular, _) {
     $scope.workspace = $scope.analysis;
     $scope.project = currentProject;
     $scope.outcomes = $scope.analysis.selectedOutcomes;
-    $scope.interventions = $scope.analysis.selectedInterventions;
+    $scope.interventions = $scope.analysis.interventionInclusions;
 
     var projectIdParam = {
       projectId: $stateParams.projectId
@@ -42,9 +42,8 @@ define(['angular', 'lodash'], function(angular, _) {
       version: $scope.project.datasetVersion
     };
 
-    $scope.evidenceTable = TrialverseTrialDataResource.query({
-      projectId: currentProject.id,
-      analysisId: currentAnalysis.id
+    $scope.evidenceTable = ProjectStudiesResource.query({
+      projectId: currentProject.id
     });
 
     var isIdEqual = function(left, right) {
@@ -60,7 +59,7 @@ define(['angular', 'lodash'], function(angular, _) {
     };
 
     $scope.isValidAnalysis = function(analysis) {
-      var twoOrMoreInerventions = analysis.selectedInterventions.length >= 2;
+      var twoOrMoreInerventions = analysis.interventionInclusions.length >= 2;
       var twoOrMoreOutcomes = analysis.selectedOutcomes.length >= 2;
       var noMatchedMixedTreatmentArm = $scope.studyModel.selectedStudy && !$scope.studyModel.selectedStudy.hasMatchedMixedTreatmentArm;
       var noMissingOutcomes = $scope.studyModel.selectedStudy && !hasMissingOutcomes($scope.studyModel.selectedStudy);
@@ -72,7 +71,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function outcomesChanged() {
       SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
-      SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.selectedInterventions);
+      SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
 
       // necessary because angular-select uses $watchcollection instead of $watch
@@ -83,9 +82,9 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function interventionsChanged() {
-      SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.selectedInterventions);
-      SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.selectedInterventions);
-      SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.selectedInterventions);
+      SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
+      SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
+      SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
 
       // necessary because angular-select uses $watchcollection instead of $watch
@@ -106,15 +105,15 @@ define(['angular', 'lodash'], function(angular, _) {
     });
 
     InterventionResource.query(projectIdParam).$promise.then(function(interventions) {
-      // add intervention details to selectedInterventions
-      $scope.analysis.selectedInterventions = $scope.analysis.selectedInterventions.map(function(selectedIntervention) {
+      // add intervention details to interventionInclusions
+      $scope.analysis.interventionInclusions = $scope.analysis.interventionInclusions.map(function(selectedIntervention) {
         return _.find(interventions, function(intervention) {
           return selectedIntervention.interventionId === intervention.id;
         });
       });
       // use same object in options list as in selected option list, as ui-select uses object equality internaly
-      $scope.interventions = SingleStudyBenefitRiskAnalysisService.concatWithNoDuplicates(interventions, $scope.analysis.selectedInterventions, isIdEqual);
-      deregisterInterventionWatch = $scope.$watchCollection('analysis.selectedInterventions', function(oldValue, newValue) {
+      $scope.interventions = SingleStudyBenefitRiskAnalysisService.concatWithNoDuplicates(interventions, $scope.analysis.interventionInclusions, isIdEqual);
+      deregisterInterventionWatch = $scope.$watchCollection('analysis.interventionInclusions', function(oldValue, newValue) {
         if (newValue.length !== oldValue.length) {
           interventionsChanged();
         }
@@ -134,9 +133,9 @@ define(['angular', 'lodash'], function(angular, _) {
       });
 
       SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
-      SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.selectedInterventions);
-      SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.selectedInterventions);
-      SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.selectedInterventions);
+      SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
+      SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
+      SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
     });
 
@@ -152,7 +151,7 @@ define(['angular', 'lodash'], function(angular, _) {
 
     function saveAnalysis() {
       var saveCommand = angular.copy($scope.analysis);
-      saveCommand.selectedInterventions = saveCommand.selectedInterventions.map(function(intervention) {
+      saveCommand.interventionInclusions = saveCommand.interventionInclusions.map(function(intervention) {
         return {
           interventionId: intervention.id,
           analysisId: saveCommand.id

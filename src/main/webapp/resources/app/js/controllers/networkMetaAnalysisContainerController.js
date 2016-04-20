@@ -1,11 +1,11 @@
 'use strict';
 define(['lodash'], function(_) {
   var dependencies = ['$scope', '$q', '$state', '$window', '$stateParams', 'currentAnalysis', 'currentProject', 'OutcomeResource',
-    'InterventionResource', 'CovariateResource', 'ModelResource', 'NetworkMetaAnalysisService', 'TrialverseTrialDataResource'
+    'InterventionResource', 'CovariateResource', 'ModelResource', 'NetworkMetaAnalysisService', 'EvidenceTableResource'
   ];
 
   var NetworkMetaAnalysisContainerController = function($scope, $q, $state, $window, $stateParams, currentAnalysis, currentProject,
-    OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, TrialverseTrialDataResource) {
+    OutcomeResource, InterventionResource, CovariateResource, ModelResource, NetworkMetaAnalysisService, EvidenceTableResource) {
 
     $scope.isAnalysisLocked = true;
     $scope.isNetworkDisconnected = true;
@@ -101,7 +101,7 @@ define(['lodash'], function(_) {
         return;
       }
       $scope.analysis.outcome = resolveOutcomeId($scope.analysis.outcome.id);
-      TrialverseTrialDataResource
+      EvidenceTableResource
         .query({
           projectId: $scope.project.id,
           analysisId: $scope.analysis.id

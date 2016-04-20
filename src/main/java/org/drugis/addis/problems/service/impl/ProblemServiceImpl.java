@@ -377,7 +377,8 @@ public class ProblemServiceImpl implements ProblemService {
     final List<AbstractIntervention> includedInterventions = analysisService.getIncludedInterventions(analysis);
 
     final String versionedUuid = mappingService.getVersionedUuid(project.getNamespaceUid());
-    final List<TrialDataStudy> singleStudyMeasurements = triplestoreService.getSingleStudyMeasurements(versionedUuid, analysis.getStudyGraphUri(), project.getDatasetVersion(), outcomeUris, alternativeUris);
+    final List<TrialDataStudy> singleStudyMeasurements = triplestoreService.getSingleStudyData(versionedUuid,
+            analysis.getStudyGraphUri(), project.getDatasetVersion(), outcomeUris, alternativeUris);
     TrialDataStudy trialDataStudy = singleStudyMeasurements.get(0);
 
     Map<URI, AlternativeEntry> alternatives = new HashMap<>();
@@ -394,7 +395,7 @@ public class ProblemServiceImpl implements ProblemService {
         criteria.put(measurement.getVariableUri(), criterionEntry);
       }
 
-      Optional<AbstractIntervention> matchingIncludedIntervention = analysisService.findMatchingIncludedIntervention(includedInterventions, arm);
+      Optional<AbstractIntervention> matchingIncludedIntervention = triplestoreService.findMatchingIncludedIntervention(includedInterventions, arm);
       if(matchingIncludedIntervention.isPresent()){
         arm.setMatchedProjectInterventionId(matchingIncludedIntervention.get().getId());
       }

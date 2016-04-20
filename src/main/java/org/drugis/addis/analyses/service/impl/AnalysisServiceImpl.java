@@ -13,7 +13,6 @@ import org.drugis.addis.exception.ResourceDoesNotExistException;
 import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
 import org.drugis.addis.interventions.service.InterventionService;
-import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.models.Model;
 import org.drugis.addis.models.repository.ModelRepository;
 import org.drugis.addis.outcomes.Outcome;
@@ -23,7 +22,6 @@ import org.drugis.addis.projects.repository.ProjectRepository;
 import org.drugis.addis.projects.service.ProjectService;
 import org.drugis.addis.security.Account;
 import org.drugis.addis.trialverse.model.trialdata.AbstractSemanticIntervention;
-import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.MappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -228,7 +226,7 @@ public class AnalysisServiceImpl implements AnalysisService {
               .map(Covariate::getDefinitionKey)
               .collect(Collectors.toList());
 
-      trialData = triplestoreService.getTrialData(namespaceUid, datasetVersion,
+      trialData = triplestoreService.getNetworkData(namespaceUid, datasetVersion,
               networkMetaAnalysis.getOutcome().getSemanticOutcomeUri(), includedInterventionUris, includedCovariates);
 
 
@@ -237,37 +235,17 @@ public class AnalysisServiceImpl implements AnalysisService {
 
       List<URI> outcomeUris = singleStudyBenefitRiskAnalysis.getSelectedOutcomes().stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toList());
 
-      trialData = triplestoreService.getSingleStudyMeasurements(namespaceUid,
-              singleStudyBenefitRiskAnalysis.getStudyGraphUri(), datasetVersion, outcomeUris
-               , includedInterventionUris);
+      trialData = triplestoreService.getSingleStudyData(namespaceUid,
+              singleStudyBenefitRiskAnalysis.getStudyGraphUri(), datasetVersion, outcomeUris, includedInterventionUris);
 
     } else {
       throw new NotImplementedException("not yet implemented for other analysis types");
     }
 
     // add matching data;
-    for(TrialDataStudy study: trialData) {
-      for(TrialDataArm arm: study.getTrialDataArms()) {
-        Optional<AbstractIntervention> matchingIntervention = findMatchingIncludedIntervention(includedInterventions, arm);
-
-        if(matchingIntervention.isPresent()){
-          arm.setMatchedProjectInterventionId(matchingIntervention.get().getId());
-        }
-
-      }
-    }
+    triplestoreService.addMatchingInformation(includedInterventions, trialData);
 
     return trialData;
   }
 
-  public Optional<AbstractIntervention> findMatchingIncludedIntervention(List<AbstractIntervention> includedInterventions, TrialDataArm arm) {
-    return includedInterventions.stream().filter(i -> {
-            try {
-              return interventionService.isMatched(i, arm.getSemanticIntervention());
-            } catch (InvalidTypeForDoseCheckException e) {
-              e.printStackTrace();
-            }
-            return false;
-          }).findFirst();
-  }
 }

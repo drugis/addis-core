@@ -1,8 +1,8 @@
 'use strict';
 define([], function () {
   var dependencies = ['$resource'];
-  var TrialverseTrialDataResource = function ($resource) {
+  var EvidenceTableResource = function ($resource) {
     return $resource('/projects/:projectId/analyses/:analysisId/evidenceTable');
   };
-  return dependencies.concat(TrialverseTrialDataResource);
+  return dependencies.concat(EvidenceTableResource);
 });

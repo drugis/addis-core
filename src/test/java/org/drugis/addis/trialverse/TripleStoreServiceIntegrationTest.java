@@ -28,8 +28,7 @@ public class TripleStoreServiceIntegrationTest {
   TriplestoreService triplestoreService;
 
   @Test
-  public void testSingleStudyGetDataQuery() throws Exception {
-
+  public void testGetSpecificGraphDataQuery() throws Exception {
     Model model1 = ModelFactory.createDefaultModel();
     InputStream mockStudyGraph1 = new ClassPathResource("trialverseModel/abergCompleteStudy.ttl").getInputStream();
     model1.read(mockStudyGraph1, null, "TTL");
@@ -37,8 +36,40 @@ public class TripleStoreServiceIntegrationTest {
     URI studyUri = URI.create("http://trials.drugis.org/graphs/studyUid");
     dataset.addNamedModel(String.valueOf(studyUri), model1);
 
-    String template = TriplestoreServiceImpl.SINGLE_STUDY_MEASUREMENTS;
-    String queryStr = StringUtils.replace(template, "$studyUri", studyUri.toString());
+    String template = TriplestoreServiceImpl.TRIAL_DATA;
+    String queryStr = StringUtils.replace(template, "$graphSelector", "<" + studyUri.toString() + ">");
+
+    String ageOutcome = "16a99c68-8e05-4625-ad59-1ce2acc5e574";
+    List<String> outcomeUids = Arrays.asList(ageOutcome);
+    queryStr = StringUtils.replace(queryStr, "$outcomeUnionString", buildOutcomeUnionString(outcomeUids));
+
+    URI paroxetine = URI.create("http://trials.drugis.org/concepts/c017057f-bfc9-4e1a-8ece-3fb5671f3746");
+    List<URI> interventionUris = Arrays.asList(paroxetine);
+    String interventionUn = buildInterventionUnionString(interventionUris);
+    queryStr = StringUtils.replace(queryStr, "$interventionUnionString", interventionUn);
+
+    Query query = QueryFactory.create(queryStr);
+    QueryExecution queryExecution = QueryExecutionFactory.create(query, dataset);
+    ResultSet resultSet = queryExecution.execSelect();
+
+    List<Object> results = new ArrayList<>();
+    resultSet.forEachRemaining(results::add);
+
+    assertEquals(2, results.size());
+    assertTrue("check that the result contains a titrated dose", results.toString().contains("Titrated"));
+  }
+
+  @Test
+  public void testAllGraphsDataQuery() throws Exception {
+    Model model1 = ModelFactory.createDefaultModel();
+    InputStream mockStudyGraph1 = new ClassPathResource("trialverseModel/abergCompleteStudy.ttl").getInputStream();
+    model1.read(mockStudyGraph1, null, "TTL");
+    Dataset dataset = DatasetFactory.createMem();
+    URI studyUri = URI.create("http://trials.drugis.org/graphs/studyUid");
+    dataset.addNamedModel(String.valueOf(studyUri), model1);
+
+    String template = TriplestoreServiceImpl.TRIAL_DATA;
+    String queryStr = StringUtils.replace(template, "$graphSelector", "?graph");
 
     String ageOutcome = "16a99c68-8e05-4625-ad59-1ce2acc5e574";
     List<String> outcomeUids = Arrays.asList(ageOutcome);

@@ -635,3 +635,7 @@ DROP TABLE SingleStudyBenefitRiskAnalysis_Intervention;
 --changeset reidd:52
 ALTER TABLE SingleStudyBenefitRiskAnalysis RENAME COLUMN studyGraphUid TO studyGraphUri;
 --rollback ALTER TABLE SingleStudyBenefitRiskAnalysis RENAME COLUMN studyGraphUri TO studyGraphUid;
+
+--changeset reidd:53
+UPDATE covariate SET definitionkey = CONCAT('http://trials.drugis.org/', definitionkey) WHERE type = 'POPULATION_CHARACTERISTIC';
+--rollback UPDATE covariate SET definitionkey = RIGHT(definitionkey, 36) WHERE type = 'POPULATION_CHARACTERISTIC';

@@ -9,11 +9,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.covariates.CovariateRepository;
 import org.drugis.addis.exception.ResourceDoesNotExistException;
+import org.drugis.addis.interventions.model.AbstractIntervention;
 import org.drugis.addis.interventions.repository.InterventionRepository;
+import org.drugis.addis.interventions.service.InterventionService;
+import org.drugis.addis.interventions.service.impl.InvalidTypeForDoseCheckException;
 import org.drugis.addis.trialverse.model.*;
 import org.drugis.addis.trialverse.model.emun.*;
 import org.drugis.addis.trialverse.model.mapping.VersionedUuidAndOwner;
 import org.drugis.addis.trialverse.model.trialdata.CovariateStudyValue;
+import org.drugis.addis.trialverse.model.trialdata.TrialDataArm;
 import org.drugis.addis.trialverse.model.trialdata.TrialDataStudy;
 import org.drugis.addis.trialverse.service.QueryResultMappingService;
 import org.drugis.addis.trialverse.service.TriplestoreService;
@@ -84,6 +88,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Inject
   InterventionRepository interventionRepository;
+
+  @Inject
+  InterventionService interventionService;
 
   @Inject
   QueryResultMappingService queryResultMappingService;
@@ -503,15 +510,34 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
   @Override
-  public List<TrialDataStudy> getTrialData(String namespaceUid, String version, URI outcomeUri,
-                                           List<URI> interventionUris, List<String> covariateKeys) throws ReadValueException {
-    if(interventionUris.isEmpty()) {
+  public List<TrialDataStudy> getNetworkData(String namespaceUid, String version, URI outcomeUri,
+                                             List<URI> interventionUris, List<String> covariateKeys) throws ReadValueException {
+    return getTrialData(namespaceUid, version, "?graph", Collections.singletonList(outcomeUri), interventionUris, covariateKeys);
+  }
+
+  @Override
+  public List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, String version, List<URI> outcomeUris, List<URI> interventionUris) throws ReadValueException {
+    String graphSelector = studyUri == null ? null : "<" + studyUri.toString() + ">";
+    return getTrialData(namespaceUid, version, graphSelector, outcomeUris, interventionUris, Collections.emptyList());
+  }
+
+  @Override
+  public List<TrialDataStudy> getAllTrialData(String namespaceUid, String datasetVersion, List<URI> outcomeUris,
+                                              List<URI> interventionUris) throws ReadValueException {
+    return getTrialData(namespaceUid, datasetVersion, "?graph", outcomeUris, interventionUris, Collections.emptyList());
+  }
+
+  private List<TrialDataStudy> getTrialData(String namespaceUid, String version, String graphSelector, List<URI> outcomeUris,
+                                            List<URI> interventionUris, List<String> covariateKeys) throws ReadValueException {
+    if (interventionUris.isEmpty() || outcomeUris.isEmpty() || graphSelector == null) {
       return Collections.emptyList();
     }
     String interventionUnion = buildInterventionUnionString(interventionUris);
+    String outcomeUnion = buildOutcomeUnionString(outcomeUris);
     String query = TRIAL_DATA
-            .replace("$outcomeUri", outcomeUri.toString())
-            .replace("$interventionUnion", interventionUnion);
+            .replace("$graphSelector", graphSelector)
+            .replace("$outcomeUnionString", outcomeUnion)
+            .replace("$interventionUnionString", interventionUnion);
 
     ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
     JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
@@ -551,6 +577,34 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     }
 
     return new ArrayList<>(trialDataStudies.values());
+  }
+
+
+  @Override
+  public Optional<AbstractIntervention> findMatchingIncludedIntervention(List<AbstractIntervention> includedInterventions, TrialDataArm arm) {
+    return includedInterventions.stream().filter(i -> {
+      try {
+        return interventionService.isMatched(i, arm.getSemanticIntervention());
+      } catch (InvalidTypeForDoseCheckException e) {
+        e.printStackTrace();
+      }
+      return false;
+    }).findFirst();
+  }
+
+
+  @Override
+  public void addMatchingInformation(List<AbstractIntervention> includedInterventions, List<TrialDataStudy> trialData) {
+    for (TrialDataStudy study : trialData) {
+      for (TrialDataArm arm : study.getTrialDataArms()) {
+        Optional<AbstractIntervention> matchingIntervention = findMatchingIncludedIntervention(includedInterventions, arm);
+
+        if (matchingIntervention.isPresent()) {
+          arm.setMatchedProjectInterventionId(matchingIntervention.get().getId());
+        }
+
+      }
+    }
   }
 
   private Predicate<String> isStudyLevelCovariate(List<CovariateOption> covariateOptions) {
@@ -611,26 +665,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   }
 
 
-  @Override
-  public List<TrialDataStudy> getSingleStudyMeasurements(String namespaceUid, URI studyUri, String version, List<URI> outcomeUris, List<URI> interventionUids) throws ReadValueException {
-
-    if(interventionUids.isEmpty()) {
-      return Collections.emptyList();
-    }
-    String query = StringUtils.replace(SINGLE_STUDY_MEASUREMENTS, "$studyUri", studyUri.toString());
-    query = StringUtils.replace(query, "$outcomeUnionString", buildOutcomeUnionString(outcomeUris));
-    String interventionUn = buildInterventionUnionString(interventionUids);
-    query = StringUtils.replace(query, "$interventionUnionString", interventionUn);
-    logger.debug(query);
-
-    ResponseEntity<String> response = queryTripleStoreVersion(namespaceUid, query, version);
-    JSONArray bindings = JsonPath.read(response.getBody(), "$.results.bindings");
-
-    Map<URI, TrialDataStudy> trialDataStudyMap = queryResultMappingService.mapResultRowToTrialDataStudy(bindings);
-
-    return new ArrayList<>(trialDataStudyMap.values());
-  }
-
   private ResponseEntity<String> queryTripleStoreHead(String datasetUri, String query) {
     String datasetUuid = subStringAfterLastSymbol(datasetUri, '/');
 
@@ -646,7 +680,6 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, acceptSparqlResultsRequest, String.class);
   }
-
 
   private ResponseEntity<String> queryTripleStoreVersion(String namespaceUid, String query, String versionUri) {
     logger.debug("Triplestore uri = " + TRIPLESTORE_BASE_URI);
@@ -665,5 +698,4 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
     return restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, new HttpEntity<>(headers), String.class);
   }
-
 }

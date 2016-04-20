@@ -272,8 +272,7 @@ public class AnalysisServiceTest {
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
     List<URI> includedInterventionUids = Collections.singletonList(intervention1.getSemanticInterventionUri());
     List<String> includedCovariateUids = Collections.emptyList();
-    Measurement arm1Measurement = null;
-    Measurement arm2Measurement = null;
+
     URI drugInstance1 = URI.create("foo/druginstance1");
     URI drugConcept1 = intervention1.getSemanticInterventionUri();
     URI drugInstance2 = URI.create("foo/druginstance2");
@@ -288,13 +287,13 @@ public class AnalysisServiceTest {
     TrialDataStudy study1 = new TrialDataStudy(URI.create("studyUri"), "name", study1Arms);
     List<TrialDataStudy> trialData = Arrays.asList(study1);
     when(interventionService.isMatched(intervention1, arm1.getSemanticIntervention())).thenReturn(true);
-    when(triplestoreService.getTrialData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids))
+    when(triplestoreService.getNetworkData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids))
             .thenReturn(trialData);
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(project.getNamespaceUid());
 
     List<TrialDataStudy> trialDataStudies = analysisService.buildEvidenceTable(projectId, analysisId);
 
-    verify(triplestoreService).getTrialData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids);
+    verify(triplestoreService).getNetworkData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids);
 
     assertNotNull(trialDataStudies);
     assertEquals(1, trialDataStudies.size());

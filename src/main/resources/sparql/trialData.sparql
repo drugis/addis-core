@@ -42,17 +42,21 @@ SELECT DISTINCT
 ?minDoseUnitMultiplier
 (COALESCE(?treatmentTypeOptional, "http://trials.drugis.org/ontology#SimpleDrugTreatment") AS ?treatmentType)
 WHERE {
-  GRAPH ?graph {
+  BIND ($graphSelector AS ?graph) .
+  GRAPH $graphSelector {
     ?study rdfs:label ?studyName .
     ?study ontology:has_outcome ?outcomeInstance .
-    ?outcomeInstance ontology:of_variable [
-      owl:sameAs <$outcomeUri>
-    ] .
-    ?outcomeInstance a ?outcomeTypeUid .
-    ?outcomeInstance rdfs:label ?outcomeInstanceLabel .
-    $interventionUnion .
+    $outcomeUnionString .
+    ?outcomeInstance
+      rdfs:label ?outcomeInstanceLabel ;
+      a ?outcomeTypeUid ;
+      rdfs:label ?outcomeInstanceLabel ;
+      ontology:of_variable [
+        owl:sameAs ?outcomeTypeUri
+      ] .
+    $interventionUnionString .
   }
-  GRAPH ?graph {
+  GRAPH $graphSelector {
     ?drugInstance owl:sameAs ?drug .
     ?drugInstance rdfs:label ?interventionLabel .
     ?study ontology:has_arm ?arm .

@@ -207,14 +207,14 @@ public class ProblemServiceTest {
     List<URI> outcomeUris = Arrays.asList(outcome.getSemanticOutcomeUri(), secondOutcome.getSemanticOutcomeUri());
     List<URI> interventionUris = Arrays.asList(fluoxIntervention.getSemanticInterventionUri(), sertraIntervention.getSemanticInterventionUri());
 
-    when(triplestoreService.getSingleStudyMeasurements(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), outcomeUris, interventionUris)).thenReturn(studyResult);
+    when(triplestoreService.getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), outcomeUris, interventionUris)).thenReturn(studyResult);
 
     AbstractMeasurementEntry measurementEntry = mock(ContinuousMeasurementEntry.class);
     List<AbstractMeasurementEntry> performanceTable = Collections.singletonList(measurementEntry);
 
     List<AbstractIntervention> includedInterventions = Arrays.asList(fluoxIntervention, sertraIntervention);
     when(analysisService.getIncludedInterventions(singleStudyAnalysis)).thenReturn(includedInterventions);
-    when(analysisService.findMatchingIncludedIntervention(any(), any())).thenReturn(Optional.of(fluoxIntervention));
+    when(triplestoreService.findMatchingIncludedIntervention(any(), any())).thenReturn(Optional.of(fluoxIntervention));
 
     when(performanceTablebuilder.build(any())).thenReturn(performanceTable);
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
@@ -225,7 +225,7 @@ public class ProblemServiceTest {
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
 
-    verify(triplestoreService).getSingleStudyMeasurements(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), outcomeUris, interventionUris);
+    verify(triplestoreService).getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), outcomeUris, interventionUris);
     verify(performanceTablebuilder).build(any());
     verify(mappingService).getVersionedUuid(project.getNamespaceUid());
     verify(interventionRepository).query(project.getId());

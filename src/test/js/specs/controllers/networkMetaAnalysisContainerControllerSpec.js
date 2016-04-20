@@ -64,7 +64,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         name: 'intervention-name3',
         semanticInterventionUri: 'semanticInterventionUri3'
       }, ],
-      trialverseTrialDataResource,
+      EvidenceTableResource,
       mockModel = {
         id: 512,
         analysisId: 600
@@ -92,8 +92,8 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       outcomeResource.query.and.returnValue(mockOutcomes);
       interventionResource = jasmine.createSpyObj('InterventionResource', ['query']);
       interventionResource.query.and.returnValue(mockInterventions);
-      trialverseTrialDataResource = jasmine.createSpyObj('TrialverseTrialDataResource', ['query', 'get']);
-      trialverseTrialDataResource.query.and.returnValue(mockTrialData);
+      EvidenceTableResource = jasmine.createSpyObj('EvidenceTableResource', ['query', 'get']);
+      EvidenceTableResource.query.and.returnValue(mockTrialData);
       networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows',
         'transformTrialDataToNetwork', 'isNetworkDisconnected', 'addInclusionsToInterventions', 'changeArmExclusion',
         'buildInterventionInclusions', 'doesInterventionHaveAmbiguousArms', 'doesModelHaveAmbiguousArms', 'cleanUpExcludedArms',
@@ -132,7 +132,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         OutcomeResource: outcomeResource,
         InterventionResource: interventionResource,
         CovariateResource: covariateResource,
-        TrialverseTrialDataResource: trialverseTrialDataResource,
+        EvidenceTableResource: EvidenceTableResource,
         NetworkMetaAnalysisService: networkMetaAnalysisService,
         ModelResource: modelResource
       });
@@ -169,7 +169,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       });
       describe('and there is already an outcome defined on the analysis', function() {
         it('should get the tabledata and transform it to table rows and network', function() {
-          expect(trialverseTrialDataResource.query).toHaveBeenCalledWith({
+          expect(EvidenceTableResource.query).toHaveBeenCalledWith({
             projectId: mockProject.id,
             analysisId: mockAnalysis.id,
             outcomeUri: mockOutcomes[0].semanticOutcomeUri,
