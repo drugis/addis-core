@@ -10,19 +10,25 @@ public class CriterionEntry {
   private URI criterionUri;
   private List<Double> scale;
   private PartialValueFunction pvf;
+  private String title;
 
   public CriterionEntry(URI criterionUri) {
     this.criterionUri = criterionUri;
   }
 
-  public CriterionEntry(URI criterionUri, List<Double> scale, PartialValueFunction partialValueFunction) {
+  public CriterionEntry(URI criterionUri, String title, List<Double> scale, PartialValueFunction partialValueFunction) {
     this.criterionUri = criterionUri;
+    this.title = title;
     this.scale = scale;
     this.pvf = partialValueFunction;
   }
 
   public URI getCriterionUri() {
     return criterionUri;
+  }
+
+  public String getTitle() {
+    return title;
   }
 
   public List<Double> getScale() {
@@ -41,10 +47,10 @@ public class CriterionEntry {
     CriterionEntry that = (CriterionEntry) o;
 
     if (!criterionUri.equals(that.criterionUri)) return false;
-    if (pvf != null ? !pvf.equals(that.pvf) : that.pvf != null) return false;
     if (scale != null ? !scale.equals(that.scale) : that.scale != null) return false;
+    if (pvf != null ? !pvf.equals(that.pvf) : that.pvf != null) return false;
+    return title.equals(that.title);
 
-    return true;
   }
 
   @Override
@@ -52,6 +58,7 @@ public class CriterionEntry {
     int result = criterionUri.hashCode();
     result = 31 * result + (scale != null ? scale.hashCode() : 0);
     result = 31 * result + (pvf != null ? pvf.hashCode() : 0);
+    result = 31 * result + title.hashCode();
     return result;
   }
 }

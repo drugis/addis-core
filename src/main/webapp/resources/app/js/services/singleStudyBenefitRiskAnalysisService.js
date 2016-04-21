@@ -74,27 +74,47 @@ define(['lodash'], function(_) {
       }
     };
 
-    function isSameOutcome(studyOutcomeUri, selectedOutcome) {
-      var lastIndexOfSlash = studyOutcomeUri.lastIndexOf('/');
-      var idPart = studyOutcomeUri.substring(lastIndexOfSlash + 1);
-      return selectedOutcome.semanticOutcomeUri === idPart;
+    function isSameIntervention(studyInterventionUri, selectedIntervention) {
+      return selectedIntervention.semanticInterventionUri === studyInterventionUri;
     }
 
-    function isSameIntervention(studyInterventionUri, selectedIntervention) {
-      var lastIndexOfSlash = studyInterventionUri.lastIndexOf('/');
-      var idPart = studyInterventionUri.substring(lastIndexOfSlash + 1);
-      return selectedIntervention.semanticInterventionUri === idPart;
+    function noArmMatchingOutcome(selectedOutcome, trialDataArms) {
+      return !_.find(trialDataArms, function(arm) {
+        return _.find(arm.measurements, function(measurement) {
+          return measurement.variableConceptUri === selectedOutcome.semanticOutcomeUri;
+        });
+      });
+    }
+
+    function findMissingOutcomes(selectedOutcomes, trialDataArms) {
+      return _.filter(selectedOutcomes, function(selectedOutcome) {
+        return noArmMatchingOutcome(selectedOutcome, trialDataArms);
+      });
+    }
+
+    function noArmMatchingIntervention(intervention, trialDataArms) {
+      return !_.find(trialDataArms, function(arm) {
+        return intervention.id === arm.matchedProjectInterventionId;
+      });
+    }
+
+    function findMissingInterventions(selectedInterventions, trialDataArms) {
+      return _.filter(selectedInterventions, function(selectedIntervention) {
+        return noArmMatchingIntervention(selectedIntervention, trialDataArms);
+      });
     }
 
     var addMissingOutcomesToStudies = function(studies, selectedOutcomes) {
-      return _.each(studies, function(study) {
-        study.missingOutcomes = findMissing(selectedOutcomes, study.outcomeUids, isSameOutcome);
+      return studies.map(function(study) {
+        study.missingOutcomes = findMissingOutcomes(selectedOutcomes, study.trialDataArms);
+        return study;
       });
     };
 
     var addMissingInterventionsToStudies = function(studies, selectedInterventions) {
-      return _.each(studies, function(study) {
-        study.missingInterventions = findMissing(selectedInterventions, study.interventionUids, isSameIntervention);
+      return studies.map(function(study) {
+        study.missingInterventions = findMissingInterventions(selectedInterventions, study.trialDataArms);
+        return study;
       });
     };
 
