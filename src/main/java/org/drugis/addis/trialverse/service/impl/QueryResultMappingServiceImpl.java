@@ -46,10 +46,10 @@ public class QueryResultMappingServiceImpl implements QueryResultMappingService 
         String armLabel = readValue(row, "armLabel");
         trialDataArm = new TrialDataArm(armUri, armLabel, drugInstance, abstractSemanticIntervention);
         armCache.put(armUri, trialDataArm);
+        trialDataStudy.getTrialDataArms().add(trialDataArm);
       }
       Measurement measurement = readMeasurement(row, studyUri, armUri);
       trialDataArm.addMeasurement(measurement);
-      trialDataStudy.getTrialDataArms().add(trialDataArm);
     }
     return trialDataStudies;
   }
