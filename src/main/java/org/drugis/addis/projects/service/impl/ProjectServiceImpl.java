@@ -81,7 +81,7 @@ public class ProjectServiceImpl implements ProjectService {
             .map(Outcome::getSemanticOutcomeUri)
             .collect(Collectors.toList());
     List<TrialDataStudy> studies = triplestoreService.getAllTrialData(mappingService.getVersionedUuid(project.getNamespaceUid()), project.getDatasetVersion(), outcomeUris, interventionUris);
-    triplestoreService.addMatchingInformation(interventions, studies);
+    studies = triplestoreService.addMatchingInformation(interventions, studies);
     return studies;
   }
 }

@@ -248,7 +248,7 @@ public class AnalysisServiceTest {
   }
 
   @Test
-  public void buildEvidenceTable() throws ResourceDoesNotExistException, ReadValueException, InvalidTypeForDoseCheckException, URISyntaxException {
+  public void buildEvidenceTableTest() throws ResourceDoesNotExistException, ReadValueException, InvalidTypeForDoseCheckException, URISyntaxException {
 
     List<ArmExclusion> excludedArms = Collections.emptyList();
     int includedInterventionId = 101;
@@ -264,36 +264,37 @@ public class AnalysisServiceTest {
     Project project = new Project(projectId, owner, "proj", "desc", namespaceUid, version);
     when(projectRepository.get(projectId)).thenReturn(project);
     when(analysisRepository.get(analysisId)).thenReturn(networkMetaAnalysis);
-    AbstractIntervention intervention1 = new SimpleIntervention(includedInterventionId, projectId, "intervention1", "", new SemanticInterventionUriAndName(URI.create("semUri1"), "intervention 1"));
-    AbstractIntervention intervention2 = new SimpleIntervention(sirNotAppearingInThisFilmId, projectId, "intervention2", "", new SemanticInterventionUriAndName(URI.create("semUri2"), "intervention 2"));
-    List<AbstractIntervention> interventions = Arrays.asList(intervention1, intervention2);
+    AbstractIntervention includedIntervention = new SimpleIntervention(includedInterventionId, projectId, "includedIntervention", "", new SemanticInterventionUriAndName(URI.create("semUri1"), "intervention 1"));
+    AbstractIntervention notIncludedIntervention = new SimpleIntervention(sirNotAppearingInThisFilmId, projectId, "notIncludedIntervention", "", new SemanticInterventionUriAndName(URI.create("semUri2"), "intervention 2"));
+    List<AbstractIntervention> interventions = Arrays.asList(includedIntervention, notIncludedIntervention);
     List<Covariate> covariates = Collections.emptyList();
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
-    List<URI> includedInterventionUids = Collections.singletonList(intervention1.getSemanticInterventionUri());
+    List<URI> includedInterventionUids = Collections.singletonList(includedIntervention.getSemanticInterventionUri());
     List<String> includedCovariateUids = Collections.emptyList();
 
     URI drugInstance1 = URI.create("foo/druginstance1");
-    URI drugConcept1 = intervention1.getSemanticInterventionUri();
+    URI drugConcept1 = includedIntervention.getSemanticInterventionUri();
     URI drugInstance2 = URI.create("foo/druginstance2");
-    URI drugConcept2 = intervention2.getSemanticInterventionUri();
+    URI drugConcept2 = notIncludedIntervention.getSemanticInterventionUri();
     Dose minDose1 = new Dose(0.5, "P1D", URI.create("unitConceptUri"), "milligram", 0.001);
     Dose maxDose1 = new Dose(1.0, "P1D", URI.create("unitConceptUri"), "milligram", 0.001);
     AbstractSemanticIntervention arm1Intervention = new TitratedSemanticIntervention(drugInstance1, drugConcept1, minDose1, maxDose1);
     AbstractSemanticIntervention arm2Intervention = new SimpleSemanticIntervention(drugInstance2, drugConcept2);
     TrialDataArm arm1 = new TrialDataArm(URI.create("foo/armuri1"), "armname1", drugInstance1, arm1Intervention);
+    arm1.setMatchedProjectInterventionId(includedIntervention.getId());
     TrialDataArm arm2 = new TrialDataArm(URI.create("foo/armuri2"), "armname2", drugInstance2, arm2Intervention);
     List<TrialDataArm> study1Arms = Arrays.asList(arm1, arm2);
     TrialDataStudy study1 = new TrialDataStudy(URI.create("studyUri"), "name", study1Arms);
     List<TrialDataStudy> trialData = Arrays.asList(study1);
-    when(interventionService.isMatched(intervention1, arm1.getSemanticIntervention())).thenReturn(true);
+    when(triplestoreService.addMatchingInformation(Collections.singletonList(includedIntervention), trialData)).thenReturn(trialData);
     when(triplestoreService.getNetworkData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids))
             .thenReturn(trialData);
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(project.getNamespaceUid());
 
+    //EXEC
     List<TrialDataStudy> trialDataStudies = analysisService.buildEvidenceTable(projectId, analysisId);
 
-    verify(interventionService).isMatched(intervention1, arm1.getSemanticIntervention());
     verify(triplestoreService).getNetworkData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids);
 
     assertNotNull(trialDataStudies);
