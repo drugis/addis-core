@@ -843,16 +843,14 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
           isIncluded: true
         };
         var interventions = [intervention1, intervention2];
-        var trialData = {
-          trialDataStudies: [{
+        var trialData = [{
             studyUid: 'studyUid',
             trialDataArms: [{
               drugConceptUid: 'drugUri1'
             }, {
               drugConceptUid: 'drugUri2'
             }]
-          }]
-        };
+          }];
 
         var overlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap(analysis, interventions, trialData);
         expect(overlapMap).toEqual({});
@@ -879,16 +877,14 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
         };
 
         var interventions = [intervention1, intervention2, intervention3];
-        var trialData = {
-          trialDataStudies: [{
+        var trialData =  [{
             studyUid: 'studyUid',
             trialDataArms: [{
               drugConceptUid: 'drugUri1'
             }, {
               drugConceptUid: 'drugUri2'
             }]
-          }]
-        };
+          }];
         var expectedMap = {
           1: [intervention2],
           2: [intervention1]
