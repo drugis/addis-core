@@ -62,7 +62,6 @@ define(['lodash', 'angular'], function(_, angular) {
         }
 
         ++currentInterventionRow.interventionRowSpan;
-
         table[i] = row;
       }
 
@@ -89,11 +88,13 @@ define(['lodash', 'angular'], function(_, angular) {
       }
       var exclusionMap = buildExcludedArmsMap(analysis.excludedArms);
       angular.forEach(trialDataStudies, function(study) {
+
+        var numberOfMatchedInterventions = 0;
         var studyRows = [];
+
         angular.forEach(study.trialDataArms, function(trialDataArm) {
           var row = {};
           row.covariatesColumns = [];
-
           row.study = study.name;
           row.studyUri = study.studyUri;
           row.studyRowSpan = study.trialDataArms.length;
@@ -120,6 +121,7 @@ define(['lodash', 'angular'], function(_, angular) {
             });
             row.intervention = intervention.name;
             row.interventionId = intervention.id;
+            ++numberOfMatchedInterventions;
           } else {
             row.intervention = 'unmatched';
           }
@@ -129,10 +131,15 @@ define(['lodash', 'angular'], function(_, angular) {
           row.mu = outcomeMeasurement.mean;
           row.sigma = outcomeMeasurement.stdDev;
           row.sampleSize = outcomeMeasurement.sampleSize;
-
-          rows.push(row);
           studyRows.push(row);
         });
+        studyRows = studyRows.map(function(studyRow) {
+          studyRow.numberOfMatchedInterventions = numberOfMatchedInterventions;
+          return studyRow;
+        });
+
+        rows = rows.concat(studyRows);
+
       });
       return rows;
     }

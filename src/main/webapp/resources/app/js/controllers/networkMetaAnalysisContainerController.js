@@ -72,11 +72,7 @@ define(['lodash'], function(_) {
     };
 
     $scope.lessThanTwoInterventionArms = function(dataRow) {
-      var matchedAndIncludedRows = _.filter(dataRow.studyRows, function(studyRow) {
-        return studyRow.intervention !== 'unmatched' && studyRow.included;
-      });
-      var matchedInterventions = _.uniq(_.map(matchedAndIncludedRows, 'intervention'));
-      return matchedInterventions.length < 2;
+      return dataRow.numberOfMatchedInterventions < 2;
     };
 
     $scope.hasIncludedStudies = function() {
