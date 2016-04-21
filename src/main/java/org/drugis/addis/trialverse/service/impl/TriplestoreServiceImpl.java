@@ -260,7 +260,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return getQueryResultList(namespaceUid, query);
   }
 
-  public Integer tryParseInt(String str) {
+  private Integer tryParseInt(String str) {
     try {
       return Integer.parseInt(str);
     } catch (NumberFormatException e) {
@@ -268,7 +268,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     }
   }
 
-  public Long tryParseLong(String str) {
+  private Long tryParseLong(String str) {
     try {
       return Long.parseLong(str);
     } catch (NumberFormatException e) {
@@ -276,7 +276,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     }
   }
 
-  public Double tryParseDouble(String str) {
+  private Double tryParseDouble(String str) {
     try {
       return Double.parseDouble(str);
     } catch (NumberFormatException e) {
@@ -461,7 +461,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     String indication = row.containsKey("indication") ? JsonPath.<String>read(binding, "$.indication.value") : null;
     String objective = row.containsKey("objective") ? JsonPath.<String>read(binding, "$.objective.value") : null;
     String investigationalDrugNames = row.containsKey("drugNames") ? JsonPath.<String>read(binding, "$.drugNames.value") : null;
-    Integer numberOfArms = row.containsKey("numberOfArms") ? Integer.parseInt(JsonPath.<String>read(binding, "$.numberOfArms.value")) : null;
+    Integer numberOfArms = row.containsKey("numberOfArms") ? Integer.parseInt(JsonPath.read(binding, "$.numberOfArms.value")) : null;
 
     DateTimeFormatter formatter = DateTimeFormat.forPattern(STUDY_DATE_FORMAT);
     DateTime startDate = row.containsKey("startDate") ? formatter.parseDateTime(JsonPath.<String>read(binding, "$.startDate.value")).toDateMidnight().toDateTime() : null;

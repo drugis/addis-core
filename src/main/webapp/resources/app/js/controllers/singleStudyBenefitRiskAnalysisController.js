@@ -2,13 +2,13 @@
 define(['angular', 'lodash'], function(angular, _) {
   var dependencies = ['$scope', '$stateParams', '$state', '$window',
     'currentAnalysis', 'currentProject',
-    'OutcomeResource', 'InterventionResource', 'TrialverseStudyResource',
+    'OutcomeResource', 'InterventionResource',
     'SingleStudyBenefitRiskAnalysisService', 'DEFAULT_VIEW', 'AnalysisResource',
     'ProjectStudiesResource'
   ];
   var SingleStudyBenefitRiskAnalysisController = function($scope, $stateParams,
     $state, $window, currentAnalysis, currentProject, OutcomeResource,
-    InterventionResource, TrialverseStudyResource, SingleStudyBenefitRiskAnalysisService,
+    InterventionResource, SingleStudyBenefitRiskAnalysisService,
     DEFAULT_VIEW, AnalysisResource, ProjectStudiesResource) {
 
     var deregisterOutcomeWatch, deregisterInterventionWatch;
@@ -37,15 +37,6 @@ define(['angular', 'lodash'], function(angular, _) {
       projectId: $stateParams.projectId
     };
 
-    var projectNamespaceUid = {
-      namespaceUid: $scope.project.namespaceUid,
-      version: $scope.project.datasetVersion
-    };
-
-    $scope.evidenceTable = ProjectStudiesResource.query({
-      projectId: currentProject.id
-    });
-
     var isIdEqual = function(left, right) {
       return left.id === right.id;
     };
@@ -70,7 +61,7 @@ define(['angular', 'lodash'], function(angular, _) {
     };
 
     function outcomesChanged() {
-      SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
+      $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
       SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
 
@@ -82,7 +73,7 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     function interventionsChanged() {
-      SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
+      $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
@@ -120,43 +111,36 @@ define(['angular', 'lodash'], function(angular, _) {
       });
     });
 
-    TrialverseStudyResource.query(projectNamespaceUid).$promise.then(function(studies) {
+    ProjectStudiesResource.query({
+      projectId: currentProject.id
+    }).$promise.then(function(studies) {
       $scope.studies = studies;
       $scope.studyArrayLength = studies.length;
 
       $scope.studyModel.selectedStudy = _.find(studies, function(study) {
-        return study.studyGraphUid === $scope.analysis.studyGraphUid;
+        return study.studyUri === $scope.analysis.studyGraphUri;
       });
 
-      _.each(studies, function(study) {
-        study.interventionUids = compileListOfInterventionUids(study);
-      });
-
-      SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
-      SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
+      $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
+      $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
     });
 
-    function compileListOfInterventionUids(study) {
-      var interventionUids = [];
-
-      _.each(study.treatmentArms, function(treatmentArm) {
-        interventionUids = interventionUids.concat(treatmentArm.interventionUids);
-      });
-
-      return interventionUids;
-    }
-
-    function saveAnalysis() {
-      var saveCommand = angular.copy($scope.analysis);
+    function analysisToSaveCommand(analysis) {
+      var saveCommand = angular.copy(analysis);
       saveCommand.interventionInclusions = saveCommand.interventionInclusions.map(function(intervention) {
         return {
           interventionId: intervention.id,
           analysisId: saveCommand.id
         };
       });
+      return saveCommand;
+    }
+
+    function saveAnalysis() {
+      var saveCommand = analysisToSaveCommand($scope.analysis);
       AnalysisResource.save(saveCommand, function() {
         // necessary because angular-select uses $watchcollection instead of $watch
         $scope.studies = $scope.studies.splice(0, $scope.studyArrayLength);
@@ -164,7 +148,7 @@ define(['angular', 'lodash'], function(angular, _) {
     }
 
     $scope.onStudySelect = function(item) {
-      $scope.analysis.studyGraphUid = item.studyGraphUid;
+      $scope.analysis.studyGraphUri = item.studyUri;
       saveAnalysis();
     };
 
@@ -191,7 +175,8 @@ define(['angular', 'lodash'], function(angular, _) {
       }
       SingleStudyBenefitRiskAnalysisService.getProblem($scope.analysis).then(function(problem) {
         $scope.analysis.problem = problem;
-        AnalysisResource.save($scope.analysis).$promise.then(function(response) {
+        var saveCommand = analysisToSaveCommand($scope.analysis);
+        AnalysisResource.save(saveCommand).$promise.then(function(response) {
           $scope.analysis = response;
           $scope.workspace = response;
           $scope.goToDefaultScenarioView();

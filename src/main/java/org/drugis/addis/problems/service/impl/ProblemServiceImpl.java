@@ -362,10 +362,13 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException {
-    final List<URI> outcomeUris = analysis.getSelectedOutcomes().stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toList());
+    final List<URI> outcomeUris = analysis.getSelectedOutcomes()
+            .stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toList());
     final List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
     final Map<Integer, AbstractIntervention> interventionMap = interventions
             .stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
+    final Map<URI, Outcome> outcomesByUriMap = analysis.getSelectedOutcomes()
+            .stream().collect(Collectors.toMap(Outcome::getSemanticOutcomeUri, Function.identity()));
 
     final List<URI> alternativeUris = analysis.getInterventionInclusions()
             .stream().map(intervention -> interventionMap.get(intervention.getInterventionId()).getSemanticInterventionUri())
@@ -391,7 +394,7 @@ public class ProblemServiceImpl implements ProblemService {
       alternatives.put(drugInstanceUri, new AlternativeEntry(drugInstanceUri, alternativeName));
       for (Measurement measurement : measurements) {
         measurementDrugInstancePairs.add(Pair.of(measurement, drugInstanceUri));
-        CriterionEntry criterionEntry = createCriterionEntry(measurement);
+        CriterionEntry criterionEntry = createCriterionEntry(measurement, outcomesByUriMap.get(measurement.getVariableConceptUri()));
         criteria.put(measurement.getVariableUri(), criterionEntry);
       }
 
@@ -405,7 +408,7 @@ public class ProblemServiceImpl implements ProblemService {
     return new SingleStudyBenefitRiskProblem(analysis.getTitle(), alternatives, criteria, performanceTable);
   }
 
-  private CriterionEntry createCriterionEntry(Measurement measurement) throws EnumConstantNotPresentException {
+  private CriterionEntry createCriterionEntry(Measurement measurement, Outcome outcome) throws EnumConstantNotPresentException {
     List<Double> scale;
     if (measurement.getRate() != null) { // rate measurement
       scale = Arrays.asList(0.0, 1.0);
@@ -415,7 +418,7 @@ public class ProblemServiceImpl implements ProblemService {
       throw new RuntimeException("Invalid measurement");
     }
     // NB: partialvaluefunctions to be filled in by MCDA component, left null here
-    return new CriterionEntry(measurement.getVariableUri(), scale, null);
+    return new CriterionEntry(measurement.getVariableUri(), outcome.getName(), scale, null);
   }
 
 
