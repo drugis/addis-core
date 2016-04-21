@@ -171,11 +171,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
         it('should get the tabledata and transform it to table rows and network', function() {
           expect(EvidenceTableResource.query).toHaveBeenCalledWith({
             projectId: mockProject.id,
-            analysisId: mockAnalysis.id,
-            outcomeUri: mockOutcomes[0].semanticOutcomeUri,
-            interventionUris: [],
-            covariateKeys: [],
-            version: mockProject.datasetVersion
+            analysisId: mockAnalysis.id
           });
           trialverseTrialDataDeferred.resolve();
           scope.$apply();
