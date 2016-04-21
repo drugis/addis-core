@@ -90,6 +90,7 @@ define(['lodash', 'angular'], function(_, angular) {
       angular.forEach(trialDataStudies, function(study) {
 
         var numberOfMatchedInterventions = 0;
+        var numberOfIncludedInterventions = 0;
         var studyRows = [];
 
         angular.forEach(study.trialDataArms, function(trialDataArm) {
@@ -113,7 +114,7 @@ define(['lodash', 'angular'], function(_, angular) {
           row.drugConceptUid = trialDataArm.semanticIntervention.drugConcept;
           row.arm = trialDataArm.name;
           row.trialverseUid = trialDataArm.uri;
-          row.included = !exclusionMap[trialDataArm.uri] && row.intervention !== 'unmatched';
+
 
           if (trialDataArm.matchedProjectInterventionId !== null) {
             var intervention = _.find(interventions, function(intervention) {
@@ -126,6 +127,11 @@ define(['lodash', 'angular'], function(_, angular) {
             row.intervention = 'unmatched';
           }
 
+          row.included = !exclusionMap[trialDataArm.uri] && row.intervention !== 'unmatched';
+          if(row.included){
+            ++numberOfIncludedInterventions;
+          }
+
           var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataArm);
           row.rate = outcomeMeasurement.rate;
           row.mu = outcomeMeasurement.mean;
@@ -135,6 +141,7 @@ define(['lodash', 'angular'], function(_, angular) {
         });
         studyRows = studyRows.map(function(studyRow) {
           studyRow.numberOfMatchedInterventions = numberOfMatchedInterventions;
+          studyRow.numberOfIncludedInterventions = numberOfIncludedInterventions;
           return studyRow;
         });
 
@@ -165,7 +172,7 @@ define(['lodash', 'angular'], function(_, angular) {
       return _.map(trialDataStudies, function(study) {
         var copiedStudy = angular.copy(study);
         copiedStudy.trialDataArms = _.filter(study.trialDataArms, function(arm) {
-          return !exclusionMap[arm.uid];
+          return !exclusionMap[arm.uri];
         });
         return copiedStudy;
       });
@@ -378,16 +385,16 @@ define(['lodash', 'angular'], function(_, angular) {
       angular.forEach(trialDataStudies, function(trialDataStudy) {
         var drugUidForInterventionInStudy;
 
-        angular.forEach(trialDataStudy.trialDataInterventions, function(trialDataIntervention) {
-          if (trialDataIntervention.drugConceptUid === intervention.semanticInterventionUri) {
-            drugUidForInterventionInStudy = trialDataIntervention.semanticIntervention.drugConcept;
+        angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
+          if (trialDataArm.semanticIntervention.drugConcept === intervention.semanticInterventionUri) {
+            drugUidForInterventionInStudy = trialDataArm.semanticIntervention.drugConcept;
           }
         });
 
         if (drugUidForInterventionInStudy) {
           angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
             if (trialDataArm.semanticIntervention.drugConcept === drugUidForInterventionInStudy) {
-              armsMatchingIntervention[trialDataArm.id] = true;
+              armsMatchingIntervention[trialDataArm.uri] = true;
             }
           });
         }
@@ -462,7 +469,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
           var includedArms = _.filter(study.trialDataArms, function(arm) {
             return !_.find(analysis.excludedArms, function(exclusion) {
-              return exclusion.trialverseUid === arm.uid;
+              return exclusion.trialverseUid === arm.uri;
             });
           });
 
