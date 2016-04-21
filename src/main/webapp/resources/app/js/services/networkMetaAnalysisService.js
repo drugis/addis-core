@@ -76,12 +76,18 @@ define(['lodash', 'angular'], function(_, angular) {
       }, {});
     }
 
-    function buildTableFromTrialData(trialDataStudies, interventions, excludedArms, covariates, treatmentOverlapMap) {
+    function getOutcomeMeasurement(analysis, trialDataArm) {
+      return _.find(trialDataArm.measurements, function(measurement) {
+        return analysis.outcome.semanticOutcomeUri === measurement.variableConceptUri;
+      });
+    }
+
+    function buildTableFromTrialData(trialDataStudies, interventions, analysis, covariates, treatmentOverlapMap) {
       var rows = [];
       if (interventions.length < 1) {
         return rows;
       }
-      var exclusionMap = buildExcludedArmsMap(excludedArms);
+      var exclusionMap = buildExcludedArmsMap(analysis.excludedArms);
       angular.forEach(trialDataStudies, function(study) {
         var studyRows = [];
         angular.forEach(study.trialDataArms, function(trialDataArm) {
@@ -118,10 +124,11 @@ define(['lodash', 'angular'], function(_, angular) {
             row.intervention = 'unmatched';
           }
 
-          row.rate = trialDataArm.measurement.rate;
-          row.mu = trialDataArm.measurement.mean;
-          row.sigma = trialDataArm.measurement.stdDev;
-          row.sampleSize = trialDataArm.measurement.sampleSize;
+          var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataArm);
+          row.rate = outcomeMeasurement.rate;
+          row.mu = outcomeMeasurement.mean;
+          row.sigma = outcomeMeasurement.stdDev;
+          row.sampleSize = outcomeMeasurement.sampleSize;
 
           rows.push(row);
           studyRows.push(row);
@@ -157,13 +164,11 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     }
 
-    function sumInterventionSampleSizes(trialData, intervention, outcome) {
+    function sumInterventionSampleSizes(trialData, intervention, analysis) {
       var interventionSum = _.reduce(trialData, function(sum, trialDataStudy) {
         angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
           if (trialDataArm.matchedProjectInterventionId === intervention.id) {
-            var outcomeMeasurement = _.find(trialDataArm.measurements, function(measurement) {
-              return outcome.semanticOutcomeUri === measurement.variableConceptUri;
-            });
+            var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataArm);
             sum += outcomeMeasurement.sampleSize;
           }
         });
@@ -205,7 +210,7 @@ define(['lodash', 'angular'], function(_, angular) {
       network.interventions = _.map(interventions, function(intervention) {
         return {
           name: intervention.name,
-          sampleSize: sumInterventionSampleSizes(validTrialData, intervention, analysis.outcome)
+          sampleSize: sumInterventionSampleSizes(validTrialData, intervention, analysis)
         };
       });
       network.edges = attachStudiesForEdges(network.edges, validTrialData);
@@ -215,8 +220,8 @@ define(['lodash', 'angular'], function(_, angular) {
       return network;
     }
 
-    function transformTrialDataToTableRows(trialData, interventions, excludedArms, covariates, treatmentOverlapMap) {
-      var tableRows = buildTableFromTrialData(trialData, interventions, excludedArms, covariates, treatmentOverlapMap);
+    function transformTrialDataToTableRows(trialData, interventions, analysis, covariates, treatmentOverlapMap) {
+      var tableRows = buildTableFromTrialData(trialData, interventions, analysis, covariates, treatmentOverlapMap);
       tableRows = sortTableByStudyAndIntervention(tableRows);
       tableRows = addRenderingHintsToTable(tableRows);
       return tableRows;
