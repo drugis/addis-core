@@ -108,14 +108,13 @@ define(['lodash', 'angular'], function(_, angular) {
           row.trialverseUid = trialDataArm.uri;
           row.included = !exclusionMap[trialDataArm.uri] && row.intervention !== 'unmatched';
 
-          if(trialDataArm.matchedProjectInterventionId !== null){
-            var intervention = _.find(interventions, function(intervention){
+          if (trialDataArm.matchedProjectInterventionId !== null) {
+            var intervention = _.find(interventions, function(intervention) {
               return trialDataArm.matchedProjectInterventionId === intervention.id;
             });
             row.intervention = intervention.name;
             row.interventionId = intervention.id;
-          }
-          else {
+          } else {
             row.intervention = 'unmatched';
           }
 
@@ -158,11 +157,14 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     }
 
-    function sumInterventionSampleSizes(trialData, intervention) {
+    function sumInterventionSampleSizes(trialData, intervention, outcome) {
       var interventionSum = _.reduce(trialData, function(sum, trialDataStudy) {
         angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
-          if (trialDataArm.matchedProjectInterventionId == intervention.id) {
-            sum += trialDataArm.measurement.sampleSize;
+          if (trialDataArm.matchedProjectInterventionId === intervention.id) {
+            var outcomeMeasurement = _.find(trialDataArm.measurements, function(measurement) {
+              return outcome.semanticOutcomeUri === measurement.variableConceptUri;
+            });
+            sum += outcomeMeasurement.sampleSize;
           }
         });
         return sum;
@@ -192,18 +194,18 @@ define(['lodash', 'angular'], function(_, angular) {
     }
 
 
-    function transformTrialDataToNetwork(trialDataStudies, interventions, excludedArms) {
+    function transformTrialDataToNetwork(trialDataStudies, interventions, analysis) {
       var network = {
         interventions: [],
         edges: AnalysisService.generateEdges(interventions)
       };
-      var validTrialData = filterExcludedArms(trialDataStudies, excludedArms);
+      var validTrialData = filterExcludedArms(trialDataStudies, analysis.excludedArms);
       validTrialData = filterStudiesHavingLessThanTwoMatchedInterventions(validTrialData);
 
       network.interventions = _.map(interventions, function(intervention) {
         return {
           name: intervention.name,
-          sampleSize: sumInterventionSampleSizes(validTrialData, intervention)
+          sampleSize: sumInterventionSampleSizes(validTrialData, intervention, analysis.outcome)
         };
       });
       network.edges = attachStudiesForEdges(network.edges, validTrialData);
@@ -295,8 +297,8 @@ define(['lodash', 'angular'], function(_, angular) {
     function doesModelHaveAmbiguousArms(trialDataStudies, analysis) {
       function doesStudyHaveAmbiguousArms(trialDataStudy) {
         var interventionCounts = trialDataStudy.trialDataArms.reduce(function(acc, arm) {
-          if(arm.matchedProjectInterventionId !== null && isArmIncluded(analysis, arm)) {
-            if(acc[arm.matchedProjectInterventionId]) {
+          if (arm.matchedProjectInterventionId !== null && isArmIncluded(analysis, arm)) {
+            if (acc[arm.matchedProjectInterventionId]) {
               ++acc[arm.matchedProjectInterventionId];
             } else {
               acc[arm.matchedProjectInterventionId] = 1;
@@ -305,7 +307,7 @@ define(['lodash', 'angular'], function(_, angular) {
           return acc;
         }, {});
         return _.find(interventionCounts, function(count) {
-          return count > 1 ;
+          return count > 1;
         });
       }
 
@@ -318,6 +320,7 @@ define(['lodash', 'angular'], function(_, angular) {
       if (interventionId === null) {
         return false;
       }
+
       function isArmIncluded(trialDataArm) {
         return !_.find(analysis.excludedArms, function(exclusion) {
           return exclusion.trialverseUid === trialDataArm.uri;

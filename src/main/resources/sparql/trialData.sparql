@@ -16,8 +16,9 @@ SELECT DISTINCT
 ?drug
 ?interventionLabel
 ?drugInstance
+?outcomeTypeUri
 ?outcomeInstance
-?variableConceptUri
+?outcomeTypeUid
 ?outcomeInstanceLabel
 ?arm
 ?armLabel
@@ -49,7 +50,7 @@ WHERE {
     $outcomeUnionString .
     ?outcomeInstance
       rdfs:label ?outcomeInstanceLabel ;
-      a ?variableConceptUri ;
+      a ?outcomeTypeUid ;
       rdfs:label ?outcomeInstanceLabel ;
       ontology:of_variable [
         owl:sameAs ?outcomeTypeUri

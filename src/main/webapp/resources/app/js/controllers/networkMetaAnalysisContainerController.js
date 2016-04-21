@@ -50,7 +50,7 @@ define(['lodash'], function(_) {
       ])
       .then(function() {
         $scope.hasModel = $scope.models.length > 0;
-        $scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.includedInterventions);
+        $scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions($scope.interventions, $scope.analysis.interventionInclusions);
         $scope.covariates = NetworkMetaAnalysisService.addInclusionsToCovariates($scope.covariates, $scope.analysis.includedCovariates);
         if (!$scope.analysis.outcome && $scope.outcomes.length > 0) {
           // set first outcome as default outcome
@@ -122,7 +122,7 @@ define(['lodash'], function(_) {
     };
 
     $scope.changeInterventionInclusion = function(intervention) {
-      $scope.analysis.includedInterventions = NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);
+      $scope.analysis.interventionInclusions = NetworkMetaAnalysisService.buildInterventionInclusions($scope.interventions, $scope.analysis);
       if ($scope.trialverseData && !intervention.isIncluded) {
         $scope.analysis.excludedArms = NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, $scope.analysis, $scope.trialverseData);
       }
@@ -178,7 +178,7 @@ define(['lodash'], function(_) {
 
     function updateNetwork() {
       var includedInterventions = getIncludedInterventions($scope.interventions);
-      $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis.excludedArms);
+      $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis);
       $scope.isNetworkDisconnected = NetworkMetaAnalysisService.isNetworkDisconnected($scope.networkGraph.network);
     }
 
