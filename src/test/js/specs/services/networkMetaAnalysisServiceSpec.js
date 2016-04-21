@@ -1,64 +1,67 @@
 define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
 
   var exampleStudies = [{
-    "studyUri": "http://trials.drugis.org/graphs/favaUri",
-    "name": "Fava et al, 2002",
-    "trialDataArms": [{
-      "uri": "http://trials.drugis.org/instances/fava-parox-arm",
-      "name": "Paroxetine",
-      "drugInstance": "http://trials.drugis.org/instances/parox-instance",
-      "measurement": {
-        "studyUid": "http://trials.drugis.org/graphs/favaUri",
-        "variableUri": "http://trials.drugis.org/instances/hamd-instance",
-        "armUri": "http://trials.drugis.org/instances/fava-parox-arm",
-        "sampleSize": 96,
-        "rate": 64,
-        "stdDev": null,
-        "mean": null
+    'studyUri': 'http://trials.drugis.org/graphs/favaUri',
+    'name': 'Fava et al, 2002',
+    'trialDataArms': [{
+      'uri': 'http://trials.drugis.org/instances/fava-parox-arm',
+      'name': 'Paroxetine',
+      'drugInstance': 'http://trials.drugis.org/instances/parox-instance',
+      'measurements': [{
+        'studyUid': 'http://trials.drugis.org/graphs/favaUri',
+        'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
+        'variableConceptUri': 'variableConceptUri',
+        'armUri': 'http://trials.drugis.org/instances/fava-parox-arm',
+        'sampleSize': 96,
+        'rate': 64,
+        'stdDev': null,
+        'mean': null
+      }],
+      'semanticIntervention': {
+        'drugInstance': 'http://trials.drugis.org/instances/parox-instance',
+        'drugConcept': 'http://trials.drugis.org/concepts/parox-concept'
       },
-      "semanticIntervention": {
-        "drugInstance": "http://trials.drugis.org/instances/parox-instance",
-        "drugConcept": "http://trials.drugis.org/concepts/parox-concept"
-      },
-      "matchedProjectInterventionId": 2
+      'matchedProjectInterventionId': 2
     }, {
-      "uri": "http://trials.drugis.org/instances/fava-sertra-arm",
-      "name": "Sertraline",
-      "drugInstance": "http://trials.drugis.org/instances/sertra-instance",
-      "measurement": {
-        "studyUid": "http://trials.drugis.org/graphs/favaUri",
-        "variableUri": "http://trials.drugis.org/instances/hamd-instance",
-        "armUri": "http://trials.drugis.org/instances/fava-sertra-arm",
-        "sampleSize": 96,
-        "rate": 70,
-        "stdDev": null,
-        "mean": null
+      'uri': 'http://trials.drugis.org/instances/fava-sertra-arm',
+      'name': 'Sertraline',
+      'drugInstance': 'http://trials.drugis.org/instances/sertra-instance',
+      'measurements': [{
+        'studyUid': 'http://trials.drugis.org/graphs/favaUri',
+        'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
+        'variableConceptUri': 'variableConceptUri',
+        'armUri': 'http://trials.drugis.org/instances/fava-sertra-arm',
+        'sampleSize': 96,
+        'rate': 70,
+        'stdDev': null,
+        'mean': null
+      }],
+      'semanticIntervention': {
+        'drugInstance': 'http://trials.drugis.org/instances/sertra-instance',
+        'drugConcept': 'http://trials.drugis.org/concepts/sertra-concept'
       },
-      "semanticIntervention": {
-        "drugInstance": "http://trials.drugis.org/instances/sertra-instance",
-        "drugConcept": "http://trials.drugis.org/concepts/sertra-concept"
-      },
-      "matchedProjectInterventionId": 3
+      'matchedProjectInterventionId': 3
     }, {
-      "uri": "http://trials.drugis.org/instances/fava-arm-1-uri",
-      "name": "Fluoxetine",
-      "drugInstance": "http://trials.drugis.org/instances/fluoxInstance",
-      "measurement": {
-        "studyUid": "http://trials.drugis.org/graphs/favaUri",
-        "variableUri": "http://trials.drugis.org/instances/hamd-instance",
-        "armUri": "http://trials.drugis.org/instances/fava-arm-1-uri",
-        "sampleSize": 92,
-        "rate": 57,
-        "stdDev": null,
-        "mean": null
+      'uri': 'http://trials.drugis.org/instances/fava-arm-1-uri',
+      'name': 'Fluoxetine',
+      'drugInstance': 'http://trials.drugis.org/instances/fluoxInstance',
+      'measurements': [{
+        'studyUid': 'http://trials.drugis.org/graphs/favaUri',
+        'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
+        'variableConceptUri': 'variableConceptUri',
+        'armUri': 'http://trials.drugis.org/instances/fava-arm-1-uri',
+        'sampleSize': 92,
+        'rate': 57,
+        'stdDev': null,
+        'mean': null
+      }],
+      'semanticIntervention': {
+        'drugInstance': 'http://trials.drugis.org/instances/fluoxInstance',
+        'drugConcept': 'http://trials.drugis.org/concepts/fluox-concept'
       },
-      "semanticIntervention": {
-        "drugInstance": "http://trials.drugis.org/instances/fluoxInstance",
-        "drugConcept": "http://trials.drugis.org/concepts/fluox-concept"
-      },
-      "matchedProjectInterventionId": 1
+      'matchedProjectInterventionId': 1
     }],
-    "covariateValues": [{
+    'covariateValues': [{
       'covariateKey': 'COVARIATE_KEY',
       value: 123
     }]
@@ -395,13 +398,20 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
 
       beforeEach(module('addis.services'));
 
-      fit('should construct table rows from the list of trialDataStudies',
+      it('should construct table rows from the list of trialDataStudies',
         inject(function(NetworkMetaAnalysisService) {
 
           var trialVerseStudyData = exampleStudies;
           var treatmentOverlapMap = {};
           var interventions = exampleInterventions();
           var excludedArms = [];
+          var analysis = {
+            excludedArms: excludedArms,
+            outcome: {
+              semanticOutcomeUri: 'variableConceptUri'
+            }
+          };
+
           var covariates = [{
             isIncluded: false
           }, {
@@ -413,7 +423,7 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
           }];
 
           // Execute
-          var resultRows = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialVerseStudyData, interventions, excludedArms, covariates, treatmentOverlapMap);
+          var resultRows = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialVerseStudyData, interventions, analysis, covariates, treatmentOverlapMap);
 
           expect(resultRows[1]).toEqual({
             covariatesColumns: [{
@@ -433,6 +443,7 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
             mu: null,
             sigma: null,
             sampleSize: 96,
+            numberOfMatchedInterventions: 3,
             firstInterventionRow: true,
             interventionRowSpan: 1
           });
@@ -456,6 +467,7 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
             mu: null,
             sigma: null,
             sampleSize: 96,
+            numberOfMatchedInterventions: 3,
             firstInterventionRow: true,
             interventionRowSpan: 1
           });
@@ -481,7 +493,7 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
             sampleSize: 92,
             firstInterventionRow: true,
             firstStudyRow: true,
-            interventionRowSpan: 1
+            numberOfMatchedInterventions: 3,
           });
         })
       );
