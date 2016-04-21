@@ -594,7 +594,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
 
   @Override
-  public void addMatchingInformation(List<AbstractIntervention> includedInterventions, List<TrialDataStudy> trialData) {
+  public List<TrialDataStudy> addMatchingInformation(List<AbstractIntervention> includedInterventions, List<TrialDataStudy> trialData) {
     for (TrialDataStudy study : trialData) {
       for (TrialDataArm arm : study.getTrialDataArms()) {
         Optional<AbstractIntervention> matchingIntervention = findMatchingIncludedIntervention(includedInterventions, arm);
@@ -605,6 +605,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
       }
     }
+    return trialData;
   }
 
   private Predicate<String> isStudyLevelCovariate(List<CovariateOption> covariateOptions) {

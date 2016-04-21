@@ -149,8 +149,6 @@ public class ProblemServiceTest {
 
   @Test
   public void testGetSingleStudyBenefitRiskProblem() throws ResourceDoesNotExistException, URISyntaxException, SQLException, IOException, ReadValueException, InvalidTypeForDoseCheckException {
-
-
     URI secondOutcomeUri = URI.create("http://secondSemantic");
     SemanticVariable secondSemanticOutcome = new SemanticVariable(secondOutcomeUri, "second semantic outcome");
     Outcome secondOutcome = new Outcome(-303, projectId, "second outcome", "very", secondSemanticOutcome);
@@ -224,17 +222,20 @@ public class ProblemServiceTest {
 
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
-
     verify(triplestoreService).getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), outcomeUris, interventionUris);
+    verify(triplestoreService).findMatchingIncludedIntervention(includedInterventions, daanEtAlFluoxArm);
+    verify(triplestoreService).findMatchingIncludedIntervention(includedInterventions, daanEtAlSertraArm);
     verify(performanceTablebuilder).build(any());
     verify(mappingService).getVersionedUuid(project.getNamespaceUid());
     verify(interventionRepository).query(project.getId());
+
     Pair<Measurement, URI> pair1 = Pair.of(daanEtAlFluoxMeasurement1, daanEtAlFluoxArm.getDrugInstance());
     Pair<Measurement, URI> pair2 = Pair.of(daanEtAlFluoxMeasurement2, daanEtAlFluoxArm.getDrugInstance());
     Pair<Measurement, URI> pair3 = Pair.of(daanEtAlSertraMeasurement1, daanEtAlSertraArm.getDrugInstance());
     Pair<Measurement, URI> pair4 = Pair.of(daanEtAlSertraMeasurement2, daanEtAlSertraArm.getDrugInstance());
     List<Pair<Measurement, URI>> instancePairs = Arrays.asList(pair1, pair2, pair3, pair4);
     verify(performanceTablebuilder).build(instancePairs);
+
     assertNotNull(actualProblem);
     assertNotNull(actualProblem.getTitle());
     assertEquals(singleStudyAnalysis.getTitle(), actualProblem.getTitle());

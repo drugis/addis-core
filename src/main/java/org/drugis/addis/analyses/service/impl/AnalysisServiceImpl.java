@@ -243,7 +243,7 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
     // add matching data;
-    triplestoreService.addMatchingInformation(includedInterventions, trialData);
+    trialData = triplestoreService.addMatchingInformation(includedInterventions, trialData);
 
     return trialData;
   }
