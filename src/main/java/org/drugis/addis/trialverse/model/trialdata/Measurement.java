@@ -6,6 +6,7 @@ public class Measurement {
 
   private URI studyUid;
   private URI variableUri;
+  private URI variableConceptUri;
   private URI armUri;
   private Integer sampleSize;
   private Integer rate;
@@ -15,9 +16,10 @@ public class Measurement {
   public Measurement() {
   }
 
-  public Measurement(URI studyUid, URI variableUri, URI armUri, Integer sampleSize, Integer rate, Double stdDev, Double mean) {
+  public Measurement(URI studyUid, URI variableUri, URI variableConceptUri, URI armUri, Integer sampleSize, Integer rate, Double stdDev, Double mean) {
     this.studyUid = studyUid;
     this.variableUri = variableUri;
+    this.variableConceptUri = variableConceptUri;
     this.armUri = armUri;
     this.sampleSize = sampleSize;
     this.rate = rate;
@@ -31,6 +33,10 @@ public class Measurement {
 
   public URI getVariableUri() {
     return variableUri;
+  }
+
+  public URI getVariableConceptUri() {
+    return variableConceptUri;
   }
 
   public URI getArmUri() {
@@ -56,25 +62,26 @@ public class Measurement {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof Measurement)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     Measurement that = (Measurement) o;
 
-    if (!armUri.equals(that.armUri)) return false;
-    if (mean != null ? !mean.equals(that.mean) : that.mean != null) return false;
-    if (rate != null ? !rate.equals(that.rate) : that.rate != null) return false;
-    if (!sampleSize.equals(that.sampleSize)) return false;
-    if (stdDev != null ? !stdDev.equals(that.stdDev) : that.stdDev != null) return false;
     if (!studyUid.equals(that.studyUid)) return false;
     if (!variableUri.equals(that.variableUri)) return false;
+    if (!variableConceptUri.equals(that.variableConceptUri)) return false;
+    if (!armUri.equals(that.armUri)) return false;
+    if (!sampleSize.equals(that.sampleSize)) return false;
+    if (rate != null ? !rate.equals(that.rate) : that.rate != null) return false;
+    if (stdDev != null ? !stdDev.equals(that.stdDev) : that.stdDev != null) return false;
+    return mean != null ? mean.equals(that.mean) : that.mean == null;
 
-    return true;
   }
 
   @Override
   public int hashCode() {
     int result = studyUid.hashCode();
     result = 31 * result + variableUri.hashCode();
+    result = 31 * result + variableConceptUri.hashCode();
     result = 31 * result + armUri.hashCode();
     result = 31 * result + sampleSize.hashCode();
     result = 31 * result + (rate != null ? rate.hashCode() : 0);

@@ -12,7 +12,7 @@
     "type": "literal",
     "value": "DBP mean trough (clinic, sitting)"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -118,7 +118,7 @@
     "type": "typed-literal",
     "value": "1.000000e-03"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -201,7 +201,7 @@
     "type": "literal",
     "value": "DBP mean trough (clinic, sitting)"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -307,7 +307,7 @@
     "type": "literal",
     "value": "DBP mean trough (clinic, sitting)"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -413,7 +413,7 @@
     "type": "literal",
     "value": "DBP mean trough (clinic, sitting)"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -519,7 +519,7 @@
     "type": "literal",
     "value": "DBP mean trough (clinic, sitting)"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -625,7 +625,7 @@
     "type": "literal",
     "value": "DBP mean trough (clinic, sitting)"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -731,7 +731,7 @@
     "type": "literal",
     "value": "DBP mean trough (clinic, sitting)"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -837,7 +837,7 @@
     "type": "literal",
     "value": "DBP mean trough (clinic, sitting)"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -943,7 +943,7 @@
     "type": "literal",
     "value": "DBP mean trough (clinic, sitting)"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -1049,7 +1049,7 @@
     "type": "literal",
     "value": "DBP mean trough (clinic, sitting)"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -1155,7 +1155,7 @@
     "type": "typed-literal",
     "value": "1.000000e-03"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -1238,7 +1238,7 @@
     "type": "typed-literal",
     "value": "1.000000e-03"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -1321,7 +1321,7 @@
     "type": "typed-literal",
     "value": "1.000000e-03"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -1404,7 +1404,7 @@
     "type": "typed-literal",
     "value": "1.000000e-03"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -1487,7 +1487,7 @@
     "type": "typed-literal",
     "value": "1.000000e-03"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -1570,7 +1570,7 @@
     "type": "literal",
     "value": "DBP mean trough (clinic, sitting)"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -1676,7 +1676,7 @@
     "type": "literal",
     "value": "DBP mean trough (clinic, sitting)"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -1782,7 +1782,7 @@
     "type": "literal",
     "value": "DBP mean trough (clinic, sitting)"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -1888,7 +1888,7 @@
     "type": "typed-literal",
     "value": "1.000000e-03"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -1971,7 +1971,7 @@
     "type": "typed-literal",
     "value": "1.000000e-03"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },
@@ -2054,7 +2054,7 @@
     "type": "typed-literal",
     "value": "1.000000e-03"
   },
-  "outcomeTypeUid": {
+  "variableConceptUri": {
     "type": "uri",
     "value": "http:\/\/trials.drugis.org\/ontology#Endpoint"
   },

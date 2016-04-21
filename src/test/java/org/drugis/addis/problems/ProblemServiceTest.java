@@ -166,9 +166,10 @@ public class ProblemServiceTest {
     int daanEtAlFluoxSampleSize = 20;
     int daanEtAlFluoxRate = 30;
     URI variableUri = outcome.getSemanticOutcomeUri();
-    Measurement daanEtAlFluoxMeasurement1 = new Measurement(daanEtAlUri, variableUri, daanEtAlFluoxArmUri,
+    URI variableConceptUri = outcome.getSemanticOutcomeUri();
+    Measurement daanEtAlFluoxMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlFluoxArmUri,
             daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null);
-    Measurement daanEtAlFluoxMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, daanEtAlFluoxArmUri,
+    Measurement daanEtAlFluoxMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, daanEtAlFluoxArmUri,
             daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null);
     AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
 
@@ -181,9 +182,9 @@ public class ProblemServiceTest {
     URI daanEtAlSertraArmUri = URI.create("daanEtAlSertraArm");
     int daanEtAlSertraSampleSize = 40;
     int daanEtAlSertraRate = 5;
-    Measurement daanEtAlSertraMeasurement1 = new Measurement(daanEtAlUri, variableUri, daanEtAlSertraArmUri,
+    Measurement daanEtAlSertraMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlSertraArmUri,
             daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
-    Measurement daanEtAlSertraMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, daanEtAlSertraArmUri,
+    Measurement daanEtAlSertraMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, daanEtAlSertraArmUri,
             daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
     AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
 
@@ -280,7 +281,8 @@ public class ProblemServiceTest {
     int daanEtAlFluoxSampleSize = 20;
     int daanEtAlFluoxRate = 30;
     URI variableUri = outcome.getSemanticOutcomeUri();
-    Measurement daanEtAlFluoxMeasurement = new Measurement(daanEtAlUri, variableUri, daanEtAlFluoxArmUri,
+    URI variableConceptUri = outcome.getSemanticOutcomeUri();
+    Measurement daanEtAlFluoxMeasurement = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlFluoxArmUri,
             daanEtAlFluoxSampleSize, daanEtAlFluoxRate, null, null);
     AbstractSemanticIntervention simpleSemanticFluoxIntervention = new SimpleSemanticIntervention(daanEtAlFluoxInstance, fluoxConceptUri);
 
@@ -292,7 +294,7 @@ public class ProblemServiceTest {
     URI daanEtAlSertraArmUri = URI.create("daanEtAlSertraArm");
     int daanEtAlSertraSampleSize = 40;
     int daanEtAlSertraRate = 5;
-    Measurement daanEtAlSertraMeasurement = new Measurement(daanEtAlUri, variableUri, daanEtAlSertraArmUri,
+    Measurement daanEtAlSertraMeasurement = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlSertraArmUri,
             daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
     AbstractSemanticIntervention simpleSemanticSertraIntervention = new SimpleSemanticIntervention(daanEtAlSertraInstance, sertraConceptUri);
 
@@ -301,7 +303,7 @@ public class ProblemServiceTest {
     daanEtAlSertraArm.addMeasurement(daanEtAlSertraMeasurement);
 
     URI daanEtAlExcludedArmUri = URI.create("excludeme");
-    Measurement daanEtAlExcludedMeasurement = new Measurement(daanEtAlUri, variableUri, daanEtAlExcludedArmUri,
+    Measurement daanEtAlExcludedMeasurement = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlExcludedArmUri,
             daanEtAlSertraSampleSize, daanEtAlSertraRate, null, null);
     TrialDataArm excludedArm = new TrialDataArm(daanEtAlSertraArmUri, "excludedArm", daanEtAlSertraInstance,
             simpleSemanticSertraIntervention);

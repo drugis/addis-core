@@ -38,11 +38,12 @@ public class PerformanceTableBuilderTest {
 
   private String variableName1 = "variable name 1";
   private String variableName2 = "variable name 2";
-  private Variable variable1 = new Variable(URI.create("101L"), "1L", variableName1, "desc", null, false, MeasurementType.RATE, "");
-  private Variable variable2 = new Variable(URI.create("102L"), "1L", variableName2, "desc", null, false, MeasurementType.CONTINUOUS, "");
 
-  private Measurement measurement1 = new Measurement(URI.create("1L"), variable1.getUri(), arm1.getUri(), 111, 42, null, null);
-  private Measurement measurement2 = new Measurement(URI.create("1L"), variable2.getUri(), arm1.getUri(), 222, null, 0.2, 7.56);
+  private Variable variable1 = new Variable(URI.create("101L"), "1L", variableName1, "desc", null, false, MeasurementType.RATE, URI.create("varConcept1"));
+  private Variable variable2 = new Variable(URI.create("102L"), "1L", variableName2, "desc", null, false, MeasurementType.CONTINUOUS, URI.create("varConcept2"));
+
+  private Measurement measurement1 = new Measurement(URI.create("1L"), variable1.getUri(), variable1.getVariableConceptUri(), arm1.getUri(), 111, 42, null, null);
+  private Measurement measurement2 = new Measurement(URI.create("1L"), variable2.getUri(), variable2.getVariableConceptUri(), arm1.getUri(), 222, null, 0.2, 7.56);
 
   @Before
   public void setUp() throws Exception {
@@ -63,10 +64,10 @@ public class PerformanceTableBuilderTest {
     Double stdDev = measurement2.getStdDev();
 
     URI studyUri = URI.create("itsastudio");
-    Pair<Measurement, URI> row1 = Pair.of(new Measurement(studyUri, criterionUri1, arm1.getUri(), sampleSize1, null, stdDev, mu), alternativeUri1);
-    Pair<Measurement, URI> row2 = Pair.of(new Measurement(studyUri, criterionUri2, arm2.getUri(), sampleSize2, rate, null, null), alternativeUri2);
-    Pair<Measurement, URI> row3 = Pair.of(new Measurement(studyUri, criterionUri1, arm2.getUri(), sampleSize1, null, stdDev, mu), alternativeUri2);
-    Pair<Measurement, URI> row4 = Pair.of(new Measurement(studyUri, criterionUri2, arm1.getUri(), sampleSize2, rate, null, null), alternativeUri1);
+    Pair<Measurement, URI> row1 = Pair.of(new Measurement(studyUri, criterionUri1, measurement1.getVariableConceptUri(), arm1.getUri(), sampleSize1, null, stdDev, mu), alternativeUri1);
+    Pair<Measurement, URI> row2 = Pair.of(new Measurement(studyUri, criterionUri2, measurement2.getVariableConceptUri(), arm2.getUri(), sampleSize2, rate, null, null), alternativeUri2);
+    Pair<Measurement, URI> row3 = Pair.of(new Measurement(studyUri, criterionUri1, measurement1.getVariableConceptUri(), arm2.getUri(), sampleSize1, null, stdDev, mu), alternativeUri2);
+    Pair<Measurement, URI> row4 = Pair.of(new Measurement(studyUri, criterionUri2, measurement2.getVariableConceptUri(), arm1.getUri(), sampleSize2, rate, null, null), alternativeUri1);
 
     // EXECUTE
     List<Pair<Measurement, URI>> measurementPairs =Arrays.asList(row1, row2, row3, row4);
