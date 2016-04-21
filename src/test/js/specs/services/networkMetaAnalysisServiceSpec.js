@@ -78,14 +78,15 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       'uri': '144',
       'name': 'Azilsartan Medoxomil 40 mg QD',
       'drugInstance': '98',
-      'measurement': {
+      'measurements': [{
         'mean': -14.47,
         'armUri': '144',
         'variableUri': 698,
-        'measurementAttribute': 'mean',
+  'variableConceptUri': 'variableConceptUri1',
+      'measurementAttribute': 'mean',
         'sampleSize': 276,
         'stdDev': 15.815811834996014
-      },
+      }],
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
@@ -96,13 +97,14 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       'name': 'Azilsartan Medoxomil 80 mg QD',
       'study': '44',
       'drugInstance': '98',
-      'measurement': {
+      'measurements': [{
         'mean': -17.58,
         'armUri': '145',
         'variableUri': '698',
+  'variableConceptUri': 'variableConceptUri1',
         'sampleSize': 279,
         'stdDev': 15.818018554800092
-      },
+      }],
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
@@ -112,14 +114,14 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       'uri': '146',
       'name': 'Olmesartan 40 mg QD',
       'drugInstance': '99',
-      'measurement': {
+      'measurements': [{
         'mean': -14.87,
         'armUri': '146',
         'variableUri': '698',
-
+  'variableConceptUri': 'variableConceptUri1',
         'sampleSize': 280,
         'stdDev': 15.812874501494028
-      },
+      }],
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/olme-concept'
@@ -131,13 +133,14 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       'uri': '147',
       'name': 'Placebo QD',
       'drugInstance': '100',
-      'measurement': {
+      'measurements': [{
         'mean': -2.06,
         'armUri': '147',
-        'variableUri': '698',
+        'variabletUri': '698',
+  'variableConceptUri': 'variableConceptUri1',
         'sampleSize': 140,
         'stdDev': 15.819597340008373
-      },
+      }],
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/placebo-concept'
@@ -147,14 +150,14 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       'uri': 143,
       'name': 'Azilsartan Medoxomil 20 mg QD',
       'drugInstance': '98',
-      'measurement': {
+      'measurements': [{
         'mean': -14.28,
         'armUri': '143',
         'variableUri': 698,
-
-        'sampleSize': 274,
+    'variableConceptUri': 'variableConceptUri1',
+         'sampleSize': 274,
         'stdDev': 15.824615761527987
-      },
+      }],
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
@@ -168,15 +171,15 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       'uri': '149',
       'name': 'Azilsartan Medoxomil 40 mg QD',
       'drugInstance': '101',
-      'measurement': {
+      'measurements': [{
         'mean': -9.51,
         'armUri': '149',
         'variableUri': '731',
+        'variableConceptUri': 'variableConceptUri1',
         'measurementAttribute': 'mean',
-
         'sampleSize': 134,
         'stdDev': 15.395863080711
-      },
+      }],
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
@@ -186,15 +189,15 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       'uri': '150',
       'name': 'Azilsartan Medoxomil 80 mg QD',
       'drugInstance': '101',
-      'measurement': {
+      'measurements': [{
         'mean': -9.58,
         'armUri': '150',
         'variableUri': '731',
+      'variableConceptUri': 'variableConceptUri1',
         'measurementAttribute': 'mean',
-
         'sampleSize': 130,
         'stdDev': 15.403769993089353
-      },
+      }],
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
@@ -204,14 +207,14 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       'uri': '151',
       'name': 'Placebo QD',
       'drugInstance': '102',
-      'measurement': {
+      'measurements': [{
         'mean': -3.04,
         'armUri': 151,
         'variableUri': 731,
-
-        'sampleSize': 271,
+        'variableConceptUri': 'variableConceptUri1',
+          'sampleSize': 271,
         'stdDev': 15.37290593869617
-      },
+      }],
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/placebo-concept'
@@ -225,14 +228,14 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       'uri': '156',
       'name': 'Olmesartan 40 mg QD',
       'drugInstance': '105',
-      'measurement': {
+      'measurements': [{
         'mean': -13.2,
         'armUri': '156',
         'variableUri': '758',
-
+      'variableConceptUri': 'variableConceptUri1',
         'sampleSize': 283,
         'stdDev': 15.729134591578775
-      },
+      }],
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/olme-concept'
@@ -242,14 +245,14 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       'uri': 155,
       'name': 'Valsartan 320 mg QD',
       'drugInstance': '104',
-      'measurement': {
+      'measurements': [{
         'mean': -11.31,
         'armUri': '155',
         'variableUri': '758',
-
+      'variableConceptUri': 'variableConceptUri1',
         'sampleSize': 271,
         'stdDev': 15.721284139662384
-      },
+      }],
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/valsa-concept'
@@ -259,14 +262,14 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       'uri': 157,
       'name': 'Placebo QD',
       'drugInstance': '106',
-      'measurement': {
+      'measurements': [{
         'mean': -1.83,
         'armUri': '157',
         'variableUri': '758',
-
+      'variableConceptUri': 'variableConceptUri1',
         'sampleSize': 148,
         'stdDev': 15.730023903351194
-      },
+      }],
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/placebo-concept'
@@ -276,14 +279,13 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       'uri': 154,
       'name': 'Azilsartan Medoxomil 80 mg QD',
       'drugInstance': '103',
-      'measurement': {
+      'measurements': [{
         'realValue': -16.74,
         'armUri': 154,
         'variableUri': 758,
-
-        'sampleSize': 270,
+  'variableConceptUri': 'variableConceptUri1',
         'stdDev': 15.725114625973317
-      },
+      }],
       semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
@@ -293,14 +295,15 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       'uri': '153',
       'name': 'Azilsartan Medoxomil 40 mg QD',
       'drugInstance': '103',
-      'measurement': {
+      'measurements': [{
         'mean': -16.38,
         'armUri': '153',
         'variableUri': '758',
+      'variableConceptUri': 'variableConceptUri1',
         'sampleSize': 269,
         'stdDev': 15.728769468715601
-      },
-      semanticIntervention: {
+      }],
+    semanticIntervention: {
         drugInstance: '98',
         drugConcept: 'http://trials.drugis.org/concepts/azi-concept'
       },
@@ -386,8 +389,14 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
 
       it('should construct the evidence network from the list of trialDataStudies', inject(function(NetworkMetaAnalysisService) {
         var trialVerseStudyData = exampleNetworkStudies;
+        var analysis = {
+          excludedArms: [],
+          outcome: {
+            semanticOutcomeUri: 'variableConceptUri1'
+          }
+        };
 
-        var network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialVerseStudyData, networkInterventions);
+        var network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialVerseStudyData, networkInterventions, analysis);
 
         expect(network).toEqual(expectedNetwork);
       }));
@@ -774,7 +783,7 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
           }]
         };
 
-        var trialDataStudies =  [study1];
+        var trialDataStudies = [study1];
 
         var analysis = {
           excludedArms: [{
@@ -837,13 +846,13 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
         };
         var interventions = [intervention1, intervention2];
         var trialData = [{
-            studyUid: 'studyUid',
-            trialDataArms: [{
-              drugConceptUid: 'drugUri1'
-            }, {
-              drugConceptUid: 'drugUri2'
-            }]
-          }];
+          studyUid: 'studyUid',
+          trialDataArms: [{
+            drugConceptUid: 'drugUri1'
+          }, {
+            drugConceptUid: 'drugUri2'
+          }]
+        }];
 
         var overlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap(analysis, interventions, trialData);
         expect(overlapMap).toEqual({});
@@ -870,14 +879,14 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
         };
 
         var interventions = [intervention1, intervention2, intervention3];
-        var trialData =  [{
-            studyUid: 'studyUid',
-            trialDataArms: [{
-              drugConceptUid: 'drugUri1'
-            }, {
-              drugConceptUid: 'drugUri2'
-            }]
-          }];
+        var trialData = [{
+          studyUid: 'studyUid',
+          trialDataArms: [{
+            drugConceptUid: 'drugUri1'
+          }, {
+            drugConceptUid: 'drugUri2'
+          }]
+        }];
         var expectedMap = {
           1: [intervention2],
           2: [intervention1]
