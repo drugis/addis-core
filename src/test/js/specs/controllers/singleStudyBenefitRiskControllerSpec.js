@@ -15,8 +15,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
     var outcomeResource = jasmine.createSpyObj('outcomeResource', ['query']);
     var interventionResource = jasmine.createSpyObj('InterventionResource', ['query']);
     var analysisResource = jasmine.createSpyObj('AnalysisResource', ['save']);
-    var trialverseStudyResource = jasmine.createSpyObj('TrialverseStudyResource', ['query']);
-    var problemResource = jasmine.createSpyObj('problemResource', ['get']);
+    var projectStudiesResource = jasmine.createSpyObj('projectStudiesResource', ['query']);
     var singleStudyBenefitRiskAnalysisService = jasmine.createSpyObj('singleStudyBenefitRiskAnalysisService', ['getProblem', 'getDefaultScenario', 'validateProblem',
       'concatWithNoDuplicates', 'addMissingOutcomesToStudies', 'addMissingInterventionsToStudies',
       'addHasMatchedMixedTreatmentArm', 'recalculateGroup', 'addOverlappingInterventionsToStudies'
@@ -31,22 +30,23 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
     }];
     var studiesDeferred;
     var mockStudies = [{
-      studyGraphUid: 'graphUid1',
+      studyUri: 'graphUid1',
       studyUid: 'uid1',
     }, {
-      studyGraphUid: 'graphuid2',
+      studyUri: 'graphuid2',
       studyUid: 'graphuid2'
     }];
     var q;
     var mockProject = {
+      id: 1,
       namespaceUid: 456,
       datasetVersion: 'version',
       owner: 'user'
     };
     var mockAnalysis = {
       selectedOutcomes: {},
-      selectedInterventions: {},
-      studyGraphUid: 'uid'
+      interventionInclusions: [],
+      studyGraphUri: 'graphUid1'
     };
 
     beforeEach(module('addis.controllers'));
@@ -68,15 +68,15 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       // set some mock outcomes anU interventions
       scope.analysis = {
         selectedOutcomes: [],
-        selectedInterventions: [],
-        studyGraphUid: 'graphuid2'
+        interventionInclusions: [],
+        studyGraphUri: 'graphuid2'
       };
       scope.analysis.selectedOutcomes = [{
         a: 'a'
       }, {
         b: 'b'
       }];
-      scope.analysis.selectedInterventions = [{
+      scope.analysis.interventionInclusions = [{
         c: 'c'
       }, {
         d: 'd'
@@ -98,68 +98,67 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
 
       studiesDeferred = $q.defer();
       mockStudies.$promise = studiesDeferred.promise;
-      trialverseStudyResource.query.and.returnValue(mockStudies);
+      projectStudiesResource.query.and.returnValue(mockStudies);
 
       $controller('SingleStudyBenefitRiskAnalysisController', {
         $scope: scope,
         $stateParams: mockStateParams,
         $state: state,
-        $q: $q,
         $window: mockWindow,
         'currentAnalysis': mockAnalysis,
         'currentProject': mockProject,
         'OutcomeResource': outcomeResource,
         'InterventionResource': interventionResource,
-        'TrialverseStudyResource': trialverseStudyResource,
-        'ProblemResource': problemResource,
+        'projectStudiesResource': projectStudiesResource,
         'SingleStudyBenefitRiskAnalysisService': singleStudyBenefitRiskAnalysisService,
         'DEFAULT_VIEW': 'DEFAULT_VIEW',
-        'AnalysisResource': analysisResource
+        'AnalysisResource': analysisResource,
+        'ProjectStudiesResource': projectStudiesResource
       });
     }));
 
     describe('on load', function() {
 
-      it('isValidAnalysis should reject analyses that contain fewer than two selectedInterventions and two selectedOutcomes',
+      it('isValidAnalysis should reject analyses that contain fewer than two interventionInclusions and two selectedOutcomes',
         function() {
           var invalidAnalysis = {
-            selectedInterventions: [],
+            interventionInclusions: [],
             selectedOutcomes: []
           };
           expect(scope.isValidAnalysis(invalidAnalysis)).toBeFalsy();
 
           invalidAnalysis = {
-            selectedInterventions: [1],
+            interventionInclusions: [1],
             selectedOutcomes: []
           };
           expect(scope.isValidAnalysis(invalidAnalysis)).toBeFalsy();
 
           invalidAnalysis = {
-            selectedInterventions: [],
+            interventionInclusions: [],
             selectedOutcomes: [1]
           };
           expect(scope.isValidAnalysis(invalidAnalysis)).toBeFalsy();
 
           invalidAnalysis = {
-            selectedInterventions: [1, 2, 3],
+            interventionInclusions: [1, 2, 3],
             selectedOutcomes: []
           };
           expect(scope.isValidAnalysis(invalidAnalysis)).toBeFalsy();
 
           invalidAnalysis = {
-            selectedInterventions: [],
+            interventionInclusions: [],
             selectedOutcomes: [1, 2, 3]
           };
           expect(scope.isValidAnalysis(invalidAnalysis)).toBeFalsy();
 
           var validAnalysis = {
-            selectedInterventions: [1, 2],
+            interventionInclusions: [1, 2],
             selectedOutcomes: [1, 2]
           };
           expect(scope.isValidAnalysis(invalidAnalysis)).toBeFalsy();
 
           validAnalysis = {
-            selectedInterventions: [1, 2, 3],
+            interventionInclusions: [1, 2, 3],
             selectedOutcomes: [1, 2, 3]
           };
           expect(scope.isValidAnalysis(invalidAnalysis)).toBeFalsy();
@@ -170,7 +169,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       });
 
       it('should set the interventions to equal the already selected interventions', function() {
-        expect(scope.interventions).toEqual(scope.analysis.selectedInterventions);
+        expect(scope.interventions).toEqual(scope.analysis.interventionInclusions);
       });
 
       it('should query the outcomes for the current project', function() {
@@ -186,9 +185,8 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       });
 
       it('should query studies for the current project', function() {
-        expect(trialverseStudyResource.query).toHaveBeenCalledWith({
-          namespaceUid: 456,
-          version: mockProject.datasetVersion
+        expect(projectStudiesResource.query).toHaveBeenCalledWith({
+          projectId: 1
         });
       });
     });
@@ -236,11 +234,11 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
     });
 
     describe('when a study is selected', function() {
-      it('should place the selected items ui on the analysis as the studyUid', function() {
+      it('should place the selected items uid on the analysis as the studyUid', function() {
         scope.onStudySelect({
-          studyGraphUid: 'test-uid'
+          studyUri: 'test-uid'
         });
-        expect(scope.analysis.studyGraphUid).toEqual('test-uid');
+        expect(scope.analysis.studyGraphUri).toEqual('test-uid');
       });
     });
 
@@ -276,7 +274,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
         var mockOutcome = {
           name: 'mockOutcome'
         };
-        scope.analysis.selectedInterventions.pop(mockOutcome);
+        scope.analysis.interventionInclusions.pop(mockOutcome);
         scope.$apply();
         scope.dirty = true;
 

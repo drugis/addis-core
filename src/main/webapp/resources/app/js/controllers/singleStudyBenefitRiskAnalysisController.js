@@ -22,9 +22,9 @@ define(['angular', 'lodash'], function(angular, _) {
       isUserOwner: $window.config.user.id === currentProject.owner.id,
     };
     $scope.userId = $stateParams.userUid;
+    $scope.isProblemDefined = !!currentAnalysis.problem;
     $scope.editMode.disableEditing = !$scope.editMode.isUserOwner || $scope.isProblemDefined;
     $scope.studies = [];
-    $scope.isProblemDefined = !!currentAnalysis.problem;
     $scope.$parent.analysis = currentAnalysis;
     $scope.$parent.project = currentProject;
     // for mcda use
