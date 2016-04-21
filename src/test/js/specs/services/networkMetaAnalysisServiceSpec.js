@@ -755,39 +755,32 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
         var study1 = {
           trialDataArms: [{
             drugInstance: 1,
-            drugConceptUid: 'uri1',
-            id: 10
+            uri: 10,
+            semanticIntervention: {
+              drugConcept: 'uri1'
+            }
           }, {
             drugInstance: 2,
-            drugConceptUid: 'uri2',
-            id: 11
+            uri: 11,
+            semanticIntervention: {
+              drugConcept: 'uri2'
+            }
           }, {
             drugInstance: 2,
-            drugConceptUid: 'uri2',
-            id: 12
+            uri: 12,
+            semanticIntervention: {
+              drugConcept: 'uri2'
+            }
           }]
         };
-        var study2 = {
-          trialDataArms: [{
-            drugInstance: 7,
-            drugConceptUid: 'uri1',
-            id: 20
-          }, {
-            drugInstance: 3,
-            drugConceptUid: 'uri3',
-            id: 21
-          }]
-        };
-        var trialverseData = {
-          trialDataStudies: [study1, study2]
-        };
+
+        var trialDataStudies =  [study1];
+
         var analysis = {
           excludedArms: [{
             trialverseUid: 10
           }, {
             trialverseUid: 21
-          }, {
-            trialverseUid: 20
           }]
         };
         var intervention = {
@@ -798,7 +791,7 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
           trialverseUid: 21
         }];
 
-        expect(NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, analysis, trialverseData)).toEqual(expectedArmExclusions);
+        expect(NetworkMetaAnalysisService.cleanUpExcludedArms(intervention, analysis, trialDataStudies)).toEqual(expectedArmExclusions);
 
       }));
     });
