@@ -385,16 +385,16 @@ define(['lodash', 'angular'], function(_, angular) {
       angular.forEach(trialDataStudies, function(trialDataStudy) {
         var drugUidForInterventionInStudy;
 
-        angular.forEach(trialDataStudy.trialDataInterventions, function(trialDataIntervention) {
-          if (trialDataIntervention.drugConceptUid === intervention.semanticInterventionUri) {
-            drugUidForInterventionInStudy = trialDataIntervention.semanticIntervention.drugConcept;
+        angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
+          if (trialDataArm.semanticIntervention.drugConcept === intervention.semanticInterventionUri) {
+            drugUidForInterventionInStudy = trialDataArm.semanticIntervention.drugConcept;
           }
         });
 
         if (drugUidForInterventionInStudy) {
           angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
             if (trialDataArm.semanticIntervention.drugConcept === drugUidForInterventionInStudy) {
-              armsMatchingIntervention[trialDataArm.id] = true;
+              armsMatchingIntervention[trialDataArm.uri] = true;
             }
           });
         }
