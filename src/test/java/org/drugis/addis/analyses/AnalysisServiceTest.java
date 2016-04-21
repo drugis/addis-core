@@ -293,6 +293,7 @@ public class AnalysisServiceTest {
 
     List<TrialDataStudy> trialDataStudies = analysisService.buildEvidenceTable(projectId, analysisId);
 
+    verify(interventionService).isMatched(intervention1, arm1.getSemanticIntervention());
     verify(triplestoreService).getNetworkData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids);
 
     assertNotNull(trialDataStudies);

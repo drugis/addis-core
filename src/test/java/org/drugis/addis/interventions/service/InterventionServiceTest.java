@@ -29,7 +29,7 @@ public class InterventionServiceTest {
   private URI unitConcept = URI.create("unitCons");
   private String unitLabel = "unitLabel";
   private Double unitMultiplier = 2d;
-  Measurement measurement = new Measurement(URI.create("studyUri"), URI.create("variableUri"), URI.create("armUri"), sampleSize, rate, std, mean);
+  Measurement measurement = new Measurement(URI.create("studyUri"), URI.create("variableUri"), URI.create("variableConceptUri"), URI.create("armUri"), sampleSize, rate, std, mean);
   private URI drugConceptUri = URI.create("drugConceptUri");
 
   @Test
@@ -45,7 +45,7 @@ public class InterventionServiceTest {
   @Test
   public void isUNMatchedSimpleIntervention() throws Exception, InvalidTypeForDoseCheckException {
     AbstractSemanticIntervention semanticIntervention = new SimpleSemanticIntervention(URI.create("drugInstanceUri"), drugConceptUri);
-    Measurement measurement = new Measurement(URI.create("studyUri"), URI.create("variableUri"), URI.create("armUri"), sampleSize, rate, std, mean);
+    Measurement measurement = new Measurement(URI.create("studyUri"), URI.create("variableUri"), URI.create("variableConceptUri"), URI.create("armUri"), sampleSize, rate, std, mean);
     TrialDataArm trialdataArm = new TrialDataArm(URI.create("uri"), "arm name", URI.create("instance"), semanticIntervention);
     URI otherdrugConceptUri = URI.create("otherDrugConceptUri");
     AbstractIntervention intervention = new SimpleIntervention(interventionId, projectId, "intervention name", "moti", otherdrugConceptUri, "sem label");

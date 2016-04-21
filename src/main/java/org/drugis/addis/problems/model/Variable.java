@@ -14,12 +14,12 @@ public class Variable {
   private String unitDescription;
   private Boolean isPrimary;
   private MeasurementType measurementType;
-  private String variableType;
+  private URI variableConceptUri;
 
   public Variable() {
   }
 
-  public Variable(URI uri, String studyUid, String name, String description, String unitDescription, Boolean isPrimary, MeasurementType measurementType, String variableType) {
+  public Variable(URI uri, String studyUid, String name, String description, String unitDescription, Boolean isPrimary, MeasurementType measurementType, URI variableConceptUri) {
     this.uri = uri;
     this.study = studyUid;
     this.name = name;
@@ -27,7 +27,7 @@ public class Variable {
     this.unitDescription = unitDescription;
     this.isPrimary = isPrimary;
     this.measurementType = measurementType;
-    this.variableType = variableType;
+    this.variableConceptUri = variableConceptUri;
   }
 
   public URI getUri() {
@@ -58,8 +58,8 @@ public class Variable {
     return measurementType;
   }
 
-  public String getVariableType() {
-    return variableType;
+  public URI getVariableConceptUri() {
+    return variableConceptUri;
   }
 
   @Override
@@ -77,7 +77,7 @@ public class Variable {
     if (!study.equals(variable.study)) return false;
     if (unitDescription != null ? !unitDescription.equals(variable.unitDescription) : variable.unitDescription != null)
       return false;
-    if (!variableType.equals(variable.variableType)) return false;
+    if (!variableConceptUri.equals(variable.variableConceptUri)) return false;
 
     return true;
   }
@@ -91,7 +91,7 @@ public class Variable {
     result = 31 * result + (unitDescription != null ? unitDescription.hashCode() : 0);
     result = 31 * result + isPrimary.hashCode();
     result = 31 * result + measurementType.hashCode();
-    result = 31 * result + variableType.hashCode();
+    result = 31 * result + variableConceptUri.hashCode();
     return result;
   }
 }
