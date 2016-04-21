@@ -29,7 +29,7 @@
             <tr ng-repeat="dataRow in trialData" ng-class="{topborder: dataRow.firstStudyRow}">
                 <td ng-show="dataRow.firstStudyRow" rowspan="{{dataRow.studyRowSpan}}">
                     <a ui-sref="namespace-study({userUid: userId, projectId: project.id, studyUid: dataRow.studyUid})">{{dataRow.study}}</a>
-                    <div class="info" ng-show="lessThanTwoInterventionArms(dataRow)">Fewer than two included
+                    <div class="info" ng-show="dataRow.numberOfMatchedInterventions < 2">Fewer than two included
                         interventions. This study will be excluded.
                     </div>
                 </td>

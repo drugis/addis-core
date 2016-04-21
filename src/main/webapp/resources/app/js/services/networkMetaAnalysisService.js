@@ -62,7 +62,6 @@ define(['lodash', 'angular'], function(_, angular) {
         }
 
         ++currentInterventionRow.interventionRowSpan;
-
         table[i] = row;
       }
 
@@ -76,18 +75,26 @@ define(['lodash', 'angular'], function(_, angular) {
       }, {});
     }
 
-    function buildTableFromTrialData(trialDataStudies, interventions, excludedArms, covariates, treatmentOverlapMap) {
+    function getOutcomeMeasurement(analysis, trialDataArm) {
+      return _.find(trialDataArm.measurements, function(measurement) {
+        return analysis.outcome.semanticOutcomeUri === measurement.variableConceptUri;
+      });
+    }
+
+    function buildTableFromTrialData(trialDataStudies, interventions, analysis, covariates, treatmentOverlapMap) {
       var rows = [];
       if (interventions.length < 1) {
         return rows;
       }
-      var exclusionMap = buildExcludedArmsMap(excludedArms);
+      var exclusionMap = buildExcludedArmsMap(analysis.excludedArms);
       angular.forEach(trialDataStudies, function(study) {
+
+        var numberOfMatchedInterventions = 0;
         var studyRows = [];
+
         angular.forEach(study.trialDataArms, function(trialDataArm) {
           var row = {};
           row.covariatesColumns = [];
-
           row.study = study.name;
           row.studyUri = study.studyUri;
           row.studyRowSpan = study.trialDataArms.length;
@@ -114,18 +121,25 @@ define(['lodash', 'angular'], function(_, angular) {
             });
             row.intervention = intervention.name;
             row.interventionId = intervention.id;
+            ++numberOfMatchedInterventions;
           } else {
             row.intervention = 'unmatched';
           }
 
-          row.rate = trialDataArm.measurement.rate;
-          row.mu = trialDataArm.measurement.mean;
-          row.sigma = trialDataArm.measurement.stdDev;
-          row.sampleSize = trialDataArm.measurement.sampleSize;
-
-          rows.push(row);
+          var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataArm);
+          row.rate = outcomeMeasurement.rate;
+          row.mu = outcomeMeasurement.mean;
+          row.sigma = outcomeMeasurement.stdDev;
+          row.sampleSize = outcomeMeasurement.sampleSize;
           studyRows.push(row);
         });
+        studyRows = studyRows.map(function(studyRow) {
+          studyRow.numberOfMatchedInterventions = numberOfMatchedInterventions;
+          return studyRow;
+        });
+
+        rows = rows.concat(studyRows);
+
       });
       return rows;
     }
@@ -157,13 +171,11 @@ define(['lodash', 'angular'], function(_, angular) {
       });
     }
 
-    function sumInterventionSampleSizes(trialData, intervention, outcome) {
+    function sumInterventionSampleSizes(trialData, intervention, analysis) {
       var interventionSum = _.reduce(trialData, function(sum, trialDataStudy) {
         angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
           if (trialDataArm.matchedProjectInterventionId === intervention.id) {
-            var outcomeMeasurement = _.find(trialDataArm.measurements, function(measurement) {
-              return outcome.semanticOutcomeUri === measurement.variableConceptUri;
-            });
+            var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataArm);
             sum += outcomeMeasurement.sampleSize;
           }
         });
@@ -205,7 +217,7 @@ define(['lodash', 'angular'], function(_, angular) {
       network.interventions = _.map(interventions, function(intervention) {
         return {
           name: intervention.name,
-          sampleSize: sumInterventionSampleSizes(validTrialData, intervention, analysis.outcome)
+          sampleSize: sumInterventionSampleSizes(validTrialData, intervention, analysis)
         };
       });
       network.edges = attachStudiesForEdges(network.edges, validTrialData);
@@ -215,8 +227,8 @@ define(['lodash', 'angular'], function(_, angular) {
       return network;
     }
 
-    function transformTrialDataToTableRows(trialData, interventions, excludedArms, covariates, treatmentOverlapMap) {
-      var tableRows = buildTableFromTrialData(trialData, interventions, excludedArms, covariates, treatmentOverlapMap);
+    function transformTrialDataToTableRows(trialData, interventions, analysis, covariates, treatmentOverlapMap) {
+      var tableRows = buildTableFromTrialData(trialData, interventions, analysis, covariates, treatmentOverlapMap);
       tableRows = sortTableByStudyAndIntervention(tableRows);
       tableRows = addRenderingHintsToTable(tableRows);
       return tableRows;
