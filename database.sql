@@ -646,3 +646,7 @@ ALTER TABLE SingleStudyBenefitRiskAnalysis RENAME COLUMN studyGraphUid TO studyG
 --changeset reidd:53
 UPDATE covariate SET definitionkey = CONCAT('http://trials.drugis.org/', definitionkey) WHERE type = 'POPULATION_CHARACTERISTIC';
 --rollback UPDATE covariate SET definitionkey = RIGHT(definitionkey, 36) WHERE type = 'POPULATION_CHARACTERISTIC';
+
+--changeset reidd:54
+UPDATE singlestudybenefitriskanalysis SET studyGraphUri=CONCAT('http://trials.drugis.org/graphs/', studyGraphUri) WHERE LEFT(studyGraphUri, 4) <> 'http';
+--rollback UPDATE singlestudybenefitriskanalysis SET studyGraphUri = RIGHT(studyGraphUri, 36) WHERE LEFT(studyGraphUri, 4) = 'http';
