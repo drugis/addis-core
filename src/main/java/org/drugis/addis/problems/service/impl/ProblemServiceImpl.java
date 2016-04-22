@@ -278,18 +278,14 @@ public class ProblemServiceImpl implements ProblemService {
     List<AbstractNetworkMetaAnalysisProblemEntry> entries = new ArrayList<>();
 
     for (TrialDataStudy trialDataStudy : trialDataStudies) {
-      List<TrialDataArm> filteredArms =  trialDataStudy.getTrialDataArms()
-              .stream()
-              .filter(a -> a.getMatchedProjectInterventionId() != null)
-              .collect(Collectors.toList());
-
+      List<TrialDataArm> filteredArms = filterUnmatchedArms(trialDataStudy);
       filteredArms = filterExcludedArms(filteredArms, analysis);
 
       // do not include studies with fewer than two included and matched arms
       if (filteredArms.size() >= 2) {
         entries.addAll(filteredArms.stream()
                 .map(trialDataArm -> buildEntry(trialDataStudy.getName(),
-                        trialDataArm.getMatchedProjectInterventionId(),
+                        trialDataArm.getMatchedProjectInterventionIds().iterator().next(), // safe because we filter unmatched arms
                         trialDataArm.getMeasurements().get(0)))  // nma has exactly one measurement
                 .collect(Collectors.toList()));
       }
@@ -313,6 +309,13 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     return new NetworkMetaAnalysisProblem(entries, treatments, studyLevelCovariates);
+  }
+
+  private List<TrialDataArm> filterUnmatchedArms(TrialDataStudy trialDataStudy) {
+    return trialDataStudy.getTrialDataArms()
+            .stream()
+            .filter(a -> a.getMatchedProjectInterventionIds().size() > 0)
+            .collect(Collectors.toList());
   }
 
   private List<TrialDataArm> filterExcludedArms(List<TrialDataArm> trialDataArms, NetworkMetaAnalysis analysis) {
@@ -398,9 +401,11 @@ public class ProblemServiceImpl implements ProblemService {
         criteria.put(measurement.getVariableUri(), criterionEntry);
       }
 
-      Optional<AbstractIntervention> matchingIncludedIntervention = triplestoreService.findMatchingIncludedIntervention(includedInterventions, arm);
-      if(matchingIncludedIntervention.isPresent()){
-        arm.setMatchedProjectInterventionId(matchingIncludedIntervention.get().getId());
+      Set<AbstractIntervention> matchingIncludedInterventions = triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
+      if(matchingIncludedInterventions.size() > 0){
+        Set<Integer> matchedProjectInterventionIds = matchingIncludedInterventions.stream()
+                .map(AbstractIntervention::getId).collect(Collectors.toSet());
+        arm.setMatchedProjectInterventionIds(matchedProjectInterventionIds);
       }
 
     }

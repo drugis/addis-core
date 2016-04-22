@@ -282,11 +282,11 @@ public class AnalysisServiceTest {
     AbstractSemanticIntervention arm1Intervention = new TitratedSemanticIntervention(drugInstance1, drugConcept1, minDose1, maxDose1);
     AbstractSemanticIntervention arm2Intervention = new SimpleSemanticIntervention(drugInstance2, drugConcept2);
     TrialDataArm arm1 = new TrialDataArm(URI.create("foo/armuri1"), "armname1", drugInstance1, arm1Intervention);
-    arm1.setMatchedProjectInterventionId(includedIntervention.getId());
+    arm1.setMatchedProjectInterventionIds(new HashSet<>(Collections.singletonList(includedIntervention.getId())));
     TrialDataArm arm2 = new TrialDataArm(URI.create("foo/armuri2"), "armname2", drugInstance2, arm2Intervention);
     List<TrialDataArm> study1Arms = Arrays.asList(arm1, arm2);
     TrialDataStudy study1 = new TrialDataStudy(URI.create("studyUri"), "name", study1Arms);
-    List<TrialDataStudy> trialData = Arrays.asList(study1);
+    List<TrialDataStudy> trialData = Collections.singletonList(study1);
     when(triplestoreService.addMatchingInformation(Collections.singletonList(includedIntervention), trialData)).thenReturn(trialData);
     when(triplestoreService.getNetworkData(project.getNamespaceUid(), project.getDatasetVersion(), outcome.getSemanticOutcomeUri(), includedInterventionUids, includedCovariateUids))
             .thenReturn(trialData);
@@ -299,7 +299,7 @@ public class AnalysisServiceTest {
 
     assertNotNull(trialDataStudies);
     assertEquals(1, trialDataStudies.size());
-    assertEquals((Integer) includedInterventionId, trialDataStudies.get(0).getTrialDataArms().get(0).getMatchedProjectInterventionId());
+    assertTrue(trialDataStudies.get(0).getTrialDataArms().get(0).getMatchedProjectInterventionIds().contains(includedInterventionId));
   }
 
 }

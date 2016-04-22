@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -67,7 +66,7 @@ public interface TriplestoreService {
 
   List<StudyData> getStudyData(String namespaceUid, String studyUid, StudyDataSection studyDataSection);
 
-  Optional<AbstractIntervention> findMatchingIncludedIntervention(List<AbstractIntervention> includedInterventions, TrialDataArm arm);
+  Set<AbstractIntervention> findMatchingIncludedInterventions(List<AbstractIntervention> includedInterventions, TrialDataArm arm);
 
   List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, String version, List<CovariateOption> covariates) throws ReadValueException;
 

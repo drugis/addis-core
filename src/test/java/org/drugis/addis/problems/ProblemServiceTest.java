@@ -194,8 +194,8 @@ public class ProblemServiceTest {
     daanEtAlSertraArm.addMeasurement(daanEtAlSertraMeasurement2);
 
     // add matching result to arms
-    daanEtAlFluoxArm.setMatchedProjectInterventionId(fluoxIntervention.getId());
-    daanEtAlSertraArm.setMatchedProjectInterventionId(sertraIntervention.getId());
+    daanEtAlFluoxArm.setMatchedProjectInterventionIds(new HashSet<>(Arrays.asList(fluoxIntervention.getId())));
+    daanEtAlSertraArm.setMatchedProjectInterventionIds(new HashSet<>(Arrays.asList(sertraIntervention.getId())));
     List<TrialDataArm> daanEtAlArms = Arrays.asList(daanEtAlFluoxArm, daanEtAlSertraArm);
     TrialDataStudy daanEtAl = new TrialDataStudy(daanEtAlUri, "Daan et al", daanEtAlArms);
 
@@ -213,7 +213,7 @@ public class ProblemServiceTest {
 
     List<AbstractIntervention> includedInterventions = Arrays.asList(fluoxIntervention, sertraIntervention);
     when(analysisService.getIncludedInterventions(singleStudyAnalysis)).thenReturn(includedInterventions);
-    when(triplestoreService.findMatchingIncludedIntervention(any(), any())).thenReturn(Optional.of(fluoxIntervention));
+    when(triplestoreService.findMatchingIncludedInterventions(any(), any())).thenReturn(new HashSet<>(Arrays.asList(fluoxIntervention)));
 
     when(performanceTablebuilder.build(any())).thenReturn(performanceTable);
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
@@ -224,8 +224,8 @@ public class ProblemServiceTest {
     verify(projectRepository).get(projectId);
     verify(analysisRepository).get(analysisId);
     verify(triplestoreService).getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), outcomeUris, interventionUris);
-    verify(triplestoreService).findMatchingIncludedIntervention(includedInterventions, daanEtAlFluoxArm);
-    verify(triplestoreService).findMatchingIncludedIntervention(includedInterventions, daanEtAlSertraArm);
+    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm);
+    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm);
     verify(performanceTablebuilder).build(any());
     verify(mappingService).getVersionedUuid(project.getNamespaceUid());
     verify(interventionRepository).query(project.getId());
@@ -310,17 +310,17 @@ public class ProblemServiceTest {
     excludedArm.addMeasurement(daanEtAlExcludedMeasurement);
 
     // exclude arms
-    Set<ArmExclusion> excludedArms = new HashSet<>(Arrays.asList(new ArmExclusion(networkMetaAnalysis.getId(), daanEtAlExcludedArmUri)));
+    Set<ArmExclusion> excludedArms = new HashSet<>(Collections.singletonList(new ArmExclusion(networkMetaAnalysis.getId(), daanEtAlExcludedArmUri)));
     networkMetaAnalysis.updateArmExclusions(excludedArms);
 
     // add matching result to arms
-    daanEtAlFluoxArm.setMatchedProjectInterventionId(fluoxIntervention.getId());
-    daanEtAlSertraArm.setMatchedProjectInterventionId(sertraIntervention.getId());
+    daanEtAlFluoxArm.setMatchedProjectInterventionIds(new HashSet<>(Collections.singletonList(fluoxIntervention.getId())));
+    daanEtAlSertraArm.setMatchedProjectInterventionIds(new HashSet<>(Collections.singletonList(sertraIntervention.getId())));
     List<TrialDataArm> daanEtAlArms = Arrays.asList(daanEtAlFluoxArm, daanEtAlSertraArm, excludedArm);
     TrialDataStudy daanEtAl = new TrialDataStudy(daanEtAlUri, "Daan et al", daanEtAlArms);
     Double randomisedValue = 30d;
     daanEtAl.addCovariateValue(new CovariateStudyValue(daanEtAlUri, includedCovariate.getDefinitionKey(), randomisedValue));
-    List<TrialDataStudy> trialDataStudies = Arrays.asList(daanEtAl);
+    List<TrialDataStudy> trialDataStudies = Collections.singletonList(daanEtAl);
     when(analysisService.buildEvidenceTable(project.getId(), networkMetaAnalysis.getId())).thenReturn(trialDataStudies);
 
     final AbstractProblem problem = problemService.getProblem(project.getId(), networkMetaAnalysis.getId());

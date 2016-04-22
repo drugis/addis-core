@@ -581,7 +581,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
 
   @Override
-  public Optional<AbstractIntervention> findMatchingIncludedIntervention(List<AbstractIntervention> includedInterventions, TrialDataArm arm) {
+  public Set<AbstractIntervention> findMatchingIncludedInterventions(List<AbstractIntervention> includedInterventions, TrialDataArm arm) {
     return includedInterventions.stream().filter(i -> {
       try {
         return interventionService.isMatched(i, arm.getSemanticIntervention());
@@ -589,7 +589,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
         e.printStackTrace();
       }
       return false;
-    }).findFirst();
+    }).collect(Collectors.toSet());
   }
 
 
@@ -597,11 +597,9 @@ public class TriplestoreServiceImpl implements TriplestoreService {
   public List<TrialDataStudy> addMatchingInformation(List<AbstractIntervention> includedInterventions, List<TrialDataStudy> trialData) {
     for (TrialDataStudy study : trialData) {
       for (TrialDataArm arm : study.getTrialDataArms()) {
-        Optional<AbstractIntervention> matchingIntervention = findMatchingIncludedIntervention(includedInterventions, arm);
-
-        if (matchingIntervention.isPresent()) {
-          arm.setMatchedProjectInterventionId(matchingIntervention.get().getId());
-        }
+        Set<AbstractIntervention> matchingInterventions = findMatchingIncludedInterventions(includedInterventions, arm);
+        Set<Integer> matchingInterventionIds = matchingInterventions.stream().map(AbstractIntervention::getId).collect(Collectors.toSet());
+        arm.setMatchedProjectInterventionIds(matchingInterventionIds);
 
       }
     }

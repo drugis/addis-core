@@ -2,7 +2,9 @@ package org.drugis.addis.trialverse.model.trialdata;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by connor on 9-5-14.
@@ -14,7 +16,7 @@ public class TrialDataArm {
   private List<Measurement> measurements = new ArrayList<>();
   private AbstractSemanticIntervention semanticIntervention;
 
-  private Integer matchedProjectInterventionId;
+  private Set<Integer> matchedProjectInterventionIds = new HashSet<>();
 
   public TrialDataArm() {
   }
@@ -50,12 +52,12 @@ public class TrialDataArm {
     return semanticIntervention;
   }
 
-  public Integer getMatchedProjectInterventionId() {
-    return matchedProjectInterventionId;
+  public Set<Integer> getMatchedProjectInterventionIds() {
+    return matchedProjectInterventionIds;
   }
 
-  public void setMatchedProjectInterventionId(Integer matchedProjectInterventionId) {
-    this.matchedProjectInterventionId = matchedProjectInterventionId;
+  public void setMatchedProjectInterventionIds(Set<Integer> matchedProjectInterventionId) {
+    this.matchedProjectInterventionIds = matchedProjectInterventionId;
   }
 
   @Override
@@ -70,7 +72,7 @@ public class TrialDataArm {
     if (!drugInstance.equals(arm.drugInstance)) return false;
     if (!measurements.equals(arm.measurements)) return false;
     if (!semanticIntervention.equals(arm.semanticIntervention)) return false;
-    return matchedProjectInterventionId.equals(arm.matchedProjectInterventionId);
+    return matchedProjectInterventionIds.equals(arm.matchedProjectInterventionIds);
 
   }
 
@@ -81,7 +83,7 @@ public class TrialDataArm {
     result = 31 * result + drugInstance.hashCode();
     result = 31 * result + measurements.hashCode();
     result = 31 * result + semanticIntervention.hashCode();
-    result = 31 * result + matchedProjectInterventionId.hashCode();
+    result = 31 * result + matchedProjectInterventionIds.hashCode();
     return result;
   }
 }
