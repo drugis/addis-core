@@ -4,9 +4,9 @@ define(['lodash', 'angular'], function(_, angular) {
 
   var NetworkMetaAnalysisService = function(AnalysisService) {
 
-    function findInterventionOptionForDrug(drugInstanceUri, interventionOptions) {
+    function findInterventionOptionForDrug(drugConceptUri, interventionOptions) {
       return _.find(interventionOptions, function(intervention) {
-        return intervention.semanticInterventionUri === drugInstanceUri;
+        return intervention.semanticInterventionUri === drugConceptUri;
       });
     }
 
@@ -115,11 +115,15 @@ define(['lodash', 'angular'], function(_, angular) {
           row.arm = trialDataArm.name;
           row.trialverseUid = trialDataArm.uri;
 
-
-          if (trialDataArm.matchedProjectInterventionId !== null) {
-            var intervention = _.find(interventions, function(intervention) {
-              return trialDataArm.matchedProjectInterventionId === intervention.id;
+          var overlappingTreatments;
+          var intervention = _.find(interventions, function(intervention) {
+            return _.find(trialDataArm.matchedProjectInterventionIds, function(id){
+              return id === intervention.id;
             });
+          });
+
+          if (intervention) {
+            overlappingTreatments = treatmentOverlapMap[intervention.id];
             row.intervention = intervention.name;
             row.interventionId = intervention.id;
             ++numberOfMatchedInterventions;
@@ -130,6 +134,11 @@ define(['lodash', 'angular'], function(_, angular) {
           row.included = !exclusionMap[trialDataArm.uri] && row.intervention !== 'unmatched';
           if(row.included){
             ++numberOfIncludedInterventions;
+          }
+
+          if (row.included && overlappingTreatments) {
+            overlappingTreatments = [intervention].concat(overlappingTreatments);
+            row.overlappingInterventionWarning = _.map(overlappingTreatments, 'name').join(', ');
           }
 
           var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataArm);
@@ -154,9 +163,7 @@ define(['lodash', 'angular'], function(_, angular) {
     function countMatchedInterventions(study) {
       var numberOfMatchedInterventions = 0;
       angular.forEach(study.trialDataArms, function(trialDataArm) {
-        if (trialDataArm.matchedProjectInterventionId !== null) {
-          ++numberOfMatchedInterventions;
-        }
+          numberOfMatchedInterventions = numberOfMatchedInterventions + trialDataArm.matchedProjectInterventionIds.length;
       });
       return numberOfMatchedInterventions;
     }
@@ -181,7 +188,12 @@ define(['lodash', 'angular'], function(_, angular) {
     function sumInterventionSampleSizes(trialData, intervention, analysis) {
       var interventionSum = _.reduce(trialData, function(sum, trialDataStudy) {
         angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
-          if (trialDataArm.matchedProjectInterventionId === intervention.id) {
+
+          var matchedIntervention = _.find(trialDataArm.matchedProjectInterventionIds, function(id){
+              return id === intervention.id;
+          });
+
+          if (matchedIntervention) {
             var outcomeMeasurement = getOutcomeMeasurement(analysis, trialDataArm);
             sum += outcomeMeasurement.sampleSize;
           }
@@ -193,7 +205,9 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function findArmForIntervention(trialdataArms, trialDataIntervention) {
       return _.find(trialdataArms, function(trialdataArm) {
-        return trialdataArm.matchedProjectInterventionId === trialDataIntervention.id;
+        return _.find(trialdataArm.matchedProjectInterventionIds, function(id){
+          return id === trialDataIntervention.id;
+        });
       });
     }
 
@@ -316,12 +330,18 @@ define(['lodash', 'angular'], function(_, angular) {
     function doesModelHaveAmbiguousArms(trialDataStudies, analysis) {
       function doesStudyHaveAmbiguousArms(trialDataStudy) {
         var interventionCounts = trialDataStudy.trialDataArms.reduce(function(acc, arm) {
-          if (arm.matchedProjectInterventionId !== null && isArmIncluded(analysis, arm)) {
-            if (acc[arm.matchedProjectInterventionId]) {
-              ++acc[arm.matchedProjectInterventionId];
+          if (arm.matchedProjectInterventionIds.length > 0 && isArmIncluded(analysis, arm)) {
+
+            var matchedInterventionId = _.find(arm.matchedProjectInterventionIds, function(id){
+              return acc[id];
+            });
+
+            if (matchedInterventionId) {
+              ++acc[matchedInterventionId];
             } else {
-              acc[arm.matchedProjectInterventionId] = 1;
+              acc[matchedInterventionId] = 1;
             }
+
           }
           return acc;
         }, {});
@@ -348,8 +368,12 @@ define(['lodash', 'angular'], function(_, angular) {
       var containingStudy = _.find(trialDataStudies, function(trialDataStudy) {
         return trialDataStudy.studyUri === studyUri;
       });
+
       var includedArmsForDrugUid = _.filter(containingStudy.trialDataArms, function(trialDataArm) {
-        return trialDataArm.matchedProjectInterventionId === interventionId && isArmIncluded(trialDataArm);
+        var matchedIntervention = _.find(trialDataArm.matchedProjectInterventionIds, function(id){
+          return id === interventionId;
+        });
+        return matchedIntervention !== undefined && isArmIncluded(trialDataArm);
       });
 
       return includedArmsForDrugUid.length > 1;
@@ -440,7 +464,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function hasMoreThanOneIncludedIntervention(study, includedInterventions) {
       var numberOfIncludedInterventions = study.trialDataArms.reduce(function(count, arm) {
-        var intervention = findInterventionOptionForDrug(arm.drugConceptUid, includedInterventions);
+        var intervention = findInterventionOptionForDrug(arm.semanticIntervention.drugConcept, includedInterventions);
         if (intervention && intervention.isIncluded) {
           ++count;
         }
@@ -474,7 +498,7 @@ define(['lodash', 'angular'], function(_, angular) {
           });
 
           var hasIncludedArmWithOverlap = _.find(includedArms, function(arm) {
-            return intervention.semanticInterventionUri === arm.drugConceptUid;
+            return intervention.semanticInterventionUri === arm.semanticIntervention.drugConcept;
           });
 
           var moreThanOneIncludedIntervention = hasMoreThanOneIncludedIntervention(study, includedInterventions);
