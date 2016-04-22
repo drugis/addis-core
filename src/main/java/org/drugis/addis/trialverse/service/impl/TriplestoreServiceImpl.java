@@ -492,7 +492,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             .build();
   }
 
-  private String buildInterventionUnionString(List<URI> interventionUris) {
+  private String buildInterventionUnionString(Set<URI> interventionUris) {
     String result = "";
     for (URI interventionUri : interventionUris) {
       result += " { ?interventionInstance owl:sameAs <" + interventionUri + "> } UNION \n";
@@ -501,7 +501,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return result.substring(0, result.lastIndexOf("UNION"));
   }
 
-  private String buildOutcomeUnionString(List<URI> uris) {
+  private String buildOutcomeUnionString(Set<URI> uris) {
     String result = "";
     for (URI outcomeUri : uris) {
       result += " { ?outcomeInstance ontology:of_variable [ owl:sameAs <" + outcomeUri + "> ] } UNION \n";
@@ -511,24 +511,24 @@ public class TriplestoreServiceImpl implements TriplestoreService {
 
   @Override
   public List<TrialDataStudy> getNetworkData(String namespaceUid, String version, URI outcomeUri,
-                                             List<URI> interventionUris, List<String> covariateKeys) throws ReadValueException {
-    return getTrialData(namespaceUid, version, "?graph", Collections.singletonList(outcomeUri), interventionUris, covariateKeys);
+                                             Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException {
+    return getTrialData(namespaceUid, version, "?graph", Collections.singleton(outcomeUri), interventionUris, covariateKeys);
   }
 
   @Override
-  public List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, String version, List<URI> outcomeUris, List<URI> interventionUris) throws ReadValueException {
+  public List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, String version, Set<URI> outcomeUris, Set<URI> interventionUris) throws ReadValueException {
     String graphSelector = studyUri == null ? null : "<" + studyUri.toString() + ">";
-    return getTrialData(namespaceUid, version, graphSelector, outcomeUris, interventionUris, Collections.emptyList());
+    return getTrialData(namespaceUid, version, graphSelector, outcomeUris, interventionUris, Collections.emptySet());
   }
 
   @Override
-  public List<TrialDataStudy> getAllTrialData(String namespaceUid, String datasetVersion, List<URI> outcomeUris,
-                                              List<URI> interventionUris) throws ReadValueException {
-    return getTrialData(namespaceUid, datasetVersion, "?graph", outcomeUris, interventionUris, Collections.emptyList());
+  public List<TrialDataStudy> getAllTrialData(String namespaceUid, String datasetVersion, Set<URI> outcomeUris,
+                                              Set<URI> interventionUris) throws ReadValueException {
+    return getTrialData(namespaceUid, datasetVersion, "?graph", outcomeUris, interventionUris, Collections.emptySet());
   }
 
-  private List<TrialDataStudy> getTrialData(String namespaceUid, String version, String graphSelector, List<URI> outcomeUris,
-                                            List<URI> interventionUris, List<String> covariateKeys) throws ReadValueException {
+  private List<TrialDataStudy> getTrialData(String namespaceUid, String version, String graphSelector, Set<URI> outcomeUris,
+                                            Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException {
     if (interventionUris.isEmpty() || outcomeUris.isEmpty() || graphSelector == null) {
       return Collections.emptyList();
     }

@@ -22,6 +22,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by connor on 2/28/14.
@@ -60,7 +61,7 @@ public interface TriplestoreService {
 
   JSONArray getStudyEpochs(String namespaceUid, String studyUid);
 
-  List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, String version, List<URI> outcomeUris, List<URI> interventionUids) throws ReadValueException;
+  List<TrialDataStudy> getSingleStudyData(String namespaceUid, URI studyUri, String version, Set<URI> outcomeUris, Set<URI> interventionUids) throws ReadValueException;
 
   List<TreatmentActivity> getStudyTreatmentActivities(String namespaceUid, String studyUid);
 
@@ -70,9 +71,9 @@ public interface TriplestoreService {
 
   List<CovariateStudyValue> getStudyLevelCovariateValues(String namespaceUid, String version, List<CovariateOption> covariates) throws ReadValueException;
 
-  List<TrialDataStudy> getNetworkData(String namespaceUid, String version, URI outcomeUri, List<URI> interventionUris, List<String> covariateKeys) throws ReadValueException;
+  List<TrialDataStudy> getNetworkData(String namespaceUid, String version, URI outcomeUri, Set<URI> interventionUris, Set<String> covariateKeys) throws ReadValueException;
 
-  List<TrialDataStudy> getAllTrialData(String namespaceUid, String datasetVersion, List<URI> outcomeUris, List<URI> interventionUris) throws ReadValueException;
+  List<TrialDataStudy> getAllTrialData(String namespaceUid, String datasetVersion, Set<URI> outcomeUris, Set<URI> interventionUris) throws ReadValueException;
 
   List<TrialDataStudy> addMatchingInformation(List<AbstractIntervention> includedInterventions, List<TrialDataStudy> trialData);
 }

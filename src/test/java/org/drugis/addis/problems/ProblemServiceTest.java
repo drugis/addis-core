@@ -203,8 +203,8 @@ public class ProblemServiceTest {
     singleStudyAnalysis.setStudyGraphUri(daanEtAlUri);
 
     List<TrialDataStudy> studyResult = Collections.singletonList(daanEtAl);
-    List<URI> outcomeUris = Arrays.asList(outcome.getSemanticOutcomeUri(), secondOutcome.getSemanticOutcomeUri());
-    List<URI> interventionUris = Arrays.asList(fluoxIntervention.getSemanticInterventionUri(), sertraIntervention.getSemanticInterventionUri());
+    Set<URI> outcomeUris = new HashSet<>(Arrays.asList(outcome.getSemanticOutcomeUri(), secondOutcome.getSemanticOutcomeUri()));
+    Set<URI> interventionUris = new HashSet<>(Arrays.asList(fluoxIntervention.getSemanticInterventionUri(), sertraIntervention.getSemanticInterventionUri()));
 
     when(triplestoreService.getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), outcomeUris, interventionUris)).thenReturn(studyResult);
 
