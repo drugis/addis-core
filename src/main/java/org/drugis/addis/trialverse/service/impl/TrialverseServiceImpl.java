@@ -14,6 +14,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by connor on 25-3-14.
@@ -26,7 +27,7 @@ public class TrialverseServiceImpl implements TrialverseService {
   TriplestoreService triplestoreService;
 
   @Override
-  public List<ObjectNode> getTrialData(String namespaceUId, String version, URI semanticOutcomeUri, List<URI> alternativeUris, List<String> covariateKeys) throws ReadValueException {
+  public List<ObjectNode> getTrialData(String namespaceUId, String version, URI semanticOutcomeUri, Set<URI> alternativeUris, Set<String> covariateKeys) throws ReadValueException {
     List<TrialDataStudy> trialData = triplestoreService.getNetworkData(namespaceUId, version, semanticOutcomeUri, alternativeUris, covariateKeys);
     return objectsToNodes(trialData);
   

@@ -362,17 +362,17 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private SingleStudyBenefitRiskProblem getSingleStudyBenefitRiskProblem(Project project, SingleStudyBenefitRiskAnalysis analysis) throws ResourceDoesNotExistException, URISyntaxException, ReadValueException, InvalidTypeForDoseCheckException {
-    final List<URI> outcomeUris = analysis.getSelectedOutcomes()
-            .stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toList());
+    final Set<URI> outcomeUris = analysis.getSelectedOutcomes()
+            .stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toSet());
     final List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
     final Map<Integer, AbstractIntervention> interventionMap = interventions
             .stream().collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
     final Map<URI, Outcome> outcomesByUriMap = analysis.getSelectedOutcomes()
             .stream().collect(Collectors.toMap(Outcome::getSemanticOutcomeUri, Function.identity()));
 
-    final List<URI> alternativeUris = analysis.getInterventionInclusions()
+    final Set<URI> alternativeUris = analysis.getInterventionInclusions()
             .stream().map(intervention -> interventionMap.get(intervention.getInterventionId()).getSemanticInterventionUri())
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
 
     final Map<URI, AbstractIntervention> alternativeToInterventionMap = interventions.stream()
             .collect(Collectors.toMap(AbstractIntervention::getSemanticInterventionUri, Function.identity()));

@@ -270,8 +270,8 @@ public class AnalysisServiceTest {
     List<Covariate> covariates = Collections.emptyList();
     when(interventionRepository.query(projectId)).thenReturn(interventions);
     when(covariateRepository.findByProject(projectId)).thenReturn(covariates);
-    List<URI> includedInterventionUids = Collections.singletonList(includedIntervention.getSemanticInterventionUri());
-    List<String> includedCovariateUids = Collections.emptyList();
+    Set<URI> includedInterventionUids = Collections.singleton(includedIntervention.getSemanticInterventionUri());
+    Set<String> includedCovariateUids = Collections.emptySet();
 
     URI drugInstance1 = URI.create("foo/druginstance1");
     URI drugConcept1 = includedIntervention.getSemanticInterventionUri();

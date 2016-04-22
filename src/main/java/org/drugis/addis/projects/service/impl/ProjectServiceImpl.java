@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -71,15 +72,15 @@ public class ProjectServiceImpl implements ProjectService {
     Project project = projectRepository.get(projectId);
 
     List<AbstractIntervention> interventions = interventionRepository.query(projectId);
-    List<URI> interventionUris = interventions
+    Set<URI> interventionUris = interventions
             .stream()
             .map(AbstractIntervention::getSemanticInterventionUri)
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
 
-    List<URI> outcomeUris = outcomeRepository.query(projectId)
+    Set<URI> outcomeUris = outcomeRepository.query(projectId)
             .stream()
             .map(Outcome::getSemanticOutcomeUri)
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
     List<TrialDataStudy> studies = triplestoreService.getAllTrialData(mappingService.getVersionedUuid(project.getNamespaceUid()), project.getDatasetVersion(), outcomeUris, interventionUris);
     studies = triplestoreService.addMatchingInformation(interventions, studies);
     return studies;

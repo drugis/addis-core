@@ -207,9 +207,9 @@ public class AnalysisServiceImpl implements AnalysisService {
     Project project = projectRepository.get(projectId);
     AbstractAnalysis analysis = analysisRepository.get(analysisId);
     List<AbstractIntervention> includedInterventions = getIncludedInterventions(analysis);
-    List<URI> includedInterventionUris = includedInterventions.stream()
+    Set<URI> includedInterventionUris = includedInterventions.stream()
             .map(AbstractIntervention::getSemanticInterventionUri)
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
 
     List<TrialDataStudy> trialData = Collections.emptyList();
 
@@ -222,9 +222,9 @@ public class AnalysisServiceImpl implements AnalysisService {
         return trialData;
       }
 
-      List<String>  includedCovariates = getIncludedCovariates(networkMetaAnalysis).stream()
+      Set<String>  includedCovariates = getIncludedCovariates(networkMetaAnalysis).stream()
               .map(Covariate::getDefinitionKey)
-              .collect(Collectors.toList());
+              .collect(Collectors.toSet());
 
       trialData = triplestoreService.getNetworkData(namespaceUid, datasetVersion,
               networkMetaAnalysis.getOutcome().getSemanticOutcomeUri(), includedInterventionUris, includedCovariates);
@@ -233,7 +233,7 @@ public class AnalysisServiceImpl implements AnalysisService {
     } else if(analysis instanceof SingleStudyBenefitRiskAnalysis) {
       SingleStudyBenefitRiskAnalysis singleStudyBenefitRiskAnalysis = (SingleStudyBenefitRiskAnalysis) analysis;
 
-      List<URI> outcomeUris = singleStudyBenefitRiskAnalysis.getSelectedOutcomes().stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toList());
+      Set<URI> outcomeUris = singleStudyBenefitRiskAnalysis.getSelectedOutcomes().stream().map(Outcome::getSemanticOutcomeUri).collect(Collectors.toSet());
 
       trialData = triplestoreService.getSingleStudyData(namespaceUid,
               singleStudyBenefitRiskAnalysis.getStudyGraphUri(), datasetVersion, outcomeUris, includedInterventionUris);
