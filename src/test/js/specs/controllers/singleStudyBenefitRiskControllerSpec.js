@@ -87,6 +87,7 @@ define(['lodash', 'angular', 'angular-mocks', 'controllers'], function(_) {
       singleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies.and.returnValue(mockStudies);
       singleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies.and.returnValue(mockStudies);
       singleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm.and.returnValue(mockStudies);
+      singleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies.and.returnValue(mockStudies);
 
       outcomesDeferred = $q.defer();
       mockOutcomes.$promise = outcomesDeferred.promise;

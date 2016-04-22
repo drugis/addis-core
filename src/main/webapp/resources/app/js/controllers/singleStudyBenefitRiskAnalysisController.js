@@ -75,7 +75,7 @@ define(['angular', 'lodash'], function(angular, _) {
     function interventionsChanged() {
       $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
-      SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
+      $scope.studies = SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
 
       // necessary because angular-select uses $watchcollection instead of $watch
@@ -124,7 +124,7 @@ define(['angular', 'lodash'], function(angular, _) {
       $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingOutcomesToStudies($scope.studies, $scope.analysis.selectedOutcomes);
       $scope.studies = SingleStudyBenefitRiskAnalysisService.addMissingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskAnalysisService.addHasMatchedMixedTreatmentArm($scope.studies, $scope.analysis.interventionInclusions);
-      SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
+      $scope.studies = SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies($scope.studies, $scope.analysis.interventionInclusions);
       SingleStudyBenefitRiskAnalysisService.recalculateGroup($scope.studies);
     });
 

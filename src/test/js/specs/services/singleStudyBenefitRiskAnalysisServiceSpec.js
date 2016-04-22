@@ -242,25 +242,24 @@ define(['angular', 'angular-mocks', 'services'], function() {
       });
       beforeEach(module('addis.services'));
       it('should add a list of overlapping interventions to the studies', inject(function(SingleStudyBenefitRiskAnalysisService) {
-        var drugUri = 'http://trials.drugis.org/instances/333-333';
-        var treatmentArm = {
-          interventionUids: [drugUri]
+        var trialDataArm = {
+          matchedProjectInterventionIds: [1, 2]
         };
 
         var studies = [{
-          treatmentArms: [treatmentArm]
+          trialDataArms: [trialDataArm]
         }];
 
         var selectedInterventions = [{
-          semanticInterventionUri: '333-333'
+          id: 1
         }, {
-          semanticInterventionUri: '333-333'
+          id: 2
         }];
 
         var result = SingleStudyBenefitRiskAnalysisService.addOverlappingInterventionsToStudies(studies, selectedInterventions);
 
         expect(result).toEqual([{
-          treatmentArms: [treatmentArm],
+          trialDataArms: [trialDataArm],
           overlappingInterventions: selectedInterventions
         }]);
 
