@@ -45,8 +45,8 @@ define(['lodash'], function(_) {
       });
 
       $scope.alternatives = alternatives.map(function(alternative) {
-        var isAlternativeInInclusions = analysis.includedAlternatives.find(function(includedAlternative) {
-          return includedAlternative.id === alternative.id;
+        var isAlternativeInInclusions = analysis.interventionInclusions.find(function(includedIntervention) {
+          return includedIntervention.interventionId === alternative.id;
         });
         if (isAlternativeInInclusions) {
           alternative.isIncluded = true;
@@ -122,8 +122,11 @@ define(['lodash'], function(_) {
           outcomeWithAnalysis: function() {
             return owa;
           },
-          includedAlternatives: function() {
-            return $scope.analysis.includedAlternatives;
+          alternatives: function() {
+            return $scope.alternatives;
+          },
+          interventionInclusions: function() {
+            return $scope.analysis.interventionInclusions;
           },
           setBaselineDistribution: function() {
             return function(baseline) {
@@ -153,8 +156,11 @@ define(['lodash'], function(_) {
         })).then(function(result) {
           //    console.log('MCDAPataviService.run succes');
           //    console.log('result = ' + JSON.stringify(result));
+          var includedAlternatives = _.filter($scope.alternatives, function(alternative){
+            return alternative.isIncluded;
+          });
           $scope.outcomesWithAnalyses = MetaBenefitRiskService.addScales($scope.outcomesWithAnalyses,
-            $scope.analysis.includedAlternatives, result.results);
+            includedAlternatives, result.results);
         }, function() {
           console.log('MCDAPataviService.run error');
         });

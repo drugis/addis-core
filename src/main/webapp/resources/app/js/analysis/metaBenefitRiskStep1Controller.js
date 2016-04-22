@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash'], function(_) {
+define(['lodash', 'angular'], function(_, angular) {
   var dependencies = ['$scope', '$q', '$stateParams', '$state', 'AnalysisResource', 'InterventionResource',
     'OutcomeResource', 'MetaBenefitRiskService', 'ModelResource'
   ];
@@ -103,8 +103,8 @@ define(['lodash'], function(_) {
       });
 
       $scope.alternatives = alternatives.map(function(alternative) {
-        var isAlternativeInInclusions = analysis.includedAlternatives.find(function(includedAlternative) {
-          return includedAlternative.id === alternative.id;
+        var isAlternativeInInclusions = analysis.interventionInclusions.find(function(includedAlternative) {
+          return includedAlternative.interventionId === alternative.id;
         });
         if (isAlternativeInInclusions) {
           alternative.isIncluded = true;
@@ -130,7 +130,7 @@ define(['lodash'], function(_) {
     }
 
     function setIncludedAlternatives() {
-      $scope.analysis.includedAlternatives = $scope.alternatives.filter(function(alternative) {
+      $scope.analysis.interventionInclusions = $scope.alternatives.filter(function(alternative) {
         return alternative.isIncluded;
       });
     }
@@ -146,7 +146,7 @@ define(['lodash'], function(_) {
     function updateAlternatives() {
       setIncludedAlternatives();
       updateMissingAlternativesForAllOutcomes();
-      $scope.analysis.$save();
+      buildAnalysisCommand($scope.analysis).$save();
       checkStep1Validity();
     }
 
@@ -183,8 +183,19 @@ define(['lodash'], function(_) {
     }
 
     function updateMissingAlternatives(owa) {
-      owa.selectedModel.missingAlternatives = MetaBenefitRiskService.findMissingAlternatives($scope.analysis.includedAlternatives, owa);
+      owa.selectedModel.missingAlternatives = MetaBenefitRiskService.findMissingAlternatives($scope.analysis.interventionInclusions, owa);
       owa.selectedModel.missingAlternativesNames = _.map(owa.selectedModel.missingAlternatives, 'name');
+    }
+
+    function buildAnalysisCommand(analysis){
+      var analysisCommand = angular.copy(analysis);
+      analysisCommand.interventionInclusions = analysis.interventionInclusions.map(function(includedIntervention) {
+        return {
+          analysisId: $scope.analysis.id,
+          interventionId: includedIntervention.id
+        };
+      });
+      return analysisCommand;
     }
 
     function buildInclusions() {
@@ -199,7 +210,7 @@ define(['lodash'], function(_) {
         };
       });
       checkStep1Validity();
-      $scope.analysis.$save();
+      buildAnalysisCommand($scope.analysis).$save();
     }
 
   };

@@ -12,8 +12,9 @@ public class CriterionEntry {
   private PartialValueFunction pvf;
   private String title;
 
-  public CriterionEntry(URI criterionUri) {
+  public CriterionEntry(URI criterionUri, String title) {
     this.criterionUri = criterionUri;
+    this.title = title;
   }
 
   public CriterionEntry(URI criterionUri, String title, List<Double> scale, PartialValueFunction partialValueFunction) {

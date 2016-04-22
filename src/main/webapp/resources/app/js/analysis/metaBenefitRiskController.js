@@ -42,7 +42,7 @@ define(['lodash'], function(_) {
       });
 
       $scope.alternatives = alternatives.map(function(alternative) {
-        var isAlternativeInInclusions = analysis.includedAlternatives.find(function(includedAlternative) {
+        var isAlternativeInInclusions = analysis.interventionInclusions.find(function(includedAlternative) {
           return includedAlternative.id === alternative.id;
         });
         if (isAlternativeInInclusions) {
@@ -64,7 +64,7 @@ define(['lodash'], function(_) {
     });
 
     function setIncludedAlternatives() {
-      $scope.analysis.includedAlternatives = $scope.alternatives.filter(function(alternative) {
+      $scope.analysis.interventionInclusions = $scope.alternatives.filter(function(alternative) {
         return alternative.isIncluded;
       });
     }

@@ -56,13 +56,13 @@
       <thead>
         <tr>
           <td></td>
-          <td ng-repeat="alternative in analysis.interventionInclusions">{{alternative.name}}</td>
+          <td ng-repeat="alternative in alternatives | filter:!isIncluded">{{alternative.name}}</td>
         </tr>
       </thead>
       <tbody>
         <tr ng-repeat="owa in outcomesWithAnalyses">
           <td class="table-head">{{owa.outcome.name}}</td>
-          <td ng-repeat="alternative in analysis.interventionInclusions">
+          <td ng-repeat="alternative in alternatives  | filter:!isIncluded">
             <span ng-if="owa.scales[alternative.name]">
              {{owa.scales[alternative.name]['50%']}}
             ({{owa.scales[alternative.name]['2.5%']}},

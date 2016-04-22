@@ -138,7 +138,7 @@ public class ProblemServiceImpl implements ProblemService {
     Map<String, CriterionEntry> criteriaWithBaseline = outcomesByName.values()
             .stream()
             .filter(o -> inclusionsWithBaseline.stream().filter(moi -> moi.getOutcomeId().equals(o.getId())).findFirst().isPresent())
-            .collect(Collectors.toMap(Outcome::getName, o -> new CriterionEntry(o.getSemanticOutcomeUri())));
+            .collect(Collectors.toMap(Outcome::getName, o -> new CriterionEntry(o.getSemanticOutcomeUri(), o.getName())));
     Map<String, AlternativeEntry> alternatives = includedAlternatives
             .stream()
             .collect(Collectors.toMap(AbstractIntervention::getName, i -> new AlternativeEntry(i.getSemanticInterventionUri(), i.getName())));

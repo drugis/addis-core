@@ -114,7 +114,7 @@ define(['angular-mocks'], function(angularMocks) {
         scope.analysis = {
           id: 1,
           $save: function() {},
-          includedAlternatives: []
+          interventionInclusions: []
         };
         scope.outcomesWithAnalyses = [outcomeWithAnalysis];
 
@@ -160,7 +160,7 @@ define(['angular-mocks'], function(angularMocks) {
             networkMetaAnalysisId: 5
           }],
           $save: function() {},
-          includedAlternatives: []
+          interventionInclusions: []
         };
         scope.outcomesWithAnalyses = [outcomeWithAnalysis];
 
