@@ -94,7 +94,7 @@ define(['lodash'], function(_) {
 
     function noArmMatchingIntervention(intervention, trialDataArms) {
       return !_.find(trialDataArms, function(arm) {
-        return intervention.id === arm.matchedProjectInterventionId;
+        return arm.matchedProjectInterventionIds.indexOf(intervention.id) > -1;
       });
     }
 
@@ -119,8 +119,9 @@ define(['lodash'], function(_) {
     };
 
     var addOverlappingInterventionsToStudies = function(studies, selectedInterventions) {
-      return _.each(studies, function(study) {
+      return _.map(studies, function(study) {
         study.overlappingInterventions = findOverlappingIntervention(selectedInterventions, study);
+        return study;
       });
     };
 
@@ -131,10 +132,14 @@ define(['lodash'], function(_) {
     };
 
     function findOverlappingIntervention(selectedInterventions, study) {
-      return _.reduce(study.treatmentArms, function(accum, arm) {
-        var matching = findAllMatchingInterventions(selectedInterventions, arm);
-        if (matching.length > 1) {
-          accum = accum.concat(matching);
+      return _.reduce(study.trialDataArms, function(accum, arm) {
+        if (arm.matchedProjectInterventionIds.length > 1) {
+          var matching = _.filter(selectedInterventions, function(intervention) {
+            return arm.matchedProjectInterventionIds.indexOf(intervention.id) > -1;
+          });
+          if (matching.length > 1) {
+            accum = accum.concat(matching);
+          }
         }
         return accum;
       }, []);
