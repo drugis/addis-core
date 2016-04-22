@@ -329,25 +329,10 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function doesModelHaveAmbiguousArms(trialDataStudies, analysis) {
       function doesStudyHaveAmbiguousArms(trialDataStudy) {
-        var interventionCounts = trialDataStudy.trialDataArms.reduce(function(acc, arm) {
-          if (arm.matchedProjectInterventionIds.length > 0 && isArmIncluded(analysis, arm)) {
-
-            var matchedInterventionId = _.find(arm.matchedProjectInterventionIds, function(id){
-              return acc[id];
-            });
-
-            if (matchedInterventionId) {
-              ++acc[matchedInterventionId];
-            } else {
-              acc[matchedInterventionId] = 1;
-            }
-
-          }
-          return acc;
-        }, {});
-        return _.find(interventionCounts, function(count) {
-          return count > 1;
+        return _.find(trialDataStudy.trialDataArms, function(arm){
+          return (arm.matchedProjectInterventionIds.length > 1) && isArmIncluded(analysis, arm);
         });
+
       }
 
       return _.find(trialDataStudies, function(trialDataStudy) {
