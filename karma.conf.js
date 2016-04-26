@@ -11,11 +11,9 @@ module.exports = function(config) {
     plugins : [
       'karma-firefox-launcher',
       'karma-chrome-launcher',
-      'karma-phantomjs-launcher',
       'karma-junit-reporter',
       'karma-jasmine',
-      'karma-requirejs',
-      'karma-coverage'
+      'karma-requirejs'
     ],
 
 
@@ -47,12 +45,6 @@ module.exports = function(config) {
     junitReporter :{
       outputFile: 'src/test/karma-test-results.xml',
       outputDir: 'src/test'
-    },
-
-    coverageReporter: {
-      type : 'cobertura',
-      dir : 'src/target/site/cobertura/',
-      file : 'karma-coverage-result.xml'
     },
 
     // web server port
