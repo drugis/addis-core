@@ -350,6 +350,9 @@ ALTER TABLE singlestudybenefitriskanalysis ADD CONSTRAINT singlestudybenefitrisk
 ALTER TABLE singlestudybenefitriskanalysis_intervention DROP CONSTRAINT analysis_interventions_interventionid_fkey ;
 ALTER TABLE singlestudybenefitriskanalysis_intervention ADD CONSTRAINT analysis_interventions_interventionid_fkey FOREIGN KEY (interventionid) REFERENCES intervention(id) ON DELETE CASCADE ;
 
+ALTER TABLE singlestudybenefitriskanalysis_intervention DROP CONSTRAINT ssbr_analysis_interventions_analysisid_fkey ;
+ALTER TABLE singlestudybenefitriskanalysis_intervention ADD CONSTRAINT ssbr_analysis_interventions_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES singlestudybenefitriskanalysis(id) ON DELETE CASCADE ;
+
 ALTER TABLE interventioninclusion DROP CONSTRAINT interventioninclusion_interventionid_fkey ;
 ALTER TABLE interventioninclusion ADD CONSTRAINT interventioninclusion_interventionid_fkey FOREIGN KEY (interventionid) REFERENCES intervention(id) ON DELETE CASCADE ;
 
@@ -362,8 +365,6 @@ ALTER TABLE networkmetaanalysis ADD CONSTRAINT networkmetaanalysis_outcomeid_fke
 ALTER TABLE remarks DROP CONSTRAINT remarks_analysisid_fkey ;
 ALTER TABLE remarks ADD CONSTRAINT remarks_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES singlestudybenefitriskanalysis(id) ON DELETE CASCADE ;
 
-ALTER TABLE singlestudybenefitriskanalysis_intervention DROP CONSTRAINT ssbr_analysis_interventions_analysisid_fkey ;
-ALTER TABLE singlestudybenefitriskanalysis_intervention ADD CONSTRAINT ssbr_analysis_interventions_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES singlestudybenefitriskanalysis(id) ON DELETE CASCADE ;
 
 ALTER TABLE singlestudybenefitriskanalysis_outcome DROP CONSTRAINT ssbr_analysis_outcomes_analysisid_fkey ;
 ALTER TABLE singlestudybenefitriskanalysis_outcome ADD CONSTRAINT ssbr_analysis_outcomes_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES singlestudybenefitriskanalysis(id) ON DELETE CASCADE ;
@@ -544,6 +545,10 @@ SELECT id, projectId, title FROM NetworkMetaAnalysis;
 INSERT INTO AbstractAnalysis (id, projectId, title)
 SELECT id, projectId, title FROM MetaBenefitRiskAnalysis;
 
+ALTER TABLE interventioninclusion DROP CONSTRAINT interventioninclusion_analysisid_fkey;
+ALTER TABLE interventioninclusion ADD CONSTRAINT interventioninclusion_analysisid_fkey FOREIGN KEY (analysisId) REFERENCES AbstractAnalysis(id);
+
+INSERT INTO interventioninclusion (analysisid, interventionid) select analysisid, alternativeId from MetaBenefitRiskAnalysis_Alternative ;
 DROP TABLE MetaBenefitRiskAnalysis_Alternative;
 
 ALTER TABLE SingleStudyBenefitRiskAnalysis DROP CONSTRAINT singlestudybenefitriskanalysis_projectid_fkey;
@@ -556,11 +561,10 @@ ALTER TABLE MetaBenefitRiskAnalysis DROP CONSTRAINT metabenefitriskanalysis_proj
 ALTER TABLE MetaBenefitRiskAnalysis DROP COLUMN projectId;
 ALTER TABLE MetaBenefitRiskAnalysis DROP COLUMN title;
 
-ALTER TABLE interventioninclusion DROP CONSTRAINT interventioninclusion_analysisid_fkey;
-ALTER TABLE interventioninclusion ADD CONSTRAINT interventioninclusion_analysisid_fkey FOREIGN KEY (analysisId) REFERENCES AbstractAnalysis(id);
 
 select setval('shared_analysis_id_seq', (select max(id) from AbstractAnalysis));
 -- rollback CREATE TABLE MetaBenefitRiskAnalysis_Alternative ( analysisId INT, alternativeId INT, PRIMARY KEY(analysisId, alternativeId), FOREIGN KEY(analysisId) REFERENCES MetaBenefitRiskAnalysis(id), FOREIGN KEY(alternativeId) REFERENCES abstractintervention(id));
+-- rollback INSERT INTO MetaBenefitRiskAnalysis_Alternative (analysisid, alternativeId) select i.analysisid, i.interventionid from interventioninclusion i WHERE i.analysisid in (select id from metabenefitriskanalysis);
 -- rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN projectId int;
 -- rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD CONSTRAINT singlestudybenefitriskanalysis_projectid_fkey FOREIGN KEY(projectId) REFERENCES project(id);
 -- rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN title VARCHAR;
@@ -629,8 +633,11 @@ ALTER TABLE BothDoseTypesIntervention ADD CONSTRAINT bothtypesintervention_botht
 --rollback ALTER TABLE abstractanalysis DROP CONSTRAINT IF EXISTS abstractanalysis_projectid_fkey ;
 
 --changeset stroombergc:51
+INSERT INTO interventioninclusion (analysisid, interventionid) select analysisid, interventionid from singlestudybenefitriskanalysis_intervention ;
 DROP TABLE SingleStudyBenefitRiskAnalysis_Intervention;
 --rollback CREATE TABLE SingleStudyBenefitRiskAnalysis_Intervention (AnalysisId INT, InterventionId INT, PRIMARY KEY(AnalysisId, InterventionId), FOREIGN KEY(AnalysisId) REFERENCES SingleStudyBenefitRiskAnalysis(id),FOREIGN KEY(InterventionId) REFERENCES abstractintervention(id));
+--rollback INSERT INTO SingleStudyBenefitRiskAnalysis_Intervention (analysisid, interventionid) select i.analysisid, i.interventionid from interventioninclusion i WHERE i.analysisid in (select id from singlestudybenefitriskanalysis);
+--rollback DELETE FROM interventioninclusion i WHERE i.analysisid IN (select id from singlestudybenefitriskanalysis);
 
 --changeset reidd:52
 ALTER TABLE SingleStudyBenefitRiskAnalysis RENAME COLUMN studyGraphUid TO studyGraphUri;
@@ -639,3 +646,7 @@ ALTER TABLE SingleStudyBenefitRiskAnalysis RENAME COLUMN studyGraphUid TO studyG
 --changeset reidd:53
 UPDATE covariate SET definitionkey = CONCAT('http://trials.drugis.org/', definitionkey) WHERE type = 'POPULATION_CHARACTERISTIC';
 --rollback UPDATE covariate SET definitionkey = RIGHT(definitionkey, 36) WHERE type = 'POPULATION_CHARACTERISTIC';
+
+--changeset reidd:54
+UPDATE singlestudybenefitriskanalysis SET studyGraphUri=CONCAT('http://trials.drugis.org/graphs/', studyGraphUri) WHERE LEFT(studyGraphUri, 4) <> 'http';
+--rollback UPDATE singlestudybenefitriskanalysis SET studyGraphUri = RIGHT(studyGraphUri, 36) WHERE LEFT(studyGraphUri, 4) = 'http';
