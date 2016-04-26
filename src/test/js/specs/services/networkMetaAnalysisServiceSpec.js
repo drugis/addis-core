@@ -1,4 +1,4 @@
-define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
+define(['angular', 'angular-mocks', 'services'], function() {
 
   var exampleStudies = [{
     'studyUri': 'http://trials.drugis.org/graphs/favaUri',
@@ -695,8 +695,7 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
           id: 1,
           semanticInterventionUri: 'uri1',
           isIncluded: true
-        },
-        {
+        }, {
           id: 3,
           semanticInterventionUri: 'uri1',
           isIncluded: true
@@ -814,9 +813,6 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
       beforeEach(module('addis.services'));
 
       it('should create an empty object if there is no overlap', inject(function(NetworkMetaAnalysisService) {
-        var analysis = {
-          excludedArms: []
-        };
         var interventions = [{
           id: 1,
           semanticInterventionUri: 'drugUri1',
@@ -825,65 +821,29 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
         var trialData = [{
           studyUid: 'studyUid',
           trialDataArms: [{
-            drugConceptUid: 'drugUri1'
+            drugConceptUid: 'drugUri1',
+            matchedProjectInterventionIds: [1]
           }, {
-            drugConceptUid: 'druguri2'
+            drugConceptUid: 'druguri2',
+            matchedProjectInterventionIds: [2]
           }]
         }];
 
-        var overlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap(analysis, interventions, trialData);
-        expect(overlapMap).toEqual({});
-      }));
-
-      it('should not find overlaps when the study does not have enough matched arms to be included', inject(function(NetworkMetaAnalysisService) {
-        var analysis = {
-          excludedArms: []
-        };
-        var intervention1 = {
-          id: 1,
-          semanticInterventionUri: 'drugUri1',
-          isIncluded: true
-        };
-        var intervention2 = {
-          id: 2,
-          semanticInterventionUri: 'drugUri1',
-          isIncluded: true
-        };
-        var interventions = [intervention1, intervention2];
-        var trialData = [{
-          studyUid: 'studyUid',
-          trialDataArms: [{
-            semanticIntervention: {
-              drugConcept: 'drugUri1'
-            }
-          }, {
-            semanticIntervention: {
-              drugConcept: 'drugUri2'
-            }
-          }]
-        }];
-
-        var overlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap(analysis, interventions, trialData);
+        var overlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap(interventions, trialData);
         expect(overlapMap).toEqual({});
       }));
 
       it('should create a list of overlapping interventions for each intervention if they overlap', inject(function(NetworkMetaAnalysisService) {
-        var analysis = {
-          excludedArms: []
-        };
         var intervention1 = {
           id: 1,
-          semanticInterventionUri: 'drugUri1',
           isIncluded: true
         };
         var intervention2 = {
           id: 2,
-          semanticInterventionUri: 'drugUri1',
           isIncluded: true
         };
         var intervention3 = {
           id: 3,
-          semanticInterventionUri: 'drugUri2',
           isIncluded: true
         };
 
@@ -891,21 +851,18 @@ define(['lodash', 'angular', 'angular-mocks', 'services'], function(_) {
         var trialData = [{
           studyUid: 'studyUid',
           trialDataArms: [{
-            semanticIntervention: {
-              drugConcept: 'drugUri1'
-            }
+            matchedProjectInterventionIds: [1, 2]
           }, {
-            semanticIntervention: {
-              drugConcept: 'drugUri2'
-            }
+            matchedProjectInterventionIds: [2, 3]
           }]
         }];
         var expectedMap = {
           1: [intervention2],
-          2: [intervention1]
+          2: [intervention1, intervention3],
+          3: [intervention2]
         };
 
-        var overlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap(analysis, interventions, trialData);
+        var overlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap(interventions, trialData);
         expect(overlapMap).toEqual(expectedMap);
       }));
     });

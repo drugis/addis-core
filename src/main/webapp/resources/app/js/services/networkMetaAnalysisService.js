@@ -4,12 +4,6 @@ define(['lodash', 'angular'], function(_, angular) {
 
   var NetworkMetaAnalysisService = function(AnalysisService) {
 
-    function findInterventionOptionForDrug(drugConceptUri, interventionOptions) {
-      return _.find(interventionOptions, function(intervention) {
-        return intervention.semanticInterventionUri === drugConceptUri;
-      });
-    }
-
     function sortTableByStudyAndIntervention(table) {
       // sort table by studies and interventions
       var tableRowComparator = function(left, right) {
@@ -117,7 +111,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
           var overlappingTreatments;
           var intervention = _.find(interventions, function(intervention) {
-            return _.find(trialDataArm.matchedProjectInterventionIds, function(id){
+            return _.find(trialDataArm.matchedProjectInterventionIds, function(id) {
               return id === intervention.id;
             });
           });
@@ -132,7 +126,7 @@ define(['lodash', 'angular'], function(_, angular) {
           }
 
           row.included = !exclusionMap[trialDataArm.uri] && row.intervention !== 'unmatched';
-          if(row.included){
+          if (row.included) {
             ++numberOfIncludedInterventions;
           }
 
@@ -163,7 +157,7 @@ define(['lodash', 'angular'], function(_, angular) {
     function countMatchedInterventions(study) {
       var numberOfMatchedInterventions = 0;
       angular.forEach(study.trialDataArms, function(trialDataArm) {
-          numberOfMatchedInterventions = numberOfMatchedInterventions + trialDataArm.matchedProjectInterventionIds.length;
+        numberOfMatchedInterventions = numberOfMatchedInterventions + trialDataArm.matchedProjectInterventionIds.length;
       });
       return numberOfMatchedInterventions;
     }
@@ -189,8 +183,8 @@ define(['lodash', 'angular'], function(_, angular) {
       var interventionSum = _.reduce(trialData, function(sum, trialDataStudy) {
         angular.forEach(trialDataStudy.trialDataArms, function(trialDataArm) {
 
-          var matchedIntervention = _.find(trialDataArm.matchedProjectInterventionIds, function(id){
-              return id === intervention.id;
+          var matchedIntervention = _.find(trialDataArm.matchedProjectInterventionIds, function(id) {
+            return id === intervention.id;
           });
 
           if (matchedIntervention) {
@@ -205,7 +199,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function findArmForIntervention(trialdataArms, trialDataIntervention) {
       return _.find(trialdataArms, function(trialdataArm) {
-        return _.find(trialdataArm.matchedProjectInterventionIds, function(id){
+        return _.find(trialdataArm.matchedProjectInterventionIds, function(id) {
           return id === trialDataIntervention.id;
         });
       });
@@ -329,7 +323,7 @@ define(['lodash', 'angular'], function(_, angular) {
 
     function doesModelHaveAmbiguousArms(trialDataStudies, analysis) {
       function doesStudyHaveAmbiguousArms(trialDataStudy) {
-        return _.find(trialDataStudy.trialDataArms, function(arm){
+        return _.find(trialDataStudy.trialDataArms, function(arm) {
           return (arm.matchedProjectInterventionIds.length > 1) && isArmIncluded(analysis, arm);
         });
 
@@ -355,7 +349,7 @@ define(['lodash', 'angular'], function(_, angular) {
       });
 
       var includedArmsForDrugUid = _.filter(containingStudy.trialDataArms, function(trialDataArm) {
-        var matchedIntervention = _.find(trialDataArm.matchedProjectInterventionIds, function(id){
+        var matchedIntervention = _.find(trialDataArm.matchedProjectInterventionIds, function(id) {
           return id === interventionId;
         });
         return matchedIntervention !== undefined && isArmIncluded(trialDataArm);
@@ -431,72 +425,39 @@ define(['lodash', 'angular'], function(_, angular) {
       return updatedList;
     }
 
-    function findOverlappingTreatments(thisIntervention, interventions) {
-      return interventions.reduce(function(overlapping, otherIntervention) {
-        if (thisIntervention.id !== otherIntervention.id &&
-          thisIntervention.semanticInterventionUri === otherIntervention.semanticInterventionUri) {
-          overlapping.push(otherIntervention);
+    function addOverlaps(overlappingTreatmentsMap, interventionIds) {
+      interventionIds.forEach(function(interventionId) {
+        var idsWithoutSelf = _.without(interventionIds, interventionId);
+        if(!overlappingTreatmentsMap[interventionId]) {
+          overlappingTreatmentsMap[interventionId] = [];
         }
-        return overlapping;
-      }, []);
-    }
-
-    function getIncludedInterventions(interventions) {
-      return _.filter(interventions, function(intervention) {
-        return intervention.isIncluded;
+        overlappingTreatmentsMap[interventionId] = _.uniq(overlappingTreatmentsMap[interventionId].concat(idsWithoutSelf));
       });
+      return overlappingTreatmentsMap;
     }
 
-    function hasMoreThanOneIncludedIntervention(study, includedInterventions) {
-      var numberOfIncludedInterventions = study.trialDataArms.reduce(function(count, arm) {
-        var intervention = findInterventionOptionForDrug(arm.semanticIntervention.drugConcept, includedInterventions);
-        if (intervention && intervention.isIncluded) {
-          ++count;
-        }
-        return count;
-      }, 0);
+    function buildOverlappingTreatmentMap(interventions, trialDataStudies) {
+      var includedInterventions = _.filter(interventions, 'isIncluded');
+      var includedInterventionMap = _.keyBy(includedInterventions, 'id');
+      var overlappingTreatmentsMap = {};
 
-      return numberOfIncludedInterventions > 1;
-    }
-
-    function buildOverlappingTreatmentMap(analysis, interventions, trialDataStudies) {
-      var includedInterventions = getIncludedInterventions(interventions);
-      var overlappingTreatmentsMap = includedInterventions.reduce(function(accum, intervention) {
-        var overlapping = findOverlappingTreatments(intervention, includedInterventions);
-        if (overlapping.length > 0) {
-          accum[intervention.id] = overlapping;
-        }
-        return accum;
-      }, {});
-
-      return _.reduce(overlappingTreatmentsMap, function(accum, overlapEntry, key) {
-        var intervention = includedInterventions.find(function(intervention) {
-          return intervention.id === parseInt(key);
+      trialDataStudies.forEach(function(study) {
+        study.trialDataArms.forEach(function(arm) {
+          if (arm.matchedProjectInterventionIds.length > 1) {
+            overlappingTreatmentsMap = addOverlaps(overlappingTreatmentsMap, arm.matchedProjectInterventionIds);
+          }
         });
+      });
 
-        var hasOverlap = _.find(trialDataStudies, function(study) {
-
-          var includedArms = _.filter(study.trialDataArms, function(arm) {
-            return !_.find(analysis.excludedArms, function(exclusion) {
-              return exclusion.trialverseUid === arm.uri;
-            });
-          });
-
-          var hasIncludedArmWithOverlap = _.find(includedArms, function(arm) {
-            return intervention.semanticInterventionUri === arm.semanticIntervention.drugConcept;
-          });
-
-          var moreThanOneIncludedIntervention = hasMoreThanOneIncludedIntervention(study, includedInterventions);
-
-          return moreThanOneIncludedIntervention && hasIncludedArmWithOverlap;
+      overlappingTreatmentsMap = _.reduce(overlappingTreatmentsMap, function(accum, value, key) {
+        accum[key] = value.map(function(interventionId) {
+          return includedInterventionMap[interventionId];
         });
-        if (hasOverlap) {
-          accum[intervention.id] = overlapEntry;
-        }
         return accum;
-      }, {});
-    }
+      }, overlappingTreatmentsMap);
 
+      return overlappingTreatmentsMap;
+    }
 
     return {
       transformTrialDataToNetwork: transformTrialDataToNetwork,
