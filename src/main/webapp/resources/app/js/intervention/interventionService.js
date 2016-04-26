@@ -24,7 +24,7 @@ define(['lodash', 'moment'], function(_, moment) {
     }, {
       value: 'AT_MOST',
       label: 'At most (<=)',
-      shortLabel: '<'
+      shortLabel: '<='
     }];
 
     function typeValueToObject(typeValue) {
