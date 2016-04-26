@@ -365,7 +365,6 @@ ALTER TABLE networkmetaanalysis ADD CONSTRAINT networkmetaanalysis_outcomeid_fke
 ALTER TABLE remarks DROP CONSTRAINT remarks_analysisid_fkey ;
 ALTER TABLE remarks ADD CONSTRAINT remarks_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES singlestudybenefitriskanalysis(id) ON DELETE CASCADE ;
 
-
 ALTER TABLE singlestudybenefitriskanalysis_outcome DROP CONSTRAINT ssbr_analysis_outcomes_analysisid_fkey ;
 ALTER TABLE singlestudybenefitriskanalysis_outcome ADD CONSTRAINT ssbr_analysis_outcomes_analysisid_fkey FOREIGN KEY (analysisid) REFERENCES singlestudybenefitriskanalysis(id) ON DELETE CASCADE ;
 
@@ -565,6 +564,7 @@ ALTER TABLE MetaBenefitRiskAnalysis DROP COLUMN title;
 select setval('shared_analysis_id_seq', (select max(id) from AbstractAnalysis));
 -- rollback CREATE TABLE MetaBenefitRiskAnalysis_Alternative ( analysisId INT, alternativeId INT, PRIMARY KEY(analysisId, alternativeId), FOREIGN KEY(analysisId) REFERENCES MetaBenefitRiskAnalysis(id), FOREIGN KEY(alternativeId) REFERENCES abstractintervention(id));
 -- rollback INSERT INTO MetaBenefitRiskAnalysis_Alternative (analysisid, alternativeId) select i.analysisid, i.interventionid from interventioninclusion i WHERE i.analysisid in (select id from metabenefitriskanalysis);
+-- rollback DELETE FROM interventioninclusion i WHERE i.analysisid in (select id from metabenefitriskanalysis);
 -- rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN projectId int;
 -- rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD CONSTRAINT singlestudybenefitriskanalysis_projectid_fkey FOREIGN KEY(projectId) REFERENCES project(id);
 -- rollback ALTER TABLE SingleStudyBenefitRiskAnalysis ADD COLUMN title VARCHAR;
