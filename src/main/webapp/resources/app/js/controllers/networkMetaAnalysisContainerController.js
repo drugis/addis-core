@@ -106,7 +106,7 @@ define(['lodash'], function(_) {
         .then(function(trialverseData) {
           $scope.trialverseData = trialverseData;
           updateNetwork();
-          var includedInterventions = getIncludedInterventions($scope.interventions);
+          var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
           $scope.treatmentOverlapMap = NetworkMetaAnalysisService.buildOverlappingTreatmentMap($scope.interventions, trialverseData);
           $scope.trialData = NetworkMetaAnalysisService.transformTrialDataToTableRows(trialverseData, includedInterventions, $scope.analysis, $scope.covariates, $scope.treatmentOverlapMap);
           $scope.tableHasAmbiguousArm = NetworkMetaAnalysisService.doesModelHaveAmbiguousArms(trialverseData, $scope.analysis);
@@ -166,14 +166,8 @@ define(['lodash'], function(_) {
       return accum;
     }
 
-    function getIncludedInterventions(interventions) {
-      return _.filter(interventions, function(intervention) {
-        return intervention.isIncluded;
-      });
-    }
-
     function updateNetwork() {
-      var includedInterventions = getIncludedInterventions($scope.interventions);
+      var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
       $scope.networkGraph.network = NetworkMetaAnalysisService.transformTrialDataToNetwork($scope.trialverseData, includedInterventions, $scope.analysis);
       $scope.isNetworkDisconnected = NetworkMetaAnalysisService.isNetworkDisconnected($scope.networkGraph.network);
     }

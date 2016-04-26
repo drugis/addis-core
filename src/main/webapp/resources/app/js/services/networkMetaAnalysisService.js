@@ -459,6 +459,12 @@ define(['lodash', 'angular'], function(_, angular) {
       return overlappingTreatmentsMap;
     }
 
+    function getIncludedInterventions(interventions) {
+      return _.filter(interventions, function(intervention) {
+        return intervention.isIncluded;
+      });
+    }
+
     return {
       transformTrialDataToNetwork: transformTrialDataToNetwork,
       transformTrialDataToTableRows: transformTrialDataToTableRows,
@@ -471,7 +477,8 @@ define(['lodash', 'angular'], function(_, angular) {
       doesModelHaveAmbiguousArms: doesModelHaveAmbiguousArms,
       cleanUpExcludedArms: cleanUpExcludedArms,
       changeCovariateInclusion: changeCovariateInclusion,
-      buildOverlappingTreatmentMap: buildOverlappingTreatmentMap
+      buildOverlappingTreatmentMap: buildOverlappingTreatmentMap,
+      getIncludedInterventions: getIncludedInterventions
     };
   };
   return dependencies.concat(NetworkMetaAnalysisService);

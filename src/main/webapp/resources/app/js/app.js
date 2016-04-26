@@ -248,7 +248,22 @@ define(
           .state('project', {
             url: '/users/:userUid/projects/:projectId',
             templateUrl: baseTemplatePath + 'project.html',
-            controller: 'SingleProjectController'
+            controller: 'SingleProjectController',
+            resolve: {
+              activeTab: function(){
+                return 'details';
+              }
+            }
+          })
+          .state('projectReport', {
+            url: '/users/:userUid/projects/:projectId/report',
+            templateUrl: baseTemplatePath + 'project.html',
+            controller: 'SingleProjectController',
+            resolve: {
+              activeTab: function(){
+                return 'report';
+              }
+            }
           })
           .state('namespace-study', {
             url: '/study/:studyUid',
