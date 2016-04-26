@@ -1,5 +1,5 @@
 'use strict';
-define(['lodash'], function(_) {
+define(['lodash', 'angular'], function(_, angular) {
   var dependencies = ['$scope', '$modalInstance', 'callback', 'InterventionResource'];
   var AddInterventionController = function($scope, $modalInstance, callback, InterventionResource) {
 
@@ -52,17 +52,56 @@ define(['lodash'], function(_) {
 
     function addIntervention(newIntervention) {
       $scope.isAddingIntervention = true;
-      newIntervention.projectId = $scope.project.id;
-      newIntervention.semanticInterventionLabel = newIntervention.semanticIntervention.label;
-      newIntervention.semanticInterventionUuid = newIntervention.semanticIntervention.uri;
-
-      delete newIntervention.semanticIntervention;
-      newIntervention = flattenTypes(newIntervention); // go from object with label to value only
-      InterventionResource.save(newIntervention, function(intervention) {
+      var createCommand = buildCreateInterventionCommand(newIntervention);
+      InterventionResource.save(createCommand, function(intervention) {
         $modalInstance.close();
         callback(intervention);
         $scope.isAddingIntervention = false;
       });
+    }
+
+    function buildCreateInterventionCommand(newIntervention) {
+      var createInterventionCommand = angular.copy(newIntervention);
+
+      createInterventionCommand.projectId = $scope.project.id;
+      createInterventionCommand.semanticInterventionLabel = newIntervention.semanticIntervention.label;
+      createInterventionCommand.semanticInterventionUuid = newIntervention.semanticIntervention.uri;
+      delete createInterventionCommand.semanticIntervention;
+
+      createInterventionCommand = flattenTypes(createInterventionCommand); // go from object with label to value only
+
+      createInterventionCommand = cleanUpConstaints(createInterventionCommand);
+
+      return createInterventionCommand;
+    }
+
+    /*
+    ** remove constraints from the command if no bounds are set
+    */
+    function cleanUpConstaints(createInterventionCommand) {
+      var cleanedCommand = angular.copy(createInterventionCommand);
+
+      if (createInterventionCommand.doseType === 'both') {
+        if (!createInterventionCommand.bothDoseTypesMinConstraint.lowerBound &&
+          !createInterventionCommand.bothDoseTypesMinConstraint.upperBound) {
+          delete cleanedCommand.bothDoseTypesMinConstraint;
+        }
+        if (!createInterventionCommand.bothDoseTypesMaxConstraint.lowerBound &&
+          !createInterventionCommand.bothDoseTypesMaxConstraint.upperBound) {
+          delete cleanedCommand.bothDoseTypesMaxConstraint;
+        }
+      } else if (createInterventionCommand.doseType === 'titrated') {
+        if (!createInterventionCommand.titratedDoseMinConstraint.lowerBound &&
+          !createInterventionCommand.titratedDoseMinConstraint.upperBound) {
+          delete cleanedCommand.titratedDoseMinConstraint;
+        }
+        if (!createInterventionCommand.titratedDoseMaxConstraint.lowerBound &&
+          !createInterventionCommand.titratedDoseMaxConstraint.upperBound) {
+          delete cleanedCommand.titratedDoseMaxConstraint;
+        }
+      }
+
+      return cleanedCommand;
     }
 
     function checkForDuplicateInterventionName(name) {
