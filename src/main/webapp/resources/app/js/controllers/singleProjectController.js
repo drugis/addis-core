@@ -13,13 +13,11 @@ define(['lodash', 'angular'], function(_, angular) {
     'AnalysisResource',
     'ANALYSIS_TYPES',
     'InterventionService',
-    'activeTab',
-    'EvidenceTableResource',
-    'NetworkMetaAnalysisService'
+    'activeTab'
   ];
   var SingleProjectController = function($scope, $q, $state, $stateParams, $window, $location, $modal, ProjectResource, TrialverseResource,
     TrialverseStudyResource, SemanticOutcomeResource, OutcomeResource, SemanticInterventionResource, InterventionResource,
-    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab, EvidenceTableResource, NetworkMetaAnalysisService) {
+    CovariateOptionsResource, CovariateResource, AnalysisResource, ANALYSIS_TYPES, InterventionService, activeTab) {
 
     $scope.activeTab = activeTab;
 
@@ -90,6 +88,7 @@ define(['lodash', 'angular'], function(_, angular) {
           $scope.analysesLoaded = true;
         });
       });
+
     });
 
     function loadCovariates() {
@@ -191,23 +190,6 @@ define(['lodash', 'angular'], function(_, angular) {
         var newPath = path.substring(0, path.length - '/report'.length);
         $location.path( newPath);
       }
-    };
-
-    $scope.getNmaNetwork = function(analysis) {
-      var networkDefer = $q.defer();
-      networkDefer.network = 1;
-      EvidenceTableResource
-        .query({
-          projectId: $scope.project.id,
-          analysisId: analysis.id
-        })
-        .$promise
-        .then(function(trialverseData) {
-          var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions($scope.interventions);
-          var network = NetworkMetaAnalysisService.transformTrialDataToNetwork(trialverseData, includedInterventions, analysis);
-          networkDefer.resolve(network);
-        });
-      return networkDefer.promise;
     };
 
   };

@@ -82,15 +82,7 @@
               </p>
               <p>{{::analysis.description}}</p>
               <div ng-if="analysis.analysisType === 'Network meta-analysis'">
-                <!-- Outcome: <outcome name> -->
-                <span><strong>Outcome: </strong>{{::analysis.outcome.name}}</span>
-                <!-- Evidence network graph -->
-                <network-plot ng-show="!hasTreatmentOverlap" network="getNmaNetwork(analysis)" ng-show="analysis.outcome"></network-plot>
-                <!-- Primary model: <model title> -->
-                <!-- Condensed one-line summary of model settings -->
-                <!-- Link to full model view -->
-                <!-- Relative effects plot and rank probabilities (consistency model); forest plot (pair-wise analysis); direct/inderect effects plot (node-splitting); covariate effects plots (regression) -->
-                <!-- Secondary models: list of model titles, links to the model views -->
+                <nma-report-view user=user project="project" analysis="analysis" interventions="interventions"></nma-report-view>
               </div>
 
               <div ng-if="analysis.analysisType === 'Single-study Benefit-Risk'">
