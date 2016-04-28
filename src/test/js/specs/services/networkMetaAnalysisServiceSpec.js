@@ -1,14 +1,14 @@
 define(['angular', 'angular-mocks', 'services'], function() {
 
   var exampleStudies = [{
-    'studyUri': 'http://trials.drugis.org/graphs/favaUri',
+    'studyUri': 'http://trials.drugis.org/graphs/favaUuid',
     'name': 'Fava et al, 2002',
     'trialDataArms': [{
       'uri': 'http://trials.drugis.org/instances/fava-parox-arm',
       'name': 'Paroxetine',
       'drugInstance': 'http://trials.drugis.org/instances/parox-instance',
       'measurements': [{
-        'studyUid': 'http://trials.drugis.org/graphs/favaUri',
+        'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
         'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
         'variableConceptUri': 'variableConceptUri',
         'armUri': 'http://trials.drugis.org/instances/fava-parox-arm',
@@ -27,7 +27,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Sertraline',
       'drugInstance': 'http://trials.drugis.org/instances/sertra-instance',
       'measurements': [{
-        'studyUid': 'http://trials.drugis.org/graphs/favaUri',
+        'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
         'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
         'variableConceptUri': 'variableConceptUri',
         'armUri': 'http://trials.drugis.org/instances/fava-sertra-arm',
@@ -46,7 +46,7 @@ define(['angular', 'angular-mocks', 'services'], function() {
       'name': 'Fluoxetine',
       'drugInstance': 'http://trials.drugis.org/instances/fluoxInstance',
       'measurements': [{
-        'studyUid': 'http://trials.drugis.org/graphs/favaUri',
+        'studyUid': 'http://trials.drugis.org/graphs/favaUuid',
         'variableUri': 'http://trials.drugis.org/instances/hamd-instance',
         'variableConceptUri': 'variableConceptUri',
         'armUri': 'http://trials.drugis.org/instances/fava-arm-1-uri',
@@ -440,7 +440,8 @@ define(['angular', 'angular-mocks', 'services'], function() {
               data: 123
             }],
             study: 'Fava et al, 2002',
-            studyUri: 'http://trials.drugis.org/graphs/favaUri',
+            studyUri: 'http://trials.drugis.org/graphs/favaUuid',
+            studyUid: 'favaUuid',
             studyRowSpan: 3,
             drugConceptUid: 'http://trials.drugis.org/concepts/parox-concept',
             arm: 'Paroxetine',
@@ -465,7 +466,8 @@ define(['angular', 'angular-mocks', 'services'], function() {
               data: 123
             }],
             study: 'Fava et al, 2002',
-            studyUri: 'http://trials.drugis.org/graphs/favaUri',
+            studyUri: 'http://trials.drugis.org/graphs/favaUuid',
+            studyUid: 'favaUuid',
             studyRowSpan: 3,
             drugConceptUid: 'http://trials.drugis.org/concepts/sertra-concept',
             arm: 'Sertraline',
@@ -489,7 +491,8 @@ define(['angular', 'angular-mocks', 'services'], function() {
               data: 123
             }],
             study: 'Fava et al, 2002',
-            studyUri: 'http://trials.drugis.org/graphs/favaUri',
+            studyUri: 'http://trials.drugis.org/graphs/favaUuid',
+            studyUid: 'favaUuid',
             studyRowSpan: 3,
             drugConceptUid: 'http://trials.drugis.org/concepts/fluox-concept',
             arm: 'Fluoxetine',

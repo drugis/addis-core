@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by daan on 3/27/14.
@@ -15,7 +16,7 @@ import java.util.List;
 @Service
 public class PerformanceTableBuilder {
 
-  public List<AbstractMeasurementEntry> build(List<Pair<Measurement, URI>> measurementDrugInstancePair ) {
+  public List<AbstractMeasurementEntry> build(Set<Pair<Measurement, URI>> measurementDrugInstancePair) {
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
     for (Pair<Measurement, URI> pair: measurementDrugInstancePair) {
       Measurement measurement = pair.getLeft();
