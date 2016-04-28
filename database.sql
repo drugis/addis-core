@@ -607,7 +607,7 @@ ALTER TABLE BothDoseTypesIntervention ADD COLUMN maxUpperBoundUnitConcept varcha
 --rollback ALTER TABLE BothDoseTypesIntervention DROP COLUMN maxUpperBoundUnitConcept ;
 
 --changeset stroombergc:49
-UPDATE abstractintervention SET semanticinterventionuri = CONCAT('http://trials.drugis.org/', semanticinterventionuri) WHERE LEFT(semanticinterventionuri, 4) <> 'http';
+UPDATE abstractintervention SET semanticinterventionuri = CONCAT('http://trials.drugis.org/concepts/', semanticinterventionuri) WHERE LEFT(semanticinterventionuri, 4) <> 'http';
 --rollback UPDATE abstractintervention SET semanticinterventionuri = RIGHT(semanticinterventionuri, 36) WHERE LEFT(semanticinterventionuri, 4) = 'http';
 
 --changeset stroombergc:50
@@ -650,3 +650,7 @@ UPDATE covariate SET definitionkey = CONCAT('http://trials.drugis.org/', definit
 --changeset reidd:54
 UPDATE singlestudybenefitriskanalysis SET studyGraphUri=CONCAT('http://trials.drugis.org/graphs/', studyGraphUri) WHERE LEFT(studyGraphUri, 4) <> 'http';
 --rollback UPDATE singlestudybenefitriskanalysis SET studyGraphUri = RIGHT(studyGraphUri, 36) WHERE LEFT(studyGraphUri, 4) = 'http';
+
+--changeset reidd:55
+UPDATE outcome SET semanticOutcomeUri=CONCAT('http://trials.drugis.org/concepts/', semanticOutcomeUri) WHERE LEFT(semanticOutcomeUri, 4) <> 'http';
+--rollback UPDATE outcome SET semanticOutcomeUri=RIGHT(semanticOutcomeUri, 36) WHERE LEFT(semanticOutcomeUri, 4) = 'http';
