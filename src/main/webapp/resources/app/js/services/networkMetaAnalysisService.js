@@ -92,6 +92,7 @@ define(['lodash', 'angular'], function(_, angular) {
           row.covariatesColumns = [];
           row.study = study.name;
           row.studyUri = study.studyUri;
+          row.studyUid = row.studyUri.slice(row.studyUri.lastIndexOf('/') + 1);
           row.studyRowSpan = study.trialDataArms.length;
           angular.forEach(covariates, function(covariate) {
             if (covariate.isIncluded) {
