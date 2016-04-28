@@ -256,7 +256,6 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws URISyntaxException, ReadValueException, ResourceDoesNotExistException {
-
     List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
 
     interventions = filterExcludedInterventions(interventions, analysis.getInterventionInclusions());
@@ -377,8 +376,8 @@ public class ProblemServiceImpl implements ProblemService {
             .stream().map(intervention -> interventionMap.get(intervention.getInterventionId()).getSemanticInterventionUri())
             .collect(Collectors.toSet());
 
-    final Map<URI, AbstractIntervention> alternativeToInterventionMap = interventions.stream()
-            .collect(Collectors.toMap(AbstractIntervention::getSemanticInterventionUri, Function.identity()));
+    final Map<Integer, AbstractIntervention> alternativeToInterventionMap = interventions.stream()
+            .collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
 
     final List<AbstractIntervention> includedInterventions = analysisService.getIncludedInterventions(analysis);
 
@@ -389,23 +388,24 @@ public class ProblemServiceImpl implements ProblemService {
 
     Map<URI, AlternativeEntry> alternatives = new HashMap<>();
     Map<URI, CriterionEntry> criteria = new HashMap<>();
-    List<Pair<Measurement, URI>> measurementDrugInstancePairs = new ArrayList<>();
+    Set<Pair<Measurement, URI>> measurementDrugInstancePairs = new HashSet<>();
     for (TrialDataArm arm : trialDataStudy.getTrialDataArms()) {
       List<Measurement> measurements = arm.getMeasurements();
-      URI drugInstanceUri = arm.getDrugInstance();
-      String alternativeName = alternativeToInterventionMap.get(arm.getSemanticIntervention().getDrugConcept()).getName();
-      alternatives.put(drugInstanceUri, new AlternativeEntry(drugInstanceUri, alternativeName));
-      for (Measurement measurement : measurements) {
-        measurementDrugInstancePairs.add(Pair.of(measurement, drugInstanceUri));
-        CriterionEntry criterionEntry = createCriterionEntry(measurement, outcomesByUriMap.get(measurement.getVariableConceptUri()));
-        criteria.put(measurement.getVariableUri(), criterionEntry);
-      }
-
       Set<AbstractIntervention> matchingIncludedInterventions = triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
-      if(matchingIncludedInterventions.size() > 0){
+      if (matchingIncludedInterventions.size() == 1) {
+        URI drugInstanceUri = arm.getDrugInstance();
+        for (Measurement measurement : measurements) {
+          measurementDrugInstancePairs.add(Pair.of(measurement, drugInstanceUri));
+          CriterionEntry criterionEntry = createCriterionEntry(measurement, outcomesByUriMap.get(measurement.getVariableConceptUri()));
+          criteria.put(measurement.getVariableUri(), criterionEntry);
+        }
         Set<Integer> matchedProjectInterventionIds = matchingIncludedInterventions.stream()
                 .map(AbstractIntervention::getId).collect(Collectors.toSet());
         arm.setMatchedProjectInterventionIds(matchedProjectInterventionIds);
+        String alternativeName = alternativeToInterventionMap.get(matchedProjectInterventionIds.iterator().next()).getName();
+        alternatives.put(drugInstanceUri, new AlternativeEntry(drugInstanceUri, alternativeName));
+      } else if (matchingIncludedInterventions.size() > 1) {
+        throw new RuntimeException("too many matched interventions for arm when creating problem");
       }
 
     }

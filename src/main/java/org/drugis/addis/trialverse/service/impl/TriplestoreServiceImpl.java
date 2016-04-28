@@ -492,7 +492,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
             .build();
   }
 
-  private String buildInterventionUnionString(Set<URI> interventionUris) {
+  public static String buildInterventionUnionString(Set<URI> interventionUris) {
     String result = "";
     for (URI interventionUri : interventionUris) {
       result += " { ?interventionInstance owl:sameAs <" + interventionUri + "> } UNION \n";
@@ -501,7 +501,7 @@ public class TriplestoreServiceImpl implements TriplestoreService {
     return result.substring(0, result.lastIndexOf("UNION"));
   }
 
-  private String buildOutcomeUnionString(Set<URI> uris) {
+  public static String buildOutcomeUnionString(Set<URI> uris) {
     String result = "";
     for (URI outcomeUri : uris) {
       result += " { ?outcomeInstance ontology:of_variable [ owl:sameAs <" + outcomeUri + "> ] } UNION \n";

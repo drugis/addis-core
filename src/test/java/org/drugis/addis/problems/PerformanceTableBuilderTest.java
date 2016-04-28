@@ -1,5 +1,6 @@
 package org.drugis.addis.problems;
 
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.Pair;
 import org.drugis.addis.problems.model.Arm;
 import org.drugis.addis.problems.model.MeasurementType;
@@ -13,8 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -70,7 +71,7 @@ public class PerformanceTableBuilderTest {
     Pair<Measurement, URI> row4 = Pair.of(new Measurement(studyUri, criterionUri2, measurement2.getVariableConceptUri(), arm1.getUri(), sampleSize2, rate, null, null), alternativeUri1);
 
     // EXECUTE
-    List<Pair<Measurement, URI>> measurementPairs =Arrays.asList(row1, row2, row3, row4);
+    Set<Pair<Measurement, URI>> measurementPairs = ImmutableSet.of(row1, row2, row3, row4);
     List<AbstractMeasurementEntry> performanceTable = builder.build(measurementPairs);
 
     assertEquals(4, performanceTable.size());
