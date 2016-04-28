@@ -15,11 +15,11 @@ import java.util.Map;
 @JsonDeserialize(using = ObjectToStringDeserializer.class)
 public class SingleStudyBenefitRiskProblem extends AbstractProblem {
   private String title;
-  private Map<URI, AlternativeEntry> alternatives;
+  private Map<Integer, AlternativeEntry> alternatives;
   private Map<URI, CriterionEntry> criteria;
   private List<AbstractMeasurementEntry> performanceTable;
 
-  public SingleStudyBenefitRiskProblem(String title, Map<URI, AlternativeEntry> alternatives, Map<URI, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
+  public SingleStudyBenefitRiskProblem(String title, Map<Integer, AlternativeEntry> alternatives, Map<URI, CriterionEntry> criteria, List<AbstractMeasurementEntry> performanceTable) {
     this.title = title;
     this.alternatives = alternatives;
     this.criteria = criteria;
@@ -30,7 +30,7 @@ public class SingleStudyBenefitRiskProblem extends AbstractProblem {
     return title;
   }
 
-  public Map<URI, AlternativeEntry> getAlternatives() {
+  public Map<Integer, AlternativeEntry> getAlternatives() {
     return alternatives;
   }
 

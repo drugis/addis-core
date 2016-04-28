@@ -1,6 +1,7 @@
 package org.drugis.addis.problems;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
 import org.drugis.addis.problems.model.Arm;
 import org.drugis.addis.problems.model.MeasurementType;
 import org.drugis.addis.problems.model.Variable;
@@ -13,8 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -31,8 +32,8 @@ public class PerformanceTableBuilderTest {
   private Arm arm1 = new Arm(URI.create("1L"), "10L", armName1);
   private Arm arm2 = new Arm(URI.create("2L"), "11L", armName2);
 
-  private URI alternativeUri1 = URI.create("altUri1");
-  private URI alternativeUri2 = URI.create("altUri2");
+  private Integer alternativeUri1 =1;
+  private Integer alternativeUri2 =2;
   private URI criterionUri1 = URI.create("critUri1");
   private URI criterionUri2 = URI.create("critUri2");
 
@@ -64,24 +65,24 @@ public class PerformanceTableBuilderTest {
     Double stdDev = measurement2.getStdDev();
 
     URI studyUri = URI.create("itsastudio");
-    Pair<Measurement, URI> row1 = Pair.of(new Measurement(studyUri, criterionUri1, measurement1.getVariableConceptUri(), arm1.getUri(), sampleSize1, null, stdDev, mu), alternativeUri1);
-    Pair<Measurement, URI> row2 = Pair.of(new Measurement(studyUri, criterionUri2, measurement2.getVariableConceptUri(), arm2.getUri(), sampleSize2, rate, null, null), alternativeUri2);
-    Pair<Measurement, URI> row3 = Pair.of(new Measurement(studyUri, criterionUri1, measurement1.getVariableConceptUri(), arm2.getUri(), sampleSize1, null, stdDev, mu), alternativeUri2);
-    Pair<Measurement, URI> row4 = Pair.of(new Measurement(studyUri, criterionUri2, measurement2.getVariableConceptUri(), arm1.getUri(), sampleSize2, rate, null, null), alternativeUri1);
+    Pair<Measurement, Integer> row1 = Pair.of(new Measurement(studyUri, criterionUri1, measurement1.getVariableConceptUri(), arm1.getUri(), sampleSize1, null, stdDev, mu), alternativeUri1);
+    Pair<Measurement, Integer> row2 = Pair.of(new Measurement(studyUri, criterionUri2, measurement2.getVariableConceptUri(), arm2.getUri(), sampleSize2, rate, null, null), alternativeUri2);
+    Pair<Measurement, Integer> row3 = Pair.of(new Measurement(studyUri, criterionUri1, measurement1.getVariableConceptUri(), arm2.getUri(), sampleSize1, null, stdDev, mu), alternativeUri2);
+    Pair<Measurement, Integer> row4 = Pair.of(new Measurement(studyUri, criterionUri2, measurement2.getVariableConceptUri(), arm1.getUri(), sampleSize2, rate, null, null), alternativeUri1);
 
     // EXECUTE
-    List<Pair<Measurement, URI>> measurementPairs =Arrays.asList(row1, row2, row3, row4);
+    Set<Pair<Measurement, Integer>> measurementPairs = ImmutableSet.of(row1, row2, row3, row4);
     List<AbstractMeasurementEntry> performanceTable = builder.build(measurementPairs);
 
     assertEquals(4, performanceTable.size());
 
     ContinuousMeasurementEntry continuousMeasurementEntry = (ContinuousMeasurementEntry) performanceTable.get(0);
-    assertEquals(alternativeUri1, continuousMeasurementEntry.getAlternativeUri());
+    assertEquals(alternativeUri1.toString(), continuousMeasurementEntry.getAlternative());
     assertEquals(criterionUri1, continuousMeasurementEntry.getCriterionUri());
     assertEquals(ContinuousPerformance.DNORM, continuousMeasurementEntry.getPerformance().getType());
 
     RateMeasurementEntry rateMeasurementEntry = (RateMeasurementEntry) performanceTable.get(1);
-    assertEquals(alternativeUri2, rateMeasurementEntry.getAlternativeUri());
+    assertEquals(alternativeUri2.toString(), rateMeasurementEntry.getAlternative());
     assertEquals(criterionUri2, rateMeasurementEntry.getCriterionUri());
     assertEquals(RatePerformance.DBETA, rateMeasurementEntry.getPerformance().getType());
 

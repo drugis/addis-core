@@ -8,8 +8,8 @@ import java.net.URI;
 public class RateMeasurementEntry extends AbstractMeasurementEntry {
   private RatePerformance performance;
 
-  public RateMeasurementEntry(URI alternativeUri, URI criterionUri, RatePerformance performance) {
-    super(alternativeUri, criterionUri);
+  public RateMeasurementEntry(Integer interventionId, URI criterionUri, RatePerformance performance) {
+    super(interventionId, criterionUri);
     this.performance = performance;
   }
 
