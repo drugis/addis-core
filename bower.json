@@ -26,7 +26,7 @@
     "fastclick": "~0.6.11",
     "font-awesome": "~4.3.0",
     "foundation": "~5.5.3",
-    "gemtc-web": "https://github.com/connorstroomberg/gemtc-web.git#feature/reportView",
+    "gemtc-web": "https://github.com/drugis/gemtc-web.git#develop",
     "jasmine": "~2.0.0",
     "jquery": "~2.1.3",
     "lodash": "~4.2.0",
