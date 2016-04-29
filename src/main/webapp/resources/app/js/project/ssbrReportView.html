@@ -1,0 +1,40 @@
+<div>
+  <a ui-sref="singleStudyBenefitRisk({userUid: user.id, projectId: project.id, analysisId: analysis.id})">View details</a>
+  <!-- view details link -->
+  <!-- Data source if ssbr / sources if metabr-->
+<table>
+  <thead>
+    <tr>
+      <th>Criterion</th>
+      <th>Description</th>
+      <th>Units</th>
+      <th class="text-center" ng-repeat="(alternativeKey, alternative) in problem.alternatives">{{alternative.title}}{{problem.valueTree.children.children[0].criteria}}</th>
+    </tr>
+  </thead>
+  <tbody class="main">
+    <tr ng-repeat="effectsTableRow in effectsTableData">
+      <td>
+        {{criterion.value.title}}
+      </td>
+      <td>
+        <div class="td-container">
+          <div class="td-content">{{criterion.value.description}}</div>
+          <div class="td-spacer">{{criterion.value.description}}</div>
+          <span>&nbsp;</span>
+        </div>
+      </td>
+      <td>{{criterion.value.unitOfMeasurement}}</td>
+      <td class="text-center" ng-repeat="(alternativeKey, alternative) in problem.alternatives" name="col{{$index}}" id="col{{$index}}" ng-show="alternativeVisible[alternativeKey]">
+        {{scales[criterion.key][alternativeKey]['50%'] | number}}
+        <br>
+        <div class="uncertain" ng-show="!isExact(criterion.key, alternativeKey)">
+          {{scales[criterion.key][alternativeKey]['2.5%'] | number}},
+          {{scales[criterion.key][alternativeKey]['97.5%'] | number}}</div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+  <!-- Scenarios list -->
+    <!-- per scenario: trade-offs -->
+    <!-- per scenario: rank acceptance plot -->
+</div>

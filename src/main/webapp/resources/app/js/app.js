@@ -50,7 +50,7 @@ define(
     'gemtc-web/constants',
     'gemtc-web/services',
     'gemtc-web/directives',
-    'mcda/controllers',
+    'mcda/services/effectsTableService',
     'mcda/controllers',
     'mcda/directives',
     'mcda/services/workspaceResource',
@@ -67,6 +67,7 @@ define(
   ],
   function(angular, require, $, Config, errorInterceptor, _) {
     var mcdaDependencies = [
+      'elicit.effectsTableService',
       'elicit.errorHandling',
       'elicit.scaleRangeService',
       'elicit.workspaceResource',
