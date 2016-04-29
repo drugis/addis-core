@@ -2,8 +2,8 @@ package org.drugis.addis.problems;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
@@ -249,11 +249,11 @@ public class ProblemServiceTest {
     verify(mappingService).getVersionedUuid(project.getNamespaceUid());
     verify(interventionRepository).query(project.getId());
 
-    Pair<Measurement, URI> pair1 = Pair.of(daanEtAlFluoxMeasurement1, daanEtAlFluoxArm.getDrugInstance());
-    Pair<Measurement, URI> pair2 = Pair.of(daanEtAlFluoxMeasurement2, daanEtAlFluoxArm.getDrugInstance());
-    Pair<Measurement, URI> pair3 = Pair.of(daanEtAlSertraMeasurement1, daanEtAlSertraArm.getDrugInstance());
-    Pair<Measurement, URI> pair4 = Pair.of(daanEtAlSertraMeasurement2, daanEtAlSertraArm.getDrugInstance());
-    Set<Pair<Measurement, URI>> instancePairs = ImmutableSet.of(pair1, pair2, pair3, pair4);
+    Pair<Measurement, Integer> pair1 = Pair.of(daanEtAlFluoxMeasurement1, daanEtAlFluoxArm.getMatchedProjectInterventionIds().iterator().next());
+    Pair<Measurement, Integer> pair2 = Pair.of(daanEtAlFluoxMeasurement2, daanEtAlFluoxArm.getMatchedProjectInterventionIds().iterator().next());
+    Pair<Measurement, Integer> pair3 = Pair.of(daanEtAlSertraMeasurement1, daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next());
+    Pair<Measurement, Integer> pair4 = Pair.of(daanEtAlSertraMeasurement2, daanEtAlSertraArm.getMatchedProjectInterventionIds().iterator().next());
+    Set<Pair<Measurement, Integer>> instancePairs = ImmutableSet.of(pair1, pair2, pair3, pair4);
     verify(performanceTablebuilder).build(instancePairs);
 
     assertNotNull(actualProblem);
