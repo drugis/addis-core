@@ -24,11 +24,12 @@
   <!-- forest plot (pair-wise analysis);-->
   <pairwise-forest-plots  model-promise="primaryModelPromise" results-promise="resultsPromise" problem-promise="problem.$promise"></pairwise-forest-plots>
 
-  <!--direct/inderect effects plot (node-splitting);-->
+  <!-- direct/inderect effects plot (node-splitting);-->
   <node-split-density-plots  model-promise="primaryModelPromise" results-promise="resultsPromise" problem-promise="problem.$promise"></node-split-density-plots>
 
+  <!-- covariate effects plots (regression);-->
+  <meta-regression-cov-plots model-promise="primaryModelPromise" results-promise="resultsPromise" problem-promise="problem.$promise"></meta-regression-cov-plots>
 
-<!--  covariate effects plots (regression) -->
 
   <!-- Secondary models: list of model titles, links to the model views -->
   <h3>Secondary models</h3>
