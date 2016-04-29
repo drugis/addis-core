@@ -53,7 +53,12 @@ define(['lodash'], function(_) {
             return model.id !== scope.analysis.primaryModel;
           });
 
-          primaryModelDefer.resolve(scope.primaryModel);
+          if (scope.primaryModel) {
+            primaryModelDefer.resolve(scope.primaryModel);
+          } else {
+            primaryModelDefer.reject('no primary model had been set');
+          }
+
         });
 
         scope.primaryModelPromise.then(function(model) {
