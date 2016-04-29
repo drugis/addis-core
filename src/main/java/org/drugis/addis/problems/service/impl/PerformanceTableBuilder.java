@@ -16,34 +16,34 @@ import java.util.Set;
 @Service
 public class PerformanceTableBuilder {
 
-  public List<AbstractMeasurementEntry> build(Set<Pair<Measurement, URI>> measurementDrugInstancePair) {
+  public List<AbstractMeasurementEntry> build(Set<Pair<Measurement, Integer>> measurementDrugInstancePair) {
     ArrayList<AbstractMeasurementEntry> performanceTable = new ArrayList<>();
-    for (Pair<Measurement, URI> pair: measurementDrugInstancePair) {
+    for (Pair<Measurement, Integer> pair: measurementDrugInstancePair) {
       Measurement measurement = pair.getLeft();
-      URI drugInstanceUri = pair.getRight();
+      Integer interventionId = pair.getRight();
       if (measurement.getRate() != null) {
 
-        performanceTable.add(createBetaDistributionEntry(drugInstanceUri, measurement.getVariableUri(), measurement.getRate(), measurement.getSampleSize()));
+        performanceTable.add(createBetaDistributionEntry(interventionId, measurement.getVariableUri(), measurement.getRate(), measurement.getSampleSize()));
       } else if (measurement.getMean() != null) {
-        performanceTable.add(createNormalDistributionEntry(drugInstanceUri, measurement.getVariableUri(), measurement.getMean(), measurement.getStdDev(), measurement.getSampleSize()));
+        performanceTable.add(createNormalDistributionEntry(interventionId, measurement.getVariableUri(), measurement.getMean(), measurement.getStdDev(), measurement.getSampleSize()));
       }
     }
     return performanceTable;
   }
 
-  private ContinuousMeasurementEntry createNormalDistributionEntry(URI alternativeUri, URI criterionUid, Double mean, Double standardDeviation, Integer sampleSize) {
+  private ContinuousMeasurementEntry createNormalDistributionEntry(Integer interventionId, URI criterionUid, Double mean, Double standardDeviation, Integer sampleSize) {
     Double sigma = standardDeviation / Math.sqrt(sampleSize);
 
     ContinuousPerformance performance = new ContinuousPerformance(new ContinuousPerformanceParameters(mean, sigma));
-    return new ContinuousMeasurementEntry(alternativeUri, criterionUid, performance);
+    return new ContinuousMeasurementEntry(interventionId, criterionUid, performance);
   }
 
-  private RateMeasurementEntry createBetaDistributionEntry(URI alternativeUri, URI criterionUri, Integer rate, Integer sampleSize) {
+  private RateMeasurementEntry createBetaDistributionEntry(Integer interventonId, URI criterionUri, Integer rate, Integer sampleSize) {
     int alpha = rate + 1;
     int beta = sampleSize - rate + 1;
 
     RatePerformance performance = new RatePerformance(new RatePerformanceParameters(alpha, beta));
-    return new RateMeasurementEntry(alternativeUri, criterionUri, performance);
+    return new RateMeasurementEntry(interventonId, criterionUri, performance);
   }
 
 }

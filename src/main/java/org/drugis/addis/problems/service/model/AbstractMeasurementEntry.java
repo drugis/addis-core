@@ -6,16 +6,16 @@ import java.net.URI;
  * Created by daan on 3/26/14.
  */
 public abstract class AbstractMeasurementEntry {
-  private URI alternativeUri;
+  private Integer alternative;
   private URI criterionUri;
 
-  protected AbstractMeasurementEntry(URI alternativeUri, URI criterionUri) {
-    this.alternativeUri = alternativeUri;
+  protected AbstractMeasurementEntry(Integer alternative, URI criterionUri) {
+    this.alternative = alternative;
     this.criterionUri = criterionUri;
   }
 
-  public URI getAlternativeUri() {
-    return this.alternativeUri;
+  public String getAlternative() {
+    return alternative.toString();
   }
 
   public URI getCriterionUri() {
@@ -31,7 +31,7 @@ public abstract class AbstractMeasurementEntry {
 
     AbstractMeasurementEntry that = (AbstractMeasurementEntry) o;
 
-    if (!alternativeUri.equals(that.alternativeUri)) return false;
+    if (!alternative.equals(that.alternative)) return false;
     if (!criterionUri.equals(that.criterionUri)) return false;
 
     return true;
@@ -39,7 +39,7 @@ public abstract class AbstractMeasurementEntry {
 
   @Override
   public int hashCode() {
-    int result = alternativeUri.hashCode();
+    int result = alternative.hashCode();
     result = 31 * result + criterionUri.hashCode();
     return result;
   }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
 import org.drugis.addis.analyses.*;
 import org.drugis.addis.analyses.repository.AnalysisRepository;
 import org.drugis.addis.analyses.repository.SingleStudyBenefitRiskAnalysisRepository;
@@ -141,7 +142,7 @@ public class ProblemServiceImpl implements ProblemService {
             .collect(Collectors.toMap(Outcome::getName, o -> new CriterionEntry(o.getSemanticOutcomeUri(), o.getName())));
     Map<String, AlternativeEntry> alternatives = includedAlternatives
             .stream()
-            .collect(Collectors.toMap(AbstractIntervention::getName, i -> new AlternativeEntry(i.getSemanticInterventionUri(), i.getName())));
+            .collect(Collectors.toMap(AbstractIntervention::getName, i -> new AlternativeEntry(i.getId(), i.getName())));
 
     final Map<String, AbstractIntervention> includedInterventionsByName = includedAlternatives.stream().collect(Collectors.toMap(AbstractIntervention::getName, Function.identity()));
 
@@ -375,9 +376,10 @@ public class ProblemServiceImpl implements ProblemService {
     final Set<URI> alternativeUris = analysis.getInterventionInclusions()
             .stream().map(intervention -> interventionMap.get(intervention.getInterventionId()).getSemanticInterventionUri())
             .collect(Collectors.toSet());
+    final Set<Integer> interventionIds = analysis.getInterventionInclusions().stream().map(InterventionInclusion::getInterventionId).collect(Collectors.toSet());
 
-    final Map<Integer, AbstractIntervention> alternativeToInterventionMap = interventions.stream()
-            .collect(Collectors.toMap(AbstractIntervention::getId, Function.identity()));
+    final Map<String, AbstractIntervention> alternativeToInterventionMap = interventions.stream()
+            .collect(Collectors.toMap(ai -> ai.getId().toString(), Function.identity()));
 
     final List<AbstractIntervention> includedInterventions = analysisService.getIncludedInterventions(analysis);
 
@@ -386,24 +388,23 @@ public class ProblemServiceImpl implements ProblemService {
             analysis.getStudyGraphUri(), project.getDatasetVersion(), outcomeUris, alternativeUris);
     TrialDataStudy trialDataStudy = singleStudyMeasurements.get(0);
 
-    Map<URI, AlternativeEntry> alternatives = new HashMap<>();
+    Map<Integer, AlternativeEntry> alternatives = new HashMap<>();
     Map<URI, CriterionEntry> criteria = new HashMap<>();
-    Set<Pair<Measurement, URI>> measurementDrugInstancePairs = new HashSet<>();
+    Set<Pair<Measurement, Integer>> measurementDrugInstancePairs = new HashSet<>();
     for (TrialDataArm arm : trialDataStudy.getTrialDataArms()) {
       List<Measurement> measurements = arm.getMeasurements();
       Set<AbstractIntervention> matchingIncludedInterventions = triplestoreService.findMatchingIncludedInterventions(includedInterventions, arm);
       if (matchingIncludedInterventions.size() == 1) {
-        URI drugInstanceUri = arm.getDrugInstance();
+        Integer matchedProjectInterventionId = matchingIncludedInterventions.iterator().next().getId();
         for (Measurement measurement : measurements) {
-          measurementDrugInstancePairs.add(Pair.of(measurement, drugInstanceUri));
+          measurementDrugInstancePairs.add(Pair.of(measurement, matchedProjectInterventionId));
           CriterionEntry criterionEntry = createCriterionEntry(measurement, outcomesByUriMap.get(measurement.getVariableConceptUri()));
           criteria.put(measurement.getVariableUri(), criterionEntry);
         }
-        Set<Integer> matchedProjectInterventionIds = matchingIncludedInterventions.stream()
-                .map(AbstractIntervention::getId).collect(Collectors.toSet());
-        arm.setMatchedProjectInterventionIds(matchedProjectInterventionIds);
-        String alternativeName = alternativeToInterventionMap.get(matchedProjectInterventionIds.iterator().next()).getName();
-        alternatives.put(drugInstanceUri, new AlternativeEntry(drugInstanceUri, alternativeName));
+
+        arm.setMatchedProjectInterventionIds(ImmutableSet.of(matchedProjectInterventionId));
+        String alternativeName = alternativeToInterventionMap.get(matchedProjectInterventionId.toString()).getName();
+        alternatives.put(matchedProjectInterventionId, new AlternativeEntry(matchedProjectInterventionId, alternativeName));
       } else if (matchingIncludedInterventions.size() > 1) {
         throw new RuntimeException("too many matched interventions for arm when creating problem");
       }

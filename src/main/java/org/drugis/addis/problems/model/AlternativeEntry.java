@@ -1,16 +1,14 @@
 package org.drugis.addis.problems.model;
 
-import java.net.URI;
-
 /**
  * Created by daan on 3/21/14.
  */
 public class AlternativeEntry {
-  private URI interventionUri;
+  private Integer alternative;
   private String title;
 
-  public AlternativeEntry(URI interventionUri, String title) {
-    this.interventionUri = interventionUri;
+  public AlternativeEntry(Integer alternative, String title) {
+    this.alternative = alternative;
     this.title = title;
   }
 
@@ -18,8 +16,8 @@ public class AlternativeEntry {
     return title;
   }
 
-  public URI getAlternativeUri() {
-    return interventionUri;
+  public Integer getAlternative() {
+    return alternative;
   }
 
   @Override
@@ -29,7 +27,7 @@ public class AlternativeEntry {
 
     AlternativeEntry that = (AlternativeEntry) o;
 
-    if (!interventionUri.equals(that.interventionUri)) return false;
+    if (!alternative.equals(that.alternative)) return false;
     if (!title.equals(that.title)) return false;
 
     return true;
@@ -37,7 +35,7 @@ public class AlternativeEntry {
 
   @Override
   public int hashCode() {
-    int result = interventionUri.hashCode();
+    int result = alternative.hashCode();
     result = 31 * result + title.hashCode();
     return result;
   }

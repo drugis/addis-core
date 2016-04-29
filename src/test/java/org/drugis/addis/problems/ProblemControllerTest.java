@@ -56,13 +56,13 @@ public class ProblemControllerTest {
   @Test
   public void testGetSingleStudybenefitRiskProblem() throws Exception, ReadValueException, InvalidTypeForDoseCheckException {
     RatePerformance ratePerformance = new RatePerformance(new RatePerformanceParameters(10, 50));
-    URI alternativeUri1 = URI.create("Alturi1");
-    URI alternativeUri2 = URI.create("Alturi2");
+    Integer alternative1 = 1;
+    Integer alternative2 = 2;
     URI criterionUri1 = URI.create("Crituri1");
     URI criterionUri2 = URI.create("Crituri2");
-    AbstractMeasurementEntry rateMeasurementEntry = new RateMeasurementEntry(alternativeUri1, criterionUri1, ratePerformance);
+    AbstractMeasurementEntry rateMeasurementEntry = new RateMeasurementEntry(alternative1, criterionUri1, ratePerformance);
     ContinuousPerformance continuousPerformance = new ContinuousPerformance(new ContinuousPerformanceParameters(7.5, 2.1));
-    AbstractMeasurementEntry continuousMeasurementEntry = new ContinuousMeasurementEntry(alternativeUri2, criterionUri2, continuousPerformance);
+    AbstractMeasurementEntry continuousMeasurementEntry = new ContinuousMeasurementEntry(alternative2, criterionUri2, continuousPerformance);
     List<AbstractMeasurementEntry> performanceTable = Arrays.asList(rateMeasurementEntry, continuousMeasurementEntry);
     SingleStudyBenefitRiskProblem problem = new SingleStudyBenefitRiskProblem("testProblem", new HashMap<>(), new HashMap<>(), performanceTable);
     Integer projectId = 1;
