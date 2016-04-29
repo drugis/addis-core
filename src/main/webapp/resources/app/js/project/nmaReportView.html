@@ -14,12 +14,14 @@
   <span>
     <strong>model settings: </strong>{{modelSettingSummary(primaryModel)}}</span>
   <!-- Link to full model view -->
-  <div>
+  <div style="padding-bottom: 1rem;">
     <a ui-sref="model({userUid: user.id, projectId: project.id, analysisId: analysis.id, modelId: primaryModel.id})">View full model</a>
   </div>
 
-  <!-- Relative effects plot and rank probabilities (consistency model);
+  <!-- Relative effects plot and rank probabilities (consistency model); -->
+  <relative-effect-plots  model-promise="primaryModelPromise" results-promise="resultsPromise" problem-promise="problem.$promise"></relative-effect-plots>
 
+<!--
    forest plot (pair-wise analysis);
     direct/inderect effects plot (node-splitting);
    covariate effects plots (regression) -->
