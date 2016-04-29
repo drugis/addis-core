@@ -1,10 +1,10 @@
 'use strict';
 define(['lodash'], function(_) {
-  var dependencies = ['EvidenceTableResource', 'NetworkMetaAnalysisService',
+  var dependencies = ['$q', 'EvidenceTableResource', 'NetworkMetaAnalysisService',
     'ModelResource', 'AnalysisService', 'PataviTaskIdResource', 'PataviService',
     'ProblemResource'
   ];
-  var nmaReportViewDirective = function(EvidenceTableResource,
+  var nmaReportViewDirective = function($q, EvidenceTableResource,
     NetworkMetaAnalysisService, ModelResource, AnalysisService,
     PataviTaskIdResource, PataviService, ProblemResource) {
     return {
@@ -18,9 +18,9 @@ define(['lodash'], function(_) {
       },
       link: function(scope) {
         EvidenceTableResource.query({
-            projectId: scope.project.id,
-            analysisId: scope.analysis.id
-          })
+          projectId: scope.project.id,
+          analysisId: scope.analysis.id
+        })
           .$promise.then(function(trialverseData) {
             scope.interventions = NetworkMetaAnalysisService.addInclusionsToInterventions(scope.interventions, scope.analysis.interventionInclusions);
             var includedInterventions = NetworkMetaAnalysisService.getIncludedInterventions(scope.interventions);
@@ -28,7 +28,7 @@ define(['lodash'], function(_) {
           });
 
 
-        var modelPromise = ModelResource.query({
+        var modelsPromise = ModelResource.query({
           projectId: scope.project.id,
           analysisId: scope.analysis.id
         }).$promise;
@@ -38,7 +38,13 @@ define(['lodash'], function(_) {
           projectId: scope.project.id
         });
 
-        modelPromise.then(function(models) {
+        var primaryModelDefer = $q.defer();
+        scope.primaryModelPromise = primaryModelDefer.promise;
+
+        var resultsDefer = $q.defer();
+        scope.resultsPromise = resultsDefer.promise;
+
+        modelsPromise.then(function(models) {
           scope.primaryModel = _.find(models, function(model) {
             return model.id === scope.analysis.primaryModel;
           });
@@ -47,7 +53,38 @@ define(['lodash'], function(_) {
             return model.id !== scope.analysis.primaryModel;
           });
 
-          getResults(scope.primaryModel);
+          if (scope.primaryModel) {
+            primaryModelDefer.resolve(scope.primaryModel);
+          } else {
+            primaryModelDefer.reject('no primary model had been set');
+          }
+
+        });
+
+        scope.primaryModelPromise.then(function(model) {
+
+          if (!model.taskId) {
+            return;
+          }
+
+          PataviTaskIdResource.get({
+            projectId: scope.project.id,
+            analysisId: scope.analysis.id,
+            modelId: model.id
+          })
+            .$promise
+            .then(PataviService.run)
+            .then(function(result) {
+                scope.result = result.results;
+                resultsDefer.resolve(result)
+              },
+              function(pataviError) {
+                console.error('an error has occurred, error: ' + JSON.stringify(pataviError));
+                scope.$emit('error', {
+                  type: 'patavi',
+                  message: pataviError.desc
+                });
+              });
         });
 
         scope.modelSettingSummary = function(model) {
@@ -60,41 +97,24 @@ define(['lodash'], function(_) {
           return modelPart + ' ' + typePart + ' on the ' + scalePart + ' scale.';
         };
 
-        var getResults = function(model) {
-          PataviTaskIdResource
-            .get({projectId: scope.project.id, analysisId: scope.analysis.id, modelId: model.id})
-            .$promise
-            .then(PataviService.run)
-            .then(function(result) {
-              scope.result = result.results;
-            },
-            function(pataviError) {
-              console.error('an error has occurred, error: ' + JSON.stringify(pataviError));
-              scope.$emit('error', {
-                type: 'patavi',
-                message: pataviError.desc
-              });
-            });
 
-      };
-
-      function modelTypeString(type) {
-        var typeString;
-        if (type === 'network') {
-          typeString = 'network meta-analysis';
-        } else if (type === 'pair-wise') {
-          typeString = 'pair-wise meta-analysis';
-        } else if (type === 'node-split') {
-          typeString = 'node-splitting analysis';
-        } else if (type === 'regression') {
-          typeString = 'meta-regression';
+        function modelTypeString(type) {
+          var typeString;
+          if (type === 'network') {
+            typeString = 'network meta-analysis';
+          } else if (type === 'pair-wise') {
+            typeString = 'pair-wise meta-analysis';
+          } else if (type === 'node-split') {
+            typeString = 'node-splitting analysis';
+          } else if (type === 'regression') {
+            typeString = 'meta-regression';
+          }
+          return typeString;
         }
-        return typeString;
+
+
       }
-
-
-    }
+    };
   };
-};
-return dependencies.concat(nmaReportViewDirective);
+  return dependencies.concat(nmaReportViewDirective);
 });
