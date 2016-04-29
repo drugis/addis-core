@@ -63,6 +63,10 @@ define(['lodash'], function(_) {
 
         scope.primaryModelPromise.then(function(model) {
 
+          if (!model.taskId) {
+            return;
+          }
+
           PataviTaskIdResource.get({
             projectId: scope.project.id,
             analysisId: scope.analysis.id,
