@@ -1,5 +1,6 @@
 package org.drugis.addis.problems;
 
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
 import org.drugis.addis.problems.model.Arm;

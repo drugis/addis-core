@@ -257,7 +257,6 @@ public class ProblemServiceImpl implements ProblemService {
   }
 
   private NetworkMetaAnalysisProblem getNetworkMetaAnalysisProblem(Project project, NetworkMetaAnalysis analysis) throws URISyntaxException, ReadValueException, ResourceDoesNotExistException {
-
     List<AbstractIntervention> interventions = interventionRepository.query(project.getId());
 
     interventions = filterExcludedInterventions(interventions, analysis.getInterventionInclusions());

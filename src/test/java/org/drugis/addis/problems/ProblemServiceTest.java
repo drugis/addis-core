@@ -2,6 +2,7 @@ package org.drugis.addis.problems;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.ext.com.google.common.collect.ImmutableSet;
 import org.drugis.addis.analyses.*;
@@ -116,17 +117,17 @@ public class ProblemServiceTest {
   ;
   private final SemanticVariable semanticOutcome = new SemanticVariable(URI.create("semanticOutcomeUri"), "semanticOutcomeLabel");
   private final Outcome outcome = new Outcome(303, project.getId(), "outcome name", "moti", semanticOutcome);
-  private final URI fluoxConceptUri = URI.create("fluoxUri");
+  private final URI fluoxConceptUri = URI.create("fluoxConceptUri");
   private final SemanticInterventionUriAndName fluoxConcept = new SemanticInterventionUriAndName(fluoxConceptUri, "fluox concept");
   private final Integer fluoxInterventionId = 401;
   private final AbstractIntervention fluoxIntervention = new SimpleIntervention(fluoxInterventionId, project.getId(),
           "fluoxetine", "moti", fluoxConcept.getUri(), fluoxConcept.getLabel());
-  private final URI paroxConceptUri = URI.create("paroxUri");
+  private final URI paroxConceptUri = URI.create("paroxConceptUri");
   private final SemanticInterventionUriAndName paroxConcept = new SemanticInterventionUriAndName(paroxConceptUri, "parox concept");
   private final Integer paroxInterventionId = 402;
   private final AbstractIntervention paroxIntervention = new SimpleIntervention(paroxInterventionId, project.getId(),
           "paroxetine", "moti", paroxConcept.getUri(), paroxConcept.getLabel());
-  private final URI sertraConceptUri = URI.create("sertraUri");
+  private final URI sertraConceptUri = URI.create("sertraConceptUri");
   private final SemanticInterventionUriAndName sertraConcept = new SemanticInterventionUriAndName(sertraConceptUri, "sertra concept");
   private final Integer sertraInterventionId = 403;
   private final AbstractIntervention sertraIntervention = new SimpleIntervention(sertraInterventionId, project.getId(),
@@ -194,10 +195,25 @@ public class ProblemServiceTest {
     daanEtAlSertraArm.addMeasurement(daanEtAlSertraMeasurement1);
     daanEtAlSertraArm.addMeasurement(daanEtAlSertraMeasurement2);
 
+    URI daanEtAlParoxInstance = URI.create("daanEtAlParoxInstance");
+    URI daanEtAlParoxArmUri = URI.create("daanEtAlParoxArm");
+    int daanEtAlParoxSampleSize = 40;
+    int daanEtAlParoxRate = 5;
+    Measurement daanEtAlParoxMeasurement1 = new Measurement(daanEtAlUri, variableUri, variableConceptUri, daanEtAlParoxArmUri,
+            daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null);
+    Measurement daanEtAlParoxMeasurement2 = new Measurement(daanEtAlUri, secondOutcomeUri, variableConceptUri, daanEtAlParoxArmUri,
+            daanEtAlParoxSampleSize, daanEtAlParoxRate, null, null);
+    AbstractSemanticIntervention simpleSemanticParoxIntervention = new SimpleSemanticIntervention(daanEtAlParoxInstance, paroxConceptUri);
+
+    TrialDataArm unmatchedDaanEtAlParoxArm = new TrialDataArm(daanEtAlParoxArmUri, "daanEtAlParoxArm", daanEtAlParoxInstance,
+            simpleSemanticParoxIntervention);
+    unmatchedDaanEtAlParoxArm.addMeasurement(daanEtAlParoxMeasurement1);
+    unmatchedDaanEtAlParoxArm.addMeasurement(daanEtAlParoxMeasurement2);
+
     // add matching result to arms
-    daanEtAlFluoxArm.setMatchedProjectInterventionIds(new HashSet<>(Arrays.asList(fluoxIntervention.getId())));
-    daanEtAlSertraArm.setMatchedProjectInterventionIds(new HashSet<>(Arrays.asList(sertraIntervention.getId())));
-    List<TrialDataArm> daanEtAlArms = Arrays.asList(daanEtAlFluoxArm, daanEtAlSertraArm);
+    daanEtAlFluoxArm.setMatchedProjectInterventionIds(Collections.singleton(fluoxIntervention.getId()));
+    daanEtAlSertraArm.setMatchedProjectInterventionIds(Collections.singleton(sertraIntervention.getId()));
+    List<TrialDataArm> daanEtAlArms = Arrays.asList(daanEtAlFluoxArm, daanEtAlSertraArm, unmatchedDaanEtAlParoxArm);
     TrialDataStudy daanEtAl = new TrialDataStudy(daanEtAlUri, "Daan et al", daanEtAlArms);
 
     // actually set study in analysis
@@ -214,7 +230,9 @@ public class ProblemServiceTest {
 
     List<AbstractIntervention> includedInterventions = Arrays.asList(fluoxIntervention, sertraIntervention);
     when(analysisService.getIncludedInterventions(singleStudyAnalysis)).thenReturn(includedInterventions);
-    when(triplestoreService.findMatchingIncludedInterventions(any(), any())).thenReturn(new HashSet<>(Arrays.asList(fluoxIntervention)));
+    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm)).thenReturn(ImmutableSet.of(fluoxIntervention));
+    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm)).thenReturn(ImmutableSet.of(sertraIntervention));
+    when(triplestoreService.findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm)).thenReturn(Collections.emptySet());
 
     when(performanceTablebuilder.build(any())).thenReturn(performanceTable);
     when(mappingService.getVersionedUuid(project.getNamespaceUid())).thenReturn(versionedUuid);
@@ -227,6 +245,7 @@ public class ProblemServiceTest {
     verify(triplestoreService).getSingleStudyData(versionedUuid, daanEtAl.getStudyUri(), project.getDatasetVersion(), outcomeUris, interventionUris);
     verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlFluoxArm);
     verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, daanEtAlSertraArm);
+    verify(triplestoreService).findMatchingIncludedInterventions(includedInterventions, unmatchedDaanEtAlParoxArm);
     verify(performanceTablebuilder).build(any());
     verify(mappingService).getVersionedUuid(project.getNamespaceUid());
     verify(interventionRepository).query(project.getId());
@@ -356,8 +375,6 @@ public class ProblemServiceTest {
     verify(interventionRepository).query(project.getId());
     verify(covariateRepository).findByProject(project.getId());
   }
-
-
 
   @Test
   public void testGetMetaBRProblem() throws ResourceDoesNotExistException, SQLException, IOException, URISyntaxException, InvalidModelException, ReadValueException, InvalidTypeForDoseCheckException {

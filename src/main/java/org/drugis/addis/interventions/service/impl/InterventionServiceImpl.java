@@ -71,7 +71,9 @@ public class InterventionServiceImpl implements InterventionService {
 
       if(semanticIntervention instanceof FixedSemanticIntervention){
         Dose dose = ((FixedSemanticIntervention) semanticIntervention).getDose();
-        return (minConstraint == null || isValid(minConstraint, dose) && maxConstraint == null || isValid(maxConstraint, dose) );
+        boolean isValidMinConstraint = minConstraint == null || isValid(minConstraint, dose);
+        boolean isValidMaxConstraint = maxConstraint == null || isValid(maxConstraint, dose);
+        return isValidMinConstraint && isValidMaxConstraint;
       }
 
       if(semanticIntervention instanceof TitratedSemanticIntervention){
