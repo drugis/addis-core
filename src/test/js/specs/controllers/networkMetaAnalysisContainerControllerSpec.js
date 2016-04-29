@@ -97,7 +97,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       networkMetaAnalysisService = jasmine.createSpyObj('NetworkMetaAnalysisService', ['transformTrialDataToTableRows',
         'transformTrialDataToNetwork', 'isNetworkDisconnected', 'addInclusionsToInterventions', 'changeArmExclusion',
         'buildInterventionInclusions', 'doesInterventionHaveAmbiguousArms', 'doesModelHaveAmbiguousArms', 'cleanUpExcludedArms',
-        'addInclusionsToCovariates', 'changeCovariateInclusion', 'buildOverlappingTreatmentMap'
+        'addInclusionsToCovariates', 'changeCovariateInclusion', 'buildOverlappingTreatmentMap', 'getIncludedInterventions'
       ]);
       var mockNetwork = {
         interventions: []
@@ -110,6 +110,7 @@ define(['angular', 'angular-mocks', 'controllers'], function() {
       });
       networkMetaAnalysisService.doesInterventionHaveAmbiguousArms.and.returnValue(true);
       networkMetaAnalysisService.addInclusionsToInterventions.and.returnValue(mockInterventions);
+      networkMetaAnalysisService.getIncludedInterventions.and.returnValue(mockInterventions);
 
       covariateDeferred = $q.defer();
       covariates.$promise = covariateDeferred.promise;

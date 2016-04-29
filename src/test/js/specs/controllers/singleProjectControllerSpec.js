@@ -71,7 +71,8 @@ define(['angular-mocks', 'angular'], function(angularMocks, angular) {
         TrialverseStudyResource: {},
         ANALYSIS_TYPES: {},
         $modal: {},
-        InterventionService: interventionService
+        InterventionService: interventionService,
+        activeTab: 'report'
       };
     });
 
