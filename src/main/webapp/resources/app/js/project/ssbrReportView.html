@@ -12,28 +12,39 @@
     </tr>
   </thead>
   <tbody class="main">
-    <tr ng-repeat="effectsTableRow in effectsTableData">
+    <tr ng-repeat="criterion in problem.criteria">
       <td>
-        {{criterion.value.title}}
+        {{criterion.title}}
       </td>
       <td>
         <div class="td-container">
-          <div class="td-content">{{criterion.value.description}}</div>
-          <div class="td-spacer">{{criterion.value.description}}</div>
+          <div class="td-content">{{criterion.description}}</div>
+          <div class="td-spacer">{{criterion.description}}</div>
           <span>&nbsp;</span>
         </div>
       </td>
-      <td>{{criterion.value.unitOfMeasurement}}</td>
-      <td class="text-center" ng-repeat="(alternativeKey, alternative) in problem.alternatives" name="col{{$index}}" id="col{{$index}}" ng-show="alternativeVisible[alternativeKey]">
-        {{scales[criterion.key][alternativeKey]['50%'] | number}}
+      <td>{{criterion.unitOfMeasurement}}</td>
+      <td class="text-center" ng-repeat="(alternativeKey, alternative) in problem.alternatives" name="col{{$index}}" id="col{{$index}}">
+        {{scales[criterion.criterionUri][alternativeKey]['50%'] | number}}
         <br>
         <div class="uncertain" ng-show="!isExact(criterion.key, alternativeKey)">
-          {{scales[criterion.key][alternativeKey]['2.5%'] | number}},
-          {{scales[criterion.key][alternativeKey]['97.5%'] | number}}</div>
+          {{scales[criterion.criterionUri][alternativeKey]['2.5%'] | number}},
+          {{scales[criterion.criterionUri][alternativeKey]['97.5%'] | number}}
+        </div>
       </td>
     </tr>
   </tbody>
 </table>
+<div ng-repeat="scenario in scenarios">
+  <strong>Scenario: </strong>{{::scenario.title}}
+  <br>
+  <strong>Trade-offs:</strong>
+  <trade-offs problem="scenario.state.problem" preferences="scenario.state.prefs"></trade-offs>
+  <rank-acceptability-plot
+          data="scenario.state.results.ranks.data"
+          problem="scenario.state.problem"
+    ></rank-acceptability-plot>
+</div>
   <!-- Scenarios list -->
     <!-- per scenario: trade-offs -->
     <!-- per scenario: rank acceptance plot -->

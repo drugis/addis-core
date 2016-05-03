@@ -1,7 +1,7 @@
 'use strict';
-define(['lodash'], function(_) {
-  var dependencies = ['AnalysisService', 'PataviTaskIdResource', 'PataviService', 'ProblemResource', 'WorkspaceService', 'EffectsTableService'];
-  var SsbrReportViewDirective = function(AnalysisService, PataviTaskIdResource, PataviService, ProblemResource, WorkspaceService, EffectsTableService) {
+define([], function() {
+  var dependencies = ['ProblemResource', 'WorkspaceService', 'ScenarioResource', 'MCDAResultsService'];
+  var SsbrReportViewDirective = function(ProblemResource, WorkspaceService, ScenarioResource, MCDAResultsService) {
     return {
       restrict: 'E',
       templateUrl: 'app/js/project/ssbrReportView.html',
@@ -20,10 +20,18 @@ define(['lodash'], function(_) {
           WorkspaceService.getObservedScales(scope.problem).then(function(scales) {
             scope.scales = scales;
           });
-          scope.effectsTableData = EffectsTableService.buildEffectsTableData(problem, problem.valueTree);
           return problem;
         });
 
+        scope.scenarios = ScenarioResource.query({
+          analysisId: scope.analysis.id,
+          projectId: scope.project.id
+        }).$promise.then(function(scenarios) {
+          scope.scenarios = scenarios.map(function(scenario) {
+            scenario.state = MCDAResultsService.getResults(scope, scenario.state);
+            return scenario;
+          });
+        });
 
       }
     };
